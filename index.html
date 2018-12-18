@@ -1,0 +1,73 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <title>Application Form</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.1.3/css/bootstrap.min.css" integrity="sha384-MCw98/SFnGE8fJT3GXwEOngsV7Zt27NXFoaoApmYm81iuXoPkFOJwJ8ERdknLPMO" crossorigin="anonymous">
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <div class="page-container container-fluid">
+        <h1>Application Form</h1>
+
+        <form method="post" action="" id="application-form">
+
+            <h2>Personal Details</h2>
+
+            <div class="form-row">
+                <div class="form-group col-sm-6">
+                    <label for="forename">Forename</label>
+                    <input class="form-control" type="text" name="forename" id="forename">
+                </div>
+                <div class="form-group col-sm-6">
+                    <label for="surname">Surname</label>
+                    <input class="form-control" type="text" name="surname" id="surname">
+                </div>
+            </div>
+
+            <div class="form-row">
+                <div class="form-group col-sm-6">
+                    <label for="dob">Date of Birth</label>
+                    <input class="form-control" type="date" max="2001-01-01" min="1900-01-01" name="dob" id="dob">
+                </div>
+            </div>
+
+            <h2>Contact Details</h2>
+
+            <div class="form-group">
+                <label for="email">Email Address</label>
+                <input class="form-control" type="email" name="email" id="email">
+            </div>
+
+            <div class="form-group">
+                <label for="phone">Telephone Number</label>
+                <input class="form-control" type="tel" name="phone" id="phone">
+            </div>
+
+            <div class="form-group">
+                <label for="address">Address</label>
+                <textarea class="form-control" name="address" id="address" rows="3"></textarea>
+            </div>
+
+            <div class="form-row">
+                <div class="form-group col-sm-6">
+                    <label for="postcode">Postcode</label>
+                    <input class="form-control" type="text" name="postcode" id="postcode">
+                </div>
+                <div class="form-group col-sm-6">
+                    <label for="country">Country</label>
+                    <select name="country" id="country" class="form-control">
+                        <option value="United Kingdom">United Kingdom</option>
+                    </select>
+                </div>
+            </div>
+
+            <button type="submit" class="btn btn-primary">Submit</button>
+
+        </form>
+
+    </div>
+    <script src="form.js"></script>
+</body>
+</html>
