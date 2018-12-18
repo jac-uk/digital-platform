@@ -5,7 +5,16 @@
     <title>Application Form</title>
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.1.3/css/bootstrap.min.css" integrity="sha384-MCw98/SFnGE8fJT3GXwEOngsV7Zt27NXFoaoApmYm81iuXoPkFOJwJ8ERdknLPMO" crossorigin="anonymous">
-    <link rel="stylesheet" href="style.css">
+    <link rel="stylesheet" href="/style.css">
+
+    <!-- update the version number as needed -->
+    <script defer src="/__/firebase/5.7.0/firebase-app.js"></script>
+    <!-- include only the Firebase features as you need -->
+    <script defer src="/__/firebase/5.7.0/firebase-firestore.js"></script>
+    <!-- initialize the SDK after all desired features are loaded -->
+    <script defer src="/__/firebase/init.js"></script>
+
+    <script src="/form.js"></script>
 </head>
 <body>
     <div class="page-container container-fluid">
@@ -66,8 +75,6 @@
             <button type="submit" class="btn btn-primary">Submit</button>
 
         </form>
-
     </div>
-    <script src="form.js"></script>
 </body>
 </html>
