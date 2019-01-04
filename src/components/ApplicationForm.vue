@@ -23,6 +23,7 @@
 
 <script>
 import Relationships from './Relationships';
+import firebase from '../firebase';
 
 export default {
   name: "ApplicationForm",
@@ -46,6 +47,14 @@ export default {
       console.log('Form was submitted');
       console.log(this.form);
       console.log(JSON.stringify(this.form));
+
+      firebase.db.collection('applications').add(this.form)
+        .then(doc => {
+          console.log(`Document written with ID ${doc.id}`);
+        })
+        .catch(error => {
+          console.error('Error adding document', error);
+        });
     },
   }
 }
