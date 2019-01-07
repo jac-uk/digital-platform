@@ -1,7 +1,6 @@
 <template>
   <div id="app" class="container-fluid">
-    <h1>Application Form</h1>
-    <ApplicationForm/>
+    <router-view></router-view>
   </div>
 </template>
 
