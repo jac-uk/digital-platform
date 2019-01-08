@@ -14,14 +14,14 @@ const config = {
 firebase.initializeApp(config);
 
 // Initialise Firestore
-const db = firebase.firestore();
+const firestore = firebase.firestore();
 
 // Disable deprecated features (as recommended by Firestore docs: https://firebase.google.com/docs/firestore/quickstart)
-db.settings({
+firestore.settings({
   timestampsInSnapshots: true
 });
 
 // Initialise Auth
-const auth = firebase.auth();
+const auth = firebase.auth;
 
-export default {db, auth};
+export {firestore, auth};
