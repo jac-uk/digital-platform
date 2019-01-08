@@ -23,7 +23,7 @@
 
 <script>
 import Relationships from './Relationships';
-import firebase from '../firebase';
+import {firestore} from '../firebase';
 
 export default {
   name: "ApplicationForm",
@@ -48,7 +48,7 @@ export default {
       console.log(this.form);
       console.log(JSON.stringify(this.form));
 
-      firebase.db.collection('applications').add(this.form)
+      firestore.collection('applications').add(this.form)
         .then(doc => {
           console.log(`Document written with ID ${doc.id}`);
         })

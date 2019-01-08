@@ -1,6 +1,6 @@
 import Vue from 'vue';
 import Router from 'vue-router';
-import firebase from './firebase';
+import {auth} from './firebase';
 
 // Views
 import Home from './views/Home';
@@ -35,7 +35,7 @@ const router = new Router({
 // Redirect to login if not authenticated
 router.beforeEach((to, from, next) => {
   const requiresAuth = to.matched.some(x => x.meta.requiresAuth);
-  const currentUser = firebase.auth.currentUser;
+  const currentUser = auth().currentUser;
 
   if (requiresAuth && !currentUser) {
     next('/login');
@@ -44,7 +44,13 @@ router.beforeEach((to, from, next) => {
   }
 });
 
-// @TODO: Add a watcher for Firebase Auth onAuthStateChange to show the appropriate view
-// Useful example: https://medium.com/dailyjs/authenticating-a-vue-js-application-with-firebase-ui-8870a3a5cff8#e3c8
+// Redirect page when the auth state changes (i.e. when a user logs in or out)
+auth().onAuthStateChanged((user) => {
+  if (user) {
+    router.push('/');
+  } else {
+    router.push('/login');
+  }
+});
 
 export default router;
