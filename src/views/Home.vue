@@ -1,7 +1,7 @@
 <template>
   <div>
     <h1>Application Form</h1>
-    <ApplicationForm/>
+    <ApplicationForm :userId="authUser.uid"/>
   </div>
 </template>
 
@@ -10,6 +10,9 @@
 
   export default {
     name: "Home",
+    props: {
+      authUser: Object,
+    },
     components: {
       ApplicationForm,
     }
