@@ -1,9 +1,10 @@
 <template>
   <div id="app" class="container-fluid">
-    <router-link to="/">Home</router-link>
-    <router-link to="/login">Login</router-link>
-    <a href="#" @click.prevent="logOut">Logout</a>
-    <router-view></router-view>
+    <nav v-if="authUser">
+      <router-link to="/">Home</router-link>
+      <a href="#" @click.prevent="logOut">Logout</a>
+    </nav>
+    <RouterView :authUser="authUser"/>
   </div>
 </template>
 
@@ -16,11 +17,21 @@ export default {
   components: {
     ApplicationForm
   },
+  data() {
+    return {
+      authUser: auth().currentUser,
+    };
+  },
   methods: {
     logOut() {
       auth().signOut();
     }
   },
+  mounted() {
+    auth().onAuthStateChanged((user) => {
+      this.authUser = user;
+    });
+  }
 }
 </script>
 

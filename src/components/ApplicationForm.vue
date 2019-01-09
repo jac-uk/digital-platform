@@ -27,6 +27,9 @@ import {firestore} from '../firebase';
 
 export default {
   name: "ApplicationForm",
+  props: {
+    userId: String
+  },
   components: {
     Relationships
   },
@@ -35,28 +38,33 @@ export default {
       form: {
         forename: '',
         surname: '',
-        relationships: [
-          // {forename: 'John', surname: 'Smith', relationship: 'Friend'},
-          // {forename: 'Jane', surname: 'Doe', relationship: 'Mother'},
-        ],
+        relationships: [],
       }
     }
   },
   methods: {
     onSubmit() {
-      console.log('Form was submitted');
-      console.log(this.form);
-      console.log(JSON.stringify(this.form));
-
-      firestore.collection('applications').add(this.form)
-        .then(doc => {
-          console.log(`Document written with ID ${doc.id}`);
+      this.userDoc().set(this.form)
+        .then(() => {
+          console.log('Document written');
         })
-        .catch(error => {
+        .catch((error) => {
           console.error('Error adding document', error);
         });
     },
-  }
+    userDoc() {
+      return firestore.collection('applications').doc(this.userId);
+    },
+  },
+  mounted() {
+    // Populate form with user's existing application, if one exists
+    this.userDoc().get()
+      .then((doc) => {
+        if (doc.exists) {
+          this.form = doc.data();
+        }
+      });
+  },
 }
 </script>
 
