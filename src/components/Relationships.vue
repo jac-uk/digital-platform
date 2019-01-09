@@ -58,6 +58,9 @@ export default {
   watch: {
     rows(val) {
       this.$emit('input', val);
+    },
+    value(val) {
+      this.rows = val;
     }
   }
 }
