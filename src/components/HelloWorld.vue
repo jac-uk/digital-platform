@@ -7,6 +7,11 @@
     name: "HelloWorld",
     props: {
       msg: String
+    },
+    methods: {
+      dummy() {
+        return 'I only exist to enable test coverage';
+      }
     }
   }
 </script>
