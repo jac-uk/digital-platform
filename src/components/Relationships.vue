@@ -1,12 +1,12 @@
 <template>
   <table class="table">
     <thead>
-    <tr>
-      <th>Forename</th>
-      <th>Surname</th>
-      <th>Relationship to you</th>
-      <th></th>
-    </tr>
+      <tr>
+        <th>Forename</th>
+        <th>Surname</th>
+        <th>Relationship to you</th>
+        <th></th>
+      </tr>
     </thead>
     <tbody>
       <tr v-if="rows.length === 0">
@@ -18,15 +18,15 @@
         <td><input class="form-control" type="text" v-model="row.forename" placeholder="Forename" /></td>
         <td><input class="form-control" type="text" v-model="row.surname" placeholder="Surname" /></td>
         <td><input class="form-control" type="text" v-model="row.relationship" placeholder="Relationship" /></td>
-        <td><button class="btn btn-danger btn-sm" @click.prevent="remove(row)">×</button></td>
+        <td><button class="btn btn-danger btn-sm" @click.prevent="remove(row)" title="Delete row">×</button></td>
       </tr>
     </tbody>
     <tfoot>
-    <tr>
-      <td colspan="4" class="text-right">
-        <button class="btn btn-success" @click.prevent="add">+ Add Relationship</button>
-      </td>
-    </tr>
+      <tr>
+        <td colspan="4" class="text-right">
+          <button class="btn btn-success" @click.prevent="add" ref="addRow">+ Add Relationship</button>
+        </td>
+      </tr>
     </tfoot>
   </table>
 </template>
@@ -34,7 +34,9 @@
 <script>
 export default {
   name: "Relationships",
-  props: ['value'],
+  props: {
+    'value': Array
+  },
   data() {
     return {
       rows: this.value
