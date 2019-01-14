@@ -50,7 +50,6 @@ export default {
         relationship: '',
       });
     },
-
     remove(rowToRemove) {
       this.rows = this.rows.filter((row) => {
         return row !== rowToRemove;
