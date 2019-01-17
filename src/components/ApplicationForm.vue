@@ -1,5 +1,5 @@
 <template>
-  <form @submit.prevent="onSubmit">
+  <form @submit.prevent="saveToFirestore">
     <h2>Personal Details</h2>
 
     <div class="form-row">
@@ -22,8 +22,8 @@
 </template>
 
 <script>
-import Relationships from './Relationships';
-import {firestore} from '../firebase';
+import Relationships from '@/components/Relationships';
+import {firestore} from '@/firebase';
 
 export default {
   name: "ApplicationForm",
@@ -43,27 +43,30 @@ export default {
     }
   },
   methods: {
-    onSubmit() {
-      this.userDoc().set(this.form)
+    loadFromFirestore() {
+      // Populate form with user's existing application, if one exists
+      return this.userDoc().get()
+        .then((doc) => {
+          if (doc.exists) {
+            this.form = doc.data();
+          }
+        });
+    },
+    saveToFirestore() {
+      return this.userDoc().set(this.form)
         .then(() => {
           console.log('Document written');
         })
         .catch((error) => {
-          console.error('Error adding document', error);
+          console.error('Unable to save application form', error);
         });
     },
     userDoc() {
       return firestore.collection('applications').doc(this.userId);
     },
   },
-  mounted() {
-    // Populate form with user's existing application, if one exists
-    this.userDoc().get()
-      .then((doc) => {
-        if (doc.exists) {
-          this.form = doc.data();
-        }
-      });
+  created() {
+    this.loadFromFirestore();
   },
 }
 </script>
