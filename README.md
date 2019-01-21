@@ -17,7 +17,7 @@ npm run build
 
 ### Runs unit tests
 ```
-npm run test:unit
+npm test
 ```
 
 ### Lints and fixes files

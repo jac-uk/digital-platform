@@ -1,0 +1,8 @@
+cache: npm
+install:
+  - npm install
+language: node_js
+node_js:
+  - "8.14.0"
+script:
+  - npm test
