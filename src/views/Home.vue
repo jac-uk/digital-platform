@@ -6,7 +6,7 @@
 </template>
 
 <script>
-  import ApplicationForm from '../components/ApplicationForm';
+  import ApplicationForm from '@/components/ApplicationForm';
 
   export default {
     name: "Home",
