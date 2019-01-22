@@ -1,5 +1,7 @@
 # application-form
 
+[![Build Status](https://travis-ci.org/JudicialAppointmentsCommission/application-form.svg?branch=master)](https://travis-ci.org/JudicialAppointmentsCommission/application-form)
+
 ## Project setup
 ```
 npm install
