@@ -1,10 +1,16 @@
 import Vue from 'vue';
 import Router from 'vue-router';
-import {auth} from './firebase';
+import {auth} from '@/firebase';
 
 // Views
-import Home from './views/Home';
-import Login from './views/Login';
+import Apply from '@/views/Apply';
+import Home from '@/views/Home';
+import Login from '@/views/Login';
+
+// Form Sections
+import Personal from '@/views/FormSections/Personal';
+import Nationality from '@/views/FormSections/Nationality';
+import Introduction from "@/views/FormSections/Introduction";
 
 Vue.use(Router);
 
@@ -12,12 +18,25 @@ const router = new Router({
   mode: 'history',
   routes: [
     {
-      path: '/',
-      name: 'home',
-      component: Home,
+      path: '/apply',
+      component: Apply,
       meta: {
         requiresAuth: true,
-      }
+      },
+      children: [
+        {
+          path: '',
+          component: Introduction,
+        },
+        {
+          path: 'nationality',
+          component: Nationality,
+        },
+        {
+          path: 'personal',
+          component: Personal,
+        },
+      ],
     },
     {
       path: '/login',
@@ -26,7 +45,7 @@ const router = new Router({
     },
     {
       path: '*',
-      redirect: '/',
+      redirect: '/apply',
     },
   ],
 });
@@ -47,7 +66,10 @@ router.beforeEach((to, from, next) => {
 // Redirect page when the auth state changes (i.e. when a user logs in or out)
 auth().onAuthStateChanged((user) => {
   if (user) {
-    router.push('/');
+    // @TODO: Perform the redirect to a 'logged in' page from the Login view, not here
+    //        Performing the redirect here means on initial page load of an authenticated user, the page will always
+    //        be redirected and the user will be taken away from where they're expecting to be.
+    // router.push('/apply');
   } else {
     router.push('/login');
   }
