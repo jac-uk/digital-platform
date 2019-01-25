@@ -1,9 +1,10 @@
 <template>
-  <div id="app" class="container-fluid">
+  <div id="app">
     <nav v-if="authUser">
-      <router-link to="/">Home</router-link>
+      <router-link to="/apply">Apply</router-link>
       <a href="#" @click.prevent="logOut">Logout</a>
     </nav>
+
     <RouterView :authUser="authUser"/>
   </div>
 </template>
@@ -36,7 +37,7 @@ export default {
 </script>
 
 <style>
-#app {
-  max-width: 600px;
+.container {
+  max-width: 960px;
 }
 </style>
