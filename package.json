@@ -9,6 +9,7 @@
     "test": "vue-cli-service test:unit"
   },
   "dependencies": {
+    "clone": "^2.1.2",
     "firebase": "^5.7.2",
     "firebaseui": "^3.5.1",
     "vue": "^2.5.21",
