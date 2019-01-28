@@ -90,11 +90,12 @@
           });
       },
     },
-    async created() {
+    created() {
       Promise.all([
         this.loadApplicant(),
         this.loadVacancy(),
-        this.loadApplication()
+        this.loadApplication(),
+        this.$store.dispatch('loadApplicant', this.authUser.uid)
       ])
         .then((values) => {
           this.loaded = true;

@@ -11,19 +11,13 @@
       </ul>
 
       <div class="form-check">
-        <input class="form-check-input" type="radio" name="exampleRadios" id="eligibility_na" value="na" v-model="applicant.eligible">
-        <label class="form-check-label" for="eligibility_na">
-          N/A
-        </label>
-      </div>
-      <div class="form-check">
-        <input class="form-check-input" type="radio" name="exampleRadios" id="eligibility_no" value="no" v-model="applicant.eligible">
+        <input class="form-check-input" type="radio" id="eligibility_no" :value="false" v-model="applicant.eligible">
         <label class="form-check-label" for="eligibility_no">
           No, I'm not eligible
         </label>
       </div>
       <div class="form-check">
-        <input class="form-check-input" type="radio" name="exampleRadios" id="eligibility_yes" value="yes" v-model="applicant.eligible">
+        <input class="form-check-input" type="radio" id="eligibility_yes" :value="true" v-model="applicant.eligible">
         <label class="form-check-label" for="eligibility_yes">
           Yes, I'm eligible
         </label>
@@ -31,7 +25,10 @@
 
       <div class="form-actions">
         <button class="btn btn-primary mr-2" type="submit">Save and Continue</button>
-        <button class="btn btn-outline-secondary" @click.prevent="save">Save as Draft</button>
+        <button class="btn btn-outline-secondary" @click.prevent="save">
+          Save as Draft
+          <span class="spinner-border spinner-border-sm" v-if="isSaving"></span>
+        </button>
       </div>
     </form>
   </section>
@@ -46,16 +43,20 @@
     },
     data() {
       return {
-        applicant: this.applicantDoc,
+        applicant: this.$store.getters.applicant(),
         application: this.applicationDoc,
-      }
+        isSaving: false,
+      };
     },
     methods: {
-      saveAndContinue() {
-        console.log('Save and continue');
+      async saveAndContinue() {
+        await this.save();
+        this.$emit('continue');
       },
-      save() {
-        console.log('Save');
+      async save() {
+        this.isSaving = true;
+        await this.$store.dispatch('saveApplicant', this.applicant);
+        this.isSaving = false;
       }
     }
   }

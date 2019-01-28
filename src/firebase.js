@@ -24,4 +24,6 @@ firestore.settings({
 // Initialise Auth
 const auth = firebase.auth;
 
-export {firestore, auth};
+const Timestamp = firebase.firestore.Timestamp;
+
+export {firestore, auth, Timestamp};
