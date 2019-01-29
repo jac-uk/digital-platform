@@ -1,7 +1,5 @@
 import Vue from 'vue';
 import Vuex from 'vuex';
-import {firestore, Timestamp} from '@/firebase';
-import clone from 'clone';
 import auth from '@/store/auth';
 import applicant from '@/store/applicant';
 import application from '@/store/application';
