@@ -1,45 +1,41 @@
 import {firestore} from "@/firebase";
-import clone from "clone";
-import docRefs from '@/store/docRefs';
 import sanitizeFirestore from "@/utils/sanitize-firestore";
 
 const module = {
   state: {
-    vacancy: {},
-    vacancyId: null,
+    data: {},
+    id: null,
   },
   mutations: {
     setVacancy(state, data) {
-      state.vacancy = data;
+      state.data = data;
     },
     setVacancyId(state, vacancyId) {
-      state.vacancyId = vacancyId;
-      docRefs.vacancy = firestore.collection('vacancies').doc(vacancyId);
+      state.id = vacancyId;
     },
   },
   actions: {
     async loadVacancy({commit, state, getters}) {
-      if (!state.vacancyId) {
+      if (!state.id) {
         throw new Error('You must set the Vacancy ID before attempting to load it');
       }
 
-      docRefs.vacancy = firestore.collection('vacancies').doc(state.vacancyId);
-      const snapshot = await docRefs.vacancy.get();
+      const snapshot = await getters.vacancyDoc.get();
       const data = sanitizeFirestore(snapshot.data());
       commit('setVacancy', data);
     },
-    async saveVacancy({commit}, data) {
-      await docRefs.vacancy.set(data);
-      commit('setVacancy', clone(data));
-    },
   },
   getters: {
-    vacancy: (state) => () => {
-      return clone(state.vacancy);
+    vacancy: (state) => {
+      return state.data;
+    },
+    vacancyDoc: (state) => {
+      if (state.id) {
+        return firestore.collection('vacancies').doc(state.id);
+      }
+      return null;
     },
   },
 };
-
-window.docRefs = docRefs;
 
 export default module;
