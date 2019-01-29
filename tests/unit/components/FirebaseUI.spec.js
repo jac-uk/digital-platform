@@ -37,10 +37,13 @@ describe('FirebaseUI component', () => {
     return shallowMount(FirebaseUI);
   };
 
-  describe('start FirebaseUI when the component is mounted', () => {
-    const wrapper = createTestSubject();
+  let wrapper;
+  beforeEach(() => {
+    wrapper = createTestSubject();
+  });
 
-    it('creates a DOM element "#firebaseui-auth-container"', () => {
+  describe('start FirebaseUI when the component is mounted', () => {
+    it('renders a DOM element "#firebaseui-auth-container"', () => {
       expect(wrapper.find('#firebaseui-auth-container').exists()).toBe(true);
     });
 
@@ -59,10 +62,7 @@ describe('FirebaseUI component', () => {
   });
 
   it('starts FirebaseUI with the expected config', () => {
-    const wrapper = createTestSubject();
-    const config = wrapper.vm.uiConfig;
-
-    expect(config).toEqual({
+    expect(wrapper.vm.uiConfig).toEqual({
       signInOptions: [
         {
           provider: auth.EmailAuthProvider.PROVIDER_ID,
@@ -71,18 +71,32 @@ describe('FirebaseUI component', () => {
       ],
       credentialHelper: firebaseui.auth.CredentialHelper.NONE,
       callbacks: {
-        signInSuccessWithAuthResult: wrapper.vm.returnFalse
+        signInSuccessWithAuthResult: wrapper.vm.signInSuccess
       }
     });
   });
 
-  it('has a method which returns false', () => {
-    const wrapper = createTestSubject();
-    expect(wrapper.vm.returnFalse()).toBe(false);
+  describe('#signInSuccess', () => {
+    it('emits a `signInSuccess` event containing an authResult object', () => {
+      const authResult = {
+        additionalUserInfo: {},
+        credential: null,
+        operationType: 'signIn',
+        user: {},
+      };
+      wrapper.vm.signInSuccess(authResult);
+      expect(wrapper.emitted().signInSuccess).toHaveLength(1);
+      expect(wrapper.emitted().signInSuccess[0]).toEqual([authResult]);
+    });
+
+    // Returning false will stop FirebaseUI from performing a window.location redirect
+    // This behaviour is documented here: https://github.com/firebase/firebaseui-web#signinsuccesswithauthresultauthresult-redirecturl
+    it('returns false', () => {
+      expect(wrapper.vm.signInSuccess()).toBe(false);
+    });
   });
 
   it('destroys the FirebaseUI instance when the component is destroyed', () => {
-    const wrapper = createTestSubject();
     wrapper.destroy();
     expect(mockUiInstance.delete).toBeCalledTimes(1);
   });

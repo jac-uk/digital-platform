@@ -2,7 +2,7 @@
   <div class="login">
     <h3>Login</h3>
     <p>You're not authenticated. Please login.</p>
-    <FirebaseUI/>
+    <FirebaseUI @signInSuccess="loginRedirect" />
   </div>
 </template>
 
@@ -14,6 +14,12 @@
     components: {
       FirebaseUI
     },
+    methods: {
+      loginRedirect(authResult) {
+        this.$store.dispatch('setCurrentUser', authResult.user);
+        this.$router.push('/');
+      }
+    }
   }
 </script>
 

@@ -26,16 +26,17 @@
           ],
           credentialHelper: firebaseui.auth.CredentialHelper.NONE,
           callbacks: {
-            signInSuccessWithAuthResult: this.returnFalse
+            signInSuccessWithAuthResult: this.signInSuccess
           }
         }
       }
     },
     methods: {
-      returnFalse() {
-        // Do nothing here because post-login triggers listen for onAuthStateChanged event
+      signInSuccess(authResult) {
+          this.$emit('signInSuccess', authResult);
+        // Return false to disable FirebaseUI auth redirect
         return false;
-      }
+      },
     }
   }
 </script>
