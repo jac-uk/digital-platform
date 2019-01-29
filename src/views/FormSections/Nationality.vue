@@ -1,6 +1,6 @@
 <template>
   <section>
-    <form @submit.prevent="saveAndContinue">
+    <form @submit.prevent="save">
       <h2>Your Nationality</h2>
       <h3>Are you eligible to apply?</h3>
       <p>You need to be a citizen of:</p>
@@ -24,8 +24,8 @@
       </div>
 
       <div class="form-actions">
-        <button class="btn btn-primary mr-2" type="submit">Save and Continue</button>
-        <button class="btn btn-outline-secondary" @click.prevent="save">
+        <button class="btn btn-primary mr-2" type="button" @click.prevent="saveAndContinue">Save and Continue</button>
+        <button class="btn btn-outline-secondary" type="submit">
           Save as Draft
           <span class="spinner-border spinner-border-sm" v-if="isSaving"></span>
         </button>
