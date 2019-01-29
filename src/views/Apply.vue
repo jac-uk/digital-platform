@@ -95,7 +95,7 @@
         this.loadApplicant(),
         this.loadVacancy(),
         this.loadApplication(),
-        this.$store.dispatch('loadApplicant', this.authUser.uid)
+        this.$store.dispatch('loadApplicant')
       ])
         .then((values) => {
           this.loaded = true;
