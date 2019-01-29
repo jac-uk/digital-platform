@@ -32,7 +32,19 @@ export default {
     auth().onAuthStateChanged((user) => {
       this.authUser = user;
     });
-  }
+  },
+  computed: {
+    isLoggedIn() {
+      return this.$store.getters.isLoggedIn;
+    },
+  },
+  watch: {
+    isLoggedIn(loggedIn) {
+      if (loggedIn === false) {
+        this.$router.push('/login');
+      }
+    },
+  },
 }
 </script>
 
