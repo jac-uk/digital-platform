@@ -1,6 +1,6 @@
 import {firestore} from "@/firebase";
 import clone from "clone";
-import sanitizeFirestore from "@/utils/sanitize-firestore";
+import sanitizeFirestore from "@/utils/sanitizeFirestore";
 
 const module = {
   state: {
