@@ -9,9 +9,11 @@
 <script>
   export default {
     name: "Introduction",
-    props: {
-      vacancy: Object
-    }
+    data() {
+      return {
+        vacancy: this.$store.getters.vacancy,
+      };
+    },
   }
 </script>
 
