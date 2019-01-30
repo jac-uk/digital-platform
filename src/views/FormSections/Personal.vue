@@ -44,7 +44,6 @@
     data() {
       return {
         applicant: this.$store.getters.applicant(),
-        application: this.applicationDoc,
         isSaving: false,
       };
     },
