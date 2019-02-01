@@ -17,7 +17,7 @@ const module = {
   actions: {
     async loadVacancy({commit, state, getters}) {
       if (!state.id) {
-        throw new Error('You must set the Vacancy ID before attempting to load it');
+        throw new Error('You must set the Vacancy ID first using the setVacancyId mutation');
       }
 
       const snapshot = await getters.vacancyDoc.get();
