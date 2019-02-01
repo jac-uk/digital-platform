@@ -1,17 +1,8 @@
 import vacancy from '@/store/vacancy';
 import * as firebase from 'firebase/app';
 import 'firebase/firestore';
-
-// Wrap sanitizeFirestore with a jest spy function so we can assert that it was called
 import sanitizeFirestore from '@/utils/sanitizeFirestore';
-jest.mock('@/utils/sanitizeFirestore', () => {
-  const realSanitizeFirestore = jest.requireActual('@/utils/sanitizeFirestore').default;
-  return jest.fn((data) => {
-    const sanitized = realSanitizeFirestore(data);
-    sanitized.sanitized = true;
-    return sanitized;
-  });
-});
+jest.mock('@/utils/sanitizeFirestore');
 
 describe('store/vacancy', () => {
   const mutations = vacancy.mutations;
@@ -45,12 +36,18 @@ describe('store/vacancy', () => {
 
   describe('actions', () => {
     let context;
+    let docBackup;
     beforeEach(() => {
       context = {
         commit: jest.fn(),
         getters,
         state,
       };
+      docBackup = getters.vacancyDoc;
+    });
+
+    afterEach(() => {
+      getters.vacancyDoc = docBackup;
     });
 
     describe('loadVacancy', () => {
@@ -59,7 +56,6 @@ describe('store/vacancy', () => {
       });
 
       it('gets the vacancy data, sanitizes it, and commits it to the state', async () => {
-        const vacancyDocBackup = getters.vacancyDoc;
         const data = {title: 'Example Vacancy Title'};
         const sanitizedData = {title: 'Example Vacancy Title', sanitized: true};
         const snapshot = {
@@ -71,8 +67,6 @@ describe('store/vacancy', () => {
 
         state.id = 'hsQqdvAfZpSw94X2B8nA';
         await actions.loadVacancy(context);
-
-        getters.vacancyDoc = vacancyDocBackup;
 
         expect(snapshot.data).toHaveBeenCalled();
         expect(sanitizeFirestore).toHaveBeenCalledWith(data);
