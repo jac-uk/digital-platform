@@ -24,18 +24,18 @@ describe('store/application', () => {
 
   describe('mutations', () => {
     describe('setApplication', () => {
-      it('stores the supplied data in the state', () => {
-        const data = {status: 'draft'};
-        mutations.setApplication(state, data);
-        expect(state.data).toBe(data);
-      });
-    });
+      const id = 'abc123';
+      const data = {status: 'draft'};
 
-    describe('setApplicationId', () => {
-      it('stores the supplied application ID in the state', () => {
-        const id = 'Kfr8yOXUIwWXC3PCeB2U';
-        mutations.setApplicationId(state, id);
+      beforeEach(() => {
+        mutations.setApplication(state, id, data);
+      });
+
+      it('stores the supplied document ID in the state', () => {
         expect(state.id).toBe(id);
+      });
+      it('stores the supplied data in the state', () => {
+        expect(state.data).toBe(data);
       });
     });
   });
@@ -85,12 +85,8 @@ describe('store/application', () => {
           expect(sanitizeFirestore).toHaveBeenCalledWith(data);
         });
 
-        it('commits the document ID to the state', () => {
-          expect(context.commit).toHaveBeenCalledWith('setApplicationId', docId);
-        });
-
-        it('commits the sanitized data to the state', () => {
-          expect(context.commit).toHaveBeenCalledWith('setApplication', sanitizedData);
+        it('commits the document ID and sanitized data', () => {
+          expect(context.commit).toHaveBeenCalledWith('setApplication', docId, sanitizedData);
         });
       });
 
@@ -106,12 +102,8 @@ describe('store/application', () => {
           delete getters.vacancyDoc;
         });
 
-        it('commits a null document ID to the state', () => {
-          expect(context.commit).toHaveBeenCalledWith('setApplicationId', null);
-        });
-
-        it('commits an empty data object to the state', () => {
-          expect(context.commit).toHaveBeenCalledWith('setApplication', {});
+        it('commits a null document ID and an empty data object', () => {
+          expect(context.commit).toHaveBeenCalledWith('setApplication', null, {});
         });
       });
 
@@ -140,7 +132,8 @@ describe('store/application', () => {
           getters.vacancyDoc = 'vacancies/hsQqdvAfZpSw94X2B8nA';
           backupDoc = getters.applicationDoc;
           getters.applicationDoc = {
-            set: jest.fn().mockResolvedValue(null)
+            set: jest.fn().mockResolvedValue(null),
+            id: 'abc123',
           };
         });
 
@@ -167,23 +160,12 @@ describe('store/application', () => {
           expect(data).toEqual({status: 'submitted'});
         });
 
-        it('commits a copy of the data to the state (not passed by reference)', async () => {
-          state.id = 'abc123';
+        it('commits the document ID and a copy of the data (not the input object passed by reference)', async () => {
           const data = {status: 'submitted'};
           await actions.saveApplication(context, data);
-          expect(context.commit).toHaveBeenCalledWith('setApplication', data);
-
-          const commit = context.commit.mock.calls.find((call) => {
-            return call[0] === 'setApplication';
-          });
-          const committedData = commit[1];
+          expect(context.commit).toHaveBeenCalledWith('setApplication', 'abc123', data);
+          const committedData = context.commit.mock.calls[0][2];
           expect(committedData).not.toBe(data);
-        });
-
-        it('commits the document ID to the state', async () => {
-          getters.applicationDoc.id = 'abc123';
-          await actions.saveApplication(context, {});
-          expect(context.commit).toHaveBeenCalledWith('setApplicationId', 'abc123');
         });
       });
 
