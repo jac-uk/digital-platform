@@ -8,11 +8,9 @@ const module = {
     id: null,
   },
   mutations: {
-    setApplication(state, data) {
+    setApplication(state, id, data) {
+      state.id = id;
       state.data = data;
-    },
-    setApplicationId(state, applicationId) {
-      state.id = applicationId;
     },
   },
   actions: {
@@ -29,8 +27,7 @@ const module = {
         .get();
 
       if (results.empty) {
-        commit('setApplicationId', null);
-        commit('setApplication', {});
+        commit('setApplication', null, {});
       } else {
         const doc = results.docs[0];
 
@@ -39,8 +36,7 @@ const module = {
         delete data.vacancy;
         data = sanitizeFirestore(data);
 
-        commit('setApplicationId', doc.id);
-        commit('setApplication', data);
+        commit('setApplication', doc.id, data);
       }
     },
     async saveApplication({commit, getters, state}, data) {
@@ -51,8 +47,7 @@ const module = {
       saveData.applicant = getters.applicantDoc;
       saveData.vacancy = getters.vacancyDoc;
       await getters.applicationDoc.set(saveData);
-      commit('setApplicationId', getters.applicationDoc.id);
-      commit('setApplication', clone(data));
+      commit('setApplication', getters.applicationDoc.id, clone(data));
     },
   },
   getters: {
