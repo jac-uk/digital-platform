@@ -18,7 +18,7 @@ const module = {
   actions: {
     async loadApplication({commit, getters}) {
       if (!getters.applicantDoc || !getters.vacancyDoc) {
-        throw new Error('Applicant and Vacancy docs must exist to load Application');
+        throw new Error('Applicant and Vacancy docs must exist to load an Application');
       }
 
       const collection = firestore.collection('applications');
@@ -44,13 +44,14 @@ const module = {
       }
     },
     async saveApplication({commit, getters, state}, data) {
+      if (!getters.applicantDoc || !getters.vacancyDoc) {
+        throw new Error('Applicant and Vacancy docs must exist to save an Application');
+      }
       const saveData = clone(data);
       saveData.applicant = getters.applicantDoc;
       saveData.vacancy = getters.vacancyDoc;
       await getters.applicationDoc.set(saveData);
-      if (!state.id) {
-        commit('setApplicationId', getters.applicationDoc.id);
-      }
+      commit('setApplicationId', getters.applicationDoc.id);
       commit('setApplication', clone(data));
     },
   },
