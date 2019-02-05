@@ -1,8 +1,14 @@
 import applicant from '@/store/applicant';
-import * as firebase from 'firebase/app';
-import 'firebase/firestore';
-import sanitizeFirestore from '@/utils/sanitizeFirestore';
+import sanitizeFirestore from "@/utils/sanitizeFirestore";
+import {firestore} from '@/firebase';
+
 jest.mock('@/utils/sanitizeFirestore');
+jest.mock('@/firebase', () => {
+  const firebase = require('firebase-mock');
+  const firestore = firebase.MockFirebaseSdk().firestore();
+  firestore.autoFlush();
+  return {firestore};
+});
 
 describe('store/applicant', () => {
   const mutations = applicant.mutations;
@@ -42,49 +48,77 @@ describe('store/applicant', () => {
     });
 
     describe('loadApplicant', () => {
-      it('gets the applicant data, sanitizes it, and commits it to the state', async () => {
+      describe('getters.currentUserId is null', () => {
+        it('throws an error', async () => {
+          getters.applicantDoc = null;
+          await expect(actions.loadApplicant(context)).rejects.toThrowError('Cannot get Applicant doc');
+        });
+      });
+
+      describe('happy path', () => {
+        const docId = '4jsbvO27RJYqSRsgZM9sPhDFLDU2';
         const data = {name: 'John Smith'};
         const sanitizedData = {name: 'John Smith', sanitized: true};
-        const snapshot = {
-          data: jest.fn().mockReturnValue(data)
-        };
-        getters.applicantDoc = {
-          get: jest.fn().mockResolvedValue(snapshot)
-        };
 
-        await actions.loadApplicant(context);
+        beforeEach(async () => {
+          getters.applicantDoc = firestore.collection('applicants').doc(docId);
+          await getters.applicantDoc.set(data);
+          await actions.loadApplicant(context);
+        });
 
-        expect(snapshot.data).toHaveBeenCalled();
-        expect(sanitizeFirestore).toHaveBeenCalledWith(data);
-        expect(context.commit).toHaveBeenCalledWith('setApplicant', sanitizedData);
+        afterEach(() => {
+          getters.applicantDoc.delete();
+        });
+
+        it('finds the document data in Firestore and sanitizes it', () => {
+          expect(sanitizeFirestore).toHaveBeenCalledWith(data);
+        });
+
+        it('commits the sanitized data', () => {
+          expect(context.commit).toHaveBeenCalledWith('setApplicant', sanitizedData);
+        });
+      });
+
+      it('returns a Promise', () => {
+        getters.applicantDoc = firestore.collection('applicants').doc();
+        expect(actions.loadApplicant(context)).toBeInstanceOf(Promise);
       });
     });
 
     describe('saveApplicant', () => {
-      const data = {name: 'John Smith'};
-
-      beforeEach(() => {
-        getters.applicantDoc = {
-          set: jest.fn().mockResolvedValue()
-        };
+      describe('getters.currentUserId is null', () => {
+        it('throws an error', async () => {
+          getters.applicantDoc = null;
+          await expect(actions.saveApplicant(context, {})).rejects.toThrowError('Cannot get Applicant doc');
+        });
       });
 
-      it('saves the data to Firestore', async () => {
-        await actions.saveApplicant(context, data);
-        expect(getters.applicantDoc.set).toHaveBeenCalledTimes(1);
-        expect(getters.applicantDoc.set).toHaveBeenCalledWith(data);
+      describe('happy path', () => {
+        const docId = '4jsbvO27RJYqSRsgZM9sPhDFLDU2';
+        const data = {name: 'John Smith'};
+
+        beforeEach(async () => {
+          getters.applicantDoc = firestore.collection('applicants').doc(docId);
+          await actions.saveApplicant(context, data);
+        });
+
+        it('saves the data to Firestore', async () => {
+          const snapshot = await getters.applicantDoc.get();
+          expect(snapshot.data()).toEqual(data);
+        });
+
+        it('commits a clone of the data to the state (not passed by reference)', async () => {
+          // Check that the committed object *IS NOT* the same as that which was passed to the saveApplicant method
+          // A clone is committed to avoid accidental 'pass by reference' changes to state data
+          const committedData = context.commit.mock.calls[0][1];
+          expect(committedData).not.toBe(data);
+          expect(committedData).toEqual(data);
+        });
       });
 
-      it('commits a clone of the data to the state', async () => {
-        await actions.saveApplicant(context, data);
-        expect(context.commit).toHaveBeenCalledTimes(1);
-        expect(context.commit).toHaveBeenCalledWith('setApplicant', data);
-
-        // Check that the committed object *IS NOT* the same as that which was passed to the saveApplicant method
-        // A clone is committed to avoid accidental 'pass by reference' changes to state data
-        const committedData = context.commit.mock.calls[0][1];
-        expect(committedData).not.toBe(data);
-        expect(committedData).toEqual(data);
+      it('returns a Promise', () => {
+        getters.applicantDoc = firestore.collection('applicants').doc();
+        expect(actions.saveApplicant(context, {})).toBeInstanceOf(Promise);
       });
     });
   });
@@ -107,21 +141,24 @@ describe('store/applicant', () => {
     });
 
     describe('applicantDoc', () => {
-      it('returns null if getters.currentUserId returns null', () => {
-        getters.currentUserId = null;
-        const doc = getters.applicantDoc(state, getters);
-        expect(doc).toBe(null);
+      afterEach(() => {
+        delete getters.currentUserId;
       });
-      it('returns a Firestore DocumentReference object', () => {
-        getters.currentUserId = '4jsbvO27RJYqSRsgZM9sPhDFLDU2';
-        const doc = getters.applicantDoc(state, getters);
-        expect(doc).toBeInstanceOf(firebase.firestore.DocumentReference);
+
+      describe('when getters.currentUserId is set', () => {
+        it('returns the document matching path applicants/{currentUserId}', () => {
+          getters.currentUserId = '4jsbvO27RJYqSRsgZM9sPhDFLDU2';
+          const doc = getters.applicantDoc(state, getters);
+          expect(doc.id).toBe(getters.currentUserId);
+          expect(doc.path).toBe(`applicants/${getters.currentUserId}`);
+        });
       });
-      it('the document path matches applicants/{currentUserId}', () => {
-        getters.currentUserId = '4jsbvO27RJYqSRsgZM9sPhDFLDU2';
-        const doc = getters.applicantDoc(state, getters);
-        expect(doc.id).toBe('4jsbvO27RJYqSRsgZM9sPhDFLDU2');
-        expect(doc.path).toBe('applicants/4jsbvO27RJYqSRsgZM9sPhDFLDU2');
+
+      describe('when getters.currentUserId is null', () => {
+        it('returns null', () => {
+          getters.currentUserId = null;
+          expect(getters.applicantDoc(state, getters)).toBe(null);
+        });
       });
     });
   });

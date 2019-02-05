@@ -13,11 +13,17 @@ const module = {
   },
   actions: {
     async loadApplicant({commit, state, getters}) {
+      if (!getters.applicantDoc) {
+        throw new Error('Cannot get Applicant doc (currentUserId is not set)');
+      }
       const snapshot = await getters.applicantDoc.get();
       const data = sanitizeFirestore(snapshot.data());
       commit('setApplicant', data);
     },
     async saveApplicant({commit, getters}, data) {
+      if (!getters.applicantDoc) {
+        throw new Error('Cannot get Applicant doc (currentUserId is not set)');
+      }
       await getters.applicantDoc.set(data);
       commit('setApplicant', clone(data));
     },
