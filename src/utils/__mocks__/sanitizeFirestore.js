@@ -4,6 +4,9 @@
 const realSanitizeFirestore = jest.requireActual('@/utils/sanitizeFirestore').default;
 
 const sanitizeFirestore = jest.fn((data) => {
+  // Return falsy values straight away
+  if (!data) return data;
+
   const sanitized = realSanitizeFirestore(data);
   sanitized.sanitized = true;
   return sanitized;
