@@ -206,7 +206,7 @@ describe('store/application', () => {
 
     describe('applicationDoc', () => {
       describe('when ID is set in the state', () => {
-        it('returns a document matching path `applications/{applicationId}`', () => {
+        it('returns the document matching path `applications/{applicationId}`', () => {
           state.id = 'abc123';
           const doc = getters.applicationDoc(state, getters);
           expect(doc.id).toBe('abc123');
