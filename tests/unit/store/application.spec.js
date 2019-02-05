@@ -172,11 +172,17 @@ describe('store/application', () => {
       it('returns a Promise', () => {
         getters.applicantDoc = 'applicants/4jsbvO27RJYqSRsgZM9sPhDFLDU2';
         getters.vacancyDoc = 'vacancies/hsQqdvAfZpSw94X2B8nA';
+        const docBackup = getters.applicationDoc;
+        getters.applicationDoc = {
+          set: jest.fn().mockResolvedValue(null),
+          id: 'abc123',
+        };
 
         expect(actions.saveApplication(context, {})).toBeInstanceOf(Promise);
 
         delete getters.applicantDoc;
         delete getters.vacancyDoc;
+        getters.applicationDoc = docBackup;
       });
     });
   });
