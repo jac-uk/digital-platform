@@ -85,4 +85,10 @@ describe('utils/sanitizeFirestore', () => {
 
     expect(data.applied_date).toBe(timestamp);
   });
+
+  const falsy = [null, undefined, false];
+  it.each(falsy)('does not sanitize falsy value `%s`', (value) => {
+    const sanitized = sanitizeFirestore(value);
+    expect(sanitized).toBe(value);
+  });
 });

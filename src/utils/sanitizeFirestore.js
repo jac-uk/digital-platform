@@ -26,6 +26,9 @@ const reviver = (key, value) => {
 };
 
 const sanitizeFirestore = (data) => {
+  // Return falsy values straight away
+  if (!data) return data;
+
   const json = JSON.stringify(data);
   return JSON.parse(json, reviver);
 };
