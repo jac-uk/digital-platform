@@ -39,7 +39,7 @@ const module = {
         commit('setApplication', doc.id, data);
       }
     },
-    async saveApplication({commit, getters, state}, data) {
+    async saveApplication({commit, getters}, data) {
       if (!getters.applicantDoc || !getters.vacancyDoc) {
         throw new Error('Applicant and Vacancy docs must exist to save an Application');
       }

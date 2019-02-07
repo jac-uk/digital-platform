@@ -21,13 +21,11 @@
 </template>
 
 <script>
-  import ApplicationForm from "@/components/ApplicationForm";
   import ApplicationNav from "@/components/ApplicationNav";
 
   export default {
     name: "Apply",
     components: {
-      ApplicationForm,
       ApplicationNav,
     },
     data() {
@@ -49,11 +47,10 @@
     },
     created() {
       this.initStore()
-        .then((values) => {
+        .then(() => {
           this.loaded = true;
         })
-        .catch((error) => {
-          console.error('Unable to load data:', error);
+        .catch(() => {
           this.loadFailed = true;
         });
     }
