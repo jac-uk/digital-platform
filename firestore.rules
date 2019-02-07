@@ -1,7 +1,25 @@
 service cloud.firestore {
   match /databases/{database}/documents {
-    match /applications/{userId} {
-    	allow read, write: if request.auth.uid == userId;
+  	match /applicants/{userId} {
+    	// Users can read & write to their own applicant document
+      allow get, create, update: if request.auth.uid == userId;
+    }
+
+    match /applications/{application} {
+    	function currentApplicant() {
+      	return path("/databases/" + database + "/documents/applicants/" + request.auth.uid);
+      }
+
+      // Allow existing records which belong to the current user
+      allow get, list, update: if resource.data.applicant == currentApplicant();
+
+      // Allow new records if they will belong to the current user
+      allow create: if request.resource.data.applicant == currentApplicant();
+    }
+
+    match /vacancies/{vacancy} {
+    	// Authenticated users can read
+    	allow get: if request.auth.uid != null;
     }
   }
 }
