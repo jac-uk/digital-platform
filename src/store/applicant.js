@@ -12,7 +12,7 @@ const module = {
     },
   },
   actions: {
-    async loadApplicant({commit, state, getters}) {
+    async loadApplicant({commit, getters}) {
       if (!getters.applicantDoc) {
         throw new Error('Cannot get Applicant doc (currentUserId is not set)');
       }

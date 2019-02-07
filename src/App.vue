@@ -10,14 +10,10 @@
 </template>
 
 <script>
-import ApplicationForm from './components/ApplicationForm';
 import {auth} from '@/firebase';
 
 export default {
   name: 'app',
-  components: {
-    ApplicationForm
-  },
   data() {
     return {
       authUser: auth().currentUser,

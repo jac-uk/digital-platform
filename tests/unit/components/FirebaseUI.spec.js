@@ -23,7 +23,7 @@ import firebaseui from 'firebaseui';
 jest.mock('firebaseui', () => {
   return {
     auth: {
-      AuthUI: jest.fn(auth => mockUiInstance),
+      AuthUI: jest.fn(() => mockUiInstance),
       CredentialHelper: {
         NONE: 'none'
       }
