@@ -55,7 +55,7 @@ describe('store/applicant', () => {
         });
       });
 
-      describe('happy path', () => {
+      describe('applicant exists in Firestore', () => {
         const docId = '4jsbvO27RJYqSRsgZM9sPhDFLDU2';
         const data = {name: 'John Smith'};
         const sanitizedData = {name: 'John Smith', sanitized: true};
@@ -76,6 +76,19 @@ describe('store/applicant', () => {
 
         it('commits the sanitized data', () => {
           expect(context.commit).toHaveBeenCalledWith('setApplicant', sanitizedData);
+        });
+      });
+
+      describe('applicant does not exist in Firestore - initialise an empty state', () => {
+        const docId = '4jsbvO27RJYqSRsgZM9sPhDFLDU2';
+
+        beforeEach(async () => {
+          getters.applicantDoc = firestore.collection('applicants').doc(docId);
+          await actions.loadApplicant(context);
+        });
+
+        it('commits an empty data object', () => {
+          expect(context.commit).toHaveBeenCalledWith('setApplicant', {});
         });
       });
 
