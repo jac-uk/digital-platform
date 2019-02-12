@@ -44,7 +44,7 @@ export default {
 }
 </script>
 
-<style>
+<style lang="scss">
 .container {
   max-width: 960px;
 }
