@@ -1,7 +1,7 @@
 <template>
   <section>
     <form @submit.prevent="save">
-      <h2>Your Nationality</h2>
+      <h2>Nationality</h2>
 
       <fieldset>
         <legend>Your Nationality</legend>
