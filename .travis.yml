@@ -1,17 +1,14 @@
 cache: npm
 install:
-- npm install
+  - npm install
 language: node_js
 node_js:
-- 8.14.0
-jobs:
-  include:
-  - stage: test
-    script:
-    - npm run lint
-    - npm test
-  - stage: deploy
-    deploy:
-      provider: firebase
-      token:
-        secure: ENaIeX7Q69U26IrZbf3peoNMmjk7wN38WCvmbOvRdxP7r9Zez5g5pDMhzHwad5oHnApYBlD29EzLULOhiKFdjztIO2bXqA/dFFH+JtWqWADs3+HRo2xBMHlGyP4NksBmMMdOuI24UViho16pdOh2GH30/Xrk/1qkJuS1YliSZF78X3UrZtylZJIIaLMN3Lb7oTqtFztVOv5kzX6EKH6RodbAykK5fbw/Mm+Nk1YYpXB5gWd/egxFuVaSohiY54ks0mb34YozCI6ZNlcMYdd2yUykWQtULgkRt3szlz6W2yd9zZq8vkQyEZkgcbMEQ4VZyPsMinrMcjRy7by/r5tZ6NYvqYZnCs+0nTkQkaxTI64GJLWj4lPOGY5SrD7Hx06r+PVUBmGmevOxKpNvfCPRY1ObJ4cqyN1ez4XyncFcJM4yBUigYia9n3A9Vt2aqJ36e5n3t0uJStNtBYmrS1hfXGnuuj0B0AX3+/IH1W4vkorTr9kHoZDKAsII3L55Qqij8dfDvE2EVFkT5yB2EhdNeGAoTLTJRMGdih+pvg0xw28m4OML7USA1t11Z9Usx3g7m5DmwOvRiKHHHswV3MWkwUqdRH24NhH+nGaU/kWShYD06WtYrFjYVGyOjB9JNPuzgmFjr2qviBLdP6xDKYV7QKz826Bxspe51TVKmpx+RNE=
+  - 8.14.0
+
+script:
+  - npm run lint
+  - npm test
+deploy:
+  provider: firebase
+  token:
+    secure: ENaIeX7Q69U26IrZbf3peoNMmjk7wN38WCvmbOvRdxP7r9Zez5g5pDMhzHwad5oHnApYBlD29EzLULOhiKFdjztIO2bXqA/dFFH+JtWqWADs3+HRo2xBMHlGyP4NksBmMMdOuI24UViho16pdOh2GH30/Xrk/1qkJuS1YliSZF78X3UrZtylZJIIaLMN3Lb7oTqtFztVOv5kzX6EKH6RodbAykK5fbw/Mm+Nk1YYpXB5gWd/egxFuVaSohiY54ks0mb34YozCI6ZNlcMYdd2yUykWQtULgkRt3szlz6W2yd9zZq8vkQyEZkgcbMEQ4VZyPsMinrMcjRy7by/r5tZ6NYvqYZnCs+0nTkQkaxTI64GJLWj4lPOGY5SrD7Hx06r+PVUBmGmevOxKpNvfCPRY1ObJ4cqyN1ez4XyncFcJM4yBUigYia9n3A9Vt2aqJ36e5n3t0uJStNtBYmrS1hfXGnuuj0B0AX3+/IH1W4vkorTr9kHoZDKAsII3L55Qqij8dfDvE2EVFkT5yB2EhdNeGAoTLTJRMGdih+pvg0xw28m4OML7USA1t11Z9Usx3g7m5DmwOvRiKHHHswV3MWkwUqdRH24NhH+nGaU/kWShYD06WtYrFjYVGyOjB9JNPuzgmFjr2qviBLdP6xDKYV7QKz826Bxspe51TVKmpx+RNE=
