@@ -1,5 +1,6 @@
 {
   "projects": {
-    "default": "application-form-e08c9"
+    "default": "application-form-e08c9",
+    "staging": "jac-application-form-staging"
   }
 }
