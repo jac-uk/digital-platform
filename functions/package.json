@@ -10,6 +10,7 @@
     "logs": "firebase functions:log"
   },
   "dependencies": {
+    "ajv": "^5.5.2",
     "firebase-admin": "^7.0.0",
     "firebase-functions": "^2.1.0",
     "firebase-functions-test": "^0.1.6"
