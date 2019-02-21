@@ -31,13 +31,11 @@ describe("Validation email", () => {
   };
 
   it("is sent when a user registers", () => {
-    expect(NotifyClient).not.toHaveBeenCalledTimes(1)
-
-
     jacFunctions.sendValidationEmail(mockEvent).then(() => {
       expect(NotifyClient).toHaveBeenCalledTimes(1)
+      const mockNotifyClientInstance = NotifyClient.mock.instances[0]
+      const mockSendEmail = mockNotifyClientInstance.sendEmail
+      expect(mockSendEmail).toHaveBeenCalledTimes(1)
     })
   })
 })
-
-
