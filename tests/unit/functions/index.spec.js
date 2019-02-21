@@ -2,7 +2,12 @@ const NotifyClient = require("../../../functions/node_modules/notifications-node
 const test = require("../../../functions/node_modules/firebase-functions-test")()
 
 // mockConfig has to happen BEFORE requiring index.js
-test.mockConfig({ notify: { key: "deadbeef" } });
+test.mockConfig({
+  notify: {
+    key: "deadbeef",
+    validate: "template-id-abc-123"
+  }
+});
 
 const jacFunctions = require("../../../functions/index")
 jest.mock("../../../functions/node_modules/notifications-node-client")
@@ -17,6 +22,7 @@ it('Check that the consumer called the class constructor', () => {
 })
 
 describe("Validation email", () => {
+
   const mockEvent = {
     data: {
       email: "test@test.com",
@@ -25,7 +31,9 @@ describe("Validation email", () => {
   };
 
   it("is sent when a user registers", () => {
-    const notifyClient = new NotifyClient()
+    expect(NotifyClient).not.toHaveBeenCalledTimes(1)
+
+
     jacFunctions.sendValidationEmail(mockEvent).then(() => {
       expect(NotifyClient).toHaveBeenCalledTimes(1)
     })
