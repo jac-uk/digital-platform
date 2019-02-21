@@ -47,7 +47,16 @@ describe("exports.sendValidationEmail", () => {
       expect(NotifyClient).toHaveBeenCalledTimes(1)
       const mockNotifyClientInstance = NotifyClient.mock.instances[0]
       const mockSendEmail = mockNotifyClientInstance.sendEmail
-      expect(mockSendEmail).toHaveBeenCalledWith(validationTemplateId)
+      expect(mockSendEmail).toHaveBeenCalledWith(validationTemplateId, expect.anything())
+    })
+  })
+
+  it("calls .sendEmail with the correct 'to:' email", () => {
+    jacFunctions.sendValidationEmail(mockEvent).then(() => {
+      expect(NotifyClient).toHaveBeenCalledTimes(1)
+      const mockNotifyClientInstance = NotifyClient.mock.instances[0]
+      const mockSendEmail = mockNotifyClientInstance.sendEmail
+      expect(mockSendEmail).toHaveBeenCalledWith(expect.anything(), mockEvent.data.email)
     })
   })
 })
