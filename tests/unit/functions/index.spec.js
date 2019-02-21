@@ -20,7 +20,7 @@ beforeEach(() => {
 })
 
 it('Check that the consumer called the class constructor', () => {
-  const notifyClient = new NotifyClient()
+  new NotifyClient()
   expect(NotifyClient).toHaveBeenCalledTimes(1)
 })
 
