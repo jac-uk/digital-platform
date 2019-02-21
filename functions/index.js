@@ -9,6 +9,7 @@ exports.sendValidationEmail = functions.auth.user().onCreate((user) => {
   const email = user.email
   const displayName = user.displayName
 
-  notifyClient.sendEmail()
+  notifyClient
+    .sendEmail(functions.config().notify.templates.validation)
   return true
 });
