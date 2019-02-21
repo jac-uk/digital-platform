@@ -1,11 +1,14 @@
 const NotifyClient = require("../../../functions/node_modules/notifications-node-client").NotifyClient
 const test = require("../../../functions/node_modules/firebase-functions-test")()
+const validationTemplateId = "validation-template-123"
 
 // mockConfig has to happen BEFORE requiring index.js
 test.mockConfig({
   notify: {
     key: "deadbeef",
-    validate: "template-id-abc-123"
+    templates: {
+      validation: validationTemplateId
+    }
   }
 });
 
@@ -21,7 +24,7 @@ it('Check that the consumer called the class constructor', () => {
   expect(NotifyClient).toHaveBeenCalledTimes(1)
 })
 
-describe("Validation email", () => {
+describe("exports.sendValidationEmail", () => {
 
   const mockEvent = {
     data: {
@@ -30,12 +33,21 @@ describe("Validation email", () => {
     }
   };
 
-  it("is sent when a user registers", () => {
+  it("calls .sendEmail once on an instance of the notify client", () => {
     jacFunctions.sendValidationEmail(mockEvent).then(() => {
       expect(NotifyClient).toHaveBeenCalledTimes(1)
       const mockNotifyClientInstance = NotifyClient.mock.instances[0]
       const mockSendEmail = mockNotifyClientInstance.sendEmail
       expect(mockSendEmail).toHaveBeenCalledTimes(1)
+    })
+  })
+
+  it("calls .sendEmail with the correct template ID", () => {
+    jacFunctions.sendValidationEmail(mockEvent).then(() => {
+      expect(NotifyClient).toHaveBeenCalledTimes(1)
+      const mockNotifyClientInstance = NotifyClient.mock.instances[0]
+      const mockSendEmail = mockNotifyClientInstance.sendEmail
+      expect(mockSendEmail).toHaveBeenCalledWith(validationTemplateId)
     })
   })
 })
