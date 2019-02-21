@@ -3,6 +3,7 @@ before_install:
   - npm install -g firebase-tools
 install:
   - npm install
+  - npm --prefix ./functions install ./functions
 language: node_js
 node_js:
   - 8.14.0
