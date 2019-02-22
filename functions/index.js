@@ -10,6 +10,10 @@ exports.sendValidationEmail = functions.auth.user().onCreate((user) => {
   const displayName = user.displayName
 
   notifyClient
-    .sendEmail(functions.config().notify.templates.validation, email)
+    .sendEmail(
+      functions.config().notify.templates.validation,
+      email,
+      { personalisation: { } }
+    )
   return true
 });
