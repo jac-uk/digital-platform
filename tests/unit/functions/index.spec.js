@@ -47,7 +47,7 @@ describe("exports.sendValidationEmail", () => {
       expect(NotifyClient).toHaveBeenCalledTimes(1)
       const mockNotifyClientInstance = NotifyClient.mock.instances[0]
       const mockSendEmail = mockNotifyClientInstance.sendEmail
-      expect(mockSendEmail).toHaveBeenCalledWith(validationTemplateId, expect.anything())
+      expect(mockSendEmail).toHaveBeenCalledWith(validationTemplateId, expect.anything(), expect.anything())
     })
   })
 
@@ -56,7 +56,20 @@ describe("exports.sendValidationEmail", () => {
       expect(NotifyClient).toHaveBeenCalledTimes(1)
       const mockNotifyClientInstance = NotifyClient.mock.instances[0]
       const mockSendEmail = mockNotifyClientInstance.sendEmail
-      expect(mockSendEmail).toHaveBeenCalledWith(expect.anything(), mockEvent.data.email)
+      expect(mockSendEmail).toHaveBeenCalledWith(expect.anything(), mockEvent.data.email, expect.anything())
+    })
+  })
+
+  it("calls .sendEmail with the required personalisation object", () => {
+    jacFunctions.sendValidationEmail(mockEvent).then(() => {
+      expect(NotifyClient).toHaveBeenCalledTimes(1)
+      const mockNotifyClientInstance = NotifyClient.mock.instances[0]
+      const mockSendEmail = mockNotifyClientInstance.sendEmail
+      expect(mockSendEmail).toHaveBeenCalledWith(
+        expect.anything(),
+        expect.anything(),
+        expect.objectContaining({ personalisation: expect.any(Object) })
+     )
     })
   })
 })
