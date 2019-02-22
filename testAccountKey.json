@@ -1,0 +1,6 @@
+{
+  "type": "service_account",
+  "project_id": "application-form-e08c9",
+  "client_email": "firebase-adminsdk-mnp2c@application-form-e08c9.iam.gserviceaccount.com",
+  "client_x509_cert_url": "https://www.googleapis.com/robot/v1/metadata/x509/firebase-adminsdk-mnp2c%40application-form-e08c9.iam.gserviceaccount.com"
+}

@@ -18,7 +18,9 @@ npm run build
 ```
 
 ### Runs unit tests
+
 ```
+export FIREBASE_CONFIG='testAccountKey.json'
 npm test
 ```
 
