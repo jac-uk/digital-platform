@@ -9,6 +9,9 @@
     <li class="nav-item">
       <RouterLink to="/apply/personal" class="nav-link" active-class="active">Personal Details</RouterLink>
     </li>
+    <li class="nav-item">
+      <RouterLink to="/apply/diversity" class="nav-link" active-class="active">Diversity</RouterLink>
+    </li>
   </ol>
 </template>
 
