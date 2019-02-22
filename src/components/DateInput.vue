@@ -19,7 +19,7 @@
   let uid = 0;
 
   export default {
-    name: "DateInput",
+    name: 'DateInput',
     props: {
       value: {
         required: true,
