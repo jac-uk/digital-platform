@@ -21,22 +21,9 @@
       <fieldset>
         <legend>Your Date of Birth</legend>
         <div class="fieldset-text">
-          For example, 31 3 1980
+          For example, 31 03 1980
         </div>
-        <div class="form-row mb-3" style="max-width: 18rem;">
-          <div class="col-3">
-            <label for="dob_day">Day</label>
-            <input type="number" min="1" max="31" step="1" class="form-control" id="dob_day" v-model="applicant.dob_day" placeholder="DD">
-          </div>
-          <div class="col-3">
-            <label for="dob_month">Month</label>
-            <input type="number" min="1" max="12" step="1" class="form-control" id="dob_month" v-model="applicant.dob_month" placeholder="MM">
-          </div>
-          <div class="col-6">
-            <label for="dob_year">Year</label>
-            <input type="number" min="1900" max="2019" step="1" class="form-control" id="dob_year" v-model="applicant.dob_year" placeholder="YYYY">
-          </div>
-        </div>
+        <DateInput v-model="applicant.date_of_birth" style="max-width: 18rem;" />
       </fieldset>
 
       <fieldset>
@@ -148,8 +135,13 @@
 </template>
 
 <script>
+  import DateInput from '@/components/DateInput';
+
   export default {
     name: "Personal",
+    components: {
+      DateInput,
+    },
     data() {
       return {
         applicant: this.$store.getters.applicant(),
