@@ -1,7 +1,7 @@
 const admin = require('../../../functions/node_modules/firebase-admin');
 const NotifyClient = require("../../../functions/node_modules/notifications-node-client").NotifyClient
 const test = require("../../../functions/node_modules/firebase-functions-test")()
-const validationTemplateId = "validation-template-123"
+const verificationTemplateId = "verification-template-123"
 
 let adminStub, jacFunctions
 
@@ -18,7 +18,7 @@ beforeEach(() => {
     notify: {
       key: "deadbeef",
       templates: {
-        validation: validationTemplateId
+        verification: verificationTemplateId
       }
     }
   });
@@ -36,7 +36,7 @@ it("Check that the consumer called the class constructor", () => {
   expect(NotifyClient).toHaveBeenCalledTimes(1)
 })
 
-describe("exports.sendValidationEmail", () => {
+describe("exports.sendVerificationEmail", () => {
   const mockEvent = {
     data: {
       email: "test@test.com",
@@ -51,30 +51,30 @@ describe("exports.sendValidationEmail", () => {
     })
 
     it("uses a new instance of the notify client", () => {
-      jacFunctions.sendValidationEmail(mockEvent).then(() => {
+      jacFunctions.sendVerificationEmail(mockEvent).then(() => {
         const mockSendEmail = mockNotifyClientInstance.sendEmail
         expect(NotifyClient).toHaveBeenCalledTimes(1)
       })
     })
 
     it("is only called once per invocation", () => {
-      jacFunctions.sendValidationEmail(mockEvent).then(() => {
+      jacFunctions.sendVerificationEmail(mockEvent).then(() => {
         const mockSendEmail = mockNotifyClientInstance.sendEmail
         expect(mockSendEmail).toHaveBeenCalledTimes(1)
       })
     })
 
     it("is called with the configured Notify template ID", () => {
-      jacFunctions.sendValidationEmail(mockEvent).then(() => {
+      jacFunctions.sendVerificationEmail(mockEvent).then(() => {
         const mockSendEmail = mockNotifyClientInstance.sendEmail
-        expect(mockSendEmail).toHaveBeenCalledWith(validationTemplateId,
+        expect(mockSendEmail).toHaveBeenCalledWith(verificationTemplateId,
           expect.anything(),
           expect.anything())
       })
     })
 
     it("is called with the 'to:' email registered by the user", () => {
-      jacFunctions.sendValidationEmail(mockEvent).then(() => {
+      jacFunctions.sendVerificationEmail(mockEvent).then(() => {
         const mockSendEmail = mockNotifyClientInstance.sendEmail
         expect(mockSendEmail).toHaveBeenCalledWith(expect.anything(),
           mockEvent.data.email,
@@ -83,7 +83,7 @@ describe("exports.sendValidationEmail", () => {
     })
 
     it("is called with the required Notify personalisation object", () => {
-      jacFunctions.sendValidationEmail(mockEvent).then(() => {
+      jacFunctions.sendVerificationEmail(mockEvent).then(() => {
         const mockSendEmail = mockNotifyClientInstance.sendEmail
         expect(mockSendEmail).toHaveBeenCalledWith(expect.anything(),
           expect.anything(),
@@ -97,7 +97,7 @@ describe("exports.sendValidationEmail", () => {
 
     beforeEach(() => {
       mockGenerateEmailVerificationLink = jest.spyOn(admin.auth(), "generateEmailVerificationLink")
-      jacFunctions.sendValidationEmail(mockEvent)
+      jacFunctions.sendVerificationEmail(mockEvent)
     })
 
     it("is called once", () => {
