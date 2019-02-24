@@ -8,87 +8,100 @@ let adminStub, jacFunctions
 jest.mock("../../../functions/node_modules/notifications-node-client")
 
 beforeAll(() => {
-	adminStub = jest.spyOn(admin, "initializeApp");
-	jacFunctions = require("../../../functions/index")
+  adminStub = jest.spyOn(admin, "initializeApp");
+  jacFunctions = require("../../../functions/index")
 })
 
 beforeEach(() => {
 
-	test.mockConfig({
-		notify: {
-			key: "deadbeef",
-			templates: {
-				validation: validationTemplateId
-			}
-		}
-	});
+  test.mockConfig({
+    notify: {
+      key: "deadbeef",
+      templates: {
+        validation: validationTemplateId
+      }
+    }
+  });
 
-	NotifyClient.mockClear()
+  NotifyClient.mockClear()
 })
 
 afterAll(() => {
-	adminStub.mockRestore();
-	test.cleanup()
+  adminStub.mockRestore();
+  test.cleanup()
 })
 
 it("Check that the consumer called the class constructor", () => {
-	new NotifyClient()
-	expect(NotifyClient).toHaveBeenCalledTimes(1)
+  new NotifyClient()
+  expect(NotifyClient).toHaveBeenCalledTimes(1)
 })
 
 describe("exports.sendValidationEmail", () => {
-	const mockEvent = {
-		data: {
-			email: "test@test.com",
-			displayName: "Test User"
-		}
-	};
-describe("NotifyClient", () => {
-		let mockNotifyClientInstance, mockSendEmail
+  const mockEvent = {
+    data: {
+      email: "test@test.com",
+      displayName: "Test User"
+    }
+  };
+  describe("NotifyClient", () => {
+    let mockNotifyClientInstance
 
-		beforeEach(() => {
-			jacFunctions.sendValidationEmail(mockEvent)
-			mockNotifyClientInstance = NotifyClient.mock.instances[0]
-			mockSendEmail = mockNotifyClientInstance.sendEmail
-		})
+    beforeEach(() => {
+      mockNotifyClientInstance = NotifyClient.mock.instances[0]
+    })
 
-		it("creates a new instance of the notify client", () => {
-			expect(NotifyClient).toHaveBeenCalledTimes(1)
-		})
+    it("creates a new instance of the notify client", () => {
+      jacFunctions.sendValidationEmail(mockEvent).then(() => {
+        const mockSendEmail = mockNotifyClientInstance.sendEmail
+        expect(NotifyClient).toHaveBeenCalledTimes(1)
+      })
+    })
 
-		it("calls .sendEmail once on an instance of the notify client", () => {
-			expect(mockSendEmail).toHaveBeenCalledTimes(1)
-		})
+    it("calls .sendEmail once on an instance of the notify client", () => {
+      jacFunctions.sendValidationEmail(mockEvent).then(() => {
+        const mockSendEmail = mockNotifyClientInstance.sendEmail
+        expect(mockSendEmail).toHaveBeenCalledTimes(1)
+      })
+    })
 
-		it("calls .sendEmail with the correct template ID", () => {
-			expect(mockSendEmail).toHaveBeenCalledWith(validationTemplateId,
-				expect.anything(),
-				expect.anything())
-		})
+    it("calls .sendEmail with the correct template ID", () => {
+      jacFunctions.sendValidationEmail(mockEvent).then(() => {
+        const mockSendEmail = mockNotifyClientInstance.sendEmail
+        expect(mockSendEmail).toHaveBeenCalledWith(validationTemplateId,
+          expect.anything(),
+          expect.anything())
+      })
+    })
 
-		it("calls .sendEmail with the correct 'to:' email", () => {
-			expect(mockSendEmail).toHaveBeenCalledWith(expect.anything(),
-				mockEvent.data.email,
-				expect.anything())
-		})
+    it("calls .sendEmail with the correct 'to:' email", () => {
+      jacFunctions.sendValidationEmail(mockEvent).then(() => {
+        const mockSendEmail = mockNotifyClientInstance.sendEmail
+        expect(mockSendEmail).toHaveBeenCalledWith(expect.anything(),
+          mockEvent.data.email,
+          expect.anything())
+      })
+    })
 
-		it("calls .sendEmail with the required personalisation object", () => {
-			expect(mockSendEmail).toHaveBeenCalledWith(expect.anything(),
-				expect.anything(),
-				expect.objectContaining({ personalisation: expect.any(Object) }))
-		})
-	})
+    it("calls .sendEmail with the required personalisation object", () => {
+      jacFunctions.sendValidationEmail(mockEvent).then(() => {
+        const mockSendEmail = mockNotifyClientInstance.sendEmail
+        expect(mockSendEmail).toHaveBeenCalledWith(expect.anything(),
+          expect.anything(),
+          expect.objectContaining({ personalisation: expect.any(Object) }))
+      })
+    })
+  })
 
-	describe("admin.auth().generateEmailVerificationLink", () => {
-		let mockGenerateEmailVerificationLink
+  describe("admin.auth().generateEmailVerificationLink", () => {
+    let mockGenerateEmailVerificationLink
 
-		beforeEach(() => {
-			mockGenerateEmailVerificationLink = jest.spyOn(admin.auth(), "generateEmailVerificationLink");
-			jacFunctions.sendValidationEmail(mockEvent)
-		})
+    beforeEach(() => {
+      mockGenerateEmailVerificationLink = jest.spyOn(admin.auth(), "generateEmailVerificationLink");
+      jacFunctions.sendValidationEmail(mockEvent)
+    })
 
-		it("is called once", () => {
-			expect(mockGenerateEmailVerificationLink).toHaveBeenCalledTimes(1)
-		})
-	})
+    it("is called once", () => {
+      expect(mockGenerateEmailVerificationLink).toHaveBeenCalledTimes(1)
+    })
+  })
 })
