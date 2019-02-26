@@ -1,5 +1,5 @@
 const admin = require("firebase-admin");
-const NotifyClient = require('notifications-node-client').NotifyClient
+const NotifyClient = require("notifications-node-client").NotifyClient
 
 admin.initializeApp()
 const functions = require("firebase-functions");
@@ -7,7 +7,6 @@ const functions = require("firebase-functions");
 exports.sendVerificationEmail = functions.auth.user().onCreate((user) => {
   const notifyClient = new NotifyClient(functions.config().notify.key)
   const email = user.email
-  const displayName = user.displayName
 
   const sendEmail = (link) => {
     notifyClient
@@ -16,7 +15,7 @@ exports.sendVerificationEmail = functions.auth.user().onCreate((user) => {
         email,
         { personalisation: { verificationLink: link } }
       )
-      .then(() => console.info({ type: "verification Link", email: email }))
+      .then(() => console.info({ type: "verification link", email: email }))
       .catch(error => console.error(error))
   }
 
