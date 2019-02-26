@@ -45,20 +45,23 @@ all been added as Notify admins.  Managment of users should ultimately
 fall to the Head of Comms, the Digital Product Manager and the Digital
 Lead Developer.
 
-At the time of writing, 2019-02-19, Notify is configured to use the
-standard GDS design template (Crown branding), and the API key is
-restricted to only send messages within JAC digital.  We will need to
-ask GDS to change the design templates to reflect our branding (we can
-edit the content templates, directly) and we will also need to have GDS
-switch us from `trial` to `live` mode in order to go into production.
-Both of these requests can be raised via [Notify
-support](https://www.notifications.service.gov.uk/support) and can be done
-very quickly (usually same-day).
+As of 2019-02-26, Notify is configured to use JAC branding, and the API
+We will need to have GDS switch us from `trial` to `live` mode in order
+to go into production.  This request can be raised via [Notify
+support](https://www.notifications.service.gov.uk/support) and can be
+done very quickly (usually same-day).
 
 Lastly, the firebase mailer functions [functions/index.js] will expect
-`functions.config().notify.api_key` to be set to the API key generated
-from the
-[Notify API page](https://www.notifications.service.gov.uk/services/0abe6c8e-0b87-4cde-9493-5da4921ccc53/api/keys).
+the following funciton configuration variables to be set:
+
+`functions.config().notify.key`--This is API key that authorises us to
+make calls to the GOVUK Notify API.  If needed, this can be re-generated
+from the [Notify API
+page](https://www.notifications.service.gov.uk/services/0abe6c8e-0b87-4cde-9493-5da4921ccc53/api/keys).
+
+`functions.config().notify.template.verificaiton`--This is the
+verification email template id. It can be found in the list
+[here](https://www.notifications.service.gov.uk/services/0abe6c8e-0b87-4cde-9493-5da4921ccc53/templates).
 
 
 
