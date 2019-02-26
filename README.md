@@ -52,14 +52,14 @@ support](https://www.notifications.service.gov.uk/support) and can be
 done very quickly (usually same-day).
 
 Lastly, the firebase mailer functions [functions/index.js] will expect
-the following funciton configuration variables to be set:
+the following function configuration variables to be set:
 
 `functions.config().notify.key`--This is API key that authorises us to
 make calls to the GOVUK Notify API.  If needed, this can be re-generated
 from the [Notify API
 page](https://www.notifications.service.gov.uk/services/0abe6c8e-0b87-4cde-9493-5da4921ccc53/api/keys).
 
-`functions.config().notify.template.verificaiton`--This is the
+`functions.config().notify.template.verification`--This is the
 verification email template id. It can be found in the list
 [here](https://www.notifications.service.gov.uk/services/0abe6c8e-0b87-4cde-9493-5da4921ccc53/templates).
 
