@@ -52,15 +52,47 @@
         <fieldset>
           <legend>What is your ethnic group?</legend>
           <h6>White</h6>
-          <SelectList id="ethnicity_white" :options="selectListOptions.ethnicities.white" :multiple="false" v-model="applicant.ethnicity" />
+          <SelectList id="ethnicity_white" :options="selectListOptions.ethnicities.white" v-model="applicant.ethnicity" />
           <h6 class="mt-3">Mixed/multiple ethnic backgrounds</h6>
-          <SelectList id="ethnicity_mixed" :options="selectListOptions.ethnicities.mixed" :multiple="false" v-model="applicant.ethnicity" />
+          <SelectList id="ethnicity_mixed" :options="selectListOptions.ethnicities.mixed" v-model="applicant.ethnicity" />
           <h6 class="mt-3">Any other mixed/multiple ethinic background</h6>
-          <SelectList id="ethnicity_other_mixed" :options="selectListOptions.ethnicities.otherMixed" :multiple="false" v-model="applicant.ethnicity" />
+          <SelectList id="ethnicity_other_mixed" :options="selectListOptions.ethnicities.otherMixed" v-model="applicant.ethnicity" />
           <h6 class="mt-3">Black/African/Caribbean/Black British</h6>
-          <SelectList id="ethnicity_black" :options="selectListOptions.ethnicities.black" :multiple="false" v-model="applicant.ethnicity" />
+          <SelectList id="ethnicity_black" :options="selectListOptions.ethnicities.black" v-model="applicant.ethnicity" />
           <h6 class="mt-3">Other ethnic group</h6>
-          <SelectList id="ethnicity_other" :options="selectListOptions.ethnicities.other" :multiple="false" v-model="applicant.ethnicity" />
+          <SelectList id="ethnicity_other" :options="selectListOptions.ethnicities.other" v-model="applicant.ethnicity" />
+        </fieldset>
+
+        <fieldset>
+          <legend>What is your sex?</legend>
+          <SelectList id="sex" :options="selectListOptions.sex" v-model="applicant.sex" />
+        </fieldset>
+
+        <fieldset>
+          <legend>Is your gender identity the same as the sex you were assigned at birth?</legend>
+          <SelectList id="gender" :options="selectListOptions.yesNo" v-model="applicant.gender_matches_sex" />
+        </fieldset>
+
+        <fieldset>
+          <legend>How would you describe your sexual orientation?</legend>
+          <SelectList id="sexual_orientation" :options="selectListOptions.sexualOrientation" v-model="applicant.sexual_orientation" />
+        </fieldset>
+
+        <fieldset>
+          <legend>Do you have a disability, as defined by the Equality Act 2010?</legend>
+          <SelectList id="disability" :options="selectListOptions.yesNo" v-model="applicant.disability" />
+        </fieldset>
+
+        <fieldset>
+          <legend>What is your religion or belief?</legend>
+          <SelectList id="religion" :options="selectListOptions.religion" v-model="applicant.religion" />
+          <div class="custom-control custom-radio">
+            <input class="custom-control-input" type="radio" id="religion_other" value="Other" v-model="applicant.religion">
+            <label class="custom-control-label" for="religion_other">
+              Other (please specify)
+            </label>
+            <input v-if="applicant.religion === 'Other'" type="text" class="form-control" v-model="applicant.religion_other">
+          </div>
         </fieldset>
       </div>
 
@@ -145,6 +177,36 @@
               'I prefer not to answer this question',
             ],
           },
+          sex: [
+            'Male',
+            'Female',
+            'Other (e.g. Transgender)',
+            'I prefer not to answer this question',
+          ],
+          yesNo: [
+            'Yes',
+            'No',
+            'I prefer not to answer this question',
+          ],
+          sexualOrientation: [
+            'Bisexual',
+            'Gay man',
+            'Gay woman/ lesbian',
+            'Heterosexual/ straight',
+            'Other',
+            'I prefer not to answer this question',
+          ],
+          religion: [
+            'Atheist',
+            'Buddhist',
+            'Christian',
+            'Hindu',
+            'Jewish',
+            'Muslim',
+            'No religion',
+            'Sikh',
+            'I prefer not to answer this question',
+          ],
         },
       };
     },
