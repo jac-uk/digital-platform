@@ -34,19 +34,14 @@ See [Configuration Reference](https://cli.vuejs.org/config/).
 
 ## Sending notification to users
 
-We are using [GOVUK Notify](https://www.notifications.service.gov.uk) to
-handle all automatic communications from the service.  This is currently
-only email, but we may use the Notify Text and Postal options in the
-future.
-
 Notify has been configured to work with our `judicialappointments.digital` domain.
 The core members of the Digital Team and the Head of Comms have
 all been added as Notify admins.  Managment of users should ultimately
 fall to the Head of Comms, the Digital Product Manager and the Digital
 Lead Developer.
 
-As of 2019-02-26, Notify is configured to use JAC branding, and the API
-We will need to have GDS switch us from `trial` to `live` mode in order
+Notify is configured to use JAC branding, and the API. We will need to
+have GDS switch us from `trial` to `live` mode in order
 to go into production.  This request can be raised via [Notify
 support](https://www.notifications.service.gov.uk/support) and can be
 done very quickly (usually same-day).
