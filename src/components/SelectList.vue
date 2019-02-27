@@ -1,9 +1,9 @@
 <template>
   <div>
-    <div :class="divClass" v-for="(option, index) in options" :key="option">
-      <input class="custom-control-input" :type="type" :id="id + '_' + index" :value="option" v-model="inputValue">
+    <div :class="divClass" v-for="(option, index) in inputOptions" :key="option">
+      <input class="custom-control-input" :type="type" :id="id + '_' + index" :value="option.value" v-model="inputValue">
       <label class="custom-control-label" :for="id + '_' + index">
-        {{option}}
+        {{option.label}}
       </label>
     </div>
   </div>
@@ -56,6 +56,17 @@
         set(value) {
           this.$emit('input', value);
         }
+      },
+      inputOptions() {
+        return this.options.map(option => {
+          if (typeof option === 'string') {
+            return {
+              value: option,
+              label: option,
+            };
+          }
+          return option;
+        });
       },
       multiAndValue() {
         return [this.multiple, this.value];
