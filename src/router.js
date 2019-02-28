@@ -10,6 +10,7 @@ import Login from '@/views/Login';
 import Introduction from '@/views/FormSections/Introduction';
 import Nationality from '@/views/FormSections/Nationality';
 import Personal from '@/views/FormSections/Personal';
+import Qualifications from '@/views/FormSections/Qualifications';
 import Diversity from '@/views/FormSections/Diversity';
 
 Vue.use(Router);
@@ -35,6 +36,10 @@ const router = new Router({
         {
           path: 'personal',
           component: Personal,
+        },
+        {
+          path: 'qualifications',
+          component: Qualifications,
         },
         {
           path: 'diversity',

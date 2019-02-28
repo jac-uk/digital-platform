@@ -10,6 +10,9 @@
       <RouterLink to="/apply/personal" class="nav-link" active-class="active">Personal Details</RouterLink>
     </li>
     <li class="nav-item">
+      <RouterLink to="/apply/qualifications" class="nav-link" active-class="active">Qualifications</RouterLink>
+    </li>
+    <li class="nav-item">
       <RouterLink to="/apply/diversity" class="nav-link" active-class="active">Diversity</RouterLink>
     </li>
   </ol>
@@ -17,10 +20,6 @@
 
 <script>
   export default {
-    name: "ApplicationNav"
+    name: 'ApplicationNav'
   }
 </script>
-
-<style scoped>
-
-</style>
