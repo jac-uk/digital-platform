@@ -5,7 +5,7 @@
 
       <fieldset>
         <legend>What’s your nationality?</legend>
-        <SelectList :options="nationalityOptions" v-model="applicant.nationality" />
+        <SelectList id="nationality" :options="nationalityOptions" v-model="applicant.nationality" />
         <div v-if="applicant.nationality === 'Non-Commonwealth'" class="mt-3">
           Email <a href="mailto:dcj128@judicialappointments.gov.uk">dcj128@judicialappointments.gov.uk</a> or
           call <a href="tel:+442033340123">020 3334 0123</a> to discuss your application
