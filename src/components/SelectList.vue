@@ -1,6 +1,6 @@
 <template>
   <div>
-    <div :class="divClass" v-for="(option, index) in inputOptions" :key="option">
+    <div :class="divClass" v-for="(option, index) in inputOptions" :key="option.value">
       <input class="custom-control-input" :type="type" :id="id + '_' + index" :value="option.value" v-model="inputValue">
       <label class="custom-control-label" :for="id + '_' + index">
         {{option.label}}
