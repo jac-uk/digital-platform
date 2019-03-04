@@ -10,7 +10,7 @@
     </div>
     <div class="form-group">
       <label>Qualification date</label>
-      <DateInput v-model="row.date" style="max-width: 18rem;" />
+      <DateInput v-model="row.date" />
     </div>
     <slot name="removeButton"></slot>
   </div>
