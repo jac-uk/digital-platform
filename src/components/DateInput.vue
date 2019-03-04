@@ -1,5 +1,5 @@
 <template>
-  <div class="form-row mb-3">
+  <div class="date-input form-row mb-3">
     <div class="col-3" v-if="type === 'date'">
       <label :for="dayInputId">Day</label>
       <input type="number" min="1" max="31" class="form-control" :id="dayInputId" v-model.lazy="dayInput" ref="dayInput">
@@ -155,6 +155,8 @@
   }
 </script>
 
-<style scoped>
-
+<style>
+  .date-input {
+    max-width: 18rem;
+  }
 </style>

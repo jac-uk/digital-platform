@@ -23,7 +23,7 @@
         <div class="fieldset-text">
           For example, 31 03 1980
         </div>
-        <DateInput v-model="applicant.date_of_birth" style="max-width: 18rem;" />
+        <DateInput v-model="applicant.date_of_birth" />
       </fieldset>
 
       <fieldset>
