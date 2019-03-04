@@ -3,14 +3,14 @@
     <div class="card mb-3" v-for="(row, index) in rows" :key="index">
       <component class="card-body" :row="row" :index="index" :is="component">
         <template slot="removeButton">
-          <button @click.prevent="removeRow(index)" class="btn btn-secondary">
+          <button @click.prevent="removeRow(index)" class="btn btn-secondary" type="button">
             Remove
           </button>
         </template>
       </component>
     </div>
     <div class="text-right">
-      <button @click.prevent="addRow" class="btn btn-primary">
+      <button @click.prevent="addRow" class="btn btn-primary" type="button">
         Add another
       </button>
     </div>
