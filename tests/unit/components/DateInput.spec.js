@@ -8,32 +8,74 @@ describe('components/DateInput', () => {
     });
   };
 
-  describe('`value` property', () => {
-    const prop = DateInput.props.value;
+  describe('properties', () => {
+    describe('value', () => {
+      const prop = DateInput.props.value;
 
-    it('is required', () => {
-      expect(prop.required).toBe(true);
+      it('is required', () => {
+        expect(prop.required).toBe(true);
+      });
+
+      describe('valid values', () => {
+        const goodValues = [
+          ['a Date object', new Date()],
+          ['a null value', null],
+          ['an undefined value', undefined],
+        ];
+
+        it.each(goodValues)('accepts %s', (label, value) => {
+          expect(prop.validator(value)).toBe(true);
+        });
+      });
+
+      describe('invalid values', () => {
+        const badValues = [
+          ['a String', '2019-01-01'],
+          ['a Number', 1550583417768],
+          ['boolean true', true],
+          ['boolean false', true],
+        ];
+
+        it.each(badValues)('does not accept %s', (label, value) => {
+          expect(prop.validator(value)).toBe(false);
+        });
+      });
     });
 
-    const goodValues = [
-      ['a Date object', new Date()],
-      ['a null value', null],
-      ['an undefined value', undefined],
-    ];
+    describe('type', () => {
+      const prop = DateInput.props.type;
 
-    it.each(goodValues)('accepts %s', (label, value) => {
-      expect(prop.validator(value)).toBe(true);
-    });
+      it('is not required', () => {
+        expect(prop.required).not.toBe(true);
+      });
 
-    const badValues = [
-      ['a String', '2019-01-01'],
-      ['a Number', 1550583417768],
-      ['boolean true', true],
-      ['boolean false', true],
-    ];
+      it('defaults to "date"', () => {
+        expect(prop.default).toBe('date');
+      });
 
-    it.each(badValues)('does not accept %s', (label, value) => {
-      expect(prop.validator(value)).toBe(false);
+      describe('valid values', () => {
+        const goodValues = [
+          ['date'],
+          ['month'],
+        ];
+
+        it.each(goodValues)('accepts "%s"', (value) => {
+          expect(prop.validator(value)).toBe(true);
+        });
+      });
+
+      describe('invalid values', () => {
+        const badValues = [
+          ['ymd'],
+          ['ym'],
+          ['a bad string'],
+          [true],
+        ];
+
+        it.each(badValues)('does not accept "%s"', (value) => {
+          expect(prop.validator(value)).toBe(false);
+        });
+      });
     });
   });
 
@@ -211,19 +253,47 @@ describe('components/DateInput', () => {
     });
 
     describe('dateConstructor', () => {
-      describe('given `day`, `month` and `year` fields are set', () => {
-        it('returns an array of Date constructor arguments', () => {
-          subject.setData({day: 12, month: 4, year: 1980});
-          expect(subject.vm.dateConstructor).toHaveLength(3);
-          expect(subject.vm.dateConstructor).toEqual([1980, 3, 12]);
+      describe('given property type="date"', () => {
+        beforeEach(() => {
+          subject.setProps({type: 'date'});
         });
 
-        it('adjusts month to be zero-indexed, as required by Date constructor', () => {
-          subject.setData({day: 1, month: 1, year: 1960});
-          expect(subject.vm.dateConstructor).toEqual([1960, 0, 1]);
+        describe('and `day`, `month` and `year` fields are set', () => {
+          it('returns an array of Date constructor arguments', () => {
+            subject.setData({day: 12, month: 4, year: 1980});
+            expect(subject.vm.dateConstructor).toHaveLength(3);
+            expect(subject.vm.dateConstructor).toEqual([1980, 3, 12]);
+          });
 
-          subject.setData({day: 25, month: 12, year: 1960});
-          expect(subject.vm.dateConstructor).toEqual([1960, 11, 25]);
+          it('adjusts month to be zero-indexed, as required by Date constructor', () => {
+            subject.setData({day: 1, month: 1, year: 1960});
+            expect(subject.vm.dateConstructor).toEqual([1960, 0, 1]);
+
+            subject.setData({day: 25, month: 12, year: 1960});
+            expect(subject.vm.dateConstructor).toEqual([1960, 11, 25]);
+          });
+        });
+      });
+
+      describe('given property type="month"', () => {
+        beforeEach(() => {
+          subject.setProps({type: 'month'});
+        });
+
+        describe('and `month` and `year` fields are set', () => {
+          it('returns an array of Date constructor arguments', () => {
+            subject.setData({day: 12, month: 4, year: 1980});
+            expect(subject.vm.dateConstructor).toHaveLength(2);
+            expect(subject.vm.dateConstructor).toEqual([1980, 3]);
+          });
+
+          it('adjusts month to be zero-indexed, as required by Date constructor', () => {
+            subject.setData({day: 1, month: 1, year: 1960});
+            expect(subject.vm.dateConstructor).toEqual([1960, 0]);
+
+            subject.setData({day: 25, month: 12, year: 1960});
+            expect(subject.vm.dateConstructor).toEqual([1960, 11]);
+          });
         });
       });
 
@@ -377,37 +447,52 @@ describe('components/DateInput', () => {
       subject = createTestSubject(new Date('2018-01-01'));
     });
 
-    describe('Day input', () => {
-      let input;
+    describe('given property type="date"', () => {
+      describe('Day input', () => {
+        let input;
+        beforeEach(() => {
+          input = subject.find({ ref: 'dayInput' });
+        });
+
+        describe('is lazily bound to `dayInput`', () => {
+          it('displays the value of `dayInput`', () => {
+            expect(input.element.value).toBe(subject.vm.dayInput);
+          });
+          it('updates `dayInput` on change', () => {
+            input.element.value = '12';
+            input.trigger('change');
+            expect(subject.vm.dayInput).toBe('12');
+          });
+          it('does nothing on input/keypress', () => {
+            input.element.value = '12';
+            input.trigger('input');
+            expect(subject.vm.dayInput).not.toBe('12');
+            expect(subject.vm.dayInput).toBe('01');
+          });
+        });
+
+        it('has an ID attribute bound to `dayInputId`', () => {
+          expect(input.attributes('id')).toBe(subject.vm.dayInputId);
+        });
+
+        it('has an associated label element', () => {
+          const id = input.attributes('id');
+          const label = subject.find(`label[for="${id}"]`);
+          expect(label.exists()).toBe(true);
+        });
+      });
+    });
+
+    describe('given property type="month"', () => {
       beforeEach(() => {
-        input = subject.find({ ref: 'dayInput' });
+        subject.setProps({type: 'month'});
       });
 
-      describe('is lazily bound to `dayInput`', () => {
-        it('displays the value of `dayInput`', () => {
-          expect(input.element.value).toBe(subject.vm.dayInput);
+      describe('Day input', () => {
+        it('is not rendered', () => {
+          const input = subject.find({ ref: 'dayInput' });
+          expect(input.exists()).toBe(false);
         });
-        it('updates `dayInput` on change', () => {
-          input.element.value = '12';
-          input.trigger('change');
-          expect(subject.vm.dayInput).toBe('12');
-        });
-        it('does nothing on input/keypress', () => {
-          input.element.value = '12';
-          input.trigger('input');
-          expect(subject.vm.dayInput).not.toBe('12');
-          expect(subject.vm.dayInput).toBe('01');
-        });
-      });
-
-      it('has an ID attribute bound to `dayInputId`', () => {
-        expect(input.attributes('id')).toBe(subject.vm.dayInputId);
-      });
-
-      it('has an associated label element', () => {
-        const id = input.attributes('id');
-        const label = subject.find(`label[for="${id}"]`);
-        expect(label.exists()).toBe(true);
       });
     });
 

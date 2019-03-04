@@ -1,6 +1,6 @@
 <template>
   <div class="form-row mb-3">
-    <div class="col-3">
+    <div class="col-3" v-if="type === 'date'">
       <label :for="dayInputId">Day</label>
       <input type="number" min="1" max="31" class="form-control" :id="dayInputId" v-model.lazy="dayInput" ref="dayInput">
     </div>
@@ -24,6 +24,10 @@
       value: {
         required: true,
         validator: (value) => (value instanceof Date || value === null || value === undefined),
+      },
+      type: {
+        default: 'date',
+        validator: (value) => (['date', 'month'].indexOf(value) !== -1),
       },
     },
     data() {
@@ -97,7 +101,9 @@
         const month = this.month;
         const year = this.year;
 
-        if (day && month && year) {
+        if (this.type === 'month' && month && year) {
+          return [year, month-1];
+        } else if (day && month && year) {
           return [year, month-1, day];
         } else {
           return null;
