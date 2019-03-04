@@ -22,12 +22,17 @@
     name: 'RepeatableFields',
     props: {
       value: {
-        type: Array,
+        validator: (value) => (value instanceof Array || value === null || value === undefined),
         required: true,
       },
       component: {
         required: true,
       },
+    },
+    data() {
+      return {
+        rows: [],
+      };
     },
     methods: {
       addRow() {
@@ -37,17 +42,13 @@
         this.rows.splice(index, 1);
       },
     },
-    computed: {
-      rows: {
-        get() {
-          return this.value;
-        },
-        set(value) {
-          this.$emit('input', value);
-        }
-      }
-    },
     created() {
+      if (this.value instanceof Array) {
+        this.rows = this.value;
+      } else {
+        this.$emit('input', this.rows);
+      }
+
       if (this.rows.length === 0) {
         this.addRow();
       }
