@@ -5,7 +5,7 @@
 
       <fieldset>
         <legend>What are your qualifications?</legend>
-        <p>To be implemented</p>
+        <RepeatableFields v-model="applicant.qualifications" :component="repeatableFields.Qualification" />
       </fieldset>
 
       <fieldset>
@@ -87,6 +87,8 @@
   import DateInput from '@/components/DateInput';
   import SelectList from '@/components/SelectList';
   import BooleanInput from '@/components/BooleanInput';
+  import RepeatableFields from '@/components/RepeatableFields';
+  import Qualification from '@/views/RepeatableFields/Qualification';
 
   export default {
     name: 'Qualifications',
@@ -94,6 +96,7 @@
       DateInput,
       SelectList,
       BooleanInput,
+      RepeatableFields,
     },
     data() {
       return {
@@ -111,6 +114,9 @@
             'Scotland',
             'Northern Ireland',
           ],
+        },
+        repeatableFields: {
+          Qualification,
         },
       };
     },

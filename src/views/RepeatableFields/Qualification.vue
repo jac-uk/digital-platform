@@ -1,0 +1,40 @@
+<template>
+  <div>
+    <div class="form-group">
+      <label :for="qualificationInputId">Qualification</label>
+      <input type="text" class="form-control" :id="qualificationInputId" v-model="row.qualification">
+    </div>
+    <div class="form-group">
+      <label :for="collegeInputId">College or university</label>
+      <input type="text" class="form-control" :id="collegeInputId" v-model="row.college">
+    </div>
+    <div class="form-group">
+      <label>Qualification date</label>
+      <DateInput v-model="row.date" style="max-width: 18rem;" />
+    </div>
+    <slot name="removeButton"></slot>
+  </div>
+</template>
+
+<script>
+  import DateInput from '@/components/DateInput';
+
+  export default {
+    name: 'Qualification',
+    components: {
+      DateInput,
+    },
+    props: [
+      'row',
+      'index',
+    ],
+    computed: {
+      qualificationInputId() {
+        return `qualification_${this.index}_qualification`;
+      },
+      collegeInputId() {
+        return `qualification_${this.index}_college`;
+      },
+    },
+  }
+</script>
