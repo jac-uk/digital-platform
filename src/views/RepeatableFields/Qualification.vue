@@ -10,7 +10,10 @@
     </div>
     <div class="form-group">
       <label>Qualification date</label>
-      <DateInput v-model="row.date" />
+      <div class="fieldset-text">
+        For example, 02 2017
+      </div>
+      <DateInput v-model="row.date" type="month" />
     </div>
     <slot name="removeButton"></slot>
   </div>

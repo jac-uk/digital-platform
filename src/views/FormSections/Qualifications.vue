@@ -22,7 +22,7 @@
         <fieldset>
           <legend>When were you admitted as a solicitor?</legend>
           <div class="fieldset-text">For example, 02 2017</div>
-          <DateInput v-model="applicant.solicitor_date_admitted" />
+          <DateInput v-model="applicant.solicitor_date_admitted" type="month" />
         </fieldset>
 
         <fieldset>
@@ -35,7 +35,7 @@
         <fieldset>
           <legend>When were you called to the Faculty?</legend>
           <div class="fieldset-text">For example, 02 2017</div>
-          <DateInput v-model="applicant.advocate_date_called_to_faculty" />
+          <DateInput v-model="applicant.advocate_date_called_to_faculty" type="month" />
         </fieldset>
       </div>
 
@@ -43,7 +43,7 @@
         <fieldset>
           <legend>When were you called to the Bar?</legend>
           <div class="fieldset-text">For example, 02 2017</div>
-          <DateInput v-model="applicant.barrister_date_called_to_bar" />
+          <DateInput v-model="applicant.barrister_date_called_to_bar" type="month" />
         </fieldset>
 
         <div v-if="applicant.location_qualified !== 'Northern Ireland'">
@@ -55,7 +55,7 @@
             <div v-if="applicant.barrister_completed_pupillage" class="mt-3">
               <p>When did you complete pupillage?</p>
               <div class="fieldset-text">For example, 02 2017</div>
-              <DateInput v-model="applicant.barrister_date_completed_pupillage" />
+              <DateInput v-model="applicant.barrister_date_completed_pupillage" type="month" />
             </div>
 
             <div v-if="!applicant.barrister_completed_pupillage" class="mt-3">
