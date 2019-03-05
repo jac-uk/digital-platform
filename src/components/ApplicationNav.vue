@@ -13,6 +13,9 @@
       <RouterLink to="/apply/qualifications" class="nav-link" active-class="active">Qualifications</RouterLink>
     </li>
     <li class="nav-item">
+      <RouterLink to="/apply/experience" class="nav-link" active-class="active">Experience</RouterLink>
+    </li>
+    <li class="nav-item">
       <RouterLink to="/apply/self-assessment" class="nav-link" active-class="active">Self Assessment</RouterLink>
     </li>
     <li class="nav-item">
