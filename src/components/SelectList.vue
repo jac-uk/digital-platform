@@ -1,7 +1,15 @@
 <template>
   <div>
     <div :class="divClass" v-for="(option, index) in inputOptions" :key="option.value">
-      <input class="custom-control-input" :type="type" :id="id + '_' + index" :value="option.value" v-model="inputValue">
+      <!--
+        Dynamic `type` attributes don't work in IE11, so here we conditionally show/hide a radio or checkbox
+        depending on the value of the `type` computed property.
+
+        Related to: https://github.com/vuejs/vue/issues/8379
+      -->
+      <input v-if="type === 'radio'" type="radio" class="custom-control-input" :id="id + '_' + index" :value="option.value" v-model="inputValue">
+      <input v-if="type === 'checkbox'" type="checkbox" class="custom-control-input" :id="id + '_' + index" :value="option.value" v-model="inputValue">
+
       <label class="custom-control-label" :for="id + '_' + index">
         {{option.label}}
       </label>
