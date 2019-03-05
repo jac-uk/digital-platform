@@ -11,8 +11,9 @@ import Introduction from '@/views/FormSections/Introduction';
 import Nationality from '@/views/FormSections/Nationality';
 import Personal from '@/views/FormSections/Personal';
 import Qualifications from '@/views/FormSections/Qualifications';
-import Diversity from '@/views/FormSections/Diversity';
+import Experience from '@/views/FormSections/Experience';
 import SelfAssessment from '@/views/FormSections/SelfAssessment';
+import Diversity from '@/views/FormSections/Diversity';
 
 Vue.use(Router);
 
@@ -41,6 +42,10 @@ const router = new Router({
         {
           path: 'qualifications',
           component: Qualifications,
+        },
+        {
+          path: 'experience',
+          component: Experience,
         },
         {
           path: 'self-assessment',
