@@ -28,7 +28,7 @@ describe('store/application', () => {
       const data = {status: 'draft'};
 
       beforeEach(() => {
-        mutations.setApplication(state, id, data);
+        mutations.setApplication(state, {id, data});
       });
 
       it('stores the supplied document ID in the state', () => {
@@ -86,7 +86,7 @@ describe('store/application', () => {
         });
 
         it('commits the document ID and sanitized data', () => {
-          expect(context.commit).toHaveBeenCalledWith('setApplication', docId, sanitizedData);
+          expect(context.commit).toHaveBeenCalledWith('setApplication', {id: docId, data: sanitizedData});
         });
       });
 
@@ -103,7 +103,7 @@ describe('store/application', () => {
         });
 
         it('commits a null document ID and an empty data object', () => {
-          expect(context.commit).toHaveBeenCalledWith('setApplication', null, {});
+          expect(context.commit).toHaveBeenCalledWith('setApplication', {id: null, data: {}});
         });
       });
 
@@ -163,8 +163,8 @@ describe('store/application', () => {
         it('commits the document ID and a copy of the data (not the input object passed by reference)', async () => {
           const data = {status: 'submitted'};
           await actions.saveApplication(context, data);
-          expect(context.commit).toHaveBeenCalledWith('setApplication', 'abc123', data);
-          const committedData = context.commit.mock.calls[0][2];
+          expect(context.commit).toHaveBeenCalledWith('setApplication', {id: 'abc123', data});
+          const committedData = context.commit.mock.calls[0][1].data;
           expect(committedData).not.toBe(data);
         });
       });
