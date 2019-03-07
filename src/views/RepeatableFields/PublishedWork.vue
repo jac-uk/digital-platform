@@ -34,13 +34,5 @@
         }
       };
     },
-    computed: {
-      qualificationInputId() {
-        return `qualification_${this.index}_qualification`;
-      },
-      collegeInputId() {
-        return `qualification_${this.index}_college`;
-      },
-    },
   }
 </script>
