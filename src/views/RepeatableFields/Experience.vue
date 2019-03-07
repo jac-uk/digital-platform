@@ -31,29 +31,63 @@
       <BooleanInput v-model="row.is_judicial_appointment" />
     </div>
 
-    <div class="form-group">
-      <label>Is the appointment salaried or fee-paid?</label>
-      <SelectList :options="selectListOptions.appointmentTypes" v-model="row.appointment_type" :id="inputIds.appointmentType" />
+    <div v-if="row.is_judicial_appointment === true">
+      <div class="form-group">
+        <label>Is the appointment salaried or fee-paid?</label>
+        <SelectList :options="selectListOptions.appointmentTypes" v-model="row.appointment_type" :id="inputIds.appointmentType" />
+      </div>
+
+      <div class="form-group">
+        <label :for="inputIds.jurisdiction">What’s your jurisdiction?</label>
+        <input type="text" class="form-control" :id="inputIds.jurisdiction" v-model="row.jurisdiction">
+      </div>
+
+      <div class="form-group">
+        <label>Which circuit do you work on?</label>
+        <SelectList :options="selectListOptions.circuits" v-model="row.circuit" :id="inputIds.circuit" />
+      </div>
+
+      <div class="form-group">
+        <label :for="inputIds.region">Which region do you work in?</label>
+        <input type="text" class="form-control" :id="inputIds.region" v-model="row.region">
+      </div>
+
+      <div class="form-group">
+        <label :for="inputIds.daysSat">How many days have you sat in this appointment?</label>
+        <input type="number" class="form-control" :id="inputIds.daysSat" v-model.number="row.days_sat" style="max-width: 6rem;">
+      </div>
     </div>
 
-    <div class="form-group">
-      <label :for="inputIds.jurisdiction">What's your jurisdiction?</label>
-      <input type="text" class="form-control" :id="inputIds.jurisdiction" v-model="row.jurisdiction">
-    </div>
+    <div v-if="row.is_judicial_appointment === false">
+      <div class="form-group">
+        <label>Is this job in the Government Legal Service or Crown Prosecution Service?</label>
+        <BooleanInput v-model="row.is_public_employee" />
+      </div>
 
-    <div class="form-group">
-      <label>Which circuit do you work on?</label>
-      <SelectList :options="selectListOptions.circuits" v-model="row.circuit" :id="inputIds.circuit" />
-    </div>
+      <div class="form-group">
+        <label :for="inputIds.company">Company or organisation</label>
+        <input type="text" class="form-control" :id="inputIds.company" v-model="row.company">
+      </div>
 
-    <div class="form-group">
-      <label :for="inputIds.region">Which region do you work in?</label>
-      <input type="text" class="form-control" :id="inputIds.region" v-model="row.region">
-    </div>
+      <div class="form-group">
+        <label>What law-related activities do you do?</label>
+        <SelectList :multiple="true" :options="selectListOptions.activities" v-model="row.activities" :id="inputIds.activities" />
+        <div class="custom-control custom-checkbox">
+          <input type="checkbox" class="custom-control-input" :id="inputIds.activitiesOther" v-model="row.activities_has_other">
+          <label class="custom-control-label" :for="inputIds.activitiesOther">Other</label>
+          <input v-if="row.activities_has_other" type="text" class="form-control" v-model="row.activities_other">
+        </div>
+      </div>
 
-    <div class="form-group">
-      <label :for="inputIds.daysSat">How many days have you sat in this appointment?</label>
-      <input type="number" class="form-control" :id="inputIds.daysSat" v-model="row.days_sat" style="max-width: 6rem;">
+      <div class="form-group">
+        <label :for="inputIds.mainDuties">Main duties</label>
+        <textarea class="form-control" :id="inputIds.mainDuties" rows="3" v-model="row.main_duties"></textarea>
+      </div>
+
+      <div class="form-group">
+        <label :for="inputIds.specialisms">Specialism/s</label>
+        <textarea class="form-control" :id="inputIds.specialisms" rows="3" v-model="row.specialisms"></textarea>
+      </div>
     </div>
 
     <slot name="removeButton"></slot>
@@ -86,6 +120,11 @@
           circuit: `experience_${this.index}_circuit`,
           region: `experience_${this.index}_region`,
           daysSat: `experience_${this.index}_days_sat`,
+          company: `experience_${this.index}_company`,
+          activities: `experience_${this.index}_activities`,
+          activitiesOther: `experience_${this.index}_activities_other`,
+          mainDuties: `experience_${this.index}_main_duties`,
+          specialisms: `experience_${this.index}_specialisms`,
         },
         selectListOptions: {
           appointmentTypes: [
@@ -99,6 +138,16 @@
             'Northern',
             'North eastern',
             'Wales',
+          ],
+          activities: [
+            'Carrying out of judicial functions of any court or tribunals',
+            'Acting as an arbitrator',
+            'Practising or being employed as a lawyer',
+            'Advising (whether or not in the course of such practice or employment as a lawyer) on the application of the law',
+            'Assisting (whether or not in the course of such practice) persons involved in proceedings for the resolution of issues arising under the law',
+            'Acting (whether or not in the course of such practice) as a mediator in connection with attempts to resolve issues that are the subject of proceedings or could be, if not resolved',
+            'Drafting (whether or not in the course of such practice) documents intended to affect persons’ rights and obligations',
+            'Teaching or researching law',
           ],
         },
       };
