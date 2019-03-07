@@ -2,12 +2,13 @@
   <section>
     <form @submit.prevent="save">
       <h2>Your experience</h2>
-      <p>List your employment history, including any judicial appointments, starting with your most recent job</p>
-
 
       <fieldset>
-        <legend>What are your qualifications?</legend>
-        <RepeatableFields v-model="applicant.qualifications" :component="repeatableFields.Qualification" />
+        <legend>Your experience</legend>
+        <div class="fieldset-text">
+          List your employment history, including any judicial appointments, starting with your most recent job
+        </div>
+        <RepeatableFields v-model="applicant.experience" :component="repeatableFields.Experience" />
       </fieldset>
 
       <div class="form-actions">
@@ -26,10 +27,10 @@
   import SelectList from '@/components/SelectList';
   import BooleanInput from '@/components/BooleanInput';
   import RepeatableFields from '@/components/RepeatableFields';
-  import Qualification from '@/views/RepeatableFields/Qualification';
+  import Experience from '@/views/RepeatableFields/Experience';
 
   export default {
-    name: 'Qualifications',
+    name: 'Experience',
     components: {
       DateInput,
       SelectList,
@@ -54,7 +55,7 @@
           ],
         },
         repeatableFields: {
-          Qualification,
+          Experience,
         },
       };
     },
