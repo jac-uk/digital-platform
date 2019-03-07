@@ -79,6 +79,7 @@
       <div class="form-group">
         <label v-if="presentTense">What law-related activities do you do?</label>
         <label v-if="pastTense">What law-related activities did you do?</label>
+        <div class="fieldset-text">Select all that apply</div>
         <SelectList :multiple="true" :options="selectListOptions.activities" v-model="row.activities" :id="inputIds.activities" />
         <div class="custom-control custom-checkbox">
           <input type="checkbox" class="custom-control-input" :id="inputIds.activitiesOther" v-model="row.activities_has_other">
