@@ -23,18 +23,12 @@
 </template>
 
 <script>
-  import DateInput from '@/components/DateInput';
-  import SelectList from '@/components/SelectList';
-  import BooleanInput from '@/components/BooleanInput';
   import RepeatableFields from '@/components/RepeatableFields';
   import Experience from '@/views/RepeatableFields/Experience';
 
   export default {
     name: 'Experience',
     components: {
-      DateInput,
-      SelectList,
-      BooleanInput,
       RepeatableFields,
     },
     data() {
