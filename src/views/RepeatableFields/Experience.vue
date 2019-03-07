@@ -27,40 +27,47 @@
     </div>
 
     <div class="form-group">
-      <label>Is this job a judicial appointment?</label>
+      <label v-if="presentTense">Is this job a judicial appointment?</label>
+      <label v-if="pastTense">Was this job a judicial appointment?</label>
       <BooleanInput v-model="row.is_judicial_appointment" />
     </div>
 
     <div v-if="row.is_judicial_appointment === true">
       <div class="form-group">
-        <label>Is the appointment salaried or fee-paid?</label>
+        <label v-if="presentTense">Is the appointment salaried or fee-paid?</label>
+        <label v-if="pastTense">Was the appointment salaried or fee-paid?</label>
         <SelectList :options="selectListOptions.appointmentTypes" v-model="row.appointment_type" :id="inputIds.appointmentType" />
       </div>
 
       <div class="form-group">
-        <label :for="inputIds.jurisdiction">What’s your jurisdiction?</label>
+        <label v-if="presentTense" :for="inputIds.jurisdiction">What’s your jurisdiction?</label>
+        <label v-if="pastTense" :for="inputIds.jurisdiction">What was your jurisdiction?</label>
         <input type="text" class="form-control" :id="inputIds.jurisdiction" v-model="row.jurisdiction">
       </div>
 
       <div class="form-group">
-        <label>Which circuit do you work on?</label>
+        <label v-if="presentTense">Which circuit do you work on?</label>
+        <label v-if="pastTense">Which circuit did you work on?</label>
         <SelectList :options="selectListOptions.circuits" v-model="row.circuit" :id="inputIds.circuit" />
       </div>
 
       <div class="form-group">
-        <label :for="inputIds.region">Which region do you work in?</label>
+        <label v-if="presentTense" :for="inputIds.region">Which region do you work in?</label>
+        <label v-if="pastTense" :for="inputIds.region">Which region did you work in?</label>
         <input type="text" class="form-control" :id="inputIds.region" v-model="row.region">
       </div>
 
       <div class="form-group">
-        <label :for="inputIds.daysSat">How many days have you sat in this appointment?</label>
+        <label v-if="presentTense" :for="inputIds.daysSat">How many days have you sat in this appointment?</label>
+        <label v-if="pastTense" :for="inputIds.daysSat">How many days did you sit in this appointment?</label>
         <input type="number" class="form-control" :id="inputIds.daysSat" v-model.number="row.days_sat" style="max-width: 6rem;">
       </div>
     </div>
 
     <div v-if="row.is_judicial_appointment === false">
       <div class="form-group">
-        <label>Is this job in the Government Legal Service or Crown Prosecution Service?</label>
+        <label v-if="presentTense">Is this job in the Government Legal Service or Crown Prosecution Service?</label>
+        <label v-if="pastTense">Was this job in the Government Legal Service or Crown Prosecution Service?</label>
         <BooleanInput v-model="row.is_public_employee" />
       </div>
 
@@ -70,7 +77,8 @@
       </div>
 
       <div class="form-group">
-        <label>What law-related activities do you do?</label>
+        <label v-if="presentTense">What law-related activities do you do?</label>
+        <label v-if="pastTense">What law-related activities did you do?</label>
         <SelectList :multiple="true" :options="selectListOptions.activities" v-model="row.activities" :id="inputIds.activities" />
         <div class="custom-control custom-checkbox">
           <input type="checkbox" class="custom-control-input" :id="inputIds.activitiesOther" v-model="row.activities_has_other">
@@ -151,6 +159,14 @@
           ],
         },
       };
+    },
+    computed: {
+      presentTense() {
+        return !!this.row.currently_in_job;
+      },
+      pastTense() {
+        return !this.row.currently_in_job;
+      }
     },
   }
 </script>
