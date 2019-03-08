@@ -3,6 +3,12 @@
     <form @submit.prevent="save">
       <h2>Your assessors</h2>
 
+      <fieldset>
+        <legend>Your assessors</legend>
+        <div class="fieldset-text">Guidance on choosing your two assessors.</div>
+        <RepeatableFields v-model="applicant.assessors" :component="repeatableFields.Assessor" :max="2" />
+      </fieldset>
+
       <div class="form-actions">
         <button class="btn btn-primary mr-2" type="button" @click.prevent="saveAndContinue">Save and Continue</button>
         <button class="btn btn-outline-secondary" type="submit">
@@ -15,12 +21,24 @@
 </template>
 
 <script>
+  import SelectList from '@/components/SelectList';
+  import Assessor from '@/views/RepeatableFields/Assessor';
+  import RepeatableFields from '@/components/RepeatableFields';
+
   export default {
+    components: {
+      RepeatableFields,
+      Assessor,
+      SelectList,
+    },
     data() {
       return {
         applicant: this.$store.getters.applicant(),
         vacancy: this.$store.getters.vacancy,
         isSaving: false,
+        repeatableFields: {
+          Assessor,
+        },
       };
     },
     methods: {
@@ -33,6 +51,6 @@
         await this.$store.dispatch('saveApplicant', this.applicant);
         this.isSaving = false;
       },
-    }
+    },
   }
 </script>
