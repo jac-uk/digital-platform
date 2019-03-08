@@ -15,6 +15,7 @@ import Experience from '@/views/FormSections/Experience';
 import SelfAssessment from '@/views/FormSections/SelfAssessment';
 import Character from '@/views/FormSections/Character';
 import Diversity from '@/views/FormSections/Diversity';
+import Outreach from '@/views/FormSections/Outreach';
 
 Vue.use(Router);
 
@@ -59,6 +60,10 @@ const router = new Router({
         {
           path: 'diversity',
           component: Diversity,
+        },
+        {
+          path: 'outreach',
+          component: Outreach,
         },
       ],
     },

@@ -24,6 +24,9 @@
     <li class="nav-item">
       <RouterLink to="/apply/diversity" class="nav-link" active-class="active">Diversity</RouterLink>
     </li>
+    <li class="nav-item">
+      <RouterLink to="/apply/outreach" class="nav-link" active-class="active">Outreach</RouterLink>
+    </li>
   </ol>
 </template>
 
