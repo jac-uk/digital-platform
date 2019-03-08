@@ -11,7 +11,7 @@
           <label class="custom-control-label" for="how_did_you_hear_has_other">
             Other form of communication (please specify)
           </label>
-          <input v-if=applicant.how_did_you_hear_has_other" type="text" class="form-control" v-model="applicant.how_did_you_hear_other">
+          <input v-if="applicant.how_did_you_hear_has_other" type="text" class="form-control" v-model="applicant.how_did_you_hear_other">
         </div>
       </fieldset>
 
@@ -47,7 +47,6 @@ export default {
           'LinkedIn',
           'Word of mouth',
           'From one of the presiding judges',
-          'I prefer not to answer this question',
         ],
       },
     };
