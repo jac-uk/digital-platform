@@ -19,6 +19,9 @@
       <RouterLink to="/apply/self-assessment" class="nav-link" active-class="active">Self Assessment</RouterLink>
     </li>
     <li class="nav-item">
+      <RouterLink to="/apply/character" class="nav-link" active-class="active">Character</RouterLink>
+    </li>
+    <li class="nav-item">
       <RouterLink to="/apply/diversity" class="nav-link" active-class="active">Diversity</RouterLink>
     </li>
   </ol>
