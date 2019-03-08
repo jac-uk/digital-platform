@@ -21,15 +21,12 @@
 </template>
 
 <script>
-  import SelectList from '@/components/SelectList';
   import Assessor from '@/views/RepeatableFields/Assessor';
   import RepeatableFields from '@/components/RepeatableFields';
 
   export default {
     components: {
       RepeatableFields,
-      Assessor,
-      SelectList,
     },
     data() {
       return {
