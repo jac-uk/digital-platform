@@ -13,6 +13,7 @@ import Personal from '@/views/FormSections/Personal';
 import Qualifications from '@/views/FormSections/Qualifications';
 import Experience from '@/views/FormSections/Experience';
 import SelfAssessment from '@/views/FormSections/SelfAssessment';
+import Assessors from '@/views/FormSections/Assessors';
 import Character from '@/views/FormSections/Character';
 import Preferences from '@/views/FormSections/Preferences';
 import Diversity from '@/views/FormSections/Diversity';
@@ -53,6 +54,10 @@ const router = new Router({
         {
           path: 'self-assessment',
           component: SelfAssessment,
+        },
+        {
+          path: 'assessors',
+          component: Assessors,
         },
         {
           path: 'character',
