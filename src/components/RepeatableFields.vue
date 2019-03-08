@@ -10,7 +10,7 @@
       </component>
     </div>
     <div class="text-right">
-      <button @click.prevent="addRow" class="btn btn-primary" type="button">
+      <button @click.prevent="addRow" class="btn btn-primary" type="button" v-if="canAddRow">
         Add another
       </button>
     </div>
@@ -28,15 +28,31 @@
       component: {
         required: true,
       },
+      max: {
+        required: false,
+        default: false,
+        type: [Number, Boolean],
+      },
     },
     data() {
       return {
         rows: [],
       };
     },
+    computed: {
+      canAddRow() {
+        if (this.max) {
+          return this.rows.length < this.max;
+        } else {
+          return true;
+        }
+      },
+    },
     methods: {
       addRow() {
-        this.rows.push({});
+        if (this.canAddRow) {
+          this.rows.push({});
+        }
       },
       removeRow(index) {
         this.rows.splice(index, 1);
