@@ -14,7 +14,7 @@ import Qualifications from '@/views/FormSections/Qualifications';
 import Experience from '@/views/FormSections/Experience';
 import SelfAssessment from '@/views/FormSections/SelfAssessment';
 import Diversity from '@/views/FormSections/Diversity';
-import Media from '@/views/FormSections/Media';
+import Outreach from '@/views/FormSections/Outreach';
 
 Vue.use(Router);
 
@@ -57,8 +57,8 @@ const router = new Router({
           component: Diversity,
         },
         {
-          path: 'media',
-          component: Media,
+          path: 'outreach',
+          component: Outreach,
         },
       ],
     },
