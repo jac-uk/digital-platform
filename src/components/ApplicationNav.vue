@@ -36,6 +36,9 @@
     <li class="nav-item">
       <RouterLink to="/apply/outreach" class="nav-link" active-class="active">Outreach</RouterLink>
     </li>
+    <li class="nav-item">
+      <RouterLink to="/apply/review-and-submit" class="nav-link" active-class="active">Review and Submit</RouterLink>
+    </li>
   </ol>
 </template>
 

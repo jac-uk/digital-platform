@@ -19,6 +19,7 @@ import Preferences from '@/views/FormSections/Preferences';
 import Declarations from '@/views/FormSections/Declarations';
 import Diversity from '@/views/FormSections/Diversity';
 import Outreach from '@/views/FormSections/Outreach';
+import ReviewAndSubmit from '@/views/FormSections/ReviewAndSubmit';
 
 Vue.use(Router);
 
@@ -79,6 +80,10 @@ const router = new Router({
         {
           path: 'outreach',
           component: Outreach,
+        },
+        {
+          path: 'review-and-submit',
+          component: ReviewAndSubmit,
         },
       ],
     },
