@@ -76,29 +76,14 @@
 </template>
 
 <script>
-import DateInput from '@/components/DateInput';
 
 export default {
   name: "Personal",
-  components: {
-    DateInput,
-  },
   data() {
     return {
       applicant: this.$store.getters.applicant(),
       isSaving: false,
     };
-  },
-  methods: {
-    async saveAndContinue() {
-      await this.save();
-      this.$emit('continue');
-    },
-    async save() {
-      this.isSaving = true;
-      await this.$store.dispatch('saveApplicant', this.applicant);
-      this.isSaving = false;
-    },
   }
 }
 </script>
