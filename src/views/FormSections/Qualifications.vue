@@ -72,13 +72,7 @@
         </div>
       </div>
 
-      <div class="form-actions">
-        <button class="btn btn-primary mr-2" type="button" @click.prevent="saveAndContinue">Save and Continue</button>
-        <button class="btn btn-outline-secondary" type="submit">
-          Save as Draft
-          <span class="spinner-border spinner-border-sm" v-if="isSaving"></span>
-        </button>
-      </div>
+      <SaveAndContinueButtons :isSaving="isSaving" @saveAndContinue="saveAndContinue" />
     </form>
   </section>
 </template>
@@ -89,10 +83,11 @@
   import BooleanInput from '@/components/BooleanInput';
   import RepeatableFields from '@/components/RepeatableFields';
   import Qualification from '@/views/RepeatableFields/Qualification';
+  import SaveAndContinueButtons from '@/components/SaveAndContinueButtons';
 
   export default {
-    name: 'Qualifications',
     components: {
+      SaveAndContinueButtons,
       DateInput,
       SelectList,
       BooleanInput,

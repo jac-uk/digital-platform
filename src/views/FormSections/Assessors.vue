@@ -9,13 +9,7 @@
         <RepeatableFields v-model="applicant.assessors" :component="repeatableFields.Assessor" :max="2" />
       </fieldset>
 
-      <div class="form-actions">
-        <button class="btn btn-primary mr-2" type="button" @click.prevent="saveAndContinue">Save and Continue</button>
-        <button class="btn btn-outline-secondary" type="submit">
-          Save as Draft
-          <span class="spinner-border spinner-border-sm" v-if="isSaving"></span>
-        </button>
-      </div>
+      <SaveAndContinueButtons :isSaving="isSaving" @saveAndContinue="saveAndContinue" />
     </form>
   </section>
 </template>
@@ -23,9 +17,11 @@
 <script>
   import Assessor from '@/views/RepeatableFields/Assessor';
   import RepeatableFields from '@/components/RepeatableFields';
+  import SaveAndContinueButtons from '@/components/SaveAndContinueButtons';
 
   export default {
     components: {
+      SaveAndContinueButtons,
       RepeatableFields,
     },
     data() {

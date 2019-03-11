@@ -22,7 +22,6 @@
   import SaveAndContinueButtons from '@/components/SaveAndContinueButtons';
 
   export default {
-    name: "Nationality",
     components: {
       SaveAndContinueButtons,
       SelectList,
@@ -52,7 +51,3 @@
     }
   }
 </script>
-
-<style scoped>
-
-</style>

@@ -102,13 +102,7 @@
         <RepeatableFields v-if="applicant.character_has_current_investigations" v-model="applicant.character_current_investigations" :component="repeatableFields.ConductDetails" class="mt-3" />
       </fieldset>
 
-      <div class="form-actions">
-        <button class="btn btn-primary mr-2" type="button" @click.prevent="saveAndContinue">Save and Continue</button>
-        <button class="btn btn-outline-secondary" type="submit">
-          Save as Draft
-          <span class="spinner-border spinner-border-sm" v-if="isSaving"></span>
-        </button>
-      </div>
+      <SaveAndContinueButtons :isSaving="isSaving" @saveAndContinue="saveAndContinue" />
     </form>
   </section>
 </template>
@@ -118,10 +112,11 @@
   import RepeatableFields from '@/components/RepeatableFields';
   import OffenceDetails from '@/views/RepeatableFields/OffenceDetails';
   import ConductDetails from '@/views/RepeatableFields/ConductDetails';
+  import SaveAndContinueButtons from '@/components/SaveAndContinueButtons';
 
   export default {
-    name: 'Experience',
     components: {
+      SaveAndContinueButtons,
       RepeatableFields,
       BooleanInput
     },

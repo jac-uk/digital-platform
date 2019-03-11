@@ -5,14 +5,16 @@
 
       <fieldset>
         <legend>Salaried part-time working</legend>
-
         <label>Do you want to work part time?</label>
         <BooleanInput v-model="applicant.work_part_time" />
-        </fieldset>
-        <fieldset v-if="applicant.work_part_time">
-          <legend>What sitting patterns are you interested in?</legend>
-          <SelectList id="sitting_patterns" :multiple="true" :options="selectListOptions.sitting_patterns" v-model="applicant.sitting_patterns" />
       </fieldset>
+
+      <fieldset v-if="applicant.work_part_time">
+        <legend>What sitting patterns are you interested in?</legend>
+        <SelectList id="sitting_patterns" :multiple="true" :options="selectListOptions.sitting_patterns" v-model="applicant.sitting_patterns" />
+      </fieldset>
+
+      <SaveAndContinueButtons :isSaving="isSaving" @saveAndContinue="saveAndContinue" />
     </form>
   </section>
 </template>
@@ -20,10 +22,11 @@
 <script>
 import BooleanInput from '@/components/BooleanInput';
 import SelectList from '@/components/SelectList';
+import SaveAndContinueButtons from '@/components/SaveAndContinueButtons';
 
 export default {
-  name: 'Experience',
   components: {
+    SaveAndContinueButtons,
     BooleanInput,
     SelectList
   },

@@ -96,23 +96,18 @@
         </fieldset>
       </div>
 
-      <div class="form-actions">
-        <button class="btn btn-primary mr-2" type="button" @click.prevent="saveAndContinue">Save and Continue</button>
-        <button class="btn btn-outline-secondary" type="submit">
-          Save as Draft
-          <span class="spinner-border spinner-border-sm" v-if="isSaving"></span>
-        </button>
-      </div>
+      <SaveAndContinueButtons :isSaving="isSaving" @saveAndContinue="saveAndContinue" />
     </form>
   </section>
 </template>
 
 <script>
   import SelectList from '@/components/SelectList';
+  import SaveAndContinueButtons from '@/components/SaveAndContinueButtons';
 
   export default {
-    name: 'Diversity',
     components: {
+      SaveAndContinueButtons,
       SelectList,
     },
     data() {
