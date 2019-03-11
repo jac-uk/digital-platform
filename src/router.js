@@ -9,7 +9,7 @@ import Login from '@/views/Login';
 // Form Sections
 import Introduction from '@/views/FormSections/Introduction';
 import Nationality from '@/views/FormSections/Nationality';
-import Personal from '@/views/FormSections/Personal';
+import Personal from '@/views/FormSections/PersonalDetails/Edit';
 import Qualifications from '@/views/FormSections/Qualifications';
 import Experience from '@/views/FormSections/Experience';
 import SelfAssessment from '@/views/FormSections/SelfAssessment';
