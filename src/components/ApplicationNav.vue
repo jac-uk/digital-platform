@@ -28,6 +28,9 @@
       <RouterLink to="/apply/preferences" class="nav-link" active-class="active">Preferences</RouterLink>
     </li>
     <li class="nav-item">
+      <RouterLink to="/apply/declarations" class="nav-link" active-class="active">Declarations</RouterLink>
+    </li>
+    <li class="nav-item">
       <RouterLink to="/apply/diversity" class="nav-link" active-class="active">Diversity</RouterLink>
     </li>
     <li class="nav-item">
