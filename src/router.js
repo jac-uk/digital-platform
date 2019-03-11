@@ -16,6 +16,7 @@ import SelfAssessment from '@/views/FormSections/SelfAssessment';
 import Assessors from '@/views/FormSections/Assessors';
 import Character from '@/views/FormSections/Character';
 import Preferences from '@/views/FormSections/Preferences';
+import Declarations from '@/views/FormSections/Declarations';
 import Diversity from '@/views/FormSections/Diversity';
 import Outreach from '@/views/FormSections/Outreach';
 
@@ -66,6 +67,10 @@ const router = new Router({
         {
           path: 'preferences',
           component: Preferences,
+        },
+        {
+          path: 'declarations',
+          component: Declarations,
         },
         {
           path: 'diversity',
