@@ -2,6 +2,9 @@
   <section>
     <h2>Introduction</h2>
     <p>You are applying for <strong>{{vacancy.jac_ref}}: {{vacancy.title}}</strong></p>
+    <button class="btn btn-primary" type="button" @click="$emit('continue')">
+      Start application
+    </button>
   </section>
 </template>
 
