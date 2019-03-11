@@ -13,7 +13,7 @@
           <ApplicationNav />
         </nav>
         <div class="col-md-8">
-          <RouterView />
+          <RouterView @continue="nextPage" />
         </div>
       </div>
     </div>
@@ -44,6 +44,12 @@
           this.$store.dispatch('loadApplication'),
         ]);
       },
+      nextPage() {
+        const nextPage = this.$store.getters.nextPagePath;
+        if (nextPage) {
+          this.$router.push(nextPage);
+        }
+      },
     },
     created() {
       this.initStore()
@@ -53,7 +59,14 @@
         .catch(() => {
           this.loadFailed = true;
         });
-    }
+
+      this.$store.dispatch('setCurrentPagePath', this.$route.path);
+    },
+    watch: {
+      '$route'(to) {
+        this.$store.dispatch('setCurrentPagePath', to.path);
+      },
+    },
   }
 </script>
 

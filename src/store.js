@@ -3,6 +3,7 @@ import Vuex from 'vuex';
 import auth from '@/store/auth';
 import applicant from '@/store/applicant';
 import application from '@/store/application';
+import navigation from '@/store/navigation';
 import vacancy from '@/store/vacancy';
 
 Vue.use(Vuex);
@@ -15,6 +16,7 @@ const store = new Vuex.Store({
     auth,
     applicant,
     application,
+    navigation,
     vacancy,
   },
 
