@@ -92,6 +92,13 @@ const router = new Router({
       redirect: '/apply',
     },
   ],
+  scrollBehavior(to, from, savedPosition) {
+    if (savedPosition) {
+      return savedPosition;
+    } else {
+      return {x: 0, y: 0};
+    }
+  },
 });
 
 // Check that the user has permission to access this route (i.e. is the user logged in?)
