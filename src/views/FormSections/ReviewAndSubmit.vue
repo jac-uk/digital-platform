@@ -6,7 +6,7 @@
 </template>
 
 <script>
-import Personal from '@/views/FormSections/PersonalDetails/Edit';
+import Personal from '@/views/FormSections/PersonalDetails/Show';
 export default {
   name: "ReviewAndSubmit",
   components: { "Personal": Personal },
