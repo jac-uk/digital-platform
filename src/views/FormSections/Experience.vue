@@ -38,13 +38,7 @@
         <RepeatableFields v-if="applicant.is_member_of_legal_associations" v-model="applicant.member_of_legal_associations" :component="repeatableFields.LegalAssociation" />
       </fieldset>
 
-      <div class="form-actions">
-        <button class="btn btn-primary mr-2" type="button" @click.prevent="saveAndContinue">Save and Continue</button>
-        <button class="btn btn-outline-secondary" type="submit">
-          Save as Draft
-          <span class="spinner-border spinner-border-sm" v-if="isSaving"></span>
-        </button>
-      </div>
+      <SaveAndContinueButtons :isSaving="isSaving" @saveAndContinue="saveAndContinue" />
     </form>
   </section>
 </template>
@@ -56,10 +50,11 @@
   import Experience from '@/views/RepeatableFields/Experience';
   import PublishedWork from '@/views/RepeatableFields/PublishedWork';
   import LegalAssociation from '@/views/RepeatableFields/LegalAssociation';
+  import SaveAndContinueButtons from '@/components/SaveAndContinueButtons';
 
   export default {
-    name: 'Experience',
     components: {
+      SaveAndContinueButtons,
       BooleanInput,
       RepeatableFields,
       SelectList,
