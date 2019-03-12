@@ -143,5 +143,27 @@ describe('store/auth', () => {
         });
       });
     });
+
+    describe('currentUserEmail', () => {
+      describe('given a user is not logged in', () => {
+        it('returns null', () => {
+          expect(getters.currentUserEmail(state)).toBe(null);
+        });
+      });
+
+      describe('given user with email `user@example.com` is logged in', () => {
+        beforeEach(() => {
+          state.currentUser = {
+            uid: 'abc123',
+            email: 'user@example.com',
+            emailVerified: true,
+          };
+        });
+
+        it('returns `user@example.com`', () => {
+          expect(getters.currentUserEmail(state)).toBe('user@example.com');
+        });
+      });
+    });
   });
 });
