@@ -30,6 +30,9 @@ const module = {
     isEmailVerified(state) {
       return (state.currentUser !== null) ? state.currentUser.emailVerified : false;
     },
+    currentUserEmail(state) {
+      return (state.currentUser !== null) ? state.currentUser.email : null;
+    },
   },
 };
 
