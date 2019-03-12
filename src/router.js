@@ -7,18 +7,18 @@ import Apply from '@/views/Apply';
 import Login from '@/views/Login';
 
 // Form Sections
-import Introduction from '@/views/FormSections/Introduction';
-import Nationality from '@/views/FormSections/Nationality';
-import Personal from '@/views/FormSections/Personal';
-import Qualifications from '@/views/FormSections/Qualifications';
-import Experience from '@/views/FormSections/Experience';
-import SelfAssessment from '@/views/FormSections/SelfAssessment';
-import Assessors from '@/views/FormSections/Assessors';
-import Character from '@/views/FormSections/Character';
-import Preferences from '@/views/FormSections/Preferences';
-import Declarations from '@/views/FormSections/Declarations';
-import Diversity from '@/views/FormSections/Diversity';
-import Outreach from '@/views/FormSections/Outreach';
+import Introduction from '@/views/Sections/Introduction';
+import Nationality from '@/views/Sections/Nationality';
+import Personal from '@/views/Sections/Personal';
+import Qualifications from '@/views/Sections/Qualifications';
+import Experience from '@/views/Sections/Experience';
+import SelfAssessment from '@/views/Sections/SelfAssessment';
+import Assessors from '@/views/Sections/Assessors';
+import Character from '@/views/Sections/Character';
+import Preferences from '@/views/Sections/Preferences';
+import Declarations from '@/views/Sections/Declarations';
+import Diversity from '@/views/Sections/Diversity';
+import Outreach from '@/views/Sections/Outreach';
 
 Vue.use(Router);
 
