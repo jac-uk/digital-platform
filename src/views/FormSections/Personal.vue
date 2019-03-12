@@ -4,17 +4,20 @@
       <h2>Personal Details</h2>
 
       <fieldset>
-        <legend>Your Name</legend>
+        <legend>Your name</legend>
         <div class="form-group">
-          <label for="full_name">Full Name</label>
-          <input type="text" class="form-control" id="full_name" v-model="applicant.full_name" autocomplete="name" placeholder="e.g. Mr John Smith">
+          <label for="full_name">Full name</label>
+          <div class="fieldset-text">We'll use this name when contacting you about your application</div>
+          <input type="text" class="form-control" id="full_name" v-model="applicant.full_name" autocomplete="name">
         </div>
         <div class="form-group">
-          <label for="preferred_name">Preferred Name</label>
-          <input type="text" class="form-control" id="preferred_name" v-model="applicant.preferred_name" placeholder="e.g. John" style="max-width: 18rem;">
+          <label>Are you or have you been known by any other name?</label>
+          <div class="fieldset-text">We need this to do a character check</div>
+          <BooleanInput v-model="applicant.has_other_name" />
         </div>
-        <div class="fieldset-text">
-          We’ll use your preferred name when contacting you about your application.
+        <div class="form-group" v-if="applicant.has_other_name">
+          <label for="other_name">Name</label>
+          <input type="text" class="form-control" id="other_name" v-model="applicant.other_name">
         </div>
       </fieldset>
 
@@ -131,9 +134,11 @@
 <script>
   import DateInput from '@/components/DateInput';
   import SaveAndContinueButtons from '@/components/SaveAndContinueButtons';
+  import BooleanInput from '@/components/BooleanInput';
 
   export default {
     components: {
+      BooleanInput,
       SaveAndContinueButtons,
       DateInput,
     },
