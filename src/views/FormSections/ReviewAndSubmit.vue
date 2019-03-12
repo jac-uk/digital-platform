@@ -2,18 +2,21 @@
   <section>
     <h2>Check your answers before sending your application</h2>
     <Personal />
-    <Qualifications/>
+    <Qualifications />
+    <Experience />
   </section>
 </template>
 
 <script>
 import Personal from '@/views/FormSections/PersonalDetails/Show';
 import Qualifications from '@/views/FormSections/Qualifications/Show';
+import Experience from '@/views/FormSections/Experience/Show';
 export default {
   name: "ReviewAndSubmit",
   components: {
     Personal,
-    Qualifications
+    Qualifications,
+    Experience
   },
   data() {
     return {
@@ -22,7 +25,3 @@ export default {
   },
 }
 </script>
-
-<style scoped>
-
-</style>

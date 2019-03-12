@@ -11,7 +11,7 @@ import Introduction from '@/views/FormSections/Introduction';
 import Nationality from '@/views/FormSections/Nationality';
 import Personal from '@/views/FormSections/PersonalDetails/Edit';
 import Qualifications from '@/views/FormSections/Qualifications/Edit';
-import Experience from '@/views/FormSections/Experience';
+import Experience from '@/views/FormSections/Experience/Edit';
 import SelfAssessment from '@/views/FormSections/SelfAssessment';
 import Assessors from '@/views/FormSections/Assessors';
 import Character from '@/views/FormSections/Character';
