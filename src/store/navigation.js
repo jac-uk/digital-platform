@@ -49,6 +49,10 @@ const module = {
         title: 'Outreach',
         path: '/apply/outreach',
       },
+      {
+        title: 'Review and Submit',
+        path: '/apply/review',
+      },
     ],
     currentPage: undefined,
   },
