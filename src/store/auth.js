@@ -27,6 +27,9 @@ const module = {
     currentUserId(state) {
       return (state.currentUser !== null) ? state.currentUser.uid : null;
     },
+    isEmailVerified(state) {
+      return (state.currentUser !== null) ? state.currentUser.emailVerified : false;
+    },
   },
 };
 

@@ -65,39 +65,81 @@ describe('store/auth', () => {
 
   describe('getters', () => {
     describe('isLoggedIn', () => {
-      describe('currentUser is `null`', () => {
+      describe('given a user is not logged in', () => {
         it('returns false', () => {
-          state.currentUser = null;
           expect(getters.isLoggedIn(state)).toBe(false);
         });
       });
-      describe('currentUser is set', () => {
-        it('returns true', () => {
+
+      describe('given a user is logged in', () => {
+        beforeEach(() => {
           state.currentUser = {
             uid: 'abc123',
             email: 'user@example.com',
             emailVerified: true,
           };
+        });
+
+        it('returns true', () => {
           expect(getters.isLoggedIn(state)).toBe(true);
         });
       });
     });
 
     describe('currentUserId', () => {
-      describe('user is not logged in', () => {
+      describe('given a user is not logged in', () => {
         it('returns null', () => {
-          state.currentUser = null;
           expect(getters.currentUserId(state)).toBe(null);
         });
       });
-      describe('user is logged in', () => {
-        it("returns the user's ID", () => {
+
+      describe('given user with ID `abc123` is logged in', () => {
+        beforeEach(() => {
           state.currentUser = {
             uid: 'abc123',
             email: 'user@example.com',
             emailVerified: true,
           };
+        });
+
+        it('returns `abc123`', () => {
           expect(getters.currentUserId(state)).toBe('abc123');
+        });
+      });
+    });
+
+    describe('isEmailVerified', () => {
+      describe('given a user is not logged in', () => {
+        it('returns null', () => {
+          expect(getters.isEmailVerified(state)).toBe(false);
+        });
+      });
+
+      describe('given a non-verified user is logged in', () => {
+        beforeEach(() => {
+          state.currentUser = {
+            uid: 'abc123',
+            email: 'user@example.com',
+            emailVerified: false,
+          };
+        });
+
+        it('returns false', () => {
+          expect(getters.isEmailVerified(state)).toBe(false);
+        });
+      });
+
+      describe('given a verified user is logged in', () => {
+        beforeEach(() => {
+          state.currentUser = {
+            uid: 'abc123',
+            email: 'user@example.com',
+            emailVerified: true,
+          };
+        });
+
+        it('returns true', () => {
+          expect(getters.isEmailVerified(state)).toBe(true);
         });
       });
     });
