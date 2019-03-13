@@ -5,6 +5,7 @@
     <Qualifications />
     <Experience />
     <SelfAssessment />
+    <Assessors />
   </section>
 </template>
 
@@ -13,12 +14,14 @@ import Experience from '@/views/Sections/Experience/Show';
 import Personal from '@/views/Sections/Personal/Show';
 import Qualifications from '@/views/Sections/Qualifications/Show';
 import SelfAssessment from '@/views/Sections/SelfAssessment/Show';
+import Assessors from '@/views/Sections/Assessors/Show';
 export default {
   components: {
     Experience,
     Personal,
     Qualifications,
     SelfAssessment,
+    Assessors,
   },
   data() {
     return {
