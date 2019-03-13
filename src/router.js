@@ -5,6 +5,7 @@ import store from '@/store';
 // Views
 import Apply from '@/views/Apply';
 import Login from '@/views/Login';
+import VerifyEmail from '@/views/VerifyEmail';
 
 // Form Sections
 import Introduction from '@/views/Sections/Introduction/Edit';
@@ -93,6 +94,11 @@ const router = new Router({
       component: Login,
     },
     {
+      path: '/verify-email',
+      name: 'verify-email',
+      component: VerifyEmail,
+    },
+    {
       path: '*',
       redirect: '/apply',
     },
@@ -108,12 +114,23 @@ const router = new Router({
 
 // Check that the user has permission to access this route (i.e. is the user logged in?)
 // Redirect to login if not authenticated
+
+/**
+ * Verify User's Access
+ *
+ * - redirect to the login page if required
+ * - show 'verify your email' page if required
+ * - otherwise display the page
+ */
 router.beforeEach((to, from, next) => {
   const requiresAuth = to.matched.some(x => x.meta.requiresAuth);
   const isLoggedIn = store.getters.isLoggedIn;
+  const isEmailVerified = store.getters.isEmailVerified;
 
   if (requiresAuth && !isLoggedIn) {
     next('/login');
+  } else if (requiresAuth && !isEmailVerified) {
+    next('/verify-email');
   } else {
     next();
   }
