@@ -1,15 +1,14 @@
 <template>
   <div>
     <h3>Verify your email address</h3>
-    <p>We need to make sure we've got the right email address for you.</p>
+    <p>The JAC needs to make sure we have the right email address for you.</p>
     <p>We've sent an email to <strong>{{email}}</strong> containing a link to verify your email address.</p>
-    <p>Click the link in the email to complete your registration and start your application.</p>
+    <p>Follow the link to complete your registration and start your application.</p>
     <details>
       <summary>Help! I haven't received the email yet</summary>
-      <p>It could take up to 10 minutes for our email to arrive.</p>
+      <p>It could take up to 10 minutes for the email to arrive.</p>
       <p>Don't forget to check your 'spam' or 'junk mail' folder in case it didn't go into your inbox.</p>
       <p>If it still hasn't arrived after 10 minutes, you can resend the email:</p>
-
       <button class="btn btn-primary" type="button" :disabled="sendInProgress" @click.prevent="sendVerificationEmail">
         Resend email
       </button>
