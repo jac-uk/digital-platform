@@ -1,6 +1,7 @@
 import * as firebase from 'firebase/app';
 import 'firebase/auth';
 import 'firebase/firestore';
+import 'firebase/functions';
 
 // Configure and initialise Firebase
 const config = {
@@ -21,9 +22,9 @@ firestore.settings({
   timestampsInSnapshots: true
 });
 
-// Initialise Auth
+// Other firebase exports
 const auth = firebase.auth;
-
+const functions = firebase.functions;
 const Timestamp = firebase.firestore.Timestamp;
 
-export {firestore, auth, Timestamp};
+export {firestore, auth, functions, Timestamp};
