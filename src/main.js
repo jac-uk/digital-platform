@@ -3,6 +3,7 @@ import App from '@/App.vue';
 import {auth} from '@/firebase';
 import router from '@/router';
 import store from '@/store';
+import 'details-element-polyfill';
 
 Vue.config.productionTip = false;
 
