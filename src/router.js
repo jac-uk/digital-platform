@@ -97,6 +97,22 @@ const router = new Router({
       path: '/verify-email',
       name: 'verify-email',
       component: VerifyEmail,
+      beforeEnter: (to, from, next) => {
+        const isLoggedIn = store.getters.isLoggedIn;
+        const isEmailVerified = store.getters.isEmailVerified;
+
+        if (!isLoggedIn) {
+          // User must be logged in
+          return next({name: 'login'});
+        }
+
+        if (isEmailVerified) {
+          // Email is already verified, skip this page
+          return next('/');
+        }
+
+        return next();
+      },
     },
     {
       path: '*',
@@ -128,12 +144,16 @@ router.beforeEach((to, from, next) => {
   const isEmailVerified = store.getters.isEmailVerified;
 
   if (requiresAuth && !isLoggedIn) {
-    next('/login');
-  } else if (requiresAuth && !isEmailVerified) {
-    next('/verify-email');
-  } else {
-    next();
+    // User must be logged in
+    return next({name: 'login'});
   }
+
+  if (requiresAuth && !isEmailVerified) {
+    // User must verify their email address
+    return next({name: 'verify-email'});
+  }
+
+  return next();
 });
 
 export default router;
