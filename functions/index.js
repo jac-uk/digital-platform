@@ -21,13 +21,14 @@ const sendEmail = (email, templateId, personalisation) => {
       {personalisation}
     )
     .then(notifyResponse => {
-      console.info(JSON.parse(JSON.stringify(notifyResponse)));
+      console.info(notifyResponse.body);
       return true;
     });
 };
 
 const sendVerificationEmail = (email) => {
-  return admin.auth().generateEmailVerificationLink(email)
+  const returnUrl = 'https://apply.judicialappointments.digital';
+  return admin.auth().generateEmailVerificationLink(email, {url: returnUrl})
     .then(link => {
       const templateId = functions.config().notify.templates.verification;
       const personalisation = {
