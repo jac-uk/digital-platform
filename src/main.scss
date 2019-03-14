@@ -30,6 +30,7 @@ $secondary: $jac-grey;
 
 // Import project SCSS
 @import "scss/fieldset";
+@import "scss/details";
 
 h1 {
   margin-bottom: $spacer * 2;
