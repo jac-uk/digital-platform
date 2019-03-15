@@ -57,7 +57,7 @@ export default {
   props: {
     answeredYes: Boolean,
     changeLink: String,
-    records: Object,
+    records: Array,
     subtitle: String,
     title: String,
     otherCaption: String,

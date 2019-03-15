@@ -44,7 +44,7 @@
 export default {
   props: {
     answeredYes: Boolean,
-    records: Object,
+    records: Array,
     title: String
   },
   computed: {
