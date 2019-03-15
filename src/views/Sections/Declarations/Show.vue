@@ -1,5 +1,8 @@
 <template>
-  <section>
+  <section class="card mb-3">
+    <div class="card-header">
+      <h3 class="card-title">Declarations</h3>
+    </div>
     <BooleanWithCheckboxes
       changeLink="/apply/declarations"
       :other="applicant.how_do_you_know_the_commissioners"
