@@ -26,16 +26,11 @@ const sendEmail = (email, templateId, personalisation) => {
     });
 };
 
-const sendVerificationEmail = (email) => {
+const sendVerificationEmail = async (email) => {
   const returnUrl = functions.config().production.url;
-  return admin.auth().generateEmailVerificationLink(email, {url: returnUrl})
-    .then(link => {
-      const templateId = functions.config().notify.templates.verification;
-      const personalisation = {
-        verificationLink: link,
-      };
-      return sendEmail(email, templateId, personalisation);
-    });
+  const templateId = functions.config().notify.templates.verification;
+  const verificationLink = await admin.auth().generateEmailVerificationLink(email, {url: returnUrl});
+  return sendEmail(email, templateId, {verificationLink});
 };
 
 exports.sendVerificationEmailOnNewUser = functions.auth.user().onCreate((user) => {
