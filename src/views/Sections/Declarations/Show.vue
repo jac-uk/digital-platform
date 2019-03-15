@@ -1,11 +1,12 @@
 <template>
   <section>
     <BooleanWithCheckboxes
-      title="Are you interested in salaried part-time working?"
-      subtitle="What sitting patterns are you interested in?"
-      changeLink="/apply/preferences"
-      :answeredYes="applicant.work_part_time"
-      :records="applicant.sitting_patterns"
+      changeLink="/apply/declarations"
+      :other="applicant.how_do_you_know_the_commissioners"
+      otherCaption="How do you know them?"
+      title="Are you related to, or known to any of the JAC Commissioners?"
+      :answeredYes="applicant.are_you_known_to_the_commissioners"
+      :records="applicant.known_to_commissioners"
       />
   </section>
 </template>

@@ -8,6 +8,7 @@
     <Assessors />
     <Character />
     <Preferences />
+    <Declarations />
   </section>
 </template>
 
@@ -19,6 +20,7 @@ import SelfAssessment from '@/views/Sections/SelfAssessment/Show';
 import Assessors from '@/views/Sections/Assessors/Show';
 import Character from '@/views/Sections/Character/Show';
 import Preferences from '@/views/Sections/Preferences/Show';
+import Declarations from '@/views/Sections/Declarations/Show';
 export default {
   components: {
     Experience,
@@ -27,7 +29,8 @@ export default {
     SelfAssessment,
     Assessors,
     Character,
-    Preferences
+    Preferences,
+    Declarations
   },
   data() {
     return {
