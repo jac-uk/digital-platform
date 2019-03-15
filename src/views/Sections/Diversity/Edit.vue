@@ -16,7 +16,8 @@
       </fieldset>
 
       <fieldset>
-        <legend>What is your professional background? Select all that apply.</legend>
+        <legend>What is your professional background?</legend>
+        <div class="fieldset-text">Select all that apply</div>
         <SelectList id="professional_background" :multiple="true" :options="selectListOptions.professionalBackground" v-model="applicant.professional_background" />
         <div class="custom-control custom-checkbox">
           <input class="custom-control-input" type="checkbox" id="professional_background_other" :value="true" v-model="applicant.professional_background_has_other">
@@ -28,7 +29,8 @@
       </fieldset>
 
       <fieldset>
-        <legend>What is your current legal role? If you currently hold multiple roles, select all that apply.</legend>
+        <legend>What is your current legal role?</legend>
+        <div class="fieldset-text">If you currently hold multiple roles, select all that apply</div>
         <SelectList id="current_legal_role" :multiple="true" :options="selectListOptions.currentLegalRole" v-model="applicant.current_legal_role" />
         <div class="custom-control custom-checkbox">
           <input class="custom-control-input" type="checkbox" id="current_legal_role_other" :value="true" v-model="applicant.current_legal_role_has_other">
@@ -41,31 +43,48 @@
 
       <fieldset>
         <legend>Do you hold, or have you held in the past, a fee-paid judicial role?</legend>
-        <SelectList id="fee_paid_judicial_role" :multiple="true" :options="selectListOptions.feePaidJudicialRole" v-model="applicant.fee_paid_judicial" />
+        <SelectList id="fee_paid_judicial_role" :options="selectListOptions.feePaidJudicialRole" v-model="applicant.fee_paid_judicial" />
+      </fieldset>
+
+      <fieldset>
+        <legend>Between the ages 11 to 18, did you mainly attend a state or fee-paying school?</legend>
+        <SelectList id="school_type" :options="selectListOptions.schoolTypes" v-model="applicant.school_type" />
+      </fieldset>
+
+      <fieldset>
+        <legend>Did you go to university and if so, were you the first generation from your family to go?</legend>
+        <SelectList id="university_attendance" :options="selectListOptions.universityAttendance" v-model="applicant.university_attendance" />
       </fieldset>
 
       <fieldset>
         <legend>What is your ethnic group?</legend>
-        <h6>White</h6>
-        <SelectList id="ethnicity_white" :options="selectListOptions.ethnicities.white" v-model="applicant.ethnicity" />
-        <h6 class="mt-3">Mixed/multiple ethnic backgrounds</h6>
-        <SelectList id="ethnicity_mixed" :options="selectListOptions.ethnicities.mixed" v-model="applicant.ethnicity" />
-        <h6 class="mt-3">Any other mixed/multiple ethinic background</h6>
-        <SelectList id="ethnicity_other_mixed" :options="selectListOptions.ethnicities.otherMixed" v-model="applicant.ethnicity" />
+        <SelectList id="ethnicity_no_answer" :options="['Prefer not to answer']" v-model="applicant.ethnicity" />
+        <h6 class="mt-3">Asian/Asian British</h6>
+        <SelectList id="ethnicity_asian" :options="selectListOptions.ethnicities.asian" v-model="applicant.ethnicity" />
         <h6 class="mt-3">Black/African/Caribbean/Black British</h6>
         <SelectList id="ethnicity_black" :options="selectListOptions.ethnicities.black" v-model="applicant.ethnicity" />
+        <h6 class="mt-3">White</h6>
+        <SelectList id="ethnicity_white" :options="selectListOptions.ethnicities.white" v-model="applicant.ethnicity" />
+        <h6 class="mt-3">Mixed or multiple ethnic backgrounds</h6>
+        <SelectList id="ethnicity_mixed" :options="selectListOptions.ethnicities.mixed" v-model="applicant.ethnicity" />
         <h6 class="mt-3">Other ethnic group</h6>
-        <SelectList id="ethnicity_other" :options="selectListOptions.ethnicities.other" v-model="applicant.ethnicity" />
+        <div class="custom-control custom-radio">
+          <input class="custom-control-input" type="radio" id="ethnicicty_other" value="Other" v-model="applicant.ethnicity">
+          <label class="custom-control-label" for="ethnicicty_other">
+            Other (please specify)
+          </label>
+          <input v-if="applicant.ethnicity === 'Other'" type="text" class="form-control" v-model="applicant.ethnicity_other">
+        </div>
       </fieldset>
 
       <fieldset>
-        <legend>What is your sex?</legend>
-        <SelectList id="sex" :options="selectListOptions.sex" v-model="applicant.sex" />
+        <legend>What is your gender?</legend>
+        <SelectList id="gender" :options="selectListOptions.gender" v-model="applicant.gender" />
       </fieldset>
 
       <fieldset>
-        <legend>Is your gender identity the same as the sex you were assigned at birth?</legend>
-        <SelectList id="gender" :options="selectListOptions.yesNo" v-model="applicant.gender_matches_sex" />
+        <legend>Is your gender identity the same as the gender you were assigned at birth?</legend>
+        <SelectList id="gender_same_as_birth" :options="selectListOptions.yesNo" v-model="applicant.gender_same_as_birth" />
       </fieldset>
 
       <fieldset>
@@ -88,6 +107,16 @@
           </label>
           <input v-if="applicant.religion === 'Other'" type="text" class="form-control" v-model="applicant.religion_other">
         </div>
+      </fieldset>
+
+      <fieldset>
+        <legend>Have you attended an outreach event on JAC selection exercises?</legend>
+        <SelectList id="has_attended_outreach_event" :options="selectListOptions.yesNo" v-model="applicant.has_attended_outreach_event" />
+      </fieldset>
+
+      <fieldset>
+        <legend>Did you participate in a Judicial Work Shadowing Scheme?</legend>
+        <SelectList id="participated_in_judicial_work_shadowing_scheme" :options="selectListOptions.yesNo" v-model="applicant.participated_in_judicial_work_shadowing_scheme" />
       </fieldset>
 
       <SaveAndContinueButtons :isSaving="isSaving" @saveAndContinue="saveAndContinue" />
@@ -114,10 +143,10 @@
             {value: false, label: 'Do NOT share my diversity data'},
           ],
           professionalBackground: [
-            'Solicitor',
             'Barrister',
             'CILEx',
-            'I prefer not to answer this question',
+            'Solicitor',
+            'Prefer not to answer',
           ],
           currentLegalRole: [
             'Academic',
@@ -130,16 +159,42 @@
             'Salaried court judge',
             'Salaried tribunal judge',
             'Solicitor',
-            'I prefer not to answer this question',
+            'Prefer not to answer',
           ],
           feePaidJudicialRole: [
             'Fee-paid court post',
             'Fee-paid tribunal post',
-            'Other fee-paid judicial office holder',
             'I have not previously held a fee-paid role',
-            'I prefer not to answer this question',
+            'Other fee-paid judicial office',
+            'Prefer not to answer',
+          ],
+          schoolTypes: [
+            'UK state school – selective',
+            'UK state school – non-selective',
+            'UK independent or fee-paying school',
+            'UK independent or fee-paying school with financial assistance (bursary or means-tested scholarship)',
+            'I attended a school outside of the UK',
+            'Prefer not to answer',
+          ],
+          universityAttendance: [
+            'I did not go to university',
+            'I went to university and was the first generation in my family to do so',
+            'I went to university but was not first generation in my family to do so',
+            'Prefer not to answer',
           ],
           ethnicities: {
+            asian: [
+              'Bangladeshi',
+              'Chinese',
+              'Indian',
+              'Pakistani',
+              'Any other Asian background',
+            ],
+            black: [
+              'African',
+              'Caribbean',
+              'Any other Black/African/Caribbean background',
+            ],
             white: [
               'English, Welsh, Scottish, Northern Ireland, British',
               'Irish',
@@ -150,36 +205,19 @@
               'White and Black Caribbean',
               'White and Black African',
               'White and Asian',
-            ],
-            otherMixed: [
-              'Asian/Asian British',
-              'Indian',
-              'Pakistani',
-              'Bangladeshi',
-              'Chinese',
-              'Any other Asian background',
-            ],
-            black: [
-              'African',
-              'Caribbean',
-              'Any other Black/African/Caribbean background',
-            ],
-            other: [
-              'Arab',
-              'Other',
-              'I prefer not to answer this question',
+              'Any other mixed or multiple ethnic background',
             ],
           },
-          sex: [
-            'Male',
+          gender: [
             'Female',
-            'Other (e.g. Transgender)',
-            'I prefer not to answer this question',
+            'Male',
+            'Other',
+            'Prefer not to answer',
           ],
           yesNo: [
             'Yes',
             'No',
-            'I prefer not to answer this question',
+            'Prefer not to answer',
           ],
           sexualOrientation: [
             'Bisexual',
@@ -187,7 +225,7 @@
             'Gay woman/ lesbian',
             'Heterosexual/ straight',
             'Other',
-            'I prefer not to answer this question',
+            'Prefer not to answer',
           ],
           religion: [
             'Atheist',
@@ -198,7 +236,7 @@
             'Muslim',
             'No religion',
             'Sikh',
-            'I prefer not to answer this question',
+            'Prefer not to answer',
           ],
         },
       };
