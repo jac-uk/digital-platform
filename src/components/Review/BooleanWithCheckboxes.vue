@@ -18,6 +18,14 @@
         <tr v-for="record in records" :key="record">
           <td colspan="2">{{ record }}</td>
         </tr>
+        <tr v-if="other">
+          <th v-if="otherCaption">
+            {{ otherCaption }}
+          </th>
+          <td v-if="other">
+            {{ other }}
+          </td>
+        </tr>
         <tr>
           <td colspan="10">
             <RouterLink :to="changeLink" class="float-right">Change</RouterLink>
@@ -52,6 +60,8 @@ export default {
     records: Object,
     subtitle: String,
     title: String,
+    otherCaption: String,
+    other: String,
   },
 }
 </script>
