@@ -1,11 +1,10 @@
 <template>
   <section>
     <form @submit.prevent="save">
-      <h2>Your preferences</h2>
+      <h2>Preferences</h2>
 
       <fieldset>
-        <legend>Salaried part-time working</legend>
-        <label>Do you want to work part time?</label>
+        <legend>Are you interested in salaried part-time working?</legend>
         <BooleanInput v-model="applicant.work_part_time" />
       </fieldset>
 
@@ -38,7 +37,6 @@ export default {
         sitting_patterns: [
            '80%',
            '90%',
-           'Block of weeks',
            'Blocks of at least 6 to 8 weeks',
         ],
       },
