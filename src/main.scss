@@ -9,6 +9,7 @@ $jac-yellow: rgb(240, 182, 0);
 // Configure Bootstrap variables
 $primary: $jac-purple;
 $secondary: $jac-grey;
+$link-decoration: underline;
 
 // Import Bootstrap components that we need
 @import "../node_modules/bootstrap/scss/functions";
@@ -37,4 +38,7 @@ h1 {
 }
 h2 {
   margin-bottom: $spacer;
+}
+.nav-link {
+  text-decoration: none;
 }
