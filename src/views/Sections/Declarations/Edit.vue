@@ -16,11 +16,6 @@
           <textarea id="how_do_you_know_them_details" class="form-control" v-model="applicant.how_do_you_know_the_commissioners" placeholder="Please provide details."></textarea>
         </div>
       </fieldset>
-      <fieldset>
-        <legend>Confidentiality</legend>
-        <SelectList id="confidentiality" :multiple="true" :options="selectListOptions.confidentiality" v-model="applicant.confidentiality" />
-      </fieldset>
-
       <SaveAndContinueButtons :isSaving="isSaving" @saveAndContinue="saveAndContinue" />
     </form>
   </section>
@@ -58,12 +53,6 @@ export default {
           'His Honour Judge Phillip Sycamore',
           'Sir Simon Wessely',
           'Dame Philippa Whipple DBE'
-        ],
-        confidentiality: [
-          'I undertake to maintain absolute confidentiality relating to all aspects of the selection process for this selection exercise.',
-          'As I progress in the exercise I undertake to ensure that any relevant materials provided to me as part of the selection process are kept secure and not shared with anyone else.',
-          'I understand that the Judicial Appointments Commission will automatically refer any suspected breach of this agreement to the Bar Standards Board, the Solicitors Regulatory Authority, CILEx Regulation, Judicial Conduct Investigations Office or other relevant regulatory body to consider as a potential breach of my professional obligations, or as misconduct, and this could result in disciplinary action by my regulator.',
-          'I understand that the Judicial Appointments Commission takes very seriously the integrity of the selection process and any evidence that a candidate has breached this agreement might result in disqualification from this and future exercises.'
         ]
       },
     };
