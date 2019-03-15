@@ -27,7 +27,7 @@ const sendEmail = (email, templateId, personalisation) => {
 };
 
 const sendVerificationEmail = (email) => {
-  const returnUrl = 'https://apply.judicialappointments.digital';
+  const returnUrl = functions.config().production.url;
   return admin.auth().generateEmailVerificationLink(email, {url: returnUrl})
     .then(link => {
       const templateId = functions.config().notify.templates.verification;
