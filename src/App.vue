@@ -1,11 +1,24 @@
 <template>
   <div id="app">
-    <nav v-if="authUser">
-      <router-link to="/apply">Apply</router-link>
-      <a href="#" @click.prevent="logOut">Logout</a>
+    <nav class="navbar navbar-expand-sm navbar-light bg-light mb-4" v-if="isLoggedIn">
+      <div class="container">
+        <RouterLink to="/" class="navbar-brand">
+          <img src="@/assets/jac-logo.svg" alt="Judicial Appointments Commission" width="197" height="66">
+        </RouterLink>
+        <div class="navbar-collapse">
+          <ul class="navbar-nav ml-auto">
+            <li class="nav-item active">
+              <RouterLink to="/apply" class="nav-link" active-class="active">Apply</RouterLink>
+            </li>
+            <li class="nav-item">
+              <a class="nav-link" href="#" @click.prevent="logOut">Logout</a>
+            </li>
+          </ul>
+        </div>
+      </div>
     </nav>
 
-    <RouterView :authUser="authUser"/>
+    <RouterView />
   </div>
 </template>
 
@@ -13,21 +26,10 @@
 import {auth} from '@/firebase';
 
 export default {
-  name: 'app',
-  data() {
-    return {
-      authUser: auth().currentUser,
-    };
-  },
   methods: {
     logOut() {
       auth().signOut();
     }
-  },
-  mounted() {
-    auth().onAuthStateChanged((user) => {
-      this.authUser = user;
-    });
   },
   computed: {
     isLoggedIn() {
@@ -45,13 +47,5 @@ export default {
 </script>
 
 <style lang="scss">
-.container {
-  max-width: 960px;
-}
-
-input[type=number]::-webkit-inner-spin-button,
-input[type=number]::-webkit-outer-spin-button {
-  -webkit-appearance: none;
-  margin: 0;
-}
+  // Required to include global main.scss styles
 </style>
