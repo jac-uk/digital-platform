@@ -1,7 +1,7 @@
 <template>
   <section>
     <form @submit.prevent="save">
-      <h2>Your experience</h2>
+      <h2>Experience</h2>
 
       <fieldset>
         <legend>Your experience</legend>
