@@ -1,7 +1,7 @@
 <template>
   <section>
     <form @submit.prevent="save">
-      <h2>Your qualifications</h2>
+      <h2>Qualifications</h2>
 
       <fieldset>
         <legend>What are your qualifications?</legend>
