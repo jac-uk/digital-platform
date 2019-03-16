@@ -20,14 +20,9 @@
 
       <div v-if="applicant.qualified_profession === 'Solicitor'">
         <fieldset>
-          <legend>When were you admitted as a solicitor?</legend>
+          <legend>When were you entered on the Roll?</legend>
           <div class="fieldset-text">For example, 02 2017</div>
-          <DateInput v-model="applicant.solicitor_date_admitted" type="month" />
-        </fieldset>
-
-        <fieldset>
-          <legend>Are you currently on the roll?</legend>
-          <BooleanInput v-model="applicant.solicitor_currently_on_roll" />
+          <DateInput v-model="applicant.solicitor_date_on_roll" type="month" />
         </fieldset>
       </div>
 
