@@ -5,18 +5,12 @@
     </div>
 
     <div class="card-body">
+      <h4>Self assessment</h4>
       <table class="table">
         <tbody>
           <tr>
-            <th scope="row">Additional Selection Criteria</th>
-            <td>{{ application.additional_selection_criteria}}</td>
-            <td>
-              <RouterLink to="/apply/self-assessment">Change</RouterLink>
-            </td>
-          </tr>
-          <tr>
-            <th scope="row">Section 9(1) authorisation</th>
-            <td>{{ application.has_section_9_1_authorisation ? "Yes" : "No" }}</td>
+            <th scope="row">Leadership</th>
+            <td>{{ application.competency_leadership }}</td>
             <td>
               <RouterLink to="/apply/self-assessment">Change</RouterLink>
             </td>
@@ -43,7 +37,7 @@
             </td>
           </tr>
           <tr>
-            <th scope="row">Working and Communicating with others</th>
+            <th scope="row">Working and Communicating with Others</th>
             <td>{{ application.competency_working_and_communicating_with_others }}</td>
             <td>
               <RouterLink to="/apply/self-assessment">Change</RouterLink>
@@ -52,6 +46,52 @@
           <tr>
             <th scope="row">Managing Work Effectively</th>
             <td>{{ application.competency_managing_work_effectively }}</td>
+            <td>
+              <RouterLink to="/apply/self-assessment">Change</RouterLink>
+            </td>
+          </tr>
+        </tbody>
+      </table>
+
+      <h4>Additional Selection Criterion</h4>
+      <table class="table">
+        <tbody>
+          <tr>
+            <th scope="row">How do you meet this requirement?</th>
+            <td>{{ application.additional_selection_criteria}}</td>
+            <td>
+              <RouterLink to="/apply/self-assessment">Change</RouterLink>
+            </td>
+          </tr>
+          <tr>
+            <th scope="row">Please provide details</th>
+            <td>{{ application.additional_selection_criteria_details}}</td>
+            <td>
+              <RouterLink to="/apply/self-assessment">Change</RouterLink>
+            </td>
+          </tr>
+        </tbody>
+      </table>
+
+      <h4>Reasonable Length of Service</h4>
+      <table class="table">
+        <tbody>
+          <tr>
+            <th scope="row">If you are unable to provide 3 years’ service, please provide any mitigation you would like the Commission to consider</th>
+            <td>{{ application.length_of_service_mitigation}}</td>
+            <td>
+              <RouterLink to="/apply/self-assessment">Change</RouterLink>
+            </td>
+          </tr>
+        </tbody>
+      </table>
+
+      <h4>Authorisations</h4>
+      <table class="table">
+        <tbody>
+          <tr>
+            <th scope="row">Do you currently have a Section 9(1) authorisation?</th>
+            <td>{{ application.has_section_9_1_authorisation ? "Yes" : "No" }}</td>
             <td>
               <RouterLink to="/apply/self-assessment">Change</RouterLink>
             </td>
