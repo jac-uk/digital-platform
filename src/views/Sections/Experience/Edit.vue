@@ -27,12 +27,6 @@
       </fieldset>
 
       <fieldset>
-        <legend>Have you had any work published?</legend>
-        <BooleanInput v-model="applicant.has_published_work" class="mb-3" />
-        <RepeatableFields v-if="applicant.has_published_work" v-model="applicant.published_work" :component="repeatableFields.PublishedWork" />
-      </fieldset>
-
-      <fieldset>
         <legend>Are you a member of any legal associations?</legend>
         <BooleanInput v-model="applicant.is_member_of_legal_associations" class="mb-3" />
         <RepeatableFields v-if="applicant.is_member_of_legal_associations" v-model="applicant.member_of_legal_associations" :component="repeatableFields.LegalAssociation" />
@@ -48,7 +42,6 @@
   import RepeatableFields from '@/components/RepeatableFields';
   import SelectList from '@/components/SelectList';
   import Experience from '@/views/RepeatableFields/Experience';
-  import PublishedWork from '@/views/RepeatableFields/PublishedWork';
   import LegalAssociation from '@/views/RepeatableFields/LegalAssociation';
   import SaveAndContinueButtons from '@/components/SaveAndContinueButtons';
 
@@ -77,7 +70,6 @@
         },
         repeatableFields: {
           Experience,
-          PublishedWork,
           LegalAssociation,
         },
       };
