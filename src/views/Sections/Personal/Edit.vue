@@ -1,13 +1,13 @@
 <template>
   <section>
     <form @submit.prevent="save">
-      <h2>Personal Details</h2>
+      <h2>Your personal details</h2>
 
       <fieldset>
         <legend>Your name</legend>
         <div class="form-group">
           <label for="full_name">Full name</label>
-          <div class="fieldset-text">We'll use this name when contacting you about your application</div>
+          <div class="fieldset-text">We’ll use this name when contacting you about your application, and when contacting your assessors</div>
           <input type="text" class="form-control" id="full_name" v-model="applicant.full_name" autocomplete="name">
         </div>
         <div class="form-group">
@@ -22,7 +22,7 @@
       </fieldset>
 
       <fieldset>
-        <legend>Your Date of Birth</legend>
+        <legend>Your date of birth</legend>
         <div class="fieldset-text">
           For example, 31 03 1980
         </div>
@@ -30,35 +30,31 @@
       </fieldset>
 
       <fieldset>
-        <legend>Your National Insurance Number</legend>
+        <legend>Your National Insurance number</legend>
         <div class="fieldset-text">
-          It’s on your National Insurance card, benefit letter, payslip or P60. For&nbsp;example, ‘QQ 12 34 56 C’.
+          It’s on your National Insurance card, payslip or P60. For&nbsp;example, QQ&nbsp;12&nbsp;34&nbsp;56&nbsp;C
         </div>
         <div class="form-group">
-          <label for="national_insurance">National Insurance Number</label>
+          <label for="national_insurance">National Insurance number</label>
           <input type="text" class="form-control" id="national_insurance" v-model="applicant.national_insurance">
         </div>
       </fieldset>
 
       <fieldset>
-        <legend>Your Contact Details</legend>
+        <legend>Your telephone number</legend>
         <div class="fieldset-text">
-          We’ll only use these details to contact you regarding your application.
+          We’ll only use this to contact you about your application
         </div>
         <div class="form-group">
-          <label for="email">Email Address</label>
-          <input type="email" class="form-control" id="email" v-model="applicant.email" autocomplete="email">
-        </div>
-        <div class="form-group">
-          <label for="phone">Telephone Number</label>
+          <label for="phone">Telephone number</label>
           <input type="tel" class="form-control" id="phone" v-model="applicant.phone" autocomplete="tel">
         </div>
       </fieldset>
 
       <fieldset>
-        <legend>Your Address</legend>
+        <legend>Your address</legend>
         <div class="fieldset-text">
-          We need your address to verify your identity when we perform character checks.
+          We’ll use this address when verifying your identity for a character check
         </div>
         <div class="form-group">
           <label for="address_line_1">
@@ -75,7 +71,7 @@
         </div>
         <div class="form-group">
           <label for="address_town">
-            Town or City
+            Town or city
           </label>
           <input type="text" class="form-control" id="address_town" v-model="applicant.address_town" autocomplete="address-line2" style="max-width: 18rem;">
         </div>
@@ -94,9 +90,9 @@
       </fieldset>
 
       <fieldset>
-        <legend>Reasonable Adjustments</legend>
+        <legend>Reasonable adjustments</legend>
         <div class="fieldset-text">
-          We provide reasonable adjustments to ensure that disabled candidates are not placed at a substantial disadvantage. We’ll also consider making reasonable adjustments for those suffering from short-term injury or temporary illness.
+          We provide reasonable adjustments to ensure that candidates with a disability are not placed at a substantial disadvantage. We’ll also consider making reasonable adjustments for those suffering from short-term injury or temporary illness.
         </div>
 
         <p>Do you need any reasonable adjustments?</p>
@@ -116,12 +112,12 @@
 
         <div class="form-group mt-3" v-if="applicant.reasonable_adjustments">
           <label for="reasonable_adjustments_details">
-            Details of Request
+            Provide details of your condition and request
           </label>
-          <textarea class="form-control" id="reasonable_adjustments_details" v-model="applicant.reasonable_adjustments_details" rows="3" placeholder="Please provide details of your condition and request"></textarea>
+          <textarea class="form-control" id="reasonable_adjustments_details" v-model="applicant.reasonable_adjustments_details" rows="3"></textarea>
           <div class="form-text">
             <p>We’ll contact you if we need to discuss your arrangements.</p>
-            <p>If you would like to discuss reasonable adjustments in confidence with someone, please telephone us on 020 3334 0123 or email <a href="mailto:reasonableadjustments@jac.gsi.gov.uk">reasonableadjustments@jac.gsi.gov.uk</a>.</p>
+            <p>If you would like to discuss reasonable adjustments in confidence with someone, please email <a href="mailto:dcj128@judicialappointments.gov.uk">dcj128@judicialappointments.gov.uk</a>.</p>
           </div>
         </div>
       </fieldset>
