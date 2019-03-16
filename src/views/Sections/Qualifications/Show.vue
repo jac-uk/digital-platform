@@ -1,7 +1,7 @@
 <template>
   <section class="card mb-3">
     <div class="card-header">
-      <h3 class="card-title">Your Qualifications</h3>
+      <h3 class="card-title">Qualifications</h3>
     </div>
 
     <div class="card-body">
