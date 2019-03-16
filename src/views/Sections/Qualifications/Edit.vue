@@ -64,8 +64,8 @@
               <p class="mt-3">Do you have an exemption certificate?</p>
               <BooleanInput v-model="applicant.barrister_has_pupillage_exemption_certificate" />
               <p v-if="applicant.barrister_has_pupillage_exemption_certificate" class="mt-3">
-                Email your certificate to <a href="mailto:jaas@jac.gsi.gov.uk">jaas@jac.gsi.gov.uk</a>
-                quoting {{vacancy.jac_ref}}: {{vacancy.title}}
+                Email your certificate to
+                <a href="mailto:dcj128@judicialappointments.gov.uk">dcj128@judicialappointments.gov.uk</a>
               </p>
             </div>
           </fieldset>
@@ -96,7 +96,6 @@
     data() {
       return {
         applicant: this.$store.getters.applicant(),
-        vacancy: this.$store.getters.vacancy,
         isSaving: false,
         selectListOptions: {
           qualifiedProfessions: [
