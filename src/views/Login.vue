@@ -1,16 +1,16 @@
 <template>
-  <div class="login">
-    <h3>Login</h3>
-    <p>You're not authenticated. Please login.</p>
+  <main>
+    <div class="text-center mb-3 mt-5">
+      <img src="@/assets/jac-logo.svg" alt="Judicial Appointments Commission" width="197" height="66">
+    </div>
     <FirebaseUI @signInSuccess="loginRedirect" />
-  </div>
+  </main>
 </template>
 
 <script>
   import FirebaseUI from '@/components/FirebaseUI';
 
   export default {
-    name: "Login",
     components: {
       FirebaseUI
     },
@@ -22,7 +22,3 @@
     }
   }
 </script>
-
-<style scoped>
-
-</style>
