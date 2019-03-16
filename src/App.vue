@@ -1,5 +1,5 @@
 <template>
-  <div id="app">
+  <div id="app" class="mb-5">
     <nav class="navbar navbar-expand-sm navbar-light bg-light mb-4" v-if="isLoggedIn">
       <div class="container">
         <RouterLink to="/" class="navbar-brand">
