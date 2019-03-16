@@ -26,12 +26,6 @@
         </div>
       </fieldset>
 
-      <fieldset>
-        <legend>Are you a member of any legal associations?</legend>
-        <BooleanInput v-model="applicant.is_member_of_legal_associations" class="mb-3" />
-        <RepeatableFields v-if="applicant.is_member_of_legal_associations" v-model="applicant.member_of_legal_associations" :component="repeatableFields.LegalAssociation" />
-      </fieldset>
-
       <SaveAndContinueButtons :isSaving="isSaving" @saveAndContinue="saveAndContinue" />
     </form>
   </section>
@@ -42,7 +36,6 @@
   import RepeatableFields from '@/components/RepeatableFields';
   import SelectList from '@/components/SelectList';
   import Experience from '@/views/RepeatableFields/Experience';
-  import LegalAssociation from '@/views/RepeatableFields/LegalAssociation';
   import SaveAndContinueButtons from '@/components/SaveAndContinueButtons';
 
   export default {
@@ -70,7 +63,6 @@
         },
         repeatableFields: {
           Experience,
-          LegalAssociation,
         },
       };
     },
