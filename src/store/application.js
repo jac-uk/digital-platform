@@ -27,7 +27,7 @@ const module = {
         .get();
 
       if (results.empty) {
-        commit('setApplication', {id: null, data: {}});
+        commit('setApplication', {id: null, data: { state: 'draft', createdAt: new Date, updatedAt: new Date}});
       } else {
         const doc = results.docs[0];
 
@@ -35,6 +35,7 @@ const module = {
         delete data.applicant;
         delete data.vacancy;
         data = sanitizeFirestore(data);
+        data.updatedAt = new Date;
 
         commit('setApplication', {id: doc.id, data});
       }
