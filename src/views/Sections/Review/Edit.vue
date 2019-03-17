@@ -10,6 +10,15 @@
     <Character />
     <Preferences />
     <Declarations />
+    <p>You are applying for <strong>{{vacancy.jac_ref}}: {{vacancy.title}}</strong></p>
+    <form @submit.prevent="saveAndSubmit">
+      <div class="form-actions">
+        <button class="btn btn-primary mr-2" type="button" @click.prevent="save">
+          Submit application
+        </button>
+        <span class="spinner-border spinner-border-sm text-secondary" v-if="isSaving"></span>
+      </div>
+    </form>
   </section>
 </template>
 
@@ -38,7 +47,17 @@ export default {
   data() {
     return {
       vacancy: this.$store.getters.vacancy,
+      application: this.$store.getters.application(),
+      isSaving: false,
     };
   },
+  methods: {
+    async saveAndSubmit() {
+      this.isSaving = true;
+      this.application.state = 'submitted';
+      await this.$store.dispatch('saveApplication', this.application);
+      this.isSaving = false;
+    },
+  }
 }
 </script>
