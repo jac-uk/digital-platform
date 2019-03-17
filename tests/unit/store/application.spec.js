@@ -59,8 +59,8 @@ describe('store/application', () => {
 
       describe('application already exists in Firestore', () => {
         const docId = 'abc123';
-        const data = {status: 'draft'};
-        const sanitizedData = {status: 'draft', sanitized: true};
+        const data = {state: 'draft'};
+        const sanitizedData = {state: 'draft', sanitized: true, updatedAt: expect.any(Date)};
 
         beforeEach(async () => {
           getters.applicantDoc = 'applicants/4jsbvO27RJYqSRsgZM9sPhDFLDU2';
@@ -103,7 +103,14 @@ describe('store/application', () => {
         });
 
         it('commits a null document ID and an empty data object', () => {
-          expect(context.commit).toHaveBeenCalledWith('setApplication', {id: null, data: {}});
+          expect(context.commit)
+            .toHaveBeenCalledWith(
+              'setApplication',
+              {
+                id: null,
+                data: { createdAt: expect.any(Date), state: 'draft', updatedAt: expect.any(Date) }
+              }
+            );
         });
       });
 
