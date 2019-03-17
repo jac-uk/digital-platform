@@ -10,6 +10,7 @@
     <Character />
     <Preferences />
     <Declarations />
+    <Diversity />
     <p v-if="application.state != 'submitted'">
       You are applying for <strong>{{vacancy.jac_ref}}: {{vacancy.title}}</strong>
     </p>
@@ -34,6 +35,7 @@ import Assessors from '@/views/Sections/Assessors/Show';
 import Character from '@/views/Sections/Character/Show';
 import Preferences from '@/views/Sections/Preferences/Show';
 import Declarations from '@/views/Sections/Declarations/Show';
+import Diversity from '@/views/Sections/Diversity/Show';
 export default {
   components: {
     Citizenship,
@@ -44,7 +46,8 @@ export default {
     Assessors,
     Character,
     Preferences,
-    Declarations
+    Declarations,
+    Diversity
   },
   data() {
     return {
