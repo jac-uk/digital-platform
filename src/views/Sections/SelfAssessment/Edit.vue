@@ -3,7 +3,7 @@
     <form @submit.prevent="save">
       <h2>Your self assessment</h2>
 
-      <fieldset>
+      <fieldset :disabled="application.state === 'submitted'">
         <legend>Additional Selection Criteria</legend>
         <div class="form-group">
           <label for="additional_selection_criteria">How do you meet this requirement?</label>
@@ -11,13 +11,13 @@
         </div>
       </fieldset>
 
-      <fieldset>
+      <fieldset :disabled="application.state === 'submitted'">
         <legend>Authorisations</legend>
         <p>Do you currently have a Section 9(1) authorisation?</p>
         <BooleanInput v-model="application.has_section_9_1_authorisation" />
       </fieldset>
 
-      <fieldset>
+      <fieldset :disabled="application.state === 'submitted'">
         <legend>Self Assessment</legend>
         <div class="fieldset-text">
           You may wish to refer to our guidance and the competency framework for this exercise before you complete this part of your application.
@@ -44,7 +44,7 @@
         </div>
       </fieldset>
 
-      <SaveAndContinueButtons :isSaving="isSaving" @saveAndContinue="saveAndContinue" />
+      <SaveAndContinueButtons v-if="application.state !== 'submitted'" :isSaving="isSaving" @saveAndContinue="saveAndContinue" />
     </form>
   </section>
 </template>

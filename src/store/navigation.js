@@ -53,6 +53,10 @@ const module = {
         title: 'Review and Submit',
         path: '/apply/review',
       },
+      {
+        title: 'Submitted',
+        path: '/apply/submitted',
+      },
     ],
     currentPage: undefined,
   },
