@@ -11,9 +11,9 @@
     <Preferences />
     <Declarations />
     <p>You are applying for <strong>{{vacancy.jac_ref}}: {{vacancy.title}}</strong></p>
-    <form @submit.prevent="saveAndSubmit">
+    <form @submit.prevent="save">
       <div class="form-actions">
-        <button class="btn btn-primary mr-2" type="button" @click.prevent="save">
+        <button class="btn btn-primary mr-2" type="button" @click.prevent="saveAndSubmit">
           Submit application
         </button>
         <span class="spinner-border spinner-border-sm text-secondary" v-if="isSaving"></span>
@@ -53,6 +53,10 @@ export default {
   },
   methods: {
     async saveAndSubmit() {
+      await this.save();
+      this.$emit('continue');
+    },
+    async save() {
       this.isSaving = true;
       this.application.state = 'submitted';
       await this.$store.dispatch('saveApplication', this.application);

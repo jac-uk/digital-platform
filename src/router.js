@@ -21,6 +21,7 @@ import Declarations from '@/views/Sections/Declarations/Edit';
 import Diversity from '@/views/Sections/Diversity/Edit';
 import Outreach from '@/views/Sections/Outreach/Edit';
 import Review from '@/views/Sections/Review/Edit';
+import Submitted from '@/views/Sections/Submitted/Show';
 
 Vue.use(Router);
 
@@ -85,6 +86,10 @@ const router = new Router({
         {
           path: 'review',
           component: Review,
+        },
+        {
+          path: 'submitted',
+          component: Submitted,
         },
       ],
     },
