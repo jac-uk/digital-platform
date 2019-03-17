@@ -3,6 +3,18 @@
     <form @submit.prevent="save">
       <h2>Your self assessment</h2>
 
+      <div class="card mb-3" v-if="application.state === 'submitted'">
+        <div class="card-header">
+          <h2 class="card-title">
+            You have submitted your application for this vacancy
+          </h2>
+        </div>
+        <div class="card-body">
+          Email dcj128@judicialappointments.gov.uk or call 020 3334 0123 to
+          discuss changes to your application.
+        </div>
+      </div>
+
       <fieldset :disabled="application.state === 'submitted'">
         <legend>Additional Selection Criteria</legend>
         <div class="form-group">
@@ -50,30 +62,30 @@
 </template>
 
 <script>
-  import BooleanInput from '@/components/BooleanInput';
-  import SaveAndContinueButtons from '@/components/SaveAndContinueButtons';
+import BooleanInput from '@/components/BooleanInput';
+import SaveAndContinueButtons from '@/components/SaveAndContinueButtons';
 
-  export default {
-    components: {
-      SaveAndContinueButtons,
-      BooleanInput,
+export default {
+  components: {
+    SaveAndContinueButtons,
+    BooleanInput,
+  },
+  data() {
+    return {
+      application: this.$store.getters.application(),
+      isSaving: false,
+    };
+  },
+  methods: {
+    async saveAndContinue() {
+      await this.save();
+      this.$emit('continue');
     },
-    data() {
-      return {
-        application: this.$store.getters.application(),
-        isSaving: false,
-      };
+    async save() {
+      this.isSaving = true;
+      await this.$store.dispatch('saveApplication', this.application);
+      this.isSaving = false;
     },
-    methods: {
-      async saveAndContinue() {
-        await this.save();
-        this.$emit('continue');
-      },
-      async save() {
-        this.isSaving = true;
-        await this.$store.dispatch('saveApplication', this.application);
-        this.isSaving = false;
-      },
-    }
   }
+}
 </script>
