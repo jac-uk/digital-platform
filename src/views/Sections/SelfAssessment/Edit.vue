@@ -57,12 +57,8 @@
           for more information about this requirement
         </div>
         <div class="form-group">
-          <label for="additional_selection_criteria">How do you meet this requirement?</label>
-          <textarea class="form-control" id="additional_selection_criteria" rows="9" v-model="application.additional_selection_criteria"></textarea>
-        </div>
-        <div class="form-group">
-          <label for="additional_selection_criteria_details">Please provide details</label>
-          <textarea class="form-control" id="additional_selection_criteria_details" rows="9" v-model="application.additional_selection_criteria_details"></textarea>
+          <label for="additional_selection_criteria">Provide details of how you meet this requirement</label>
+          <textarea class="form-control" id="additional_selection_criteria" rows="3" v-model="application.additional_selection_criteria"></textarea>
         </div>
       </fieldset>
 
