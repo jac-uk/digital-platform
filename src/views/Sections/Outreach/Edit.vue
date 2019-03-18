@@ -1,7 +1,7 @@
 <template>
   <section>
     <form @submit.prevent="save">
-      <h2>How did you hear about the vacancy?</h2>
+      <h2>How did you hear about this vacancy?</h2>
 
       <fieldset>
         <legend>Select any that apply:</legend>
@@ -37,7 +37,7 @@ export default {
         heard_about_from: [
           'JAC website',
           'JAC newsletter: Judging Your Future',
-          'Judiciary intranet',
+          'Judiciary website',
           'Judiciary extranet',
           'Twitter',
           'LinkedIn',

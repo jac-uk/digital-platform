@@ -6,8 +6,8 @@ const module = {
         path: '/apply',
       },
       {
-        title: 'Nationality',
-        path: '/apply/nationality',
+        title: 'Citizenship',
+        path: '/apply/citizenship',
       },
       {
         title: 'Personal Details',
