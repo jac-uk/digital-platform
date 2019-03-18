@@ -20,7 +20,7 @@
           <SelectList :multiple="true" :options="selectListOptions.activities" v-model="applicant.gaps_in_employment_activities" id="gaps_in_employment_activities" />
           <div class="custom-control custom-checkbox">
             <input type="checkbox" class="custom-control-input" id="gaps_in_employment_activities_other" v-model="applicant.gaps_in_employment_activities_has_other">
-            <label class="custom-control-label" for="gaps_in_employment_activities_other">Other</label>
+            <label class="custom-control-label" for="gaps_in_employment_activities_other">Other activity that may be considered law-related</label>
             <input v-if="applicant.gaps_in_employment_activities_has_other" type="text" class="form-control" v-model="applicant.gaps_in_employment_activities_other">
           </div>
         </div>
