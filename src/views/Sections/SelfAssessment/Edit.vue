@@ -54,7 +54,7 @@
         <div class="fieldset-text">
           Refer to the ‘Additional Selection Criteria’ section of
           <a href="https://www.judicialappointments.gov.uk/128-senior-circuit-judge-designated-civil-judge-information-page" target="_blank">the vacancy information page</a>
-          for more information about this requirement
+          for more information about this requirement.
         </div>
         <div class="form-group">
           <label for="additional_selection_criteria">Provide details of how you meet this requirement</label>
@@ -67,7 +67,7 @@
         <div class="fieldset-text">
           Refer to the ‘Reasonable Length of Service’ section of
           <a href="https://www.judicialappointments.gov.uk/128-senior-circuit-judge-designated-civil-judge-information-page" target="_blank">the vacancy information page</a>
-          for more information about this requirement
+          for more information about this requirement.
         </div>
         <div class="form-group">
           <label>Are you able to provide 3 years’ service?</label>
