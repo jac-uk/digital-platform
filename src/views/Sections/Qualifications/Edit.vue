@@ -9,7 +9,7 @@
       </fieldset>
 
       <fieldset>
-        <legend>What are you qualified as?</legend>
+        <legend>Are you qualified as a:</legend>
         <SelectList :options="selectListOptions.qualifiedProfessions" :multiple="false" v-model="applicant.qualified_profession" id="qualified_profession" />
       </fieldset>
 
@@ -94,9 +94,9 @@
         isSaving: false,
         selectListOptions: {
           qualifiedProfessions: [
-            {value: 'Barrister', label: 'A barrister'},
-            {value: 'Solicitor', label: 'A solicitor'},
-            {value: 'Advocate', label: 'An advocate'},
+            {value: 'Barrister', label: 'Barrister'},
+            {value: 'Solicitor', label: 'Solicitor'},
+            {value: 'Advocate', label: 'Advocate'},
           ],
           qualifiedLocations: [
             'England and Wales',

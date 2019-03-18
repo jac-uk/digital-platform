@@ -32,7 +32,7 @@
     <table class="table">
       <tbody>
         <tr>
-          <th scope="row">Qualified Profession</th>
+          <th scope="row">Qualified profession</th>
           <td>{{ applicant.qualified_profession }}</td>
           <td>
             <RouterLink to="/apply/qualifications">Change</RouterLink>
