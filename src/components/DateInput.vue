@@ -2,15 +2,15 @@
   <div class="date-input form-row mb-3">
     <div class="col-3" v-if="type === 'date'">
       <label :for="dayInputId">Day</label>
-      <input type="number" min="1" max="31" class="form-control" :id="dayInputId" v-model.lazy="dayInput" ref="dayInput">
+      <input type="tel" class="form-control" :id="dayInputId" v-model.lazy="dayInput" ref="dayInput">
     </div>
     <div class="col-3">
       <label :for="monthInputId">Month</label>
-      <input type="number" min="1" max="12" class="form-control" :id="monthInputId" v-model.lazy="monthInput" ref="monthInput">
+      <input type="tel" class="form-control" :id="monthInputId" v-model.lazy="monthInput" ref="monthInput">
     </div>
     <div class="col-6">
       <label :for="yearInputId">Year</label>
-      <input type="number" class="form-control" :id="yearInputId" v-model.lazy="yearInput" ref="yearInput">
+      <input type="tel" class="form-control" :id="yearInputId" v-model.lazy="yearInput" ref="yearInput">
     </div>
   </div>
 </template>
@@ -155,7 +155,7 @@
   }
 </script>
 
-<style>
+<style scoped>
   .date-input {
     max-width: 18rem;
   }
