@@ -34,8 +34,14 @@ const sendVerificationEmail = async (email) => {
 }
 
 const sendApplicationStartedEmail = async (applicantId) => {
-  const user = await admin.auth().getUser(applicantId)
+  const user = await admin.auth().getUser(applicantId);
   const templateId = functions.config().notify.templates.application_started;
+  return sendEmail(user.email, templateId, {});
+}
+
+const sendApplicationSubmittedEmail = async (applicantId) => {
+  const user = await admin.auth().getUser(applicantId);
+  const templateId = functions.config().notify.templates.application_submitted;
   return sendEmail(user.email, templateId, {});
 }
 
@@ -53,4 +59,14 @@ exports.sendApplicationStartedEmail = functions.firestore
   .document('applicants/{userId}')
   .onCreate((snap, context) => {
     return sendApplicationStartedEmail(context.params.userId);
+  });
+
+exports.sendApplicationSubmittedEmail = functions.firestore
+  .document('applications/{applicationId}')
+  .onUpdate((change, context) => {
+    const data = change.after.data();
+    if (data.state === 'submitted') {
+      return sendApplicationSubmittedEmail(data.applicant.id);
+    }
+    return true;
   });
