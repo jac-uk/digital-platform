@@ -6,7 +6,7 @@
 
     <div class="card-body">
       <h4>Self assessment</h4>
-      <table class="table competencies">
+      <table class="table long-answers">
         <tbody>
           <tr>
             <th scope="row">Leadership</th>
@@ -54,18 +54,11 @@
       </table>
 
       <h4>Additional Selection Criterion</h4>
-      <table class="table">
+      <table class="table long-answers">
         <tbody>
           <tr>
-            <th scope="row">How do you meet this requirement?</th>
+            <th scope="row">Provide details of how you meet this requirement</th>
             <td>{{ application.additional_selection_criteria}}</td>
-            <td>
-              <RouterLink to="/apply/self-assessment">Change</RouterLink>
-            </td>
-          </tr>
-          <tr>
-            <th scope="row">Please provide details</th>
-            <td>{{ application.additional_selection_criteria_details}}</td>
             <td>
               <RouterLink to="/apply/self-assessment">Change</RouterLink>
             </td>
@@ -83,7 +76,7 @@
               <RouterLink to="/apply/self-assessment">Change</RouterLink>
             </td>
           </tr>
-          <tr>
+          <tr v-if="application.length_of_service_accepted === false">
             <th scope="row">Provide any mitigation you’d like considered</th>
             <td>{{ application.length_of_service_mitigation }}</td>
             <td>
@@ -123,7 +116,7 @@
   th {
     width: 50%;
   }
-  .competencies th {
+  .long-answers th {
     width: 30%;
   }
 </style>
