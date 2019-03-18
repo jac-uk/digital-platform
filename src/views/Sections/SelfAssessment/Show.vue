@@ -6,7 +6,7 @@
 
     <div class="card-body">
       <h4>Self assessment</h4>
-      <table class="table">
+      <table class="table competencies">
         <tbody>
           <tr>
             <th scope="row">Leadership</th>
@@ -77,8 +77,15 @@
       <table class="table">
         <tbody>
           <tr>
-            <th scope="row">If you are unable to provide 3 years’ service, please provide any mitigation you would like the Commission to consider</th>
-            <td>{{ application.length_of_service_mitigation}}</td>
+            <th scope="row">Are you able to provide 3 years’ service?</th>
+            <td>{{ application.length_of_service_accepted ? 'Yes' : 'No' }}</td>
+            <td>
+              <RouterLink to="/apply/self-assessment">Change</RouterLink>
+            </td>
+          </tr>
+          <tr>
+            <th scope="row">Provide any mitigation you’d like considered</th>
+            <td>{{ application.length_of_service_mitigation }}</td>
             <td>
               <RouterLink to="/apply/self-assessment">Change</RouterLink>
             </td>
@@ -111,3 +118,12 @@
     }
   }
 </script>
+
+<style scoped>
+  th {
+    width: 50%;
+  }
+  .competencies th {
+    width: 30%;
+  }
+</style>

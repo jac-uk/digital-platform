@@ -51,6 +51,11 @@
 
       <fieldset :disabled="application.state === 'submitted'">
         <legend>Additional Selection Criterion</legend>
+        <div class="fieldset-text">
+          Refer to the ‘Additional Selection Criteria’ section of
+          <a href="https://www.judicialappointments.gov.uk/128-senior-circuit-judge-designated-civil-judge-information-page" target="_blank">the vacancy information page</a>
+          for more information about this requirement
+        </div>
         <div class="form-group">
           <label for="additional_selection_criteria">How do you meet this requirement?</label>
           <textarea class="form-control" id="additional_selection_criteria" rows="9" v-model="application.additional_selection_criteria"></textarea>
@@ -63,9 +68,17 @@
 
       <fieldset :disabled="application.state === 'submitted'">
         <legend>Reasonable Length of Service</legend>
-        <div class="fieldset-text">Refer to the Information Page</div>
+        <div class="fieldset-text">
+          Refer to the ‘Reasonable Length of Service’ section of
+          <a href="https://www.judicialappointments.gov.uk/128-senior-circuit-judge-designated-civil-judge-information-page" target="_blank">the vacancy information page</a>
+          for more information about this requirement
+        </div>
         <div class="form-group">
-          <label for="length_of_service_mitigation">If you are unable to provide 3 years’ service, please provide any mitigation you would like the Commission to consider</label>
+          <label>Are you able to provide 3 years’ service?</label>
+          <BooleanInput v-model="application.length_of_service_accepted" />
+        </div>
+        <div class="form-group" v-if="application.length_of_service_accepted === false">
+          <label for="length_of_service_mitigation">Provide any mitigation you’d like considered</label>
           <textarea class="form-control" id="length_of_service_mitigation" rows="3" v-model="application.length_of_service_mitigation"></textarea>
         </div>
       </fieldset>
