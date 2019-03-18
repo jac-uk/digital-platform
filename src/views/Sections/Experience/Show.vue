@@ -83,30 +83,36 @@
         </tfoot>
       </table>
 
-        <table class="table">
-          <tbody>
-            <tr>
-              <th scope="row">Have you had and gaps in employment?</th>
-              <td>{{ applicant.has_gaps_in_employment ? "Yes" : "No" }}</td>
-              <td>
-                <RouterLink to="/apply/experience">Change</RouterLink>
-              </td>
-            </tr>
-            <tr v-for="gap in applicant.gaps_in_employment_activities" :key="gap.id">
-              <td scope="row">{{ gap }}</td>
-              <td>Yes</td>
-              <td><RouterLink to="/apply/experience">Change</RouterLink></td>
-            </tr>
-            <tr v-if="applicant.gaps_in_employment_activities_has_other">
-              <th scope="row">Other activity that may be considered law-related</th>
-              <td>{{ applicant.gaps_in_employment_activities_other }}</td>
-              <td><RouterLink to="/apply/experience">Change</RouterLink></td>
-            </tr>
-          </tbody>
-        </table>
-      </div>
-    </section>
-  </template>
+      <table class="table">
+        <tbody>
+          <tr>
+            <th scope="row">Have you had and gaps in employment?</th>
+            <td>{{ applicant.has_gaps_in_employment ? "Yes" : "No" }}</td>
+            <td>
+              <RouterLink to="/apply/experience">Change</RouterLink>
+            </td>
+          </tr>
+          <tr>
+            <th scope="row">Law-related activities during gaps</th>
+            <td>
+              <ul>
+                <li v-for="activity in applicant.gaps_in_employment_activities" :key="activity">
+                  {{ activity }}
+                </li>
+                <li v-if="applicant.gaps_in_employment_activities_has_other">
+                  Other: {{applicant.gaps_in_employment_activities_other}}
+                </li>
+              </ul>
+            </td>
+            <td>
+              <RouterLink to="/apply/experience">Change</RouterLink>
+            </td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+  </section>
+</template>
 
 <script>
 export default {
