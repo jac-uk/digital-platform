@@ -1,25 +1,38 @@
 <template>
   <section class="card mb-3">
     <div class="card-header">
-      <h3 class="card-title">Your Qualifications</h3>
+      <h3 class="card-title">Qualifications</h3>
     </div>
 
     <div class="card-body">
+
+      <h4>Qualifications</h4>
+      <table class="table" v-for="qualification in applicant.qualifications" :key="qualification.qualification">
+        <tbody>
+          <tr>
+            <th scope="row">Qualification</th>
+            <td>{{qualification.qualification}}</td>
+          </tr>
+          <tr>
+            <th scope="row">College or university</th>
+            <td>{{qualification.college}}</td>
+          </tr>
+          <tr>
+            <th scope="row">Qualification date</th>
+            <td>{{ qualification.date.toLocaleDateString() }}</td>
+          </tr>
+          <tr>
+            <td colspan="2">
+              <RouterLink to="/apply/qualifications" class="float-right">Change</RouterLink>
+            </td>
+          </tr>
+        </tbody>
+      </table>
+
     <table class="table">
       <tbody>
-        <tr v-for="qualification in applicant.qualifications" :key="qualification.id">
-          <th scope="row">Qualification</th>
-          <td>
-            {{ qualification.qualification }}<br />
-            {{ qualification.college }}<br />
-            {{ qualification.date.toLocaleDateString() }}
-          </td>
-          <td>
-            <RouterLink to="/apply/qualifications">Change</RouterLink>
-          </td>
-        </tr>
         <tr>
-          <th scope="row">Qualified Profession</th>
+          <th scope="row">Qualified profession</th>
           <td>{{ applicant.qualified_profession }}</td>
           <td>
             <RouterLink to="/apply/qualifications">Change</RouterLink>
@@ -32,65 +45,75 @@
             <RouterLink to="/apply/qualifications">Change</RouterLink>
           </td>
         </tr>
-        <tr v-if="applicant.solicitor_date_admitted">
-          <th scope="row">When were you admitted as a solicitor?</th>
-          <td>{{ applicant.solicitor_date_admitted.toLocaleDateString() }}</td>
+
+        <tr v-if="applicant.qualified_profession === 'Solicitor'">
+          <th scope="row">When were you entered on the Roll?</th>
+          <td v-if="applicant.solicitor_date_on_roll">
+            {{ applicant.solicitor_date_on_roll.toLocaleDateString() }}
+          </td>
+          <td v-else></td>
           <td>
             <RouterLink to="/apply/qualifications">Change</RouterLink>
           </td>
         </tr>
-        <tr v-if="applicant.solicitor_currently_on_roll">
-          <th scope="row">Are you currently on the roll?</th>
-          <td>{{ applicant.solicitor_currently_on_roll }}</td>
+
+        <tr v-if="applicant.qualified_profession === 'Advocate'">
+          <th scope="row">When were you called to the Faculty?</th>
+          <td v-if="applicant.advocate_date_called_to_faculty">
+            {{ applicant.advocate_date_called_to_faculty.toLocaleDateString() }}
+          </td>
+          <td v-else></td>
           <td>
             <RouterLink to="/apply/qualifications">Change</RouterLink>
           </td>
         </tr>
-        <tr v-if="applicant.advocate_date_called_to_faculty">
-          <th scope="row">Are you currently on the roll?</th>
-          <td>{{ applicant.advocate_date_called_to_faculty.toLocaleDateString() }}</td>
-          <td>
-            <RouterLink to="/apply/qualifications">Change</RouterLink>
-          </td>
-        </tr>
-        <tr v-if="applicant.advocate_date_called_to_faculty">
-          <th scope="row">Are you currently on the roll?</th>
-          <td>{{ applicant.advocate_date_called_to_faculty.toLocaleDateString() }}</td>
-          <td>
-            <RouterLink to="/apply/qualifications">Change</RouterLink>
-          </td>
-        </tr>
-        <tr v-if="applicant.barrister_date_called_to_bar">
+
+        <tr v-if="applicant.qualified_profession === 'Barrister'">
           <th scope="row">When were you called to the Bar?</th>
-          <td>{{ applicant.barrister_date_called_to_bar.toLocaleDateString() }}</td>
+          <td v-if="applicant.barrister_date_called_to_bar">
+            {{ applicant.barrister_date_called_to_bar.toLocaleDateString() }}
+          </td>
+          <td v-else></td>
           <td>
             <RouterLink to="/apply/qualifications">Change</RouterLink>
           </td>
         </tr>
-        <tr v-if="applicant.barrister_date_called_to_bar">
-          <th scope="row">When were you called to the Bar?</th>
-          <td>{{ applicant.barrister_date_called_to_bar.toLocaleDateString() }}</td>
+
+        <tr v-if="applicant.qualified_profession === 'Barrister' && applicant.location_qualified !== 'Northern Ireland'">
+          <th scope="row">Have you completed pupillage?</th>
+          <td>{{ applicant.barrister_completed_pupillage ? "Yes" : "No" }}</td>
           <td>
             <RouterLink to="/apply/qualifications">Change</RouterLink>
           </td>
         </tr>
-        <tr v-if="applicant.barrister_completed_pupillage">
-          <th scope="row">Have you completed pupilage?</th>
-          <td>{{ applicant.barrister_completed_pupillage }}</td>
+
+        <tr v-if="applicant.qualified_profession === 'Barrister' && applicant.location_qualified !== 'Northern Ireland' && applicant.barrister_completed_pupillage">
+          <th scope="row">When did you complete pupillage?</th>
+          <td>
+            {{ applicant.barrister_date_completed_pupillage.toLocaleDateString() }}
+          </td>
           <td>
             <RouterLink to="/apply/qualifications">Change</RouterLink>
           </td>
         </tr>
-        <tr v-if="applicant.barrister_reason_pupillage_not_completed">
-          <th scope="row">Why didn't you complete pupilage?</th>
+
+        <tr v-if="applicant.qualified_profession === 'Barrister' && applicant.location_qualified !== 'Northern Ireland' && !applicant.barrister_completed_pupillage">
+          <th scope="row">Why didn’t you complete pupillage?</th>
           <td>{{ applicant.barrister_reason_pupillage_not_completed }}</td>
           <td>
             <RouterLink to="/apply/qualifications">Change</RouterLink>
           </td>
         </tr>
-        <tr v-if="applicant.barrister_has_pupillage_exemption_certificate">
+
+        <tr v-if="applicant.qualified_profession === 'Barrister' && applicant.location_qualified !== 'Northern Ireland' && !applicant.barrister_completed_pupillage">
           <th scope="row">Do you have an exemption certificate?</th>
-          <td>{{ applicant.barrister_has_pupillage_exemption_certificate ? "Yes" : "No" }}</td>
+          <td>
+            <p>{{ applicant.barrister_has_pupillage_exemption_certificate ? "Yes" : "No" }}</p>
+            <p v-if="applicant.barrister_has_pupillage_exemption_certificate">
+              Email your certificate to
+              <a href="mailto:dcj128@judicialappointments.gov.uk">dcj128@judicialappointments.gov.uk</a>
+            </p>
+          </td>
           <td>
             <RouterLink to="/apply/qualifications">Change</RouterLink>
           </td>
@@ -106,9 +129,14 @@ export default {
   data() {
     return {
       applicant: this.$store.getters.applicant(),
-      vacancy: this.$store.getters.vacancy,
       isSaving: false
     };
-  }
+  },
 }
 </script>
+
+<style scoped>
+  th {
+    width: 40%;
+  }
+</style>

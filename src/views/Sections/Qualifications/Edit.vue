@@ -1,7 +1,7 @@
 <template>
   <section>
     <form @submit.prevent="save">
-      <h2>Your qualifications</h2>
+      <h2>Qualifications</h2>
 
       <fieldset>
         <legend>What are your qualifications?</legend>
@@ -9,7 +9,7 @@
       </fieldset>
 
       <fieldset>
-        <legend>What are you qualified as?</legend>
+        <legend>Are you qualified as a:</legend>
         <SelectList :options="selectListOptions.qualifiedProfessions" :multiple="false" v-model="applicant.qualified_profession" id="qualified_profession" />
       </fieldset>
 
@@ -20,14 +20,9 @@
 
       <div v-if="applicant.qualified_profession === 'Solicitor'">
         <fieldset>
-          <legend>When were you admitted as a solicitor?</legend>
+          <legend>When were you entered on the Roll?</legend>
           <div class="fieldset-text">For example, 02 2017</div>
-          <DateInput v-model="applicant.solicitor_date_admitted" type="month" />
-        </fieldset>
-
-        <fieldset>
-          <legend>Are you currently on the roll?</legend>
-          <BooleanInput v-model="applicant.solicitor_currently_on_roll" />
+          <DateInput v-model="applicant.solicitor_date_on_roll" type="month" />
         </fieldset>
       </div>
 
@@ -64,8 +59,8 @@
               <p class="mt-3">Do you have an exemption certificate?</p>
               <BooleanInput v-model="applicant.barrister_has_pupillage_exemption_certificate" />
               <p v-if="applicant.barrister_has_pupillage_exemption_certificate" class="mt-3">
-                Email your certificate to <a href="mailto:jaas@jac.gsi.gov.uk">jaas@jac.gsi.gov.uk</a>
-                quoting {{vacancy.jac_ref}}: {{vacancy.title}}
+                Email your certificate to
+                <a href="mailto:dcj128@judicialappointments.gov.uk">dcj128@judicialappointments.gov.uk</a>
               </p>
             </div>
           </fieldset>
@@ -96,13 +91,12 @@
     data() {
       return {
         applicant: this.$store.getters.applicant(),
-        vacancy: this.$store.getters.vacancy,
         isSaving: false,
         selectListOptions: {
           qualifiedProfessions: [
-            {value: 'Barrister', label: 'A barrister'},
-            {value: 'Solicitor', label: 'A solicitor'},
-            {value: 'Advocate', label: 'An advocate'},
+            {value: 'Barrister', label: 'Barrister'},
+            {value: 'Solicitor', label: 'Solicitor'},
+            {value: 'Advocate', label: 'Advocate'},
           ],
           qualifiedLocations: [
             'England and Wales',
