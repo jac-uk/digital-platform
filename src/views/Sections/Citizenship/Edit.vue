@@ -1,14 +1,13 @@
 <template>
   <section>
     <form @submit.prevent="save">
-      <h2>Nationality</h2>
+      <h2>Citizenship</h2>
 
       <fieldset>
-        <legend>What’s your nationality?</legend>
-        <SelectList id="nationality" :options="nationalityOptions" v-model="applicant.nationality" />
-        <div v-if="applicant.nationality === 'Non-Commonwealth'" class="mt-3">
-          Email <a href="mailto:dcj128@judicialappointments.gov.uk">dcj128@judicialappointments.gov.uk</a> or
-          call <a href="tel:+442033340123">020 3334 0123</a> to discuss your application
+        <legend>What is your citizenship?</legend>
+        <SelectList id="nationality" :options="options" v-model="applicant.citizenship" />
+        <div v-if="applicant.citizenship === 'Non-Commonwealth'" class="mt-3">
+          Email <a href="mailto:dcj128@judicialappointments.gov.uk">dcj128@judicialappointments.gov.uk</a> to provide further details
         </div>
       </fieldset>
 
@@ -30,11 +29,11 @@
       return {
         applicant: this.$store.getters.applicant(),
         isSaving: false,
-        nationalityOptions: [
-          {value: "British", label: "I'm British (including English, Scottish, Welsh and Northern Irish)"},
-          {value: "Irish", label: "I'm Irish"},
-          {value: "Commonwealth", label: "I'm a citizen of a Commonwealth country"},
-          {value: "Non-Commonwealth", label: "I'm none of these"},
+        options: [
+          {value: "British", label: "I am a citizen of the United Kingdom"},
+          {value: "Irish", label: "I am a citizen of the Republic of Ireland"},
+          {value: "Commonwealth", label: "I am a citizen of another Commonwealth country"},
+          {value: "Non-Commonwealth", label: "I am none of these"},
         ],
       };
     },

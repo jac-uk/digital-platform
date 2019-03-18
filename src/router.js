@@ -9,7 +9,7 @@ import VerifyEmail from '@/views/VerifyEmail';
 
 // Form Sections
 import Introduction from '@/views/Sections/Introduction/Edit';
-import Nationality from '@/views/Sections/Nationality/Edit';
+import Citizenship from '@/views/Sections/Citizenship/Edit';
 import Personal from '@/views/Sections/Personal/Edit';
 import Qualifications from '@/views/Sections/Qualifications/Edit';
 import Experience from '@/views/Sections/Experience/Edit';
@@ -39,8 +39,8 @@ const router = new Router({
           component: Introduction,
         },
         {
-          path: 'nationality',
-          component: Nationality,
+          path: 'citizenship',
+          component: Citizenship,
         },
         {
           path: 'personal',
