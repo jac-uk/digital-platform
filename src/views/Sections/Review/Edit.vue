@@ -10,8 +10,10 @@
     <Character />
     <Preferences />
     <Declarations />
-    <p>You are applying for <strong>{{vacancy.jac_ref}}: {{vacancy.title}}</strong></p>
-    <form @submit.prevent="save">
+    <p v-if="application.state != 'submitted'">
+      You are applying for <strong>{{vacancy.jac_ref}}: {{vacancy.title}}</strong>
+    </p>
+    <form v-if="application.state != 'submitted'"  @submit.prevent="save">
       <div class="form-actions">
         <button class="btn btn-primary mr-2" type="button" @click.prevent="saveAndSubmit">
           Submit application
