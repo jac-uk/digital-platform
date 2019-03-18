@@ -61,7 +61,7 @@
               <td><RouterLink to="/apply/experience">Change</RouterLink></td>
             </tr>
             <tr v-if="applicant.gaps_in_employment_activities_has_other">
-              <th scope="row">Other</th>
+              <th scope="row">Other activity that may be considered law-related</th>
               <td>{{ applicant.gaps_in_employment_activities_other }}</td>
               <td><RouterLink to="/apply/experience">Change</RouterLink></td>
             </tr>

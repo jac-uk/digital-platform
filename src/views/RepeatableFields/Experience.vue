@@ -83,7 +83,7 @@
         <SelectList :multiple="true" :options="selectListOptions.activities" v-model="row.activities" :id="inputIds.activities" />
         <div class="custom-control custom-checkbox">
           <input type="checkbox" class="custom-control-input" :id="inputIds.activitiesOther" v-model="row.activities_has_other">
-          <label class="custom-control-label" :for="inputIds.activitiesOther">Other</label>
+          <label class="custom-control-label" :for="inputIds.activitiesOther">Other activity that may be considered law-related</label>
           <input v-if="row.activities_has_other" type="text" class="form-control" v-model="row.activities_other">
         </div>
       </div>
