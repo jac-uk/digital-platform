@@ -88,11 +88,6 @@
         <label class="mt-3">Have you ever been asked to resign, or been dismissed from, employment or judicial office?</label>
         <BooleanInput v-model="applicant.character_has_dismissals" />
         <RepeatableFields v-if="applicant.character_has_dismissals" v-model="applicant.character_dismissals" :component="repeatableFields.ConductDetails" class="mt-3" />
-
-        <label class="mt-3">Is there anything else that is relevant to your character that you haven't already told us?</label>
-        <div class="fieldset-text">For example, anything which might make a member of the public think you're unsuitable for this post</div>
-        <BooleanInput v-model="applicant.character_has_other" />
-        <RepeatableFields v-if="applicant.character_has_other" v-model="applicant.character_other" :component="repeatableFields.ConductDetails" class="mt-3" />
       </fieldset>
 
       <fieldset>
@@ -100,6 +95,14 @@
         <label>Are you involved in any current investigations?</label>
         <BooleanInput v-model="applicant.character_has_current_investigations" />
         <RepeatableFields v-if="applicant.character_has_current_investigations" v-model="applicant.character_current_investigations" :component="repeatableFields.ConductDetails" class="mt-3" />
+      </fieldset>
+
+      <fieldset>
+        <legend>Additional information</legend>
+        <label class="mt-3">Is there anything else that is relevant to your character that you haven't already told us?</label>
+        <div class="fieldset-text">For example, anything which might make a member of the public think you're unsuitable for this post</div>
+        <BooleanInput v-model="applicant.character_has_other" />
+        <RepeatableFields v-if="applicant.character_has_other" v-model="applicant.character_other" :component="repeatableFields.ConductDetails" class="mt-3" />
       </fieldset>
 
       <SaveAndContinueButtons :isSaving="isSaving" @saveAndContinue="saveAndContinue" />

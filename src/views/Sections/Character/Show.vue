@@ -112,17 +112,19 @@
         :answeredYes="applicant.character_has_dismissals"
         :records="applicant.character_dissmissals"
         />
-      <CharacterTable
-        title="Is there anything else that is relevant to your character that you haven't already told us?"
-        :answeredYes="applicant.character_has_other"
-        :records="applicant.character_other"
-        />
 
       <h4>Current investigations or proceedings</h4>
       <CharacterTable
         title="Are you involved in any current investigations?"
         :answeredYes="applicant.character_has_current_investigations"
         :records="applicant.character_current_investigations"
+        />
+
+      <h4>Additional information</h4>
+      <CharacterTable
+        title="Is there anything else that is relevant to your character that you haven't already told us?"
+        :answeredYes="applicant.character_has_other"
+        :records="applicant.character_other"
         />
     </div>
   </section>
