@@ -5,12 +5,16 @@
       <input type="text" class="form-control" :id="inputIds.offence" v-model="row.offence">
     </div>
     <div class="form-group">
+      <label>Date of offence</label>
+      <DateInput v-model="row.offence_date" type="month" />
+    </div>
+    <div class="form-group">
       <label :for="inputIds.sentence">Sentence or penalty</label>
       <input type="text" class="form-control" :id="inputIds.sentence" v-model="row.sentence">
     </div>
     <div class="form-group">
-      <label>Date</label>
-      <DateInput v-model="row.date" type="month" />
+      <label>Date of sentence or penalty</label>
+      <DateInput v-model="row.sentence_date" type="month" />
     </div>
     <div class="form-group">
       <label :for="inputIds.circumstances">Circumstances</label>
