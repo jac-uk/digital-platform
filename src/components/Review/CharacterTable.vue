@@ -10,7 +10,7 @@
       </thead>
       <tbody v-for="record in visibleRecords" :key="record.id">
         <tr v-for="(value, key) in record" :key="value.id">
-          <th class="text-capitalize offence_key">{{ key }}</th>
+          <th class="text-capitalize offence_key">{{ key.replace('_', ' ') }}</th>
           <td v-if="value instanceof Date" class="offence_info">{{ value.toLocaleDateString("en-GB", { month: "numeric", year: "numeric" }) }}</td>
           <td v-else class="offence_info">{{ value }}</td>
         </tr>

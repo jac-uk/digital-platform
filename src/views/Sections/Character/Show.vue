@@ -130,14 +130,15 @@
 
 <script>
   import CharacterTable from '@/components/Review/CharacterTable';
-          export default {
-            components: {
-              CharacterTable
-            },
-            data() {
-              return {
-                applicant: this.$store.getters.applicant(),
-              };
-            }
-          }
+
+  export default {
+    components: {
+      CharacterTable
+    },
+    data() {
+      return {
+        applicant: this.$store.getters.applicant(),
+      };
+    }
+  }
 </script>
