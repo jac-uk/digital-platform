@@ -13,6 +13,7 @@
           <ApplicationNav />
         </nav>
         <div class="col-md-8">
+          <Banner />
           <RouterView @continue="nextPage" />
         </div>
       </div>
@@ -22,11 +23,13 @@
 
 <script>
   import ApplicationNav from "@/components/ApplicationNav";
+  import Banner from "@/components/Banner";
 
   export default {
     name: "Apply",
     components: {
       ApplicationNav,
+      Banner
     },
     data() {
       return {
