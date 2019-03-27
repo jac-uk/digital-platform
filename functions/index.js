@@ -70,3 +70,13 @@ exports.sendApplicationSubmittedEmail = functions.firestore
     }
     return true;
   });
+
+exports.moveIndependentAssessmentToGoogleDrive = functions.storage
+  .object()
+  .onFinalize((object) => {
+    if (object.name.startsWith('independent-assessments/')) {
+      const handler = require('./src/moveIndependentAssessmentToGoogleDrive');
+      return handler(object);
+    }
+    return true;
+  });
