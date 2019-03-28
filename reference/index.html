@@ -52,11 +52,17 @@
     </main>
   </div>
 
+  <!-- Promise polyfill -->
   <script src="https://cdn.jsdelivr.net/npm/es6-promise@4/dist/es6-promise.auto.min.js"></script>
+  <!-- URLSearchParams polyfill -->
+  <script src="https://cdn.jsdelivr.net/npm/@ungap/url-search-params/min.js"></script>
+
+  <!-- Firebase SDKs -->
   <script src="/__/firebase/5.9.0/firebase-app.js"></script>
   <script src="/__/firebase/5.9.0/firebase-firestore.js"></script>
   <script src="/__/firebase/5.9.0/firebase-storage.js"></script>
   <script src="/__/firebase/init.js"></script>
+
   <script>
     function showScreen(name) {
       document.getElementById('loading').hidden = true;
@@ -68,13 +74,25 @@
       document.getElementById('vacancy_title').innerText = data.vacancy_title;
     }
 
-    function getVacancy(id) {
+    function getReference(id) {
       var db = firebase.firestore();
       return db.collection('references').doc(id).get();
     }
 
+    function getReferenceId() {
+      var queryString = new URLSearchParams(window.location.search);
+      return queryString.get('ref');
+    }
+
     function main() {
-      getVacancy('example')
+      var referenceId = getReferenceId();
+
+      if (!referenceId) {
+        showScreen('not-found');
+        return;
+      }
+
+      getReference(referenceId)
         .then(function(doc) {
           if (doc.exists) {
             renderUploadScreen(doc.data());
