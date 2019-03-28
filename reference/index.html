@@ -5,8 +5,91 @@
   <meta http-equiv="X-UA-Compatible" content="IE=edge">
   <meta name="viewport" content="width=device-width,initial-scale=1.0">
   <title>Provide a reference - Judical Appointments Commission</title>
+  <link href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-ggOyR0iXCbMQv3Xipma34MD+dH/1fQ784/j6cY/iJTQUOhcWr7x9JvoRxT2MZw1T" crossorigin="anonymous">
+  <style>
+    .container {
+      max-width: 960px;
+    }
+    h1 {
+      margin-bottom: 2rem;
+    }
+  </style>
 </head>
 <body>
-  <!-- nothing here yet -->
+  <div class="mb-5">
+    <nav class="navbar navbar-expand-sm navbar-light bg-light mb-4">
+      <div class="container">
+        <a href="/" class="navbar-brand">
+          <img src="/jac-logo.svg" alt="Judicial Appointments Commission" width="197" height="66">
+        </a>
+      </div>
+    </nav>
+    <main class="container">
+      <div id="loading">
+        <span class="spinner-border spinner-border-sm text-secondary" aria-hidden="true"></span>
+        Loading...
+      </div>
+
+      <div id="screen-upload" hidden>
+        <h1>Supply your reference</h1>
+        <p>
+          <strong id="applicant_name"></strong>
+          has applied for the role
+          <strong id="vacancy_title"></strong>
+          and has requested a reference from you.
+        </p>
+      </div>
+
+      <div id="screen-not-found" hidden>
+        <h1>Invalid link</h1>
+        <p>We couldn't find details of that reference.</p>
+      </div>
+
+      <div id="screen-error" hidden>
+        <h1>Something went wrong</h1>
+        <p>We couldn't load the page. Please try again in a few minutes.</p>
+      </div>
+    </main>
+  </div>
+
+  <script src="https://cdn.jsdelivr.net/npm/es6-promise@4/dist/es6-promise.auto.min.js"></script>
+  <script src="/__/firebase/5.9.0/firebase-app.js"></script>
+  <script src="/__/firebase/5.9.0/firebase-firestore.js"></script>
+  <script src="/__/firebase/5.9.0/firebase-storage.js"></script>
+  <script src="/__/firebase/init.js"></script>
+  <script>
+    function showScreen(name) {
+      document.getElementById('loading').hidden = true;
+      document.getElementById('screen-' + name).hidden = false;
+    }
+
+    function renderUploadScreen(data) {
+      document.getElementById('applicant_name').innerText = data.applicant_name;
+      document.getElementById('vacancy_title').innerText = data.vacancy_title;
+    }
+
+    function getVacancy(id) {
+      var db = firebase.firestore();
+      return db.collection('references').doc(id).get();
+    }
+
+    function main() {
+      getVacancy('example')
+        .then(function(doc) {
+          if (doc.exists) {
+            renderUploadScreen(doc.data());
+            showScreen('upload');
+          } else {
+            showScreen('not-found');
+          }
+        })
+        .catch(function(error) {
+          console.error('Error getting vacancy:', error);
+          showScreen('error');
+        });
+    }
+
+    main();
+  </script>
 </body>
 </html>
