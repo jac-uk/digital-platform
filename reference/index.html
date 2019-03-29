@@ -5,13 +5,17 @@
   <meta http-equiv="X-UA-Compatible" content="IE=edge">
   <meta name="viewport" content="width=device-width,initial-scale=1.0">
   <title>Provide a reference - Judical Appointments Commission</title>
-  <link href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-ggOyR0iXCbMQv3Xipma34MD+dH/1fQ784/j6cY/iJTQUOhcWr7x9JvoRxT2MZw1T" crossorigin="anonymous">
+  <link href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css" rel="stylesheet"
+        integrity="sha384-ggOyR0iXCbMQv3Xipma34MD+dH/1fQ784/j6cY/iJTQUOhcWr7x9JvoRxT2MZw1T" crossorigin="anonymous">
   <style>
     .container {
       max-width: 960px;
     }
     h1 {
       margin-bottom: 2rem;
+    }
+    form {
+      max-width: 500px;
     }
   </style>
 </head>
@@ -25,12 +29,12 @@
       </div>
     </nav>
     <main class="container">
-      <div id="loading">
+      <section id="screen-loading">
         <span class="spinner-border spinner-border-sm text-secondary" aria-hidden="true"></span>
         Loading...
-      </div>
+      </section>
 
-      <div id="screen-upload" hidden>
+      <section id="screen-upload" hidden>
         <h1>Supply your reference</h1>
         <p>
           <strong id="applicant_name"></strong>
@@ -38,17 +42,40 @@
           <strong id="vacancy_title"></strong>
           and has requested a reference from you.
         </p>
-      </div>
 
-      <div id="screen-not-found" hidden>
+        <form onsubmit="event.preventDefault(); processForm();">
+          <div class="d-sm-flex">
+            <div class="flex-grow-1">
+              <div class="custom-file">
+                <input type="file" class="custom-file-input" id="fileInput" required>
+                <label class="custom-file-label rounded-top" for="fileInput">Choose file</label>
+              </div>
+            </div>
+            <div class="pl-sm-3 mt-3 mt-sm-0">
+              <button class="btn btn-primary">Submit</button>
+              <span id="progress-spinner" class="invisible spinner-border spinner-border-sm text-secondary ml-1"
+              aria-hidden="true"></span>
+            </div>
+          </div>
+        </form>
+      </section>
+
+      <section id="screen-received" hidden>
+        <h1>Reference received</h1>
+        <p>Thank you for uploading your reference.</p>
+      </section>
+
+      <section id="screen-not-found" hidden>
         <h1>Invalid link</h1>
         <p>We couldn't find details of that reference.</p>
-      </div>
+      </section>
 
-      <div id="screen-error" hidden>
+      <section id="screen-error" hidden>
         <h1>Something went wrong</h1>
         <p>We couldn't load the page. Please try again in a few minutes.</p>
-      </div>
+        <p>Please <a href="https://www.judicialappointments.gov.uk/contact-us">contact us</a> if the problem
+          persists.</p>
+      </section>
     </main>
   </div>
 
@@ -63,10 +90,25 @@
   <script src="/__/firebase/5.9.0/firebase-storage.js"></script>
   <script src="/__/firebase/init.js"></script>
 
+  <!-- Bootstrap custom file inputs -->
+  <script src="https://cdn.jsdelivr.net/npm/bs-custom-file-input/dist/bs-custom-file-input.min.js"></script>
+
   <script>
     function showScreen(name) {
-      document.getElementById('loading').hidden = true;
+      const sections = document.getElementsByTagName('section');
+      for (var i = 0; i < sections.length; i++) {
+        sections[i].hidden = true;
+      }
       document.getElementById('screen-' + name).hidden = false;
+    }
+
+    function showProgressSpinner(show) {
+      const spinner = document.getElementById('progress-spinner');
+      if (show) {
+        spinner.classList.remove('invisible');
+      } else {
+        spinner.classList.add('invisible');
+      }
     }
 
     function renderUploadScreen(data) {
@@ -75,18 +117,60 @@
     }
 
     function getReference(id) {
-      var db = firebase.firestore();
+      const db = firebase.firestore();
       return db.collection('references').doc(id).get();
     }
 
     function getReferenceId() {
-      var queryString = new URLSearchParams(window.location.search);
+      const queryString = new URLSearchParams(window.location.search);
       return queryString.get('ref');
     }
 
-    function main() {
-      var referenceId = getReferenceId();
+    function validateFileInput(input) {
+      // Check that a file was selected
+      if (input.files.length < 1) {
+        alert('Select a file to upload');
+        return false;
+      }
 
+      // Max file size 50MB
+      const file = input.files[0];
+      const fiftymb = 50 * 1024 * 1024;
+      if (file.size >= fiftymb) {
+        alert("Maximum file upload size is 50 MB\nPlease choose a smaller file");
+        return false;
+      }
+
+      return true;
+    }
+
+    function uploadFile(file) {
+      const uploadPath = 'references/' + referenceId + '/' + file.name;
+      const uploadRef = firebase.storage().ref().child(uploadPath);
+      return uploadRef.put(file);
+    }
+
+    function processForm() {
+      const fileInput = document.getElementById('fileInput');
+
+      if (!validateFileInput(fileInput)) {
+        return false;
+      }
+
+      const file = fileInput.files[0];
+      showProgressSpinner(true);
+      uploadFile(file)
+        .then(function() {
+          showProgressSpinner(false);
+          showScreen('received');
+        })
+        .catch(function(error) {
+          console.error('Error uploading file:', error);
+          showScreen('error');
+        });
+    }
+
+    function main() {
       if (!referenceId) {
         showScreen('not-found');
         return;
@@ -95,8 +179,13 @@
       getReference(referenceId)
         .then(function(doc) {
           if (doc.exists) {
-            renderUploadScreen(doc.data());
-            showScreen('upload');
+            const data = doc.data();
+            if (data.state === 'pending') {
+              renderUploadScreen(doc.data());
+              showScreen('upload');
+            } else {
+              showScreen('received');
+            }
           } else {
             showScreen('not-found');
           }
@@ -107,6 +196,8 @@
         });
     }
 
+    const referenceId = getReferenceId();
+    bsCustomFileInput.init();
     main();
   </script>
 </body>
