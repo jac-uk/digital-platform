@@ -30,7 +30,7 @@ class Folder {
       return results.data.files[0].id;
     }
 
-    throw new Error('Not found');
+    throw new Error(`Folder not found: "${name}" with parent ID "${parentId}"`);
   }
 
   async create(name, parentId) {
