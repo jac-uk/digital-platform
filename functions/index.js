@@ -71,11 +71,12 @@ exports.sendApplicationSubmittedEmail = functions.firestore
     return true;
   });
 
-exports.moveIndependentAssessmentToGoogleDrive = functions.storage
+exports.processReferenceUpload = functions.storage
   .object()
   .onFinalize((object) => {
-    if (object.name.startsWith('independent-assessments/')) {
-      const handler = require('./src/moveIndependentAssessmentToGoogleDrive');
+    const regex = /^references\/.*\/.*$/;
+    if (regex.test(object.name)) {
+      const handler = require('./src/references/processUpload');
       return handler(object);
     }
     return true;
