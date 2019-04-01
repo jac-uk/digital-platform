@@ -70,3 +70,6 @@ node_modules/
 
 # Built frontend assets
 /dist
+
+# Report/export files
+functions/submitted.json
