@@ -10,6 +10,12 @@
  *
  * Exports applicant and application data for submitted applications.
  *
+ * Do useful things with the output JSON using jq. For example:
+ *
+ * ```
+ * cat submitted.json | jq -r '.[].applicant | [.full_name, .ethnicity, .disability, .gender, .school_type, (.professional_background | join(", "))] | @csv' > diversity-report.csv
+ * ```
+ *
  */
 const fs = require('fs');
 const admin = require('firebase-admin');
