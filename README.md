@@ -60,3 +60,6 @@ verification email template id. It can be found in the list
 
 `functions.config().production.url`--This should be the URL to the production
 site – e.g. `https://apply.judicialappointments.digital`
+
+`functions.config().references.team_drive_id`--This is the Google Team Drive ID in which reference files should be 
+stored.
