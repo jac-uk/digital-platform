@@ -1,0 +1,10 @@
+service firebase.storage {
+  match /b/{bucket}/o {
+    match /references/{referenceId}/{fileName} {
+      // Allow creation of files less than 50 MB
+      // Deny updates to existing files
+      allow write: if resource == null
+                   && request.resource.size < 50 * 1024 * 1024;
+    }
+  }
+}

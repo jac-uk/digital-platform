@@ -24,6 +24,12 @@ service cloud.firestore {
         // Authenticated users can read
         allow get: if request.auth.uid != null;
     }
+
+    match /references/{reference} {
+        // World readable if you know the document ID (`get` allowed)
+        // But cannot query the collection (`list` not allowed)
+        allow get;
+    }
   }
 }
 
