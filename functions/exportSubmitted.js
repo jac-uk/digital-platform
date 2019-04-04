@@ -76,7 +76,7 @@ const main = async () => {
     if (err) {
       console.error(err);
       return;
-    };
+    }
     console.log(`Submitted applications have been exported to ${outputFile}`);
   });
 };
