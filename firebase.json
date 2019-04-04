@@ -27,6 +27,13 @@
         "firebase.json",
         "**/.*",
         "**/node_modules/**"
+      ],
+      "redirects": [
+        {
+          "source": "/download-form/128.docx",
+          "destination": "https://drive.google.com/uc?export=download&id=1ANHrCLDMHw8sUd4j8i9jALqD1xQB2uns",
+          "type": 301
+        }
       ]
     }
   ],
