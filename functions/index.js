@@ -81,3 +81,23 @@ exports.processReferenceUpload = functions.storage
     }
     return true;
   });
+
+exports.sendReferenceRequestEmail = functions.firestore
+  .document('references/{referenceId}')
+  .onCreate((snapshot) => {
+    const config = functions.config();
+    const templateId = config.notify.templates.reference_request;
+    const data = snapshot.data();
+
+    const downloadUrl = `${config.references.url}/download-form/128.docx`;
+    const uploadUrl = `${config.references.url}/?ref=${snapshot.id}`;
+
+    const personalisation = {
+      'applicant name': data.applicant_name,
+      'assessor name': data.assessor.name,
+      'download url': downloadUrl,
+      'upload url': uploadUrl,
+    };
+
+    return sendEmail(data.assessor.email, templateId, personalisation);
+  });
