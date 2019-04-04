@@ -27,7 +27,7 @@ const uploadToGoogleDrive = async (object, reference, localPath) => {
   const applicantFolder = await folder.getOrCreate(referenceData.applicant_name, vacancyFolder);
 
   const ext = getFileExtension(object.name);
-  const fileName = `${referenceData.referee_name} (${referenceData.referee_type}).${ext}`;
+  const fileName = `${referenceData.assessor.name} (${referenceData.type}).${ext}`;
 
   const fileMetadata = {
     name: fileName,
