@@ -15,8 +15,8 @@
   "dependencies": {
     "@google-cloud/storage": "^2.4.3",
     "ajv": "^5.5.2",
-    "firebase-admin": "^7.0.0",
-    "firebase-functions": "^2.1.0",
+    "firebase-admin": "^7.2.0",
+    "firebase-functions": "^2.2.1",
     "firebase-functions-test": "^0.1.6",
     "googleapis": "^38.0.0",
     "install": "^0.12.2",
