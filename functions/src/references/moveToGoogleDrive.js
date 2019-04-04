@@ -1,12 +1,10 @@
 const {google} = require('googleapis');
+const functions = require('firebase-functions');
 const {Storage} = require('@google-cloud/storage');
 const path = require('path');
 const os = require('os');
 const fs = require('fs');
 const Folder = require('../GoogleDrive/Folder');
-
-// Config variables
-const teamDriveId = '0AKR0Lvdiz0fHUk9PVA';
 
 const getFileName = (path) => {
   return path.split('/').pop();
@@ -17,6 +15,7 @@ const getFileExtension = (filename) => {
 };
 
 const uploadToGoogleDrive = async (object, reference, localPath) => {
+  const teamDriveId = functions.config().references.team_drive_id;
   const auth = await google.auth.getClient({
     scopes: ['https://www.googleapis.com/auth/drive']
   });
@@ -32,7 +31,7 @@ const uploadToGoogleDrive = async (object, reference, localPath) => {
 
   const fileMetadata = {
     name: fileName,
-    teamDriveId: teamDriveId,
+    teamDriveId,
     parents: [applicantFolder],
     originalFilename: getFileName(object.name),
     properties: {
