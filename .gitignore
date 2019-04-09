@@ -69,7 +69,7 @@ node_modules/
 .env
 
 # Built frontend assets
-/dist
+dist/
 
 # Report/export files
 functions/submitted.json

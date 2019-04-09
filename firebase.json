@@ -7,7 +7,7 @@
     {
       "target": "apply",
       "predeploy": "npm run build",
-      "public": "dist",
+      "public": "hosting/apply/dist",
       "ignore": [
         "firebase.json",
         "**/.*",
