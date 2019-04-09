@@ -6,7 +6,7 @@
   "hosting": [
     {
       "target": "apply",
-      "predeploy": "npm run build",
+      "predeploy": "npm --prefix hosting/apply run build",
       "public": "hosting/apply/dist",
       "ignore": [
         "firebase.json",
@@ -38,9 +38,6 @@
     }
   ],
   "functions": {
-    "predeploy": [
-      "npm --prefix \"$RESOURCE_DIR\" run lint"
-    ],
     "source": "functions"
   },
   "storage": {
