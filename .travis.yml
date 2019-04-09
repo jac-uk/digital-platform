@@ -1,16 +1,16 @@
 cache: npm
-before_install:
-  - npm install -g firebase-tools
 install:
-  - npm install
-  - npm --prefix ./functions install ./functions
+  - npm --prefix functions install
+  - npm --prefix hosting/apply install
 language: node_js
 node_js:
-  - 8.14.0
+  - 8.15.1
 script:
-  - npm run lint
-  - npm test
+  - npm --prefix functions run lint
+  - npm --prefix hosting/apply run lint
+  - npm --prefix hosting/apply run test
 after_success:
   - test $TRAVIS_BRANCH = "master" &&
     test $TRAVIS_PULL_REQUEST = "false" &&
+    npm install -g firebase-tools &&
     firebase deploy --token $FIREBASE_TOKEN --project default --force
