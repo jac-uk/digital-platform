@@ -22,7 +22,7 @@
     },
     {
       "target": "reference",
-      "public": "reference",
+      "public": "hosting/reference",
       "ignore": [
         "firebase.json",
         "**/.*",
