@@ -1,64 +1,53 @@
-# application-form
+# JAC Digital Platform
 
 [![Build Status](https://travis-ci.org/JudicialAppointmentsCommission/application-form.svg?branch=master)](https://travis-ci.org/JudicialAppointmentsCommission/application-form)
 
-## Project setup
-```
-npm install
-```
+This project contains components of the JAC Digital Platform which are concerned with handling user applications for 
+vacancies.
 
-### Compiles and hot-reloads for development
-```
-npm run serve
-```
+It's hosted in [Firebase](https://firebase.google.com) (part of [Google Cloud](https://cloud.google.com)).
 
-### Compiles and minifies for production
-```
-npm run build
-```
+## Application form
 
-### Runs unit tests
+The application form is used by candidates when applying for a vacancy.
 
-```
-npm test
-```
+Available at https://apply.judicialappointments.digital
 
-### Lints and fixes files
-```
-npm run lint
-```
+More info in [hosting/apply/README.md](hosting/apply/README.md)
 
-### Customize configuration
-See [Configuration Reference](https://cli.vuejs.org/config/).
+## Reference upload
 
-## Sending notification to users
+A page allowing referees ('assessors') to upload their references ('independent assessments') to support a candidate's 
+application.
 
-Notify has been configured to work with our `judicialappointments.digital` domain.
-The core members of the Digital Team and the Head of Comms have
-all been added as Notify admins.  Managment of users should ultimately
-fall to the Head of Comms, the Digital Product Manager and the Digital
-Lead Developer.
+Available at https://reference.judicialappointments.digital
 
-Notify is configured to use JAC branding, and the API. We will need to
-have GDS switch us from `trial` to `live` mode in order
-to go into production.  This request can be raised via [Notify
-support](https://www.notifications.service.gov.uk/support) and can be
-done very quickly (usually same-day).
+More info in [hosting/reference/README.md](hosting/reference/README.md)
 
-Lastly, the firebase mailer functions [functions/index.js] will expect
-the following function configuration variables to be set:
+## Cloud Functions
 
-`functions.config().notify.key`--This is API key that authorises us to
-make calls to the GOV.UK Notify API.  If needed, this can be re-generated
-from the [Notify API
-page](https://www.notifications.service.gov.uk/services/0abe6c8e-0b87-4cde-9493-5da4921ccc53/api/keys).
+[Cloud Functions](https://firebase.google.com/docs/functions/) form the 'backend' of this project. They are 
+[Node.js](https://nodejs.org/en/) functions which execute in a serverless environment based on defined triggers.
+For example, a function could be 
+[triggered every time a new user registers](https://firebase.google.com/docs/functions/auth-events).
 
-`functions.config().notify.template.verification`--This is the
-verification email template id. It can be found in the list
-[here](https://www.notifications.service.gov.uk/services/0abe6c8e-0b87-4cde-9493-5da4921ccc53/templates).
+More info in [functions/README.md](functions/README.md)
 
-`functions.config().production.url`--This should be the URL to the production
-site – e.g. `https://apply.judicialappointments.digital`
+## Project architecture
 
-`functions.config().references.team_drive_id`--This is the Google Team Drive ID in which reference files should be 
-stored.
+For the needs of this project, it makes sense for these components to be hosted in one shared Firebase project. 
+
+Conceptually, this works because all components within the project are built around progressing the user's 
+application for a vacancy.
+
+Technically, one of the advantages of this approach is that user authentication and application data can be shared 
+between components. This enables a Single Sign-on flow in which, for example, a user could create an account on the 
+application form whilst applying for a role, and later they'd be able to complete their Qualifying Test by logging in with the same 
+credentials.
+
+### One project, multiple sites
+
+Each 'component' in this project (application form, reference upload, etc.) is hosted on its own Firebase Hosting site.
+
+Hosting multiple sites in one project is a feature 
+[supported and documented by Firebase](https://firebase.google.com/docs/hosting/multisites).
