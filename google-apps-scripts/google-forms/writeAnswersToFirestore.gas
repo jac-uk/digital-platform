@@ -1,0 +1,21 @@
+function onSubmit(e) {
+  const form = FormApp.getActiveForm();
+  const title = form.getTitle();
+  const fid = form.getId();
+
+  const itemResponses = e.response.getItemResponses();
+
+  const responses = { title: title, fid: fid, responses: {} };
+
+  itemResponses.forEach(function (itemResponse) {
+    responses.responses[itemResponse.getItem().getTitle()] = itemResponse.getResponse();
+  });
+
+  const options = {
+    'method' : 'post',
+    'contentType': 'application/json',
+    'payload' : JSON.stringify(answers)
+  };
+
+  UrlFetchApp.fetch('<CHANGE TO ACTIVE FUNCTION ENDPOINT WHEN DEPLOYED>', options);
+}
