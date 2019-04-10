@@ -24,9 +24,8 @@
       "target": "reference",
       "public": "hosting/reference",
       "ignore": [
-        "firebase.json",
-        "**/.*",
-        "**/node_modules/**"
+        "README.md",
+        "**/.*"
       ],
       "redirects": [
         {
