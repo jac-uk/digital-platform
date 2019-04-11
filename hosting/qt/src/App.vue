@@ -1,28 +1,48 @@
 <template>
-  <div id="app">
-    <img alt="Vue logo" src="./assets/logo.png">
-    <HelloWorld msg="Welcome to Your Vue.js App"/>
+  <div id="app" class="mb-5">
+    <nav class="navbar navbar-expand-sm navbar-light bg-light mb-4" v-if="isLoggedIn">
+      <div class="container">
+        <RouterLink to="/" class="navbar-brand">
+          <img src="@/assets/jac-logo.svg" alt="Judicial Appointments Commission" width="197" height="66">
+        </RouterLink>
+        <div class="navbar-collapse">
+          <ul class="navbar-nav ml-auto">
+            <li class="nav-item">
+              <a class="nav-link" href="#" @click.prevent="logOut">Logout</a>
+            </li>
+          </ul>
+        </div>
+      </div>
+    </nav>
+
+    <RouterView />
   </div>
 </template>
 
 <script>
-import HelloWorld from './components/HelloWorld.vue'
+  import {auth} from '@/firebase';
 
-export default {
-  name: 'app',
-  components: {
-    HelloWorld
+  export default {
+    methods: {
+      logOut() {
+        auth().signOut();
+      }
+    },
+    computed: {
+      isLoggedIn() {
+        return this.$store.getters.isLoggedIn;
+      },
+    },
+    watch: {
+      isLoggedIn(loggedIn) {
+        if (loggedIn === false) {
+          this.$router.push('/login');
+        }
+      },
+    },
   }
-}
 </script>
 
-<style>
-#app {
-  font-family: 'Avenir', Helvetica, Arial, sans-serif;
-  -webkit-font-smoothing: antialiased;
-  -moz-osx-font-smoothing: grayscale;
-  text-align: center;
-  color: #2c3e50;
-  margin-top: 60px;
-}
+<style lang="scss">
+  // Required to include global main.scss styles
 </style>
