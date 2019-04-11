@@ -11,6 +11,9 @@
         ],
         "reference": [
           "jac-references"
+        ],
+        "qt": [
+          "jac-qt"
         ]
       }
     }

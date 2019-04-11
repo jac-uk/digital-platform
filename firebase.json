@@ -34,6 +34,22 @@
           "type": 301
         }
       ]
+    },
+    {
+      "target": "qt",
+      "predeploy": "npm --prefix hosting/qt run build",
+      "public": "hosting/qt/dist",
+      "ignore": [
+        "firebase.json",
+        "**/.*",
+        "**/node_modules/**"
+      ],
+      "rewrites": [
+        {
+          "source": "**",
+          "destination": "/index.html"
+        }
+      ]
     }
   ],
   "functions": {
