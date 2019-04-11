@@ -1,21 +1,38 @@
 function onSubmit(e) {
   const form = FormApp.getActiveForm();
-  const title = form.getTitle();
-  const fid = form.getId();
+  const responses = { title: form.getTitle() };
 
   const itemResponses = e.response.getItemResponses();
 
-  const responses = { title: title, fid: fid, responses: {} };
-
   itemResponses.forEach(function (itemResponse) {
-    responses.responses[itemResponse.getItem().getTitle()] = itemResponse.getResponse();
+    const responseTitle = itemResponse.getItem().getTitle();
+    const responseValue = itemResponse.getResponse();
+
+    // Adjust the regex as the circumstances dictate. This is sufficient for this iteration.
+    if (/unique.reference.number/i.test(responseTitle)) {
+      responses.userId = responseValue;
+    } else {
+      responses[responseTitle] = responseValue;
+    }
   });
 
   const options = {
     'method' : 'post',
     'contentType': 'application/json',
-    'payload' : JSON.stringify(answers)
+    'payload' : JSON.stringify(responses)
   };
 
-  UrlFetchApp.fetch('<CHANGE TO ACTIVE FUNCTION ENDPOINT WHEN DEPLOYED>', options);
+  try {
+    // Hardcoding the endpoint for now as that is MVP for this iteration.  Will revisit and refactor in future iterations.
+    UrlFetchApp.fetch('https://us-central1-application-form-e08c9.cloudfunctions.net/qtSubmissions', options);
+    console.info({ recordWrittenFor: responses.userId });
+  } catch(e) {
+    // Log bad users only, do not raise and exception.
+    if (e.message.match('returned code 400')) {
+      console.warn(JSON.stringify({ badUserID: responses }, null, 2));
+    } else {
+      throw e;
+    }
+  }
 }
+
