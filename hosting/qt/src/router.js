@@ -1,8 +1,10 @@
 import Vue from 'vue';
 import Router from 'vue-router';
+import store from '@/store';
 
 // Views
 import Login from '@/views/Login';
+import TakeTest from '@/views/TakeTest';
 
 Vue.use(Router);
 
@@ -14,6 +16,17 @@ const router = new Router({
       name: 'login',
       component: Login,
     },
+    {
+      path: '/take-test',
+      component: TakeTest,
+      meta: {
+        requiresAuth: true,
+      },
+    },
+    {
+      path: '*',
+      redirect: '/take-test',
+    },
   ],
   scrollBehavior(to, from, savedPosition) {
     if (savedPosition) {
@@ -24,9 +37,6 @@ const router = new Router({
   },
 });
 
-// Check that the user has permission to access this route (i.e. is the user logged in?)
-// Redirect to login if not authenticated
-
 /**
  * Verify User's Access
  *
@@ -34,7 +44,7 @@ const router = new Router({
  * - show 'verify your email' page if required
  * - otherwise display the page
  */
-/*router.beforeEach((to, from, next) => {
+router.beforeEach((to, from, next) => {
   const requiresAuth = to.matched.some(x => x.meta.requiresAuth);
   const isLoggedIn = store.getters.isLoggedIn;
   const isEmailVerified = store.getters.isEmailVerified;
@@ -50,6 +60,6 @@ const router = new Router({
   }
 
   return next();
-});*/
+});
 
 export default router;
