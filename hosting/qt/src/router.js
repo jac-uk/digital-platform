@@ -1,12 +1,9 @@
-import Vue from 'vue';
 import Router from 'vue-router';
 import store from '@/store';
 
 // Views
 import Login from '@/views/Login';
 import TakeTest from '@/views/TakeTest';
-
-Vue.use(Router);
 
 const router = new Router({
   mode: 'history',

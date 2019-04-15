@@ -1,10 +1,15 @@
 import Vue from 'vue';
+import Router from 'vue-router';
+import Vuex from 'vuex';
 import App from '@/App.vue';
 import {auth} from '@/firebase';
-import router from '@/router';
-import store from '@/store';
 
 Vue.config.productionTip = false;
+Vue.use(Router);
+Vue.use(Vuex);
+
+const router = require('@/router').default;
+const store = require('@/store').default;
 
 // Initialise the Vue app once Firebase Auth has initialised
 // The Vue app depends on the user's auth state to load the correct view (i.e. an authenticated view or the login view)
