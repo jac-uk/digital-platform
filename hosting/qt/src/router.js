@@ -4,6 +4,7 @@ import store from '@/store';
 // Views
 import Login from '@/views/Login';
 import TakeTest from '@/views/TakeTest';
+import VerifyEmail from '@/views/VerifyEmail';
 
 const router = new Router({
   mode: 'history',
@@ -18,6 +19,27 @@ const router = new Router({
       component: TakeTest,
       meta: {
         requiresAuth: true,
+      },
+    },
+    {
+      path: '/verify-email',
+      name: 'verify-email',
+      component: VerifyEmail,
+      beforeEnter: (to, from, next) => {
+        const isLoggedIn = store.getters.isLoggedIn;
+        const isEmailVerified = store.getters.isEmailVerified;
+
+        if (!isLoggedIn) {
+          // User must be logged in
+          return next({name: 'login'});
+        }
+
+        if (isEmailVerified) {
+          // Email is already verified, skip this page
+          return next('/');
+        }
+
+        return next();
       },
     },
     {
