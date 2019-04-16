@@ -1,7 +1,7 @@
 const admin = require("firebase-admin");
 const functions = require("firebase-functions");
 const NotifyClient = require("notifications-node-client").NotifyClient;
-const qtSubmission = require("./qt/submission");
+exports.qtSubmissions = require("./qt/submission");
 exports.writeQtSummary = require("./qt/summary");
 
 admin.initializeApp();
@@ -103,14 +103,3 @@ exports.sendReferenceRequestEmail = functions.firestore
 
     return sendEmail(data.assessor.email, templateId, personalisation);
   });
-
-exports.qtSubmissions = functions.https.onRequest((request, response) => {
-  qtSubmission.createRecord(request.body)
-    .then(() => {
-      return response.status(200).send({status: 'OK'});
-    })
-    .catch((e) => {
-      console.error(e);
-      return response.status(500).send({status: 'Error'});
-    });
-});
