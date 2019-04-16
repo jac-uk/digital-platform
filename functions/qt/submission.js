@@ -43,7 +43,7 @@ const createRecord = async (record) => {
 }
 
 exports = module.exports = functions.https.onRequest((request, response) => {
-  createRecord(request.body)
+  return createRecord(request.body)
     .then(() => {
       return response.status(200).send({status: 'OK'});
     })
