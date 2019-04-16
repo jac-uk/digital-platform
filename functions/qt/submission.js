@@ -1,8 +1,9 @@
 const admin = require("firebase-admin");
+const functions = require("firebase-functions");
 
 // This throws exceptions rather than logging because we want to know as soon as these issues occur.  By throwing, we are
 // ensuring they will appear in StackDriver Errors in an actionable way.
-exports.createRecord = async (record) => {
+const createRecord = async (record) => {
   const firestore = admin.firestore();
   console.info({ createRecordCalled: record });
 
@@ -40,4 +41,15 @@ exports.createRecord = async (record) => {
 
   return true;
 }
+
+exports = module.exports = functions.https.onRequest((request, response) => {
+  createRecord(request.body)
+    .then(() => {
+      return response.status(200).send({status: 'OK'});
+    })
+    .catch((e) => {
+      console.error(e);
+      return response.status(500).send({status: 'Error'});
+    });
+});
 
