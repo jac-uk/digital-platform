@@ -26,6 +26,7 @@
     "request": "^2.88.0"
   },
   "devDependencies": {
+    "csv-writer": "^1.2.0",
     "eslint": "^5.12.0",
     "eslint-plugin-promise": "^3.6.0",
     "jest": "^24.7.1"
