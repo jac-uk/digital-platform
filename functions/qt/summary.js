@@ -1,7 +1,7 @@
 const admin = require("firebase-admin");
 const functions = require("firebase-functions");
 
-exports = module.exports = functions.firestore.document("qtSubmissions/{submission}").onCreate((snapshot, context) => {
+module.exports = functions.firestore.document("qtSubmissions/{submission}").onCreate((snapshot, context) => {
   const firestore = admin.firestore();
   const data = snapshot.data();
   const record = {
@@ -16,7 +16,7 @@ exports = module.exports = functions.firestore.document("qtSubmissions/{submissi
   return firestore
     .collection("qtSummaries")
     .doc(data.userId)
-    .set(record)
+    .update(record)
     .then(() => console.info(record))
     .catch(e => console.error({error: e, record}));
 });
