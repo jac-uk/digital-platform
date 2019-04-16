@@ -8,8 +8,8 @@ const createRecord = async (record) => {
   console.info({ createRecordCalled: record });
 
   // This function expects the test title to be in the following format:
-  // "Optional Disambiguator (i.e. '128' or 'April 2019'): Test Name (i.e. RUCA): Test Phase (i.e. Situational Judgement)"
-  const titleFormat = /^[^:]*:?\s*([^:]+):\s*([^:]+)$/;
+  // Test Name (i.e. April 2019 RUCA): Test Phase (i.e. Situational Judgement)"
+  const titleFormat = /^(.+)\s*:\s*([^:]+)$/;
   testDetails = record.title.match(titleFormat);
   if (testDetails === null) {
     throw new Error("Title is incorrectly formatted " + record.title);
@@ -42,7 +42,7 @@ const createRecord = async (record) => {
   return true;
 }
 
-exports = module.exports = functions.https.onRequest((request, response) => {
+module.exports = functions.https.onRequest((request, response) => {
   return createRecord(request.body)
     .then(() => {
       return response.status(200).send({status: 'OK'});
