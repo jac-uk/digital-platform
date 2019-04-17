@@ -1,13 +1,13 @@
 service cloud.firestore {
-    match /databases/{database}/documents {
-      match /applicants/{userId} {
-        // Users can read & write to their own applicant document
+  match /databases/{database}/documents {
+    match /applicants/{userId} {
+      // Users can read & write to their own applicant document
       allow get, create, update: if request.auth.uid == userId;
     }
 
     match /applications/{application} {
-        function currentApplicant() {
-          return path("/databases/" + database + "/documents/applicants/" + request.auth.uid);
+      function currentApplicant() {
+        return path("/databases/" + database + "/documents/applicants/" + request.auth.uid);
       }
 
       // Allow existing records which belong to the current user
@@ -21,14 +21,24 @@ service cloud.firestore {
     }
 
     match /vacancies/{vacancy} {
-        // Authenticated users can read
-        allow get: if request.auth.uid != null;
+      // Authenticated users can read
+      allow get: if request.auth.uid != null;
     }
 
     match /references/{reference} {
-        // World readable if you know the document ID (`get` allowed)
-        // But cannot query the collection (`list` not allowed)
-        allow get;
+      // World readable if you know the document ID (`get` allowed)
+      // But cannot query the collection (`list` not allowed)
+      allow get;
+    }
+
+    match /qts/{qt} {
+      // Authenticated users can read
+      allow get: if request.auth.uid != null;
+    }
+
+    match /qtSummaries/{userId} {
+      // Users can read & write to their own QT summary document
+      allow get, create, update: if request.auth.uid == userId;
     }
   }
 }

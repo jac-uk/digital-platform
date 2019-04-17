@@ -22,6 +22,7 @@ $link-decoration: underline;
 @import "../node_modules/bootstrap/scss/nav";
 @import "../node_modules/bootstrap/scss/navbar";
 @import "../node_modules/bootstrap/scss/buttons";
+@import "../node_modules/bootstrap/scss/card";
 @import "../node_modules/bootstrap/scss/spinners";
 @import "../node_modules/bootstrap/scss/utilities";
 
@@ -31,7 +32,7 @@ h1 {
 h2 {
   margin-bottom: $spacer;
 }
-.nav-link {
+.nav-link, .btn {
   text-decoration: none;
 }
 .container {
