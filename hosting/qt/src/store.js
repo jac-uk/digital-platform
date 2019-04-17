@@ -1,5 +1,7 @@
 import Vuex from 'vuex';
 import auth from '@/store/auth';
+import qt from '@/store/qt';
+import qtSummary from '@/store/qtSummary';
 
 const store = new Vuex.Store({
   // Don't use strict mode in production for performance reasons (https://vuex.vuejs.org/guide/strict.html)
@@ -7,6 +9,8 @@ const store = new Vuex.Store({
 
   modules: {
     auth,
+    qt,
+    qtSummary,
   },
 
   state: {},
