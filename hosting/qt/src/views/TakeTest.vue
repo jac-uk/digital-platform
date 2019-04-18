@@ -21,8 +21,13 @@
         <p>This qualifying test has now closed.</p>
       </div>
       <div v-if="qtHasOpened && !qtHasClosed">
-        <p>You are taking the <strong>{{qt.title}}</strong> qualifying test.</p>
-        <p>It consists of {{qt.phases.length}} parts.</p>
+        <div v-if="allQtPhasesFinished">
+          <p>You've completed all phases of this qualifying test.</p>
+        </div>
+        <div v-else>
+          <p>You are taking the <strong>{{qt.title}}</strong> qualifying test.</p>
+          <p>It consists of {{qt.phases.length}} phases.</p>
+        </div>
 
         <div class="card mb-3" v-for="(phase, index) in qt.phases" :key="phase.title">
           <div class="card-body">
@@ -98,6 +103,7 @@
         'qtPhaseCanBeStarted',
         'qtPhaseHasBeenStarted',
         'qtPhaseHasBeenFinished',
+        'allQtPhasesFinished',
       ]),
     },
     mounted() {
