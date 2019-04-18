@@ -27,13 +27,30 @@
         <div class="card mb-3" v-for="(phase, index) in qt.phases" :key="phase.title">
           <div class="card-body">
             <h5 class="card-title">{{index+1}}. {{phase.title}}</h5>
-            <div class="card-text">
-              <p>You will have 45 minutes to complete this phase of the test.</p>
-              <p>Time will begin when you click 'Start'.</p>
+            <div class="card-subtitle text-muted mb-3">45 minutes</div>
+
+            <div v-if="qtPhaseHasBeenFinished(phase.title)">
+              You have completed this phase
             </div>
-            <a href="#" class="btn btn-primary" @click.prevent="startPhase(phase)">
-              Start test
-            </a>
+
+            <div v-else-if="qtPhaseHasBeenStarted(phase.title)">
+              <p>Test in progress</p>
+              <button type="button" class="btn btn-primary" @click="openPhaseForm(phase)">
+                Return to test
+              </button>
+            </div>
+
+            <div v-else-if="qtPhaseCanBeStarted(phase.title)">
+              <p>Time will begin when you click 'Start test'</p>
+              <button type="button" class="btn btn-primary mr-2" @click="startPhase(phase)" :disabled="isStarting">
+                Start test
+              </button>
+              <span class="spinner-border spinner-border-sm text-secondary" v-if="isStarting"></span>
+            </div>
+
+            <div v-else>
+              <p>You must complete the above {{ (index > 1) ? 'tests' : 'test' }} before you can start this one</p>
+            </div>
           </div>
         </div>
       </div>
@@ -50,6 +67,7 @@
         qtId: 'ANEMLDHK21g6HtnXQBiC',
         loaded: false,
         loadFailed: false,
+        isStarting: false,
       };
     },
     methods: {
@@ -61,9 +79,14 @@
         ]);
       },
       async startPhase(phase) {
-        const qtTitle = this.qt.title;
-        const phaseTitle = phase.title;
-        await this.$store.dispatch('startQtPhase', {qtTitle, phaseTitle});
+        this.isStarting = true;
+        await this.$store.dispatch('startQtPhase', phase.title);
+        this.isStarting = false;
+        this.openPhaseForm(phase);
+      },
+      openPhaseForm(phase) {
+        const url = this.qtPhaseFormUrl(phase.title);
+        window.open(url);
       },
     },
     computed: {
@@ -71,6 +94,10 @@
         'qt',
         'qtHasOpened',
         'qtHasClosed',
+        'qtPhaseFormUrl',
+        'qtPhaseCanBeStarted',
+        'qtPhaseHasBeenStarted',
+        'qtPhaseHasBeenFinished',
       ]),
     },
     mounted() {
@@ -85,6 +112,8 @@
   }
 </script>
 
-<style>
-
+<style scoped>
+  button[disabled] {
+    cursor: progress;
+  }
 </style>

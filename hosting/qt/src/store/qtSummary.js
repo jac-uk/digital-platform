@@ -1,5 +1,6 @@
 import {firestore} from "@/firebase";
 import sanitizeFirestore from "@/utils/sanitizeFirestore";
+import merge from 'deepmerge';
 
 const module = {
   state: {
@@ -10,7 +11,7 @@ const module = {
       state.data = data;
     },
     updateQtSummary(state, data) {
-      state.data = {...state.data, ...data};
+      state.data = merge(state.data, data);
     },
   },
   actions: {
@@ -24,12 +25,13 @@ const module = {
         commit('setQtSummary', {});
       }
     },
-    async startQtPhase({commit, getters}, {qtTitle, phaseTitle}) {
+    async startQtPhase({commit, getters}, phaseTitle) {
+      const qtTitle = getters.qt.title;
       const now = new Date();
       const saveData = {
         [qtTitle]: {
           [phaseTitle]: {
-            startedAt: now,
+            startedAt: now
           }
         }
       };
@@ -43,6 +45,16 @@ const module = {
         return firestore.collection('qtSummaries').doc(getters.currentUserId);
       }
       return null;
+    },
+    qtPhaseSummary: (state, getters) => (phaseTitle) => {
+      const qtTitle = getters.qt.title;
+      let summary;
+      try {
+        summary = state.data[qtTitle][phaseTitle];
+      } catch (e) {
+        // If that phase doesn't exist in `state.data`, leave `summary` undefined
+      }
+      return summary || {};
     },
   },
 };
