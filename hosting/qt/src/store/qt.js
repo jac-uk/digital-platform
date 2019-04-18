@@ -45,6 +45,20 @@ const module = {
       const close = state.data.closing_time;
       return close <= now;
     },
+    qtIsOpen: (state, getters) => {
+      return (getters.qtHasOpened && !getters.qtHasClosed);
+    },
+    qtPhase: (state) => (phaseTitle) => {
+      return state.data.phases.find(phase => phase.title === phaseTitle);
+    },
+    qtPhaseBefore: (state) => (phaseTitle) => {
+      const index = state.data.phases.findIndex(phase => phase.title === phaseTitle);
+      if (index > 0) {
+        return state.data.phases[index-1];
+      } else {
+        return null;
+      }
+    },
   },
 };
 
