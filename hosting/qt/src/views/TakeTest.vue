@@ -104,11 +104,15 @@
       this.initStore()
         .then(() => {
           this.loaded = true;
+          this.$store.dispatch('subscribeQtSummary');
         })
         .catch(() => {
           this.loadFailed = true;
         });
-    }
+    },
+    destroyed() {
+      this.$store.dispatch('unsubscribeQtSummary');
+    },
   }
 </script>
 

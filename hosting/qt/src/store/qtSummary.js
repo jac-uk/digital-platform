@@ -2,6 +2,17 @@ import {firestore} from "@/firebase";
 import sanitizeFirestore from "@/utils/sanitizeFirestore";
 import merge from 'deepmerge';
 
+let unsubscribe;
+
+const loadSnapshot = (commit, snapshot) => {
+  if (snapshot.exists) {
+    const data = sanitizeFirestore(snapshot.data());
+    commit('setQtSummary', data);
+  } else {
+    commit('setQtSummary', {});
+  }
+};
+
 const module = {
   state: {
     data: {},
@@ -17,13 +28,17 @@ const module = {
   actions: {
     async loadQtSummary({commit, getters}) {
       const snapshot = await getters.qtSummaryDoc.get();
-
-      if (snapshot.exists) {
-        const data = sanitizeFirestore(snapshot.data());
-        commit('setQtSummary', data);
-      } else {
-        commit('setQtSummary', {});
-      }
+      loadSnapshot(commit, snapshot);
+    },
+    subscribeQtSummary({commit, getters}) {
+      if (typeof unsubscribe == 'function') return; // Don't subscribe again if already subscribed
+      unsubscribe = getters.qtSummaryDoc.onSnapshot((snapshot) => {
+        loadSnapshot(commit, snapshot);
+      });
+    },
+    unsubscribeQtSummary() {
+      unsubscribe();
+      unsubscribe = undefined; // Reset so we can subscribe again
     },
     async startQtPhase({commit, getters}, phaseTitle) {
       const qtTitle = getters.qt.title;
