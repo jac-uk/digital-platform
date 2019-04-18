@@ -27,6 +27,18 @@ const module = {
       if (!phase) return null;
       return phase.form_url + getters.currentUserId;
     },
+    allQtPhasesFinished: (state, getters) => {
+      const qt = getters.qt;
+      if (!qt.phases) return false;
+
+      let allComplete = true;
+      qt.phases.forEach((phase) => {
+        if (!getters.qtPhaseHasBeenFinished(phase.title)) {
+          allComplete = false;
+        }
+      });
+      return allComplete;
+    },
   },
 };
 
