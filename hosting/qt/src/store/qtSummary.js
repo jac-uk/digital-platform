@@ -33,11 +33,13 @@ const module = {
     subscribeQtSummary({commit, getters}) {
       if (typeof unsubscribe == 'function') return; // Don't subscribe again if already subscribed
       unsubscribe = getters.qtSummaryDoc.onSnapshot((snapshot) => {
-        loadSnapshot(commit, snapshot);
+        if (!snapshot.metadata.hasPendingWrites && !snapshot.metadata.fromCache) {
+          loadSnapshot(commit, snapshot);
+        }
       });
     },
     unsubscribeQtSummary() {
-      unsubscribe();
+      if (typeof unsubscribe === 'function') unsubscribe();
       unsubscribe = undefined; // Reset so we can subscribe again
     },
     async startQtPhase({commit, getters}, phaseTitle) {
