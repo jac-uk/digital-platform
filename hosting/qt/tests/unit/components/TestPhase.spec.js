@@ -1,35 +1,32 @@
 import {shallowMount} from '@vue/test-utils';
 import TestPhase from '@/components/TestPhase';
 
-const returnTrue = () => (true);
-const returnFalse = () => (false);
-
 describe('components/TestPhase', () => {
-  let store, wrapper;
-
-  beforeEach(() => {
-    store = {
-      commit: jest.fn(),
-      dispatch: jest.fn(),
-      getters: {
-        qtPhaseCanBeStarted: returnFalse,
-        qtPhaseHasBeenStarted: returnFalse,
-        qtPhaseHasBeenFinished: returnFalse,
-      },
-    };
-
-    wrapper = shallowMount(TestPhase, {
-      propsData: {
-        title: 'Situational Judgement',
-        number: 1,
-      },
-      mocks: {
-        $store: store,
-      },
-    });
-  });
+  let wrapper;
 
   describe('template', () => {
+    const createWrapper = (computed) => {
+      return shallowMount(TestPhase, {
+        propsData: {
+          title: 'Situational Judgement',
+          number: 1,
+        },
+        computed: {
+          canBeStarted: () => computed.canBeStarted,
+          hasBeenStarted: () => computed.hasBeenStarted,
+          hasBeenFinished: () => computed.hasBeenFinished,
+        },
+      });
+    };
+
+    beforeEach(() => {
+      wrapper = createWrapper({
+        canBeStarted: false,
+        hasBeenStarted: false,
+        hasBeenFinished: false,
+      });
+    });
+
     it('shows the phase number and title', () => {
       const cardTitle = wrapper.find('.card-title');
       expect(cardTitle.text()).toEqual('1. Situational Judgement');
@@ -42,9 +39,11 @@ describe('components/TestPhase', () => {
 
     describe('when other tests need to be completed before this one can be started', () => {
       beforeEach(() => {
-        store.getters.qtPhaseCanBeStarted = returnFalse;
-        store.getters.qtPhaseHasBeenStarted = returnFalse;
-        store.getters.qtPhaseHasBeenFinished = returnFalse;
+        wrapper = createWrapper({
+          canBeStarted: false,
+          hasBeenStarted: false,
+          hasBeenFinished: false,
+        });
       });
 
       it('shows a message saying the above tests must be completed', () => {
@@ -54,9 +53,11 @@ describe('components/TestPhase', () => {
 
     describe('when the test phase can be started', () => {
       beforeEach(() => {
-        store.getters.qtPhaseCanBeStarted = returnTrue;
-        store.getters.qtPhaseHasBeenStarted = returnFalse;
-        store.getters.qtPhaseHasBeenFinished = returnFalse;
+        wrapper = createWrapper({
+          canBeStarted: true,
+          hasBeenStarted: false,
+          hasBeenFinished: false,
+        });
       });
 
       it('shows a button to start the test', () => {
@@ -93,9 +94,11 @@ describe('components/TestPhase', () => {
 
     describe('when the test phase is in progress', () => {
       beforeEach(() => {
-        store.getters.qtPhaseCanBeStarted = returnFalse;
-        store.getters.qtPhaseHasBeenStarted = returnTrue;
-        store.getters.qtPhaseHasBeenFinished = returnFalse;
+        wrapper = createWrapper({
+          canBeStarted: false,
+          hasBeenStarted: true,
+          hasBeenFinished: false,
+        });
       });
 
       it('says "Test in progress"', () => {
@@ -119,9 +122,11 @@ describe('components/TestPhase', () => {
 
     describe('when the test phase has been completed', () => {
       beforeEach(() => {
-        store.getters.qtPhaseCanBeStarted = returnFalse;
-        store.getters.qtPhaseHasBeenStarted = returnTrue;
-        store.getters.qtPhaseHasBeenFinished = returnTrue;
+        wrapper = createWrapper({
+          canBeStarted: false,
+          hasBeenStarted: true,
+          hasBeenFinished: true,
+        });
       });
 
       it('says the phase is complete', () => {
@@ -131,6 +136,163 @@ describe('components/TestPhase', () => {
       it("doesn't show any buttons", () => {
         const button = wrapper.find('button');
         expect(button.exists()).toBe(false);
+      });
+    });
+  });
+
+  describe('script', () => {
+    let store;
+
+    beforeEach(() => {
+      store = {
+        dispatch: jest.fn(),
+        getters: {
+          qtPhaseCanBeStarted: () => false,
+          qtPhaseHasBeenStarted: () => false,
+          qtPhaseHasBeenFinished: () => false,
+          qtPhaseFormUrl: () => 'https://google.com',
+        },
+      };
+
+      wrapper = shallowMount(TestPhase, {
+        propsData: {
+          title: 'Situational Judgement',
+          number: 1,
+        },
+        mocks: {
+          $store: store,
+        },
+      });
+    });
+
+    describe('props', () => {
+      describe('`title`', () => {
+        let prop;
+        beforeEach(() => {
+          prop = TestPhase.props.title;
+        });
+
+        it('is required', () => {
+          expect(prop.required).toBe(true);
+        });
+
+        it('must be a String', () => {
+          expect(prop.type).toBe(String);
+        });
+      });
+
+      describe('`number`', () => {
+        let prop;
+        beforeEach(() => {
+          prop = TestPhase.props.number;
+        });
+
+        it('is required', () => {
+          expect(prop.required).toBe(true);
+        });
+
+        it('must be a Number', () => {
+          expect(prop.type).toBe(Number);
+        });
+      });
+    });
+
+    describe('data (initial state)', () => {
+      it('`isStarting` is `false`', () => {
+        expect(wrapper.vm.isStarting).toBe(false);
+      });
+    });
+
+    describe('computed properties', () => {
+      const dynamicGetters = [
+      //[
+      //  computed field name,
+      //  Vuex getter function name,
+      //  mock return value,
+      //],
+        [
+          'canBeStarted',
+          'qtPhaseCanBeStarted',
+          true,
+        ],
+        [
+          'hasBeenStarted',
+          'qtPhaseHasBeenStarted',
+          true,
+        ],
+        [
+          'hasBeenFinished',
+          'qtPhaseHasBeenFinished',
+          true,
+        ],
+        [
+          'formUrl',
+          'qtPhaseFormUrl',
+          'https://google.com',
+        ],
+      ];
+
+      describe.each(dynamicGetters)('`%s`', (field, getter, value) => {
+        beforeEach(() => {
+          store.getters[getter] = jest.fn(() => value);
+          wrapper.vm[field]; // to trigger the computed value getter
+        });
+
+        it(`executes Vuex getter \`$store.${getter}(this.title)\``, () => {
+          expect(store.getters[getter]).toHaveBeenCalledWith('Situational Judgement');
+          expect(store.getters[getter]).toHaveBeenCalledTimes(1);
+        });
+
+        it(`returns the value of Vuex getter \`$store.${getter}(this.title)\``, () => {
+          expect(wrapper.vm[field]).toBe(value);
+        });
+      });
+    });
+
+    describe('methods', () => {
+      describe('#start', () => {
+        beforeEach(() => {
+          wrapper.setMethods({
+            openForm: jest.fn(),
+          });
+        });
+
+        it('returns a Promise', () => {
+          expect(wrapper.vm.start()).toBeInstanceOf(Promise);
+        });
+
+        describe('the Promise', () => {
+          it('sets `isStarting` to true', async () => {
+            expect(wrapper.vm.isStarting).toBe(true);
+            await wrapper.vm.start();
+            expect(wrapper.vm.isStarting).toBe(true);
+          });
+
+          it('dispatches `startQtPhase` for the phase title', async () => {
+            await wrapper.vm.start();
+            expect(store.dispatch).toHaveBeenCalledWith('startQtPhase', 'Situational Judgement');
+          });
+
+          describe('when dispatched `startQtPhase` Promise resolves', () => {
+            it('sets `isStarting` to false', () => {
+
+            });
+
+            it('runs `#openForm` to open the form', () => {
+
+            });
+          });
+        });
+      });
+
+      describe('#openForm', () => {
+        it('opens the form URL in a new tab', () => {
+          const spy = jest.spyOn(window, 'open').mockImplementation(() => (null));
+          wrapper.vm.openForm();
+          expect(spy).toHaveBeenCalledWith('https://google.com');
+          expect(spy).toHaveBeenCalledTimes(1);
+          spy.mockRestore();
+        });
       });
     });
   });

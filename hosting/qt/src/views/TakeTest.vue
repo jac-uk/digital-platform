@@ -1,14 +1,17 @@
 <template>
   <main class="container">
     <h1>Take a qualifying test</h1>
-    <div v-if="loaded === false && loadFailed === false">
+
+    <div ref="loadingMessage" v-if="loaded === false && loadFailed === false">
       <span class="spinner-border spinner-border-sm text-secondary" aria-hidden="true"></span>
       Loading...
     </div>
-    <div v-if="loaded === false && loadFailed === true">
+
+    <div ref="errorMessage" v-if="loaded === false && loadFailed === true">
       <p>Could not load data. Please reload the page and try again.</p>
     </div>
-    <div v-if="loaded === true">
+
+    <div ref="qtView" v-if="loaded === true">
       <h2>{{qt.title}}</h2>
       <div v-if="qtHasOpened === false">
         <p>
@@ -17,9 +20,11 @@
           on <strong>{{qt.opening_time.toLocaleDateString()}}</strong>.
         </p>
       </div>
+
       <div v-if="qtHasClosed === true">
         <p>This qualifying test has now closed.</p>
       </div>
+
       <div v-if="qtHasOpened && !qtHasClosed">
         <div v-if="allQtPhasesFinished">
           <p>You've completed all phases of this qualifying test.</p>
@@ -44,29 +49,25 @@
     },
     data() {
       return {
-        qtId: 'ANEMLDHK21g6HtnXQBiC',
+        qtId: 'ANEMLDHK21g6HtnXQBiC', // hardcoded for now
         loaded: false,
         loadFailed: false,
         isStarting: false,
       };
     },
     methods: {
-      initStore() {
-        this.$store.commit('setQtId', this.qtId);
+      loadQtData() {
         return Promise.all([
           this.$store.dispatch('loadQt'),
           this.$store.dispatch('loadQtSummary'),
-        ]);
-      },
-      async startPhase(phase) {
-        this.isStarting = true;
-        await this.$store.dispatch('startQtPhase', phase.title);
-        this.isStarting = false;
-        this.openPhaseForm(phase);
-      },
-      openPhaseForm(phase) {
-        const url = this.qtPhaseFormUrl(phase.title);
-        window.open(url);
+        ])
+          .then(() => {
+            this.loaded = true;
+            this.$store.dispatch('subscribeQtSummary');
+          })
+          .catch(() => {
+            this.loadFailed = true;
+          });
       },
     },
     computed: {
@@ -74,31 +75,15 @@
         'qt',
         'qtHasOpened',
         'qtHasClosed',
-        'qtPhaseFormUrl',
-        'qtPhaseCanBeStarted',
-        'qtPhaseHasBeenStarted',
-        'qtPhaseHasBeenFinished',
         'allQtPhasesFinished',
       ]),
     },
     mounted() {
-      this.initStore()
-        .then(() => {
-          this.loaded = true;
-          this.$store.dispatch('subscribeQtSummary');
-        })
-        .catch(() => {
-          this.loadFailed = true;
-        });
+      this.$store.commit('setQtId', this.qtId);
+      this.loadQtData();
     },
     destroyed() {
       this.$store.dispatch('unsubscribeQtSummary');
     },
   }
 </script>
-
-<style scoped>
-  button[disabled] {
-    cursor: progress;
-  }
-</style>

@@ -17,7 +17,7 @@
 
       <div v-else-if="canBeStarted">
         <p>Time will begin when you click 'Start test'</p>
-        <button type="button" class="btn btn-primary mr-2" @click="start" :disabled="isStarting">
+        <button type="button" class="btn btn-primary mr-2" @click="startThisPhase" :disabled="isStarting">
           Start test
         </button>
         <span class="spinner-border spinner-border-sm text-secondary" v-if="isStarting"></span>
@@ -62,9 +62,13 @@
       },
     },
     methods: {
-      async start() {
+      startThisPhase() {
         this.isStarting = true;
-        await this.$store.dispatch('startQtPhase', this.title);
+        return this.$store
+          .dispatch('startQtPhase', this.title)
+          .then(this.thisPhaseStarted);
+      },
+      thisPhaseStarted() {
         this.isStarting = false;
         this.openForm();
       },
