@@ -1,0 +1,21 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`views/TakeTest template when the QT data failed to load error message matches snapshot 1`] = `
+<div>
+  <p>
+    Could not load data. Please reload the page and try again.
+  </p>
+</div>
+`;
+
+exports[`views/TakeTest template when the QT data hasn't loaded yet loading message matches snapshot 1`] = `
+<div>
+  <span
+    aria-hidden="true"
+    class="spinner-border spinner-border-sm text-secondary"
+  />
+  
+    Loading...
+  
+</div>
+`;

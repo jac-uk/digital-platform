@@ -29,7 +29,7 @@ const module = {
     },
     allQtPhasesFinished: (state, getters) => {
       const qt = getters.qt;
-      if (!qt.phases) return false;
+      if (!qt.phases) return null;
 
       let allComplete = true;
       qt.phases.forEach((phase) => {
