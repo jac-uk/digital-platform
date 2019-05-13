@@ -68,6 +68,24 @@ const getRecords = async () => {
   return records;
 };
 
+// Monkey patch the Date.toJSON method to adjust format in output
+// I'm sure there will be a cleaner way to do this, but using this as a quick & dirty solution
+// Dates will be formatted YYYY-MM-DD
+Date.prototype.toJSON = function() {
+  const pad = (number) => {
+    if (number < 10) {
+      return '0' + number;
+    }
+    return number;
+  };
+
+  const day = pad(this.getUTCDate());
+  const month = pad(this.getUTCMonth()+1);
+  const year = this.getUTCFullYear();
+
+  return year + '-' + month + '-' + day;
+};
+
 const main = async () => {
   const records = await getRecords();
   const output = JSON.stringify(records, null, 2);
