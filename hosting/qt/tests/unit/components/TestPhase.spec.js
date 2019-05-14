@@ -67,7 +67,7 @@ describe('components/TestPhase', () => {
       });
 
       describe('when the start button is clicked', () => {
-        it('starts the timer and opens the test form', () => {
+        it.skip('starts the timer and opens the test form', () => {
           wrapper.setMethods({start: jest.fn()});
           wrapper.find('button').trigger('click');
           expect(wrapper.vm.start).toHaveBeenCalledTimes(1);
@@ -250,7 +250,7 @@ describe('components/TestPhase', () => {
     });
 
     describe('methods', () => {
-      describe('#start', () => {
+      describe.skip('#start', () => {
         beforeEach(() => {
           wrapper.setMethods({
             openForm: jest.fn(),
