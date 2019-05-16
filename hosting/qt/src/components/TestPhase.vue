@@ -1,30 +1,34 @@
 <template>
   <div class="card mb-3">
     <div class="card-body">
-      <h5 class="card-title">{{number}}. {{title}}</h5>
-      <div class="card-subtitle text-muted mb-3">45 minutes</div>
+      <h5 class="card-title">
+        {{title}}
+        <small class="text-muted">– 40 minutes</small>
+      </h5>
+
+      <p v-if="!hasBeenFinished">
+        2 questions. Give a written answer of up to 500 words per question.
+      </p>
 
       <div v-if="hasBeenFinished">
-        You have completed this phase
+        Submitted
       </div>
 
       <div v-else-if="hasBeenStarted">
-        <p>Test in progress</p>
+        <p>You are taking this part of the test.</p>
         <button type="button" class="btn btn-primary" @click="openForm">
           Return to test
         </button>
       </div>
 
-      <div v-else-if="canBeStarted">
-        <p>Time will begin when you click 'Start test'</p>
-        <button type="button" class="btn btn-primary mr-2" @click="startThisPhase" :disabled="isStarting">
-          Start test
+      <div v-else>
+        <button type="button" class="btn btn-primary mr-2"
+                @click="startThisPhase"
+                :disabled="!canBeStarted || isStarting"
+                :class="{isStarting}">
+          Start
         </button>
         <span class="spinner-border spinner-border-sm text-secondary" v-if="isStarting"></span>
-      </div>
-
-      <div v-else>
-        <p>You must complete the above {{ (number > 2) ? 'tests' : 'test' }} before you can start this one</p>
       </div>
     </div>
   </div>
@@ -41,6 +45,10 @@
         type: Number,
         required: true,
       },
+      termsAgreed: {
+        type: Boolean,
+        required: true,
+      },
     },
     data() {
       return {
@@ -49,7 +57,7 @@
     },
     computed: {
       canBeStarted() {
-        return this.$store.getters.qtPhaseCanBeStarted(this.title);
+        return this.$store.getters.qtPhaseCanBeStarted(this.title) && this.termsAgreed;
       },
       hasBeenStarted() {
         return this.$store.getters.qtPhaseHasBeenStarted(this.title);
@@ -80,7 +88,7 @@
 </script>
 
 <style scoped>
-  button[disabled] {
+  button.isStarting {
     cursor: progress;
   }
 </style>

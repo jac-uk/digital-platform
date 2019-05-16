@@ -25,6 +25,8 @@ $link-decoration: underline;
 @import "../node_modules/bootstrap/scss/card";
 @import "../node_modules/bootstrap/scss/spinners";
 @import "../node_modules/bootstrap/scss/utilities";
+@import "../node_modules/bootstrap/scss/forms";
+@import "../node_modules/bootstrap/scss/custom-forms";
 
 h1 {
   margin-bottom: $spacer * 2;
