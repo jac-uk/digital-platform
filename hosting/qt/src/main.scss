@@ -10,10 +10,16 @@ $jac-yellow: rgb(240, 182, 0);
 $primary: $jac-purple;
 $secondary: $jac-grey;
 $link-decoration: underline;
+$headings-line-height: 1.5;
 
-// Import Bootstrap components that we need
+// Import Bootstrap variables
 @import "../node_modules/bootstrap/scss/functions";
 @import "../node_modules/bootstrap/scss/variables";
+
+// Overwrite some Bootstrap variables now that the defaults have been set
+$custom-control-label-disabled-color: $body-color;
+
+// Import Bootstrap components that we need
 @import "../node_modules/bootstrap/scss/mixins";
 @import "../node_modules/bootstrap/scss/root";
 @import "../node_modules/bootstrap/scss/reboot";
@@ -38,5 +44,5 @@ h2 {
   text-decoration: none;
 }
 .container {
-  max-width: 960px;
+  max-width: 640px;
 }
