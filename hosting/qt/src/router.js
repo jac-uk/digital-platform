@@ -10,8 +10,8 @@ const router = new Router({
   mode: 'history',
   routes: [
     {
-      path: '/login',
-      name: 'login',
+      path: '/sign-in',
+      name: 'sign-in',
       component: Login,
     },
     {
@@ -26,7 +26,7 @@ const router = new Router({
       name: 'verify-email',
       component: VerifyEmail,
       beforeEnter: (to, from, next) => {
-        const isLoggedIn = store.getters.isLoggedIn;
+        const isLoggedIn = store.getters.isSignedIn;
         const isEmailVerified = store.getters.isEmailVerified;
 
         if (!isLoggedIn) {
@@ -65,12 +65,12 @@ const router = new Router({
  */
 router.beforeEach((to, from, next) => {
   const requiresAuth = to.matched.some(x => x.meta.requiresAuth);
-  const isLoggedIn = store.getters.isLoggedIn;
+  const isSignedIn = store.getters.isSignedIn;
   const isEmailVerified = store.getters.isEmailVerified;
 
-  if (requiresAuth && !isLoggedIn) {
+  if (requiresAuth && !isSignedIn) {
     // User must be logged in
-    return next({name: 'login'});
+    return next({name: 'sign-in'});
   }
 
   if (requiresAuth && !isEmailVerified) {
