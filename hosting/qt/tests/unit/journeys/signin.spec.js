@@ -9,7 +9,7 @@ jest.mock('@/firebase', () => ({
   }))
 }));
 
-describe('Login journey', () => {
+describe('Sign in journey', () => {
   let subject;
   let router;
   let store;
@@ -37,9 +37,9 @@ describe('Login journey', () => {
 
   describe('unauthenticated user', () => {
     describe('when I visit /', () => {
-      it('redirects to /login', () => {
+      it('redirects to /sign-in', () => {
         router.push('/');
-        expect(subject.vm.$route.path).toBe('/login');
+        expect(subject.vm.$route.path).toBe('/sign-in');
       });
     });
   });
