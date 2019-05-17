@@ -1,7 +1,7 @@
 import {shallowMount} from '@vue/test-utils';
 import TestPhase from '@/components/TestPhase';
 
-describe('components/TestPhase', () => {
+describe.skip('components/TestPhase', () => {
   let wrapper;
 
   describe('template', () => {
