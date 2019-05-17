@@ -12,37 +12,18 @@
     </div>
 
     <div ref="qtView" v-if="loaded === true">
-      <h2>{{qt.title}}</h2>
+      <h4>{{qt.title}}</h4>
+
+      <div v-if="!qtHasOpened">
+        <p>This test will be open on 23 June 2019 between 7am and 9pm.</p>
+      </div>
 
       <div v-if="qtIsOpen">
         <p>This test is open.</p>
-
-        <div class="custom-control custom-checkbox mb-3" v-if="!firstPhaseHasBeenStarted">
-          <input type="checkbox" id="terms_agreed" class="custom-control-input" v-model="termsAgreed">
-          <label for="terms_agreed" class="custom-control-label">
-            I confirm that I will keep this test confidential and not share the scenario or questions at any point during or after the selection exercise.
-          </label>
-        </div>
-      </div>
-
-      <div v-if="!qtHasOpened">
-        <p>This test will be open on 4 June 2019 between 7am and 9pm.</p>
       </div>
 
       <div v-if="!qtHasClosed">
-
-        <div v-if="!firstPhaseHasBeenStarted">
-          <h3>Test format</h3>
-          <p>When you’re ready to take the test, click ‘Start’. A question and answer page will open and a timer will start. The
-            timer will stop when you click ‘Submit’.</p>
-        </div>
-
-        <TestPhase v-for="(phase, index) in qt.phases" :key="phase.title" :title="phase.title" :number="index+1"
-                   :termsAgreed="termsAgreed" />
-
-        <div v-if="allQtPhasesFinished">
-          <p>You can now log out.</p>
-        </div>
+        <TestPhase v-for="(phase, index) in qt.phases" :key="phase.title" :title="phase.title" :number="index+1" />
       </div>
 
       <div v-if="qtHasClosed">
@@ -67,7 +48,6 @@
         loaded: false,
         loadFailed: false,
         isStarting: false,
-        termsAgreed: this.firstPhaseHasBeenStarted,
       };
     },
     methods: {
@@ -91,12 +71,7 @@
         'qtIsOpen',
         'qtHasOpened',
         'qtHasClosed',
-        'allQtPhasesFinished',
       ]),
-      firstPhaseHasBeenStarted() {
-        const firstPhaseTitle = this.qt.phases[0].title;
-        return this.$store.getters.qtPhaseHasBeenStarted(firstPhaseTitle);
-      },
     },
     mounted() {
       this.$store.commit('setQtId', this.qtId);
