@@ -34,6 +34,9 @@ $custom-control-label-disabled-color: $body-color;
 @import "../node_modules/bootstrap/scss/forms";
 @import "../node_modules/bootstrap/scss/custom-forms";
 
+// Import project SCSS
+@import "scss/details";
+
 h1 {
   margin-bottom: $spacer * 2;
 }
