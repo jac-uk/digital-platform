@@ -8,37 +8,41 @@
 
       <p>20 multiple choice questions</p>
 
-      <div class="custom-control custom-checkbox mb-3">
-        <input type="checkbox" id="terms_agreed" class="custom-control-input" v-model="termsAgreed" :disabled="hasBeenStarted">
-        <label for="terms_agreed" class="custom-control-label">
-          I confirm that I will keep this test confidential and not share the scenario or questions at any point during or after the selection exercise.
-        </label>
-      </div>
+      <div v-if="qtIsOpen">
+        <div class="custom-control custom-checkbox mb-3">
+          <input type="checkbox" id="terms_agreed" class="custom-control-input" v-model="termsAgreed" :disabled="hasBeenStarted">
+          <label for="terms_agreed" class="custom-control-label">
+            I confirm that I will keep this test confidential and not share the scenario or questions at any point during or after the selection exercise.
+          </label>
+        </div>
 
-      <div v-if="hasBeenFinished">
-        You’ve submitted your test. You can now sign out.
-      </div>
+        <div v-if="hasBeenFinished">
+          You’ve submitted your test. You can now sign out.
+        </div>
 
-      <div v-else-if="hasBeenStarted">
-        <button type="button" class="btn btn-primary" @click="openForm">
-          Return to test
-        </button>
-      </div>
+        <div v-else-if="hasBeenStarted">
+          <button type="button" class="btn btn-primary" @click="openForm">
+            Return to test
+          </button>
+        </div>
 
-      <div v-else-if="canBeStarted">
-        <button type="button" class="btn btn-primary mr-2"
-                @click="startThisPhase"
-                :disabled="!termsAgreed || isStarting"
-                :class="{isStarting}">
-          Start test
-        </button>
-        <span class="spinner-border spinner-border-sm text-secondary" v-if="isStarting"></span>
+        <div v-else-if="canBeStarted">
+          <button type="button" class="btn btn-primary mr-2"
+                  @click="startThisPhase"
+                  :disabled="!termsAgreed || isStarting"
+                  :class="{isStarting}">
+            Start test
+          </button>
+          <span class="spinner-border spinner-border-sm text-secondary" v-if="isStarting"></span>
+        </div>
       </div>
     </div>
   </div>
 </template>
 
 <script>
+  import { mapGetters } from 'vuex';
+
   export default {
     props: {
       title: {
@@ -57,6 +61,9 @@
       };
     },
     computed: {
+      ...mapGetters([
+        'qtIsOpen',
+      ]),
       canBeStarted() {
         return this.$store.getters.qtPhaseCanBeStarted(this.title);
       },
