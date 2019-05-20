@@ -22,6 +22,13 @@ const router = new Router({
       },
     },
     {
+      path: '/take-test/:id',
+      component: TakeTest,
+      meta: {
+        requiresAuth: true,
+      },
+    },
+    {
       path: '/verify-email',
       name: 'verify-email',
       component: VerifyEmail,
@@ -44,7 +51,7 @@ const router = new Router({
     },
     {
       path: '*',
-      redirect: '/take-test',
+      redirect: '/take-test/open',
     },
   ],
   scrollBehavior(to, from, savedPosition) {

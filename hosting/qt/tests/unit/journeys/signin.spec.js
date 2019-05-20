@@ -56,9 +56,9 @@ describe('Sign in journey', () => {
     });
 
     describe('when I visit /', () => {
-      it('redirects to /take-test', () => {
+      it('redirects to /take-test/open', () => {
         router.push('/');
-        expect(subject.vm.$route.path).toBe('/take-test');
+        expect(subject.vm.$route.path).toBe('/take-test/open');
       });
     });
   });

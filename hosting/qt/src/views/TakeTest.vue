@@ -44,7 +44,6 @@
     },
     data() {
       return {
-        qtId: 'ANEMLDHK21g6HtnXQBiC', // hardcoded for now
         loaded: false,
         loadFailed: false,
         isStarting: false,
@@ -52,6 +51,7 @@
     },
     methods: {
       loadQtData() {
+        this.$store.commit('setQtId', this.$route.params.id);
         return Promise.all([
           this.$store.dispatch('loadQt'),
           this.$store.dispatch('loadQtSummary'),
@@ -74,11 +74,18 @@
       ]),
     },
     mounted() {
-      this.$store.commit('setQtId', this.qtId);
       this.loadQtData();
     },
     destroyed() {
       this.$store.dispatch('unsubscribeQtSummary');
+    },
+    watch: {
+      '$route' () {
+        this.loaded = false;
+        this.loadFailed = false;
+        this.$store.dispatch('unsubscribeQtSummary');
+        this.loadQtData();
+      },
     },
   }
 </script>
