@@ -20,25 +20,11 @@ const createRecord = async (record) => {
 
   const user = await admin.auth().getUser(record.userId);
 
-  const duplicates = await firestore.collection('qtSubmissions')
-    .where("testName", "==", record.testName)
-    .where("testPhase", "==", record.testPhase)
-    .where("userId", "==", record.userId)
-    .select()
-    .limit(1)
-    .get();
-
-  // We don't need to check `user` as getUser will throw if the user isn't found.
-  if (duplicates.size > 0) {
-    throw new Error("Duplicate submission " + user.email);
-  } else {
-    record.createdAt = new Date();
-    await firestore
-      .collection('qtSubmissions')
-      .doc()
-      .set(record);
-  }
-
+  record.createdAt = new Date();
+  await firestore
+    .collection('qtSubmissions')
+    .doc()
+    .set(record);
   return true;
 }
 
