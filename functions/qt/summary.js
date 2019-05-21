@@ -10,7 +10,8 @@ module.exports = functions.firestore.document("qtSubmissions/{submission}").onCr
       {
         finishedAt: data.createdAt
       }
-    }
+    },
+    updatedAt: new Date()
   };
 
   return firestore
