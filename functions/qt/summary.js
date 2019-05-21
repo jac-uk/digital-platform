@@ -16,7 +16,7 @@ module.exports = functions.firestore.document("qtSubmissions/{submission}").onCr
   return firestore
     .collection("qtSummaries")
     .doc(data.userId)
-    .update(record)
+    .set(record, { merge: true })
     .then(() => console.info(record))
     .catch(e => console.error({error: e, record}));
 });
