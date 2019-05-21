@@ -13,7 +13,9 @@
  * Do useful things with the output JSON using jq. For example:
  *
  * ```
- * cat submitted.json | jq -r '.[].applicant | [.full_name, .ethnicity, .disability, .gender, .school_type, (.professional_background | join(", "))] | @csv' > diversity-report.csv
+ * cat submitted.json | jq -r '.[] | [.applicationId, .applicant.diversity_sharing_consent, .applicant.gender_same_as_birth,
+ * .applicant.full_name, .applicant.ethnicity, .applicant.disability, .applicant.gender, .applicant.school_type,
+ * (.applicant.professional_background | join(", "))] | @csv' > diversity_report.csv
  * ```
  *
  */
