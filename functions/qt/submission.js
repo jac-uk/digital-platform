@@ -1,10 +1,13 @@
 const admin = require("firebase-admin");
 const functions = require("firebase-functions");
+const NotifyClient = require("notifications-node-client").NotifyClient;
 
 // This throws exceptions rather than logging because we want to know as soon as these issues occur.  By throwing, we are
 // ensuring they will appear in StackDriver Errors in an actionable way.
 const createRecord = async (record) => {
   const firestore = admin.firestore();
+  const client = new NotifyClient(functions.config().notify.key);
+
   console.info({ createRecordCalled: record });
 
   // This function expects the test title to be in the following format:
@@ -25,6 +28,12 @@ const createRecord = async (record) => {
     .collection('qtSubmissions')
     .doc()
     .set(record);
+
+  await client
+    .sendEmail(
+      functions.config().notify.templates.combined_qt_sj_submitted,
+      user.email,
+      {});
   return true;
 }
 
