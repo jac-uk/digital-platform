@@ -101,7 +101,7 @@
         this.openForm();
       },
       openForm() {
-        window.open(this.formUrl);
+        window.location.href = this.formUrl;
       },
     },
   }
