@@ -60,8 +60,9 @@
             this.loaded = true;
             this.$store.dispatch('subscribeQtSummary');
           })
-          .catch(() => {
+          .catch((e) => {
             this.loadFailed = true;
+            throw e;
           });
       },
     },
