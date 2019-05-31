@@ -3,6 +3,9 @@ import Router from 'vue-router';
 import Vuex from 'vuex';
 import App from '@/App.vue';
 import {auth} from '@/firebase';
+import {initSentry} from '@/sentry';
+
+initSentry();
 
 Vue.config.productionTip = false;
 Vue.use(Router);
