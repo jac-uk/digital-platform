@@ -44,17 +44,23 @@ const getRecords = async () => {
     .get();
 
   const getApplicants = [];
+  const getUsers = [];
   applications.forEach((application) => {
-    const docRef = application.get('applicant');
-    getApplicants.push(docRef.get());
+    const applicant = application.get('applicant');
+    const userId = applicant.id;
+    getApplicants.push(applicant.get());
+    getUsers.push(admin.auth().getUser(userId));
   });
-  const applicants = await Promise.all(getApplicants);
+  const [applicants, users] = await Promise.all([
+    Promise.all(getApplicants),
+    Promise.all(getUsers),
+  ]);
 
   const records = [];
   applications.forEach((application) => {
-    const applicant = applicants.find((applicant) => {
-      return applicant.id === application.get('applicant').id;
-    });
+    const userId = application.get('applicant').id;
+    const applicant = applicants.find(applicant => applicant.id === userId);
+    const user = users.find(user => user.uid === userId);
 
     const applicationData = application.data();
     delete applicationData.applicant;
@@ -62,6 +68,10 @@ const getRecords = async () => {
 
     records.push({
       applicationId: application.id,
+      user: {
+        uid: user.uid,
+        email: user.email,
+      },
       application: sortObject(applicationData),
       applicant: sortObject(applicant.data()),
     });
