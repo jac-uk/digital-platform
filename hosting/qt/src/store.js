@@ -4,6 +4,7 @@ import qt from '@/store/qt';
 import qtSummary from '@/store/qtSummary';
 import qtPhaseStates from '@/store/qtPhaseStates';
 import qualifyingTest from '@/store/qualifyingTest';
+import userQualifyingTest from '@/store/userQualifyingTest';
 
 const store = new Vuex.Store({
   // Don't use strict mode in production for performance reasons (https://vuex.vuejs.org/guide/strict.html)
@@ -15,6 +16,7 @@ const store = new Vuex.Store({
     qtSummary,
     qtPhaseStates,
     qualifyingTest,
+    userQualifyingTest,
   },
 
   state: {},

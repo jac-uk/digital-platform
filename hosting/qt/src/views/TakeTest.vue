@@ -12,35 +12,32 @@
     </div>
 
     <div ref="qtView" v-if="loaded === true">
-      <h4>{{qt.title}}</h4>
+      <h4>{{qualifyingTest.vacancyTitle}}</h4>
 
-      <div v-if="!qtHasOpened">
+      <div v-if="!qualifyingTestHasOpened">
         <p>This test will be open on 23 June 2019 between 7am and 9pm.</p>
       </div>
 
-      <div v-if="qtIsOpen">
+      <div v-if="qualifyingTestIsOpen">
         <p>This test is open.</p>
       </div>
 
-      <div v-if="!qtHasClosed">
-        <TestPhase v-for="(phase, index) in qt.phases" :key="phase.title" :title="phase.title" :number="index+1" />
-      </div>
+      <TestCard v-if="!qualifyingTestHasClosed" />
 
-      <div v-if="qtHasClosed">
+      <div v-if="qualifyingTestHasClosed">
         <p>This test has now closed.</p>
       </div>
-
     </div>
   </main>
 </template>
 
 <script>
   import { mapGetters } from 'vuex';
-  import TestPhase from '@/components/TestPhase';
+  import TestCard from '@/components/TestCard';
 
   export default {
     components: {
-      TestPhase,
+      TestCard,
     },
     data() {
       return {
@@ -50,11 +47,14 @@
       };
     },
     methods: {
-      loadQtData() {
+      loadTestData() {
         this.$store.commit('setQtId', this.$route.params.id);
+        this.$store.commit('setQualifyingTestId', this.$route.params.id);
         return Promise.all([
           this.$store.dispatch('loadQt'),
           this.$store.dispatch('loadQtSummary'),
+          this.$store.dispatch('loadQualifyingTest'),
+          this.$store.dispatch('loadUserQualifyingTest'),
         ])
           .then(() => {
             this.loaded = true;
@@ -68,14 +68,14 @@
     },
     computed: {
       ...mapGetters([
-        'qt',
-        'qtIsOpen',
-        'qtHasOpened',
-        'qtHasClosed',
+        'qualifyingTest',
+        'qualifyingTestIsOpen',
+        'qualifyingTestHasOpened',
+        'qualifyingTestHasClosed',
       ]),
     },
     mounted() {
-      this.loadQtData();
+      this.loadTestData();
     },
     destroyed() {
       this.$store.dispatch('unsubscribeQtSummary');
@@ -85,7 +85,7 @@
         this.loaded = false;
         this.loadFailed = false;
         this.$store.dispatch('unsubscribeQtSummary');
-        this.loadQtData();
+        this.loadTestData();
       },
     },
   }

@@ -8,7 +8,7 @@
 
       <p>20 multiple choice questions</p>
 
-      <div v-if="qtIsOpen">
+      <div v-if="qualifyingTestIsOpen">
         <div class="custom-control custom-checkbox mb-3">
           <input type="checkbox" id="terms_agreed" class="custom-control-input" v-model="termsAgreed" :disabled="hasBeenStarted">
           <label for="terms_agreed" class="custom-control-label">
@@ -44,16 +44,7 @@
   import { mapGetters } from 'vuex';
 
   export default {
-    props: {
-      title: {
-        type: String,
-        required: true,
-      },
-      number: {
-        type: Number,
-        required: true,
-      },
-    },
+    props: {},
     data() {
       return {
         isStarting: false,
@@ -62,7 +53,7 @@
     },
     computed: {
       ...mapGetters([
-        'qtIsOpen',
+        'qualifyingTestIsOpen',
       ]),
       canBeStarted() {
         return this.$store.getters.qtPhaseCanBeStarted(this.title);
