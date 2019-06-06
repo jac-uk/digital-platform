@@ -1,12 +1,12 @@
 import {shallowMount} from '@vue/test-utils';
-import TestPhase from '@/components/TestPhase';
+import TestCard from '@/components/TestCard';
 
-describe.skip('components/TestPhase', () => {
+describe.skip('components/TestCard', () => {
   let wrapper;
 
   describe('template', () => {
     const createWrapper = (computed) => {
-      return shallowMount(TestPhase, {
+      return shallowMount(TestCard, {
         propsData: {
           title: 'Situational Judgement',
           number: 1,
@@ -154,7 +154,7 @@ describe.skip('components/TestPhase', () => {
         },
       };
 
-      wrapper = shallowMount(TestPhase, {
+      wrapper = shallowMount(TestCard, {
         propsData: {
           title: 'Situational Judgement',
           number: 1,
@@ -169,7 +169,7 @@ describe.skip('components/TestPhase', () => {
       describe('`title`', () => {
         let prop;
         beforeEach(() => {
-          prop = TestPhase.props.title;
+          prop = TestCard.props.title;
         });
 
         it('is required', () => {
@@ -184,7 +184,7 @@ describe.skip('components/TestPhase', () => {
       describe('`number`', () => {
         let prop;
         beforeEach(() => {
-          prop = TestPhase.props.number;
+          prop = TestCard.props.number;
         });
 
         it('is required', () => {
