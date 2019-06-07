@@ -4,6 +4,10 @@ import merge from 'deepmerge';
 
 let unsubscribe;
 
+const firestoreCollection = () => {
+  return firestore.collection('usersQualifyingTests');
+};
+
 const commitSnapshot = (commit, snapshot) => {
   if (snapshot.exists) {
     let data = snapshot.data();
@@ -12,7 +16,7 @@ const commitSnapshot = (commit, snapshot) => {
     data = sanitizeFirestore(data);
     commit('setUserQualifyingTest', {id: snapshot.id, data});
   } else {
-    commit('resetUserQualifyingTest');
+    commit('clearUserQualifyingTest');
   }
 };
 
@@ -22,7 +26,7 @@ const module = {
     data: {},
   },
   mutations: {
-    resetUserQualifyingTest(state) {
+    clearUserQualifyingTest(state) {
       state.id = null;
       state.data = {};
     },
@@ -37,22 +41,19 @@ const module = {
   },
   actions: {
     async loadUserQualifyingTest({commit, getters}) {
-      const collection = firestore.collection('usersQualifyingTests');
-
-      const results = await collection
+      const results = await firestoreCollection()
         .where('qualifyingTest', '==', getters.qualifyingTestDoc)
         .where('userUid', '==', getters.currentUserId)
         .get();
 
       if (results.empty) {
-        commit('resetUserQualifyingTest');
+        commit('clearUserQualifyingTest');
       } else {
         const snapshot = results.docs[0];
         commitSnapshot(commit, snapshot);
       }
     },
     subscribeUserQualifyingTest({commit, getters}) {
-      return;
       if (typeof unsubscribe == 'function') return; // Don't subscribe again if already subscribed
       unsubscribe = getters.userQualifyingTestDoc.onSnapshot((snapshot) => {
         if (!snapshot.metadata.hasPendingWrites && !snapshot.metadata.fromCache) {
@@ -60,38 +61,46 @@ const module = {
         }
       });
     },
-    unsubscribeQtSummary() {
+    unsubscribeUserQualifyingTest() {
       if (typeof unsubscribe === 'function') unsubscribe();
       unsubscribe = undefined; // Reset so we can subscribe again
     },
     async startQualifyingTest({commit, getters}) {
-      const saveData = {
+      const data = {
         startedAt: new Date(),
+      };
+
+      const saveData = {
         qualifyingTest: getters.qualifyingTestDoc,
         userUid: getters.currentUserId,
+        ...data
       };
+
       const doc = getters.userQualifyingTestDoc;
       await doc.set(saveData, {merge: true});
-      commit('updateUserQualifyingTest', {id: doc.id, data: saveData});
+      commit('updateUserQualifyingTest', {id: doc.id, data});
     },
   },
   getters: {
     userQualifyingTest: (state) => {
       return state.data;
     },
-    userQualifyingTestDoc: (state, getters) => {
-      return firestore.collection('usersQualifyingTests').doc(state.id);
-    },
-    /*qtPhaseSummary: (state, getters) => (phaseTitle) => {
-      const qtTitle = getters.qt.title;
-      let summary;
-      try {
-        summary = state.data[qtTitle][phaseTitle];
-      } catch (e) {
-        // If that phase doesn't exist in `state.data`, leave `summary` undefined
+    userQualifyingTestDoc: (state) => {
+      if (state.id) {
+        return firestoreCollection().doc(state.id);
       }
-      return summary || {};
-    },*/
+      return firestoreCollection().doc();
+    },
+    userHasStartedTest: (state) => {
+      return !!(state.data.startedAt);
+    },
+    userHasFinishedTest: (state) => {
+      return !!(state.data.startedAt && state.data.finishedAt);
+    },
+    qualifyingTestFormUrl: (state, getters) => {
+      const formUrl = getters.qualifyingTest.googleFormsUrl + state.id;
+      return state.id ? formUrl : null;
+    },
   },
 };
 

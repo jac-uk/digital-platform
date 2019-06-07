@@ -29,6 +29,7 @@ const module = {
       return state.data;
     },
     qualifyingTestDoc: (state) => {
+      if (!state.id) return null;
       return firestore.collection('qualifyingTests').doc(state.id);
     },
     qualifyingTestHasOpened: (state) => {

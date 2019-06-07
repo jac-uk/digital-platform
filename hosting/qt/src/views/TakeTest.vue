@@ -59,6 +59,7 @@
           .then(() => {
             this.loaded = true;
             this.$store.dispatch('subscribeQtSummary');
+            this.$store.dispatch('subscribeUserQualifyingTest');
           })
           .catch((e) => {
             this.loadFailed = true;
@@ -79,12 +80,14 @@
     },
     destroyed() {
       this.$store.dispatch('unsubscribeQtSummary');
+      this.$store.dispatch('unsubscribeUserQualifyingTest');
     },
     watch: {
       '$route' () {
         this.loaded = false;
         this.loadFailed = false;
         this.$store.dispatch('unsubscribeQtSummary');
+        this.$store.dispatch('unsubscribeUserQualifyingTest');
         this.loadTestData();
       },
     },
