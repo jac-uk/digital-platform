@@ -2,7 +2,7 @@
   <div class="card mb-3">
     <div class="card-body">
       <h5 class="card-title">
-        {{title}}
+        {{qualifyingTest.title}}
         <small class="text-muted">– 50 minutes</small>
       </h5>
 
@@ -10,25 +10,25 @@
 
       <div v-if="qualifyingTestIsOpen">
         <div class="custom-control custom-checkbox mb-3">
-          <input type="checkbox" id="terms_agreed" class="custom-control-input" v-model="termsAgreed" :disabled="hasBeenStarted">
+          <input type="checkbox" id="terms_agreed" class="custom-control-input" v-model="termsAgreed" :disabled="userHasStartedTest">
           <label for="terms_agreed" class="custom-control-label">
             I confirm that I will keep this test confidential and not share the scenario or questions at any point during or after the selection exercise.
           </label>
         </div>
 
-        <div v-if="hasBeenFinished">
+        <div v-if="userHasFinishedTest">
           You’ve submitted your test. You can now sign out.
         </div>
 
-        <div v-else-if="hasBeenStarted">
+        <div v-else-if="userHasStartedTest">
           <button type="button" class="btn btn-primary" @click="openForm">
             Return to test
           </button>
         </div>
 
-        <div v-else-if="canBeStarted">
+        <div v-else>
           <button type="button" class="btn btn-primary mr-2"
-                  @click="startThisPhase"
+                  @click="start"
                   :disabled="!termsAgreed || isStarting"
                   :class="{isStarting}">
             Start test
@@ -53,46 +53,38 @@
     },
     computed: {
       ...mapGetters([
+        'qualifyingTest',
         'qualifyingTestIsOpen',
+        'qualifyingTestFormUrl',
+        'userHasStartedTest',
+        'userHasFinishedTest',
       ]),
-      canBeStarted() {
-        return this.$store.getters.qtPhaseCanBeStarted(this.title);
-      },
-      hasBeenStarted() {
-        return this.$store.getters.qtPhaseHasBeenStarted(this.title);
-      },
-      hasBeenFinished() {
-        return this.$store.getters.qtPhaseHasBeenFinished(this.title);
-      },
-      formUrl() {
-        return this.$store.getters.qtPhaseFormUrl(this.title);
-      },
       termsAgreed: {
         get() {
-          const started = this.hasBeenStarted;
+          const started = this.userHasStartedTest;
           const checkbox = this.termsAgreedCheckbox;
           return started || checkbox;
         },
         set(value) {
-          if (!this.hasBeenStarted) {
+          if (!this.userHasStartedTest) {
             this.termsAgreedCheckbox = value;
           }
         },
       },
     },
     methods: {
-      startThisPhase() {
+      start() {
         this.isStarting = true;
         return this.$store
-          .dispatch('startQtPhase', this.title)
-          .then(this.thisPhaseStarted);
+          .dispatch('startQualifyingTest')
+          .then(this.hasStarted);
       },
-      thisPhaseStarted() {
+      hasStarted() {
         this.isStarting = false;
         this.openForm();
       },
       openForm() {
-        window.location.href = this.formUrl;
+        window.location.href = this.qualifyingTestFormUrl;
       },
     },
   }
