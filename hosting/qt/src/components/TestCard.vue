@@ -2,13 +2,13 @@
   <div class="card mb-3">
     <div class="card-body">
       <h5 class="card-title">
-        {{qualifyingTest.title}}
+        {{test.title}}
         <small class="text-muted">– 50 minutes</small>
       </h5>
 
       <p>20 multiple choice questions</p>
 
-      <div v-if="qualifyingTestIsOpen">
+      <div v-if="testIsOpen">
         <div class="custom-control custom-checkbox mb-3">
           <input type="checkbox" id="terms_agreed" class="custom-control-input" v-model="termsAgreed" :disabled="userHasStartedTest">
           <label for="terms_agreed" class="custom-control-label">
@@ -53,8 +53,8 @@
     },
     computed: {
       ...mapGetters([
-        'qualifyingTest',
-        'qualifyingTestIsOpen',
+        'test',
+        'testIsOpen',
         'qualifyingTestFormUrl',
         'userHasStartedTest',
         'userHasFinishedTest',

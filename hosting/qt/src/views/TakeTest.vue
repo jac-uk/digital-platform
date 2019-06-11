@@ -12,19 +12,19 @@
     </div>
 
     <div ref="qtView" v-if="loaded === true">
-      <h4>{{qualifyingTest.vacancyTitle}}</h4>
+      <h4>{{test.vacancyTitle}}</h4>
 
-      <div v-if="!qualifyingTestHasOpened">
+      <div v-if="!testHasOpened">
         <p>This test will be open on 23 June 2019 between 7am and 9pm.</p>
       </div>
 
-      <div v-if="qualifyingTestIsOpen">
+      <div v-if="testIsOpen">
         <p>This test is open.</p>
       </div>
 
-      <TestCard v-if="!qualifyingTestHasClosed" />
+      <TestCard v-if="!testHasClosed" />
 
-      <div v-if="qualifyingTestHasClosed">
+      <div v-if="testHasClosed">
         <p>This test has now closed.</p>
       </div>
     </div>
@@ -48,9 +48,9 @@
     },
     methods: {
       loadTestData() {
-        this.$store.commit('setQualifyingTestId', this.$route.params.id);
+        this.$store.commit('setTestId', this.$route.params.id);
         return Promise.all([
-          this.$store.dispatch('loadQualifyingTest'),
+          this.$store.dispatch('loadTest'),
           this.$store.dispatch('loadUserQualifyingTest'),
         ])
           .then(() => {
@@ -65,10 +65,10 @@
     },
     computed: {
       ...mapGetters([
-        'qualifyingTest',
-        'qualifyingTestIsOpen',
-        'qualifyingTestHasOpened',
-        'qualifyingTestHasClosed',
+        'test',
+        'testIsOpen',
+        'testHasOpened',
+        'testHasClosed',
       ]),
     },
     mounted() {
