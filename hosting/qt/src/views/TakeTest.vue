@@ -48,17 +48,13 @@
     },
     methods: {
       loadTestData() {
-        this.$store.commit('setQtId', this.$route.params.id);
         this.$store.commit('setQualifyingTestId', this.$route.params.id);
         return Promise.all([
-          this.$store.dispatch('loadQt'),
-          this.$store.dispatch('loadQtSummary'),
           this.$store.dispatch('loadQualifyingTest'),
           this.$store.dispatch('loadUserQualifyingTest'),
         ])
           .then(() => {
             this.loaded = true;
-            this.$store.dispatch('subscribeQtSummary');
             this.$store.dispatch('subscribeUserQualifyingTest');
           })
           .catch((e) => {
@@ -79,14 +75,12 @@
       this.loadTestData();
     },
     destroyed() {
-      this.$store.dispatch('unsubscribeQtSummary');
       this.$store.dispatch('unsubscribeUserQualifyingTest');
     },
     watch: {
       '$route' () {
         this.loaded = false;
         this.loadFailed = false;
-        this.$store.dispatch('unsubscribeQtSummary');
         this.$store.dispatch('unsubscribeUserQualifyingTest');
         this.loadTestData();
       },

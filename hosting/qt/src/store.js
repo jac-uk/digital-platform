@@ -1,8 +1,5 @@
 import Vuex from 'vuex';
 import auth from '@/store/auth';
-import qt from '@/store/qt';
-import qtSummary from '@/store/qtSummary';
-import qtPhaseStates from '@/store/qtPhaseStates';
 import qualifyingTest from '@/store/qualifyingTest';
 import userQualifyingTest from '@/store/userQualifyingTest';
 
@@ -12,9 +9,6 @@ const store = new Vuex.Store({
 
   modules: {
     auth,
-    qt,
-    qtSummary,
-    qtPhaseStates,
     qualifyingTest,
     userQualifyingTest,
   },
