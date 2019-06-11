@@ -1,6 +1,6 @@
 import Vuex from 'vuex';
 import auth from '@/store/auth';
-import qualifyingTest from '@/store/qualifyingTest';
+import test from '@/store/test';
 import userQualifyingTest from '@/store/userQualifyingTest';
 
 const store = new Vuex.Store({
@@ -9,7 +9,7 @@ const store = new Vuex.Store({
 
   modules: {
     auth,
-    qualifyingTest,
+    test,
     userQualifyingTest,
   },
 

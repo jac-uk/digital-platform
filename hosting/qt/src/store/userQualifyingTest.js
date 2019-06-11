@@ -12,7 +12,7 @@ const commitSnapshot = (commit, snapshot) => {
   if (snapshot.exists) {
     let data = snapshot.data();
     delete data.userUid;
-    delete data.qualifyingTest;
+    delete data.test;
     data = sanitizeFirestore(data);
     commit('setUserQualifyingTest', {id: snapshot.id, data});
   } else {
@@ -42,7 +42,7 @@ const module = {
   actions: {
     async loadUserQualifyingTest({commit, getters}) {
       const results = await firestoreCollection()
-        .where('qualifyingTest', '==', getters.qualifyingTestDoc)
+        .where('test', '==', getters.testDoc)
         .where('userUid', '==', getters.currentUserId)
         .get();
 
@@ -71,7 +71,7 @@ const module = {
       };
 
       const saveData = {
-        qualifyingTest: getters.qualifyingTestDoc,
+        test: getters.testDoc,
         userUid: getters.currentUserId,
         ...data
       };
@@ -98,7 +98,7 @@ const module = {
       return !!(state.data.startedAt && state.data.finishedAt);
     },
     qualifyingTestFormUrl: (state, getters) => {
-      const formUrl = getters.qualifyingTest.googleFormsUrl + state.id;
+      const formUrl = getters.test.googleFormsUrl + state.id;
       return state.id ? formUrl : null;
     },
   },
