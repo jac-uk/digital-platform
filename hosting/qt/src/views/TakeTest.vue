@@ -51,11 +51,11 @@
         this.$store.commit('setTestId', this.$route.params.id);
         return Promise.all([
           this.$store.dispatch('loadTest'),
-          this.$store.dispatch('loadUserQualifyingTest'),
+          this.$store.dispatch('loadUserTest'),
         ])
           .then(() => {
             this.loaded = true;
-            this.$store.dispatch('subscribeUserQualifyingTest');
+            this.$store.dispatch('subscribeUserTest');
           })
           .catch((e) => {
             this.loadFailed = true;
@@ -75,13 +75,13 @@
       this.loadTestData();
     },
     destroyed() {
-      this.$store.dispatch('unsubscribeUserQualifyingTest');
+      this.$store.dispatch('unsubscribeUserTest');
     },
     watch: {
       '$route' () {
         this.loaded = false;
         this.loadFailed = false;
-        this.$store.dispatch('unsubscribeUserQualifyingTest');
+        this.$store.dispatch('unsubscribeUserTest');
         this.loadTestData();
       },
     },
