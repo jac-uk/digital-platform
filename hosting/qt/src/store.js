@@ -1,7 +1,7 @@
 import Vuex from 'vuex';
 import auth from '@/store/auth';
 import test from '@/store/test';
-import userQualifyingTest from '@/store/userQualifyingTest';
+import userTest from '@/store/userTest';
 
 const store = new Vuex.Store({
   // Don't use strict mode in production for performance reasons (https://vuex.vuejs.org/guide/strict.html)
@@ -10,7 +10,7 @@ const store = new Vuex.Store({
   modules: {
     auth,
     test,
-    userQualifyingTest,
+    userTest,
   },
 
   state: {},

@@ -55,7 +55,7 @@
       ...mapGetters([
         'test',
         'testIsOpen',
-        'qualifyingTestFormUrl',
+        'testFormUrl',
         'userHasStartedTest',
         'userHasFinishedTest',
       ]),
@@ -76,7 +76,7 @@
       start() {
         this.isStarting = true;
         return this.$store
-          .dispatch('startQualifyingTest')
+          .dispatch('startTest')
           .then(this.hasStarted);
       },
       hasStarted() {
@@ -84,7 +84,7 @@
         this.openForm();
       },
       openForm() {
-        window.location.href = this.qualifyingTestFormUrl;
+        window.location.href = this.testFormUrl;
       },
     },
   }

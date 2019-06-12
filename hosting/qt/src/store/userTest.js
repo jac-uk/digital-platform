@@ -5,7 +5,7 @@ import merge from 'deepmerge';
 let unsubscribe;
 
 const firestoreCollection = () => {
-  return firestore.collection('usersQualifyingTests');
+  return firestore.collection('usersTests');
 };
 
 const commitSnapshot = (commit, snapshot) => {
@@ -14,9 +14,9 @@ const commitSnapshot = (commit, snapshot) => {
     delete data.userUid;
     delete data.test;
     data = sanitizeFirestore(data);
-    commit('setUserQualifyingTest', {id: snapshot.id, data});
+    commit('setUserTest', {id: snapshot.id, data});
   } else {
-    commit('clearUserQualifyingTest');
+    commit('clearUserTest');
   }
 };
 
@@ -26,46 +26,46 @@ const module = {
     data: {},
   },
   mutations: {
-    clearUserQualifyingTest(state) {
+    clearUserTest(state) {
       state.id = null;
       state.data = {};
     },
-    setUserQualifyingTest(state, {id, data}) {
+    setUserTest(state, {id, data}) {
       state.id = id;
       state.data = data;
     },
-    updateUserQualifyingTest(state, {id, data}) {
+    updateUserTest(state, {id, data}) {
       state.id = id;
       state.data = merge(state.data, data);
     },
   },
   actions: {
-    async loadUserQualifyingTest({commit, getters}) {
+    async loadUserTest({commit, getters}) {
       const results = await firestoreCollection()
         .where('test', '==', getters.testDoc)
         .where('userUid', '==', getters.currentUserId)
         .get();
 
       if (results.empty) {
-        commit('clearUserQualifyingTest');
+        commit('clearUserTest');
       } else {
         const snapshot = results.docs[0];
         commitSnapshot(commit, snapshot);
       }
     },
-    subscribeUserQualifyingTest({commit, getters}) {
+    subscribeUserTest({commit, getters}) {
       if (typeof unsubscribe == 'function') return; // Don't subscribe again if already subscribed
-      unsubscribe = getters.userQualifyingTestDoc.onSnapshot((snapshot) => {
+      unsubscribe = getters.userTestDoc.onSnapshot((snapshot) => {
         if (!snapshot.metadata.hasPendingWrites && !snapshot.metadata.fromCache) {
           commitSnapshot(commit, snapshot);
         }
       });
     },
-    unsubscribeUserQualifyingTest() {
+    unsubscribeUserTest() {
       if (typeof unsubscribe === 'function') unsubscribe();
       unsubscribe = undefined; // Reset so we can subscribe again
     },
-    async startQualifyingTest({commit, getters}) {
+    async startTest({commit, getters}) {
       const data = {
         startedAt: new Date(),
       };
@@ -76,16 +76,13 @@ const module = {
         ...data
       };
 
-      const doc = getters.userQualifyingTestDoc;
+      const doc = getters.userTestDoc;
       await doc.set(saveData, {merge: true});
-      commit('updateUserQualifyingTest', {id: doc.id, data});
+      commit('updateUserTest', {id: doc.id, data});
     },
   },
   getters: {
-    userQualifyingTest: (state) => {
-      return state.data;
-    },
-    userQualifyingTestDoc: (state) => {
+    userTestDoc: (state) => {
       if (state.id) {
         return firestoreCollection().doc(state.id);
       }
@@ -97,7 +94,7 @@ const module = {
     userHasFinishedTest: (state) => {
       return !!(state.data.startedAt && state.data.finishedAt);
     },
-    qualifyingTestFormUrl: (state, getters) => {
+    testFormUrl: (state, getters) => {
       const formUrl = getters.test.googleFormsUrl + state.id;
       return state.id ? formUrl : null;
     },
