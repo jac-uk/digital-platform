@@ -31,15 +31,25 @@ service cloud.firestore {
       allow get;
     }
 
-    match /qts/{qt} {
+    match /tests/{test} {
       // Authenticated users can read
       allow get: if request.auth.uid != null;
     }
 
-    match /qtSummaries/{userId} {
-      // Users can read & write to their own QT summary document
-      allow get, create, update: if request.auth.uid == userId;
+    match /usersTests/{userTest} {
+      function belongsToCurrentUser(res) {
+        return res.data.userUid == request.auth.uid;
+      }
+
+      // Allow read on records which belong to the current user
+      allow get, list: if belongsToCurrentUser(resource);
+
+      // Allow new records if they will belong to the current user
+      allow create: if belongsToCurrentUser(request.resource);
+
+      // Allow updates on records which belong, and will continue to belonging, to the current user
+      allow update: if belongsToCurrentUser(resource) &&
+                       belongsToCurrentUser(request.resource);
     }
   }
 }
-
