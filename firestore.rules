@@ -1,4 +1,8 @@
 service cloud.firestore {
+  function userIsAuthenticated() {
+    return request.auth.uid != null;
+  }
+
   match /databases/{database}/documents {
     match /applicants/{userId} {
       // Users can read & write to their own applicant document
@@ -41,14 +45,23 @@ service cloud.firestore {
         return res.data.userUid == request.auth.uid;
       }
 
+      function doesNotExist() {
+        return resource == null;
+      }
+
       // Allow read on records which belong to the current user
-      allow get, list: if belongsToCurrentUser(resource);
+      // Also allow reads to documents which don't yet exist – so our client-side app can
+      // listen for changes on documents it hasn't created yet
+      allow get, list: if userIsAuthenticated() &&
+                          (belongsToCurrentUser(resource) || doesNotExist());
 
       // Allow new records if they will belong to the current user
-      allow create: if belongsToCurrentUser(request.resource);
+      allow create: if userIsAuthenticated() &&
+                       belongsToCurrentUser(request.resource);
 
       // Allow updates on records which belong, and will continue to belonging, to the current user
-      allow update: if belongsToCurrentUser(resource) &&
+      allow update: if userIsAuthenticated() &&
+                       belongsToCurrentUser(resource) &&
                        belongsToCurrentUser(request.resource);
     }
   }
