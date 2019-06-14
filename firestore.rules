@@ -20,8 +20,11 @@ service cloud.firestore {
       // Allow new records if they will belong to the current user
       allow create: if request.resource.data.applicant == currentApplicant();
 
+      // Allow updates on records which belong, and will continue to belonging, to the current user
+      // But only if the application isn't in a 'submitted' state
       allow update: if resource.data.applicant == currentApplicant() &&
-          resource.data.state != "submitted";
+                       request.resource.data.applicant == currentApplicant() &&
+                       resource.data.state != "submitted";
     }
 
     match /vacancies/{vacancy} {
