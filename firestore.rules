@@ -26,7 +26,7 @@ service cloud.firestore {
 
     match /vacancies/{vacancy} {
       // Authenticated users can read
-      allow get: if request.auth.uid != null;
+      allow get: if userIsAuthenticated();
     }
 
     match /references/{reference} {
@@ -37,7 +37,7 @@ service cloud.firestore {
 
     match /tests/{test} {
       // Authenticated users can read
-      allow get: if request.auth.uid != null;
+      allow get: if userIsAuthenticated();
     }
 
     match /usersTests/{userTest} {
