@@ -45,6 +45,10 @@ between components. This enables a Single Sign-on flow in which, for example, a 
 application form whilst applying for a role, and later they'd be able to complete their Qualifying Test by logging in with the same 
 credentials.
 
+### Architecture Diagram
+
+![Application architecture diagram](docs/jac-digital-platform-architecture.svg)
+
 ### One project, multiple sites
 
 Each 'component' in this project (application form, reference upload, etc.) is hosted on its own Firebase Hosting site.
