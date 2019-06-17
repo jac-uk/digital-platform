@@ -66,7 +66,7 @@ describe('FirebaseUI component', () => {
       signInOptions: [
         {
           provider: auth.EmailAuthProvider.PROVIDER_ID,
-          requireDisplayName: false
+          requireDisplayName: true
         }
       ],
       credentialHelper: firebaseui.auth.CredentialHelper.NONE,
