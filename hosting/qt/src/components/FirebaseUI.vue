@@ -21,7 +21,7 @@
           signInOptions: [
             {
               provider: auth.EmailAuthProvider.PROVIDER_ID,
-              requireDisplayName: false
+              requireDisplayName: true
             }
           ],
           credentialHelper: firebaseui.auth.CredentialHelper.NONE,
@@ -33,7 +33,7 @@
     },
     methods: {
       signInSuccess(authResult) {
-          this.$emit('signInSuccess', authResult);
+        this.$emit('signInSuccess', authResult);
         // Return false to disable FirebaseUI auth redirect
         return false;
       },
