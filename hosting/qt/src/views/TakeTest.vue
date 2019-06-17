@@ -22,7 +22,23 @@
         <p>This test is open.</p>
       </div>
 
-      <TestCard v-if="!testHasClosed" />
+      <div v-if="!testHasClosed && !userHasFinishedTest">
+        <h5>Do’s and don’ts</h5>
+        <ul>
+          <li><strong>Do</strong> make sure you’ve got a stable internet connection before you start</li>
+          <li><strong>Don’t</strong> press the back button at any point</li>
+          <li><strong>Don’t</strong> close the test window until you’ve submitted your answers</li>
+        </ul>
+
+        <h5>Timing</h5>
+        <ul>
+          <li>You have <strong>45 minutes</strong> to complete the test and must manage the time yourself</li>
+          <li>Time starts when you click ‘start test’ and stops when you click ‘submit’</li>
+          <li>Your answers won’t be marked if you submit after 45 minutes</li>
+        </ul>
+      </div>
+
+      <TestCard v-if="!testHasClosed" class="mt-4" />
 
       <div v-if="testHasClosed">
         <p>This test has now closed.</p>
@@ -69,6 +85,7 @@
         'testIsOpen',
         'testHasOpened',
         'testHasClosed',
+        'userHasFinishedTest',
       ]),
     },
     mounted() {
