@@ -1,18 +1,24 @@
 <template>
-  <div class="card mb-3">
+  <div class="card">
     <div class="card-body">
-      <h5 class="card-title">
-        {{test.title}}
-        <small class="text-muted">– 50 minutes</small>
-      </h5>
+      <h5 class="card-title">{{test.title}}</h5>
 
-      <p>20 multiple choice questions</p>
+      <p>
+        There are 20 multiple choice questions of equal weight. Each question presents a hypothetical situation that you might
+        face in the tribunal role you’ve applied for.
+      </p>
+      <p>
+        In each situation there is an issue or problem you need to resolve, with 5 possible answers. You’ll need to tick a box
+        for the best and worst answer in each case. There are no marks for next best or next worst answer.
+      </p>
 
       <div v-if="testIsOpen">
+        <hr />
         <div class="custom-control custom-checkbox mb-3">
-          <input type="checkbox" id="terms_agreed" class="custom-control-input" v-model="termsAgreed" :disabled="userHasStartedTest">
-          <label for="terms_agreed" class="custom-control-label">
-            I confirm that I will keep this test confidential and not share the scenario or questions at any point during or after the selection exercise.
+          <input type="checkbox" id="terms" class="custom-control-input" v-model="termsAgreed" :disabled="userHasStartedTest">
+          <label for="terms" class="custom-control-label">
+            I confirm that I will keep this test confidential and not share the scenario or questions at any point during or after
+            the selection exercise.
           </label>
         </div>
 
