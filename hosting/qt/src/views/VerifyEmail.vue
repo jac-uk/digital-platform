@@ -7,9 +7,9 @@
     <details>
       <summary>I haven’t got the email yet</summary>
       <section>
-        <p>It could take up to 10 minutes for the email to arrive.</p>
+        <p>It could take up to 2 minutes for the email to arrive.</p>
         <p>Check your ‘spam’ or ‘junk mail’ folder in case it didn’t go into your inbox.</p>
-        <p>If it still hasn’t arrived after 10 minutes, you can ask us to resend the email:</p>
+        <p>If it still hasn’t arrived after 2 minutes, click ‘resend email’:</p>
         <button class="btn btn-primary" type="button" :disabled="sendInProgress" @click.prevent="sendVerificationEmail">
           Resend email
         </button>
