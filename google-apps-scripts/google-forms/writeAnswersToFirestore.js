@@ -45,8 +45,6 @@ function onSubmit(e) {
     'payload' : JSON.stringify(data)
   };
 
-  Logger.log(JSON.stringify(data, null, 2));
-
   UrlFetchApp.fetch(testSubmissionEndpoint, options);
   console.info({ recordWritten: data.email });
   return true;
