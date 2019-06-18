@@ -27,5 +27,6 @@ module.exports = {
   coverageReporters: [
     'html',
     'text-summary'
-  ]
-}
+  ],
+  setupTestFrameworkScriptFile: 'jest-extended',
+};
