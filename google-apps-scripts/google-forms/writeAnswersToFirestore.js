@@ -4,9 +4,10 @@
  * Data will continue to be saved in the Form and on an attached spreadsheet if one has been used. All this script does is send a
  * copy of the data to the specified RESTFUL endpoint.
  */
-const testSubmissionEndpoint = "<change to correct endpoint>";
 
 function onSubmit(e) {
+  // Set this variable to the URL that receives and processes the answers.
+  const testSubmissionEndpoint = "<change to correct endpoint>";
   const data = { title: FormApp.getActiveForm().getTitle() };
 
   const itemResponses = e.response.getItemResponses();
