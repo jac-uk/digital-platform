@@ -13,7 +13,7 @@ This directory is meant to be the centralised repo for keeping track of all the 
 1. Open your form in edit view.
 1. Open the Three dot menu -> Script Editor
 1. Replace the contents of the script editor with
-   [google-forms/writeAnswersToFirestore.gas](google-forms/writeAnswersToFirestore.gas) and save.
+   [google-forms/writeAnswersToFirestore.js](google-forms/writeAnswersToFirestore.js) and save.
 1. Change the target endpoint (`<CHANGE TO...`) to point at the correct function.
 1. Edit -> Current project's triggers -> Add trigger
 1. Choose Which Function to run -> onSubmit

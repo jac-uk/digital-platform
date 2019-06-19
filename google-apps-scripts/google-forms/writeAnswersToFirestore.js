@@ -6,8 +6,7 @@
  */
 
 function onSubmit(e) {
-  // Set this variable to the URL that receives and processes the answers.
-  const testSubmissionEndpoint = "<change to correct endpoint>";
+  const testSubmissionEndpoint = "<CHANGE TO CORRECT ENDPOINT>";
   const data = { title: FormApp.getActiveForm().getTitle() };
 
   const itemResponses = e.response.getItemResponses();
