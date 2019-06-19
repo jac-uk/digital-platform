@@ -2,6 +2,8 @@
   <main class="container">
     <h1>Take a qualifying test</h1>
 
+    <IEWarning />
+
     <div ref="loadingMessage" v-if="loaded === false && loadFailed === false">
       <span class="spinner-border spinner-border-sm text-secondary" aria-hidden="true"></span>
       Loading...
@@ -41,11 +43,13 @@
   import { mapGetters } from 'vuex';
   import TestCard from '@/components/TestCard';
   import TestWindow from '@/components/TestWindow';
+  import IEWarning from '@/components/IEWarning';
 
   export default {
     components: {
       TestCard,
       TestWindow,
+      IEWarning,
     },
     data() {
       return {
