@@ -51,7 +51,7 @@ const router = new Router({
     },
     {
       path: '*',
-      redirect: '/take-test/open',
+      redirect: '/take-test/Q3QPebYC4it3Orp4RtA7',
     },
   ],
   scrollBehavior(to, from, savedPosition) {
