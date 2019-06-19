@@ -14,13 +14,7 @@
     <div ref="qtView" v-if="loaded === true">
       <h4>{{test.vacancyTitle}}</h4>
 
-      <div v-if="!testHasOpened">
-        <p>This test will be open on 23 June 2019 between 7am and 9pm.</p>
-      </div>
-
-      <div v-if="testIsOpen">
-        <p>This test is open.</p>
-      </div>
+      <TestWindow />
 
       <div v-if="!testHasClosed && !userHasFinishedTest">
         <h5>Do’s and don’ts</h5>
@@ -39,10 +33,6 @@
       </div>
 
       <TestCard v-if="!testHasClosed" class="mt-4" />
-
-      <div v-if="testHasClosed">
-        <p>This test has now closed.</p>
-      </div>
     </div>
   </main>
 </template>
@@ -50,10 +40,12 @@
 <script>
   import { mapGetters } from 'vuex';
   import TestCard from '@/components/TestCard';
+  import TestWindow from '@/components/TestWindow';
 
   export default {
     components: {
       TestCard,
+      TestWindow,
     },
     data() {
       return {
@@ -82,8 +74,6 @@
     computed: {
       ...mapGetters([
         'test',
-        'testIsOpen',
-        'testHasOpened',
         'testHasClosed',
         'userHasFinishedTest',
       ]),
