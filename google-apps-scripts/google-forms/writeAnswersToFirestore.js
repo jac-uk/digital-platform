@@ -1,8 +1,13 @@
+/*
+ * A Google Apps Script that submits Google Form data to a Firebase function.
+ *
+ * Data will continue to be saved in the Form and on an attached spreadsheet if one has been used. All this script does is send a
+ * copy of the data to the specified RESTFUL endpoint.
+ */
 const testSubmissionEndpoint = "<change to correct endpoint>";
 
 function onSubmit(e) {
-  const form = FormApp.getActiveForm();
-  const data = { title: form.getTitle() };
+  const data = { title: FormApp.getActiveForm().getTitle() };
 
   const itemResponses = e.response.getItemResponses();
   data.email = e.response.getRespondentEmail();
@@ -10,27 +15,39 @@ function onSubmit(e) {
   itemResponses.forEach(function (itemResponse) {
     const item = itemResponse.getItem();
     // Get the question.
-    const responseTitle = itemResponse.getItem().getTitle();
+    const responseTitle = item.getTitle();
     const responseValue = itemResponse.getResponse();
-    const gridAnswers = {};
 
-    if (itemResponse.getItem().getType() == "CHECKBOX_GRID") {
-      const answersArrayOfArrays = responseValue;
-      // Because gs doesn't have .flat()
-      const answersArray = [].concat.apply([], answersArrayOfArrays);
-      const rows = item.asCheckboxGridItem().getRows();
+    if (item.getType() == "CHECKBOX_GRID") {
+      const gridAnswers = {};
+
+      /*
+       * This is a one-liner to flatten an array of arrays.  It is a less-than-clear map reduce, or at least functions as such.
+       * See:
+       *
+       * https://stackoverflow.com/questions/10865025/merge-flatten-an-array-of-arrays
+       *
+       * for more details.
+       * This is done becaue Google Apps Script does not yet support `.flat()`.
+       */
+      const answersArray = [].concat.apply([], responseValue);
+
+      const checkboxGrid = item.asCheckboxGridItem();
+      const rows = checkboxGrid.getRows();
 
       /* Build a keyed object because Firestore doesn't yet work with directly nested Arrays of Arrays *and*
-         the format of `.getResponse()` when the question an array of checkboxes is unusual:
+         the format of `.getResponse()` when the question an array of checkboxes is exactly that:
 
          [['Most Appropriate'],null,null,null,['Least Appropriate'],null]
 
          Where the populated element indicates the row position of the user's chosen answer. It is an array
          because the checkbox grid needs to be able to deal with cases where there may be multiple answer columns chosen.
-         We DO NOT support this format--anything other than two columns will cause problems.
+         We DO NOT support this format--anything other than two columns will cause problems. That said, these two columns can be
+         named any way the ops teams/policy like.
          */
-      item.asCheckboxGridItem().getColumns().forEach(function (key) {
-        gridAnswers[key.toString()] = rows[answersArray.indexOf(key)];
+      checkboxGrid.getColumns().forEach(function (column) {
+        column = column.toString();
+        gridAnswers[column] = rows[answersArray.indexOf(column)];
       });
 
       data[responseTitle] = gridAnswers;
@@ -49,3 +66,4 @@ function onSubmit(e) {
   console.info({ recordWritten: data.email });
   return true;
 }
+
