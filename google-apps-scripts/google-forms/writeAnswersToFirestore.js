@@ -19,7 +19,7 @@ function onSubmit(e) {
     const responseValue = itemResponse.getResponse();
 
     if (item.getType() == "CHECKBOX_GRID") {
-      const gridAnswers = {};
+      const userSelectedAnswers = {};
 
       /*
        * This is a one-liner to flatten an array of arrays.  It is a less-than-clear map reduce, or at least functions as such.
@@ -33,7 +33,7 @@ function onSubmit(e) {
       const answersArray = [].concat.apply([], responseValue);
 
       const checkboxGrid = item.asCheckboxGridItem();
-      const rows = checkboxGrid.getRows();
+      const allRows = checkboxGrid.getRows();
 
       /* Build a keyed object because Firestore doesn't yet work with directly nested Arrays of Arrays *and*
          the format of `.getResponse()` when the question an array of checkboxes is exactly that:
@@ -45,12 +45,13 @@ function onSubmit(e) {
          We DO NOT support this format--anything other than two columns will cause problems. That said, these two columns can be
          named any way the ops teams/policy like.
          */
-      checkboxGrid.getColumns().forEach(function (column) {
-        column = column.toString();
-        gridAnswers[column] = rows[answersArray.indexOf(column)];
+      checkboxGrid.getColumns().forEach(function (columnName) {
+        columnName = columnName.toString();
+        const chosenAnswer = allRows[answersArray.indexOf(columnName)];
+        userSelectedAnswers[columnName] = chosenAnswer;
       });
 
-      data[responseTitle] = gridAnswers;
+      data[responseTitle] = userSelectedAnswers;
     } else {
       data[responseTitle] = responseValue;
     }
