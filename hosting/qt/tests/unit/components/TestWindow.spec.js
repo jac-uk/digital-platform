@@ -1,16 +1,18 @@
 import {shallowMount, createLocalVue} from '@vue/test-utils';
 import Vuex from 'vuex';
 import TestWindow from '@/components/TestWindow';
+import MockDate from 'mockdate';
 
 const localVue = createLocalVue();
 localVue.use(Vuex);
 
 describe('components/TestWindow', () => {
+  let subject;
   const createTestSubject = (mockGetters) => {
     const defaultMockGetters = {
       test: () => ({
-        openingTime: new Date(),
-        closingTime: new Date(),
+        openingTime: new Date('2019-06-20 09:00'),
+        closingTime: new Date('2019-06-20 18:00'),
       }),
       testHasOpened: () => false,
       testHasClosed: () => false,
@@ -25,7 +27,10 @@ describe('components/TestWindow', () => {
     return shallowMount(TestWindow, {localVue, store});
   };
 
-  let subject;
+  afterEach(() => {
+    // Reset Date if it was mocked with MockDate
+    MockDate.reset();
+  });
 
   it('renders in a HTML <div> tag', () => {
     subject = createTestSubject({});
@@ -34,72 +39,132 @@ describe('components/TestWindow', () => {
 
   describe('before test day', () => {
     beforeEach(() => {
-      const mockGetters = {
+      MockDate.set(new Date('2019-06-19'));
+      subject = createTestSubject({
         test: () => ({
-          openingTime: new Date('2050-06-17 07:00:00'),
-          closingTime: new Date('2050-06-17 21:00:00'),
+          openingTime: new Date('2019-06-20 09:00'),
+          closingTime: new Date('2019-06-20 18:00'),
         }),
         testHasOpened: () => false,
         testHasClosed: () => false,
         testIsOpen:    () => false,
-      };
-      subject = createTestSubject(mockGetters);
+      });
     });
 
-    it('starts with "The test window will be open on"', () => {
+    it('starts "The test window will be open on"', () => {
       expect(subject.text()).toStartWith('The test window will be open on');
     });
 
     it('shows the date of the test', () => {
-      expect(subject.text()).toContain('17 June 2050');
+      expect(subject.text()).toContain('20 June 2019');
     });
 
     it('shows the opening and closing times', () => {
-      expect(subject.text()).toContain('between 7am and 9pm');
+      expect(subject.text()).toContain('between 9am and 6pm');
     });
   });
 
-  describe('on test day', () => {
-    describe('before the test window has opened', () => {
-      // TODO: Impement tests
-      it.skip('', () => {});
+  describe('on test day, before the test window has opened', () => {
+    beforeEach(() => {
+      MockDate.set(new Date('2019-06-20 08:45'));
+      subject = createTestSubject({
+        test: () => ({
+          openingTime: new Date('2019-06-20 09:00'),
+          closingTime: new Date('2019-06-20 18:00'),
+        }),
+        testHasOpened: () => false,
+        testHasClosed: () => false,
+        testIsOpen:    () => false,
+      });
     });
 
-    describe('when the test window is open', () => {
-      // TODO: Impement tests
-      it.skip('', () => {});
+    it('starts "The test window will be open today"', () => {
+      expect(subject.text()).toStartWith('The test window will be open today');
     });
 
-    describe('after the test window has closed', () => {
-      // TODO: Impement tests
-      it.skip('', () => {});
+    it('shows the opening and closing times', () => {
+      expect(subject.text()).toContain('between 9am and 6pm');
+    });
+  });
+
+  describe('on test day, when the test window is open', () => {
+    beforeEach(() => {
+      MockDate.set(new Date('2019-06-20 12:00'));
+      subject = createTestSubject({
+        test: () => ({
+          openingTime: new Date('2019-06-20 09:00'),
+          closingTime: new Date('2019-06-20 18:00'),
+        }),
+        testHasOpened: () => true,
+        testHasClosed: () => false,
+        testIsOpen:    () => true,
+      });
+    });
+
+    it('starts "The test window is now open"', () => {
+      expect(subject.text()).toStartWith('The test window is now open');
+    });
+
+    it('shows the closing time', () => {
+      expect(subject.text()).toContain('closes at 6pm');
+    });
+
+    it('advises to start the test 1 hour before closing time', () => {
+      expect(subject.text()).toContain('Start the test no later than 5pm');
+    });
+  });
+
+  describe('on test day, after the test window has closed', () => {
+    beforeEach(() => {
+      MockDate.set(new Date('2019-06-20 18:30'));
+      subject = createTestSubject({
+        test: () => ({
+          openingTime: new Date('2019-06-20 09:00'),
+          closingTime: new Date('2019-06-20 18:00'),
+        }),
+        testHasOpened: () => true,
+        testHasClosed: () => true,
+        testIsOpen:    () => false,
+      });
+    });
+
+    it('starts "This test has closed."', () => {
+      expect(subject.text()).toStartWith('This test has closed.');
+    });
+
+    it('says the test was today', () => {
+      expect(subject.text()).toContain('The test window was today');
+    });
+
+    it('shows the opening and closing times', () => {
+      expect(subject.text()).toContain('between 9am and 6pm');
     });
   });
 
   describe('after test day', () => {
     beforeEach(() => {
-      const mockGetters = {
+      MockDate.set(new Date('2019-06-21'));
+      subject = createTestSubject({
         test: () => ({
-          openingTime: new Date('2000-02-05 09:00:00'),
-          closingTime: new Date('2000-02-05 17:00:00'),
+          openingTime: new Date('2019-06-20 09:00'),
+          closingTime: new Date('2019-06-20 18:00'),
         }),
         testHasOpened: () => true,
         testHasClosed: () => true,
         testIsOpen:    () => false,
-      };
-      subject = createTestSubject(mockGetters);
+      });
     });
 
-    it('starts with "This test has closed."', () => {
+    it('starts "This test has closed."', () => {
       expect(subject.text()).toStartWith('This test has closed.');
     });
 
     it('shows the date of the test', () => {
-      expect(subject.text()).toContain('5 February 2000');
+      expect(subject.text()).toContain('20 June 2019');
     });
 
     it('shows the opening and closing times', () => {
-      expect(subject.text()).toContain('between 9am and 5pm');
+      expect(subject.text()).toContain('between 9am and 6pm');
     });
   });
 });
