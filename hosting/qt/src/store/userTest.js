@@ -1,6 +1,5 @@
-import {firestore} from "@/firebase";
+import firebase, {firestore} from "@/firebase";
 import sanitizeFirestore from "@/utils/sanitizeFirestore";
-import merge from 'deepmerge';
 
 let unsubscribe;
 
@@ -34,10 +33,6 @@ const module = {
       state.id = id;
       state.data = data;
     },
-    updateUserTest(state, {id, data}) {
-      state.id = id;
-      state.data = merge(state.data, data);
-    },
   },
   actions: {
     async loadUserTest({commit, getters}) {
@@ -66,19 +61,19 @@ const module = {
       unsubscribe = undefined; // Reset so we can subscribe again
     },
     async startTest({commit, getters}) {
-      const data = {
-        startedAt: new Date(),
-      };
+      const doc = getters.userTestDoc;
 
-      const saveData = {
+      // Save the startedAt timestamp to Firestore
+      await doc.set({
+        // Use serverTimestamp() to use the server-side clock rather than rely on the end-user's device clock
+        startedAt: firebase.firestore.FieldValue.serverTimestamp(),
         test: getters.testDoc,
         userUid: getters.currentUserId,
-        ...data
-      };
+      });
 
-      const doc = getters.userTestDoc;
-      await doc.set(saveData, {merge: true});
-      commit('updateUserTest', {id: doc.id, data});
+      // Read it back to update our state
+      const snapshot = await doc.get();
+      commitSnapshot(commit, snapshot);
     },
   },
   getters: {
