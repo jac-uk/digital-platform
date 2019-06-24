@@ -1,8 +1,7 @@
 const admin = require("firebase-admin");
 const functions = require("firebase-functions");
 const NotifyClient = require("notifications-node-client").NotifyClient;
-exports.qtSubmissions = require("./qt/submission");
-exports.writeQtSummary = require("./qt/summary");
+exports.userTestSubmissions = require("./qt/submission");
 
 admin.initializeApp();
 
