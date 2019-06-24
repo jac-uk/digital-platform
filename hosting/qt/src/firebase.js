@@ -23,3 +23,4 @@ const functions = firebase.functions;
 const Timestamp = firebase.firestore.Timestamp;
 
 export {firestore, auth, functions, Timestamp};
+export default firebase;
