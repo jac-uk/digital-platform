@@ -1,5 +1,6 @@
 const admin = require("firebase-admin");
 const functions = require("firebase-functions");
+const NotifyClient = require("notifications-node-client").NotifyClient;
 
 const createRecord = async (record) => {
   const firestore = admin.firestore();
@@ -22,14 +23,21 @@ const createRecord = async (record) => {
   /*
    * We only record the `finishedAt` time for the *first* submission. In the event of duplicate submissions, we save the each
    * additional one and count the number of duplicates in the `usersTests` record. We do not update the `finishedAt`
-   * timestamp again.
+   * timestamp again and we do not send duplicate confirmation emails.
    *
    */
   const userTestDoc = await userTest.get();
   if (userTestDoc.exists) {
-    if (userTestDoc.data().finishedAt === undefined) {
+    const data = userTestDoc.data()
+    if (data.finishedAt === undefined) {
       await userTest.set({finishedAt: record.finishedAt}, {merge: true});
       console.info({updatedUsersTests: userTest.id});
+
+      const user = await admin.auth().getUser(data.userUid);
+      const client = new NotifyClient(functions.config().notify.key);
+      const personalisation = {firstname: user.displayName};
+      await client.sendEmail(record.confirmationTemplate, user.email, {personalisation});
+      console.info({sentConfirmationEmail: user.email});
     } else {
       const increment = admin.firestore.FieldValue.increment(1);
       userTest.update({duplicateSubmissions: increment});
