@@ -9,14 +9,34 @@ const createRecord = async (record) => {
   const userTest = firestore
     .collection("usersTests")
     .doc(record["Unique reference code - for JAC use only"]);
+
   record.userTest = userTest;
 
-  const uts = await firestore
+  const uts = firestore
     .collection("userTestSubmissions")
     .doc()
-    .set(record);
 
+  await uts.set(record);
   console.info({ createdUserTestSubmission: uts.id });
+
+  /*
+   * We only record the `finishedAt` time for the *first* submission. In the event of duplicate submissions, we save the each
+   * additional one and count the number of duplicates in the `usersTests` record. We do not update the `finishedAt`
+   * timestamp again.
+   *
+   */
+  const userTestDoc = await userTest.get();
+  if (userTestDoc.exists) {
+    if (userTestDoc.data().finishedAt === undefined) {
+      await userTest.set({finishedAt: record.finishedAt}, {merge: true});
+      console.info({updatedUsersTests: userTest.id});
+    } else {
+      const increment = admin.firestore.FieldValue.increment(1);
+      userTest.update({duplicateSubmissions: increment});
+      console.info({updatedUsersTests: userTest.id, DuplicateSubmission: true});
+    }
+  }
+
   return true;
 }
 
