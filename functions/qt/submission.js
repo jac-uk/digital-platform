@@ -2,10 +2,9 @@ const admin = require("firebase-admin");
 const functions = require("firebase-functions");
 const NotifyClient = require("notifications-node-client").NotifyClient;
 
-const createRecord = async (record) => {
-  const firestore = admin.firestore();
-
-  record.finishedAt = admin.firestore.FieldValue.serverTimestamp();
+const createUserTestSubmission = async (record, firestore) => {
+  const finishedAt = admin.firestore.FieldValue.serverTimestamp();
+  record.finshedAt = finishedAt;
 
   const userTest = firestore
     .collection("usersTests")
@@ -13,43 +12,62 @@ const createRecord = async (record) => {
 
   record.userTest = userTest;
 
-  const uts = firestore
+  const userTestSubmission = firestore
     .collection("userTestSubmissions")
-    .doc()
+    .doc();
 
-  await uts.set(record);
-  console.info({ createdUserTestSubmission: uts.id });
+  await userTestSubmission.set(record);
+  console.info({createdUserTestSubmission: userTestSubmission.id, usersTests: userTest.id});
 
+  return { finishedAt, userTest }
+}
+
+const updateUsersTests = async (userTestData, firestore) => {
   /*
-   * We only record the `finishedAt` time for the *first* submission. In the event of duplicate submissions, we save the each
-   * additional one and count the number of duplicates in the `usersTests` record. We do not update the `finishedAt`
-   * timestamp again and we do not send duplicate confirmation emails.
+   * We only record the `finishedAt` time for the *first* submission. In the event of duplicate submissions, we save each
+   * additional record and log the number of duplicates. We do not update the `finishedAt` timestamp
    *
    */
+  const userTest = userTestData.userTest;
   const userTestDoc = await userTest.get();
   if (userTestDoc.exists) {
-    const data = userTestDoc.data()
+    const data = userTestDoc.data();
     if (data.finishedAt === undefined) {
-      await userTest.set({finishedAt: record.finishedAt}, {merge: true});
+      await userTest.set({finishedAt: userTestData.finishedAt}, {merge: true});
       console.info({updatedUsersTests: userTest.id});
-
-      const user = await admin.auth().getUser(data.userUid);
-      const client = new NotifyClient(functions.config().notify.key);
-      const personalisation = {firstname: user.displayName};
-      await client.sendEmail(record.confirmationTemplate, user.email, {personalisation});
-      console.info({sentConfirmationEmail: user.email});
+      return data;
     } else {
-      const increment = admin.firestore.FieldValue.increment(1);
-      userTest.update({duplicateSubmissions: increment});
-      console.info({updatedUsersTests: userTest.id, DuplicateSubmission: true});
+      console.warn({updatedUsersTests: userTest.id, duplicateSubmission: true});
     }
+  } else {
+    console.warn({updatedUsersTests: undefined, unattributableSubmission: true});
   }
+  return undefined;
+}
 
+const sendConfirmationEmail = async (userTestDocData, confirmationTemplate) => {
+  const client = new NotifyClient(functions.config().notify.key);
+  const user = await admin.auth().getUser(userTestDocData.userUid);
+  const personalisation = {firstname: user.displayName};
+  await client.sendEmail(confirmationTemplate, user.email, {personalisation});
+  console.info({sentConfirmationEmail: user.email});
+  return true;
+}
+
+const main = async (record) => {
+  const firestore = admin.firestore();
+  const userTestData = await createUserTestSubmission(record, firestore);
+  const userTestDocData = await updateUsersTests(userTestData, firestore);
+
+  // No point sending duplicate emails/trying to send emails to non-existent users.
+  if (userTestDocData !== undefined) {
+    await sendConfirmationEmail(userTestDocData, record.confirmationTemplate);
+  }
   return true;
 }
 
 module.exports = functions.https.onRequest((request, response) => {
-  return createRecord(request.body)
+  return main(request.body)
     .then(() => {
       return response.status(200).send({status: 'OK'});
     })
