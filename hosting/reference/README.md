@@ -20,3 +20,13 @@ compatible word processor).
 Works in modern browsers (Chrome, Firefox, Safari, Edge).
 
 Functional in Internet Explorer 11. Does not work in older versions of Internet Explorer.
+
+
+## Local set up
+For local development, open a file in your browser and add an existing reference to your query string (for example, '.../hosting/reference/index.html?ref=REFERENCE_ID'). 
+List of existing references is in Firestore under references collection.
+
+
+
+
+
