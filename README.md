@@ -55,3 +55,21 @@ Each 'component' in this project (application form, reference upload, etc.) is h
 
 Hosting multiple sites in one project is a feature 
 [supported and documented by Firebase](https://firebase.google.com/docs/hosting/multisites).
+
+### Running apps locally
+
+Before running Qualifying Test app or Application app locally, make sure your current Node version is 8.
+Apps are located in hosting folder.
+
+### Setting up Firebase
+
+Install a Firebase CLI:
+```
+npm install -g firebase-tools
+```
+
+Then sign in with your Google account:
+```
+firebase login
+```
+
