@@ -65,9 +65,6 @@ node_modules/
 # Yarn Integrity file
 .yarn-integrity
 
-# dotenv environment variables file
-.env
-
 # Built frontend assets
 dist/
 
