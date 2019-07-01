@@ -52,7 +52,7 @@
               </div>
             </div>
             <div class="pl-sm-3 mt-3 mt-sm-0">
-              <button class="btn btn-primary">Submit</button>
+              <button class="btn btn-primary" id="test-submit-btn">Submit</button>
               <span id="progress-spinner" class="invisible spinner-border spinner-border-sm text-secondary ml-1"
               aria-hidden="true"></span>
             </div>
@@ -85,10 +85,18 @@
   <script src="https://cdn.jsdelivr.net/npm/@ungap/url-search-params/min.js"></script>
 
   <!-- Firebase SDKs -->
-  <script src="/__/firebase/5.9.0/firebase-app.js"></script>
-  <script src="/__/firebase/5.9.0/firebase-firestore.js"></script>
-  <script src="/__/firebase/5.9.0/firebase-storage.js"></script>
-  <script src="/__/firebase/init.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/6.2.4/firebase-app.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/6.2.4/firebase-auth.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/6.2.4/firebase-firestore.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/6.2.4/firebase-storage.js"></script>
+
+  <script>
+  const firebaseConfig = {
+    // config is here
+  };
+
+  firebase.initializeApp(firebaseConfig);
+  </script>
 
   <!-- Bootstrap custom file inputs -->
   <script src="https://cdn.jsdelivr.net/npm/bs-custom-file-input/dist/bs-custom-file-input.min.js"></script>
@@ -152,7 +160,7 @@
 
     function processForm() {
       const fileInput = document.getElementById('fileInput');
-
+      
       if (!validateFileInput(fileInput)) {
         return false;
       }

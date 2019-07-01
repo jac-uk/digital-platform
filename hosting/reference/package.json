@@ -1,0 +1,16 @@
+{
+  "name": "reference",
+  "version": "1.0.0",
+  "description": "A page allowing referees ('assessors') to upload their references ('independent assessments') to support a candidate's  application.",
+  "main": "index.html",
+  "scripts": {
+    "cypress": "npm run serve & cypress open",
+    "serve": "python -m SimpleHTTPServer 8002"
+  },
+  "author": "JAC",
+  "license": "ISC",
+  "dependencies": {
+    "cypress": "^3.3.2",
+    "firebase": "^6.2.4"
+  }
+}
