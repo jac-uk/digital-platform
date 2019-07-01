@@ -1,7 +1,7 @@
 {
   "projects": {
     "default": "application-form-e08c9",
-    "staging": "jac-application-form-staging"
+    "staging": "digital-platform-staging"
   },
   "targets": {
     "application-form-e08c9": {
@@ -14,6 +14,19 @@
         ],
         "qt": [
           "jac-qt"
+        ]
+      }
+    },
+    "digital-platform-staging": {
+      "hosting": {
+        "apply": [
+          "jac-apply-staging"
+        ],
+        "reference": [
+          "jac-reference-staging"
+        ],
+        "qt": [
+          "jac-qt-staging"
         ]
       }
     }
