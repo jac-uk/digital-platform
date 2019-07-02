@@ -17,6 +17,7 @@
   },
   "devDependencies": {
     "connect": "^3.7.0",
+    "cypress-file-upload": "^3.2.0",
     "serve-static": "^1.14.1",
     "wait-on": "^3.2.0"
   }
