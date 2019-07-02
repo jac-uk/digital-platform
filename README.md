@@ -1,6 +1,6 @@
 # JAC Digital Platform
 
-[![Build Status](https://travis-ci.org/JudicialAppointmentsCommission/application-form.svg?branch=master)](https://travis-ci.org/JudicialAppointmentsCommission/application-form)
+[![Build Status](https://travis-ci.org/jac-uk/digital-platform.svg?branch=master)](https://travis-ci.org/jac-uk/digital-platform)
 
 This project contains components of the JAC Digital Platform which are concerned with handling user applications for 
 vacancies.
