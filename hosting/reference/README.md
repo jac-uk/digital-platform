@@ -34,12 +34,12 @@ Before running tests, make sure NPM is installed.
 We can run Cypress tests in Chrome browser with this command:
 
 ```
-cypress-local
+npm run cypress-local
 ```
 
 We can also run tests in headless browser with:
 ```
-cypress-headless-local
+npm run cypress-headless-local
 ```
 
 
