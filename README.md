@@ -45,7 +45,7 @@ between components. This enables a Single Sign-on flow in which, for example, a 
 application form whilst applying for a role, and later they'd be able to complete their Qualifying Test by logging in with the same 
 credentials.
 
-### Architecture Diagram
+### Architecture diagram
 
 ![Application architecture diagram](docs/jac-digital-platform-architecture.svg)
 
@@ -56,14 +56,30 @@ Each 'component' in this project (application form, reference upload, etc.) is h
 Hosting multiple sites in one project is a feature 
 [supported and documented by Firebase](https://firebase.google.com/docs/hosting/multisites).
 
-### Running apps locally
+### Staging and production environments
 
-Before running Qualifying Test app or Application app locally, make sure your current Node version is 8.
-Apps are located in hosting folder.
+We use separate Firebase projects as staging and production environments.
 
-### Setting up Firebase
+For local development we use the staging environment. This allows us to develop and run tests without affecting production data.
 
-Install a Firebase CLI:
+- **Staging:** [digital-platform-staging](https://console.firebase.google.com/project/digital-platform-staging/overview)
+- **Production:** [application-form-e08c9](https://console.firebase.google.com/project/application-form-e08c9/overview)
+
+## Local development
+
+### Node.js
+
+You must be running **Node.js 8**.
+
+You can use [`nvm`](https://github.com/nvm-sh/nvm) or 
+[Homebrew](http://www.ianoxley.com/blog/2018/02/02/managing-node-versions-with-homebrew) to manage installed Node.js versions.
+
+### Firebase CLI
+
+You'll need the [Firebase Command Line Interface (CLI)](https://firebase.google.com/docs/cli) installed to interact with the staging and production projects on 
+Firebase.
+
+Install the Firebase CLI:
 ```
 npm install -g firebase-tools
 ```
@@ -73,3 +89,46 @@ Then sign in with your Google account:
 firebase login
 ```
 
+Configure Firebase CLI to use the staging environment:
+```
+firebase use staging
+```
+
+### Install project dependencies
+
+Install dependencies for Cloud Functions:
+```
+cd functions
+npm install
+```
+
+Install dependencies for Application Form app:
+```
+cd hosting/apply
+npm install
+```
+
+Install dependencies for Qualifying Tests app:
+```
+cd hosting/qt
+npm install
+```
+
+### Deploy to staging
+
+Deploy to staging using the Firebase CLI:
+
+```
+firebase deploy --project staging
+```
+
+You can also perform [partial deployments](https://firebase.google.com/docs/cli#partial_deploys) to only update specific apps, 
+Cloud Functions or Firebase services.
+
+### Deploy to production
+
+We use [Travis CI](https://travis-ci.org/jac-uk/digital-platform) to deploy to production.
+
+Open a Pull Request to merge your code into the `master` branch.
+
+Once approved, merge your Pull Request and it'll be deployed to production automatically.
