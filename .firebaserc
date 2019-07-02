@@ -1,7 +1,7 @@
 {
   "projects": {
-    "default": "application-form-e08c9",
-    "staging": "digital-platform-staging"
+    "staging": "digital-platform-staging",
+    "production": "application-form-e08c9"
   },
   "targets": {
     "application-form-e08c9": {
