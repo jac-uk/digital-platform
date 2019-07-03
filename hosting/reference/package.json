@@ -4,7 +4,7 @@
   "description": "A page allowing referees ('assessors') to upload their references ('independent assessments') to support a candidate's  application.",
   "main": "index.html",
   "scripts": {
-    "serve": "node staticServer & ./node_modules/.bin/wait-on http://localhost:8002",
+    "serve": "npx serve -l 8002 & ./node_modules/.bin/wait-on http://localhost:8002",
     "cypress-ci": "npm run serve; ./node_modules/.bin/cypress run --config video=false",
     "cypress-local": "npm run serve; ./node_modules/.bin/cypress open; kill -9 $(lsof -ti tcp:8002)",
     "cypress-headless-local": "npm run serve; ./node_modules/.bin/cypress run --config video=false; kill -9 $(lsof -ti tcp:8002)"
@@ -18,7 +18,7 @@
   "devDependencies": {
     "connect": "^3.7.0",
     "cypress-file-upload": "^3.2.0",
-    "serve-static": "^1.14.1",
+    "serve": "^11.0.2",
     "wait-on": "^3.2.0"
   }
 }
