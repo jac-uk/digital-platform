@@ -1,6 +1,6 @@
 describe('File upload', function() {
 
-  describe("when upload is successful", () => {
+  describe('when upload is successful', () => {
 
     it('displays a confirmation message', function() {
       cy.visit('http://localhost:8002?ref=test');
@@ -14,9 +14,11 @@ describe('File upload', function() {
         );
       });
 
-      cy.get("#screen-received").find("h1").contains("Independent assessment received");
-    })
+      cy.get('#test-submit-btn').click();
 
-  })
+      cy.get('#screen-received').should('be.visible');
+    });
 
-})
+  });
+
+});
