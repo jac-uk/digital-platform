@@ -69,7 +69,7 @@ For local development we use the staging environment. This allows us to develop 
 
 ### Node.js
 
-You must be running **Node.js 8**.
+You must be running **Node.js 10**.
 
 You can use [`nvm`](https://github.com/nvm-sh/nvm) or 
 [Homebrew](http://www.ianoxley.com/blog/2018/02/02/managing-node-versions-with-homebrew) to manage installed Node.js versions.
