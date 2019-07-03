@@ -5,11 +5,11 @@ describe('Content', function() {
   })
 
   it('Does not contain undefined', function() {
-    cy.contains('undefined').should('not.exist');
+    cy.wait(1000).get('body').should('not.contain', 'undefined')
   })
 
   it('Does not contain null', function() {
-    cy.contains('null').should('not.exist');
+    cy.wait(1000).get('body').should('not.contain', 'null')
   })
 
 })
