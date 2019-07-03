@@ -25,7 +25,7 @@ describe('Home Page', function() {
     it('"Invalid link" if the reference is not found or incorrect', function() {
       cy.visit('http://localhost:8002?ref=');
 
-      cy.get('#screen-not-found').should('not.be.hidden');
+      cy.get('#screen-not-found').should('be.visible');
       cy.get('#screen-error').should('be.hidden');
     })
 
