@@ -24,15 +24,15 @@ Functional in Internet Explorer 11. Does not work in older versions of Internet 
 
 ## Local set up
 
-For local development, open a file in your browser and add an existing reference to your query string (for example, '.../hosting/reference/index.html?ref=REFERENCE_ID'). 
-List of existing references is in Firestore under references collection.
+For local development, open a file in your browser and add an existing reference to your query string (for example, `.../hosting/reference/index.html?ref=REFERENCE_ID`). 
+
+List of existing references is in Firestore under /references/ collection.
 
 
 ## Running Cypress tests locally.
 
 Before running tests, make sure NPM is installed.
 We can run Cypress tests in Chrome browser with this command:
-
 ```
 npm run cypress-local
 ```

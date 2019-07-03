@@ -1,9 +1,9 @@
 describe('Home Page', function() {
 
-  describe("Loads", () => {
+  describe('Loads', () => {
 
     it('successfully if the correct reference value is provided in query string', function() {
-      cy.visit('http://localhost:8002?ref=1uOa021dKuFiNIx9rA2E');
+      cy.visit('http://localhost:8002?ref=test');
 
       cy.get('#screen-upload').should('be.visible');
     })
@@ -21,14 +21,14 @@ describe('Home Page', function() {
     })
   })
 
-  describe("Displays a message", () => {
+  describe('Displays a message', () => {
     it('"Invalid link" if the reference is not found or incorrect', function() {
       cy.visit('http://localhost:8002?ref=');
 
       cy.get('#screen-not-found').should('be.visible');
       cy.get('#screen-error').should('be.hidden');
-    })
+    });
 
-  })
+  });
 
-})
+});
