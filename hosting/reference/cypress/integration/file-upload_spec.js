@@ -1,24 +1,12 @@
-describe('File upload', function() {
+describe('File upload', () => {
 
-  describe('when upload is successful', () => {
+  // This test will be replaced with upload test when we can set data to firestore before each Cypress test.
+  // For now we only test that form is available on page load.
 
-    it('displays a confirmation message', function() {
-      cy.visit('http://localhost:8002?ref=test');
+  it('upload form is available', () => {
+    cy.visit('http://localhost:8002?ref=test'); 
 
-      const fileName = 'test.pdf';
-   
-      cy.fixture(fileName).then(fileContent => {
-        cy.get('input[type=file]').upload(
-          { fileContent, fileName, mimeType: 'application/pdf' },
-          { subjectType: 'input' }
-        );
-      });
-
-      cy.get('#test-submit-btn').click();
-
-      cy.get('#screen-received').should('be.visible');
-    });
-
+    cy.get('form').should('be.visible');
   });
 
 });
