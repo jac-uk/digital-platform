@@ -2,7 +2,7 @@ import Router from 'vue-router';
 import store from '@/store';
 
 // Views
-import Login from '@/views/Login';
+import SignIn from '@/views/SignIn';
 import TakeTest from '@/views/TakeTest';
 import VerifyEmail from '@/views/VerifyEmail';
 
@@ -12,7 +12,7 @@ const router = new Router({
     {
       path: '/sign-in',
       name: 'sign-in',
-      component: Login,
+      component: SignIn,
     },
     {
       path: '/take-test',
@@ -33,12 +33,12 @@ const router = new Router({
       name: 'verify-email',
       component: VerifyEmail,
       beforeEnter: (to, from, next) => {
-        const isLoggedIn = store.getters.isSignedIn;
+        const isSignedIn = store.getters.isSignedIn;
         const isEmailVerified = store.getters.isEmailVerified;
 
-        if (!isLoggedIn) {
+        if (!isSignedIn) {
           // User must be logged in
-          return next({name: 'login'});
+          return next({name: 'sign-in'});
         }
 
         if (isEmailVerified) {
@@ -66,7 +66,7 @@ const router = new Router({
 /**
  * Verify User's Access
  *
- * - redirect to the login page if required
+ * - redirect to the sign in page if required
  * - show 'verify your email' page if required
  * - otherwise display the page
  */
