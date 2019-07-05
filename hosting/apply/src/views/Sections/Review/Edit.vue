@@ -1,6 +1,6 @@
 <template>
   <section>
-    <h2>Check your answers before sending your application</h2>
+    <h2>Check your answers before submitting your application</h2>
     <Citizenship />
     <Personal />
     <Qualifications />
@@ -11,30 +11,17 @@
     <Preferences />
     <Declarations />
     <Diversity />
-    <p v-if="application.state != 'submitted'">
-      You are applying for <strong>{{vacancy.jac_ref}}: {{vacancy.title}}</strong>
-    </p>
-    <form v-if="application.state != 'submitted'"  @submit.prevent="save">
-      <fieldset>
-        <legend>
-          We’re looking for people to take part in user research activities
-          such as testing a future version of this form. Tell us if you’re
-          happy for us to contact you.
-        </legend>
-        <BooleanInput v-model="application.willing_to_participate_in_user_research" />
-      </fieldset>
-      <div class="form-actions">
-        <button class="btn btn-primary mr-2" type="button" @click.prevent="saveAndSubmit">
-          Submit application
-        </button>
-        <span class="spinner-border spinner-border-sm text-secondary" v-if="isSaving"></span>
-      </div>
-    </form>
+    <Outreach />
+    <div class="form-actions" v-if="application.state != 'submitted'">
+      <button class="btn btn-primary mr-2" @click.prevent="saveAndSubmit">
+        Submit application
+      </button>
+      <span class="spinner-border spinner-border-sm text-secondary" v-if="isSaving"></span>
+    </div>
   </section>
 </template>
 
 <script>
-import BooleanInput from '@/components/BooleanInput';
 import Citizenship from '@/views/Sections/Citizenship/Show';
 import Experience from '@/views/Sections/Experience/Show';
 import Personal from '@/views/Sections/Personal/Show';
@@ -45,9 +32,9 @@ import Character from '@/views/Sections/Character/Show';
 import Preferences from '@/views/Sections/Preferences/Show';
 import Declarations from '@/views/Sections/Declarations/Show';
 import Diversity from '@/views/Sections/Diversity/Show';
+import Outreach from '@/views/Sections/Outreach/Show';
 export default {
   components: {
-    BooleanInput,
     Citizenship,
     Experience,
     Personal,
@@ -57,11 +44,11 @@ export default {
     Character,
     Preferences,
     Declarations,
-    Diversity
+    Diversity,
+    Outreach
   },
   data() {
     return {
-      vacancy: this.$store.getters.vacancy,
       application: this.$store.getters.application(),
       isSaving: false,
     };

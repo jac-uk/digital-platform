@@ -1,10 +1,10 @@
 <template>
   <section>
     <form @submit.prevent="save">
-      <h2>How did you hear about this vacancy?</h2>
 
       <fieldset>
-        <legend>Select any that apply:</legend>
+        <legend>How did you hear about this vacancy?</legend>
+        <div class="fieldset-text">Select all that apply</div>
         <SelectList id="how_did_you_hear" :multiple="true" :options="selectListOptions.heard_about_from" v-model="applicant.how_did_you_hear" />
         <div class="custom-control custom-checkbox">
           <input class="custom-control-input" type="checkbox" id="how_did_you_hear_has_other" :value="true" v-model="applicant.how_did_you_hear_has_other">
@@ -15,6 +15,16 @@
         </div>
       </fieldset>
 
+      <fieldset>
+        <legend>Have you attended an outreach event on JAC selection exercises?</legend>
+        <BooleanInput v-model="applicant.has_attended_outreach_event" />
+      </fieldset>
+
+      <fieldset>
+        <legend>Have you taken part in the Judicial Work Shadowing Scheme?</legend>
+        <BooleanInput v-model="applicant.taken_part_in_judicial_work_shadowing_scheme" />
+      </fieldset>
+
       <SaveAndContinueButtons :isSaving="isSaving" @saveAndContinue="saveAndContinue" />
     </form>
   </section>
@@ -23,11 +33,13 @@
 <script>
 import SelectList from '@/components/SelectList';
 import SaveAndContinueButtons from '@/components/SaveAndContinueButtons';
+import BooleanInput from '@/components/BooleanInput';
 
 export default {
   components: {
     SaveAndContinueButtons,
     SelectList,
+    BooleanInput,
   },
   data() {
     return {
