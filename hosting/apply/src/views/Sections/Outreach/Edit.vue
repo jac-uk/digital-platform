@@ -21,8 +21,8 @@
       </fieldset>
 
       <fieldset>
-        <legend>Did you participate in a Judicial Work Shadowing Scheme?</legend>
-        <BooleanInput v-model="applicant.participated_in_judicial_work_shadowing_scheme" />
+        <legend>Have you taken part in the Judicial Work Shadowing Scheme?</legend>
+        <BooleanInput v-model="applicant.taken_part_in_judicial_work_shadowing_scheme" />
       </fieldset>
 
       <SaveAndContinueButtons :isSaving="isSaving" @saveAndContinue="saveAndContinue" />
