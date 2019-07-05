@@ -12,9 +12,6 @@
     <Declarations />
     <Diversity />
     <Outreach />
-    <p v-if="application.state != 'submitted'">
-      You are applying for <strong>{{vacancy.jac_ref}}: {{vacancy.title}}</strong>
-    </p>
     <form v-if="application.state != 'submitted'"  @submit.prevent="save">
       <div class="form-actions">
         <button class="btn btn-primary mr-2" type="button" @click.prevent="saveAndSubmit">
@@ -54,7 +51,6 @@ export default {
   },
   data() {
     return {
-      vacancy: this.$store.getters.vacancy,
       application: this.$store.getters.application(),
       isSaving: false,
     };
