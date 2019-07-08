@@ -122,19 +122,18 @@ Deploy to staging using the Firebase CLI:
 firebase deploy --project staging
 ```
 
+You can also use [CircleCI](https://circleci.com/gh/jac-uk/digital-platform) to deploy to staging.
+
+Just prefix your branch name with `staging-` and every new push to github will automatically deploy to staging.
+
 You can also perform [partial deployments](https://firebase.google.com/docs/cli#partial_deploys) to only update specific apps, 
 Cloud Functions or Firebase services.
 
 ### Deploy to production
 
-We use [CircleCi](https://circleci.com/gh/jac-uk/digital-platform) to deploy to production.
+We use [CircleCI](https://circleci.com/gh/jac-uk/digital-platform) to deploy to production.
 
 Open a Pull Request to merge your code into the `master` branch.
 
 Once approved, merge your Pull Request and it'll be deployed to production automatically.
 
-### Deploy to staging 
-
-You can also use [CircleCi](https://circleci.com/gh/jac-uk/digital-platform) to deploy to staging.
-
-Just prefix your branch name with `staging-` and every new push to github will automatically deploy to staging.
