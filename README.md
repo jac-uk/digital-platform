@@ -124,7 +124,7 @@ firebase deploy --project staging
 
 You can also use [CircleCI](https://circleci.com/gh/jac-uk/digital-platform) to deploy to staging.
 
-Just prefix your branch name with `staging-` and every new push to github will automatically deploy to staging.
+Just prefix your branch name with `staging-` and every new push will automatically deploy to staging.
 
 You can also perform [partial deployments](https://firebase.google.com/docs/cli#partial_deploys) to only update specific apps, 
 Cloud Functions or Firebase services.
