@@ -127,7 +127,7 @@ Cloud Functions or Firebase services.
 
 ### Deploy to production
 
-We use [Travis CI](https://travis-ci.org/jac-uk/digital-platform) to deploy to production.
+We use [CircleCi](https://circleci.com/gh/jac-uk/digital-platform) to deploy to production.
 
 Open a Pull Request to merge your code into the `master` branch.
 
