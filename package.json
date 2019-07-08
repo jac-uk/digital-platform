@@ -4,12 +4,6 @@
   "repository": "https://github.com/jac-uk/digital-platform",
   "license": "MIT",
   "readme": "README.md",
-  "version": "0.0.1",
-  "main": "/functions/index.js",
-  "scripts": {},
-  "exclude": [
-    "**/node_modules/**/*"
-  ],
   "devDependencies": {
     "firebase-tools": "^7.0.2"
   }
