@@ -7,7 +7,7 @@
     "build": "vue-cli-service build",
     "lint": "vue-cli-service lint",
     "test": "vue-cli-service test:unit",
-    "test-ci": "vue-cli-service test:unit --ci --runInBand --reporters=default --reporters=jest-junit"
+    "test-ci": "vue-cli-service test:unit --ci --runInBand"
   },
   "dependencies": {
     "@sentry/browser": "^5.4.0",
@@ -33,7 +33,6 @@
     "eslint": "^5.8.0",
     "eslint-plugin-vue": "^5.0.0",
     "jest-extended": "^0.11.1",
-    "jest-junit": "^6.4.0",
     "jest-serializer-vue": "^2.0.2",
     "mockdate": "^2.0.3",
     "node-sass": "^4.12.0",
