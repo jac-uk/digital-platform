@@ -25,7 +25,10 @@
       "public": "hosting/reference",
       "ignore": [
         "README.md",
-        "**/.*"
+        "**/.*",
+        "**/node_modules/**",
+        "**/cypress/**",
+        "**/cypress.json"
       ],
       "redirects": [
         {
