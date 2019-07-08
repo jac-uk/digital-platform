@@ -35,6 +35,8 @@ jobs:
             - .
       # TODO: DRY these and their subsequent uses out.  It's trickier than it looks because the paths are used in interpolated
       # strings. For now, the workaround it to enter new path names here, and in their job definitions.
+      - run: mkdir -p ../reports/test-apply
+      - run: mkdir -p ../reports/rebase-apply
       - run: mkdir -p ../reports/test-qt
       - run: mkdir -p ../reports/rebase-qt
       - run: mkdir -p ../reports/setup
@@ -80,6 +82,12 @@ jobs:
       - run:
           name: 'Test hosting/apply'
           command: npm --prefix hosting/apply run test-ci
+          environment:
+            JEST_JUNIT_OUTPUT: "reports/test-apply/results.xml"
+      - store_test_results:
+          path: ../reports/test-apply
+      - store_artifacts:
+          path: ../reports/test-apply
 
   rebase-apply:
     executor: default
@@ -95,6 +103,12 @@ jobs:
       - run:
           name: 'Test hosting/apply'
           command: npm --prefix hosting/apply run test-ci
+          environment:
+            JEST_JUNIT_OUTPUT: "reports/rebase-apply/results.xml"
+      - store_test_results:
+          path: ../reports/rebase-apply
+      - store_artifacts:
+          path: ../reports/rebase-apply
 
   test-qt:
     executor: default
