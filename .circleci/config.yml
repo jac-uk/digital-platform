@@ -1,0 +1,203 @@
+# If you want your branch to automatically deploy to `staging`, prefix the branch name with `staging-`.
+#
+# All tests *except* those that are automatically deployed to `staging` will be tested against the branch and the branch with
+# `master` rebased onto it.
+#
+# Besides branches prefixed with `staging-`, only master will be automatically deployed (to the production environment).
+version: 2.1
+executors:
+  default:
+    docker:
+      - image: circleci/node:10.16.0-stretch
+    working_directory: ~/digital-platform
+
+jobs:
+  setup:
+    executor: default
+    # This is one of the slowest steps to run.
+    # The `parallelism` setting cuts the time needed by up to the value of the config (max 4 on the free plan).
+    # All subsequent jobs depend on this one, so there is no point in using anything less that the max value here.
+    parallelism: 4
+    steps:
+      - checkout
+      - run:
+          command: |
+            BUILDFILES=$(circleci tests split --split-by=timings npm_package_paths.txt)
+            npm ci --prefix ${BUILDFILES}
+      # `npm ci` is run in parallel in this job because, if it ran in the individual test jobs, then the rebase jobs would
+      # have to depend on the test jobs to install the npm modules. This would necessitate using circleci caching as the
+      # `persist_to_workspace` and `run: mkdir` are layered/versioned.  Attempts to mount the workspace after parallel jobs have
+      # written to it will cause it to error. CicrleCI cache would work in its stead, but it slower and requires a lot more
+      # configuration.
+      - persist_to_workspace:
+          root: .
+          paths:
+            - .
+      # TODO: DRY these and their subsequent uses out.  It's trickier than it looks because the paths are used in interpolated
+      # strings. For now, the workaround it to enter new path names here, and in their job definitions.
+      - run: mkdir -p ../reports/test-qt
+      - run: mkdir -p ../reports/rebase-qt
+      - run: mkdir -p ../reports/setup
+      # This is required for the `-split-by-timings` config, above.
+      - store_test_results:
+          path: ../reports/setup
+
+  test-functions:
+    executor: default
+    steps:
+      - attach_workspace:
+          at: ~/digital-platform
+      - run:
+          name: 'Lint functions'
+          command: npm --prefix functions run lint
+      - run:
+          name: 'There are no tests for functions yet'
+          command: echo 'N/A'
+
+  rebase-functions:
+    executor: default
+    steps:
+      - attach_workspace:
+          at: ~/digital-platform
+      - run:
+          name: 'Rebase against master'
+          command: git rebase master
+      - run:
+          name: 'Lint functions'
+          command: npm --prefix functions run lint
+      - run:
+          name: 'There are no tests for functions yet'
+          command: echo 'N/A'
+
+  test-apply:
+    executor: default
+    steps:
+      - attach_workspace:
+          at: ~/digital-platform
+      - run:
+          name: 'Lint hosting/apply'
+          command: npm --prefix hosting/apply run lint
+      - run:
+          name: 'Test hosting/apply'
+          command: npm --prefix hosting/apply run test-ci
+
+  rebase-apply:
+    executor: default
+    steps:
+      - attach_workspace:
+          at: ~/digital-platform
+      - run:
+          name: 'Rebase against master'
+          command: git rebase master
+      - run:
+          name: 'Lint hosting/apply'
+          command: npm --prefix hosting/apply run lint
+      - run:
+          name: 'Test hosting/apply'
+          command: npm --prefix hosting/apply run test-ci
+
+  test-qt:
+    executor: default
+    steps:
+      - attach_workspace:
+          at: ~/digital-platform
+      - run:
+          name: 'Lint hosting/qt'
+          command: npm --prefix hosting/qt run lint
+      - run:
+          name: 'Test hosting/qt'
+          command: npm --prefix hosting/qt run test-ci
+          environment:
+            JEST_JUNIT_OUTPUT: "reports/test-qt/results.xml"
+      - store_test_results:
+          path: ../reports/test-qt
+      - store_artifacts:
+          path: ../reports/test-qt
+
+  rebase-qt:
+    executor: default
+    steps:
+      - attach_workspace:
+          at: ~/digital-platform
+      - run:
+          name: 'Rebase against master'
+          command: git rebase master
+      - run:
+          name: 'Lint hosting/qt'
+          command: npm --prefix hosting/qt run lint
+      - run:
+          name: 'Test hosting/qt'
+          command: npm --prefix hosting/qt run test-ci
+          environment:
+            JEST_JUNIT_OUTPUT: "reports/rebase-qt/results.xml"
+      - store_test_results:
+          path: ../reports/rebase-qt
+      - store_artifacts:
+          path: ../reports/rebase-qt
+
+  build-and-deploy-production:
+    executor: default
+    steps:
+      - attach_workspace:
+          at: ~/digital-platform
+      - run:
+          name: 'Deploy to production'
+          command: node_modules/.bin/firebase deploy --force --token=$FIREBASE_DEPLOY_TOKEN --project production
+
+  build-and-deploy-staging:
+    executor: default
+    steps:
+      - attach_workspace:
+          at: ~/digital-platform
+      - run:
+          name: 'Deploy to staging'
+          command: node_modules/.bin/firebase deploy --force --token=$FIREBASE_DEPLOY_TOKEN --project staging
+
+workflows:
+  version: 2
+  test-build-and-deploy:
+    jobs:
+      - setup
+      - test-functions:
+          requires:
+            - setup
+      - test-apply:
+          requires:
+            - setup
+      - test-qt:
+          requires:
+            - setup
+      - rebase-functions:
+          requires:
+            - setup
+          filters:
+            branches:
+              ignore: master
+      - rebase-qt:
+          requires:
+             - setup
+          filters:
+            branches:
+              ignore: master
+      - rebase-apply:
+          requires:
+            - setup
+          filters:
+            branches:
+              ignore: master
+      - build-and-deploy-staging:
+          requires:
+            - test-apply
+            - test-functions
+            - test-qt
+          filters:
+            branches:
+              only: /staging-.*/
+      - build-and-deploy-production:
+          requires:
+            - test-apply
+            - test-functions
+            - test-qt
+          filters:
+            branches:
+              only: master
