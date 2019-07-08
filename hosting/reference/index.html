@@ -91,7 +91,17 @@
   <script src="https://www.gstatic.com/firebasejs/6.2.4/firebase-storage.js"></script>
 
   <script>
-    const firebaseConfig = {
+    const productionFirebaseConfig = {
+      apiKey: "AIzaSyCJflOK3WP7tcs-GSJ3qS3_-xmQGoieasY",
+      authDomain: "application-form-e08c9.firebaseapp.com",
+      databaseURL: "https://application-form-e08c9.firebaseio.com",
+      projectId: "application-form-e08c9",
+      storageBucket: "application-form-e08c9.appspot.com",
+      messagingSenderId: "260815078650",
+      appId: "1:260815078650:web:7ff813e5f45a548d"
+    };
+
+    const stagingFirebaseConfig = {
       apiKey: "AIzaSyD-1ChTYmtrmSD0UuvzV6y5GURkW9eRFvA",
       authDomain: "digital-platform-staging.firebaseapp.com",
       databaseURL: "https://digital-platform-staging.firebaseio.com",
@@ -101,7 +111,13 @@
       appId: "1:67930184815:web:02eb3850834d834f"
     };
 
-    firebase.initializeApp(firebaseConfig);
+    if(window.location.hostname && window.location.hostname === "reference.judicialappointments.digital") {
+      firebase.initializeApp(productionFirebaseConfig);
+    }
+    else {
+      firebase.initializeApp(stagingFirebaseConfig);
+    }
+
   </script>
 
   <!-- Bootstrap custom file inputs -->
