@@ -132,3 +132,9 @@ We use [CircleCi](https://circleci.com/gh/jac-uk/digital-platform) to deploy to 
 Open a Pull Request to merge your code into the `master` branch.
 
 Once approved, merge your Pull Request and it'll be deployed to production automatically.
+
+### Deploy to staging 
+
+You can also use [CircleCi](https://circleci.com/gh/jac-uk/digital-platform) to deploy to staging.
+
+Just prefix your branch name with `staging-` and every new push to github will automatically deploy to staging.
