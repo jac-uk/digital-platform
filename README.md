@@ -1,6 +1,6 @@
 # JAC Digital Platform
 
-[![Build Status](https://travis-ci.org/jac-uk/digital-platform.svg?branch=master)](https://travis-ci.org/jac-uk/digital-platform)
+[![CircleCI](https://circleci.com/gh/jac-uk/digital-platform.svg?style=svg)](https://circleci.com/gh/jac-uk/digital-platform)
 
 This project contains components of the JAC Digital Platform which are concerned with handling user applications for 
 vacancies.
