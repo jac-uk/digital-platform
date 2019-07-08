@@ -1,7 +1,6 @@
 # If you want your branch to automatically deploy to `staging`, prefix the branch name with `staging-`.
 #
-# All tests *except* those that are automatically deployed to `staging` will be tested against the branch and the branch with
-# `master` rebased onto it.
+# All tests will be tested against the branch and the branch with `master` rebased onto it.
 #
 # Besides branches prefixed with `staging-`, only master will be automatically deployed (to the production environment).
 version: 2.1
