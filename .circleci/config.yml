@@ -18,9 +18,6 @@ jobs:
     # All subsequent jobs depend on this one, so there is no point in using anything less that the max value here.
     parallelism: 5
     steps:
-      - run:
-          name: 'Install xsel'
-          command: sudo apt install xsel
       - checkout
       - run:
           command: |
@@ -128,6 +125,22 @@ jobs:
     steps:
       - attach_workspace:
           at: ~/digital-platform
+      - run:
+          name: 'Install cypress dependencies'
+          command: |
+            sudo apt-get update && \
+            sudo apt-get install --no-install-recommends -y \
+            libgtk2.0-0 \
+            libgtk-3-0 \
+            libnotify-dev \
+            libgconf-2-4 \
+            libnss3 \
+            libxss1 \
+            libasound2 \
+            libxtst6 \
+            xauth \
+            xsel \
+            xvfb
       - run:
           name: 'Test hosting/reference'
           command: npm --prefix hosting/reference run cypress-ci
