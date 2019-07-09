@@ -139,7 +139,6 @@ jobs:
             libasound2 \
             libxtst6 \
             xauth \
-            xsel \
             xvfb
       - run:
           name: 'Test hosting/reference'
