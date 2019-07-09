@@ -5,18 +5,18 @@
   "main": "index.html",
   "scripts": {
     "serve": "npx serve -n -l 8002 & wait-on http://localhost:8002",
-    "cypress-ci": "npm run serve; npm_modules/.bin/cypress run --config video=false",
+    "cypress-ci": "npm run serve; cypress run --config video=false",
     "cypress-local": "npm run serve; cypress open; kill -9 $(lsof -ti tcp:8002)",
     "cypress-headless-local": "npm run serve; cypress run --config video=false; kill -9 $(lsof -ti tcp:8002)"
   },
   "author": "JAC",
   "license": "ISC",
   "dependencies": {
-    "cypress": "^3.3.2",
     "firebase": "^6.2.4"
   },
   "devDependencies": {
     "connect": "^3.7.0",
+    "cypress": "^3.3.2",
     "cypress-file-upload": "^3.2.0",
     "serve": "^11.0.2",
     "wait-on": "^3.2.0"

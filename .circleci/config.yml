@@ -142,7 +142,38 @@ jobs:
             xvfb
       - run:
           name: 'Test hosting/reference'
-          command: npm --prefix hosting/reference run cypress-ci
+          command: |
+            npm run serve --prefix hosting/reference &&
+            npx cypress run --project hosting/reference --config video=false
+
+  rebase-reference:
+    executor: default
+    steps:
+      - attach_workspace:
+          at: ~/digital-platform
+      - run:
+          name: 'Rebase against master'
+          command: git rebase master
+      - run:
+          name: 'Install cypress dependencies'
+          command: |
+            sudo apt-get update && \
+            sudo apt-get install --no-install-recommends -y \
+            libgtk2.0-0 \
+            libgtk-3-0 \
+            libnotify-dev \
+            libgconf-2-4 \
+            libnss3 \
+            libxss1 \
+            libasound2 \
+            libxtst6 \
+            xauth \
+            xvfb
+      - run:
+          name: 'Test hosting/reference'
+          command: |
+            npm run serve --prefix hosting/reference &&
+            npx cypress run --project hosting/reference --config video=false
 
   build-and-deploy-production:
     executor: default
@@ -167,6 +198,12 @@ workflows:
   test-build-and-deploy:
     jobs:
       - setup
+      - test-reference:
+          requires:
+            - setup
+      - rebase-reference:
+          requires:
+            - setup
       - test-functions:
           requires:
             - setup
@@ -174,9 +211,6 @@ workflows:
           requires:
             - setup
       - test-qt:
-          requires:
-            - setup
-      - test-reference:
           requires:
             - setup
       - rebase-functions:
