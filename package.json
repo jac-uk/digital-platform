@@ -5,6 +5,7 @@
   "license": "MIT",
   "readme": "README.md",
   "devDependencies": {
+    "cypress": "^3.3.2",
     "firebase-tools": "^7.0.2"
   }
 }
