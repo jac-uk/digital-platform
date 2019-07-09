@@ -18,6 +18,9 @@ jobs:
     # All subsequent jobs depend on this one, so there is no point in using anything less that the max value here.
     parallelism: 5
     steps:
+      - run:
+          name: 'Install xsel'
+          command: sudo apt install xsel
       - checkout
       - run:
           command: |
