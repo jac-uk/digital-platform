@@ -56,7 +56,6 @@ Each 'component' in this project (application form, reference upload, etc.) is h
 Hosting multiple sites in one project is a feature 
 [supported and documented by Firebase](https://firebase.google.com/docs/hosting/multisites).
 
-<<<<<<< HEAD
 ### Staging and production environments
 
 We use separate Firebase projects as staging and production environments.
@@ -81,16 +80,6 @@ You'll need the [Firebase Command Line Interface (CLI)](https://firebase.google.
 Firebase.
 
 Install the Firebase CLI:
-=======
-### Running apps locally
-
-Before running Qualifying Test app or Application app locally, make sure your current Node version is 8.
-Apps are located in hosting folder.
-
-### Setting up Firebase
-
-Install a Firebase CLI:
->>>>>>> update Readme
 ```
 npm install -g firebase-tools
 ```
@@ -100,7 +89,6 @@ Then sign in with your Google account:
 firebase login
 ```
 
-<<<<<<< HEAD
 Configure Firebase CLI to use the staging environment:
 ```
 firebase use staging
@@ -148,6 +136,3 @@ We use [CircleCI](https://circleci.com/gh/jac-uk/digital-platform) to deploy to 
 Open a Pull Request to merge your code into the `master` branch.
 
 Once approved, merge your Pull Request and it'll be deployed to production automatically.
-
-=======
->>>>>>> update Readme
