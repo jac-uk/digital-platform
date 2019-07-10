@@ -1,27 +1,38 @@
 <template>
-  <main>
-    <div class="container-fluid">
-      <ul class="nav">
-        <li class="nav-item">
-          <a class="nav-link active" href="#">Home</a>
-        </li>
-        <li class="nav-item">
-          <a class="nav-link" href="#">Dashboard 1</a>
-        </li>
-        <li class="nav-item">
-          <a class="nav-link" href="#">Dashboard 2</a>
-        </li>
-        <li class="nav-item">
-          <a class="nav-link disabled" href="#" tabindex="-1" aria-disabled="true">Disabled</a>
-        </li>
-      </ul>
+  <div>
+    <nav class="navbar navbar-expand-sm navbar-light bg-light mb-4">
+      <div class="container">
+        <a href="/" class="navbar-brand router-link-active">
+          <img src="/img/jac-logo.3c5bcb61.svg" alt="Judicial Appointments Commission" width="197" height="66">
+        </a>
 
+        <div class="navbar-collapse">
+          <ul class="navbar-nav ml-auto">
+            <li class="nav-item">
+              <a class="nav-link" href="#" @click.prevent="signOut">Sign out</a>
+            </li>
+          </ul>
+        </div>
+      </div>
+    </nav>
+
+    <div class="container-fluid">
       <h1 class="text-center">Hello, admin</h1>
 
       <p>This is admin dashboard page </p>
-    </div>
-  </main>
+    </div>    
+  </div>
 </template>
 
 <script>
+  import { auth } from '@/firebase';
+
+  export default {
+    methods: {
+      signOut() {
+        auth().signOut();
+        this.$router.go('/sign-in');
+      }
+    },
+  }
 </script>
