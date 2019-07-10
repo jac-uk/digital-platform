@@ -1,16 +1,13 @@
 <template>
   <div id="app">
-    <Home />
+    <h1>This is QT Admin</h1>
+
+    <RouterView />
   </div>
 </template>
 
 <script>
-import Home from './components/Landing-page.vue'
-
 export default {
-  name: 'app',
-  components: {
-    Home
-  }
+  name: 'app'
 }
 </script>
