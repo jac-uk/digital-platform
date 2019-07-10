@@ -1,29 +1,21 @@
-# qt-admin
+# # Qualifying tests admin app
 
-## Project setup
+This is a Vue app for JAC users. To use this app you'll need to log in using your judicialappointments.digital account.
+
+## Steps to set up dev environment:
 ```
 npm install
 ```
-
-### Compiles and hot-reloads for development
 ```
 npm run serve
 ```
 
-### Compiles and minifies for production
-```
-npm run build
-```
-
-### Run your tests
+### To run tests:
 ```
 npm run test
 ```
 
-### Lints and fixes files
+### Lints and fixes files:
 ```
 npm run lint
 ```
-
-### Customize configuration
-See [Configuration Reference](https://cli.vuejs.org/config/).
