@@ -1,11 +1,13 @@
 <template>
-  <main>
-    <div>
-      This is sign in
-
+  <div class="mt-3">
+    <div class="login-container text-center">
+      <div class="mb-3 mt-5">
+        <img src="@/assets/jac-logo.svg" alt="Judicial Appointments Commission" width="197" height="66">
+      </div>
+      <p class="mb-4 mt-5">Sign in to admin dashboard with your judicialappointments.digital google account</p>
       <FirebaseUI @signInSuccess="loginRedirect" />
     </div>
-  </main>
+  </div>
 </template>
 
 <script>
@@ -25,4 +27,8 @@
 </script>
 
 <style scoped>
+  .login-container {
+    max-width: 360px;
+    margin: 0 auto;
+  }
 </style>

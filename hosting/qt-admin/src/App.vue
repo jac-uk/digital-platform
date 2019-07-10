@@ -1,7 +1,5 @@
 <template>
   <div id="app">
-    <h1>This is QT Admin</h1>
-
     <RouterView />
   </div>
 </template>
@@ -11,3 +9,7 @@ export default {
   name: 'app'
 }
 </script>
+
+<style lang="scss">
+  // Required to include global main.scss styles
+</style>
