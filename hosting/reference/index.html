@@ -52,7 +52,7 @@
               </div>
             </div>
             <div class="pl-sm-3 mt-3 mt-sm-0">
-              <button class="btn btn-primary">Submit</button>
+              <button class="btn btn-primary" id="test-submit-btn">Submit</button>
               <span id="progress-spinner" class="invisible spinner-border spinner-border-sm text-secondary ml-1"
               aria-hidden="true"></span>
             </div>
@@ -85,10 +85,40 @@
   <script src="https://cdn.jsdelivr.net/npm/@ungap/url-search-params/min.js"></script>
 
   <!-- Firebase SDKs -->
-  <script src="/__/firebase/5.9.0/firebase-app.js"></script>
-  <script src="/__/firebase/5.9.0/firebase-firestore.js"></script>
-  <script src="/__/firebase/5.9.0/firebase-storage.js"></script>
-  <script src="/__/firebase/init.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/6.2.4/firebase-app.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/6.2.4/firebase-auth.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/6.2.4/firebase-firestore.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/6.2.4/firebase-storage.js"></script>
+
+  <script>
+    const productionFirebaseConfig = {
+      apiKey: "AIzaSyCJflOK3WP7tcs-GSJ3qS3_-xmQGoieasY",
+      authDomain: "application-form-e08c9.firebaseapp.com",
+      databaseURL: "https://application-form-e08c9.firebaseio.com",
+      projectId: "application-form-e08c9",
+      storageBucket: "application-form-e08c9.appspot.com",
+      messagingSenderId: "260815078650",
+      appId: "1:260815078650:web:7ff813e5f45a548d"
+    };
+
+    const stagingFirebaseConfig = {
+      apiKey: "AIzaSyD-1ChTYmtrmSD0UuvzV6y5GURkW9eRFvA",
+      authDomain: "digital-platform-staging.firebaseapp.com",
+      databaseURL: "https://digital-platform-staging.firebaseio.com",
+      projectId: "digital-platform-staging",
+      storageBucket: "digital-platform-staging.appspot.com",
+      messagingSenderId: "67930184815",
+      appId: "1:67930184815:web:02eb3850834d834f"
+    };
+
+    if(window.location.hostname && window.location.hostname === "reference.judicialappointments.digital") {
+      firebase.initializeApp(productionFirebaseConfig);
+    }
+    else {
+      firebase.initializeApp(stagingFirebaseConfig);
+    }
+
+  </script>
 
   <!-- Bootstrap custom file inputs -->
   <script src="https://cdn.jsdelivr.net/npm/bs-custom-file-input/dist/bs-custom-file-input.min.js"></script>
@@ -152,7 +182,6 @@
 
     function processForm() {
       const fileInput = document.getElementById('fileInput');
-
       if (!validateFileInput(fileInput)) {
         return false;
       }
