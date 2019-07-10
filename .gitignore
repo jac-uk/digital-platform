@@ -71,3 +71,6 @@ dist/
 # Report/export files
 functions/submitted.json
 functions/pendingReferences.csv
+
+# Cypress integration tests
+hosting/reference/cypress/screenshots/
