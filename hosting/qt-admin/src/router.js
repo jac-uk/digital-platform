@@ -25,9 +25,14 @@ const router = new Router({
       path: '/sign-in',
       name: 'sign-in',
       component: SignIn,
-      meta: {
-        redirectIfAuth: 'dashboard',
-      }
+      beforeEnter: (to, from, next) => {
+        const isSignedIn = store.getters.isSignedIn;
+        if(isSignedIn) {
+          return next({name: 'dashboard'});
+        }
+
+        return next();
+      },
     },
     {
       path: '/invalid-domain',
@@ -54,7 +59,6 @@ const router = new Router({
  */
 router.beforeEach((to, from, next) => {
   const requiresAuth = to.matched.some(x => x.meta.requiresAuth);
-  const redirectIfAuth = to.matched.some(x => x.meta.redirectIfAuth);
   const isSignedIn = store.getters.isSignedIn;
   const emailDomainIsValid = store.getters.emailDomainIsValid;
 

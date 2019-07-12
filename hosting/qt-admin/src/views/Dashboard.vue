@@ -3,7 +3,7 @@
     <nav class="navbar navbar-expand-sm navbar-light bg-light mb-4">
       <div class="container">
         <a href="/" class="navbar-brand router-link-active">
-          <img src="/img/jac-logo.3c5bcb61.svg" alt="Judicial Appointments Commission" width="197" height="66">
+          <img src="@/assets/jac-logo.svg" alt="Judicial Appointments Commission" width="197" height="66">
         </a>
 
         <div class="navbar-collapse">
