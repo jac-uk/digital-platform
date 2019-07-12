@@ -11,10 +11,6 @@ Vue.use(Vuex);
 const router = require('@/router').default;
 const store = require('@/store').default;
 
-if (process.env.NODE_ENV === 'development') {
-  Vue.config.devtools = true;
-}
-
 let vueInstance = false;
 auth().onAuthStateChanged((user) => {
   // Bind Firebase auth state to the vuex auth state store

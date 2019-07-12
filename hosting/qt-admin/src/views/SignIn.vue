@@ -4,7 +4,7 @@
       <div class="mb-3 mt-5">
         <img src="@/assets/jac-logo.svg" alt="Judicial Appointments Commission" width="197" height="66">
       </div>
-      <p class="mb-4 mt-5">Sign in to admin dashboard with your judicialappointments.digital google account</p>
+      <p class="mb-4 mt-5">Sign in to admin dashboard with your judicialappointments.digital Google account</p>
       <FirebaseUI @signInSuccess="loginRedirect" />
     </div>
   </div>
