@@ -14,31 +14,30 @@ const sendConfirmationEmail = async (userTestDocData, confirmationTemplate) => {
   console.info({sentConfirmationEmail: user.email});
 }
 
-async function getUserTest(firestore, record) {
-  const userTest = await firestore.collection('usersTests').doc(record[REFERENCE_FIELD_NAME]);
+const getUserTest = async (firestore, record) => {
+  const userTest = firestore.collection('usersTests').doc(record[REFERENCE_FIELD_NAME]);
   const userTestDoc = await userTest.get();
   return { userTest, userTestDoc };
 }
 
-async function updateUserTestDoc(userTest, userTestDoc, finishedAtTimestamp) {
+const updateUserTestDoc = async (userTest, userTestDoc, finishedAtTimestamp) => {
   const data = userTestDoc.data();
 
-  /*
-   * We only record the `finishedAt` time for the *first* submission. In the event of duplicate submissions,
-   * we log duplicates, without updating `finishedAt` timestamp.  
-   *
-   */
+  /*We only record the `finishedAt` time for the *first* submission. In the event of duplicate submissions,
+  * we log duplicates, without updating `finishedAt` timestamp.*/
   if (!data.finishedAt) {
     await userTest.set({finishedAt: finishedAtTimestamp}, {merge: true});
-
+    
     console.info({updatedUsersTests: userTest.id});
     return data;
   } else {
     console.warn({updatedUsersTests: userTest.id, duplicateSubmission: true});
   }
+
+  return false;
 }
 
-async function updateUserTestSubmission(firestore, record) {
+const updateUserTestSubmission = async (firestore, record) => {
   const userTestSubmission = firestore.collection('userTestSubmissions').doc();
   await userTestSubmission.set(record);
 
