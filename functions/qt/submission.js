@@ -8,9 +8,9 @@ const sendConfirmationEmail = async (userTestDocData, confirmationTemplate) => {
   const client = new NotifyClient(functions.config().notify.key);
   const user = await admin.auth().getUser(userTestDocData.userUid);
   const personalisation = {firstname: user.displayName};
-  
+
   await client.sendEmail(confirmationTemplate, user.email, {personalisation});
-  
+
   console.info({sentConfirmationEmail: user.email});
 }
 
@@ -30,7 +30,7 @@ async function updateUserTestDoc(userTest, userTestDoc, finishedAtTimestamp) {
    */
   if (!data.finishedAt) {
     await userTest.set({finishedAt: finishedAtTimestamp}, {merge: true});
-    
+
     console.info({updatedUsersTests: userTest.id});
     return data;
   } else {
@@ -58,7 +58,7 @@ const main = async (record) => {
     if (userTestDocData) {
       const userTestSubmission = await updateUserTestSubmission(firestore, updatedRecord);
       console.info({createdUserTestSubmission: userTestSubmission.id, usersTest: userTest.id});
-      
+
       await sendConfirmationEmail(userTestDocData, record.confirmationTemplate);
     }
   } else {
