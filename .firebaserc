@@ -14,6 +14,9 @@
         ],
         "qt": [
           "jac-qt"
+        ],
+        "qt-admin": [
+          "jac-qt-admin"
         ]
       }
     },
@@ -27,6 +30,9 @@
         ],
         "qt": [
           "jac-qt-staging"
+        ],
+        "qt-admin": [
+          "jac-qt-admin-staging"
         ]
       }
     }
