@@ -53,6 +53,22 @@
           "destination": "/index.html"
         }
       ]
+    },
+    {
+      "target": "qt-admin",
+      "predeploy": "npm --prefix hosting/qt-admin run build",
+      "public": "hosting/qt-admin/dist",
+      "ignore": [
+        "firebase.json",
+        "**/.*",
+        "**/node_modules/**"
+      ],
+      "rewrites": [
+        {
+          "source": "**",
+          "destination": "/index.html"
+        }
+      ]
     }
   ],
   "functions": {
