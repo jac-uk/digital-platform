@@ -120,6 +120,33 @@ jobs:
           name: 'Test hosting/qt'
           command: npm --prefix hosting/qt run test-ci
 
+  test-qt-admin:
+    executor: default
+    steps:
+      - attach_workspace:
+          at: ~/digital-platform
+      - run:
+          name: 'Lint hosting/qt-admin'
+          command: npm --prefix hosting/qt-admin run lint
+      - run:
+          name: 'Test hosting/qt-admin'
+          command: npm --prefix hosting/qt-admin run test-ci
+
+  rebase-qt-admin:
+    executor: default
+    steps:
+      - attach_workspace:
+          at: ~/digital-platform
+      - run:
+          name: 'Rebase against master'
+          command: git rebase master
+      - run:
+          name: 'Lint hosting/qt-admin'
+          command: npm --prefix hosting/qt-admin run lint
+      - run:
+          name: 'Test hosting/qt-admin'
+          command: npm --prefix hosting/qt-admin run test-ci
+
   test-reference:
     executor: default
     steps:
@@ -213,6 +240,9 @@ workflows:
       - test-qt:
           requires:
             - setup
+      - test-qt-admin:
+          requires:
+            - setup
       - rebase-functions:
           requires:
             - setup
@@ -220,6 +250,12 @@ workflows:
             branches:
               ignore: master
       - rebase-qt:
+          requires:
+             - setup
+          filters:
+            branches:
+              ignore: master
+      - rebase-qt-admin:
           requires:
              - setup
           filters:
@@ -236,6 +272,7 @@ workflows:
             - test-apply
             - test-functions
             - test-qt
+            - test-qt-admin
             - test-reference
           filters:
             branches:
@@ -245,6 +282,7 @@ workflows:
             - test-apply
             - test-functions
             - test-qt
+            - test-qt-admin
             - test-reference
           filters:
             branches:
