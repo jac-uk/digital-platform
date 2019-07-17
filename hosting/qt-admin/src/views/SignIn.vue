@@ -20,7 +20,7 @@
     methods: {
       loginRedirect(authResult) {
         this.$store.dispatch('setCurrentUser', authResult.user);
-        this.$router.push('/dashboard');
+        this.$router.push('/');
       }
     }
   }
