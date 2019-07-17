@@ -76,7 +76,7 @@ describe('Submission', () => {
     })
   };
 
-  it('should save a new submission and send notification to user', (done) => {
+  it('saves the answers from Google Forms and emails user', (done) => {
     firebaseAdmin.firestore().collection('usersTests').doc('test-reference-code').set({
       startedAt: 12345,
       test: '/tests/test-id',
@@ -98,7 +98,7 @@ describe('Submission', () => {
     submission(req, res);
   })
 
-  it('does not save submission or send email when userTest is missing', (done) => {    
+  it('does not save the answers from Google Forms and does not email user when userTest is missing', (done) => {    
     testHandler = async () => {
       let userTestSubmissionSnapshot = await firebaseAdmin.firestore().collection('userTestSubmissions').get();
       expect(userTestSubmissionSnapshot.docs.length).toBe(0);
@@ -111,7 +111,7 @@ describe('Submission', () => {
     submission(req, res);
   });
 
-  it('should not save timestamp if finishedAt already exists', (done) => {
+  it('does not save timestamp if finishedAt already exists in userTest record', (done) => {
     firebaseAdmin.firestore().collection('usersTests').doc('test-reference-code').set({
       startedAt: 12345,
       test: '/tests/test-id',
