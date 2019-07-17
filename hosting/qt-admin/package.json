@@ -6,7 +6,8 @@
     "serve": "vue-cli-service serve",
     "build": "vue-cli-service build",
     "lint": "vue-cli-service lint",
-    "test": "jest --passWithNoTests"
+    "test": "jest --passWithNoTests",
+    "test-ci": "test"
   },
   "dependencies": {
     "bootstrap": "^4.3.1",
