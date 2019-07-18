@@ -29,9 +29,9 @@ describe('Sign in journey', () => {
     });
   });
 
-  describe('unauthenticated user', () => {
-    describe('when visits /', () => {
-      it('should be redirected to /sign-in', () => {
+  describe('for unauthenticated user', () => {
+    describe('when they visit /', () => {
+      it('redirects to /sign-in', () => {
         router.push('/');
         expect(subject.vm.$route.path).toBe('/sign-in');
       });
@@ -39,7 +39,7 @@ describe('Sign in journey', () => {
 
   });
 
-  describe('user signed with the wrong email domain', () => {
+  describe('for user that is signed with the wrong email domain', () => {
     const user = {
         uid: 'abc123',
         email: 'testjudicialappointments@gmail.com'
@@ -49,13 +49,13 @@ describe('Sign in journey', () => {
         store.dispatch('setCurrentUser', user);
       });
 
-    it('should be redirected to the invalid-domain page', () => {
+    it('redirects to the invalid-domain page', () => {
       router.push('/');
       expect(subject.vm.$route.path).toBe('/invalid-domain');
     })
   })
 
-  describe('authenticated user', () => {
+  describe('for authenticated user', () => {
     const user = {
       uid: 'abc123',
       email: 'user@judicialappointments.digital'
@@ -65,29 +65,29 @@ describe('Sign in journey', () => {
       store.dispatch('setCurrentUser', user);
     })
 
-    describe('when is trying to go to page that does not exist', () => {
-      it('should be redirected to the home page', () => {
+    describe('when going to page that does not exist', () => {
+      it('redirects to home page', () => {
         router.push('/rtassafjshfg');
         expect(subject.vm.$route.path).toBe('/');
       })
     });
 
-    describe('when is trying to go to the home page', () => {
-      it('should be allowed to do so', () => {
+    describe('when going to the home page', () => {
+      it('can access home page', () => {
         router.push('/');
         expect(subject.vm.$route.path).toBe('/');
       })
     });
 
-    describe('when is going to the invalid-domain page', () => {
-      it('should be redirected to home page', () => {
+    describe('when going to the invalid-domain page', () => {
+      it('redirects to home page', () => {
         router.push('/invalid-domain');
         expect(subject.vm.$route.path).toBe('/');
       })
     });
 
-    describe('when is going to sign-in page', () => {
-      it('should be redirected to home page', () => {
+    describe('when going to sign-in page', () => {
+      it('redirects to home page', () => {
         router.push('/sign-in');
         expect(subject.vm.$route.path).toBe('/');
       })

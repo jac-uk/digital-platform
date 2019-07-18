@@ -15,7 +15,7 @@ describe('store/auth', () => {
   describe('mutations', () => {
 
     describe('setCurrentUser', () => {
-      it('sets `currentUser` in the state', () => {
+      it('sets currentUser in the state', () => {
         const data = {uid: "12345", email: "test@test.com"};
         mutations.setCurrentUser(state, data);
         expect(state.currentUser).toBe(data);
@@ -39,14 +39,14 @@ describe('store/auth', () => {
     describe('setCurrentUser', () => {
 
       describe('when user is not signed in', () => {
-        it('should run `setCurrentUser` mutation with `null`', () => {
+        it('runs setCurrentUser mutation with null', () => {
           actions.setCurrentUser(context, null);
           expect(context.commit).toHaveBeenCalledWith('setCurrentUser', null);
         });
       });
 
       describe('when user is signed in', () => {
-        it('should run `setCurrentUser` mutation with data from the user object', () => {
+        it('runs setCurrentUser mutation with data from the user object', () => {
           const user = {
             uid: 'abc123',
             email: 'test@test.com',
@@ -70,14 +70,14 @@ describe('store/auth', () => {
 
     describe('isSignedIn', () => {
 
-      describe('given a user is not signed in', () => {
-        it('should return false', () => {
+      describe('when user is not signed in', () => {
+        it('returns false', () => {
           expect(getters.isSignedIn(state)).toBe(false);
         });
       });
 
-      describe('given a user is signed in', () => {
-        it('should return true', () => {
+      describe('when user is signed in', () => {
+        it('returns true', () => {
           state.currentUser = {
             uid: 'abc123',
             email: 'test@test.com'
@@ -89,14 +89,14 @@ describe('store/auth', () => {
 
     describe('emailDomainIsValid', () => {
 
-      describe('if a user is not signed in', () => {
-        it('should return null', () => {
+      describe('if user is not signed in', () => {
+        it('returns null', () => {
           expect(getters.emailDomainIsValid(state)).toBe(null);
         });
       });
 
-      describe('if the user is signed in but has the wrong email domain', () => {
-        it('should return false', () => {
+      describe('if user has wrong email domain', () => {
+        it('returns false', () => {
           state.currentUser = {
             uid: 'abc123',
             email: 'test@test.com'
@@ -105,8 +105,8 @@ describe('store/auth', () => {
         });
       });
 
-      describe('if the user is signed in and email domain is equal to judicialappointments.digital', () => {
-        it('should return true', () => {
+      describe('if user is signed and email domain is correct', () => {
+        it('returns true', () => {
           state.currentUser = {
             uid: 'abc123',
             email: 'test@judicialappointments.digital'
