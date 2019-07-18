@@ -7,12 +7,12 @@ describe('InvalidDomain view', () => {
   };
 
   let wrapper;
-  
+
   beforeEach(() => {
     wrapper = createTestSubject();
   });
 
-  it('renders InvalidDomain component', () => {
+  it('renders component', () => {
     expect(wrapper.find(InvalidDomain).exists()).toBe(true);
   });
 });

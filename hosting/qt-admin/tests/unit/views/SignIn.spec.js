@@ -1,4 +1,4 @@
-import {shallowMount} from "@vue/test-utils";
+import {shallowMount} from '@vue/test-utils';
 import SignIn from '@/views/SignIn';
 import FirebaseUI from '@/components/FirebaseUI';
 
@@ -8,6 +8,7 @@ describe('SignIn view', () => {
   };
 
   let wrapper;
+
   beforeEach(() => {
     wrapper = createTestSubject();
   });
@@ -26,21 +27,21 @@ describe('SignIn view', () => {
 
     beforeEach(() => {
       wrapper.vm.$router = {
-        push: jest.fn()
+        push: jest.fn();
       };
 
       wrapper.vm.$store = {
-        dispatch: jest.fn()
+        dispatch: jest.fn();
       };
 
       wrapper.find(FirebaseUI).vm.$emit('signInSuccess', authResult);
     });
 
-    it('should update the store with the authenticated user object', () => {
+    it('updates the store with the authenticated user object', () => {
       expect(wrapper.vm.$store.dispatch).toHaveBeenCalledWith('setCurrentUser', authResult.user);
     });
 
-    it('should redirect to the homepage', () => {
+    it('redirects to the homepage', () => {
       expect(wrapper.vm.$router.push).toHaveBeenCalledWith('/');
     });
   });
