@@ -9,7 +9,7 @@
         <div class="navbar-collapse">
           <ul class="navbar-nav ml-auto">
             <li class="nav-item">
-              <a class="nav-link" href="#" @click.prevent="signOut">Sign out</a>
+              <button class="btn btn-link" id="sign-out" @click="signOut">Sign out</button>
             </li>
           </ul>
         </div>
