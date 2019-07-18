@@ -27,11 +27,11 @@ describe('SignIn view', () => {
 
     beforeEach(() => {
       wrapper.vm.$router = {
-        push: jest.fn();
+        push: jest.fn()
       };
 
       wrapper.vm.$store = {
-        dispatch: jest.fn();
+        dispatch: jest.fn()
       };
 
       wrapper.find(FirebaseUI).vm.$emit('signInSuccess', authResult);
