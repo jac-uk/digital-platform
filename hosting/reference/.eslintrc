@@ -1,0 +1,24 @@
+{
+  "root": true,
+  "extends": [
+    "eslint:recommended",
+    "plugin:cypress/recommended"
+  ],
+  "env": {
+    "es6": true,
+    "cypress/globals": true
+  },
+  "plugins": [
+    "cypress"
+  ],
+  "rules": {
+    "comma-dangle": ["error", {
+      "objects": "always"
+    }],
+    "semi": "error",
+    "func-style": ["error", "expression"],
+    "prefer-arrow-callback": "error",
+    "quotes": ["error", "single"],
+    "eol-last": ["error", "always"],
+  }
+}
