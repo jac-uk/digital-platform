@@ -8,7 +8,7 @@ const module = {
     },
   },
   actions: {
-    setCurrentUser({commit}, user) {
+    setCurrentUser({commit,}, user) {
       if (user === null) {
         commit('setCurrentUser', null);
       } else {
@@ -25,7 +25,7 @@ const module = {
     },
     emailDomainIsValid(state) {
       return state.currentUser && state.currentUser.email.split('@')[1] === 'judicialappointments.digital';
-    }
+    },
   },
 };
 

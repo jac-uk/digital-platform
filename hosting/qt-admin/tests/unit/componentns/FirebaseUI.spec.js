@@ -6,16 +6,16 @@ import {auth} from '@/firebase';
 const mockFirebaseAuth = jest.fn();
 const mockUiInstance = {
   start: jest.fn(),
-  delete: jest.fn()
+  delete: jest.fn(),
 };
 
 jest.mock('@/firebase', () => {
   const mock = {
-    auth: jest.fn(() => (mockFirebaseAuth))
+    auth: jest.fn(() => (mockFirebaseAuth)),
   };
   mock.auth.GoogleAuthProvider = {
     PROVIDER_ID: 'email',
-    requireDisplayName: true
+    requireDisplayName: true,
   };
   return mock;
 });
@@ -24,9 +24,9 @@ jest.mock('firebaseui', () => (
   {auth: {
     AuthUI: jest.fn(() => mockUiInstance),
     CredentialHelper: {
-      NONE: 'none'
-    }
-  }
+      NONE: 'none',
+    },
+  },
 }));
 
 describe('FirebaseUI component', () => {
@@ -63,12 +63,12 @@ describe('FirebaseUI component', () => {
       signInOptions: [
         {
           provider: auth.GoogleAuthProvider.PROVIDER_ID,
-          customParameters: {hd: 'judicialappointments.digital'}
+          customParameters: {hd: 'judicialappointments.digital',},
         }
       ],
       callbacks: {
-        signInSuccessWithAuthResult: wrapper.vm.signInSuccess
-      }
+        signInSuccessWithAuthResult: wrapper.vm.signInSuccess,
+      },
     };
 
     expect(wrapper.vm.uiConfig).toEqual(uiConfigOptions);

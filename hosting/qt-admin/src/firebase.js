@@ -6,13 +6,13 @@ import 'firebase/functions';
 // Configure and initialise Firebase
 // Config variables are pulled from the environment at build time
 const config = {
-  apiKey: "AIzaSyD-1ChTYmtrmSD0UuvzV6y5GURkW9eRFvA",
-  authDomain: "digital-platform-staging.firebaseapp.com",
-  databaseURL: "https://digital-platform-staging.firebaseio.com",
-  projectId: "digital-platform-staging",
-  storageBucket: "digital-platform-staging.appspot.com",
-  messagingSenderId: "67930184815",
-  appId: "1:67930184815:web:02eb3850834d834f"
+  apiKey: 'AIzaSyD-1ChTYmtrmSD0UuvzV6y5GURkW9eRFvA',
+  authDomain: 'digital-platform-staging.firebaseapp.com',
+  databaseURL: 'https://digital-platform-staging.firebaseio.com',
+  projectId: 'digital-platform-staging',
+  storageBucket: 'digital-platform-staging.appspot.com',
+  messagingSenderId: '67930184815',
+  appId: '1:67930184815:web:02eb3850834d834f',
 };
 firebase.initializeApp(config);
 

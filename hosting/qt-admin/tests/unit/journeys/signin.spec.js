@@ -5,8 +5,8 @@ import Vuex from 'vuex';
 
 jest.mock('@/firebase', () => ({
   auth: jest.fn(() => ({
-    signOut: jest.fn()
-  }))
+    signOut: jest.fn(),
+  })),
 }));
 
 describe('Sign in journey', () => {
@@ -42,7 +42,7 @@ describe('Sign in journey', () => {
   describe('for user that is signed with the wrong email domain', () => {
     const user = {
         uid: 'abc123',
-        email: 'testjudicialappointments@gmail.com'
+        email: 'testjudicialappointments@gmail.com',
       };
 
       beforeEach(() => {
@@ -52,45 +52,45 @@ describe('Sign in journey', () => {
     it('redirects to the invalid-domain page', () => {
       router.push('/');
       expect(subject.vm.$route.path).toBe('/invalid-domain');
-    })
-  })
+    });
+  });
 
   describe('for authenticated user', () => {
     const user = {
       uid: 'abc123',
-      email: 'user@judicialappointments.digital'
+      email: 'user@judicialappointments.digital',
     };
 
     beforeEach(() => {
       store.dispatch('setCurrentUser', user);
-    })
+    });
 
     describe('when going to page that does not exist', () => {
       it('redirects to home page', () => {
         router.push('/rtassafjshfg');
         expect(subject.vm.$route.path).toBe('/');
-      })
+      });
     });
 
     describe('when going to the home page', () => {
       it('can access home page', () => {
         router.push('/');
         expect(subject.vm.$route.path).toBe('/');
-      })
+      });
     });
 
     describe('when going to the invalid-domain page', () => {
       it('redirects to home page', () => {
         router.push('/invalid-domain');
         expect(subject.vm.$route.path).toBe('/');
-      })
+      });
     });
 
     describe('when going to sign-in page', () => {
       it('redirects to home page', () => {
         router.push('/sign-in');
         expect(subject.vm.$route.path).toBe('/');
-      })
+      });
     });
-  })
+  });
 });

@@ -18,13 +18,13 @@ describe('Dashboard view', () => {
 
   it('contains sign out button', () => {
     expect(wrapper.contains('button#sign-out')).toBe(true);
-  })
+  });
 
   it('calls signOut methods', () => {
-    wrapper.setMethods({ signOut:jest.fn() });
+    wrapper.setMethods({ signOut:jest.fn(), });
     wrapper.find('button#sign-out').trigger('click');
 
     expect(wrapper.vm.signOut).toHaveBeenCalledTimes(1);
-  })
+  });
 });
 

@@ -16,7 +16,7 @@ describe('store/auth', () => {
 
     describe('setCurrentUser', () => {
       it('sets currentUser in the state', () => {
-        const data = {uid: "12345", email: "test@test.com"};
+        const data = {uid: '12345', email: 'test@test.com',};
         mutations.setCurrentUser(state, data);
         expect(state.currentUser).toBe(data);
       });
@@ -50,12 +50,12 @@ describe('store/auth', () => {
           const user = {
             uid: 'abc123',
             email: 'test@test.com',
-            something: "test"
+            something: 'test',
           };
 
           const expectedState = {
             uid: 'abc123',
-            email: 'test@test.com'
+            email: 'test@test.com',
           };
 
           actions.setCurrentUser(context, user);
@@ -80,7 +80,7 @@ describe('store/auth', () => {
         it('returns true', () => {
           state.currentUser = {
             uid: 'abc123',
-            email: 'test@test.com'
+            email: 'test@test.com',
           };
           expect(getters.isSignedIn(state)).toBe(true);
         });
@@ -99,7 +99,7 @@ describe('store/auth', () => {
         it('returns false', () => {
           state.currentUser = {
             uid: 'abc123',
-            email: 'test@test.com'
+            email: 'test@test.com',
           };
           expect(getters.emailDomainIsValid(state)).toBe(false);
         });
@@ -109,7 +109,7 @@ describe('store/auth', () => {
         it('returns true', () => {
           state.currentUser = {
             uid: 'abc123',
-            email: 'test@judicialappointments.digital'
+            email: 'test@judicialappointments.digital',
           };
 
           expect(getters.emailDomainIsValid(state)).toBe(true);
