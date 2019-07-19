@@ -1,4 +1,4 @@
-import {shallowMount} from "@vue/test-utils";
+import {shallowMount} from '@vue/test-utils';
 import TakeTest from '@/views/TakeTest';
 
 const mockQt = {
@@ -48,7 +48,7 @@ describe.skip('views/TakeTest', () => {
     wrapper = shallowMount(TakeTest, {
       mocks: {
         $store: store,
-      }
+      },
     });
   });
 
@@ -111,12 +111,12 @@ describe.skip('views/TakeTest', () => {
   describe('template', () => {
     let loadingMessage, errorMessage, qtView;
     const findElements = () => {
-      loadingMessage = wrapper.find({ref: 'loadingMessage'});
-      errorMessage = wrapper.find({ref: 'errorMessage'});
-      qtView = wrapper.find({ref: 'qtView'});
+      loadingMessage = wrapper.find({ref: 'loadingMessage',});
+      errorMessage = wrapper.find({ref: 'errorMessage',});
+      qtView = wrapper.find({ref: 'qtView',});
     };
 
-    describe("when the QT data hasn't loaded yet", () => {
+    describe('when the QT data hasn\'t loaded yet', () => {
       beforeEach(() => {
         wrapper.setData({
           loaded: false,
@@ -134,11 +134,11 @@ describe.skip('views/TakeTest', () => {
         expect(loadingMessage.element).toMatchSnapshot();
       });
 
-      it("doesn't show an error message", () => {
+      it('doesn\'t show an error message', () => {
         expect(errorMessage.exists()).toBe(false);
       });
 
-      it("doesn't show details of the QT", () => {
+      it('doesn\'t show details of the QT', () => {
         expect(qtView.exists()).toBe(false);
       });
     });
@@ -165,7 +165,7 @@ describe.skip('views/TakeTest', () => {
         expect(loadingMessage.exists()).toBe(false);
       });
 
-      it("doesn't show details of the QT", () => {
+      it('doesn\'t show details of the QT', () => {
         expect(qtView.exists()).toBe(false);
       });
     });
@@ -188,7 +188,7 @@ describe.skip('views/TakeTest', () => {
         expect(loadingMessage.exists()).toBe(false);
       });
 
-      it("doesn't show an error message", () => {
+      it('doesn\'t show an error message', () => {
         expect(errorMessage.exists()).toBe(false);
       });
 
@@ -196,7 +196,7 @@ describe.skip('views/TakeTest', () => {
         expect(wrapper.find('h2').text()).toBe('Combined QT');
       });
 
-      describe("the QT hasn't opened yet", () => {
+      describe('the QT hasn\'t opened yet', () => {
         beforeEach(() => {
           store.getters.qtHasOpened = false;
           store.getters.qtHasClosed = false;

@@ -14,6 +14,6 @@
         // `document.documentMode` is only present in IE. For every other browser it's undefined.
         isIE: !!document.documentMode,
       };
-    }
-  }
+    },
+  };
 </script>

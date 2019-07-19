@@ -63,7 +63,7 @@
         this.$store.commit('setTestId', this.$route.params.id);
         return Promise.all([
           this.$store.dispatch('loadTest'),
-          this.$store.dispatch('loadUserTest'),
+          this.$store.dispatch('loadUserTest')
         ])
           .then(() => {
             this.loaded = true;
@@ -79,7 +79,7 @@
       ...mapGetters([
         'test',
         'testHasClosed',
-        'userHasFinishedTest',
+        'userHasFinishedTest'
       ]),
     },
     mounted() {
@@ -96,5 +96,5 @@
         this.loadTestData();
       },
     },
-  }
+  };
 </script>

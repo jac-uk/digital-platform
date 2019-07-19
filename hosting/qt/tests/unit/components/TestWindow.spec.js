@@ -21,10 +21,10 @@ describe('components/TestWindow', () => {
     const store = new Vuex.Store({
       getters: {
         ...defaultMockGetters,
-        ...mockGetters
+        ...mockGetters,
       },
     });
-    return shallowMount(TestWindow, {localVue, store});
+    return shallowMount(TestWindow, {localVue, store,});
   };
 
   afterEach(() => {

@@ -38,7 +38,7 @@
         'test',
         'testHasOpened',
         'testHasClosed',
-        'testIsOpen',
+        'testIsOpen'
       ]),
       openingTime() {
         return dayjs(this.test.openingTime);
@@ -65,7 +65,7 @@
         const openingTime = this.formatTime(this.openingTime);
         const closingTime = this.formatTime(this.closingTime);
         return `between ${openingTime} and ${closingTime}`;
-      }
+      },
     },
     methods: {
       formatDate(date) {
@@ -75,5 +75,5 @@
         return date.format('ha');
       },
     },
-  }
+  };
 </script>

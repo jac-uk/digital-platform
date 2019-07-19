@@ -68,7 +68,7 @@ describe.skip('components/TestCard', () => {
 
       describe('when the start button is clicked', () => {
         it.skip('starts the timer and opens the test form', () => {
-          wrapper.setMethods({start: jest.fn()});
+          wrapper.setMethods({start: jest.fn(),});
           wrapper.find('button').trigger('click');
           expect(wrapper.vm.start).toHaveBeenCalledTimes(1);
         });
@@ -113,7 +113,7 @@ describe.skip('components/TestCard', () => {
 
       describe('when the button is clicked', () => {
         it('opens the test form', () => {
-          wrapper.setMethods({openForm: jest.fn()});
+          wrapper.setMethods({openForm: jest.fn(),});
           wrapper.find('button').trigger('click');
           expect(wrapper.vm.openForm).toHaveBeenCalled();
         });
@@ -133,7 +133,7 @@ describe.skip('components/TestCard', () => {
         expect(wrapper.text()).toContain('You have completed this phase');
       });
 
-      it("doesn't show any buttons", () => {
+      it('doesn\'t show any buttons', () => {
         const button = wrapper.find('button');
         expect(button.exists()).toBe(false);
       });
@@ -213,23 +213,23 @@ describe.skip('components/TestCard', () => {
         [
           'canBeStarted',
           'qtPhaseCanBeStarted',
-          true,
+          true
         ],
         [
           'hasBeenStarted',
           'qtPhaseHasBeenStarted',
-          true,
+          true
         ],
         [
           'hasBeenFinished',
           'qtPhaseHasBeenFinished',
-          true,
+          true
         ],
         [
           'formUrl',
           'qtPhaseFormUrl',
-          'https://google.com',
-        ],
+          'https://google.com'
+        ]
       ];
 
       describe.each(dynamicGetters)('`%s`', (field, getter, value) => {

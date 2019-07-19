@@ -5,8 +5,8 @@ import Vuex from 'vuex';
 
 jest.mock('@/firebase', () => ({
   auth: jest.fn(() => ({
-    signOut: jest.fn()
-  }))
+    signOut: jest.fn(),
+  })),
 }));
 
 describe('Sign in journey', () => {
