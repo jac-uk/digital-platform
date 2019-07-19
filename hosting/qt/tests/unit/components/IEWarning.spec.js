@@ -24,7 +24,7 @@ describe('components/IEWarning', () => {
       expect(subject.text()).toContain('The test will not work correctly on this browser');
     });
 
-    it("styles the warning as a Bootstrap 'danger' alert", () => {
+    it('styles the warning as a Bootstrap \'danger\' alert', () => {
       expect(subject.is('.alert')).toBe(true);
       expect(subject.is('.alert-danger')).toBe(true);
     });

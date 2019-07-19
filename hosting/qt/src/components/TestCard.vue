@@ -63,7 +63,7 @@
         'testIsOpen',
         'testFormUrl',
         'userHasStartedTest',
-        'userHasFinishedTest',
+        'userHasFinishedTest'
       ]),
       termsAgreed: {
         get() {
@@ -93,7 +93,7 @@
         window.location.href = this.testFormUrl;
       },
     },
-  }
+  };
 </script>
 
 <style scoped>

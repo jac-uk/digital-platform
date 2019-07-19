@@ -1,5 +1,5 @@
-import firebase, {firestore} from "@/firebase";
-import sanitizeFirestore from "@/utils/sanitizeFirestore";
+import firebase, {firestore} from '@/firebase';
+import sanitizeFirestore from '@/utils/sanitizeFirestore';
 
 let unsubscribe;
 
@@ -13,7 +13,7 @@ const commitSnapshot = (commit, snapshot) => {
     delete data.userUid;
     delete data.test;
     data = sanitizeFirestore(data);
-    commit('setUserTest', {id: snapshot.id, data});
+    commit('setUserTest', {id: snapshot.id, data,});
   } else {
     commit('clearUserTest');
   }
@@ -29,13 +29,13 @@ const module = {
       state.id = null;
       state.data = {};
     },
-    setUserTest(state, {id, data}) {
+    setUserTest(state, {id, data,}) {
       state.id = id;
       state.data = data;
     },
   },
   actions: {
-    async loadUserTest({commit, getters}) {
+    async loadUserTest({commit, getters,}) {
       const results = await firestoreCollection()
         .where('test', '==', getters.testDoc)
         .where('userUid', '==', getters.currentUserId)
@@ -48,7 +48,7 @@ const module = {
         commitSnapshot(commit, snapshot);
       }
     },
-    subscribeUserTest({commit, getters}) {
+    subscribeUserTest({commit, getters,}) {
       if (typeof unsubscribe == 'function') return; // Don't subscribe again if already subscribed
       unsubscribe = getters.userTestDoc.onSnapshot((snapshot) => {
         if (!snapshot.metadata.hasPendingWrites && !snapshot.metadata.fromCache) {
@@ -60,7 +60,7 @@ const module = {
       if (typeof unsubscribe === 'function') unsubscribe();
       unsubscribe = undefined; // Reset so we can subscribe again
     },
-    async startTest({commit, getters}) {
+    async startTest({commit, getters,}) {
       const doc = getters.userTestDoc;
 
       // Save the startedAt timestamp to Firestore

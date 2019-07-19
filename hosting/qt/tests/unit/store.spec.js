@@ -7,7 +7,7 @@ jest.mock('vuex', () => {
   return {
     Store: jest.fn((config) => {
       return config;
-    })
+    }),
   };
 });
 
@@ -21,7 +21,7 @@ describe('Vuex store', () => {
   });
 
   const modules = [
-    ['auth', auth],
+    ['auth', auth]
   ];
   it.each(modules)('registers module `%s`', (moduleName, module) => {
     expect(store.modules[moduleName]).toBe(module);

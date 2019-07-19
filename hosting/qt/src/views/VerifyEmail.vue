@@ -38,7 +38,7 @@ import {functions} from '@/firebase';
         });
       },
     },
-  }
+  };
 </script>
 
 <style scoped>
