@@ -4,6 +4,7 @@
   "description": "A page allowing referees ('assessors') to upload their references ('independent assessments') to support a candidate's  application.",
   "main": "index.html",
   "scripts": {
+    "lint": "eslint 'Cypress/**'",
     "serve": "npx serve -n -l 8002 & wait-on http://localhost:8002",
     "cypress-ci": "npm run serve; cypress run --config video=false",
     "cypress-local": "npm run serve; cypress open; kill -9 $(lsof -ti tcp:8002)",
@@ -18,6 +19,8 @@
     "connect": "^3.7.0",
     "cypress": "^3.4.0",
     "cypress-file-upload": "^3.2.0",
+    "eslint": "^6.0.1",
+    "eslint-plugin-cypress": "^2.6.0",
     "serve": "^11.0.2",
     "wait-on": "^3.2.0"
   }
