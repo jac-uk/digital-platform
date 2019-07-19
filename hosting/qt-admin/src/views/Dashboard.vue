@@ -32,7 +32,7 @@
       signOut() {
         auth().signOut();
         this.$router.go('/sign-in');
-      }
+      },
     },
-  }
+  };
 </script>
