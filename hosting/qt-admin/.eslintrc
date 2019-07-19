@@ -15,7 +15,8 @@
     "semi": "error",
     "func-style": ["error", "expression"],
     "prefer-arrow-callback": "error",
-    "quotes": ["error", "single"]
+    "quotes": ["error", "single"],
+    "eol-last": ["error", "always"]
   },
   "parserOptions": {
     "parser": "babel-eslint"
