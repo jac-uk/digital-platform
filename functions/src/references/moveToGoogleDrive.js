@@ -1,6 +1,6 @@
-const {google} = require('googleapis');
+const {google,} = require('googleapis');
 const functions = require('firebase-functions');
-const {Storage} = require('@google-cloud/storage');
+const {Storage,} = require('@google-cloud/storage');
 const path = require('path');
 const os = require('os');
 const fs = require('fs');
@@ -17,9 +17,9 @@ const getFileExtension = (filename) => {
 const uploadToGoogleDrive = async (object, reference, localPath) => {
   const teamDriveId = functions.config().references.team_drive_id;
   const auth = await google.auth.getClient({
-    scopes: ['https://www.googleapis.com/auth/drive']
+    scopes: ['https://www.googleapis.com/auth/drive'],
   });
-  const drive = google.drive({version: 'v3', auth});
+  const drive = google.drive({version: 'v3', auth,});
   const folder = new Folder(drive, teamDriveId);
 
   const referenceData = reference.data();

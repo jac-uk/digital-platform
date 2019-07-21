@@ -1,14 +1,15 @@
-const backupBucket = "jac-firebase-backups";
-const backupPath = "/authentication/";
+/*eslint-disable no-unused-vars*/
+const backupBucket = 'jac-firebase-backups';
+const backupPath = '/authentication/';
 const batchSize = 1000;
-const frequency = "every 12 hours";
+const frequency = 'every 12 hours';
 
-const admin = require("firebase-admin");
-const fs = require("fs");
-const functions = require("firebase-functions");
-const os = require("os");
-const path = require("path");
-const { promisify } = require("util");
+const admin = require('firebase-admin');
+const fs = require('fs');
+const functions = require('firebase-functions');
+const os = require('os');
+const path = require('path');
+const { promisify, } = require('util');
 const writeFileAsync = promisify(fs.writeFile);
 
 const listUsers = async (users, nextPageToken) => {
@@ -21,14 +22,14 @@ const listUsers = async (users, nextPageToken) => {
     listUsers(users, results.pageToken);
   }
   return users;
-}
+};
 
 const uploadToBackupBucket = async (users) => {
   const date = new Date();
-  const fileName = date.toISOString() + ".json";
+  const fileName = date.toISOString() + '.json';
   const tempFilePath = path.join(os.tmpdir(), fileName);
   const metadata = {
-    contentType: "application/json",
+    contentType: 'application/json',
   };
 
   // Because fs does not return promises.
@@ -40,15 +41,15 @@ const uploadToBackupBucket = async (users) => {
     metadata: metadata,
   });
   return fs.unlinkSync(tempFilePath);
-}
+};
 
 const main = async () => {
   const users = [];
   await listUsers(users, undefined);
   await uploadToBackupBucket(JSON.stringify(users, null, 2));
   return true;
-}
+};
 
 module.exports = functions.pubsub.schedule(frequency).onRun((context) => {
    return main();
-})
+});
