@@ -16,7 +16,7 @@ const admin = require('firebase-admin');
 admin.initializeApp();
 
 const firestore = admin.firestore();
-const count = {}
+const count = {};
 
 return firestore.collection('applications')
   .get()
@@ -24,9 +24,9 @@ return firestore.collection('applications')
     snapshot.forEach(doc => {
       const data = doc.data();
       if (count[data.state] === undefined) {
-        count[data.state] = 1
+        count[data.state] = 1;
       } else {
-        count[data.state] += 1
+        count[data.state] += 1;
       }
     });
     return console.log(JSON.stringify(count, null, 2));

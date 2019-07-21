@@ -1,6 +1,6 @@
-const admin = require("firebase-admin");
+const admin = require('firebase-admin');
 const firestore = admin.firestore();
-const {Storage} = require('@google-cloud/storage');
+const {Storage,} = require('@google-cloud/storage');
 const moveToGoogleDrive = require('./moveToGoogleDrive');
 
 const getReferenceIdFromObjectName = (name) => {
@@ -24,7 +24,7 @@ const processUpload = async (object) => {
 
   if (reference.data().state === 'pending') {
     await moveToGoogleDrive(object, reference);
-    await reference.ref.update({state: 'received'});
+    await reference.ref.update({state: 'received',});
     console.log(`Reference ${referenceId} received`);
   } else {
     console.log(`Reference ${referenceId} has already been received – ignoring this file`);

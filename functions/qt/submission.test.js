@@ -1,8 +1,9 @@
+/*eslint-disable no-unused-vars*/
 const firebaseFunctionsTest = require('firebase-functions-test')();
 const firebasemock = require('firebase-mock');
 const REFERENCE_CODE_FIELD_NAME = 'Unique reference code - for JAC use only';
 
-let mockauth, mockfirestore, mocksdk, firebaseAdmin, emailSent;
+let mockauth, mockfirestore, mocksdk, firebaseAdmin, emailSent, emailMock, testHandler;
 
 beforeEach(async () => {
   mockauth = new firebasemock.MockAuthentication();
@@ -28,7 +29,7 @@ beforeEach(async () => {
   });
   
   // set up for sendEmail test
-  firebaseFunctionsTest.mockConfig({notify: {key: 'test-key'}});
+  firebaseFunctionsTest.mockConfig({notify: {key: 'test-key',},});
   emailMock = setupEmailMock(() => emailSent = true);
   emailSent = false;
 
@@ -37,27 +38,27 @@ beforeEach(async () => {
   firebaseAdmin.auth().autoFlush();
   firebaseAdmin.firestore().collection('usersTests').autoFlush(1000);
   firebaseAdmin.firestore().collection('userTestSubmissions').autoFlush(100);
-  await firebaseAdmin.auth().createUser({uid: 'test-user-id', email: 'alex@test.com', password: 'testpassword'});
+  await firebaseAdmin.auth().createUser({uid: 'test-user-id', email: 'alex@test.com', password: 'testpassword',});
 
   // as firebase-mock supports `firestore.FieldValue.serverTimestamp` only for `update` operations,
   // because we use `set` operation to save userTestSubmission, `finishedAt` field won't be populated
   // this is why we replace `serverTimestamp` implementation with a custom object to
   // assert on this object to make sure that the same `finishedAt`` timestamp is used for both
   // userTest and userTestSubmission
-  firebaseAdmin.firestore.FieldValue.serverTimestamp = () => ({isEqual: () => false, type: 'submission-test'});
+  firebaseAdmin.firestore.FieldValue.serverTimestamp = () => ({isEqual: () => false, type: 'submission-test',});
 
 });
 
-function setupEmailMock(f) {
+const setupEmailMock = (f) => {
   return jest.mock('notifications-node-client', () => ({
     NotifyClient: jest.fn().mockImplementation(() => ({
       sendEmail: () => new Promise(resolve => {
         f();
         return resolve();
-      })
-    }))
+      }),
+    })),
   }));
-}
+};
 
 describe('Submission', () => {
   // set up req and res with callback function
@@ -65,15 +66,15 @@ describe('Submission', () => {
     body: { 
       confirmationTemplate: 'the template',
       ['Unique reference code - for JAC use only']: 'test-reference-code',
-    }
+    },
   };
 
   const res = {
-    status: (code) => ({
+    status: () => ({
       send: (payload) => {
         testHandler(payload);
-      }
-    })
+      },
+    }),
   };
 
   it('saves the answers from Google Forms and emails user', (done) => {
@@ -96,7 +97,7 @@ describe('Submission', () => {
 
     const submission = require('./submission.js');
     submission(req, res);
-  })
+  });
 
   it('does not save the answers from Google Forms and does not email user when userTest is missing', (done) => {    
     testHandler = async () => {
@@ -129,7 +130,7 @@ describe('Submission', () => {
 
       // setup before sending duplicate submission
       // 1. redefine our custom timestamp object
-      firebaseAdmin.firestore.FieldValue.serverTimestamp = () => ({isEqual: () => false, type: 'duplicate-submission-test'});
+      firebaseAdmin.firestore.FieldValue.serverTimestamp = () => ({isEqual: () => false, type: 'duplicate-submission-test',});
       // 2. manually reset emailSent variable
       emailSent = false;
 
@@ -152,4 +153,4 @@ describe('Submission', () => {
 
     submission(req, res);
   });
-})
+});

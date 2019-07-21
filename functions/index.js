@@ -1,8 +1,9 @@
-const admin = require("firebase-admin");
-const functions = require("firebase-functions");
-const NotifyClient = require("notifications-node-client").NotifyClient;
-exports.userTestSubmissions = require("./qt/submission");
-exports.backupFirebaseAuthentication = require("./backup/authentication");
+/*eslint-disable no-unused-vars*/
+const admin = require('firebase-admin');
+const functions = require('firebase-functions');
+const NotifyClient = require('notifications-node-client').NotifyClient;
+exports.userTestSubmissions = require('./qt/submission');
+exports.backupFirebaseAuthentication = require('./backup/authentication');
 
 admin.initializeApp();
 
@@ -20,7 +21,7 @@ const sendEmail = (email, templateId, personalisation) => {
     .sendEmail(
       templateId,
       email,
-      {personalisation}
+      {personalisation,}
     )
     .then(notifyResponse => {
       console.info(notifyResponse.body);
@@ -31,21 +32,21 @@ const sendEmail = (email, templateId, personalisation) => {
 const sendVerificationEmail = async (email) => {
   const returnUrl = functions.config().production.url;
   const templateId = functions.config().notify.templates.verification;
-  const verificationLink = await admin.auth().generateEmailVerificationLink(email, {url: returnUrl});
-  return sendEmail(email, templateId, {verificationLink});
-}
+  const verificationLink = await admin.auth().generateEmailVerificationLink(email, {url: returnUrl,});
+  return sendEmail(email, templateId, {verificationLink,});
+};
 
 const sendApplicationStartedEmail = async (applicantId) => {
   const user = await admin.auth().getUser(applicantId);
   const templateId = functions.config().notify.templates.application_started;
   return sendEmail(user.email, templateId, {});
-}
+};
 
 const sendApplicationSubmittedEmail = async (applicantId) => {
   const user = await admin.auth().getUser(applicantId);
   const templateId = functions.config().notify.templates.application_submitted;
   return sendEmail(user.email, templateId, {});
-}
+};
 
 exports.sendVerificationEmailOnNewUser = functions.auth.user().onCreate((user) => {
   const email = user.email;
