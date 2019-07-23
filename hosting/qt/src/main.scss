@@ -34,6 +34,7 @@ $custom-control-label-disabled-color: $body-color;
 @import "../node_modules/bootstrap/scss/forms";
 @import "../node_modules/bootstrap/scss/custom-forms";
 @import "../node_modules/bootstrap/scss/alert";
+@import "../node_modules/bootstrap/scss/breadcrumb";
 
 // Import project SCSS
 @import "scss/details";
@@ -49,4 +50,18 @@ h2 {
 }
 .container {
   max-width: 640px;
+}
+
+html, body {
+  height: 100%;
+}
+
+#app {
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+}
+
+main {
+  flex-grow: 1;
 }
