@@ -5,6 +5,7 @@ import store from '@/store';
 import SignIn from '@/views/SignIn';
 import TakeTest from '@/views/TakeTest';
 import VerifyEmail from '@/views/VerifyEmail';
+import Test from '@/views/Test';
 
 const router = new Router({
   mode: 'history',
@@ -24,6 +25,13 @@ const router = new Router({
     {
       path: '/take-test/:id',
       component: TakeTest,
+      meta: {
+        requiresAuth: true,
+      },
+    },
+    {
+      path: '/test',
+      component: Test,
       meta: {
         requiresAuth: true,
       },

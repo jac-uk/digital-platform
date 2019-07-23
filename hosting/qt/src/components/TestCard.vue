@@ -111,7 +111,7 @@ export default {
       this.openForm();
     },
     openForm() {
-      window.location.href = this.testFormUrl;
+      this.$router.push({name: 'TakeTest'});
     },
   },
 };
