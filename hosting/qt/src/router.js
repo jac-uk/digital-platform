@@ -3,9 +3,9 @@ import store from '@/store';
 
 // Views
 import SignIn from '@/views/SignIn';
-import TakeTest from '@/views/TakeTest';
-import VerifyEmail from '@/views/VerifyEmail';
 import Test from '@/views/Test';
+import VerifyEmail from '@/views/VerifyEmail';
+import TakeTest from '@/views/TakeTest';
 
 const router = new Router({
   mode: 'history',
@@ -16,22 +16,23 @@ const router = new Router({
       component: SignIn,
     },
     {
-      path: '/take-test',
-      component: TakeTest,
-      meta: {
-        requiresAuth: true,
-      },
-    },
-    {
-      path: '/take-test/:id',
-      component: TakeTest,
-      meta: {
-        requiresAuth: true,
-      },
-    },
-    {
       path: '/test',
       component: Test,
+      meta: {
+        requiresAuth: true,
+      },
+    },
+    {
+      path: '/test/:id',
+      component: Test,
+      meta: {
+        requiresAuth: true,
+      },
+    },
+    {
+      path: '/test/:id/take',
+      component: TakeTest,
+      name: 'TakeTest',
       meta: {
         requiresAuth: true,
       },
@@ -59,8 +60,8 @@ const router = new Router({
     },
     {
       path: '*',
-      redirect: '/take-test/Q3QPebYC4it3Orp4RtA7',
-    },
+      redirect: '/test/Q3QPebYC4it3Orp4RtA7',
+    }
   ],
   scrollBehavior(to, from, savedPosition) {
     if (savedPosition) {

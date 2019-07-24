@@ -56,9 +56,9 @@ describe('Sign in journey', () => {
     });
 
     describe('when I visit /', () => {
-      it('redirects to /take-test/Q3QPebYC4it3Orp4RtA7', () => {
+      it('redirects to /test/Q3QPebYC4it3Orp4RtA7', () => {
         router.push('/');
-        expect(subject.vm.$route.path).toBe('/take-test/Q3QPebYC4it3Orp4RtA7');
+        expect(subject.vm.$route.path).toBe('/test/Q3QPebYC4it3Orp4RtA7');
       });
     });
   });

@@ -1,55 +1,18 @@
 <template>
-  <main class="container">
-    <h1>Take a qualifying test</h1>
-
-    <IEWarning />
-
-    <div
-      v-if="loaded === false && loadFailed === false"
-      ref="loadingMessage"
-    >
-      <span
-        class="spinner-border spinner-border-sm text-secondary"
-        aria-hidden="true"
-      />
-      Loading...
-    </div>
-
-    <div
-      v-if="loaded === false && loadFailed === true"
-      ref="errorMessage"
-    >
-      <p>Could not load data. Please reload the page and try again.</p>
-    </div>
-
-    <div
-      v-if="loaded === true"
-      ref="qtView"
-    >
-      <h4>{{ test.vacancyTitle }}</h4>
-
-      <TestWindow />
-
-      <div v-if="!testHasClosed && !userHasFinishedTest">
-        <h5>Do’s and don’ts</h5>
-        <ul>
-          <li><strong>Do</strong> make sure you’ve got a stable internet connection before you start</li>
-          <li><strong>Don’t</strong> press the back button at any point</li>
-          <li><strong>Don’t</strong> close the test window until you’ve submitted your answers</li>
-        </ul>
-
-        <h5>Timing</h5>
-        <ul>
-          <li>You have <strong>45 minutes</strong> to complete the test and must manage the time yourself</li>
-          <li>Time starts when you click ‘start test’ and stops when you click ‘submit’</li>
-          <li>Your answers won’t be marked if you submit after 45 minutes</li>
-        </ul>
+  <main>
+    <div class="breadcrumb-container">
+      <div class="breadcrumb">
+        <button class="breadcrumb-item ative" @click="leaveThePage">Go back to My Tests page</button>
       </div>
-
-      <TestCard
-        v-if="!testHasClosed"
-        class="mt-4"
-      />
+    </div>
+    <div class="iframe-conainer">
+      <iframe id="inlineFrameExample"
+        title="Inline Frame Example"
+        width="100%"
+        height="100%"
+        frameborder="0"
+        v-bind:src="this.testFormUrl">
+    </iframe>
     </div>
   </main>
 </template>
@@ -113,3 +76,27 @@ export default {
   },
 };
 </script>
+
+<style scoped>
+  .iframe-conainer {
+    height: 100%;
+  }
+
+  button.breadcrumb-item {
+    border: none;
+    background: transparent;
+    text-decoration: underline;
+  }
+
+  main {
+    display: flex;
+    flex-direction: column;
+  }
+
+  .iframe-conainer {
+    flex-grow: 1;
+  }
+
+
+</style>
+

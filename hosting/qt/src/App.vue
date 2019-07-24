@@ -1,7 +1,6 @@
 <template>
   <div
     id="app"
-    class="mb-5"
   >
     <nav
       v-if="isSignedIn"
