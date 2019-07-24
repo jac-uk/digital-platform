@@ -15,7 +15,7 @@ const module = {
     },
   },
   actions: {
-    async loadTest({commit, getters,}) {
+    async loadTest({commit, getters}) {
       const document = getters.testDoc;
       if (!document) throw new Error('Set a test ID before trying to load it');
       const snapshot = await document.get();

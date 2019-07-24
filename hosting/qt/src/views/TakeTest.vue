@@ -4,17 +4,29 @@
 
     <IEWarning />
 
-    <div ref="loadingMessage" v-if="loaded === false && loadFailed === false">
-      <span class="spinner-border spinner-border-sm text-secondary" aria-hidden="true"></span>
+    <div
+      v-if="loaded === false && loadFailed === false"
+      ref="loadingMessage"
+    >
+      <span
+        class="spinner-border spinner-border-sm text-secondary"
+        aria-hidden="true"
+      />
       Loading...
     </div>
 
-    <div ref="errorMessage" v-if="loaded === false && loadFailed === true">
+    <div
+      v-if="loaded === false && loadFailed === true"
+      ref="errorMessage"
+    >
       <p>Could not load data. Please reload the page and try again.</p>
     </div>
 
-    <div ref="qtView" v-if="loaded === true">
-      <h4>{{test.vacancyTitle}}</h4>
+    <div
+      v-if="loaded === true"
+      ref="qtView"
+    >
+      <h4>{{ test.vacancyTitle }}</h4>
 
       <TestWindow />
 
@@ -34,67 +46,70 @@
         </ul>
       </div>
 
-      <TestCard v-if="!testHasClosed" class="mt-4" />
+      <TestCard
+        v-if="!testHasClosed"
+        class="mt-4"
+      />
     </div>
   </main>
 </template>
 
 <script>
-  import { mapGetters } from 'vuex';
-  import TestCard from '@/components/TestCard';
-  import TestWindow from '@/components/TestWindow';
-  import IEWarning from '@/components/IEWarning';
+import { mapGetters } from 'vuex';
+import TestCard from '@/components/TestCard';
+import TestWindow from '@/components/TestWindow';
+import IEWarning from '@/components/IEWarning';
 
-  export default {
-    components: {
-      TestCard,
-      TestWindow,
-      IEWarning,
+export default {
+  components: {
+    TestCard,
+    TestWindow,
+    IEWarning,
+  },
+  data() {
+    return {
+      loaded: false,
+      loadFailed: false,
+      isStarting: false,
+    };
+  },
+  methods: {
+    loadTestData() {
+      this.$store.commit('setTestId', this.$route.params.id);
+      return Promise.all([
+        this.$store.dispatch('loadTest'),
+        this.$store.dispatch('loadUserTest'),
+      ])
+        .then(() => {
+          this.loaded = true;
+          this.$store.dispatch('subscribeUserTest');
+        })
+        .catch((e) => {
+          this.loadFailed = true;
+          throw e;
+        });
     },
-    data() {
-      return {
-        loaded: false,
-        loadFailed: false,
-        isStarting: false,
-      };
-    },
-    methods: {
-      loadTestData() {
-        this.$store.commit('setTestId', this.$route.params.id);
-        return Promise.all([
-          this.$store.dispatch('loadTest'),
-          this.$store.dispatch('loadUserTest')
-        ])
-          .then(() => {
-            this.loaded = true;
-            this.$store.dispatch('subscribeUserTest');
-          })
-          .catch((e) => {
-            this.loadFailed = true;
-            throw e;
-          });
-      },
-    },
-    computed: {
-      ...mapGetters([
-        'test',
-        'testHasClosed',
-        'userHasFinishedTest'
-      ]),
-    },
-    mounted() {
+  },
+  computed: {
+    ...mapGetters([
+      'test',
+      'testHasClosed',
+      'userHasFinishedTest',
+    ]),
+  },
+  watch: {
+    '$route' () {
+      this.loaded = false;
+      this.loadFailed = false;
+      this.$store.dispatch('unsubscribeUserTest');
       this.loadTestData();
     },
-    destroyed() {
-      this.$store.dispatch('unsubscribeUserTest');
-    },
-    watch: {
-      '$route' () {
-        this.loaded = false;
-        this.loadFailed = false;
-        this.$store.dispatch('unsubscribeUserTest');
-        this.loadTestData();
-      },
-    },
-  };
+  },
+  mounted() {
+    this.loadTestData();
+  },
+  destroyed() {
+    this.$store.dispatch('unsubscribeUserTest');
+  },
+};
 </script>

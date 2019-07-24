@@ -13,7 +13,7 @@ const mockQt = {
     {
       title: 'Critical Analysis',
       form_url: 'https://qt.judicialappointments.digital/test/critical-analysis',
-    }
+    },
   ],
 };
 
@@ -111,9 +111,9 @@ describe.skip('views/TakeTest', () => {
   describe('template', () => {
     let loadingMessage, errorMessage, qtView;
     const findElements = () => {
-      loadingMessage = wrapper.find({ref: 'loadingMessage',});
-      errorMessage = wrapper.find({ref: 'errorMessage',});
-      qtView = wrapper.find({ref: 'qtView',});
+      loadingMessage = wrapper.find({ref: 'loadingMessage'});
+      errorMessage = wrapper.find({ref: 'errorMessage'});
+      qtView = wrapper.find({ref: 'qtView'});
     };
 
     describe('when the QT data hasn\'t loaded yet', () => {
