@@ -73,23 +73,6 @@ export default {
       isStarting: false,
     };
   },
-  methods: {
-    loadTestData() {
-      this.$store.commit('setTestId', this.$route.params.id);
-      return Promise.all([
-        this.$store.dispatch('loadTest'),
-        this.$store.dispatch('loadUserTest'),
-      ])
-        .then(() => {
-          this.loaded = true;
-          this.$store.dispatch('subscribeUserTest');
-        })
-        .catch((e) => {
-          this.loadFailed = true;
-          throw e;
-        });
-    },
-  },
   computed: {
     ...mapGetters([
       'test',
@@ -110,6 +93,23 @@ export default {
   },
   destroyed() {
     this.$store.dispatch('unsubscribeUserTest');
+  },
+  methods: {
+    loadTestData() {
+      this.$store.commit('setTestId', this.$route.params.id);
+      return Promise.all([
+        this.$store.dispatch('loadTest'),
+        this.$store.dispatch('loadUserTest'),
+      ])
+        .then(() => {
+          this.loaded = true;
+          this.$store.dispatch('subscribeUserTest');
+        })
+        .catch((e) => {
+          this.loadFailed = true;
+          throw e;
+        });
+    },
   },
 };
 </script>
