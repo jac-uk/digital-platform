@@ -28,7 +28,7 @@ const router = new Router({
       beforeEnter: (to, from, next) => {
         const isSignedIn = store.getters.isSignedIn;
         if(isSignedIn) {
-          return next({name: 'dashboard',});
+          return next({name: 'dashboard'});
         }
 
         return next();
@@ -42,12 +42,12 @@ const router = new Router({
         const isSignedIn = store.getters.isSignedIn;
         const emailDomainIsValid = store.getters.emailDomainIsValid;
         if(isSignedIn && emailDomainIsValid) {
-          return next({name: 'dashboard',});
+          return next({name: 'dashboard'});
         }
 
         return next();
       },
-    }
+    },
   ],
 });
 
@@ -63,11 +63,11 @@ router.beforeEach((to, from, next) => {
   const emailDomainIsValid = store.getters.emailDomainIsValid;
 
   if (requiresAuth && !isSignedIn) {
-    return next({name: 'sign-in',});
+    return next({name: 'sign-in'});
   } 
 
   if (requiresAuth && !emailDomainIsValid) {
-    return next({name: 'invalid-domain',});
+    return next({name: 'invalid-domain'});
   }
 
   return next();
