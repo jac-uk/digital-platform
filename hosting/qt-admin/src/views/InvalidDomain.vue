@@ -2,14 +2,24 @@
   <div>
     <nav class="navbar navbar-expand-sm navbar-light bg-light mb-4">
       <div class="container">
-        <a href="/" class="navbar-brand router-link-active">
-          <img src="@/assets/jac-logo.svg" alt="Judicial Appointments Commission" width="197" height="66">
+        <a
+          href="/"
+          class="navbar-brand router-link-active"
+        >
+          <img
+            src="@/assets/jac-logo.svg"
+            alt="Judicial Appointments Commission"
+            width="197"
+            height="66"
+          >
         </a>
       </div>
     </nav>
 
     <div class="container-fluid">
-      <h1 class="text-center">Invalid email domain</h1>
+      <h1 class="text-center">
+        Invalid email domain
+      </h1>
 
       <p>Please sign in with your judicialappointments.digital Google account</p>
     </div>    

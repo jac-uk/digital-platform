@@ -63,8 +63,8 @@ describe('FirebaseUI component', () => {
       signInOptions: [
         {
           provider: auth.GoogleAuthProvider.PROVIDER_ID,
-          customParameters: {hd: 'judicialappointments.digital',},
-        }
+          customParameters: {hd: 'judicialappointments.digital'},
+        },
       ],
       callbacks: {
         signInSuccessWithAuthResult: wrapper.vm.signInSuccess,

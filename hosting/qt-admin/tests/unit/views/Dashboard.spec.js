@@ -21,7 +21,7 @@ describe('Dashboard view', () => {
   });
 
   it('calls signOut methods', () => {
-    wrapper.setMethods({ signOut:jest.fn(), });
+    wrapper.setMethods({ signOut: jest.fn() });
     wrapper.find('button#sign-out').trigger('click');
 
     expect(wrapper.vm.signOut).toHaveBeenCalledTimes(1);
