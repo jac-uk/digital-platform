@@ -24,7 +24,7 @@ describe('components/TestWindow', () => {
         ...mockGetters,
       },
     });
-    return shallowMount(TestWindow, {localVue, store,});
+    return shallowMount(TestWindow, {localVue, store});
   };
 
   afterEach(() => {
