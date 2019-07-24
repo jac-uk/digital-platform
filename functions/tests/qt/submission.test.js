@@ -3,7 +3,7 @@ const submission = require('../../qt/submission');
 const admin = require('firebase-admin');
 
 const mocks = {
-  getUser: jest.fn().mockResolvedValue({dummy: 'user',}),
+  getUser: jest.fn().mockResolvedValue({dummy: 'user'}),
 };
 
 jest.mock('firebase-admin', () => {
