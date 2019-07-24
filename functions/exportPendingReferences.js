@@ -27,7 +27,7 @@ const csvWriter = createCsvWriter({
     'applicant name',
     'assessor name',
     'download url',
-    'upload url'
+    'upload url',
   ],
   path: exportPath,
 });
@@ -48,7 +48,7 @@ const generateCsvData = (references) => {
       data.applicant_name,
       data.assessor.name,
       'https://reference.judicialappointments.digital/download-form/128.docx', // hardcoded for now
-      `https://reference.judicialappointments.digital/?ref=${reference.id}`
+      `https://reference.judicialappointments.digital/?ref=${reference.id}`,
     ];
   });
 };

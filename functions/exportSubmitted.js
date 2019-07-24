@@ -27,7 +27,7 @@ const firestore = admin.firestore();
 // This is deprecated and throws warnings.  For now, though, it is
 // easier than trying to recursively parse the data structure looking for
 // firestore Timestamps.
-firestore.settings({timestampsInSnapshots: false,});
+firestore.settings({timestampsInSnapshots: false});
 
 const sortObject = (object) => {
   const newObject = {};
@@ -53,7 +53,7 @@ const getRecords = async () => {
   });
   const [applicants, users] = await Promise.all([
     Promise.all(getApplicants),
-    Promise.all(getUsers)
+    Promise.all(getUsers),
   ]);
 
   const records = [];

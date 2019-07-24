@@ -11,14 +11,12 @@
   "plugins": ["promise"],
   "extends": ["eslint:recommended", "plugin:promise/recommended"],
   "rules": {
-    "comma-dangle": ["error", {
-      "objects": "always"
-    }],
-    "semi": "error",
+    "comma-dangle": ["error", {"arrays": "always-multiline", "objects": "always-multiline"}],
+    "eol-last": ["error", "always"],
     "func-style": ["error", "expression"],
     "prefer-arrow-callback": "error",
-    "quotes": ["error", "single", { "avoidEscape": true}],
-    "eol-last": ["error", "always"],
+    "quotes": ["error", "single", {"avoidEscape": true}],
+    "semi": "error",
     "no-console": "off"
   }
 }

@@ -9,7 +9,7 @@ const fs = require('fs');
 const functions = require('firebase-functions');
 const os = require('os');
 const path = require('path');
-const { promisify, } = require('util');
+const { promisify } = require('util');
 const writeFileAsync = promisify(fs.writeFile);
 
 const listUsers = async (users, nextPageToken) => {

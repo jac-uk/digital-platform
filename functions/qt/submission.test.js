@@ -29,7 +29,7 @@ beforeEach(async () => {
   });
   
   // set up for sendEmail test
-  firebaseFunctionsTest.mockConfig({notify: {key: 'test-key',},});
+  firebaseFunctionsTest.mockConfig({notify: {key: 'test-key'}});
   emailMock = setupEmailMock(() => emailSent = true);
   emailSent = false;
 
@@ -38,14 +38,14 @@ beforeEach(async () => {
   firebaseAdmin.auth().autoFlush();
   firebaseAdmin.firestore().collection('usersTests').autoFlush(1000);
   firebaseAdmin.firestore().collection('userTestSubmissions').autoFlush(100);
-  await firebaseAdmin.auth().createUser({uid: 'test-user-id', email: 'alex@test.com', password: 'testpassword',});
+  await firebaseAdmin.auth().createUser({uid: 'test-user-id', email: 'alex@test.com', password: 'testpassword'});
 
   // as firebase-mock supports `firestore.FieldValue.serverTimestamp` only for `update` operations,
   // because we use `set` operation to save userTestSubmission, `finishedAt` field won't be populated
   // this is why we replace `serverTimestamp` implementation with a custom object to
   // assert on this object to make sure that the same `finishedAt`` timestamp is used for both
   // userTest and userTestSubmission
-  firebaseAdmin.firestore.FieldValue.serverTimestamp = () => ({isEqual: () => false, type: 'submission-test',});
+  firebaseAdmin.firestore.FieldValue.serverTimestamp = () => ({isEqual: () => false, type: 'submission-test'});
 
 });
 
@@ -130,7 +130,7 @@ describe('Submission', () => {
 
       // setup before sending duplicate submission
       // 1. redefine our custom timestamp object
-      firebaseAdmin.firestore.FieldValue.serverTimestamp = () => ({isEqual: () => false, type: 'duplicate-submission-test',});
+      firebaseAdmin.firestore.FieldValue.serverTimestamp = () => ({isEqual: () => false, type: 'duplicate-submission-test'});
       // 2. manually reset emailSent variable
       emailSent = false;
 
