@@ -1,4 +1,4 @@
-/* eslint-disable */
+/* eslint-disable cypress/no-unnecessary-waiting */
 describe('Content', () => {
 
   beforeEach(() => {
