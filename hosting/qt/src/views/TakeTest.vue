@@ -1,8 +1,10 @@
 <template>
   <main>
+    <LoadingMessage v-if="loaded === false" loadFailed="loadFailed" />
+
     <div class="breadcrumb-container">
       <div class="breadcrumb">
-        <button class="breadcrumb-item ative" @click="leaveThePage">Go back to My Tests page</button>
+        <button class="breadcrumb-item ative" @click="leaveThePage" id="goBack-btn">Go back to My Tests page</button>
       </div>
     </div>
     <div class="iframe-conainer">
@@ -18,63 +20,51 @@
 </template>
 
 <script>
-import { mapGetters } from 'vuex';
-import TestCard from '@/components/TestCard';
-import TestWindow from '@/components/TestWindow';
-import IEWarning from '@/components/IEWarning';
+  import { mapGetters } from 'vuex';
+  import loadTestData from '@/utils/helpers/loadTestData';
+  import LoadingMessage from '@/components/LoadingMessage';
 
-export default {
-  components: {
-    TestCard,
-    TestWindow,
-    IEWarning,
-  },
-  data() {
-    return {
-      loaded: false,
-      loadFailed: false,
-      isStarting: false,
-    };
-  },
-  computed: {
-    ...mapGetters([
-      'test',
-      'testHasClosed',
-      'userHasFinishedTest',
-    ]),
-  },
-  watch: {
-    '$route' () {
-      this.loaded = false;
-      this.loadFailed = false;
-      this.$store.dispatch('unsubscribeUserTest');
-      this.loadTestData();
+  export default {
+    components: {
+      LoadingMessage,
     },
-  },
-  mounted() {
-    this.loadTestData();
-  },
-  destroyed() {
-    this.$store.dispatch('unsubscribeUserTest');
-  },
-  methods: {
-    loadTestData() {
-      this.$store.commit('setTestId', this.$route.params.id);
-      return Promise.all([
-        this.$store.dispatch('loadTest'),
-        this.$store.dispatch('loadUserTest'),
-      ])
-        .then(() => {
+    data() {
+      return {
+        loaded: this.testFormUrl,
+        loadFailed: false,
+      };
+    },
+    computed: {
+      ...mapGetters([
+        'testFormUrl'
+      ]),
+    },
+    mounted() {
+      const formUrlExistsInState = this.testFormUrl;
+
+      if(!formUrlExistsInState) {
+        loadTestData(this.$store, this.$route).then((result) => {
+        if(result) {
           this.loaded = true;
-          this.$store.dispatch('subscribeUserTest');
-        })
-        .catch((e) => {
+          return;
+        }
+        else {
           this.loadFailed = true;
-          throw e;
-        });
+        }
+      });
+      }
     },
-  },
-};
+    methods: {
+      leaveThePage() {
+        if (confirm('If you leave this page the progress will be lost. Do you want to leave the page?')) {
+          console.log("THIS IS");
+          this.$router.go(-1);
+        } else {
+          return;
+        }
+      },
+    },
+  };
 </script>
 
 <style scoped>
