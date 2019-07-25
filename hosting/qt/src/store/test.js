@@ -1,5 +1,5 @@
 import {firestore} from '@/firebase';
-import sanitizeFirestore from '@/utils/sanitizeFirestore';
+import sanitizeFirestore from '@/helpers/sanitizeFirestore';
 
 const module = {
   state: {

@@ -1,70 +1,75 @@
 <template>
   <main>
-    <LoadingMessage v-if="loaded === false" loadFailed="loadFailed" />
-
     <div class="breadcrumb-container">
       <div class="breadcrumb">
-        <button class="breadcrumb-item ative" @click="leaveThePage" id="goBack-btn">Go back to My Tests page</button>
+        <button
+          id="goBack-btn"
+          class="breadcrumb-item ative"
+          @click="leaveThePage"
+        >
+          Go back to My Tests page
+        </button>
       </div>
     </div>
+
+    <LoadingMessage
+      v-if="loaded === false"
+      :load-failed="loadFailed"
+    />
+    
     <div class="iframe-conainer">
-      <iframe id="inlineFrameExample"
-        title="Inline Frame Example"
+      <iframe
         width="100%"
         height="100%"
-        frameborder="0"
-        v-bind:src="this.testFormUrl">
-    </iframe>
+        style="border:none"
+        :src="testFormUrl"
+      />
     </div>
   </main>
 </template>
 
 <script>
-  import { mapGetters } from 'vuex';
-  import loadTestData from '@/utils/helpers/loadTestData';
-  import LoadingMessage from '@/components/LoadingMessage';
+import { mapGetters } from 'vuex';
+import loadTestData from '@/helpers/loadTestData';
+import LoadingMessage from '@/components/LoadingMessage';
 
-  export default {
-    components: {
-      LoadingMessage,
-    },
-    data() {
-      return {
-        loaded: this.testFormUrl,
-        loadFailed: false,
-      };
-    },
-    computed: {
-      ...mapGetters([
-        'testFormUrl'
-      ]),
-    },
-    mounted() {
-      const formUrlExistsInState = this.testFormUrl;
+export default {
+  components: {
+    LoadingMessage,
+  },
+  data() {
+    return {
+      loadFailed: false,
+      loaded: false,
+    };
+  },
+  computed: {
+    ...mapGetters([
+      'testFormUrl',
+    ]),
+  },
+  mounted() {
+    this.loaded = this.testFormUrl ? true : false;
 
-      if(!formUrlExistsInState) {
-        loadTestData(this.$store, this.$route).then((result) => {
-        if(result) {
-          this.loaded = true;
-          return;
-        }
-        else {
+    if(!this.loaded) {
+      loadTestData(this.$store, this.$route).then(() => {
+
+        this.loaded = true;
+      })
+        .catch((e) => {
           this.loadFailed = true;
-        }
-      });
+          throw e;
+        });
+    }
+  },
+  methods: {
+    leaveThePage() {
+      if (confirm('If you leave this page the progress will be lost. Do you want to leave the page?')) {
+        this.$router.go(-1);
       }
     },
-    methods: {
-      leaveThePage() {
-        if (confirm('If you leave this page the progress will be lost. Do you want to leave the page?')) {
-          console.log("THIS IS");
-          this.$router.go(-1);
-        } else {
-          return;
-        }
-      },
-    },
-  };
+  },
+};
 </script>
 
 <style scoped>

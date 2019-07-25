@@ -1,5 +1,5 @@
 import firebase, {firestore} from '@/firebase';
-import sanitizeFirestore from '@/utils/sanitizeFirestore';
+import sanitizeFirestore from '@/helpers/sanitizeFirestore';
 
 let unsubscribe;
 
