@@ -13,7 +13,7 @@ import {Timestamp} from '@/firebase';
  *    - convert firebase.firestore.Timestamp objects into plain Date objects
  *
  * Example usage:
- *    import sanitizeFirestore from '@/utils/sanitize-firestore';
+ *    import sanitizeFirestore from '@/helpers/sanitize-firestore';
  *    const data = sanitizeFirestore(documentSnapshot.data());
  */
 

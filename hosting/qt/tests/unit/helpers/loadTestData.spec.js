@@ -1,6 +1,6 @@
-import loadTestData from '@/utils/helpers/loadTestData.js';
+import loadTestData from '@/helpers/loadTestData.js';
 
-describe('loadTest', () => {
+describe('helpers/loadTestData', () => {
   let route = {
     params: {
       id: 111,

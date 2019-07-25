@@ -4,10 +4,16 @@
 
     <IEWarning />
 
-    <LoadingMessage v-if="loaded === false" loadFailed="loadFailed" />
+    <LoadingMessage
+      v-if="loaded === false"
+      :load-failed="loadFailed"
+    />
 
-    <div ref="qtView" v-if="loaded === true">
-      <h4>{{test.vacancyTitle}}</h4>
+    <div
+      v-if="loaded === true"
+      ref="qtView"
+    >
+      <h4>{{ test.vacancyTitle }}</h4>
 
       <TestWindow />
 
@@ -27,61 +33,60 @@
         </ul>
       </div>
 
-      <TestCard v-if="!testHasClosed" class="mt-4" />
+      <TestCard
+        v-if="!testHasClosed"
+        class="mt-4"
+      />
     </div>
   </main>
 </template>
 
 <script>
-  import { mapGetters } from 'vuex';
-  import TestCard from '@/components/TestCard';
-  import TestWindow from '@/components/TestWindow';
-  import IEWarning from '@/components/IEWarning';
-  import loadTestData from '@/utils/helpers/loadTestData';
-  import LoadingMessage from '@/components/LoadingMessage';
+import { mapGetters } from 'vuex';
+import TestCard from '@/components/TestCard';
+import TestWindow from '@/components/TestWindow';
+import IEWarning from '@/components/IEWarning';
+import loadTestData from '@/helpers/loadTestData';
+import LoadingMessage from '@/components/LoadingMessage';
 
-  export default {
-    components: {
-      TestCard,
-      TestWindow,
-      IEWarning,
-      LoadingMessage,
+export default {
+  components: {
+    TestCard,
+    TestWindow,
+    IEWarning,
+    LoadingMessage,
+  },
+  data() {
+    return {
+      loaded: false,
+      loadFailed: false,
+      isStarting: false,
+    };
+  },
+  computed: {
+    ...mapGetters([
+      'test',
+      'testHasClosed',
+      'userHasFinishedTest',
+    ]),
+  },
+  watch: {
+    '$route' () {
+      this.loaded = false;
+      this.loadFailed = false;
     },
-    data() {
-      return {
-        loaded: false,
-        loadFailed: false,
-        isStarting: false,
-      };
-    },
-    computed: {
-      ...mapGetters([
-        'test',
-        'testHasClosed',
-        'userHasFinishedTest'
-      ]),
-    },
-    mounted() {
-      loadTestData(this.$store, this.$route).then((result) => {
-        if(result) {
-          this.loaded = true;
-          return;
-        }
-        else {
-          this.loadFailed = true;
-        }
+  },
+  mounted() {
+    loadTestData(this.$store, this.$route).then(() => {
+      this.loaded = true;
+    })
+      .catch((e) => {
+        this.loadFailed = true;
+        throw e;
       });
-    },
-    destroyed() {
-      this.$store.dispatch('unsubscribeUserTest');
-    },
-    watch: {
-      '$route' () {
-        this.loaded = false;
-        this.loadFailed = false;
-        this.$store.dispatch('unsubscribeUserTest');
-        this.loadTestData();
-      },
-    },
-  };
+  },
+  destroyed() {
+    this.$store.dispatch('unsubscribeUserTest');
+  },
+};
 </script>
