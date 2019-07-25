@@ -4,14 +4,7 @@
 
     <IEWarning />
 
-    <div ref="loadingMessage" v-if="loaded === false && loadFailed === false">
-      <span class="spinner-border spinner-border-sm text-secondary" aria-hidden="true"></span>
-      Loading...
-    </div>
-
-    <div ref="errorMessage" v-if="loaded === false && loadFailed === true">
-      <p>Could not load data. Please reload the page and try again.</p>
-    </div>
+    <LoadingMessage v-if="loaded === false" loadFailed="loadFailed" />
 
     <div ref="qtView" v-if="loaded === true">
       <h4>{{test.vacancyTitle}}</h4>
@@ -44,12 +37,15 @@
   import TestCard from '@/components/TestCard';
   import TestWindow from '@/components/TestWindow';
   import IEWarning from '@/components/IEWarning';
+  import loadTestData from '@/utils/helpers/loadTestData';
+  import LoadingMessage from '@/components/LoadingMessage';
 
   export default {
     components: {
       TestCard,
       TestWindow,
       IEWarning,
+      LoadingMessage,
     },
     data() {
       return {
@@ -57,23 +53,6 @@
         loadFailed: false,
         isStarting: false,
       };
-    },
-    methods: {
-      loadTestData() {
-        this.$store.commit('setTestId', this.$route.params.id);
-        return Promise.all([
-          this.$store.dispatch('loadTest'),
-          this.$store.dispatch('loadUserTest')
-        ])
-          .then(() => {
-            this.loaded = true;
-            this.$store.dispatch('subscribeUserTest');
-          })
-          .catch((e) => {
-            this.loadFailed = true;
-            throw e;
-          });
-      },
     },
     computed: {
       ...mapGetters([
@@ -83,7 +62,15 @@
       ]),
     },
     mounted() {
-      this.loadTestData();
+      loadTestData(this.$store, this.$route).then((result) => {
+        if(result) {
+          this.loaded = true;
+          return;
+        }
+        else {
+          this.loadFailed = true;
+        }
+      });
     },
     destroyed() {
       this.$store.dispatch('unsubscribeUserTest');
