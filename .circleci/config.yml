@@ -73,7 +73,7 @@ jobs:
           at: ~/digital-platform
       - run:
           name: 'Lint hosting/apply'
-          command: npm --prefix hosting/apply run lint
+          command: npm --prefix hosting/apply run lint-ci
       - run:
           name: 'Test hosting/apply'
           command: npm --prefix hosting/apply run test-ci
@@ -88,7 +88,7 @@ jobs:
           command: git rebase master
       - run:
           name: 'Lint hosting/apply'
-          command: npm --prefix hosting/apply run lint
+          command: npm --prefix hosting/apply run lint-ci
       - run:
           name: 'Test hosting/apply'
           command: npm --prefix hosting/apply run test-ci
@@ -100,7 +100,7 @@ jobs:
           at: ~/digital-platform
       - run:
           name: 'Lint hosting/qt'
-          command: npm --prefix hosting/qt run lint
+          command: npm --prefix hosting/qt run lint-ci
       - run:
           name: 'Test hosting/qt'
           command: npm --prefix hosting/qt run test-ci
@@ -115,7 +115,7 @@ jobs:
           command: git rebase master
       - run:
           name: 'Lint hosting/qt'
-          command: npm --prefix hosting/qt run lint
+          command: npm --prefix hosting/qt run lint-ci
       - run:
           name: 'Test hosting/qt'
           command: npm --prefix hosting/qt run test-ci
@@ -127,7 +127,7 @@ jobs:
           at: ~/digital-platform
       - run:
           name: 'Lint hosting/qt-admin'
-          command: npm --prefix hosting/qt-admin run lint
+          command: npm --prefix hosting/qt-admin run lint-ci
       - run:
           name: 'Test hosting/qt-admin'
           command: npm --prefix hosting/qt-admin run test-ci
@@ -142,7 +142,7 @@ jobs:
           command: git rebase master
       - run:
           name: 'Lint hosting/qt-admin'
-          command: npm --prefix hosting/qt-admin run lint
+          command: npm --prefix hosting/qt-admin run lint-ci
       - run:
           name: 'Test hosting/qt-admin'
           command: npm --prefix hosting/qt-admin run test-ci
@@ -167,6 +167,9 @@ jobs:
             libxtst6 \
             xauth \
             xvfb
+      - run:
+          name: 'Lint hosting/reference'
+          command: npm --prefix hosting/reference run lint-ci
       - run:
           name: 'Test hosting/reference'
           command: |
@@ -196,6 +199,9 @@ jobs:
             libxtst6 \
             xauth \
             xvfb
+      - run:
+          name: 'Lint hosting/reference'
+          command: npm --prefix hosting/reference run lint-ci
       - run:
           name: 'Test hosting/reference'
           command: |
