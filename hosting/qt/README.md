@@ -1,5 +1,13 @@
 # Qualifying tests
 
+---
+
+### ⚠️ Development on hold
+
+Development of qualifying tests has been put on hold so we can focus our efforts on application form functionality.
+
+---
+
 ## Project setup
 ```
 npm install
