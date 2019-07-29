@@ -7,6 +7,17 @@ vacancies.
 
 It's hosted in [Firebase](https://firebase.google.com) (part of [Google Cloud](https://cloud.google.com)).
 
+---
+
+### ℹ️ Project status
+
+Our current focus is on developing functionality to handle applications. This includes the user-facing application form, and 
+associated admin functionality for internal staff.
+
+We will further develop qualifying test functionality at a later date.
+
+---
+
 ## Application form
 
 The application form is used by candidates when applying for a vacancy.
