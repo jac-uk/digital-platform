@@ -61,7 +61,7 @@ const router = new Router({
     {
       path: '*',
       redirect: '/test/Q3QPebYC4it3Orp4RtA7',
-    }
+    },
   ],
   scrollBehavior(to, from, savedPosition) {
     if (savedPosition) {

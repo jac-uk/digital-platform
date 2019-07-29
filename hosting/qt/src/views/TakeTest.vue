@@ -14,16 +14,26 @@
 
     <LoadingMessage
       v-if="loaded === false"
+      ref="loadingMessageComponent"
       :load-failed="loadFailed"
     />
-    
-    <div class="iframe-conainer">
+
+    <div 
+      v-else
+      class="iframe-container"
+    >
       <iframe
-        width="100%"
-        height="100%"
-        style="border:none"
+        v-if="authorizedForView"
         :src="testFormUrl"
       />
+
+      <div 
+        v-else
+        ref="alert"
+        class="alert alert-danger"
+      >
+        The test is not available
+      </div>
     </div>
   </main>
 </template>
@@ -41,20 +51,30 @@ export default {
     return {
       loadFailed: false,
       loaded: false,
+      authorizedForView: false,
     };
   },
   computed: {
     ...mapGetters([
       'testFormUrl',
+      'testIsOpen',
+      'userHasStartedTest',
+      'userHasFinishedTest',
     ]),
   },
   mounted() {
+    // update the value of authorizedForView
+    if(this.testIsOpen !== null && this.userHasStartedTest !== null && this.userHasFinishedTest !== null) {
+      this.authorizedForView = this.isAuthorised();
+    }
+
     this.loaded = this.testFormUrl ? true : false;
 
     if(!this.loaded) {
       loadTestData(this.$store, this.$route).then(() => {
-
         this.loaded = true;
+        // update authorizedForView after loadTestData
+        this.authorizedForView = this.isAuthorised();
       })
         .catch((e) => {
           this.loadFailed = true;
@@ -68,13 +88,17 @@ export default {
         this.$router.go(-1);
       }
     },
+    isAuthorised() {
+      return this.testIsOpen && this.userHasStartedTest && !this.userHasFinishedTest;
+    },
   },
 };
 </script>
 
 <style scoped>
-  .iframe-conainer {
+  .iframe-container {
     height: 100%;
+    flex-grow: 1;
   }
 
   button.breadcrumb-item {
@@ -88,10 +112,10 @@ export default {
     flex-direction: column;
   }
 
-  .iframe-conainer {
-    flex-grow: 1;
+  iframe {
+    width: 100%;
+    height: 100%;
+    border: none;
   }
-
-
 </style>
 
