@@ -60,7 +60,7 @@ const module = {
       if (typeof unsubscribe === 'function') unsubscribe();
       unsubscribe = undefined; // Reset so we can subscribe again
     },
-    async startTest({commit, getters}) {
+    async startTest({commit, getters, state}) {
       const doc = getters.userTestDoc;
 
       // Save the startedAt timestamp to Firestore
@@ -73,7 +73,10 @@ const module = {
 
       // Read it back to update our state
       const snapshot = await doc.get();
+      console.log("state before: ", state);
       commitSnapshot(commit, snapshot);
+      console.log("commitSnapshot happened");
+      console.log("state after: ", state);
     },
   },
   getters: {
@@ -84,6 +87,7 @@ const module = {
       return firestoreCollection().doc();
     },
     userHasStartedTest: (state) => {
+      console.log("state in userHasStartedTest", state);
       return !!(state.data.startedAt);
     },
     userHasFinishedTest: (state) => {
