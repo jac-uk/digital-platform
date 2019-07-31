@@ -1,5 +1,6 @@
 <template>
   <main>
+    {{canUserTakeTest}}
     <div class="breadcrumb-container">
       <div class="breadcrumb">
         <button
@@ -23,7 +24,7 @@
       class="iframe-container"
     >
       <iframe
-        v-if="authorizedForView"
+        v-if="canUserTakeTest"
         :src="testFormUrl"
       />
 
@@ -61,26 +62,18 @@ export default {
       'userHasStartedTest',
       'userHasFinishedTest',
     ]),
+    canUserTakeTest() {
+      return this.testIsOpen && this.userHasStartedTest && !this.userHasFinishedTest;
+    }
   },
   mounted() {
-    // update the value of authorizedForView
-    if(this.testIsOpen !== null && this.userHasStartedTest !== null && this.userHasFinishedTest !== null) {
-      this.authorizedForView = this.isAuthorised();
-    }
-
-    this.loaded = this.testFormUrl ? true : false;
-
-    if(!this.loaded) {
-      loadTestData(this.$store, this.$route).then(() => {
-        this.loaded = true;
-        // update authorizedForView after loadTestData
-        this.authorizedForView = this.isAuthorised();
-      })
-        .catch((e) => {
-          this.loadFailed = true;
-          throw e;
-        });
-    }
+    loadTestData(this.$store, this.$route).then(() => {
+      this.loaded = true;
+    })
+      .catch((e) => {
+        this.loadFailed = true;
+        throw e;
+      });
   },
   methods: {
     leaveThePage() {
@@ -88,10 +81,11 @@ export default {
         this.$router.go(-1);
       }
     },
-    isAuthorised() {
-      return this.testIsOpen && this.userHasStartedTest && !this.userHasFinishedTest;
-    },
   },
+  beforeRouteEnter(to, from, next) {
+    console.log("to, from, next", to, from, next);
+    next();
+  }
 };
 </script>
 
