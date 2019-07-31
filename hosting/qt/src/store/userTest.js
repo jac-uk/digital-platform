@@ -88,7 +88,7 @@ const module = {
     },
     userHasStartedTest: (state) => {
       console.log("state in userHasStartedTest", state);
-      return !!(state.data.startedAt);
+      return state.data.startedAt !== undefined;
     },
     userHasFinishedTest: (state) => {
       return !!(state.data.startedAt && state.data.finishedAt);
