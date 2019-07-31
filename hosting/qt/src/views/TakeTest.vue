@@ -27,14 +27,6 @@
         v-if="canUserTakeTest"
         :src="testFormUrl"
       />
-
-      <div 
-        v-else
-        ref="alert"
-        class="alert alert-danger"
-      >
-        The test is not available
-      </div>
     </div>
   </main>
 </template>
@@ -52,7 +44,6 @@ export default {
     return {
       loadFailed: false,
       loaded: false,
-      authorizedForView: false,
     };
   },
   computed: {
@@ -69,11 +60,12 @@ export default {
   mounted() {
     loadTestData(this.$store, this.$route).then(() => {
       this.loaded = true;
-    })
-      .catch((e) => {
-        this.loadFailed = true;
-        throw e;
-      });
+    }).catch((e) => {
+      this.loadFailed = true;
+      throw e;
+    });
+
+    this.redirectIfUserCanNotTakeTest();
   },
   methods: {
     leaveThePage() {
@@ -81,10 +73,16 @@ export default {
         this.$router.go(-1);
       }
     },
+    redirectIfUserCanNotTakeTest() {
+      if(!this.canUserTakeTest) {
+        this.$router.push({name: 'Test'});
+      }
+    }
   },
-  beforeRouteEnter(to, from, next) {
-    console.log("to, from, next", to, from, next);
-    next();
+  watch: {
+    canUserTakeTest() {
+      this.redirectIfUserCanNotTakeTest();
+    }
   }
 };
 </script>
