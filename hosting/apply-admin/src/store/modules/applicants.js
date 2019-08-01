@@ -1,0 +1,12 @@
+export default {
+  strict: true,
+  namespaced: true,
+  actions: {
+  },
+  mutations: {
+  },
+  state: {
+    applicants: [],
+  },
+};
+
