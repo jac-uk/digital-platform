@@ -1,6 +1,5 @@
 <template>
   <main>
-    {{canUserTakeTest}}
     <div class="breadcrumb-container">
       <div class="breadcrumb">
         <button
@@ -55,17 +54,21 @@ export default {
     ]),
     canUserTakeTest() {
       return this.testIsOpen && this.userHasStartedTest && !this.userHasFinishedTest;
-    }
+    },
   },
-  mounted() {
-    loadTestData(this.$store, this.$route).then(() => {
+  watch: {
+    canUserTakeTest() {
+      this.redirectIfUserCanNotTakeTest();
+    },
+  },
+  async mounted() {
+    await loadTestData(this.$store, this.$route).then(() => {
       this.loaded = true;
+      this.redirectIfUserCanNotTakeTest();
     }).catch((e) => {
       this.loadFailed = true;
       throw e;
-    });
-
-    this.redirectIfUserCanNotTakeTest();
+    }); 
   },
   methods: {
     leaveThePage() {
@@ -77,13 +80,8 @@ export default {
       if(!this.canUserTakeTest) {
         this.$router.push({name: 'Test'});
       }
-    }
+    },
   },
-  watch: {
-    canUserTakeTest() {
-      this.redirectIfUserCanNotTakeTest();
-    }
-  }
 };
 </script>
 
