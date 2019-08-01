@@ -61,8 +61,8 @@ export default {
       this.redirectIfUserCanNotTakeTest();
     },
   },
-  async mounted() {
-    await loadTestData(this.$store, this.$route).then(() => {
+  mounted() {
+    loadTestData(this.$store, this.$route).then(() => {
       this.loaded = true;
       this.redirectIfUserCanNotTakeTest();
     }).catch((e) => {
