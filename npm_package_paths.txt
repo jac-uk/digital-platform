@@ -1,6 +1,7 @@
 .
 functions
 hosting/apply
+hosting/apply-admin
 hosting/qt
 hosting/qt-admin
 hosting/reference
