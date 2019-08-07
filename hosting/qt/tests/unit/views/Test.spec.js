@@ -1,4 +1,4 @@
-import {shallowMount} from '@vue/test-utils';
+import { shallowMount } from '@vue/test-utils';
 import Test from '@/views/Test';
 
 const mockQt = {
@@ -111,9 +111,9 @@ describe.skip('views/Test', () => {
   describe('template', () => {
     let loadingMessage, errorMessage, qtView;
     const findElements = () => {
-      loadingMessage = wrapper.find({ref: 'loadingMessage'});
-      errorMessage = wrapper.find({ref: 'errorMessage'});
-      qtView = wrapper.find({ref: 'qtView'});
+      loadingMessage = wrapper.find({ ref: 'loadingMessage' });
+      errorMessage = wrapper.find({ ref: 'errorMessage' });
+      qtView = wrapper.find({ ref: 'qtView' });
     };
 
     describe('when the QT data hasn\'t loaded yet', () => {

@@ -28,7 +28,7 @@
 </template>
 
 <script>
-import {functions} from '@/firebase';
+import { functions } from '@/firebase';
 
 export default {
   data() {

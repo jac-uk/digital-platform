@@ -2,7 +2,7 @@ import Vue from 'vue';
 import Router from 'vue-router';
 import Vuex from 'vuex';
 import App from '@/App.vue';
-import {auth} from '@/firebase';
+import { auth } from '@/firebase';
 
 Vue.config.productionTip = false;
 Vue.use(Router);

@@ -49,7 +49,7 @@ export default {
   watch: {
     isSignedIn(signedIn) {
       if (signedIn === false) {
-        this.$router.push({name: 'sign-in'});
+        this.$router.push({ name: 'sign-in' });
       }
     },
   },

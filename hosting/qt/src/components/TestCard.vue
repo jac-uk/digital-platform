@@ -111,7 +111,7 @@ export default {
       this.openForm();
     },
     openForm() {
-      this.$router.push({name: 'TakeTest'});
+      this.$router.push({ name: 'TakeTest' });
     },
   },
 };
