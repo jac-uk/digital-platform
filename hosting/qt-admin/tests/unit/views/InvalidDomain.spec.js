@@ -1,4 +1,4 @@
-import {shallowMount} from '@vue/test-utils';
+import { shallowMount } from '@vue/test-utils';
 import InvalidDomain from '@/views/InvalidDomain';
 
 describe('InvalidDomain view', () => {

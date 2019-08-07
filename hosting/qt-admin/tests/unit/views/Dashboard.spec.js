@@ -1,4 +1,4 @@
-import {shallowMount} from '@vue/test-utils';
+import { shallowMount } from '@vue/test-utils';
 import Dashboard from '@/views/Dashboard';
 
 describe('Dashboard view', () => {
