@@ -7,7 +7,5 @@
   "devDependencies": {
     "firebase-tools": "^7.0.2"
   },
-  "dependencies": {
-    "vuexfire": "^3.1.0"
-  }
+  "dependencies": {}
 }
