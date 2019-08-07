@@ -1,5 +1,5 @@
 import sanitizeFirestore from '@/helpers/sanitizeFirestore';
-import {Timestamp} from '@/firebase';
+import { Timestamp } from '@/firebase';
 
 describe('helpers/sanitizeFirestore', () => {
   const date = new Date('2015-12-23 22:33:44');

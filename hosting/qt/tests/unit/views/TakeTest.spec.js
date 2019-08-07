@@ -1,6 +1,6 @@
 import Vue from 'vue';
 import Vuex from 'vuex';
-import {shallowMount, createLocalVue} from '@vue/test-utils';
+import { shallowMount, createLocalVue } from '@vue/test-utils';
 import TakeTest from '@/views/TakeTest';
 import loadTestData from '@/helpers/loadTestData';
 import VueRouter from 'vue-router';
@@ -71,7 +71,7 @@ describe('TakeTest view', () => {
       });
 
       wrapper.setData({ loaded: false, loadFailed: false });
-      expect(wrapper.find({ref: 'loadingMessageComponent'}).exists()).toBe(true);
+      expect(wrapper.find({ ref: 'loadingMessageComponent' }).exists()).toBe(true);
     });
   });
 
@@ -105,7 +105,7 @@ describe('TakeTest view', () => {
       });
 
       wrapper.vm.$nextTick(() => {
-        expect(router.push).toHaveBeenCalledWith({name: 'Test'});
+        expect(router.push).toHaveBeenCalledWith({ name: 'Test' });
         done();
       });
     });

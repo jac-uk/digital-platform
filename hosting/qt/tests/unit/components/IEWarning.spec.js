@@ -1,4 +1,4 @@
-import {shallowMount} from '@vue/test-utils';
+import { shallowMount } from '@vue/test-utils';
 import IEWarning from '@/components/IEWarning';
 
 describe('components/IEWarning', () => {

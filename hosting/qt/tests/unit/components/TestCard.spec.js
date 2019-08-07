@@ -1,4 +1,4 @@
-import {shallowMount} from '@vue/test-utils';
+import { shallowMount } from '@vue/test-utils';
 import TestCard from '@/components/TestCard';
 
 describe.skip('components/TestCard', () => {
@@ -68,7 +68,7 @@ describe.skip('components/TestCard', () => {
 
       describe('when the start button is clicked', () => {
         it.skip('starts the timer and opens the test form', () => {
-          wrapper.setMethods({start: jest.fn()});
+          wrapper.setMethods({ start: jest.fn() });
           wrapper.find('button').trigger('click');
           expect(wrapper.vm.start).toHaveBeenCalledTimes(1);
         });
@@ -113,7 +113,7 @@ describe.skip('components/TestCard', () => {
 
       describe('when the button is clicked', () => {
         it('opens the test form', () => {
-          wrapper.setMethods({openForm: jest.fn()});
+          wrapper.setMethods({ openForm: jest.fn() });
           wrapper.find('button').trigger('click');
           expect(wrapper.vm.openForm).toHaveBeenCalled();
         });

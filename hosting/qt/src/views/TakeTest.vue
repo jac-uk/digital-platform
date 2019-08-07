@@ -78,7 +78,7 @@ export default {
     },
     redirectIfUserCanNotTakeTest() {
       if(!this.canUserTakeTest) {
-        this.$router.push({name: 'Test'});
+        this.$router.push({ name: 'Test' });
       }
     },
   },

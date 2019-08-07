@@ -1,4 +1,4 @@
-import {shallowMount, createLocalVue} from '@vue/test-utils';
+import { shallowMount, createLocalVue } from '@vue/test-utils';
 import Vuex from 'vuex';
 import TestWindow from '@/components/TestWindow';
 import MockDate from 'mockdate';
@@ -24,7 +24,7 @@ describe('components/TestWindow', () => {
         ...mockGetters,
       },
     });
-    return shallowMount(TestWindow, {localVue, store});
+    return shallowMount(TestWindow, { localVue, store });
   };
 
   afterEach(() => {
