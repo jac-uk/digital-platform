@@ -16,7 +16,7 @@ jobs:
     # This is one of the slowest steps to run.
     # The `parallelism` setting cuts the time needed by up to the value of the config (max 4 on the free plan).
     # All subsequent jobs depend on this one, so there is no point in using anything less that the max value here.
-    parallelism: 7
+    parallelism: 6
     steps:
       - checkout
       - run:
@@ -92,33 +92,6 @@ jobs:
       - run:
           name: 'Test hosting/apply'
           command: npm --prefix hosting/apply run test-ci
-
-  test-apply-admin:
-    executor: default
-    steps:
-      - attach_workspace:
-          at: ~/digital-platform
-      - run:
-          name: 'Lint hosting/apply-admin'
-          command: npm --prefix hosting/apply-admin run lint-ci
-      - run:
-          name: 'Test hosting/apply-admin'
-          command: npm --prefix hosting/apply-admin run test-ci
-
-  rebase-apply-admin:
-    executor: default
-    steps:
-      - attach_workspace:
-          at: ~/digital-platform
-      - run:
-          name: 'Rebase against master'
-          command: git rebase master
-      - run:
-          name: 'Lint hosting/apply-admin'
-          command: npm --prefix hosting/apply-admin run lint-ci
-      - run:
-          name: 'Test hosting/apply-admin'
-          command: npm --prefix hosting/apply-admin run test-ci
 
   test-qt:
     executor: default
@@ -267,9 +240,6 @@ workflows:
       - test-apply:
           requires:
             - setup
-      - test-apply-admin:
-          requires:
-            - setup
       - test-qt:
           requires:
             - setup
@@ -306,16 +276,9 @@ workflows:
           filters:
             branches:
               ignore: master
-      - rebase-apply-admin:
-          requires:
-            - setup
-          filters:
-            branches:
-              ignore: master
       - build-and-deploy-staging:
           requires:
             - test-apply
-            - test-apply-admin
             - test-functions
             - test-qt
             - test-qt-admin
@@ -326,7 +289,6 @@ workflows:
       - build-and-deploy-production:
           requires:
             - test-apply
-            - test-apply-admin
             - test-functions
             - test-qt
             - test-qt-admin

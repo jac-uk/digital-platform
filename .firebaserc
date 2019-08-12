@@ -17,9 +17,6 @@
         ],
         "qt-admin": [
           "jac-qt-admin"
-        ],
-        "apply-admin": [
-          "jac-apply-admin"
         ]
       }
     },
@@ -27,9 +24,6 @@
       "hosting": {
         "apply": [
           "jac-apply-staging"
-        ],
-        "apply-admin": [
-          "jac-apply-admin-staging"
         ],
         "reference": [
           "jac-reference-staging"
