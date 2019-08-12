@@ -16,7 +16,7 @@ jobs:
     # This is one of the slowest steps to run.
     # The `parallelism` setting cuts the time needed by up to the value of the config (max 4 on the free plan).
     # All subsequent jobs depend on this one, so there is no point in using anything less that the max value here.
-    parallelism: 6
+    parallelism: 5
     steps:
       - checkout
       - run:
