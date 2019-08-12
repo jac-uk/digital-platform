@@ -6,9 +6,6 @@
   "targets": {
     "application-form-e08c9": {
       "hosting": {
-        "apply": [
-          "application-form-e08c9"
-        ],
         "reference": [
           "jac-references"
         ],
@@ -22,9 +19,6 @@
     },
     "digital-platform-staging": {
       "hosting": {
-        "apply": [
-          "jac-apply-staging"
-        ],
         "reference": [
           "jac-reference-staging"
         ],
