@@ -5,22 +5,6 @@
   },
   "hosting": [
     {
-      "target": "apply",
-      "predeploy": "npm --prefix hosting/apply run build",
-      "public": "hosting/apply/dist",
-      "ignore": [
-        "firebase.json",
-        "**/.*",
-        "**/node_modules/**"
-      ],
-      "rewrites": [
-        {
-          "source": "**",
-          "destination": "/index.html"
-        }
-      ]
-    },
-    {
       "target": "reference",
       "public": "hosting/reference",
       "ignore": [

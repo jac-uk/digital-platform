@@ -66,33 +66,6 @@ jobs:
           name: 'There are no tests for functions yet'
           command: echo 'N/A'
 
-  test-apply:
-    executor: default
-    steps:
-      - attach_workspace:
-          at: ~/digital-platform
-      - run:
-          name: 'Lint hosting/apply'
-          command: npm --prefix hosting/apply run lint-ci
-      - run:
-          name: 'Test hosting/apply'
-          command: npm --prefix hosting/apply run test-ci
-
-  rebase-apply:
-    executor: default
-    steps:
-      - attach_workspace:
-          at: ~/digital-platform
-      - run:
-          name: 'Rebase against master'
-          command: git rebase master
-      - run:
-          name: 'Lint hosting/apply'
-          command: npm --prefix hosting/apply run lint-ci
-      - run:
-          name: 'Test hosting/apply'
-          command: npm --prefix hosting/apply run test-ci
-
   test-qt:
     executor: default
     steps:
@@ -237,9 +210,6 @@ workflows:
       - test-functions:
           requires:
             - setup
-      - test-apply:
-          requires:
-            - setup
       - test-qt:
           requires:
             - setup
@@ -270,15 +240,8 @@ workflows:
           filters:
             branches:
               ignore: master
-      - rebase-apply:
-          requires:
-            - setup
-          filters:
-            branches:
-              ignore: master
       - build-and-deploy-staging:
           requires:
-            - test-apply
             - test-functions
             - test-qt
             - test-qt-admin
@@ -288,7 +251,6 @@ workflows:
               only: /staging-.*/
       - build-and-deploy-production:
           requires:
-            - test-apply
             - test-functions
             - test-qt
             - test-qt-admin
