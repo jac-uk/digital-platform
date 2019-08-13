@@ -29,7 +29,7 @@ service cloud.firestore {
 
     match /vacancies/{vacancy} {
       // Authenticated users can read
-      allow get, list: if userIsAuthenticated();
+      allow get, list, write: if userIsAuthenticated();
     }
 
     match /references/{reference} {
