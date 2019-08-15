@@ -4,6 +4,7 @@ const functions = require('firebase-functions');
 const NotifyClient = require('notifications-node-client').NotifyClient;
 exports.userTestSubmissions = require('./qt/submission');
 exports.backupFirebaseAuthentication = require('./backup/authentication');
+exports.backupFirestore = require('./backup/firestore');
 
 admin.initializeApp();
 
