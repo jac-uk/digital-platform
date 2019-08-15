@@ -76,6 +76,14 @@ For local development we use the staging environment. This allows us to develop 
 - **Staging:** [digital-platform-staging](https://console.firebase.google.com/project/digital-platform-staging/overview)
 - **Production:** [application-form-e08c9](https://console.firebase.google.com/project/application-form-e08c9/overview)
 
+### Database backups
+
+The Firestore and Firebase Authentication databases are backed up automatically every hour.
+
+Backups are performed using Cloud Functions triggered on a schedule.
+
+More info in [functions/backup/README.md](functions/backup/README.md)
+
 ## Local development
 
 ### Node.js
