@@ -1,55 +1,44 @@
-/*eslint-disable no-unused-vars*/
-const backupBucket = 'jac-firebase-backups';
-const backupPath = '/authentication/';
-const batchSize = 1000;
-const frequency = 'every 12 hours';
+const PROJECT_ID = process.env.GCLOUD_PROJECT;
+const BACKUP_BUCKET = `${PROJECT_ID}-backups`;
+const BACKUP_PATH = '/authentication/';
+const BACKUP_SCHEDULE = 'every 1 hours synchronized';
 
 const admin = require('firebase-admin');
+const firebaseTools = require('firebase-tools');
 const fs = require('fs');
 const functions = require('firebase-functions');
 const os = require('os');
 const path = require('path');
-const { promisify } = require('util');
-const writeFileAsync = promisify(fs.writeFile);
 
-const listUsers = async (users, nextPageToken) => {
-  const results = await admin.auth().listUsers(batchSize, nextPageToken);
-  results.users.forEach((userRecord) => {
-    users.push(userRecord);
+// Download auth export file to the local filesystem
+const downloadAuthExport = async (filePath) => {
+  await firebaseTools.auth.export(filePath, {
+    project: PROJECT_ID,
   });
-  // Get next batch of users.
-  if (results.pageToken) {
-    listUsers(users, results.pageToken);
-  }
-  return users;
 };
 
-const uploadToBackupBucket = async (users) => {
-  const date = new Date();
-  const fileName = date.toISOString() + '.json';
-  const tempFilePath = path.join(os.tmpdir(), fileName);
-  const metadata = {
-    contentType: 'application/json',
-  };
-
-  // Because fs does not return promises.
-  await writeFileAsync(tempFilePath, users);
-
-  const bucket = admin.storage().bucket(backupBucket);
-  await bucket.upload(tempFilePath, {
-    destination: backupPath + fileName,
-    metadata: metadata,
+// Upload local file to the backup Cloud Storage bucket
+const uploadToStorageBucket = async (localPath, fileName) => {
+  const bucket = admin.storage().bucket(BACKUP_BUCKET);
+  await bucket.upload(localPath, {
+    destination: BACKUP_PATH + fileName,
   });
-  return fs.unlinkSync(tempFilePath);
 };
 
+// Delete a file from the local filesystem
+const deleteLocalFile = (filePath) => {
+  return fs.unlinkSync(filePath);
+};
+
+// Main handler function
 const main = async () => {
-  const users = [];
-  await listUsers(users, undefined);
-  await uploadToBackupBucket(JSON.stringify(users, null, 2));
-  return true;
+  const timestamp = (new Date()).toISOString();
+  const fileName = timestamp + '.json';
+  const tempFilePath = path.join(os.tmpdir(), fileName);
+
+  await downloadAuthExport(tempFilePath);
+  await uploadToStorageBucket(tempFilePath, fileName);
+  deleteLocalFile(tempFilePath);
 };
 
-module.exports = functions.pubsub.schedule(frequency).onRun((context) => {
-   return main();
-});
+module.exports = functions.pubsub.schedule(BACKUP_SCHEDULE).onRun(main);
