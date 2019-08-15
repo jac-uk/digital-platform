@@ -4,6 +4,16 @@ Functions in this directory handle backups of the Firestore and Firebase Authent
  
 Backups are fully automated: a new backup is taken once every hour, and old backups are deleted after 30 days.
 
+## Storage location
+
+Backups are stored in a Cloud Storage bucket determined by the name of the project: `${PROJECT_ID}-backups`.
+
+For example, backups of the production project `application-form-e08c9` are stored in the bucket `application-form-e08c9-backups`.
+
+Firebase Authentication backups are stored in the `/authentication/` directory. Each backup is a timestamped JSON file.
+
+Firestore backups are stored in the `/firestore/` directory, with each sub-directory being a timestamped export of the database.
+
 ## Setup dependencies
 
 ### Cloud Storage bucket
@@ -25,6 +35,9 @@ This will create a new bucket:
 - `--retention 30d`: 30 day [retention policy](https://cloud.google.com/storage/docs/bucket-lock) (older files are deleted automatically)
 
 The same can also be achieved using the web console instead of `gsutil`.
+
+**⚠️ Note:** The bucket **must be** located in the same location as the Firestore database. Firestore will not export to 
+buckets in different locations.
 
 ### Service Account permissions
 
