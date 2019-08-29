@@ -27,7 +27,7 @@ service cloud.firestore {
                        resource.data.state != "submitted";
     }
 
-    match /vacancies/{vacancy} {
+    match /exercises/{exercise} {
       // Authenticated users can read
       allow get, list, write: if userIsAuthenticated();
     }
