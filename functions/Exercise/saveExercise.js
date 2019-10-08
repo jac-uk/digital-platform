@@ -11,16 +11,16 @@ const saveExercise = async (data) => {
   let newRef = await createRefNumber();
   let exerciseData = {
     ...data,
-    ref: newRef
-  }
+    ref: newRef,
+  };
 
   try {
-    let docRef = await firestore.collection('exercises').add(exerciseData)
-    console.log("Document written with ID: ", docRef.id);
+    let docRef = await firestore.collection('exercises').add(exerciseData);
+    console.log('Document written with ID: ', docRef.id);
 
     return docRef.id;
   } catch (error) {
-    console.error("Error adding document: ", error);
+    console.error('Error adding document: ', error);
   }
 };
 
