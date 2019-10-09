@@ -1,11 +1,12 @@
 const admin = require('firebase-admin');
+const functions = require('firebase-functions');
 
 const firestore = admin.firestore();
 const REF_START_AT = 200;
 
 const createExercise = async (data, context) => {
   let userEmail = context.auth.token.email;
-  if(userEmail.split('@').pop() !== "judicialappointments.digital") {
+  if(userEmail.split('@').pop() !== 'judicialappointments.digital') {
     throw new functions.https.HttpsError('authentication failed', `The function has been called from ${userEmail} account`);
   }
 
