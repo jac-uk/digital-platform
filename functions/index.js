@@ -59,8 +59,8 @@ exports.sendVerificationEmail = functions.https.onCall((data, context) => {
   return sendVerificationEmail(email);
 });
 
-exports.saveNewExercise = functions.https.onCall((data, context) => {
-  return require('./Exercise/saveExercise')(data);
+exports.createExercise = functions.https.onCall((data, context) => {
+  return require('./Exercise/createExercise')(data, context);
 });
 
 exports.sendApplicationStartedEmail = functions.firestore

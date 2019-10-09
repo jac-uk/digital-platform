@@ -1,16 +1,17 @@
 const admin = require('firebase-admin');
 
-if (admin.apps.length == 0) {
-  admin.initializeApp();  
-}
-
 const firestore = admin.firestore();
-const START_AT = 200;
+const REF_START_AT = 200;
 
-const saveExercise = async (data) => {
+const createExercise = async (data, context) => {
+  let userEmail = context.auth.token.email;
+  if(userEmail.split('@').pop() !== "judicialappointments.digital") {
+    throw new functions.https.HttpsError('authentication failed', `The function has been called from ${userEmail} account`);
+  }
+
   let newRef = await createRefNumber();
   let exerciseData = {
-    ...data,
+    name: data.name,
     ref: newRef,
   };
 
@@ -29,10 +30,10 @@ const createRefNumber = async () => {
     let exercisesRef = await firestore.collection('exercises').orderBy('ref', 'desc').limit(1).get();
     let exercisesData = exercisesRef.docs[0].data();
     let newRef = parseInt(exercisesData.ref) + 1;
-    return `${newRef}`;
+    return newRef;
   } catch(e) {
-    return START_AT;
+    return REF_START_AT;
   }  
 };
 
-module.exports = saveExercise;
+module.exports = createExercise;
