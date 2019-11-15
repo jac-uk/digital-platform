@@ -26,6 +26,11 @@ service cloud.firestore {
                        request.resource.data.applicant == currentApplicant() &&
                        resource.data.state != "submitted";
     }
+    
+    match /vacancies/{vacancy} {
+      // Authenticated users can read
+      allow get: if userIsAuthenticated();
+    }
 
     match /exercises/{exercise} {
       // Authenticated users can read
@@ -36,6 +41,11 @@ service cloud.firestore {
       // World readable if you know the document ID (`get` allowed)
       // But cannot query the collection (`list` not allowed)
       allow get;
+    }
+    
+    match /candidates/{userId} {
+  		// Users can read & write to their own candidate document
+      allow get, create, update: if request.auth.uid == userId;
     }
 
     match /tests/{test} {
