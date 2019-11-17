@@ -6,29 +6,24 @@ exports.userTestSubmissions = require('./qt/submission');
 exports.backupFirebaseAuthentication = require('./backup/authentication');
 exports.backupFirestore = require('./backup/firestore');
 
-admin.initializeApp();
+/*
+ *  To prevent this index.js from getting too big,
+ *  create your functions in separate files
+ */
 
-const sendEmail = (email, templateId, personalisation) => {
-  const client = new NotifyClient(functions.config().notify.key);
+const sendEmail = require('./sharedServices').sendEmail;
 
-  console.info({
-    action: 'Sending email',
-    email,
-    templateId,
-    personalisation,
-  });
+const sendExerciseStartedEmail = require('./exercises/sendExerciseStartedEmail');
+const testExerciseNew = require('./exercises/testExerciseNew');
 
-  return client
-    .sendEmail(
-      templateId,
-      email,
-      {personalisation}
-    )
-    .then(notifyResponse => {
-      console.info(notifyResponse.body);
-      return true;
-    });
+module.exports = {
+  'sendExerciseStartedEmail': functions.firestore.document('exercises/{exerciseId}').onCreate(sendExerciseStartedEmail),
+  'testExerciseNew': functions.https.onRequest(testExerciseNew),
 };
+
+/*
+ *  TODO: All functions below this comment should be refactored into separate files.
+ */
 
 const sendVerificationEmail = async (email) => {
   const returnUrl = functions.config().production.url;
@@ -104,4 +99,4 @@ exports.sendReferenceRequestEmail = functions.firestore
     };
 
     return sendEmail(data.assessor.email, templateId, personalisation);
-  });
+  }); 
