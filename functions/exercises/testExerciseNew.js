@@ -13,10 +13,11 @@ const testExerciseNew = (req, res) => {
   })
   .then(function() {
     console.log("Document successfully written!");
-    return true;
+    return res.send('ok');
   })
   .catch(function(error) {
     console.error("Error writing document: ", error);
+    return res.status(499).send('error');
   });
 };
 
