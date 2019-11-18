@@ -33,4 +33,4 @@ const sendEmail = (email, templateId, personalisation) => {
 module.exports = {
   db,
   sendEmail,
-}
+};
