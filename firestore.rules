@@ -10,21 +10,21 @@ service cloud.firestore {
     }
 
     match /applications/{application} {
-      function currentApplicant() {
-        return path("/databases/" + database + "/documents/applicants/" + request.auth.uid);
+      function currentUser() {
+        return request.auth.uid;
       }
 
       // Allow existing records which belong to the current user
-      allow get, list: if resource.data.applicant == currentApplicant();
+      allow get, list: if resource.data.userId == currentUser();
 
       // Allow new records if they will belong to the current user
-      allow create: if request.resource.data.applicant == currentApplicant();
+      allow create: if request.resource.data.userId == currentUser();
 
       // Allow updates on records which belong, and will continue to belong, to the current user
       // But only if the application isn't in a 'submitted' state
-      allow update: if resource.data.applicant == currentApplicant() &&
-                       request.resource.data.applicant == currentApplicant() &&
-                       resource.data.state != "submitted";
+      allow update: if resource.data.userId == currentUser() &&
+                       request.resource.data.userId == currentUser();
+                       //  && resource.data.state != "submitted";
     }
     
     match /vacancies/{vacancy} {
