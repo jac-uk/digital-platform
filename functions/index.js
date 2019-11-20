@@ -14,9 +14,11 @@ exports.backupFirestore = require('./backup/firestore');
 const sendEmail = require('./sharedServices').sendEmail;
 
 const sendExerciseStartedEmail = require('./exercises/sendExerciseStartedEmail');
+const handleExerciseMailboxChange = require('./exercises/handleExerciseMailboxChange');
 
 module.exports = {
   'sendExerciseStartedEmail': functions.firestore.document('exercises/{exerciseId}').onCreate(sendExerciseStartedEmail),
+  'handleExerciseMailboxChange': functions.firestore.document('exercises/{exerciseId}').onUpdate(handleExerciseMailboxChange),
 };
 
 /*
