@@ -9,6 +9,12 @@ service cloud.firestore {
       allow get, create, update: if request.auth.uid == userId;
     }
 
+    match /meta/stats {
+      // allow any authenticated user to read & write meta
+      // @todo restrict this to admin
+      allow read, write: if userIsAuthenticated();
+    }
+
     match /applications/{application} {
       function currentUser() {
         return request.auth.uid;
