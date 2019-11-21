@@ -13,11 +13,8 @@ exports.backupFirestore = require('./backup/firestore');
 
 const sendEmail = require('./sharedServices').sendEmail;
 
-const sendExerciseStartedEmail = require('./exercises/sendExerciseStartedEmail');
-
-module.exports = {
-  'sendExerciseStartedEmail': functions.firestore.document('exercises/{exerciseId}').onCreate(sendExerciseStartedEmail),
-};
+exports.sendExerciseStartedEmail = require('./exercises/sendExerciseStartedEmail');
+exports.handleExerciseMailboxChange = require('./exercises/handleExerciseMailboxChange');
 
 /*
  *  TODO: All functions below this comment should be refactored into separate files.
