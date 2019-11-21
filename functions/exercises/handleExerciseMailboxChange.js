@@ -24,11 +24,11 @@ exports.handleExerciseMailboxChange = functions.firestore
       // More info here:
       // https://firebase.google.com/docs/firestore/manage-data/add-data#set_a_document
       const setWithMerge = exerciseRef.set({
-        exerciseMailbox: previousEmail 
+        exerciseMailbox: previousEmail, 
       }, { merge: true});
 
-      console.error(`${email} is an invalid email format. Leaving email mailbox as ${previousEmail}`)
-      return null;      
+      console.error(`${email} is an invalid email format. Leaving email mailbox as ${previousEmail}`);
+      return null;
     }
 
     // We'll only update if the exerciseMailbox has changed.
@@ -40,7 +40,7 @@ exports.handleExerciseMailboxChange = functions.firestore
       exerciseName: data.name,
       previousEmail: previousEmail,
       newEmail: email,
-    }
+    };
 
     // Check that the firebase config has the key by running:
     // firebase functions:config:get
