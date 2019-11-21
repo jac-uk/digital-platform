@@ -5,7 +5,7 @@ const emailIsValid = require('../sharedServices').emailIsValid;
 const db = require('../sharedServices').db;
 
 exports.handleExerciseMailboxChange = functions.firestore
-  .document('users/{userId}')
+  .document('exercises/{exerciseId}')
   .onUpdate((change, context) => {
 
     // Retrieve the current and previous value
@@ -54,4 +54,3 @@ exports.handleExerciseMailboxChange = functions.firestore
       return true;
     });
   });
-
