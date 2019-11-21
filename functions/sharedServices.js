@@ -31,7 +31,7 @@ const sendEmail = (email, templateId, personalisation) => {
 };
 
 const emailIsValid = (email) => {
-  return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)
+  return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email);
 };
 
 module.exports = {
