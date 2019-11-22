@@ -16,8 +16,8 @@ const NOTIFY_SCHEDULE = 'every day 13:00';
 // https://firebase.google.com/docs/functions/manage-functions#set_timeout_and_memory_allocation
 const runtimeOpts = {
   timeoutSeconds: 300,
-  memory: '512MB'
-}
+  memory: '512MB',
+};
 
 const functions = require('firebase-functions');
 const db = require('../sharedServices').db;
