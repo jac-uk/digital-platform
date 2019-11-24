@@ -15,6 +15,7 @@ const sendEmail = require('./sharedServices').sendEmail;
 
 exports.sendExerciseStartedEmail = require('./exercises/sendExerciseStartedEmail');
 exports.handleExerciseMailboxChange = require('./exercises/handleExerciseMailboxChange');
+exports.handleCandidateOnCreate = require('./candidates/handleCandidateOnCreate');
 
 /*
  *  TODO: All functions below this comment should be refactored into separate files.
