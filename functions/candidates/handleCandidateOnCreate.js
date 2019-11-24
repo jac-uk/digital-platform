@@ -10,7 +10,7 @@ const sendCandidateCreatedAccountEmail = async (snap, context) => {
   const candidateRef = db.collection('candidates').doc(context.params.candidateId);
   const setWithMerge = candidateRef.set({
     createdAt: Date.now(), 
-    status: "account-created",
+    status: 'account-created',
   }, { merge: true});
 
   const personalizationData = {
@@ -23,9 +23,9 @@ const sendCandidateCreatedAccountEmail = async (snap, context) => {
     console.info(email + ' is a new candidate and created an account.');
     return true;
   } 
-  console.error(`Sending to ${email} candidate created account email failed.`)
+  console.error(`Sending to ${email} candidate created account email failed.`);
   return null; 
-}
+};
 
 exports.handleOnCreate = functions.firestore
   .document('candidates/{candidateId}')
