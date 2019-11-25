@@ -2,6 +2,7 @@
 const functions = require('firebase-functions');
 const sendEmail = require('../sharedServices').sendEmail;
 const db = require('../sharedServices').db;
+const getData = require('../sharedServices').getData;
 
 const setApplicationOnCreateData = async (snap, context) => {
   const data = snap.data();
@@ -11,31 +12,10 @@ const setApplicationOnCreateData = async (snap, context) => {
   const applicationRef = db.collection('applications').doc(context.params.applicationId);
   const setWithMerge = applicationRef.set({
     createdAt: Date.now(),
-    exerciseId: data.exerciseId,
-    candidateId: data.candidateId,
     status: 'draft',      
   }, { merge: true});
 
   return null;
-};
-
-// helper function to get data with collectionName and docId
-const getData = async (collectionName, docId) => {
-  const ref = db.collection(collectionName).doc(docId);
-  let data = ref.get()
-    .then(doc => {
-      if (!doc.exists) {
-        console.error(`ERROR: No such document (${docId}) in collection (${collectionName})`);
-        return null;
-      }
-
-      return doc.data();
-    })
-    .catch(err => {
-      console.error('Error getting document', err);
-      return null;
-    });  
-  return data;
 };
 
 const sendApplicationStartedEmailToCandidate = async (snap, context) => {
