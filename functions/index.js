@@ -19,6 +19,7 @@ exports.notifyAdminsWhenExerciseOpens = require('./exercises/notifyAdminsWhenExe
 exports.handleCandidateOnCreate = require('./candidates/handleCandidateOnCreate');
 exports.handleApplicationOnCreate = require('./applications/handleApplicationOnCreate');
 exports.notifyAdminsWhenExerciseCloses = require('./exercises/notifyAdminsWhenExerciseCloses');
+exports.handleApplicationOnUpdate = require('./applications/handleApplicationOnUpdate');
 
 /*
  *  TODO: All functions below this comment should be refactored into separate files.
@@ -31,12 +32,6 @@ const sendVerificationEmail = async (email) => {
   return sendEmail(email, templateId, {verificationLink});
 };
 
-const sendApplicationSubmittedEmail = async (applicantId) => {
-  const user = await admin.auth().getUser(applicantId);
-  const templateId = functions.config().notify.templates.application_submitted;
-  return sendEmail(user.email, templateId, {});
-};
-
 exports.sendVerificationEmailOnNewUser = functions.auth.user().onCreate((user) => {
   const email = user.email;
   return sendVerificationEmail(email);
@@ -46,16 +41,6 @@ exports.sendVerificationEmail = functions.https.onCall((data, context) => {
   const email = context.auth.token.email;
   return sendVerificationEmail(email);
 });
-
-exports.sendApplicationSubmittedEmail = functions.firestore
-  .document('applications/{applicationId}')
-  .onUpdate((change, context) => {
-    const data = change.after.data();
-    if (data.state === 'submitted') {
-      return sendApplicationSubmittedEmail(data.applicant.id);
-    }
-    return true;
-  });
 
 exports.processReferenceUpload = functions.storage
   .object()
