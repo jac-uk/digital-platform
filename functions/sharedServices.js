@@ -34,8 +34,28 @@ const emailIsValid = (email) => {
   return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email);
 };
 
+// helper function to get data with collectionName and docId
+const getData = async (collectionName, docId) => {
+  const ref = db.collection(collectionName).doc(docId);
+  let data = ref.get()
+    .then(doc => {
+      if (!doc.exists) {
+        console.error(`ERROR: No such document (${docId}) in collection (${collectionName})`);
+        return null;
+      }
+
+      return doc.data();
+    })
+    .catch(err => {
+      console.error('Error getting document', err);
+      return null;
+    });  
+  return data;
+};
+
 module.exports = {
   db,
   sendEmail,
   emailIsValid,
+  getData,
 };
