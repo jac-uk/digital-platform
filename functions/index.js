@@ -15,9 +15,10 @@ const sendEmail = require('./sharedServices').sendEmail;
 
 exports.sendExerciseStartedEmail = require('./exercises/sendExerciseStartedEmail');
 exports.handleExerciseMailboxChange = require('./exercises/handleExerciseMailboxChange');
-exports.handleApplicationOnCreate = require('./applications/handleApplicationOnCreate');
-exports.handleCandidateOnCreate = require('./candidates/handleCandidateOnCreate');
 exports.notifyAdminsWhenExerciseOpens = require('./exercises/notifyAdminsWhenExerciseOpens');
+exports.handleCandidateOnCreate = require('./candidates/handleCandidateOnCreate');
+exports.handleApplicationOnCreate = require('./applications/handleApplicationOnCreate');
+exports.notifyAdminsWhenExerciseCloses = require('./exercises/notifyAdminsWhenExerciseCloses');
 
 /*
  *  TODO: All functions below this comment should be refactored into separate files.
