@@ -18,7 +18,7 @@ exports.sendExerciseStartedEmail = functions.firestore
 
     const templateId = functions.config().notify.templates.exercise_started;
     return sendEmail(email, templateId, {}).then((sendEmailResponse) => {
-      slog(`${email} has created an Exercise (${context.params.exerciseId})`)
+      slog(`${email} has created an Exercise (${context.params.exerciseId})`);
       return true;
     });
   });
