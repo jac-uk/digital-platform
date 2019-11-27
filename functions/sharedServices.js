@@ -1,5 +1,6 @@
 const functions = require('firebase-functions');
 const admin = require('firebase-admin');
+const axios = require('axios');
 
 const NotifyClient = require('notifications-node-client').NotifyClient;
 
@@ -53,9 +54,32 @@ const getData = async (collectionName, docId) => {
   return data;
 };
 
+//
+//  helper function to log a string to Slack channel #prod-alerts
+//
+const slog = async (msgString) => {
+  console.log(msgString);
+
+  // Check that the firebase config has the key by running:
+  // firebase functions:config:get
+  //
+  // Set slack.url in firebase functions like this:
+  // firebase functions:config:set slack.url="YOUR_SLACK_INCOMING_WEBHOOK_URL"  
+  const slackUrl = functions.config().slack.url;
+
+  const data = {
+    text: msgString,
+  };
+  
+  // we wait for the axios.post Promise to be resolved
+  const result = axios.post(slackUrl, data);
+  return result.data;
+};
+
 module.exports = {
   db,
   sendEmail,
   emailIsValid,
   getData,
+  slog,
 };
