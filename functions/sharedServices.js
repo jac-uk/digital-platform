@@ -67,14 +67,14 @@ const slog = async (msgString) => {
   // firebase functions:config:set slack.url="YOUR_SLACK_INCOMING_WEBHOOK_URL"  
   const slackUrl = functions.config().slack.url;
 
-  data = {
+  const data = {
     text: msgString,
-  }
+  };
   
   // we wait for the axios.post Promise to be resolved
   const result = axios.post(slackUrl, data);
   return result.data;
-}
+};
 
 module.exports = {
   db,
