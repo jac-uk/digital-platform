@@ -2,6 +2,7 @@
 const functions = require('firebase-functions');
 const sendEmail = require('../sharedServices').sendEmail;
 const db = require('../sharedServices').db;
+const slog = require('../sharedServices').slog;
 
 exports.sendExerciseStartedEmail = functions.firestore
   .document('exercises/{exerciseId}')
@@ -17,7 +18,7 @@ exports.sendExerciseStartedEmail = functions.firestore
 
     const templateId = functions.config().notify.templates.exercise_started;
     return sendEmail(email, templateId, {}).then((sendEmailResponse) => {
-      console.info(email + ' has created an Exercise.');
+      slog(`${email} has created an Exercise (${context.params.exerciseId})`);
       return true;
     });
   });

@@ -3,6 +3,7 @@ const functions = require('firebase-functions');
 const sendEmail = require('../sharedServices').sendEmail;
 const emailIsValid = require('../sharedServices').emailIsValid;
 const db = require('../sharedServices').db;
+const slog = require('../sharedServices').slog;
 
 exports.handleExerciseMailboxChange = functions.firestore
   .document('exercises/{exerciseId}')
@@ -27,7 +28,7 @@ exports.handleExerciseMailboxChange = functions.firestore
         exerciseMailbox: previousEmail, 
       }, { merge: true});
 
-      console.error(`${email} is an invalid email format. Leaving email mailbox as ${previousEmail}`);
+      slog(`${email} is an invalid email format. Leaving email mailbox as ${previousEmail}`);
       return null;
     }
 
@@ -50,7 +51,7 @@ exports.handleExerciseMailboxChange = functions.firestore
     const templateId = functions.config().notify.templates.exercise_mailbox_changed;
 
     return sendEmail(email, templateId, personalizationData).then((sendEmailResponse) => {
-      console.info(`Exercise "${data.name}" - mailbox ${previousEmail} has been changed to ${email}`);
+      slog(`Exercise "${data.name}" - mailbox ${previousEmail} has been changed to ${email}`);
       return true;
     });
   });
