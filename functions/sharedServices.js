@@ -72,7 +72,7 @@ const slog = async (msgString) => {
   };
   
   // we wait for the axios.post Promise to be resolved
-  const result = axios.post(slackUrl, data);
+  const result = await axios.post(slackUrl, data);
   return result.data;
 };
 
