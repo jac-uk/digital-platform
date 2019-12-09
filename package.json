@@ -6,7 +6,7 @@
   "readme": "README.md",
   "scripts": {
     "deploy-rules": "firebase deploy --only firestore:rules"
-  },  
+  },
   "devDependencies": {
     "firebase-tools": "^7.0.2"
   },
