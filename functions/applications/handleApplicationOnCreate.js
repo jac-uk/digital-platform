@@ -23,9 +23,9 @@ const setApplicationOnCreateData = async (snap, context) => {
 const sendApplicationStartedEmailToCandidate = async (snap, context) => {
   const data = snap.data();
 
-  const candidateData = await getData('candidates', data.candidateId);
+  const candidateData = await getData('candidates', data.userId);
   if (candidateData == null) {
-    slog(`ERROR: No data returned from Candidates with docId (${data.candidateId})`);
+    slog(`ERROR: No data returned from Candidates with docId (${data.userId})`);
     return null;
   }
   const candidateEmail = candidateData.email;
@@ -60,7 +60,7 @@ exports.handleApplicationOnCreate = functions.firestore
   .onCreate( (snap, context) => {
 
     // onCreate set application data with data passed in:
-    // - candidateId
+    // - userId
     // - exerciseId
     setApplicationOnCreateData(snap, context);
 
