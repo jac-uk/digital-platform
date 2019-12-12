@@ -22,6 +22,7 @@ const runtimeOpts = {
 const functions = require('firebase-functions');
 const db = require('../sharedServices').db;
 const sendEmail = require('../sharedServices').sendEmail;
+const slog = require('../sharedServices').slog;
 
 let exercisesRef = db.collection('exercises');
 
@@ -34,13 +35,15 @@ exports.notifyAdminsWhenExerciseOpens = functions.runWith(runtimeOpts).pubsub.sc
     const yesterday = new Date();
     yesterday.setDate(yesterday.getDate() - 1);
   
-    console.info(`Looking for exercises that open today: ${today}`);
+    slog(`SCHEDULED JOB: Looking for exercises that open today: ${today}`);
 
     // Look for Exercises that open today (in exercises/{exerciseId}/applicationOpenDate field)
     exercisesRef.where('applicationOpenDate', '>', yesterday).where('applicationOpenDate', '<', today).get()
     .then(snapshot => {
       if (snapshot.empty) {
-        console.log('No matching documents.');
+        slog(`No matching documents in Exercises 
+                where applicationOpenDate > ${yesterday}
+                and applicationOpenDate < ${today}`);
         return;
       } 
 
@@ -50,10 +53,10 @@ exports.notifyAdminsWhenExerciseOpens = functions.runWith(runtimeOpts).pubsub.sc
         const data = doc.data();
 
         const applicationOpenDate = data.applicationOpenDate;
-        console.log(`${data.name} applicationOpenDate = ${applicationOpenDate.toDate().toISOString().split('T')[0]}`);
+        slog(`${data.name} applicationOpenDate = ${applicationOpenDate.toDate().toISOString().split('T')[0]}`);
 
         const email = data.exerciseMailbox;
-        console.log(`Exercise ${data.name} is now open. Sending email to ${email}`);
+        slog(`Exercise ${data.name} is now open. Emailing JAC admin: ${email}`);
 
         const personalizationData = {
           exerciseName: data.name,
@@ -70,19 +73,19 @@ exports.notifyAdminsWhenExerciseOpens = functions.runWith(runtimeOpts).pubsub.sc
         // TODO: Remove this later once everything works
         if (email.includes('@judicialappointments.digital')) {
           return sendEmail(email, templateId, personalizationData).then((sendEmailResponse) => {
-            console.info(`Exercise "${data.name}" - is now open.`);
-            console.log(sendEmailResponse);
+            slog(`Exercise "${data.name}" is now open.`);
+            slog(`Response from sendEmail: ${sendEmailResponse}`);
             return null;
           });
         } else {
-          console.error(`Don't mail out to ${email}`);
+          slog(`ERROR: Trying to send to non-JAC email address: ${email}`);
         }
       });
 
       return null;
     })
     .catch(err => {
-      console.log('Error getting documents', err);
+      slog('Error getting documents', err);
       return null;
     });
 

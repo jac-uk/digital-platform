@@ -3,8 +3,10 @@ const functions = require('firebase-functions');
 const sendEmail = require('../sharedServices').sendEmail;
 const db = require('../sharedServices').db;
 const getData = require('../sharedServices').getData;
+const slog = require('../sharedServices').slog;
 
 const setApplicationOnCreateData = async (snap, context) => {
+  slog(`New Application (${context.params.applicationId}) created`);
   const data = snap.data();
 
   // pass in exerciseId and candidateId and save it to firestore
@@ -21,9 +23,9 @@ const setApplicationOnCreateData = async (snap, context) => {
 const sendApplicationStartedEmailToCandidate = async (snap, context) => {
   const data = snap.data();
 
-  const candidateData = await getData('candidates', data.candidateId);
+  const candidateData = await getData('candidates', data.userId);
   if (candidateData == null) {
-    console.error(`ERROR: No data returned from candidates with docId = ${data.candidateId}`);
+    slog(`ERROR: No data returned from Candidates with docId (${data.userId})`);
     return null;
   }
   const candidateEmail = candidateData.email;
@@ -31,7 +33,7 @@ const sendApplicationStartedEmailToCandidate = async (snap, context) => {
 
   const exerciseData = await getData('exercises', data.exerciseId);
   if (candidateData == null) {
-    console.error(`ERROR: No data returned from exercises with docId = ${data.exerciseId}`);
+    slog(`ERROR: No data returned from Exercises with docId = ${data.exerciseId}`);
     return null;
   }  
   const exerciseName = exerciseData.name;
@@ -48,7 +50,7 @@ const sendApplicationStartedEmailToCandidate = async (snap, context) => {
   // firebase functions:config:set notify.templates.application_started="THE_GOVUK_NOTIFY_TEMPLATE_ID"  
   const templateId = functions.config().notify.templates.application_started;
   return sendEmail(candidateEmail, templateId, personalizedData).then((sendEmailResponse) => {
-    console.info(`${candidateFullName} (${candidateEmail}) has started to apply to vacancy ${exerciseName}`);
+    slog(`${candidateFullName} (${candidateEmail}) has started to apply to vacancy ${exerciseName}`);
     return true;
   });  
 };
@@ -58,7 +60,7 @@ exports.handleApplicationOnCreate = functions.firestore
   .onCreate( (snap, context) => {
 
     // onCreate set application data with data passed in:
-    // - candidateId
+    // - userId
     // - exerciseId
     setApplicationOnCreateData(snap, context);
 

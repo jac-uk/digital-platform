@@ -2,6 +2,7 @@
 const functions = require('firebase-functions');
 const sendEmail = require('../sharedServices').sendEmail;
 const db = require('../sharedServices').db;
+const slog = require('../sharedServices').slog;
 
 const sendCandidateCreatedAccountEmail = async (snap, context) => {
   const data = snap.data();
@@ -12,6 +13,7 @@ const sendCandidateCreatedAccountEmail = async (snap, context) => {
     createdAt: Date.now(), 
     status: 'account-created',
   }, { merge: true});
+  slog(`Response from setting Candidate (${context.params.candidateId}): ${setWithMerge}`);
 
   const personalizationData = {
     fullName: data.fullName,
@@ -20,10 +22,10 @@ const sendCandidateCreatedAccountEmail = async (snap, context) => {
   const templateId = functions.config().notify.templates.candidate_created_account;
   const sendEmailResponse = sendEmail(email, templateId, personalizationData);
   if (sendEmailResponse) {
-    console.info(email + ' is a new candidate and created an account.');
+    slog(`${email} is a new Candidate and created an account`);
     return true;
   } 
-  console.error(`Sending to ${email} candidate created account email failed.`);
+  slog(`ERROR: Sending to ${email} candidate (${context.params.candidateId}) created account email failed`);
   return null; 
 };
 
