@@ -1,3 +1,4 @@
+/*eslint-disable no-unused-vars*/
 const PROJECT_ID = process.env.GCLOUD_PROJECT;
 
 const functions = require('firebase-functions');
@@ -25,7 +26,7 @@ exports.scheduledFirestoreExport = functions.region('europe-west2')
     // Leave collectionIds empty to export all collections
     // or set to a list of collection IDs to export,
     // collectionIds: ['users', 'posts']
-    collectionIds: []
+    collectionIds: [],
     })
   .then(responses => {
     const response = responses[0];
