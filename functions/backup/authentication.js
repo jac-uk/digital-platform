@@ -1,7 +1,8 @@
 const PROJECT_ID = process.env.GCLOUD_PROJECT;
 const BACKUP_BUCKET = `${PROJECT_ID}-backups`;
 const BACKUP_PATH = '/authentication/';
-const BACKUP_SCHEDULE = 'every 1 hours synchronized';
+//const BACKUP_SCHEDULE = 'every 1 hours synchronized';
+const BACKUP_SCHEDULE = 'every day 23:01';
 
 const admin = require('firebase-admin');
 const firebaseTools = require('firebase-tools');
@@ -41,4 +42,8 @@ const main = async () => {
   deleteLocalFile(tempFilePath);
 };
 
-module.exports = functions.pubsub.schedule(BACKUP_SCHEDULE).onRun(main);
+module.exports = functions.region('europe-west2')
+                          .pubsub
+                          .schedule(BACKUP_SCHEDULE)
+                          .timeZone('Europe/London')
+                          .onRun(main);

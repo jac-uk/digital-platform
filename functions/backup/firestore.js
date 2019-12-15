@@ -9,13 +9,13 @@ const slog = require('../sharedServices').slog;
 const bucket = `gs://${PROJECT_ID}-backups/firestore/${(new Date()).toISOString()}`;
 console.log('bucket = ', bucket);
 
+//const FIRESTORE_BACKUP_SCHEDULE = 'every 1 hours synchronized';
 const FIRESTORE_BACKUP_SCHEDULE = 'every day 23:00';
 
 exports.scheduledFirestoreExport = functions.region('europe-west2')
                                             .pubsub
                                             .schedule(FIRESTORE_BACKUP_SCHEDULE)
                                             .timeZone('Europe/London')
-                                            
                                             .onRun((context) => {
   const databaseName = client.databasePath(PROJECT_ID, '(default)');
   console.log(`databaseName = ${databaseName}`);

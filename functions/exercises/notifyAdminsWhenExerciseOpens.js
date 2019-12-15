@@ -26,9 +26,11 @@ const slog = require('../sharedServices').slog;
 
 let exercisesRef = db.collection('exercises');
 
-exports.notifyAdminsWhenExerciseOpens = functions.runWith(runtimeOpts).pubsub.schedule(NOTIFY_SCHEDULE)
-  .timeZone('Europe/London')
-  .onRun((context) => {
+exports.notifyAdminsWhenExerciseOpens = functions.region('europe-west2')
+                                                 .runWith(runtimeOpts)
+                                                 .pubsub.schedule(NOTIFY_SCHEDULE)
+                                                 .timeZone('Europe/London')
+                                                 .onRun((context) => {
 
     // Use today's and yesterday's date as filters to find the proper applicationOpenDate
     const today = new Date();
@@ -70,15 +72,15 @@ exports.notifyAdminsWhenExerciseOpens = functions.runWith(runtimeOpts).pubsub.sc
         // firebase functions:config:set notify.templates.exercise_open="THE_GOVUK_NOTIFY_TEMPLATE_ID"
         const templateId = functions.config().notify.templates.exercise_open;
 
-        // TODO: Remove this later once everything works
-        if (email.includes('@judicialappointments.digital')) {
+        if (email.includes('@judicialappointments.digital') ||
+            email.includes('@gov.uk')) {
           return sendEmail(email, templateId, personalizationData).then((sendEmailResponse) => {
             slog(`Exercise "${data.name}" is now open.`);
             slog(`Response from sendEmail: ${sendEmailResponse}`);
             return null;
           });
         } else {
-          slog(`ERROR: Trying to send to non-JAC email address: ${email}`);
+          slog(`ERROR: NotifyAdminWhenExerciseOpens: Trying to send to non-JAC email address: ${email}`);
         }
       });
 

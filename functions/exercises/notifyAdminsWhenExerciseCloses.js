@@ -27,9 +27,11 @@ const slog = require('../sharedServices').slog;
 
 let exercisesRef = db.collection('exercises');
 
-exports.notifyAdminsWhenExerciseCloses = functions.runWith(runtimeOpts).pubsub.schedule(NOTIFY_SCHEDULE)
-  .timeZone('Europe/London')
-  .onRun((context) => {
+exports.notifyAdminsWhenExerciseCloses = functions.region('europe-west2')
+                                                  .runWith(runtimeOpts)
+                                                  .pubsub.schedule(NOTIFY_SCHEDULE)
+                                                  .timeZone('Europe/London')
+                                                  .onRun((context) => {
 
     // Use today's and yesterday's date as filters to find the proper applicationCloseDate
     const today = new Date();
@@ -71,15 +73,15 @@ exports.notifyAdminsWhenExerciseCloses = functions.runWith(runtimeOpts).pubsub.s
         // firebase functions:config:set notify.templates.exercise_closed="THE_GOVUK_NOTIFY_TEMPLATE_ID"
         const templateId = functions.config().notify.templates.exercise_closed;
 
-        // TODO: Remove this later once everything works
-        if (email.includes('@judicialappointments.digital')) {
+        if (email.includes('@judicialappointments.digital') ||
+            email.includes('@gov.uk')) {
           return sendEmail(email, templateId, personalizationData).then((sendEmailResponse) => {
             slog(`Exercise "${data.name}" is now closed.`);
             slog(`Response from sendEmail: ${sendEmailResponse}`);
             return null;
           });
         } else {
-          slog(`ERROR: Trying to send to non-JAC email address: ${email}`);
+          slog(`ERROR: NotifyAdminWhenExerciseCloses: Trying to send to non-JAC email address: ${email}`);
         }
       });
 
