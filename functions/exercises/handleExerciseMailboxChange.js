@@ -5,7 +5,7 @@ const emailIsValid = require('../sharedServices').emailIsValid;
 const db = require('../sharedServices').db;
 const slog = require('../sharedServices').slog;
 
-exports.handleExerciseMailboxChange = functions.firestore
+exports.handleExerciseMailboxChange = functions.region('europe-west2').firestore
   .document('exercises/{exerciseId}')
   .onUpdate((change, context) => {
 

@@ -4,7 +4,7 @@ const sendEmail = require('../sharedServices').sendEmail;
 const db = require('../sharedServices').db;
 const slog = require('../sharedServices').slog;
 
-exports.sendExerciseStartedEmail = functions.firestore
+exports.sendExerciseStartedEmail = functions.region('europe-west2').firestore
   .document('exercises/{exerciseId}')
   .onCreate( (snap, context) => {
     const data = snap.data();
