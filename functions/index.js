@@ -32,12 +32,12 @@ const sendVerificationEmail = async (email) => {
   return sendEmail(email, templateId, {verificationLink});
 };
 
-exports.sendVerificationEmailOnNewUser = functions.auth.user().onCreate((user) => {
+exports.sendVerificationEmailOnNewUser = functions.region('europe-west2').auth.user().onCreate((user) => {
   const email = user.email;
   return sendVerificationEmail(email);
 });
 
-exports.sendVerificationEmail = functions.https.onCall((data, context) => {
+exports.sendVerificationEmail = functions.region('europe-west2').https.onCall((data, context) => {
   const email = context.auth.token.email;
   return sendVerificationEmail(email);
 });
