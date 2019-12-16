@@ -29,7 +29,7 @@ const sendCandidateCreatedAccountEmail = async (snap, context) => {
   return null; 
 };
 
-exports.handleOnCreate = functions.firestore
+exports.handleOnCreate = functions.region('europe-west2').firestore
   .document('candidates/{candidateId}')
   .onCreate( (snap, context) => {
     const candidateCreatedAccountEmailSent = sendCandidateCreatedAccountEmail(snap, context);
