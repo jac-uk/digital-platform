@@ -55,7 +55,7 @@ const sendApplicationStartedEmailToCandidate = async (snap, context) => {
   });  
 };
 
-exports.handleApplicationOnCreate = functions.firestore
+exports.handleApplicationOnCreate = functions.region('europe-west2').firestore
   .document('applications/{applicationId}')
   .onCreate( (snap, context) => {
 
