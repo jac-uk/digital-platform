@@ -74,3 +74,5 @@ functions/pendingReferences.csv
 
 # Cypress integration tests
 hosting/reference/cypress/screenshots/
+
+.DS_Store

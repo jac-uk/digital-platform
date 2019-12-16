@@ -57,7 +57,7 @@ const onStatusChange = async (newData, previousData, context) => {
   return null;
 };
 
-exports.handleApplicationOnUpdate = functions.firestore
+exports.handleApplicationOnUpdate = functions.region('europe-west2').firestore
   .document('applications/{applicationId}')
   .onUpdate((change, context) => {
     // Retrieve the current and previous value
