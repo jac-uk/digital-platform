@@ -9,9 +9,12 @@ const setData = require('../sharedServices').setData;
 const sendApplicationSubmittedEmailToCandidate = async (data, applicationId) => {
   const candidateData = await getData('candidates', data.userId);
   if (candidateData == null) {
-    slog(`ERROR: No data returned from Candidates with docId = ${data.userId}`);
+    slog(`
+      ERROR: No data returned from Candidates with docId = ${data.userId}
+    `);
     return null;
   }
+
   const candidateEmail = candidateData.email;
   const candidateFullName = candidateData.fullName;
 
@@ -21,9 +24,9 @@ const sendApplicationSubmittedEmailToCandidate = async (data, applicationId) => 
       ERROR: No data returned from Exercises with docId = ${data.exerciseId}
     `);
     return null;
-  }  
-  const exerciseName = exerciseData.name;
+  } 
 
+  const exerciseName = exerciseData.name;
   const personalizedData = {
     candidateFullName: candidateFullName,
     exerciseName: exerciseName,
@@ -72,13 +75,66 @@ const hasEnoughWorkExperience = (applicantWorkExperienceData, requiredExperience
   return true;
 };
 
+const isQualified = (applicantQualificationData, exerciseQualificationData) => {
+  if (applicantQualificationData == null) {
+    slog(`
+      INFO: Not qualified as a solicitor, barrister or member of Cilex:
+      Applicant has 0 qualifications
+    `);
+    return false;      
+  }
+
+  // Loop through the required qualilifications for this exercise
+  for (let i = 0; i < exerciseQualificationData.length; i++) {
+    const exerciseLawyerType = exerciseQualificationData[i];
+
+    // Loop through the applicant's qualifications.
+    // If their qualification date is valid and the lawyer types match,
+    // set the applicant as 'qualified' 
+    for (let j = 0; j < applicantQualificationData.length; j++) {
+      const applicantLawyerType = applicantQualificationData[j].type;
+
+      // Check for valid qualification date
+      if (applicantQualificationData[j].date == null) {
+        slog(`
+          INFO: Not qualified as a solicitor, barrister or member of Cilex:
+          Missing qualification date on qualification type ${applicantLawyerType}
+        `);
+        return false;        
+      }
+
+      // Check for valid qualification location
+      if (applicantQualificationData[j].location == null) {
+        slog(`
+          INFO: Not qualified as a solicitor, barrister or member of Cilex:
+          Missing qualification location on qualification type ${applicantLawyerType}
+        `);
+        return false;        
+      }
+
+      if (exerciseLawyerType === applicantLawyerType) {
+        console.log(`PASS: ${exerciseLawyerType} = ${applicantLawyerType}`);
+        return true;
+      }
+    }
+  }
+
+  // If you fall all the way here, it means that the applicant's qualifications
+  // did not match and of the required exercise qualifications, so we return
+  // isQualified = false  
+  slog(`
+    INFO: Not qualified as a solicitor, barrister or member of Cilex
+  `);
+  return false;  
+};
+
 const checkPostQualificationExperience = async (data, applicationId) => {
   const exerciseData = await getData('exercises', data.exerciseId);
   if (exerciseData == null) {
     slog(`
       ERROR: No data returned from Exercises with docId = ${data.exerciseId}
     `);
-    return null;
+    return false;
   }
 
   // if the type of exercise is neither 'legal' nor 'leadership',
@@ -88,26 +144,52 @@ const checkPostQualificationExperience = async (data, applicationId) => {
     return true;
   }
 
+  // initialize this object and fill it in if there are any flags
+  // against all the checks we are doing
+  let flagData = {};
+
+  //
+  // Check if Candidate has the proper qualifications
+  //
+  const isQualifiedResponse = isQualified(
+    data.qualifications,
+    exerciseData.qualifications,
+  );
+
+  if (isQualifiedResponse === false) {
+    flagData['flag'] = 'Not qualified as a solicitor, barrister or member of Cilex';
+
+    slog(`
+      INFO: Flagging Application ${applicationId}
+      as '${flagData['flag']}'.
+    `);
+   
+    await setData('applications', applicationId, flagData);
+    return false;
+  }
+
+  //
+  // Check if Candidate has enough work experience
+  // and if they are relevant to the vacancy
+  //
   const hasEnoughWorkExperienceResponse = hasEnoughWorkExperience(
     data.experience,
     exerciseData.postQualificationExperience,
   );
 
   if (hasEnoughWorkExperienceResponse === false) {
+    flagData['flag'] = 'Not enough work experience';
+  
     slog(`
       INFO: Flagging Application ${applicationId}
-      as 'Not enough work experience'.
+      as '${flagData['flag']}'.
     `);
-    
-    const flagData = {
-      flag: 'Not enough work experience',
-    };
-
-    const response = await setData('applications', applicationId, flagData);
-    return response;
+   
+    await setData('applications', applicationId, flagData);
+    return false;
   }
 
-  return null;
+  return true;
 };
 
 const onStatusChange = async (newData, previousData, context) => {
@@ -124,11 +206,10 @@ const onStatusChange = async (newData, previousData, context) => {
     const checkPostQualificationExperienceResponse =
       await checkPostQualificationExperience(newData, applicationId);
     console.log(`Response from checkPostQualificationExperience: ${checkPostQualificationExperienceResponse}`);
-    /*
+
     const notifyCandidateResponse =
       await sendApplicationSubmittedEmailToCandidate(newData, applicationId);
     slog(`Response from sendApplicationSubmittedEmailToCandidate: ${notifyCandidateResponse}`);
-    */
   }
 
   return null;
