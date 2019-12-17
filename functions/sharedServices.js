@@ -35,7 +35,9 @@ const emailIsValid = (email) => {
   return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email);
 };
 
+//
 // helper function to get data with collectionName and docId
+//
 const getData = async (collectionName, docId) => {
   const ref = db.collection(collectionName).doc(docId);
   let data = ref.get()
@@ -52,6 +54,31 @@ const getData = async (collectionName, docId) => {
       return null;
     });  
   return data;
+};
+
+//
+// helper function to set data with collectionName and docId
+//
+const setData = async (collectionName, docId, data) => {
+  const ref = db.collection(collectionName).doc(docId);
+
+  const debugMsg = `
+    collectionName = ${collectionName},
+    docId = ${docId},
+    data = ${data}
+  `;
+
+  // withMerge doesn't overwrite doc if it already exists
+  const response = await ref.set(data, {merge: true})
+    .then(() => {
+      console.log('Document successfully written: ', debugMsg);
+      return true;
+    })
+    .catch(err => {
+      console.error('Error writing document: ', err, debugMsg);
+      return false;
+    });
+  return response;
 };
 
 //
@@ -73,7 +100,7 @@ const slog = async (msgString) => {
   
   // we wait for the axios.post Promise to be resolved
   const result = await axios.post(slackUrl, data);
-  return result.data;
+  return result;
 };
 
 module.exports = {
@@ -82,4 +109,5 @@ module.exports = {
   emailIsValid,
   getData,
   slog,
+  setData,
 };
