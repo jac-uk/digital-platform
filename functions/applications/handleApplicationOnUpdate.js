@@ -121,9 +121,27 @@ const hasEnoughWorkExperience = (applicantWorkExperienceData, requiredExperience
   const requiredExperienceLengthInDays = parseInt(requiredExperienceLengthInYears, 10) * 365;
 
   for (let i = 0; i < applicantWorkExperienceData.length; i++) {
+    // if end date is not filled in, use today's date
+    const endDate = applicantWorkExperienceData[i].endDate;
+    let endDateJS = null;
+    if (endDate == null) {
+      endDateJS = new Date();
+    } else {
+      endDateJS = endDate.toDate();
+    }
+
+    const startDate = applicantWorkExperienceData[i].startDate;
+    if (startDate == null) {
+      slog(`
+        INFO: Not enough work experience:
+        Missing required field: Start Date
+      `);
+      return false;      
+    }
+
     totalDaysWorkExperience += getNumberOfDaysBetween2Dates(
-      applicantWorkExperienceData[i].startDate.toDate(),
-      applicantWorkExperienceData[i].endDate.toDate(),
+      startDate.toDate(),
+      endDateJS,
     );
   }
 
@@ -164,6 +182,15 @@ const didLawyerlyThings = (applicantWorkExperienceData) => {
       slog(`
         INFO: Problem with law-related tasks:
         Applicant has marked only 'None of the above' for law-related tasks. 
+      `);
+      return false;
+
+    } else if (tasks[i].includes('Acting as mediator in connection with attempts')) {
+
+      slog(`
+        INFO: Problem with law-related tasks:
+        Applicant has marked 'Acting as mediator in connection with attempts 
+        to resolve issues that are, or if not resolved could be, the subject of proceedings'. 
       `);
       return false;
 
