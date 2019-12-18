@@ -19,7 +19,7 @@ const sendApplicationSubmittedEmailToCandidate = async (data, applicationId) => 
   const candidateFullName = candidateData.fullName;
 
   const exerciseData = await getData('exercises', data.exerciseId);
-  if (candidateData == null) {
+  if (exerciseData == null) {
     slog(`
       ERROR: No data returned from Exercises with docId = ${data.exerciseId}
     `);
@@ -44,6 +44,70 @@ const sendApplicationSubmittedEmailToCandidate = async (data, applicationId) => 
     `);
     return true;
   });   
+};
+
+const notifyAdminAboutFlaggedApplication = async (applicationId) => {
+  const applicationData = await getData('applications', applicationId);
+  if (applicationData == null) {
+    slog(`
+      ERROR: No data returned from Applications with docId = ${applicationId}
+    `);
+    return null;
+  }
+
+  const candidateData = await(getData('candidates', applicationData.userId));
+  if (candidateData == null) {
+    slog(`
+      ERROR: No data returned from Candidates with docId = ${applicationData.userId}
+    `);
+    return null;
+  }
+
+  const exerciseData = await(getData('exercises', applicationData.exerciseId));
+  if (exerciseData == null) {
+    slog(`
+      ERROR: No data returned from Exercises with docId = ${applicationData.exerciseId}
+    `);
+    return null;
+  }  
+
+  const personalizedData = {
+    exerciseReferenceNumber: applicationData.exerciseRef,
+    applicantEmailAddress: candidateData.email,
+    exerciseName: applicationData.exerciseName,
+    applicationFlagMsg: applicationData.flag,
+    applicationCloseDate: exerciseData.applicationCloseDate.toDate(), 
+    exerciseId: applicationData.exerciseId,
+  };
+  
+  // Check that the firebase config has the key by running:
+  // firebase functions:config:get
+  //
+  // Set notify.templates.notify_admin_about_flagged_application in firebase functions like this:
+  // firebase functions:config:set notify.templates.notify_admin_about_flagged_application="THE_GOVUK_NOTIFY_TEMPLATE_ID"  
+  const templateId = functions.config().notify.templates.notify_admin_about_flagged_application;
+  return sendEmail(exerciseData.exerciseMailbox, templateId, personalizedData).then((sendEmailResponse) => {
+    slog(`
+      Notify admin ${exerciseData.exerciseMailbox} of vacancy ${applicationData.exerciseName}
+      that ${candidateData.email}'s application has  been flagged.
+    `);
+    return true;
+  });   
+};
+
+const flagApplication = async (flagMsg, applicationId) => {
+  const flagData = {
+    flag: flagMsg,
+  };
+
+  slog(`
+    INFO: Flagging Application ${applicationId} as 
+    '${flagData.flag}'.
+  `);
+ 
+  await setData('applications', applicationId, flagData);
+  await notifyAdminAboutFlaggedApplication(applicationId);
+  return false;  
 };
 
 const getNumberOfDaysBetween2Dates = (startDate, endDate) => {
@@ -72,6 +136,40 @@ const hasEnoughWorkExperience = (applicantWorkExperienceData, requiredExperience
     return false;
   }
   
+  return true;
+};
+
+const didLawyerlyThings = (applicantWorkExperienceData) => {
+  if (applicantWorkExperienceData == null) {
+    slog(`
+      INFO: Problem with law-related tasks:
+      Applicant has 0 work experience
+    `);
+    return false;
+  }
+
+  for (let i = 0; i < applicantWorkExperienceData.length; i++) {
+    const tasks = applicantWorkExperienceData[i].tasks;
+
+    if (tasks == null || tasks.length === 0) {
+
+      slog(`
+        INFO: Problem with law-related tasks:
+        Applicant has done 0 law-related tasks
+      `);
+      return false;
+
+    } else if (tasks.length == 1 && tasks[0].includes('None of the above')) {
+
+      slog(`
+        INFO: Problem with law-related tasks:
+        Applicant has marked only 'None of the above' for law-related tasks. 
+      `);
+      return false;
+
+    }
+  }
+
   return true;
 };
 
@@ -131,41 +229,19 @@ const isQualified = (applicantQualificationData, exerciseQualificationData) => {
 const checkPostQualificationExperience = async (data, applicationId) => {
   const exerciseData = await getData('exercises', data.exerciseId);
   if (exerciseData == null) {
-    slog(`
-      ERROR: No data returned from Exercises with docId = ${data.exerciseId}
-    `);
-    return false;
+    return await flagApplication(
+      `ERROR: No data returned from Exercises with docId = ${data.exerciseId}`, 
+      applicationId,
+    );
   }
 
+  //
   // if the type of exercise is neither 'legal' nor 'leadership',
   // don't check post-qualification experience and get out
+  //
   const exerciseType = exerciseData.typeOfExercise;
   if (exerciseType !== 'legal' && exerciseType !== 'leadership') {
     return true;
-  }
-
-  // initialize this object and fill it in if there are any flags
-  // against all the checks we are doing
-  let flagData = {};
-
-  //
-  // Check if Candidate has the proper qualifications
-  //
-  const isQualifiedResponse = isQualified(
-    data.qualifications,
-    exerciseData.qualifications,
-  );
-
-  if (isQualifiedResponse === false) {
-    flagData['flag'] = 'Not qualified as a solicitor, barrister or member of Cilex';
-
-    slog(`
-      INFO: Flagging Application ${applicationId}
-      as '${flagData['flag']}'.
-    `);
-   
-    await setData('applications', applicationId, flagData);
-    return false;
   }
 
   //
@@ -176,18 +252,39 @@ const checkPostQualificationExperience = async (data, applicationId) => {
     data.experience,
     exerciseData.postQualificationExperience,
   );
-
   if (hasEnoughWorkExperienceResponse === false) {
-    flagData['flag'] = 'Not enough work experience';
-  
-    slog(`
-      INFO: Flagging Application ${applicationId}
-      as '${flagData['flag']}'.
-    `);
-   
-    await setData('applications', applicationId, flagData);
-    return false;
+    return await flagApplication(
+      'PQE: Not enough work experience',
+      applicationId,
+    );
   }
+
+  //
+  // Check if Candidate's tasks were lawyer-type tasks
+  //
+  const didLawyerlyThingsResponse = didLawyerlyThings(
+    data.experience,
+  );
+  if (didLawyerlyThingsResponse === false) {
+    return await flagApplication(
+      'PQE: Candidate did not do any lawyer-related tasks or Candidate selected -None of the Above- for law-related tasks',
+      applicationId,
+    );
+  }
+
+  //
+  // Check if Candidate has the proper qualifications
+  //
+  const isQualifiedResponse = isQualified(
+    data.qualifications,
+    exerciseData.qualifications,
+  );
+  if (isQualifiedResponse === false) {
+    return await flagApplication(
+      'PQE: Not qualified as a solicitor, barrister or member of Cilex',
+      applicationId,
+    );    
+  }  
 
   return true;
 };
