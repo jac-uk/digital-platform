@@ -253,6 +253,31 @@ const isQualified = (applicantQualificationData, exerciseQualificationData) => {
   return false;  
 };
 
+
+const checkCitizenship = async (userId, applicationId) => {
+  const candidateData = await(getData('candidates', userId));
+  if (candidateData == null) {
+    slog(`
+      ERROR: No data returned from Candidates with docId = ${userId}
+    `);
+    return false;
+  } 
+  
+  const citizenships = candidateData.citizenship;
+  if (citizenships != null && citizenships.includes('other') == false) {
+    return true;
+  }
+
+  // If you fall here, there are invalid citizenships and application should be flagged
+  slog(`
+    ERROR: Candidate with email ${candidateData.email} has 0 citizenships or has marked 'other'
+  `);
+  return await flagApplication(
+    `PQE: Candidate ${candidateData.email} has 0 citizenships or has marked 'other' citizenships`,
+    applicationId,
+  ); 
+};
+
 const checkPostQualificationExperience = async (data, applicationId) => {
   const exerciseData = await getData('exercises', data.exerciseId);
   if (exerciseData == null) {
@@ -326,6 +351,10 @@ const onStatusChange = async (newData, previousData, context) => {
     slog(`Application ${applicationId} status has changed 
           from ${previousData.status}
           to ${newData.status}`);
+
+    const checkCitizenshipResponse =
+      await checkCitizenship(newData.userId, applicationId);
+    console.log(`Response from checkCitizenship: ${checkCitizenshipResponse}`);            
 
     const checkPostQualificationExperienceResponse =
       await checkPostQualificationExperience(newData, applicationId);
