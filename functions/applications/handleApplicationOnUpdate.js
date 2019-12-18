@@ -278,6 +278,26 @@ const checkCitizenship = async (userId, applicationId) => {
   ); 
 };
 
+const checkCharacter = async (data, applicationId) => {
+
+  if (data.conductNegligenceInvestigation != false  ||
+      data.criminalConvictionCaution != false ||
+      data.declaredBankrupt != false ||
+      data.disqualifiedFromDriving != false ||
+      data.drinkDrugMobileMotoringOffence != false ||
+      data.financialDifficulties != false || 
+      data.motoringOffencesAndSixPlusPoints != false ||
+      data.otherCharacterIssues != false) {
+
+      return await flagApplication(
+        'PQE: has character issues',
+        applicationId,
+      ); 
+  }
+
+  return true;
+};
+
 const checkPostQualificationExperience = async (data, applicationId) => {
   const exerciseData = await getData('exercises', data.exerciseId);
   if (exerciseData == null) {
@@ -354,7 +374,11 @@ const onStatusChange = async (newData, previousData, context) => {
 
     const checkCitizenshipResponse =
       await checkCitizenship(newData.userId, applicationId);
-    console.log(`Response from checkCitizenship: ${checkCitizenshipResponse}`);            
+    console.log(`Response from checkCitizenship: ${checkCitizenshipResponse}`);
+
+    const checkCharacterResponse =
+      await checkCharacter(newData, applicationId);
+    console.log(`Response from checkCharacter: ${checkCharacterResponse}`);
 
     const checkPostQualificationExperienceResponse =
       await checkPostQualificationExperience(newData, applicationId);
