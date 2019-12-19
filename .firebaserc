@@ -1,10 +1,10 @@
 {
   "projects": {
     "staging": "digital-platform-staging",
-    "production": "application-form-e08c9"
+    "production": "platform-production-9207d"
   },
   "targets": {
-    "application-form-e08c9": {
+    "platform-production-9207d": {
       "hosting": {
         "reference": [
           "jac-references"
