@@ -6,6 +6,7 @@ const getData = require('../sharedServices').getData;
 const slog = require('../sharedServices').slog;
 const setData = require('../sharedServices').setData;
 
+
 const sendApplicationSubmittedEmailToCandidate = async (data, applicationId) => {
   const candidateData = await getData('candidates', data.userId);
   if (candidateData == null) {
@@ -46,6 +47,7 @@ const sendApplicationSubmittedEmailToCandidate = async (data, applicationId) => 
   });   
 };
 
+
 const notifyAdminAboutFlaggedApplication = async (applicationId) => {
   const applicationData = await getData('applications', applicationId);
   if (applicationData == null) {
@@ -55,7 +57,7 @@ const notifyAdminAboutFlaggedApplication = async (applicationId) => {
     return null;
   }
 
-  const candidateData = await(getData('candidates', applicationData.userId));
+  const candidateData = await getData('candidates', applicationData.userId);
   if (candidateData == null) {
     slog(`
       ERROR: No data returned from Candidates with docId = ${applicationData.userId}
@@ -63,7 +65,7 @@ const notifyAdminAboutFlaggedApplication = async (applicationId) => {
     return null;
   }
 
-  const exerciseData = await(getData('exercises', applicationData.exerciseId));
+  const exerciseData = await getData('exercises', applicationData.exerciseId);
   if (exerciseData == null) {
     slog(`
       ERROR: No data returned from Exercises with docId = ${applicationData.exerciseId}
@@ -95,6 +97,7 @@ const notifyAdminAboutFlaggedApplication = async (applicationId) => {
   });   
 };
 
+
 const flagApplication = async (flagMsg, applicationId) => {
   const flagData = {
     flag: flagMsg,
@@ -110,11 +113,13 @@ const flagApplication = async (flagMsg, applicationId) => {
   return false;  
 };
 
+
 const getNumberOfDaysBetween2Dates = (startDate, endDate) => {
   const timeDifference = endDate.getTime() - startDate.getTime();
   const elapsedDays = timeDifference / (1000 * 3600 * 24); 
   return parseInt(elapsedDays, 10);
 };
+
 
 const hasEnoughWorkExperience = (applicantWorkExperienceData, requiredExperienceLengthInYears) => {
   let totalDaysWorkExperience = 0;
@@ -156,6 +161,7 @@ const hasEnoughWorkExperience = (applicantWorkExperienceData, requiredExperience
   
   return true;
 };
+
 
 const didLawyerlyThings = (applicantWorkExperienceData) => {
   if (applicantWorkExperienceData == null) {
@@ -199,6 +205,7 @@ const didLawyerlyThings = (applicantWorkExperienceData) => {
 
   return true;
 };
+
 
 const isQualified = (applicantQualificationData, exerciseQualificationData) => {
   if (applicantQualificationData == null) {
@@ -255,7 +262,7 @@ const isQualified = (applicantQualificationData, exerciseQualificationData) => {
 
 
 const checkCitizenship = async (userId, applicationId) => {
-  const candidateData = await(getData('candidates', userId));
+  const candidateData = await getData('candidates', userId);
   if (candidateData == null) {
     slog(`
       ERROR: No data returned from Candidates with docId = ${userId}
@@ -278,6 +285,7 @@ const checkCitizenship = async (userId, applicationId) => {
   ); 
 };
 
+
 const checkCharacter = async (data, applicationId) => {
 
   if (data.conductNegligenceInvestigation != false  ||
@@ -297,6 +305,7 @@ const checkCharacter = async (data, applicationId) => {
 
   return true;
 };
+
 
 const checkPostQualificationExperience = async (data, applicationId) => {
   const exerciseData = await getData('exercises', data.exerciseId);
@@ -361,6 +370,64 @@ const checkPostQualificationExperience = async (data, applicationId) => {
   return true;
 };
 
+
+const checkReasonableLengthOfService = async (data, applicationId) => {
+  const candidateData = await getData('candidates', data.userId);
+  if (candidateData == null) {
+    slog(`
+      ERROR: No data returned from Candidates with docId = ${data.userId}
+    `);
+    return false;
+  }
+
+  const candidateBirthday = candidateData.dateOfBirth;
+  if (candidateBirthday == null) {
+    // flag applicant if they forgot to enter their date of birth
+    return await flagApplication(
+      `RLS: Candidate ${candidateData.email} has no birthday`,
+      applicationId,
+    );   
+  }
+
+  const exerciseData = await getData('exercises', data.exerciseId);
+  if (exerciseData == null) {
+    slog(`
+      ERROR: No data returned from Exercises with docId = ${data.exerciseId}
+    `);
+    return false;
+  }
+  
+  const selectionSCCDateJS = exerciseData.selectionSCCDate.toDate();
+  if (candidateBirthday.toDate().getFullYear() <= selectionSCCDateJS.getFullYear() - 70) {
+    // flag applicant if they are 70 years of age or older
+    return await flagApplication(
+      `RLS: Candidate born in ${candidateBirthday.toDate().getFullYear()}. 
+      Candidate is 70 years old or older and may not be able to complete a
+      reasonable length of service.`,
+      applicationId,
+    );     
+  }
+
+  const exerciseLengthOfService = parseInt(exerciseData.reasonableLengthService);
+  const exerciseRetirementAge = parseInt(exerciseData.retirementAge);
+  const maxReasonableBirthYear = parseInt(selectionSCCDateJS.getFullYear()) - exerciseRetirementAge + exerciseLengthOfService;
+
+  // flag applicant if they were born before the maxReasonableBirthYear
+  if (candidateBirthday.toDate().getFullYear() < maxReasonableBirthYear) {
+    return await flagApplication(
+      `RLS: Candidate born in ${candidateBirthday.toDate().getFullYear()}. 
+      With the specified exercise retirement age = ${exerciseRetirementAge} and
+      exercise reasonable length of service = ${exerciseLengthOfService} and 
+      exercise selection SSC year = ${selectionSCCDateJS.getFullYear()},
+      the candidate should be born on or after ${maxReasonableBirthYear}.`,
+      applicationId,
+    ); 
+  }
+
+  return true;
+};
+
+
 const onStatusChange = async (newData, previousData, context) => {
   // We'll only update if the status has changed.
   // This is crucial to prevent infinite loops.
@@ -380,6 +447,10 @@ const onStatusChange = async (newData, previousData, context) => {
       await checkCharacter(newData, applicationId);
     console.log(`Response from checkCharacter: ${checkCharacterResponse}`);
 
+    const checkReasonableLengthOfServiceResponse =
+      await checkReasonableLengthOfService(newData, applicationId);
+    console.log(`Response from checkReasonableLengthOfService: ${checkReasonableLengthOfServiceResponse}`);    
+
     const checkPostQualificationExperienceResponse =
       await checkPostQualificationExperience(newData, applicationId);
     console.log(`Response from checkPostQualificationExperience: ${checkPostQualificationExperienceResponse}`);
@@ -391,6 +462,7 @@ const onStatusChange = async (newData, previousData, context) => {
 
   return null;
 };
+
 
 exports.handleApplicationOnUpdate = functions.region('europe-west2').firestore
   .document('applications/{applicationId}')
