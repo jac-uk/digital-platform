@@ -31,16 +31,9 @@ const sendApplicationStartedEmailToCandidate = async (snap, context) => {
   const candidateEmail = candidateData.email;
   const candidateFullName = candidateData.fullName;
 
-  const exerciseData = await getData('exercises', data.exerciseId);
-  if (candidateData == null) {
-    slog(`ERROR: No data returned from Exercises with docId = ${data.exerciseId}`);
-    return null;
-  }  
-  const exerciseName = exerciseData.name;
-
   const personalizedData = {
-    candidateFullName: candidateFullName,
-    exerciseName: exerciseName,
+    applicantName: candidateFullName,
+    applicationUrl: `https://apply.judicialappointments.digital/apply/${data.exerciseId}/`,
   };
 
   // Check that the firebase config has the key by running:
@@ -50,7 +43,7 @@ const sendApplicationStartedEmailToCandidate = async (snap, context) => {
   // firebase functions:config:set notify.templates.application_started="THE_GOVUK_NOTIFY_TEMPLATE_ID"  
   const templateId = functions.config().notify.templates.application_started;
   return sendEmail(candidateEmail, templateId, personalizedData).then((sendEmailResponse) => {
-    slog(`${candidateFullName} (${candidateEmail}) has started to apply to vacancy ${exerciseName}`);
+    slog(`${candidateFullName} (${candidateEmail}) has started to apply to exerciseId ${data.exerciseId}`);
     return true;
   });  
 };
