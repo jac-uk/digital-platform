@@ -27,10 +27,8 @@ const sendApplicationSubmittedEmailToCandidate = async (data, applicationId) => 
     return null;
   } 
 
-  const exerciseName = exerciseData.name;
   const personalizedData = {
-    candidateFullName: candidateFullName,
-    exerciseName: exerciseName,
+    applicantName: candidateFullName,
   };
 
   // Check that the firebase config has the key by running:
@@ -41,7 +39,7 @@ const sendApplicationSubmittedEmailToCandidate = async (data, applicationId) => 
   const templateId = functions.config().notify.templates.application_submitted;
   return sendEmail(candidateEmail, templateId, personalizedData).then((sendEmailResponse) => {
     slog(`
-      ${candidateFullName} (${candidateEmail}) has applied to vacancy ${exerciseName}
+      ${candidateFullName} (${candidateEmail}) has applied to exercise ${data.exerciseId}
     `);
     return true;
   });   
