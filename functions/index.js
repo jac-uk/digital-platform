@@ -25,16 +25,19 @@ exports.handleApplicationOnUpdate = require('./applications/handleApplicationOnU
  *  TODO: All functions below this comment should be refactored into separate files.
  */
 
-const sendVerificationEmail = async (email) => {
+const sendVerificationEmail = async (user) => {
+  const email = user.email;
   const returnUrl = functions.config().production.url;
   const templateId = functions.config().notify.templates.verification;
   const verificationLink = await admin.auth().generateEmailVerificationLink(email, {url: returnUrl});
-  return sendEmail(email, templateId, {verificationLink});
+  return sendEmail(email, templateId, {
+    'applicantName': user.displayName,
+    verificationLink,
+  });
 };
 
 exports.sendVerificationEmailOnNewUser = functions.region('europe-west2').auth.user().onCreate((user) => {
-  const email = user.email;
-  return sendVerificationEmail(email);
+  return sendVerificationEmail(user);
 });
 
 exports.sendVerificationEmail = functions.region('europe-west2').https.onCall((data, context) => {
