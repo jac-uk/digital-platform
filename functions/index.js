@@ -40,11 +40,6 @@ exports.sendVerificationEmailOnNewUser = functions.region('europe-west2').auth.u
   return sendVerificationEmail(user);
 });
 
-exports.sendVerificationEmail = functions.region('europe-west2').https.onCall((data, context) => {
-  const email = context.auth.token.email;
-  return sendVerificationEmail(email);
-});
-
 exports.processReferenceUpload = functions.storage
   .object()
   .onFinalize((object) => {
