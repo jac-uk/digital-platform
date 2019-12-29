@@ -5,6 +5,7 @@ const db = require('../sharedServices').db;
 const getData = require('../sharedServices').getData;
 const slog = require('../sharedServices').slog;
 const setData = require('../sharedServices').setData;
+const notifyCandidatesQTResults = require('./notifyCandidatesQTResults').notifyCandidatesQTResults;
 
 
 const sendApplicationSubmittedEmailToCandidate = async (data, applicationId) => {
@@ -461,6 +462,25 @@ const onStatusChange = async (newData, previousData, context) => {
   return null;
 };
 
+const onTestResultFieldsChange = async (newData, previousData, applicationId) => {
+  // We'll only update if the sjcaTestResult or scenarioTestResult has changed.
+  // This is crucial to prevent infinite loops.
+  if (newData.sjcaTestResult == previousData.sjcaTestResult &&
+      newData.scenarioTestResult == previousData.scenarioTestResult) return null;
+
+  if (newData.sjcaTestResult != previousData.sjcaTestResult &&
+      newData.sjcaTestResult != null) {
+    notifyCandidatesQTResults(newData, applicationId, 'sjca');
+  }
+  
+  if (newData.scenarioTestResult != previousData.scenarioTestResult &&
+      newData.scenarioTestResult != null) {
+    notifyCandidatesQTResults(newData, applicationId, 'scenario');
+  }
+
+  return null;
+};
+
 
 exports.handleApplicationOnUpdate = functions.region('europe-west2').firestore
   .document('applications/{applicationId}')
@@ -470,5 +490,6 @@ exports.handleApplicationOnUpdate = functions.region('europe-west2').firestore
     const previousData = change.before.data();
 
     onStatusChange(newData, previousData, context);
+    onTestResultFieldsChange(newData, previousData, context.params.applicationId);
     return null;
   });
