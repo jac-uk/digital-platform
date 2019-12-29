@@ -1,11 +1,11 @@
 /*eslint-disable no-unused-vars*/
 const functions = require('firebase-functions');
 const sendEmail = require('../sharedServices').sendEmail;
-const db = require('../sharedServices').db;
 const getData = require('../sharedServices').getData;
 const slog = require('../sharedServices').slog;
 const setData = require('../sharedServices').setData;
 const notifyCandidatesQTResults = require('./notifyCandidatesQTResults').notifyCandidatesQTResults;
+const notifyCandidatesEligibilityResult = require('./notifyCandidatesEligibilityResult').notifyCandidatesEligibilityResult;
 
 
 const sendApplicationSubmittedEmailToCandidate = async (data, applicationId) => {
@@ -462,6 +462,7 @@ const onStatusChange = async (newData, previousData, context) => {
   return null;
 };
 
+
 const onTestResultFieldsChange = async (newData, previousData, applicationId) => {
   // We'll only update if the sjcaTestResult or scenarioTestResult has changed.
   // This is crucial to prevent infinite loops.
@@ -482,6 +483,19 @@ const onTestResultFieldsChange = async (newData, previousData, applicationId) =>
 };
 
 
+const onEligibilityChange = async (newData, previousData, context) => {
+  // We'll only update if 'eligibility' has changed.
+  // This is crucial to prevent infinite loops.
+  if (newData.eligibility == previousData.eligibility) return null;
+
+  if (newData.eligibility != null) {
+    notifyCandidatesEligibilityResult(newData, context.params.applicationId);
+  }
+
+  return null;
+};
+
+
 exports.handleApplicationOnUpdate = functions.region('europe-west2').firestore
   .document('applications/{applicationId}')
   .onUpdate((change, context) => {
@@ -491,5 +505,6 @@ exports.handleApplicationOnUpdate = functions.region('europe-west2').firestore
 
     onStatusChange(newData, previousData, context);
     onTestResultFieldsChange(newData, previousData, context.params.applicationId);
+    onEligibilityChange(newData, previousData, context);
     return null;
   });

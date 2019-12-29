@@ -87,8 +87,6 @@ const notifyCandidatesQTResults = async (applicationData, applicationId, testTyp
     testType: testTypeDisplayMap.get(testType),
   };
 
-  console.log('personalizedData = ', personalizedData);
-
   sendCandidateQTResultsEmail(personalizedData);  
 
   return null;
