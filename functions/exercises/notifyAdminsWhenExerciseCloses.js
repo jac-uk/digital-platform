@@ -139,10 +139,45 @@ const notifyCandidates = async (exerciseIds) => {
 };
 
 
+const remindAdminsToInviteCandidatesToQTs = async (exerciseData, exerciseId) => {
+  const personalizedData = {
+    exerciseReferenceNumber: exerciseData.referenceNumber,
+    exerciseName: exerciseData.name,
+    exerciseId: exerciseId,
+  };
+
+  // Check that the firebase config has the key by running:
+  // firebase functions:config:get
+  //
+  // Set notify.templates.remind_admins_to_send_qt_invites in firebase functions like this:
+  // firebase functions:config:set notify.templates.remind_admins_to_send_qt_invites="THE_GOVUK_NOTIFY_TEMPLATE_ID"
+  const templateId = functions.config().notify.templates.remind_admins_to_send_qt_invites;
+
+  const email = exerciseData.exerciseMailbox;
+
+  if (email.includes('@judicialappointments.digital') ||
+      email.includes('@judicialappointments.gov.uk')) {
+    return sendEmail(email, templateId, personalizedData)
+      .then((sendEmailResponse) => {
+        slog('SENT: remind_admins_to_send_qt_invites');
+        return null;
+      });
+  } else {
+  slog(`
+    ERROR: remind_admins_to_send_qt_invites: Trying to send to non-JAC email address: ${email}
+  `);
+  }
+  
+  return null;
+};
+
+
 const notifyAdmins = async (exerciseIds) => {
   exerciseIds.forEach(doc => { 
     //console.log(doc.id, '=>', doc.data());
     const data = doc.data();
+
+    remindAdminsToInviteCandidatesToQTs(data, doc.id);
 
     const applicationCloseDate = data.applicationCloseDate;
     slog(`
@@ -167,7 +202,7 @@ const notifyAdmins = async (exerciseIds) => {
     const templateId = functions.config().notify.templates.exercise_closed;
 
     if (email.includes('@judicialappointments.digital') ||
-        email.includes('@gov.uk')) {
+        email.includes('@judicialappointments.gov.uk')) {
       return sendEmail(email, templateId, personalizationData).then((sendEmailResponse) => {
         slog(`
           Exercise "${data.name}" is now closed.
