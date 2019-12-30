@@ -6,6 +6,7 @@ const slog = require('../sharedServices').slog;
 const setData = require('../sharedServices').setData;
 const notifyCandidatesQTResults = require('./notifyCandidatesQTResults').notifyCandidatesQTResults;
 const notifyCandidatesEligibilityResult = require('./notifyCandidatesEligibilityResult').notifyCandidatesEligibilityResult;
+const inviteCandidateToQT = require('./inviteCandidateToQT').inviteCandidateToQT;
 
 
 const sendApplicationSubmittedEmailToCandidate = async (data, applicationId) => {
@@ -457,6 +458,9 @@ const onStatusChange = async (newData, previousData, context) => {
     const notifyCandidateResponse =
       await sendApplicationSubmittedEmailToCandidate(newData, applicationId);
     slog(`Response from sendApplicationSubmittedEmailToCandidate: ${notifyCandidateResponse}`);
+  }
+  else if (newData.status == 'invite-to-qt') {
+    inviteCandidateToQT(newData, context.params.applicationId);
   }
 
   return null;
