@@ -14,7 +14,9 @@ const setApplicationOnCreateData = async (snap, context) => {
   const applicationRef = db.collection('applications').doc(context.params.applicationId);
   const setWithMerge = applicationRef.set({
     createdAt: Date.now(),
-    status: 'draft',      
+    status: 'draft',
+    firstAssessorSubmittedAssessment: false,
+    secondAssessorSubmittedAssessment: false,      
   }, { merge: true});
 
   return null;
