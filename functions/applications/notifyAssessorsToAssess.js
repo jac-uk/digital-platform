@@ -105,7 +105,7 @@ const notifyAssessorsToAssess = async (applicationData, applicationId) => {
     personalizedData.assessorName = applicationData.firstAssessorFullName;
     personalizedData.assessorEmail = applicationData.firstAssessorEmail;
 
-    sendAssessorEmail(personalizedData, 'firstAssessor');
+    await sendAssessorEmail(personalizedData, 'firstAssessor');
   }
   
   // check if second assessor has already submitted an assessment
@@ -113,7 +113,7 @@ const notifyAssessorsToAssess = async (applicationData, applicationId) => {
     personalizedData.assessorName = applicationData.secondAssessorFullName;
     personalizedData.assessorEmail = applicationData.secondAssessorEmail;
 
-    sendAssessorEmail(personalizedData, 'secondAssessor');
+    await sendAssessorEmail(personalizedData, 'secondAssessor');
   }
 
   // regardless of how many assessor emails were sent,
