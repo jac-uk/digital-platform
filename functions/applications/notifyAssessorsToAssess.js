@@ -5,7 +5,7 @@ const getData = require('../sharedServices').getData;
 const setData = require('../sharedServices').setData;
 const slog = require('../sharedServices').slog;
 
-
+/*
 const setApplicationDataAfterSendingEmail = async (emailTemplateData, whichAssessor) => {
   const data = {
     status: 'assessors-requests-sent',
@@ -18,6 +18,7 @@ const setApplicationDataAfterSendingEmail = async (emailTemplateData, whichAsses
   setData('applications', emailTemplateData.applicationId, data);
   return null;
 };
+*/
 
 
 const sendAssessorEmail = async (emailTemplateData, whichAssessor) => {
@@ -52,7 +53,7 @@ const sendAssessorEmail = async (emailTemplateData, whichAssessor) => {
       `);
 
       // set the correct (first or second) AssessorSubmittedAssessment field
-      setApplicationDataAfterSendingEmail(emailTemplateData, whichAssessor);
+      //setApplicationDataAfterSendingEmail(emailTemplateData, whichAssessor);
       return true;
     });
 };
