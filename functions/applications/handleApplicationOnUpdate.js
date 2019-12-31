@@ -8,6 +8,7 @@ const notifyCandidatesQTResults = require('./notifyCandidatesQTResults').notifyC
 const notifyCandidatesEligibilityResult = require('./notifyCandidatesEligibilityResult').notifyCandidatesEligibilityResult;
 const inviteCandidateToQT = require('./inviteCandidateToQT').inviteCandidateToQT;
 const notifyCandidateTestReceived= require('./notifyCandidateTestReceived').notifyCandidateTestReceived;
+const notifyAssessorsToAssess = require('./notifyAssessorsToAssess').notifyAssessorsToAssess;
 
 
 const sendApplicationSubmittedEmailToCandidate = async (data, applicationId) => {
@@ -466,7 +467,9 @@ const onStatusChange = async (newData, previousData, context) => {
   else if (newData.status == 'submitted-sjca-test' || newData.status == 'submitted-scenario-test') {
     notifyCandidateTestReceived(newData, context.params.applicationId);
   }
-
+  else if (newData.status == 'request-assessors') {
+    notifyAssessorsToAssess(newData, context.params.applicationId);
+  }
   return null;
 };
 
