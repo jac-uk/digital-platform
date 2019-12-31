@@ -2,6 +2,9 @@ service cloud.firestore {
   function userIsAuthenticated() {
     return request.auth.uid != null;
   }
+  function currentUser() {
+    return request.auth.uid;
+  }
 
   match /databases/{database}/documents {
     match /applicants/{userId} {
@@ -15,10 +18,24 @@ service cloud.firestore {
       allow read, write: if userIsAuthenticated();
     }
 
+    match /invitations/{invitationId} {
+      // @todo only admin users can create and view invites
+      allow read, write: if userIsAuthenticated();
+    }
+
+    match /users/{userId} {
+      // user can own record
+      allow read: if request.auth.uid == userId;
+      // user can update own record, providing haven't changed role
+      // @todo lock this down even more (maybe only update refresh flag)
+      allow update: if request.auth.uid == userId &&
+                       request.resource.data.userId == currentUser() &&
+                       request.data.role == request.resource.data.role;
+      // @todo admin can list users
+      allow list: if userIsAuthenticated();
+    }
+
     match /applications/{application} {
-      function currentUser() {
-        return request.auth.uid;
-      }
 
       // Allow existing records which belong to the current user
       allow get, list: if resource.data.userId == currentUser();
@@ -39,8 +56,8 @@ service cloud.firestore {
     }
 
     match /exercises/{exercise} {
-      // Authenticated users can read
-      allow get, list, write: if userIsAuthenticated();
+      allow get, list;
+      allow write: if userIsAuthenticated();
     }
 
     match /references/{reference} {
