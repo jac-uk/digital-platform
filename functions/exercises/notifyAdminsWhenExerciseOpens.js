@@ -73,7 +73,7 @@ exports.notifyAdminsWhenExerciseOpens = functions.region('europe-west2')
         const templateId = functions.config().notify.templates.exercise_open;
 
         if (email.includes('@judicialappointments.digital') ||
-            email.includes('@gov.uk')) {
+            email.includes('@judicialappointments.gov.uk')) {
           return sendEmail(email, templateId, personalizationData).then((sendEmailResponse) => {
             slog(`Exercise "${data.name}" is now open.`);
             slog(`Response from sendEmail: ${sendEmailResponse}`);

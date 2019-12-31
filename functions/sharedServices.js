@@ -63,15 +63,15 @@ const setData = async (collectionName, docId, data) => {
   const ref = db.collection(collectionName).doc(docId);
 
   const debugMsg = `
-    collectionName = ${collectionName},
-    docId = ${docId},
-    data = ${data}
+    collectionName: ${collectionName}
+    docId: ${docId}
   `;
 
   // withMerge doesn't overwrite doc if it already exists
   const response = await ref.set(data, {merge: true})
     .then(() => {
       console.log('Document successfully written: ', debugMsg);
+      console.log('data: ', data);
       return true;
     })
     .catch(err => {
