@@ -9,6 +9,7 @@ const notifyCandidatesEligibilityResult = require('./notifyCandidatesEligibility
 const inviteCandidateToQT = require('./inviteCandidateToQT').inviteCandidateToQT;
 const notifyCandidateTestReceived= require('./notifyCandidateTestReceived').notifyCandidateTestReceived;
 const notifyAssessorsToAssess = require('./notifyAssessorsToAssess').notifyAssessorsToAssess;
+const notifyAssessorAssessmentReceived = require('./notifyAssessorAssessmentReceived').notifyAssessorAssessmentReceived;
 
 
 const sendApplicationSubmittedEmailToCandidate = async (data, applicationId) => {
@@ -506,6 +507,26 @@ const onEligibilityChange = async (newData, previousData, context) => {
   return null;
 };
 
+const onAssessorSubmittedAssessmentChange = async (newData, previousData, context) => {
+  // We'll only update if 'firstAssessorSubmittedAssessment' or 
+  // 'secondAssessorSubmittedAssessment" field has changed.
+  // This is crucial to prevent infinite loops.
+  if (newData.firstAssessorSubmittedAssessment == previousData.firstAssessorSubmittedAssessment &&
+      newData.secondAssessorSubmittedAssessment == previousData.secondAssessorSubmittedAssessment) {
+        return null;
+      }
+
+  const applicationId = context.params.applicationId;
+
+  if (newData.firstAssessorSubmittedAssessment == true && previousData.firstAssessorSubmittedAssessment == false) {
+    notifyAssessorAssessmentReceived(newData, applicationId, 'firstAssessor');
+  } else if (newData.secondAssessorSubmittedAssessment == true && previousData.secondAssessorSubmittedAssessment == false) {
+    notifyAssessorAssessmentReceived(newData, applicationId, 'secondAssessor');
+  }
+  
+  return null;
+};
+
 
 exports.handleApplicationOnUpdate = functions.region('europe-west2').firestore
   .document('applications/{applicationId}')
@@ -517,5 +538,6 @@ exports.handleApplicationOnUpdate = functions.region('europe-west2').firestore
     onStatusChange(newData, previousData, context);
     onTestResultFieldsChange(newData, previousData, context.params.applicationId);
     onEligibilityChange(newData, previousData, context);
+    onAssessorSubmittedAssessmentChange(newData, previousData, context);
     return null;
   });
