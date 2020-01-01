@@ -9,6 +9,9 @@ admin.initializeApp();
 
 const db = admin.firestore();
 
+//
+// helper function to use gov.uk Notify to send emails
+//
 const sendEmail = (email, templateId, personalisation) => {
   const client = new NotifyClient(functions.config().notify.key);
 
@@ -31,6 +34,9 @@ const sendEmail = (email, templateId, personalisation) => {
     });
 };
 
+//
+// helper function that checks if an email address has a valid format
+//
 const emailIsValid = (email) => {
   return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email);
 };
@@ -103,6 +109,44 @@ const slog = async (msgString) => {
   return result;
 };
 
+//
+// helper function to get exercises matching a particular date
+// Used to monitor exercise timeline dates which triggers certain actions like:
+// - send email notifications
+// - change application statuses
+//
+const getExercisesWithDate = async (dateFieldName) => {
+  const today = new Date();
+  let yesterday = new Date();
+  yesterday.setDate(yesterday.getDate() - 1);
+
+  slog(`
+    SCHEDULED JOB: Looking for exercises where ${dateFieldName} = ${today}
+  `);
+
+  let exercisesRef = db.collection('exercises');
+
+  let snapshot;
+  try {
+    snapshot = await exercisesRef.where(dateFieldName, '>', yesterday).where(dateFieldName, '<', today).get(); 
+  } catch(err) {
+    slog(`
+      ERROR: Bad query: exercisesRef.where(${dateFieldName}, '>', yesterday).where(${dateFieldName}, '<', today).get() :
+    `, err);
+    return null;
+  }
+
+  if (snapshot.empty) {
+    slog(`No matching documents in Exercises 
+      where ${dateFieldName} > ${yesterday}
+      and ${dateFieldName} < ${today}`);
+    return null;
+  }
+
+  return snapshot;
+};
+
+
 module.exports = {
   db,
   sendEmail,
@@ -110,4 +154,5 @@ module.exports = {
   getData,
   slog,
   setData,
+  getExercisesWithDate, 
 };

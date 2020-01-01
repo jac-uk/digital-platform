@@ -1,62 +1,9 @@
-/*eslint-disable no-unused-vars*/
-
-/*
- * 
- * At 1pm UK time every day, this script will:
- * 
- * - Look for Exercises that close today (in exercises/{exerciseId}/applicationCloseDate attribute)
- * - For each of these exercises, send a notification email reminding them that their exercise closes today,
- *   meaning Candidates can no longer apply to this exercise (vacancy).
- * 
- */
-const NOTIFY_SCHEDULE = 'every day 13:00';
-
-// We might have to process lots of exercises today,
-// so bump up the runtime options to a bit higher normal values.
-// More info here:
-// https://firebase.google.com/docs/functions/manage-functions#set_timeout_and_memory_allocation
-const runtimeOpts = {
-  timeoutSeconds: 300,
-  memory: '512MB',
-};
-
 const functions = require('firebase-functions');
 const db = require('../sharedServices').db;
 const sendEmail = require('../sharedServices').sendEmail;
 const slog = require('../sharedServices').slog;
 const getData = require('../sharedServices').getData;
-
-
-const getExercisesClosingToday = async () => {
-  const today = new Date();
-  let yesterday = new Date();
-  yesterday.setDate(yesterday.getDate() - 1);
-
-  slog(`SCHEDULED JOB: Looking for exercises that close today: ${today}`);
-
-  let exercisesRef = db.collection('exercises');
-
-  let snapshot;
-  try {
-    // Look for Exercises that close today (in exercises/{exerciseId}/applicationCloseDate field)
-    snapshot = await exercisesRef.where('applicationCloseDate', '>', yesterday).where('applicationCloseDate', '<', today).get(); 
-  } catch(err) {
-    slog(`
-      ERROR: Bad query: exercisesRef.where('applicationCloseDate', '>', yesterday).where('applicationCloseDate', '<', today).get() :
-      ${err}
-    `);
-    return null;
-  }
-
-  if (snapshot.empty) {
-    slog(`No matching documents in Exercises 
-      where applicationCloseDate > ${yesterday}
-      and applicationCloseDate < ${today}`);
-    return null;
-  }
-
-  return snapshot;
-};
+const getExercisesWithDate = require('../sharedServices').getExercisesWithDate;
 
 
 const sendCandidateReminderEmails = async (applicationData, exerciseName) => {
@@ -83,7 +30,7 @@ const sendCandidateReminderEmails = async (applicationData, exerciseName) => {
     slog(`
       ${candidateData.fullName} (${candidateData.email}) has previously applied to exercise ${exerciseName} 
       and we've sent them a reminder today that this exercise is closed.
-    `);
+    `, sendEmailResponse);
     return true;
   });
 };
@@ -159,7 +106,7 @@ const remindAdminsToInviteCandidatesToQTs = async (exerciseData, exerciseId) => 
       email.includes('@judicialappointments.gov.uk')) {
     return sendEmail(email, templateId, personalizedData)
       .then((sendEmailResponse) => {
-        slog('SENT: remind_admins_to_send_qt_invites');
+        slog('SENT: remind_admins_to_send_qt_invites - ', sendEmailResponse);
         return null;
       });
   } else {
@@ -222,7 +169,7 @@ const notifyAdmins = async (exerciseIds) => {
 
 
 const handleExerciseApplicationCloseDate = async () => {
-  const exercisesClosingTodayPromise = getExercisesClosingToday();
+  const exercisesClosingTodayPromise = getExercisesWithDate('applicationCloseDate');
   const exercisesClosingToday = await exercisesClosingTodayPromise;
   if (exercisesClosingToday != null) {
     notifyAdmins(exercisesClosingToday);
@@ -233,12 +180,6 @@ const handleExerciseApplicationCloseDate = async () => {
 };
 
 
-exports.notifyAdminsWhenExerciseCloses = functions.region('europe-west2')
-                                                  .runWith(runtimeOpts)
-                                                  .pubsub.schedule(NOTIFY_SCHEDULE)
-                                                  .timeZone('Europe/London')
-                                                  .onRun((context) => {
-    
-    handleExerciseApplicationCloseDate();
-    return null;
-  });
+module.exports = {
+  handleExerciseApplicationCloseDate,
+};

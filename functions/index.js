@@ -18,8 +18,9 @@ exports.handleExerciseMailboxChange = require('./exercises/handleExerciseMailbox
 exports.notifyAdminsWhenExerciseOpens = require('./exercises/notifyAdminsWhenExerciseOpens');
 exports.handleCandidateOnCreate = require('./candidates/handleCandidateOnCreate');
 exports.handleApplicationOnCreate = require('./applications/handleApplicationOnCreate');
-exports.notifyAdminsWhenExerciseCloses = require('./exercises/notifyAdminsWhenExerciseCloses');
+//exports.notifyAdminsWhenExerciseCloses = require('./exercises/notifyAdminsWhenExerciseCloses');
 exports.handleApplicationOnUpdate = require('./applications/handleApplicationOnUpdate');
+exports.handleExerciseTimelineDates = require('./exercises/handleExerciseTimelineDates');
 
 /*
  *  TODO: All functions below this comment should be refactored into separate files.
