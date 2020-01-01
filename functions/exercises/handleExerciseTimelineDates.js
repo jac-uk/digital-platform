@@ -23,6 +23,7 @@ const runtimeOpts = {
 const functions = require('firebase-functions');
 const remindAssessorsToAssess = require('./remindAssessorsToAssess').remindAssessorsToAssess;
 const handleExerciseApplicationCloseDate = require('./notifyAdminsWhenExerciseCloses').handleExerciseApplicationCloseDate;
+const handleExerciseApplicationOpenDate = require('./notifyAdminsWhenExerciseOpens').handleExerciseApplicationOpenDate;
 
 exports.handleExerciseTimelineDates = functions.region('europe-west2')
                                                  .runWith(runtimeOpts)
@@ -31,6 +32,7 @@ exports.handleExerciseTimelineDates = functions.region('europe-west2')
                                                  .onRun((context) => {
   
   remindAssessorsToAssess();
+  handleExerciseApplicationOpenDate();
   handleExerciseApplicationCloseDate();
   return null;
 });
