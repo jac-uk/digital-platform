@@ -1,7 +1,5 @@
-/*eslint-disable no-unused-vars*/
 const admin = require('firebase-admin');
 const functions = require('firebase-functions');
-const NotifyClient = require('notifications-node-client').NotifyClient;
 exports.userTestSubmissions = require('./qt/submission');
 exports.backupFirebaseAuthentication = require('./backup/authentication');
 exports.backupFirestore = require('./backup/firestore');
@@ -18,7 +16,6 @@ exports.handleExerciseMailboxChange = require('./exercises/handleExerciseMailbox
 exports.notifyAdminsWhenExerciseOpens = require('./exercises/notifyAdminsWhenExerciseOpens');
 exports.handleCandidateOnCreate = require('./candidates/handleCandidateOnCreate');
 exports.handleApplicationOnCreate = require('./applications/handleApplicationOnCreate');
-//exports.notifyAdminsWhenExerciseCloses = require('./exercises/notifyAdminsWhenExerciseCloses');
 exports.handleApplicationOnUpdate = require('./applications/handleApplicationOnUpdate');
 exports.handleExerciseTimelineDates = require('./exercises/handleExerciseTimelineDates');
 
