@@ -31,6 +31,10 @@ const sendEmail = (email, templateId, personalisation) => {
     .then(notifyResponse => {
       console.info(notifyResponse.body);
       return true;
+    })
+    .catch(err => {
+      console.error('Error Sending Email:', err);
+      return err;
     });
 };
 

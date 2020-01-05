@@ -1,4 +1,3 @@
-/*eslint-disable no-unused-vars*/
 const functions = require('firebase-functions');
 const sendEmail = require('../sharedServices').sendEmail;
 const getData = require('../sharedServices').getData;
@@ -34,6 +33,7 @@ const sendApplicationSubmittedEmailToCandidate = async (data, applicationId) => 
 
   const personalizedData = {
     applicantName: candidateFullName,
+    applicationId: applicationId,
   };
 
   // Check that the firebase config has the key by running:
@@ -42,12 +42,18 @@ const sendApplicationSubmittedEmailToCandidate = async (data, applicationId) => 
   // Set notify.templates.application_submitted in firebase functions like this:
   // firebase functions:config:set notify.templates.application_submitted="THE_GOVUK_NOTIFY_TEMPLATE_ID"  
   const templateId = functions.config().notify.templates.application_submitted;
-  return sendEmail(candidateEmail, templateId, personalizedData).then((sendEmailResponse) => {
-    slog(`
-      ${candidateFullName} (${candidateEmail}) has applied to exercise ${data.exerciseId}
-    `);
-    return true;
-  });   
+  return sendEmail(candidateEmail, templateId, personalizedData)
+    .then((sendEmailResponse) => {
+      slog(`
+        ${candidateFullName} (${candidateEmail}) has applied to exercise ${data.exerciseId}
+      `);
+      console.log('sendEmailResponse: ', sendEmailResponse);
+      return true;
+    })
+    .catch(err => {
+      console.error('Error Sending Email sendApplicationSubmittedEmailToCandidate:', err);
+      return false;
+    });  
 };
 
 
@@ -91,13 +97,18 @@ const notifyAdminAboutFlaggedApplication = async (applicationId) => {
   // Set notify.templates.notify_admin_about_flagged_application in firebase functions like this:
   // firebase functions:config:set notify.templates.notify_admin_about_flagged_application="THE_GOVUK_NOTIFY_TEMPLATE_ID"  
   const templateId = functions.config().notify.templates.notify_admin_about_flagged_application;
-  return sendEmail(exerciseData.exerciseMailbox, templateId, personalizedData).then((sendEmailResponse) => {
-    slog(`
-      Notify admin ${exerciseData.exerciseMailbox} of vacancy ${applicationData.exerciseName}
-      that ${candidateData.email}'s application has  been flagged.
-    `);
-    return true;
-  });   
+  return sendEmail(exerciseData.exerciseMailbox, templateId, personalizedData)
+    .then((sendEmailResponse) => {
+      slog(`
+        Notify admin ${exerciseData.exerciseMailbox} of vacancy ${applicationData.exerciseName}
+        that ${candidateData.email}'s application has  been flagged.
+      `);
+      return sendEmailResponse;
+    })
+    .catch(err => {
+      console.error('Error Sending Email notifyAdminAboutFlaggedApplication:', err);
+      return false;
+    });       
 };
 
 
@@ -124,9 +135,15 @@ const getNumberOfDaysBetween2Dates = (startDate, endDate) => {
 };
 
 
-const hasEnoughWorkExperience = (applicantWorkExperienceData, requiredExperienceLengthInYears) => {
+const hasEnoughWorkExperience = (applicantWorkExperienceData, requiredExperienceLengthInYears, applicationId) => {
   let totalDaysWorkExperience = 0;
   const requiredExperienceLengthInDays = parseInt(requiredExperienceLengthInYears, 10) * 365;
+
+  // check if applicant has entered ANY work experience
+  if (applicantWorkExperienceData == null) {
+    slog(`Applicant ${applicationId} has not entered ANY work experience.`);
+    return false;
+  }
 
   for (let i = 0; i < applicantWorkExperienceData.length; i++) {
     // if end date is not filled in, use today's date
@@ -335,6 +352,7 @@ const checkPostQualificationExperience = async (data, applicationId) => {
   const hasEnoughWorkExperienceResponse = hasEnoughWorkExperience(
     data.experience,
     exerciseData.postQualificationExperience,
+    applicationId,
   );
   if (hasEnoughWorkExperienceResponse === false) {
     return await flagApplication(
@@ -400,7 +418,7 @@ const checkReasonableLengthOfService = async (data, applicationId) => {
     return false;
   }
   
-  const selectionSCCDateJS = exerciseData.selectionSCCDate.toDate();
+  const selectionSCCDateJS = exerciseData.characterAndSCCDate.toDate();
   if (candidateBirthday.toDate().getFullYear() <= selectionSCCDateJS.getFullYear() - 70) {
     // flag applicant if they are 70 years of age or older
     return await flagApplication(

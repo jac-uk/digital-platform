@@ -13,7 +13,7 @@ const sendCandidateCreatedAccountEmail = async (snap, context) => {
     createdAt: Date.now(), 
     status: 'account-created',
   }, { merge: true});
-  slog(`Response from setting Candidate (${context.params.candidateId}): ${setWithMerge}`);
+  slog(`Response from setting Candidate (${context.params.candidateId}): `, setWithMerge);
 
   const personalizationData = {
     fullName: data.fullName,
