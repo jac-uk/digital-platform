@@ -13,7 +13,6 @@ const sendEmail = require('./sharedServices').sendEmail;
 
 exports.sendExerciseStartedEmail = require('./exercises/sendExerciseStartedEmail');
 exports.handleExerciseMailboxChange = require('./exercises/handleExerciseMailboxChange');
-exports.notifyAdminsWhenExerciseOpens = require('./exercises/notifyAdminsWhenExerciseOpens');
 exports.handleCandidateOnCreate = require('./candidates/handleCandidateOnCreate');
 exports.handleApplicationOnCreate = require('./applications/handleApplicationOnCreate');
 exports.handleApplicationOnUpdate = require('./applications/handleApplicationOnUpdate');
