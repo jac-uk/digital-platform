@@ -1,4 +1,3 @@
-/*eslint-disable no-unused-vars*/
 const functions = require('firebase-functions');
 const sendEmail = require('../sharedServices').sendEmail;
 const getData = require('../sharedServices').getData;
@@ -40,7 +39,11 @@ const sendCandidateEmail = async (emailTemplateData) => {
 
       // set Application status to 'qt-invite-sent' after sending email
       setApplicationDataAfterSendingEmail(emailTemplateData);
-      return true;
+      return sendEmailResponse;
+    })
+    .catch(err => {
+      console.error('Error Sending Email sendCandidateEmail:', err);
+      return false;
     });
 };
 
@@ -53,6 +56,18 @@ const inviteCandidateToQT = async (applicationData, applicationId) => {
     `);
     return null;
   }
+
+  const sjcaTestDate = exerciseData.sjcaTestDate;
+  if (sjcaTestDate == null) {
+    slog('ERROR: JAC admin did not put in a value for sjcaTestDate!');
+    return null;    
+  }
+
+  const scenarioTestDate = exerciseData.scenarioTestDate;
+  if (scenarioTestDate == null) {
+    slog('ERROR: JAC admin did not put in a value for scenarioTestDate!');
+    return null;    
+  }  
 
   const candidateData = await getData('candidates', applicationData.userId);
   if (candidateData == null) {
@@ -68,11 +83,11 @@ const inviteCandidateToQT = async (applicationData, applicationId) => {
     applicationId: applicationId,
     exerciseName: exerciseData.name,
     selectionExerciseManager: exerciseData.selectionExerciseManagerFullName,
-    sjcaTestDate: exerciseData.sjcaTestDate.toDate(),
+    sjcaTestDate: sjcaTestDate.toDate(),
     sjcaTestStartTime: exerciseData.sjcaTestStartTime,
     sjcaTestEndTime: exerciseData.sjcaTestEndTime,
     sjcaTestUrl: exerciseData.sjcaTestUrl,
-    scenarioTestDate: exerciseData.scenarioTestDate.toDate(),
+    scenarioTestDate: scenarioTestDate.toDate(),
     scenarioTestStartTime: exerciseData.scenarioTestStartTime,
     scenarioTestEndTime: exerciseData.scenarioTestEndTime,
     scenarioTestUrl: exerciseData.scenarioTestUrl,
