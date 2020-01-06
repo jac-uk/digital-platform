@@ -9,6 +9,7 @@ const inviteCandidateToQT = require('./inviteCandidateToQT').inviteCandidateToQT
 const notifyCandidateTestReceived= require('./notifyCandidateTestReceived').notifyCandidateTestReceived;
 const notifyAssessorsToAssess = require('./notifyAssessorsToAssess').notifyAssessorsToAssess;
 const notifyAssessorAssessmentReceived = require('./notifyAssessorAssessmentReceived').notifyAssessorAssessmentReceived;
+const inviteCandidateToSelectionDay = require('./inviteCandidateToSelectionDay').inviteCandidateToSelectionDay;
 
 
 const sendApplicationSubmittedEmailToCandidate = async (data, applicationId) => {
@@ -489,6 +490,10 @@ const onStatusChange = async (newData, previousData, context) => {
   else if (newData.status == 'request-assessors') {
     notifyAssessorsToAssess(newData, context.params.applicationId);
   }
+  else if (newData.status == 'invite-to-selection-day') {
+    inviteCandidateToSelectionDay(newData, context.params.applicationId);
+  }
+    
   return null;
 };
 
