@@ -1,3 +1,4 @@
+rules_version = '2';
 service cloud.firestore {
   function userIsAuthenticated() {
     return request.auth.uid != null;
@@ -5,100 +6,109 @@ service cloud.firestore {
   function currentUser() {
     return request.auth.uid;
   }
+  function userIsJAC() {
+    return request.auth.token.email_verified
+      && request.auth.token.email.matches('.*@judicialappointments[.](digital|gov[.]uk)')
+  }
 
   match /databases/{database}/documents {
-    match /applicants/{userId} {
-      // Users can read & write to their own applicant document
-      allow get, create, update: if request.auth.uid == userId;
+    
+    match /{document=**} {
+      allow read: if false;
+      allow write: if false;
+    }
+
+    match /exercises/{exerciseId} {
+      allow read: if true; // @todo restrict to JAC admin when vacancy collection used instead userIsAuthenticated() && userIsJAC();
+      allow write: if userIsAuthenticated() && userIsJAC();
     }
 
     match /meta/stats {
-      // allow any authenticated user to read & write meta
-      // @todo restrict this to admin
-      allow read, write: if userIsAuthenticated();
+      allow read: if userIsAuthenticated() && userIsJAC();
+      // Admin users can increment stats.exercisesCount by 1
+      allow update: if userIsAuthenticated() && userIsJAC() && request.resource.data.exercisesCount == resource.data.exercisesCount + 1;
     }
 
-    match /invitations/{invitationId} {
-      // @todo only admin users can create and view invites
-      allow read, write: if userIsAuthenticated();
+    match /vacancies/{vacancyId} {
+      allow read: if true;
+      allow write: if false;
     }
 
-    match /users/{userId} {
-      // user can own record
-      allow read: if request.auth.uid == userId;
-      // user can update own record, providing haven't changed role
-      // @todo lock this down even more (maybe only update refresh flag)
-      allow update: if request.auth.uid == userId &&
-                       request.resource.data.userId == currentUser() &&
-                       request.data.role == request.resource.data.role;
-      // @todo admin can list users
-      allow list: if userIsAuthenticated();
+    match /candidates/{candidateId} {
+  		// Users can read & write to their own candidate document
+      allow get, create, update: if request.auth.uid == candidateId;
     }
 
-    match /applications/{application} {
-
+    match /applications/{applicationId} {
       // Allow existing records which belong to the current user
       allow get, list: if resource.data.userId == currentUser();
-
       // Allow new records if they will belong to the current user
       allow create: if request.resource.data.userId == currentUser();
-
       // Allow updates on records which belong, and will continue to belong, to the current user
       // But only if the application isn't in a 'submitted' state
       allow update: if resource.data.userId == currentUser() &&
                        request.resource.data.userId == currentUser();
                        //  && resource.data.state != "submitted";
     }
-    
-    match /vacancies/{vacancy} {
-      // Authenticated users can read
-      allow get: if userIsAuthenticated();
-    }
 
-    match /exercises/{exercise} {
-      allow get, list;
-      allow write: if userIsAuthenticated();
-    }
-
-    match /references/{reference} {
-      // World readable if you know the document ID (`get` allowed)
-      // But cannot query the collection (`list` not allowed)
-      allow get;
-    }
-    
-    match /candidates/{userId} {
-  		// Users can read & write to their own candidate document
-      allow get, create, update: if request.auth.uid == userId;
-    }
-
-    match /tests/{test} {
-      // Authenticated users can read
-      allow get: if userIsAuthenticated();
-    }
-
-    match /usersTests/{userTest} {
-      function belongsToCurrentUser(res) {
-        return res.data.userUid == request.auth.uid;
-      }
-
-      function doesNotExist() {
-        return resource == null;
-      }
-
-      // Allow read on records which belong to the current user
-      // Also allow reads to documents which don't yet exist – so our client-side app can
-      // listen for changes on documents it hasn't created yet
-      allow get, list: if userIsAuthenticated() &&
-                          (belongsToCurrentUser(resource) || doesNotExist());
-
-      // Allow new records if they will belong to the current user
-      allow create: if userIsAuthenticated() &&
-                       belongsToCurrentUser(request.resource);
-
-      // Allow updates on records which belong, and will continue to belong, to the current user
-      allow update: if userIsAuthenticated() &&
-                       belongsToCurrentUser(resource) &&
-                       belongsToCurrentUser(request.resource);
-    }
   }
 }
+
+  //   match /invitations/{invitationId} {
+  //     // @todo only admin users can create and view invites
+  //     allow read, write: if userIsAuthenticated();
+  //   }
+
+  //   match /users/{userId} {
+  //     // user can own record
+  //     allow read: if request.auth.uid == userId;
+  //     // user can update own record, providing haven't changed role
+  //     // @todo lock this down even more (maybe only update refresh flag)
+  //     allow update: if request.auth.uid == userId &&
+  //                      request.resource.data.userId == currentUser() &&
+  //                      request.data.role == request.resource.data.role;
+  //     // @todo admin can list users
+  //     allow list: if userIsAuthenticated();
+  //   }
+
+
+
+
+  //   match /references/{reference} {
+  //     // World readable if you know the document ID (`get` allowed)
+  //     // But cannot query the collection (`list` not allowed)
+  //     allow get;
+  //   }
+    
+
+  //   match /tests/{test} {
+  //     // Authenticated users can read
+  //     allow get: if userIsAuthenticated();
+  //   }
+
+  //   match /usersTests/{userTest} {
+  //     function belongsToCurrentUser(res) {
+  //       return res.data.userUid == request.auth.uid;
+  //     }
+
+  //     function doesNotExist() {
+  //       return resource == null;
+  //     }
+
+  //     // Allow read on records which belong to the current user
+  //     // Also allow reads to documents which don't yet exist – so our client-side app can
+  //     // listen for changes on documents it hasn't created yet
+  //     allow get, list: if userIsAuthenticated() &&
+  //                         (belongsToCurrentUser(resource) || doesNotExist());
+
+  //     // Allow new records if they will belong to the current user
+  //     allow create: if userIsAuthenticated() &&
+  //                      belongsToCurrentUser(request.resource);
+
+  //     // Allow updates on records which belong, and will continue to belong, to the current user
+  //     allow update: if userIsAuthenticated() &&
+  //                      belongsToCurrentUser(resource) &&
+  //                      belongsToCurrentUser(request.resource);
+  //   }
+  // }
+// }
