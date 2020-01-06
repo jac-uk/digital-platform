@@ -45,7 +45,7 @@ jobs:
           at: ~/digital-platform
       - run:
           name: 'Test rules'
-          command: npm run test:rules
+          command: npm run ci:test:rules
 
   test-functions:
     executor: default
