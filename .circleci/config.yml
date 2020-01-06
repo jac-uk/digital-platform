@@ -38,6 +38,14 @@ jobs:
       # This is required for the `-split-by-timings` config, above.
       - store_test_results:
           path: ../reports/setup
+  test-rules:
+    executor: default
+    steps:
+      - attach_workspace:
+          at: ~/digital-platform
+      - run:
+          name: 'Test rules'
+          command: npm run test:rules
 
   test-functions:
     executor: default
@@ -59,127 +67,121 @@ jobs:
       - run:
           name: 'Rebase against master'
           command: git rebase master
-      - run:
-          name: 'Lint functions'
-          command: npm --prefix functions run lint
-      - run:
-          name: 'There are no tests for functions yet'
-          command: echo 'N/A'
 
-  test-qt:
-    executor: default
-    steps:
-      - attach_workspace:
-          at: ~/digital-platform
-      - run:
-          name: 'Lint hosting/qt'
-          command: npm --prefix hosting/qt run lint-ci
-      - run:
-          name: 'Test hosting/qt'
-          command: npm --prefix hosting/qt run test-ci
+  # test-qt:
+  #   executor: default
+  #   steps:
+  #     - attach_workspace:
+  #         at: ~/digital-platform
+  #     - run:
+  #         name: 'Lint hosting/qt'
+  #         command: npm --prefix hosting/qt run lint-ci
+  #     - run:
+  #         name: 'Test hosting/qt'
+  #         command: npm --prefix hosting/qt run test-ci
 
-  rebase-qt:
-    executor: default
-    steps:
-      - attach_workspace:
-          at: ~/digital-platform
-      - run:
-          name: 'Rebase against master'
-          command: git rebase master
-      - run:
-          name: 'Lint hosting/qt'
-          command: npm --prefix hosting/qt run lint-ci
-      - run:
-          name: 'Test hosting/qt'
-          command: npm --prefix hosting/qt run test-ci
+  # rebase-qt:
+  #   executor: default
+  #   steps:
+  #     - attach_workspace:
+  #         at: ~/digital-platform
+  #     - run:
+  #         name: 'Rebase against master'
+  #         command: git rebase master
+  #     - run:
+  #         name: 'Lint hosting/qt'
+  #         command: npm --prefix hosting/qt run lint-ci
+  #     - run:
+  #         name: 'Test hosting/qt'
+  #         command: npm --prefix hosting/qt run test-ci
 
-  test-qt-admin:
-    executor: default
-    steps:
-      - attach_workspace:
-          at: ~/digital-platform
-      - run:
-          name: 'Lint hosting/qt-admin'
-          command: npm --prefix hosting/qt-admin run lint-ci
-      - run:
-          name: 'Test hosting/qt-admin'
-          command: npm --prefix hosting/qt-admin run test-ci
+  # test-qt-admin:
+  #   executor: default
+  #   steps:
+  #     - attach_workspace:
+  #         at: ~/digital-platform
+  #     - run:
+  #         name: 'Lint hosting/qt-admin'
+  #         command: npm --prefix hosting/qt-admin run lint-ci
+  #     - run:
+  #         name: 'Test hosting/qt-admin'
+  #         command: npm --prefix hosting/qt-admin run test-ci
 
-  rebase-qt-admin:
-    executor: default
-    steps:
-      - attach_workspace:
-          at: ~/digital-platform
-      - run:
-          name: 'Rebase against master'
-          command: git rebase master
-      - run:
-          name: 'Lint hosting/qt-admin'
-          command: npm --prefix hosting/qt-admin run lint-ci
-      - run:
-          name: 'Test hosting/qt-admin'
-          command: npm --prefix hosting/qt-admin run test-ci
+  # rebase-qt-admin:
+  #   executor: default
+  #   steps:
+  #     - attach_workspace:
+  #         at: ~/digital-platform
+  #     - run:
+  #         name: 'Rebase against master'
+  #         command: git rebase master
+  #     - run:
+  #         name: 'Lint hosting/qt-admin'
+  #         command: npm --prefix hosting/qt-admin run lint-ci
+  #     - run:
+  #         name: 'Test hosting/qt-admin'
+  #         command: npm --prefix hosting/qt-admin run test-ci
 
-  test-reference:
-    executor: default
-    steps:
-      - attach_workspace:
-          at: ~/digital-platform
-      - run:
-          name: 'Install cypress dependencies'
-          command: |
-            sudo apt-get update && \
-            sudo apt-get install --no-install-recommends -y \
-            libgtk2.0-0 \
-            libgtk-3-0 \
-            libnotify-dev \
-            libgconf-2-4 \
-            libnss3 \
-            libxss1 \
-            libasound2 \
-            libxtst6 \
-            xauth \
-            xvfb
-      - run:
-          name: 'Lint hosting/reference'
-          command: npm --prefix hosting/reference run lint-ci
-      - run:
-          name: 'Test hosting/reference'
-          command: |
-            npm run serve --prefix hosting/reference &&
-            npx cypress run --project hosting/reference --config video=false
+  # test-reference:
+  #   executor: default
+  #   steps:
+  #     - attach_workspace:
+  #         at: ~/digital-platform
+  #     - run:
+  #         name: 'Install cypress dependencies'
+  #         command: |
+  #           sudo apt-get update && \
+  #           sudo apt-get install --no-install-recommends -y \
+  #           libgtk2.0-0 \
+  #           libgtk-3-0 \
+  #           libnotify-dev \
+  #           libgconf-2-4 \
+  #           libnss3 \
+  #           libxss1 \
+  #           libasound2 \
+  #           libxtst6 \
+  #           xauth \
+  #           xvfb
+  #     - run:
+  #         name: 'Lint hosting/reference'
+  #         command: npm --prefix hosting/reference run lint-ci
+  #     - run:
+  #         name: 'Test hosting/reference'
+  #         command: |
+  #           npm run serve --prefix hosting/reference &&
+  #           npx cypress run --project hosting/reference --config video=false
 
-  rebase-reference:
-    executor: default
-    steps:
-      - attach_workspace:
-          at: ~/digital-platform
-      - run:
-          name: 'Rebase against master'
-          command: git rebase master
-      - run:
-          name: 'Install cypress dependencies'
-          command: |
-            sudo apt-get update && \
-            sudo apt-get install --no-install-recommends -y \
-            libgtk2.0-0 \
-            libgtk-3-0 \
-            libnotify-dev \
-            libgconf-2-4 \
-            libnss3 \
-            libxss1 \
-            libasound2 \
-            libxtst6 \
-            xauth \
-            xvfb
-      - run:
-          name: 'Lint hosting/reference'
-          command: npm --prefix hosting/reference run lint-ci
-      - run:
-          name: 'Test hosting/reference'
-          command: |
-            npm run serve --prefix hosting/reference &&
-            npx cypress run --project hosting/reference --config video=false
+  # rebase-reference:
+  #   executor: default
+  #   steps:
+  #     - attach_workspace:
+  #         at: ~/digital-platform
+  #     - run:
+  #         name: 'Rebase against master'
+  #         command: git rebase master
+  #     - run:
+  #         name: 'Install cypress dependencies'
+  #         command: |
+  #           sudo apt-get update && \
+  #           sudo apt-get install --no-install-recommends -y \
+  #           libgtk2.0-0 \
+  #           libgtk-3-0 \
+  #           libnotify-dev \
+  #           libgconf-2-4 \
+  #           libnss3 \
+  #           libxss1 \
+  #           libasound2 \
+  #           libxtst6 \
+  #           xauth \
+  #           xvfb
+  #     - run:
+  #         name: 'Lint hosting/reference'
+  #         command: npm --prefix hosting/reference run lint-ci
+  #     - run:
+  #         name: 'Test hosting/reference'
+  #         command: |
+  #           npm run serve --prefix hosting/reference &&
+  #           npx cypress run --project hosting/reference --config video=false
 
   build-and-deploy-production:
     executor: default
@@ -204,57 +206,27 @@ workflows:
   test-build-and-deploy:
     jobs:
       - setup
-      - test-reference:
-          requires:
-            - setup
       - test-functions:
           requires:
             - setup
-      - test-qt:
+      - test-rules:
           requires:
             - setup
-      - test-qt-admin:
-          requires:
-            - setup
-      - rebase-reference:
-          requires:
-            - setup
-          filters:
-            branches:
-              ignore: master
       - rebase-functions:
           requires:
             - setup
           filters:
             branches:
               ignore: master
-      - rebase-qt:
-          requires:
-             - setup
-          filters:
-            branches:
-              ignore: master
-      - rebase-qt-admin:
-          requires:
-             - setup
-          filters:
-            branches:
-              ignore: master
       - build-and-deploy-staging:
           requires:
             - test-functions
-            - test-qt
-            - test-qt-admin
-            - test-reference
           filters:
             branches:
               only: /staging-.*/
       - build-and-deploy-production:
           requires:
             - test-functions
-            - test-qt
-            - test-qt-admin
-            - test-reference
           filters:
             branches:
               only: master
