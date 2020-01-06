@@ -8,6 +8,7 @@ describe("Example", () => {
 
   context("Simple test", () => {
     it("should agree that 1 == 1", async () => {
+      const db = await setup();
       await assertSucceeds(1 == 1);
     });
   });
