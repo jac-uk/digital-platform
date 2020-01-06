@@ -5,10 +5,15 @@
   "license": "MIT",
   "readme": "README.md",
   "scripts": {
-    "deploy-rules": "firebase deploy --only firestore:rules"
+    "deploy:rules": "firebase deploy --only firestore:rules",
+    "test:rules": "mocha './test/rules/**/*.spec.js' --timeout=10000",
+    "watch:test:rules": "mocha './test/rules/**/2.meta.spec.js' --timeout=10000 --reporter=min --watch --watch-extensions=rules"
   },
   "devDependencies": {
-    "firebase-tools": "^7.0.2"
+    "firebase-tools": "^7.0.2",
+    "mocha": "^6.2.2"
   },
-  "dependencies": {}
+  "dependencies": {
+    "@firebase/testing": "^0.16.4"
+  }
 }
