@@ -6,7 +6,7 @@
   "readme": "README.md",
   "scripts": {
     "deploy:rules": "firebase deploy --only firestore:rules",
-    "test:rules": "mocha './test/rules/**/example.spec.js' --timeout=10000",
+    "test:rules": "mocha './test/rules/**/*.spec.js' --timeout=10000",
     "watch:test:rules": "mocha './test/rules/**/*.spec.js' --timeout=10000 --reporter=min --watch --watch-extensions=rules",
     "ci:test:rules": "firebase emulators:exec --only firestore 'npm run test:rules'"
   },
