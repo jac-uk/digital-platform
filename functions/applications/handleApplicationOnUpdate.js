@@ -13,6 +13,8 @@ const inviteCandidateToSelectionDay = require('./inviteCandidateToSelectionDay')
 const notifyCandidateSelectionDayFail = require('./notifyCandidateSelectionDayFail').notifyCandidateSelectionDayFail;
 const notifyCandidateNotRecommended = require('./notifyCandidateNotRecommended').notifyCandidateNotRecommended;
 const notifyCandidateNotRecommendedButSelectable = require('./notifyCandidateNotRecommendedButSelectable').notifyCandidateNotRecommendedButSelectable;
+const notifyCandidateRecommendedImmediateAppt = require('./notifyCandidateRecommendedImmediateAppt').notifyCandidateRecommendedImmediateAppt;
+const notifyCandidateRecommendedFutureAppt = require('./notifyCandidateRecommendedFutureAppt').notifyCandidateRecommendedFutureAppt;
 
 
 const sendApplicationSubmittedEmailToCandidate = async (data, applicationId) => {
@@ -505,6 +507,12 @@ const onStatusChange = async (newData, previousData, context) => {
   else if (newData.status == 'not-recommended-but-selectable') {
     notifyCandidateNotRecommendedButSelectable(newData, context.params.applicationId);
   }
+  else if (newData.status == 'immediate-appt-recommended') {
+    notifyCandidateRecommendedImmediateAppt(newData, context.params.applicationId);
+  }
+  else if (newData.status == 'future-appt-recommended') {
+    notifyCandidateRecommendedFutureAppt(newData, context.params.applicationId);
+  }  
     
   return null;
 };
