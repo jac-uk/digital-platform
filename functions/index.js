@@ -17,6 +17,8 @@ exports.handleCandidateOnCreate = require('./candidates/handleCandidateOnCreate'
 exports.handleApplicationOnCreate = require('./applications/handleApplicationOnCreate');
 exports.handleApplicationOnUpdate = require('./applications/handleApplicationOnUpdate');
 exports.handleExerciseTimelineDates = require('./exercises/handleExerciseTimelineDates');
+exports.onExerciseUpdate_PublishVacancy = require('./exercises/onExerciseUpdate_PublishVacancy');
+
 
 /*
  *  TODO: All functions below this comment should be refactored into separate files.
