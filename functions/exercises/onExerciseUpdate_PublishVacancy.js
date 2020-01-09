@@ -6,7 +6,7 @@
  */
 
 const functions = require('firebase-functions');
-const { db, setData, slog } = require('../sharedServices');
+const { db, setData } = require('../sharedServices');
 
 exports.onExerciseUpdate_PublishVacancy = functions.region('europe-west2').firestore
 .document('exercises/{exerciseId}')
