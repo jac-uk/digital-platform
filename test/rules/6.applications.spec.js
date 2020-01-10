@@ -45,6 +45,14 @@ describe("Applications", () => {
       const adminDb = await setupAdmin(db, { 'applications/app1': { userId: 'user2' } });
       await assertFails(db.collection("applications").where('userId', '==', 'user2').get());
     });
+
+    it("allow JAC admin to list all applications", async () => {
+      const db = await setup(
+        { uid: 'user1', email: 'user@judicialappointments.gov.uk', email_verified: true },
+        { 'applications/app1': { }, 'applications/app2': { } }
+      );
+      await assertSucceeds(db.collection("applications").get());
+    });    
   });  
 
   context("Update", () => {
