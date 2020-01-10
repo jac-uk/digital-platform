@@ -7,6 +7,7 @@
   "scripts": {
     "deploy:rules": "firebase deploy --only firestore:rules",
     "deploy:functions": "firebase deploy --only functions",
+    "production:deploy:rules": "firebase deploy --project=platform-production-9207d --only firestore:rules",
     "production:deploy:functions": "firebase deploy --project=platform-production-9207d --only functions",
     "test:rules": "mocha './test/rules/**/*.spec.js' --timeout=10000",
     "watch:test:rules": "mocha './test/rules/**/*.spec.js' --timeout=10000 --reporter=min --watch --watch-extensions=rules",
