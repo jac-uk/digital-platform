@@ -10,6 +10,10 @@ service cloud.firestore {
     return request.auth.token.email_verified
       && request.auth.token.email.matches('.*@judicialappointments[.](digital|gov[.]uk)')
   }
+  function notChanged(field) {
+    return !(field in request.resource.data)
+      || resource.data[field] == request.resource.data[field]
+  }
 
   match /databases/{database}/documents {
     
@@ -32,6 +36,14 @@ service cloud.firestore {
     match /vacancies/{vacancyId} {
       allow read: if true;
       allow write: if false;
+
+      // allow candidate to update vacancy meta/stats.applicationsCount
+      match /meta/stats {
+        allow read: if userIsAuthenticated();
+        allow create: if userIsAuthenticated() && request.resource.data.applicationsCount == 1;
+        allow update: if userIsAuthenticated() && request.resource.data.applicationsCount == resource.data.applicationsCount + 1;
+      }
+
     }
 
     match /candidates/{candidateId} {
