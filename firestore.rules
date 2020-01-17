@@ -23,7 +23,7 @@ service cloud.firestore {
     }
 
     match /exercises/{exerciseId} {
-      allow read: if true; // @todo restrict to JAC admin when vacancy collection used instead userIsAuthenticated() && userIsJAC();
+      allow read: if userIsAuthenticated() && userIsJAC();
       allow write: if userIsAuthenticated() && userIsJAC();
     }
 
