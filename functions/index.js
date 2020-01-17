@@ -18,6 +18,7 @@ exports.handleApplicationOnCreate = require('./applications/handleApplicationOnC
 exports.handleApplicationOnUpdate = require('./applications/handleApplicationOnUpdate');
 exports.handleExerciseTimelineDates = require('./exercises/handleExerciseTimelineDates');
 exports.onExerciseUpdate_PublishVacancy = require('./exercises/onExerciseUpdate_PublishVacancy');
+exports.onVacancyStatsUpdate = require('./exercises/onVacancyStatsUpdate');
 
 
 /*

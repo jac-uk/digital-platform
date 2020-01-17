@@ -66,6 +66,7 @@ exports.onExerciseUpdate_PublishVacancy = functions.region('europe-west2').fires
         salaryGrouping: null,
         schedule2Apply: null,
         shortlistingMethods: null,
+        shortlistingOutcomeDate: null,
         subscriberAlertsUrl: null,
         typeOfExercise: null,
         uploadedCandidateAssessmentFormTemplate: null,
