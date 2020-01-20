@@ -49,6 +49,11 @@ service cloud.firestore {
     match /candidates/{candidateId} {
   		// Users can read & write to their own candidate document
       allow get, create, update: if request.auth.uid == candidateId;
+
+      match /documents/{documentId} {
+        allow get, create, update: if request.auth.uid == candidateId && 
+                                      documentId in ['personalDetails', 'characterInformation', 'equalityAndDiversitySurvey'];
+      }
     }
 
     match /applications/{applicationId} {
@@ -59,10 +64,13 @@ service cloud.firestore {
       // Allow new records if they will belong to the current user
       allow create: if request.resource.data.userId == currentUser();
       // Allow updates on records which belong, and will continue to belong, to the current user
-      // But only if the application isn't in a 'submitted' state
+      // But only if the application is in 'draft' state
       allow update: if resource.data.userId == currentUser() &&
-                       request.resource.data.userId == currentUser();
-                       //  && resource.data.state != "submitted";
+                       request.resource.data.userId == currentUser() &&
+                       resource.data.status == "draft" &&
+                       request.resource.data.status in ['draft', 'applied'];
+      // allow JAC admins to edit an application @todo restrict what can be changed and by which role
+      allow update: if userIsAuthenticated() && userIsJAC();
     }
 
   }
