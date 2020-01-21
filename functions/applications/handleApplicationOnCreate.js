@@ -79,6 +79,7 @@ exports.handleApplicationOnCreate = functions.region('europe-west2').firestore
 
     // after setting the data, send the candidate an email 
     // so they can track their application to a judgeship vacancy
-    sendApplicationStartedEmailToCandidate(snap, context);
+    // @todo activate this
+    // sendApplicationStartedEmailToCandidate(snap, context);
     return null;
   });
