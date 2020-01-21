@@ -6,12 +6,12 @@
 exports.backupFirestore = require('./backup/firestore');
 exports.backupFirebaseAuthentication = require('./backup/authentication');
 exports.onExerciseUpdate_PublishVacancy = require('./exercises/onExerciseUpdate_PublishVacancy');
-exports.onVacancyStatsUpdate = require('./exercises/onVacancyStatsUpdate');
+exports.onWriteVacancyStats = require('./exercises/onWriteVacancyStats');
 
 // exports.sendExerciseStartedEmail = require('./exercises/sendExerciseStartedEmail');
 // exports.handleExerciseMailboxChange = require('./exercises/handleExerciseMailboxChange');
 // exports.handleCandidateOnCreate = require('./candidates/handleCandidateOnCreate');
-// exports.handleApplicationOnCreate = require('./applications/handleApplicationOnCreate');
+exports.handleApplicationOnCreate = require('./applications/handleApplicationOnCreate');
 // exports.handleApplicationOnUpdate = require('./applications/handleApplicationOnUpdate');
 // exports.handleExerciseTimelineDates = require('./exercises/handleExerciseTimelineDates');
 // exports.userTestSubmissions = require('./qt/submission');
