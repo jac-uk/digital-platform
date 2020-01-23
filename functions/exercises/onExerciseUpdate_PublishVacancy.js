@@ -73,6 +73,7 @@ exports.onExerciseUpdate_PublishVacancy = functions.region('europe-west2').fires
         scenarioTestEndTime: null,
         scenarioTestStartTime: null,
         schedule2Apply: null,
+        selectionCriteria: null,
         selectionDays: null,
         shortlistingMethods: null,
         shortlistingOutcomeDate: null,
@@ -87,7 +88,6 @@ exports.onExerciseUpdate_PublishVacancy = functions.region('europe-west2').fires
         uploadedTermsAndConditionsTemplate: null,
         welshRequirement: null,
         welshRequirementType: null,
-        yesASCApply: null,
         yesSalaryDetails: null,
       };
       const vacancy = { ...vacancyModel };
