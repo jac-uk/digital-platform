@@ -7,8 +7,8 @@ const PROJECT_ID = functions.config().project.id;
 const bucket = `gs://${PROJECT_ID}-backups/firestore/${(new Date()).toISOString()}`;
 console.log('bucket = ', bucket);
 
-const FIRESTORE_BACKUP_SCHEDULE = 'every 1 hours synchronized';
-//const FIRESTORE_BACKUP_SCHEDULE = 'every day 23:00';
+//const FIRESTORE_BACKUP_SCHEDULE = 'every 1 hours synchronized';
+const FIRESTORE_BACKUP_SCHEDULE = 'every day 23:00';
 
 exports.scheduledFirestoreExport = functions.region('europe-west2')
                                             .pubsub
