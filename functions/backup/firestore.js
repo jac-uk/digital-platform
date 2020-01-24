@@ -1,11 +1,9 @@
-/*eslint-disable no-unused-vars*/
-const PROJECT_ID = process.env.GCLOUD_PROJECT;
-
 const functions = require('firebase-functions');
 const firestore = require('@google-cloud/firestore');
 const client = new firestore.v1.FirestoreAdminClient();
 const slog = require('../sharedServices').slog;
 
+const PROJECT_ID = functions.config().project.id;
 const bucket = `gs://${PROJECT_ID}-backups/firestore/${(new Date()).toISOString()}`;
 console.log('bucket = ', bucket);
 
@@ -30,6 +28,7 @@ exports.scheduledFirestoreExport = functions.region('europe-west2')
     })
   .then(responses => {
     const response = responses[0];
+    slog(`SUCCESS: Firestore backup to ${bucket} succeeded`);
     console.log(`Operation Name: ${response['name']}`);
     return response;
   })
