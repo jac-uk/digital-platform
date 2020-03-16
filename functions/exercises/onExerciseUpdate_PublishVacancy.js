@@ -41,6 +41,7 @@ exports.onExerciseUpdate_PublishVacancy = functions.region('europe-west2').fires
         finalOutcome: null,
         futureStart: null,
         immediateStart: null,
+        independentAssessmentsReturnDate: null,
         isCourtOrTribunal: null,
         isSPTWOffered: null,
         jurisdiction: null,
