@@ -34,6 +34,7 @@ exports.onExerciseUpdate_PublishVacancy = functions.region('europe-west2').fires
         criticalAnalysisTestDate: null,
         criticalAnalysisTestEndTime: null,
         criticalAnalysisTestStartTime: null,
+        downloads: null,
         estimatedLaunchDate: null,
         exerciseMailbox: null,
         exercisePhoneNumber: null,
