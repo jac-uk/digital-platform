@@ -16,7 +16,6 @@
 
 const clamd = require('clamdjs');
 const express = require('express');
-const fs = require('fs');
 const bodyParser = require('body-parser');
 const {Storage} = require('@google-cloud/storage');
 
@@ -24,8 +23,6 @@ const app = express();
 const PORT = process.env.PORT || 8080;
 const scanner = clamd.createScanner('127.0.0.1', 3310);
 const CLOUD_STORAGE_BUCKET = process.env.UNSCANNED_BUCKET;
-const CLEAN_BUCKET = process.env.CLEAN_BUCKET;
-const QUARANTINED_BUCKET = process.env.QUARANTINED_BUCKET;
 
 app.use(bodyParser.json());
 
@@ -49,7 +46,7 @@ const run = () => app.listen(PORT, () => {
 app.post('/scan', async (req, res) => {
   console.log('Request body', req.body);
   try {
-    let filename = req.body.filename;
+    const filename = req.body.filename;
 
     const options = {
       destination: `/unscanned_files/${filename}`
@@ -58,15 +55,16 @@ app.post('/scan', async (req, res) => {
     //Downloads the file
     await storage
       .bucket(CLOUD_STORAGE_BUCKET)
-      .file(req.body.filename)
+      .file(filename)
       .download(options);
 
     console.log(`Filename is: /unscanned_files/${filename}`);
 
     const result = await scanner.scanFile(`/unscanned_files/${filename}`);
     if (result.indexOf('OK') > -1) {
-      // Move document to the bucket that holds clean documents
-      await moveProcessedFile(filename, true);
+      
+      // Add metadata with scan result
+      addMetadata(filename, 'clean');
 
       // Log scan outcome for document
       console.log(`Scan status for ${filename}: CLEAN`)
@@ -74,8 +72,9 @@ app.post('/scan', async (req, res) => {
       // Respond to API client
       res.json({status: 'clean'});
     } else {
-      // Move document to the bucket that holds infected documents
-      await moveProcessedFile(filename, false);
+
+      // Add metadata with scan result 
+      addMetadata(filename, 'infected');
 
       // Log scan outcome for document
       console.log(`Scan status for ${filename}: INFECTED`)
@@ -87,33 +86,29 @@ app.post('/scan', async (req, res) => {
       });
     }
   } catch(e) {
-    console.error(`Error processing the file ${filename}`, e)
+    console.error(`Error processing the file`, e)
     res.status(500).json({
       message: e.toString(),
       status: 'error'
     });
-  } finally {
-    // Delete file from the local directory on the container
-    deleteLocalCopy(`/unscanned_files/${filename}`, filename);
-  }
+  } 
 })
 
 
-const deleteLocalCopy = (loc, filename) => {
-  fs.unlink(loc, (err) => {
-    if (err) {
-      console.error(`Error deleting file ${filename}`);
-    } else {
-      console.log(`File ${filename} was deleted successfully`);
+const addMetadata = (filename, status) => {
+  // Add meta data to the file to indicate it has been scanned
+  const metadata = {
+    metadata: { 
+      'scanned': Date.now().toString(),
+      'status': status
     }
-  })
-}
+  }
 
-const moveProcessedFile = async (filename, isClean) => {
-  const srcfile = srcbucket.file(filename);
-  const destinationBucketName = isClean ? `gs://${CLEAN_BUCKET}` : `gs://${QUARANTINED_BUCKET}`;
-  const destinationBucket = storage.bucket(destinationBucketName);
-  await srcfile.move(destinationBucket);
+  storage.bucket(CLOUD_STORAGE_BUCKET).file(filename).setMetadata(metadata).then(function(returned) {
+    return returned;
+  }).catch(function(error) {
+    return false;
+  });
 }
 
 run();
