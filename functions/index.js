@@ -62,3 +62,13 @@ exports.sendCharacterCheckRequests = require('./callableFunctions/sendCharacterC
 //   return sendVerificationEmail(user);
 // });
 
+const functions = require('firebase-functions');
+
+exports.requestMalwareScan = functions.region('europe-west2').storage
+  .object()
+  .onFinalize((object) => {
+    const handler = require('./virus-scanning/requestMalwareScan');
+    return handler(object);
+  });
+
+// @TODO enqueueMalwareScans
