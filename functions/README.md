@@ -40,3 +40,12 @@ site – e.g. `https://apply.judicialappointments.digital`
 
 `functions.config().references.team_drive_id`--This is the Google Team Drive ID in which reference files should be 
 stored.
+
+Check firebase configuration variables like this:
+```
+firebase functions:config:get
+```
+Set firebase configuration variables like this:
+```
+firebase functions:config:set slack.url="YOUR_SLACK_INCOMING_WEBHOOK_URL"
+```
