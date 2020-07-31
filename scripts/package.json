@@ -1,7 +1,0 @@
-{
-  "name": "scripts",
-  "description": "Command line scripts to do useful things with Firebase",
-  "dependencies": {
-    "firebase-admin": "^8.3.0"
-  }
-}
