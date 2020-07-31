@@ -1,98 +1,165 @@
-const { setup, teardown, setupAdmin } = require('./helpers');
+const { setup, teardown, setupAdmin, getTimeStamp } = require('./helpers');
 const { assertFails, assertSucceeds } = require('@firebase/testing');
 
-describe("Applications", () => {
+describe('Applications', () => {
   afterEach(async () => {
     await teardown();
   });
 
-  context("Create", () => {
-    it("prevent un-authenticated user from creating an application", async () => {
+  const today = new Date();
+  const tomorrow = new Date(today.getTime() + (24 * 60 * 60 * 1000));
+  const yesterday = new Date(today.getTime() - (24 * 60 * 60 * 1000));
+  const dayAfterTomorrow = new Date(today.getTime() + (2 * 24 * 60 * 60 * 1000));
+  const dayBeforeYesterday = new Date(today.getTime() - (2 * 24 * 60 * 60 * 1000));
+
+  context('Create', () => {
+    it('prevent un-authenticated user from creating an application', async () => {
       const db = await setup();
-      await assertFails(db.collection("applications").add({}));
+      await assertFails(db.collection('applications').add({}));
     });
-    it("prevent authenticated user from creating a random application", async () => {
+    it('prevent authenticated user from creating a random application', async () => {
       const db = await setup({ uid: 'user1' });
-      await assertFails(db.collection("applications").add({}));
+      await assertFails(db.collection('applications').add({}));
     });
-    it("allow authenticated user to create own application", async () => {
+    it("prevent authenticated user from creating new application for an exercise that hasn't opened yet", async () => {
       const db = await setup({ uid: 'user1' });
-      await assertSucceeds(db.collection("applications").add({ userId: 'user1' }));
+      await setupAdmin(db, {
+        'exercises/ex1': { applicationOpenDate: getTimeStamp(tomorrow), applicationCloseDate: getTimeStamp(dayAfterTomorrow) },
+      });
+      await assertFails(db.collection('applications').add({ userId: 'user1', exerciseId: 'ex1', status: 'draft' }));
+    });
+    it('prevent authenticated user from creating new application for an exercise that has closed', async () => {
+      const db = await setup({ uid: 'user1' });
+      await setupAdmin(db, {
+        'exercises/ex1': { applicationOpenDate: getTimeStamp(dayBeforeYesterday), applicationCloseDate: getTimeStamp(yesterday) },
+      });
+      await assertFails(db.collection('applications').add({ userId: 'user1', exerciseId: 'ex1', status: 'draft' }));
+    });
+    it('allow authenticated user to create new draft application for an open exercise', async () => {
+      const db = await setup({ uid: 'user1' });
+      await setupAdmin(db, {
+        'exercises/ex1': { applicationOpenDate: getTimeStamp(dayBeforeYesterday), applicationCloseDate: getTimeStamp(dayAfterTomorrow) },
+      });
+      await assertSucceeds(db.collection('applications').add({ userId: 'user1', exerciseId: 'ex1', status: 'draft' }));
+    });
+    it("prevent authenticated user from creating an 'applied' application for an open exercise (i.e. can't apply straight away)", async () => {
+      const db = await setup({ uid: 'user1' });
+      await setupAdmin(db, {
+        'exercises/ex1': { applicationOpenDate: getTimeStamp(yesterday), applicationCloseDate: getTimeStamp(tomorrow) },
+      });
+      await assertFails(db.collection('applications').add({ userId: 'user1', exerciseId: 'ex1', status: 'applied' }));
     });
   });
 
-  context("Read", () => {
-    it("prevent un-authenticated user from reading application data", async () => {
+  context('Read', () => {
+    it('prevent un-authenticated user from reading application data', async () => {
       const db = await setup();
-      const adminDb = await setupAdmin(db, { 'applications/app1': { userId: 'user1' } });
-      await assertFails(db.collection("applications").get());
+      await setupAdmin(db, { 'applications/app1': { userId: 'user1' } });
+      await assertFails(db.collection('applications').get());
     });
   
-    it("prevent authenticated user from reading application data", async () => {
+    it('prevent authenticated user from reading application data', async () => {
       const db = await setup({ uid: 'user1' });
-      const adminDb = await setupAdmin(db, { 'applications/app1': { userId: 'user2' } });
-      await assertFails(db.collection("applications").get());
+      await setupAdmin(db, { 'applications/app1': { userId: 'user2' } });
+      await assertFails(db.collection('applications').get());
     });
   
-    it("allow authenticated user to read their own application data", async () => {
+    it('allow authenticated user to read their own application data', async () => {
       const db = await setup({ uid: 'user1' });
-      const adminDb = await setupAdmin(db, { 'applications/app1': { userId: 'user1' } });
-      await assertSucceeds(db.collection("applications").where('userId', '==', 'user1').get());
+      await setupAdmin(db, { 'applications/app1': { userId: 'user1' } });
+      await assertSucceeds(db.collection('applications').where('userId', '==', 'user1').get());
     });
   
-    it("prevent authenticated user from reading another's application data", async () => {
+    it('prevent authenticated user from reading anothers application data', async () => {
       const db = await setup({ uid: 'user1' });
-      const adminDb = await setupAdmin(db, { 'applications/app1': { userId: 'user2' } });
-      await assertFails(db.collection("applications").where('userId', '==', 'user2').get());
+      await setupAdmin(db, { 'applications/app1': { userId: 'user2' } });
+      await assertFails(db.collection('applications').where('userId', '==', 'user2').get());
     });
 
-    it("allow JAC admin to list all applications", async () => {
+    it('allow JAC admin to list all applications', async () => {
       const db = await setup(
         { uid: 'user1', email: 'user@judicialappointments.gov.uk', email_verified: true },
         { 'applications/app1': { }, 'applications/app2': { } }
       );
-      await assertSucceeds(db.collection("applications").get());
+      await assertSucceeds(db.collection('applications').get());
     });    
   });  
 
-  context("Update", () => {
-    it("prevent un-authenticated user from updating application data", async () => {
+  context('Update', () => {
+    it('prevent un-authenticated user from updating application data', async () => {
       const db = await setup();
-      await assertFails(db.collection("applications").doc("app1").update({}));
+      await setupAdmin(db, {
+        'applications/app1': { userId: 'user1', status: 'draft', exerciseId: 'ex1' },
+        'exercises/ex1': { applicationOpenDate: getTimeStamp(yesterday), applicationCloseDate: getTimeStamp(tomorrow) },
+      });
+      await assertFails(db.collection('applications').doc('app1').update({}));
     });
-    it("prevent authenticated user from updating someone else's application data", async () => {
+    it('prevent authenticated user from updating someone elses application data', async () => {
       const db = await setup({ uid: 'user1' });
-      const adminDb = await setupAdmin(db, { 'applications/app1': { userId: 'user2' } });
-      await assertFails(db.collection("applications").doc("app1").update({ userId: 'user1' }));
+      await setupAdmin(db, {
+        'applications/app1': { userId: 'user2', status: 'draft', exerciseId: 'ex1' },
+        'exercises/ex1': { applicationOpenDate: getTimeStamp(yesterday), applicationCloseDate: getTimeStamp(tomorrow) },
+      });
+      await assertFails(db.collection('applications').doc('app1').update({ userId: 'user1' }));
     });
-    it("allow authenticated user to update own application data", async () => {
-      const db = await setup({ uid: 'user1' });
-      const adminDb = await setupAdmin(db, { 'applications/app1': { userId: 'user1' } });
-      await assertSucceeds(db.collection("applications").doc("app1").update({}));
+    it('allow authenticated user to update own application data', async () => {
+      const db = await setup({ uid: 'user1', email: 'test@test.com', email_verified:true });
+      await setupAdmin(db, {
+        'applications/app1': { userId: 'user1', status: 'draft', exerciseId: 'ex1' },
+        'exercises/ex1': { applicationOpenDate: getTimeStamp(yesterday), applicationCloseDate: getTimeStamp(tomorrow) },
+      });
+      await assertSucceeds(db.collection('applications').doc('app1').update({}));
     });
-    it("prevent authenticated user from updating own application data to belong to someone else", async () => {
+    it('prevent authenticated user from updating own application data to belong to someone else', async () => {
       const db = await setup({ uid: 'user1' });
-      const adminDb = await setupAdmin(db, { 'applications/app1': { userId: 'user1' } });
-      await assertFails(db.collection("applications").doc("app1").update({ userId: 'user2' }));
+      await setupAdmin(db, {
+        'applications/app1': { userId: 'user1', status: 'draft', exerciseId: 'ex1' },
+        'exercises/ex1': { applicationOpenDate: getTimeStamp(yesterday), applicationCloseDate: getTimeStamp(tomorrow) },
+      });
+      await assertFails(db.collection('applications').doc('app1').update({ userId: 'user2' }));
+    });
+    it('prevent authenticated user from updating own application after they have applied', async () => {
+      const db = await setup({ uid: 'user1' });
+      await setupAdmin(db, {
+        'applications/app1': { userId: 'user1', status: 'applied', exerciseId: 'ex1' },
+        'exercises/ex1': { applicationOpenDate: getTimeStamp(yesterday), applicationCloseDate: getTimeStamp(tomorrow) },
+      });
+      await assertFails(db.collection('applications').doc('app1').update({}));
+    });
+    it('prevent authenticated user from updating own application before exercise has opened', async () => {
+      const db = await setup({ uid: 'user1' });
+      await setupAdmin(db, {
+        'applications/app1': { userId: 'user1', status: 'draft', exerciseId: 'ex1' },
+        'exercises/ex1': { applicationOpenDate: getTimeStamp(tomorrow), applicationCloseDate: getTimeStamp(dayAfterTomorrow) },
+      });
+      await assertFails(db.collection('applications').doc('app1').update({}));
+    });
+    it('prevent authenticated user from updating own application after exercise has closed', async () => {
+      const db = await setup({ uid: 'user1' });
+      await setupAdmin(db, {
+        'applications/app1': { userId: 'user1', status: 'draft', exerciseId: 'ex1' },
+        'exercises/ex1': { applicationOpenDate: getTimeStamp(dayBeforeYesterday), applicationCloseDate: getTimeStamp(yesterday) },
+      });
+      await assertFails(db.collection('applications').doc('app1').update({}));
     });
 
   });
 
-  context("Delete", () => {
-    it("prevent un-authenticated user from deleting a application", async () => {
+  context('Delete', () => {
+    it('prevent un-authenticated user from deleting a application', async () => {
       const db = await setup();
-      const adminDb = await setupAdmin(db, { 'applications/app1': { userId: 'user1' } });
-      await assertFails(db.collection("applications").doc("app1").delete());
+      await setupAdmin(db, { 'applications/app1': { userId: 'user1' } });
+      await assertFails(db.collection('applications').doc('app1').delete());
     });
-    it("prevent authenticated user from deleting someone else's application data", async () => {
+    it('prevent authenticated user from deleting someone elses application data', async () => {
       const db = await setup({ uid: 'user1' });
-      const adminDb = await setupAdmin(db, { 'applications/app1': { userId: 'user2' } });
-      await assertFails(db.collection("applications").doc("app1").delete());
+      await setupAdmin(db, { 'applications/app1': { userId: 'user2' } });
+      await assertFails(db.collection('applications').doc('app1').delete());
     });
-    it("prevent authenticated user from deleting own application data", async () => {
+    it('prevent authenticated user from deleting own application data', async () => {
       const db = await setup({ uid: 'user1' });
-      const adminDb = await setupAdmin(db, { 'applications/app1': { userId: 'user1' } });
-      await assertFails(db.collection("applications").doc("app1").delete());
+      await setupAdmin(db, { 'applications/app1': { userId: 'user1' } });
+      await assertFails(db.collection('applications').doc('app1').delete());
     });
   });
 

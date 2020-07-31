@@ -5,19 +5,17 @@ const projectId = `rules-spec-${Date.now()}`;
 
 module.exports.setup = async (auth, data) => {
   
-  const firebasePort = require("../../firebase.json").emulators.firestore.port;
-  const port = firebasePort /** Exists? */ ? firebasePort : 8080;
-  const rules = fs.readFileSync("firestore.rules", "utf8");
+  const rules = fs.readFileSync('database/firestore.rules', 'utf8');
 
   const app = await firebase.initializeTestApp({
     projectId,
-    auth
+    auth,
   });
   const db = app.firestore();
 
   if (data) {
     const adminApp = await firebase.initializeAdminApp({
-      projectId: projectId
+      projectId: projectId,
     }); 
     const adminDb = adminApp.firestore();
     for (const key in data) {
@@ -28,7 +26,7 @@ module.exports.setup = async (auth, data) => {
 
   await firebase.loadFirestoreRules({
     projectId,
-    rules: rules
+    rules: rules,
   });
 
   return db;
@@ -40,7 +38,7 @@ module.exports.teardown = async () => {
 
 module.exports.setupAdmin = async (db, data) => {
   const app = await firebase.initializeAdminApp({
-    projectId: db.app.options.projectId
+    projectId: db.app.options.projectId,
   }); 
   const adminDb = app.firestore();
   if (data) {
@@ -50,4 +48,8 @@ module.exports.setupAdmin = async (db, data) => {
     }
   }
   return adminDb;
+};
+
+module.exports.getTimeStamp = (date) => {
+  return firebase.firestore.Timestamp.fromDate(date);
 };
