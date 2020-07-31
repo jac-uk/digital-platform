@@ -1,34 +1,8 @@
 {
   "projects": {
+    "develop": "digital-platform-develop",
     "staging": "digital-platform-staging",
-    "production": "platform-production-9207d"
-  },
-  "targets": {
-    "platform-production-9207d": {
-      "hosting": {
-        "reference": [
-          "jac-references"
-        ],
-        "qt": [
-          "jac-qt"
-        ],
-        "qt-admin": [
-          "jac-qt-admin"
-        ]
-      }
-    },
-    "digital-platform-staging": {
-      "hosting": {
-        "reference": [
-          "jac-reference-staging"
-        ],
-        "qt": [
-          "jac-qt-staging"
-        ],
-        "qt-admin": [
-          "jac-qt-admin-staging"
-        ]
-      }
-    }
+    "production": "platform-production-9207d",
+    "default": "digital-platform-develop"
   }
 }
