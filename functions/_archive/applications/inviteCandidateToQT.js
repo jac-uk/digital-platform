@@ -7,23 +7,24 @@ const slog = require('../sharedServices').slog;
 
 const setApplicationDataAfterSendingEmail = async (emailTemplateData) => {
   const data = {
-    status: 'selection-day-invite-sent',
+    status: 'qt-invite-sent',
   };
   setData('applications', emailTemplateData.applicationId, data);
   return null;
 };
+
 
 const sendCandidateEmail = async (emailTemplateData) => {
   //
   // Check that the firebase config has the key by running:
   // firebase functions:config:get
   //
-  // Set notify.templates.invite_candidate_to_selection_day in firebase functions like this:
-  // firebase functions:config:set notify.templates.invite_candidate_to_selection_day="THE_GOVUK_NOTIFY_TEMPLATE_ID"
-  const templateId = functions.config().notify.templates.invite_candidate_to_selection_day;
+  // Set notify.templates.invite_candidate_to_qt in firebase functions like this:
+  // firebase functions:config:set notify.templates.invite_candidate_to_qt="THE_GOVUK_NOTIFY_TEMPLATE_ID"
+  const templateId = functions.config().notify.templates.invite_candidate_to_qt;
 
   console.log('templateId = ', templateId);
-  if (templateId == null) {
+  if (templateId === null) {
     console.log('ERROR: invalid templateId: ', templateId);
     return null;
   }
@@ -33,10 +34,10 @@ const sendCandidateEmail = async (emailTemplateData) => {
       slog(`
         INFO: Invited Candidate: ${emailTemplateData.applicantEmail} 
         with ApplicationId: ${emailTemplateData.applicationId}
-        to Selection Day
+        to take Qualifying Test
       `);
 
-      // set Application status to 'selection-day-invite-sent' after sending email
+      // set Application status to 'qt-invite-sent' after sending email
       setApplicationDataAfterSendingEmail(emailTemplateData);
       return sendEmailResponse;
     })
@@ -45,19 +46,31 @@ const sendCandidateEmail = async (emailTemplateData) => {
       return false;
     });
 };
-  
-  
-const inviteCandidateToSelectionDay = async (applicationData, applicationId) => {
+
+
+const inviteCandidateToQT = async (applicationData, applicationId) => {
   const exerciseData = await getData('exercises', applicationData.exerciseId);
-  if (exerciseData == null) {
+  if (exerciseData === null) {
     slog(`
       ERROR: No data returned from Exercises with docId = ${applicationData.exerciseId}
     `);
     return null;
   }
 
+  const sjcaTestDate = exerciseData.sjcaTestDate;
+  if (sjcaTestDate === null) {
+    slog('ERROR: JAC admin did not put in a value for sjcaTestDate!');
+    return null;    
+  }
+
+  const scenarioTestDate = exerciseData.scenarioTestDate;
+  if (scenarioTestDate === null) {
+    slog('ERROR: JAC admin did not put in a value for scenarioTestDate!');
+    return null;    
+  }  
+
   const candidateData = await getData('candidates', applicationData.userId);
-  if (candidateData == null) {
+  if (candidateData === null) {
     slog(`
       ERROR: No data returned from Candidates with docId = ${applicationData.userId}
     `);
@@ -70,8 +83,14 @@ const inviteCandidateToSelectionDay = async (applicationData, applicationId) => 
     applicationId: applicationId,
     exerciseName: exerciseData.name,
     selectionExerciseManager: exerciseData.selectionExerciseManagerFullName,
-    exerciseMailbox: exerciseData.exerciseMailbox,
-    exercisePhoneNumber: exerciseData.exercisePhoneNumber,
+    sjcaTestDate: sjcaTestDate.toDate(),
+    sjcaTestStartTime: exerciseData.sjcaTestStartTime,
+    sjcaTestEndTime: exerciseData.sjcaTestEndTime,
+    sjcaTestUrl: exerciseData.sjcaTestUrl,
+    scenarioTestDate: scenarioTestDate.toDate(),
+    scenarioTestStartTime: exerciseData.scenarioTestStartTime,
+    scenarioTestEndTime: exerciseData.scenarioTestEndTime,
+    scenarioTestUrl: exerciseData.scenarioTestUrl,
   };
 
   sendCandidateEmail(personalizedData);  
@@ -81,5 +100,5 @@ const inviteCandidateToSelectionDay = async (applicationData, applicationId) => 
 
 
 module.exports = {
-  inviteCandidateToSelectionDay,
+    inviteCandidateToQT,
 };

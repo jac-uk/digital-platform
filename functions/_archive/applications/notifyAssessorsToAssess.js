@@ -31,13 +31,13 @@ const sendAssessorEmail = async (emailTemplateData, whichAssessor) => {
   const templateId = functions.config().notify.templates.notify_assessor_to_assess;
 
   console.log('templateId = ', templateId);
-  if (templateId == null) {
+  if (templateId === null) {
     console.log('ERROR: invalid templateId: ', templateId);
     return null;
   }
 
   // check if candidate is trying to independently assess themselves
-  if (emailTemplateData.assessorEmail == emailTemplateData.applicantEmail) {
+  if (emailTemplateData.assessorEmail === emailTemplateData.applicantEmail) {
     slog(`
       WARNING! ${emailTemplateData.applicantName} is trying to independently assess themselves.
       Flag Application ID ${emailTemplateData.applicationId} immediately!
@@ -66,7 +66,7 @@ const generateDownloadUrl = async (applicationId) => {
 
 const notifyAssessorsToAssess = async (applicationData, applicationId) => {
   const exerciseData = await getData('exercises', applicationData.exerciseId);
-  if (exerciseData == null) {
+  if (exerciseData === null) {
     slog(`
       ERROR: No data returned from Exercises with docId = ${applicationData.exerciseId}
     `);
@@ -74,7 +74,7 @@ const notifyAssessorsToAssess = async (applicationData, applicationId) => {
   }
 
   const candidateData = await getData('candidates', applicationData.userId);
-  if (candidateData == null) {
+  if (candidateData === null) {
     slog(`
       ERROR: No data returned from Candidates with docId = ${applicationData.userId}
     `);
@@ -101,7 +101,7 @@ const notifyAssessorsToAssess = async (applicationData, applicationId) => {
   };
 
   // check if first assessor has already submitted an assessment
-  if (applicationData.firstAssessorSubmittedAssessment == false) {
+  if (applicationData.firstAssessorSubmittedAssessment === false) {
     personalizedData.assessorName = applicationData.firstAssessorFullName;
     personalizedData.assessorEmail = applicationData.firstAssessorEmail;
 
@@ -109,7 +109,7 @@ const notifyAssessorsToAssess = async (applicationData, applicationId) => {
   }
   
   // check if second assessor has already submitted an assessment
-  if (applicationData.secondAssessorSubmittedAssessment == false) {
+  if (applicationData.secondAssessorSubmittedAssessment === false) {
     personalizedData.assessorName = applicationData.secondAssessorFullName;
     personalizedData.assessorEmail = applicationData.secondAssessorEmail;
 

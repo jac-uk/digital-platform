@@ -1,21 +1,29 @@
-/*eslint-disable no-unused-vars*/
 const functions = require('firebase-functions');
 const sendEmail = require('../sharedServices').sendEmail;
 const getData = require('../sharedServices').getData;
+const setData = require('../sharedServices').setData;
 const slog = require('../sharedServices').slog;
 
+
+const setApplicationDataAfterSendingEmail = async (emailTemplateData) => {
+  const data = {
+    status: 'immediate-appt-recommended-email-sent',
+  };
+  setData('applications', emailTemplateData.applicationId, data);
+  return null;
+};
 
 const sendCandidateEmail = async (emailTemplateData) => {
   //
   // Check that the firebase config has the key by running:
   // firebase functions:config:get
   //
-  // Set notify.templates.notify_candidate_test_submitted in firebase functions like this:
-  // firebase functions:config:set notify.templates.notify_candidate_test_submitted="THE_GOVUK_NOTIFY_TEMPLATE_ID"
-  const templateId = functions.config().notify.templates.notify_candidate_test_submitted;
+  // Set notify.templates.notify_candidate_recommended_immediate_appt in firebase functions like this:
+  // firebase functions:config:set notify.templates.notify_candidate_recommended_immediate_appt="THE_GOVUK_NOTIFY_TEMPLATE_ID"
+  const templateId = functions.config().notify.templates.notify_candidate_recommended_immediate_appt;
 
   console.log('templateId = ', templateId);
-  if (templateId == null) {
+  if (templateId === null) {
     console.log('ERROR: invalid templateId: ', templateId);
     return null;
   }
@@ -25,16 +33,23 @@ const sendCandidateEmail = async (emailTemplateData) => {
       slog(`
         INFO: Notified Candidate: ${emailTemplateData.applicantEmail} 
         with ApplicationId: ${emailTemplateData.applicationId}
-        that we've received ${emailTemplateData.testType} from them.
+        that they were recommended for an immediate appointment
       `);
-      return true;
+
+      // set Application status to 'immediate-appt-recommended-email-sent' after sending email
+      setApplicationDataAfterSendingEmail(emailTemplateData);
+      return sendEmailResponse;
+    })
+    .catch(err => {
+      console.error('Error Sending Email sendCandidateEmail:', err);
+      return false;
     });
 };
-
-
-const notifyCandidateTestReceived = async (applicationData, applicationId) => {
+  
+  
+const notifyCandidateRecommendedImmediateAppt = async (applicationData, applicationId) => {
   const exerciseData = await getData('exercises', applicationData.exerciseId);
-  if (exerciseData == null) {
+  if (exerciseData === null) {
     slog(`
       ERROR: No data returned from Exercises with docId = ${applicationData.exerciseId}
     `);
@@ -42,18 +57,12 @@ const notifyCandidateTestReceived = async (applicationData, applicationId) => {
   }
 
   const candidateData = await getData('candidates', applicationData.userId);
-  if (candidateData == null) {
+  if (candidateData === null) {
     slog(`
       ERROR: No data returned from Candidates with docId = ${applicationData.userId}
     `);
     return null;
   }
-
-  // use this map to set the correct testType to be used by the email template
-  let testTypeDisplayMap = new Map([
-    ['submitted-sjca-test', 'a qualifying test'],
-    ['submitted-scenario-test', 'an online scenario test'],
-  ]);  
 
   const personalizedData = {
     applicantName: candidateData.fullName,
@@ -61,7 +70,6 @@ const notifyCandidateTestReceived = async (applicationData, applicationId) => {
     applicationId: applicationId,
     exerciseName: exerciseData.name,
     selectionExerciseManager: exerciseData.selectionExerciseManagerFullName,
-    testType: testTypeDisplayMap.get(applicationData.status),
   };
 
   sendCandidateEmail(personalizedData);  
@@ -71,5 +79,5 @@ const notifyCandidateTestReceived = async (applicationData, applicationId) => {
 
 
 module.exports = {
-    notifyCandidateTestReceived,
+  notifyCandidateRecommendedImmediateAppt,
 };

@@ -1,14 +1,14 @@
 const functions = require('firebase-functions');
-const db = require('../sharedServices').db;
-const sendEmail = require('../sharedServices').sendEmail;
-const slog = require('../sharedServices').slog;
-const getData = require('../sharedServices').getData;
-const getExercisesWithDate = require('../sharedServices').getExercisesWithDate;
+const db = require('../../sharedServices').db;
+const sendEmail = require('../../sharedServices').sendEmail;
+const slog = require('../../sharedServices').slog;
+const getData = require('../../sharedServices').getData;
+const getExercisesWithDate = require('../../sharedServices').getExercisesWithDate;
 
 
 const sendCandidateReminderEmails = async (applicationData, exerciseName) => {
   const candidateData = await getData('candidates', applicationData.userId);
-  if (candidateData == null) {
+  if (candidateData === null) {
     slog(`
       ERROR: No data returned from Candidates with docId = ${applicationData.userId}
     `);
@@ -163,6 +163,7 @@ const notifyAdmins = async (exerciseIds) => {
       slog(`
         ERROR: notifyAdmins: Trying to send to non-JAC email address: ${email}
       `);
+      return null;
     }        
   });
 };
@@ -171,7 +172,7 @@ const notifyAdmins = async (exerciseIds) => {
 const handleExerciseApplicationCloseDate = async () => {
   const exercisesClosingTodayPromise = getExercisesWithDate('applicationCloseDate');
   const exercisesClosingToday = await exercisesClosingTodayPromise;
-  if (exercisesClosingToday != null) {
+  if (exercisesClosingToday !== null) {
     notifyAdmins(exercisesClosingToday);
     notifyCandidates(exercisesClosingToday);
   }

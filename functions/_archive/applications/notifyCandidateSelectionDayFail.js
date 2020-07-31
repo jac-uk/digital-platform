@@ -7,7 +7,7 @@ const slog = require('../sharedServices').slog;
 
 const setApplicationDataAfterSendingEmail = async (emailTemplateData) => {
   const data = {
-    status: 'not-recommended-but-selectable-email-sent',
+    status: 'selection-day-candidate-failed-email-sent',
   };
   setData('applications', emailTemplateData.applicationId, data);
   return null;
@@ -18,12 +18,12 @@ const sendCandidateEmail = async (emailTemplateData) => {
   // Check that the firebase config has the key by running:
   // firebase functions:config:get
   //
-  // Set notify.templates.notify_candidate_not_recommended_but_selectable in firebase functions like this:
-  // firebase functions:config:set notify.templates.notify_candidate_not_recommended_but_selectable="THE_GOVUK_NOTIFY_TEMPLATE_ID"
-  const templateId = functions.config().notify.templates.notify_candidate_not_recommended_but_selectable;
+  // Set notify.templates.notify_candidate_selection_day_fail in firebase functions like this:
+  // firebase functions:config:set notify.templates.notify_candidate_selection_day_fail="THE_GOVUK_NOTIFY_TEMPLATE_ID"
+  const templateId = functions.config().notify.templates.notify_candidate_selection_day_fail;
 
   console.log('templateId = ', templateId);
-  if (templateId == null) {
+  if (templateId === null) {
     console.log('ERROR: invalid templateId: ', templateId);
     return null;
   }
@@ -33,10 +33,10 @@ const sendCandidateEmail = async (emailTemplateData) => {
       slog(`
         INFO: Notified Candidate: ${emailTemplateData.applicantEmail} 
         with ApplicationId: ${emailTemplateData.applicationId}
-        that they were not recommended, but selectable 
+        that they failed during Selection Day
       `);
 
-      // set Application status to 'not-recommended-but-selectable-email-sent' after sending email
+      // set Application status to 'selection-day-candidate-failed-email-sent' after sending email
       setApplicationDataAfterSendingEmail(emailTemplateData);
       return sendEmailResponse;
     })
@@ -47,9 +47,9 @@ const sendCandidateEmail = async (emailTemplateData) => {
 };
   
   
-const notifyCandidateNotRecommendedButSelectable = async (applicationData, applicationId) => {
+const notifyCandidateSelectionDayFail = async (applicationData, applicationId) => {
   const exerciseData = await getData('exercises', applicationData.exerciseId);
-  if (exerciseData == null) {
+  if (exerciseData === null) {
     slog(`
       ERROR: No data returned from Exercises with docId = ${applicationData.exerciseId}
     `);
@@ -57,7 +57,7 @@ const notifyCandidateNotRecommendedButSelectable = async (applicationData, appli
   }
 
   const candidateData = await getData('candidates', applicationData.userId);
-  if (candidateData == null) {
+  if (candidateData === null) {
     slog(`
       ERROR: No data returned from Candidates with docId = ${applicationData.userId}
     `);
@@ -79,5 +79,5 @@ const notifyCandidateNotRecommendedButSelectable = async (applicationData, appli
 
 
 module.exports = {
-  notifyCandidateNotRecommendedButSelectable,
+  notifyCandidateSelectionDayFail,
 };
