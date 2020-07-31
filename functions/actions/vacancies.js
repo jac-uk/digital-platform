@@ -1,0 +1,37 @@
+
+module.exports = (config, db) => {
+  const { newVacancy } = require('../shared/factories')(config);
+
+  return {
+    deleteVacancy,
+    updateVacancy,
+  };
+
+  /**
+   * Delete vacancy document with the provided ID
+   */
+  async function deleteVacancy(vacancyId) {
+    try {
+      await db.collection('vacancies').doc(vacancyId).delete();
+      return true;
+    } catch (e) {
+      console.error(`Error writing vacancy ${vacancyId}`, e);
+      return false;
+    }
+  }
+
+  /**
+   * Update vacancy document with the provided ID and data
+   */
+  async function updateVacancy(vacancyId, data) {
+    const vacancy = newVacancy(data);
+    try {
+      await db.collection('vacancies').doc(vacancyId).set(vacancy, { merge: true });
+      return true;
+    } catch (e) {
+      console.error(`Error writing vacancy ${vacancyId}`, e);
+      return false;
+    }
+  }  
+
+}
