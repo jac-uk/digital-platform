@@ -1,5 +1,0 @@
-.
-functions
-hosting/qt
-hosting/qt-admin
-hosting/reference
