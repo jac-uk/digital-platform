@@ -24,7 +24,7 @@ const sendCandidateQTResultsEmail = async (emailTemplateData) => {
   const templateId = testResultTemplateIdMap.get(emailTemplateData.testResult);
 
   console.log('templateId = ', templateId);
-  if (templateId == null) {
+  if (templateId === null) {
     console.log('ERROR: invalid templateId: ', templateId);
     return null;
   }
@@ -44,7 +44,7 @@ const sendCandidateQTResultsEmail = async (emailTemplateData) => {
 
 const notifyCandidatesQTResults = async (applicationData, applicationId, testType) => {
   const exerciseData = await getData('exercises', applicationData.exerciseId);
-  if (exerciseData == null) {
+  if (exerciseData === null) {
     slog(`
       ERROR: No data returned from Exercises with docId = ${applicationData.exerciseId}
     `);
@@ -55,7 +55,7 @@ const notifyCandidatesQTResults = async (applicationData, applicationId, testTyp
   const exerciseTestPassScore = exerciseData[exerciseTestPassScoreFieldName];
 
   const candidateData = await getData('candidates', applicationData.userId);
-  if (candidateData == null) {
+  if (candidateData === null) {
     slog(`
       ERROR: No data returned from Candidates with docId = ${applicationData.userId}
     `);

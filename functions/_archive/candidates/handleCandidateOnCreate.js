@@ -1,8 +1,8 @@
 /*eslint-disable no-unused-vars*/
 const functions = require('firebase-functions');
-const sendEmail = require('../sharedServices').sendEmail;
-const db = require('../sharedServices').db;
-const slog = require('../sharedServices').slog;
+const sendEmail = require('../../sharedServices').sendEmail;
+const db = require('../../sharedServices').db;
+const slog = require('../../sharedServices').slog;
 
 const sendCandidateCreatedAccountEmail = async (snap, context) => {
   const data = snap.data();

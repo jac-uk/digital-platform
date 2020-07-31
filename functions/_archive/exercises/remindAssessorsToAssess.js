@@ -94,14 +94,14 @@ const remindAssessorsToAssess = async () => {
   // send initial email asking assessors to do assessments
   const exercisesWithContactIndependentAssessorsDateTodayPromise = getExercisesWithDate('contactIndependentAssessors'); 
   const exercisesWithContactIndependentAssessorsDateToday = await exercisesWithContactIndependentAssessorsDateTodayPromise;
-  if (exercisesWithContactIndependentAssessorsDateToday != null) {
+  if (exercisesWithContactIndependentAssessorsDateToday !== null) {
     notifyAssessors(exercisesWithContactIndependentAssessorsDateToday);
   }
 
   // remind assessors 2 weeks after if they haven't done their assessments
   const reminderEmailsTodayPromise = getExercisesWithReminderDate('contactIndependentAssessors'); 
   const reminderEmailsToday = await reminderEmailsTodayPromise;
-  if (reminderEmailsToday != null) {
+  if (reminderEmailsToday !== null) {
     notifyAssessors(reminderEmailsToday);
   }  
   return null;

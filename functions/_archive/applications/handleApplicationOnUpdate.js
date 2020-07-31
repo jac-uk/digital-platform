@@ -19,7 +19,7 @@ const notifyCandidateRecommendedFutureAppt = require('./notifyCandidateRecommend
 
 const sendApplicationSubmittedEmailToCandidate = async (data, applicationId) => {
   const candidateData = await getData('candidates', data.userId);
-  if (candidateData == null) {
+  if (candidateData === null) {
     slog(`
       ERROR: No data returned from Candidates with docId = ${data.userId}
     `);
@@ -30,7 +30,7 @@ const sendApplicationSubmittedEmailToCandidate = async (data, applicationId) => 
   const candidateFullName = candidateData.fullName;
 
   const exerciseData = await getData('exercises', data.exerciseId);
-  if (exerciseData == null) {
+  if (exerciseData === null) {
     slog(`
       ERROR: No data returned from Exercises with docId = ${data.exerciseId}
     `);
@@ -65,7 +65,7 @@ const sendApplicationSubmittedEmailToCandidate = async (data, applicationId) => 
 
 const notifyAdminAboutFlaggedApplication = async (applicationId) => {
   const applicationData = await getData('applications', applicationId);
-  if (applicationData == null) {
+  if (applicationData === null) {
     slog(`
       ERROR: No data returned from Applications with docId = ${applicationId}
     `);
@@ -73,7 +73,7 @@ const notifyAdminAboutFlaggedApplication = async (applicationId) => {
   }
 
   const candidateData = await getData('candidates', applicationData.userId);
-  if (candidateData == null) {
+  if (candidateData === null) {
     slog(`
       ERROR: No data returned from Candidates with docId = ${applicationData.userId}
     `);
@@ -81,7 +81,7 @@ const notifyAdminAboutFlaggedApplication = async (applicationId) => {
   }
 
   const exerciseData = await getData('exercises', applicationData.exerciseId);
-  if (exerciseData == null) {
+  if (exerciseData === null) {
     slog(`
       ERROR: No data returned from Exercises with docId = ${applicationData.exerciseId}
     `);
@@ -146,7 +146,7 @@ const hasEnoughWorkExperience = (applicantWorkExperienceData, requiredExperience
   const requiredExperienceLengthInDays = parseInt(requiredExperienceLengthInYears, 10) * 365;
 
   // check if applicant has entered ANY work experience
-  if (applicantWorkExperienceData == null) {
+  if (applicantWorkExperienceData === null) {
     slog(`Applicant ${applicationId} has not entered ANY work experience.`);
     return false;
   }
@@ -155,14 +155,14 @@ const hasEnoughWorkExperience = (applicantWorkExperienceData, requiredExperience
     // if end date is not filled in, use today's date
     const endDate = applicantWorkExperienceData[i].endDate;
     let endDateJS = null;
-    if (endDate == null) {
+    if (endDate === null) {
       endDateJS = new Date();
     } else {
       endDateJS = endDate.toDate();
     }
 
     const startDate = applicantWorkExperienceData[i].startDate;
-    if (startDate == null) {
+    if (startDate === null) {
       slog(`
         INFO: Not enough work experience:
         Missing required field: Start Date
@@ -190,7 +190,7 @@ const hasEnoughWorkExperience = (applicantWorkExperienceData, requiredExperience
 
 
 const didLawyerlyThings = (applicantWorkExperienceData) => {
-  if (applicantWorkExperienceData == null) {
+  if (applicantWorkExperienceData === null) {
     slog(`
       INFO: Problem with law-related tasks:
       Applicant has 0 work experience
@@ -201,7 +201,7 @@ const didLawyerlyThings = (applicantWorkExperienceData) => {
   for (let i = 0; i < applicantWorkExperienceData.length; i++) {
     const tasks = applicantWorkExperienceData[i].tasks;
 
-    if (tasks == null || tasks.length === 0) {
+    if (tasks === null || tasks.length === 0) {
 
       slog(`
         INFO: Problem with law-related tasks:
@@ -209,7 +209,7 @@ const didLawyerlyThings = (applicantWorkExperienceData) => {
       `);
       return false;
 
-    } else if (tasks.length == 1 && tasks[0].includes('None of the above')) {
+    } else if (tasks.length === 1 && tasks[0].includes('None of the above')) {
 
       slog(`
         INFO: Problem with law-related tasks:
@@ -234,7 +234,7 @@ const didLawyerlyThings = (applicantWorkExperienceData) => {
 
 
 const isQualified = (applicantQualificationData, exerciseQualificationData) => {
-  if (applicantQualificationData == null) {
+  if (applicantQualificationData === null) {
     slog(`
       INFO: Not qualified as a solicitor, barrister or member of Cilex:
       Applicant has 0 qualifications
@@ -253,7 +253,7 @@ const isQualified = (applicantQualificationData, exerciseQualificationData) => {
       const applicantLawyerType = applicantQualificationData[j].type;
 
       // Check for valid qualification date
-      if (applicantQualificationData[j].date == null) {
+      if (applicantQualificationData[j].date === null) {
         slog(`
           INFO: Not qualified as a solicitor, barrister or member of Cilex:
           Missing qualification date on qualification type ${applicantLawyerType}
@@ -262,7 +262,7 @@ const isQualified = (applicantQualificationData, exerciseQualificationData) => {
       }
 
       // Check for valid qualification location
-      if (applicantQualificationData[j].location == null) {
+      if (applicantQualificationData[j].location === null) {
         slog(`
           INFO: Not qualified as a solicitor, barrister or member of Cilex:
           Missing qualification location on qualification type ${applicantLawyerType}
@@ -289,7 +289,7 @@ const isQualified = (applicantQualificationData, exerciseQualificationData) => {
 
 const checkCitizenship = async (userId, applicationId) => {
   const candidateData = await getData('candidates', userId);
-  if (candidateData == null) {
+  if (candidateData === null) {
     slog(`
       ERROR: No data returned from Candidates with docId = ${userId}
     `);
@@ -297,7 +297,7 @@ const checkCitizenship = async (userId, applicationId) => {
   } 
   
   const citizenships = candidateData.citizenship;
-  if (citizenships != null && citizenships.includes('other') == false) {
+  if (citizenships !== null && citizenships.includes('other') === false) {
     return true;
   }
 
@@ -314,14 +314,14 @@ const checkCitizenship = async (userId, applicationId) => {
 
 const checkCharacter = async (data, applicationId) => {
 
-  if (data.conductNegligenceInvestigation != false  ||
-      data.criminalConvictionCaution != false ||
-      data.declaredBankrupt != false ||
-      data.disqualifiedFromDriving != false ||
-      data.drinkDrugMobileMotoringOffence != false ||
-      data.financialDifficulties != false || 
-      data.motoringOffencesAndSixPlusPoints != false ||
-      data.otherCharacterIssues != false) {
+  if (data.conductNegligenceInvestigation !== false  ||
+      data.criminalConvictionCaution !== false ||
+      data.declaredBankrupt !== false ||
+      data.disqualifiedFromDriving !== false ||
+      data.drinkDrugMobileMotoringOffence !== false ||
+      data.financialDifficulties !== false || 
+      data.motoringOffencesAndSixPlusPoints !== false ||
+      data.otherCharacterIssues !== false) {
 
       return await flagApplication(
         'PQE: has character issues',
@@ -335,7 +335,7 @@ const checkCharacter = async (data, applicationId) => {
 
 const checkPostQualificationExperience = async (data, applicationId) => {
   const exerciseData = await getData('exercises', data.exerciseId);
-  if (exerciseData == null) {
+  if (exerciseData === null) {
     return await flagApplication(
       `ERROR: No data returned from Exercises with docId = ${data.exerciseId}`, 
       applicationId,
@@ -400,7 +400,7 @@ const checkPostQualificationExperience = async (data, applicationId) => {
 
 const checkReasonableLengthOfService = async (data, applicationId) => {
   const candidateData = await getData('candidates', data.userId);
-  if (candidateData == null) {
+  if (candidateData === null) {
     slog(`
       ERROR: No data returned from Candidates with docId = ${data.userId}
     `);
@@ -408,7 +408,7 @@ const checkReasonableLengthOfService = async (data, applicationId) => {
   }
 
   const candidateBirthday = candidateData.dateOfBirth;
-  if (candidateBirthday == null) {
+  if (candidateBirthday === null) {
     // flag applicant if they forgot to enter their date of birth
     return await flagApplication(
       `RLS: Candidate ${candidateData.email} has no birthday`,
@@ -417,7 +417,7 @@ const checkReasonableLengthOfService = async (data, applicationId) => {
   }
 
   const exerciseData = await getData('exercises', data.exerciseId);
-  if (exerciseData == null) {
+  if (exerciseData === null) {
     slog(`
       ERROR: No data returned from Exercises with docId = ${data.exerciseId}
     `);
@@ -458,9 +458,9 @@ const checkReasonableLengthOfService = async (data, applicationId) => {
 const onStatusChange = async (newData, previousData, context) => {
   // We'll only update if the status has changed.
   // This is crucial to prevent infinite loops.
-  if (newData.status == previousData.status) return null;
+  if (newData.status === previousData.status) return null;
 
-  if (newData.status == 'applied') {
+  if (newData.status === 'applied') {
     const applicationId = context.params.applicationId;
     slog(`Application ${applicationId} status has changed 
           from ${previousData.status}
@@ -486,31 +486,31 @@ const onStatusChange = async (newData, previousData, context) => {
       await sendApplicationSubmittedEmailToCandidate(newData, applicationId);
     slog(`Response from sendApplicationSubmittedEmailToCandidate: ${notifyCandidateResponse}`);
   }
-  else if (newData.status == 'invite-to-qt') {
+  else if (newData.status === 'invite-to-qt') {
     inviteCandidateToQT(newData, context.params.applicationId);
   }
-  else if (newData.status == 'submitted-sjca-test' || newData.status == 'submitted-scenario-test') {
+  else if (newData.status === 'submitted-sjca-test' || newData.status === 'submitted-scenario-test') {
     notifyCandidateTestReceived(newData, context.params.applicationId);
   }
-  else if (newData.status == 'request-assessors') {
+  else if (newData.status === 'request-assessors') {
     notifyAssessorsToAssess(newData, context.params.applicationId);
   }
-  else if (newData.status == 'invite-to-selection-day') {
+  else if (newData.status === 'invite-to-selection-day') {
     inviteCandidateToSelectionDay(newData, context.params.applicationId);
   }
-  else if (newData.status == 'selection-day-candidate-failed') {
+  else if (newData.status === 'selection-day-candidate-failed') {
     notifyCandidateSelectionDayFail(newData, context.params.applicationId);
   }
-  else if (newData.status == 'not-recommended') {
+  else if (newData.status === 'not-recommended') {
     notifyCandidateNotRecommended(newData, context.params.applicationId);
   }
-  else if (newData.status == 'not-recommended-but-selectable') {
+  else if (newData.status === 'not-recommended-but-selectable') {
     notifyCandidateNotRecommendedButSelectable(newData, context.params.applicationId);
   }
-  else if (newData.status == 'immediate-appt-recommended') {
+  else if (newData.status === 'immediate-appt-recommended') {
     notifyCandidateRecommendedImmediateAppt(newData, context.params.applicationId);
   }
-  else if (newData.status == 'future-appt-recommended') {
+  else if (newData.status === 'future-appt-recommended') {
     notifyCandidateRecommendedFutureAppt(newData, context.params.applicationId);
   }  
     
@@ -521,16 +521,16 @@ const onStatusChange = async (newData, previousData, context) => {
 const onTestResultFieldsChange = async (newData, previousData, applicationId) => {
   // We'll only update if the sjcaTestResult or scenarioTestResult has changed.
   // This is crucial to prevent infinite loops.
-  if (newData.sjcaTestResult == previousData.sjcaTestResult &&
-      newData.scenarioTestResult == previousData.scenarioTestResult) return null;
+  if (newData.sjcaTestResult === previousData.sjcaTestResult &&
+      newData.scenarioTestResult === previousData.scenarioTestResult) return null;
 
-  if (newData.sjcaTestResult != previousData.sjcaTestResult &&
-      newData.sjcaTestResult != null) {
+  if (newData.sjcaTestResult !== previousData.sjcaTestResult &&
+      newData.sjcaTestResult !== null) {
     notifyCandidatesQTResults(newData, applicationId, 'sjca');
   }
   
-  if (newData.scenarioTestResult != previousData.scenarioTestResult &&
-      newData.scenarioTestResult != null) {
+  if (newData.scenarioTestResult !== previousData.scenarioTestResult &&
+      newData.scenarioTestResult !== null) {
     notifyCandidatesQTResults(newData, applicationId, 'scenario');
   }
 
@@ -541,9 +541,9 @@ const onTestResultFieldsChange = async (newData, previousData, applicationId) =>
 const onEligibilityChange = async (newData, previousData, context) => {
   // We'll only update if 'eligibility' has changed.
   // This is crucial to prevent infinite loops.
-  if (newData.eligibility == previousData.eligibility) return null;
+  if (newData.eligibility === previousData.eligibility) return null;
 
-  if (newData.eligibility != null) {
+  if (newData.eligibility !== null) {
     notifyCandidatesEligibilityResult(newData, context.params.applicationId);
   }
 
@@ -554,16 +554,16 @@ const onAssessorSubmittedAssessmentChange = async (newData, previousData, contex
   // We'll only update if 'firstAssessorSubmittedAssessment' or 
   // 'secondAssessorSubmittedAssessment" field has changed.
   // This is crucial to prevent infinite loops.
-  if (newData.firstAssessorSubmittedAssessment == previousData.firstAssessorSubmittedAssessment &&
-      newData.secondAssessorSubmittedAssessment == previousData.secondAssessorSubmittedAssessment) {
+  if (newData.firstAssessorSubmittedAssessment === previousData.firstAssessorSubmittedAssessment &&
+      newData.secondAssessorSubmittedAssessment === previousData.secondAssessorSubmittedAssessment) {
         return null;
       }
 
   const applicationId = context.params.applicationId;
 
-  if (newData.firstAssessorSubmittedAssessment == true && previousData.firstAssessorSubmittedAssessment == false) {
+  if (newData.firstAssessorSubmittedAssessment === true && previousData.firstAssessorSubmittedAssessment === false) {
     notifyAssessorAssessmentReceived(newData, applicationId, 'firstAssessor');
-  } else if (newData.secondAssessorSubmittedAssessment == true && previousData.secondAssessorSubmittedAssessment == false) {
+  } else if (newData.secondAssessorSubmittedAssessment === true && previousData.secondAssessorSubmittedAssessment === false) {
     notifyAssessorAssessmentReceived(newData, applicationId, 'secondAssessor');
   }
   

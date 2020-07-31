@@ -16,7 +16,7 @@ exports.handleExerciseMailboxChange = functions.region('europe-west2').firestore
     const email = data.exerciseMailbox;
     const previousEmail = previousData.exerciseMailbox;
 
-    if (emailIsValid(email) == false) {
+    if (emailIsValid(email) === false) {
       // Make sure to set the email back to the previous email
       // when email address is invalid
       const exerciseRef = db.collection('exercises').doc(context.params.exerciseId);
@@ -34,7 +34,7 @@ exports.handleExerciseMailboxChange = functions.region('europe-west2').firestore
 
     // We'll only update if the exerciseMailbox has changed.
     // This is crucial to prevent infinite loops.
-    if (email == previousEmail) return null;
+    if (email === previousEmail) return null;
 
     // set this data to personalize the Exercise mailbox changed email template
     const personalizationData = {

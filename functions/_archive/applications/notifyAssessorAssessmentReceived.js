@@ -13,7 +13,7 @@ const sendAssessorEmail = async (emailTemplateData) => {
   const templateId = functions.config().notify.templates.notify_assessor_assessment_received;
 
   console.log('templateId = ', templateId);
-  if (templateId == null) {
+  if (templateId === null) {
     console.log('ERROR: invalid templateId: ', templateId);
     return null;
   }
@@ -34,7 +34,7 @@ const sendAssessorEmail = async (emailTemplateData) => {
 
 const notifyAssessorAssessmentReceived = async (applicationData, applicationId, whichAssessor) => {
   const exerciseData = await getData('exercises', applicationData.exerciseId);
-  if (exerciseData == null) {
+  if (exerciseData === null) {
     slog(`
       ERROR: No data returned from Exercises with docId = ${applicationData.exerciseId}
     `);
@@ -42,7 +42,7 @@ const notifyAssessorAssessmentReceived = async (applicationData, applicationId, 
   }
 
   const candidateData = await getData('candidates', applicationData.userId);
-  if (candidateData == null) {
+  if (candidateData === null) {
     slog(`
       ERROR: No data returned from Candidates with docId = ${applicationData.userId}
     `);

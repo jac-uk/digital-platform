@@ -13,7 +13,7 @@ const notifyAdmins = async (exerciseIds) => {
     slog(`${data.name} applicationOpenDate = ${applicationOpenDate.toDate().toISOString().split('T')[0]}`);
 
     const email = data.exerciseMailbox;
-    if (email == null) {
+    if (email === null) {
       slog(`
         ERROR: Exercise ${doc.id} has no exerciseMailbox.
       `);
@@ -46,6 +46,7 @@ const notifyAdmins = async (exerciseIds) => {
       slog(`
         ERROR: NotifyAdminWhenExerciseOpens: Trying to send to non-JAC email address: ${email}
       `);
+      return null;
     }    
 
   });
@@ -57,7 +58,7 @@ const notifyAdmins = async (exerciseIds) => {
 const handleExerciseApplicationOpenDate = async () => {
   const exercisesOpeningTodayPromise = getExercisesWithDate('applicationOpenDate');
   const exercisesOpeningToday = await exercisesOpeningTodayPromise;
-  if (exercisesOpeningToday != null) {
+  if (exercisesOpeningToday !== null) {
     notifyAdmins(exercisesOpeningToday);
   }
 

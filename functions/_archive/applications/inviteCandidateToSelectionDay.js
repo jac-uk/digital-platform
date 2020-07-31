@@ -7,7 +7,7 @@ const slog = require('../sharedServices').slog;
 
 const setApplicationDataAfterSendingEmail = async (emailTemplateData) => {
   const data = {
-    status: 'future-appt-recommended-email-sent',
+    status: 'selection-day-invite-sent',
   };
   setData('applications', emailTemplateData.applicationId, data);
   return null;
@@ -18,12 +18,12 @@ const sendCandidateEmail = async (emailTemplateData) => {
   // Check that the firebase config has the key by running:
   // firebase functions:config:get
   //
-  // Set notify.templates.notify_candidate_recommended_future_appt in firebase functions like this:
-  // firebase functions:config:set notify.templates.notify_candidate_recommended_future_appt="THE_GOVUK_NOTIFY_TEMPLATE_ID"
-  const templateId = functions.config().notify.templates.notify_candidate_recommended_future_appt;
+  // Set notify.templates.invite_candidate_to_selection_day in firebase functions like this:
+  // firebase functions:config:set notify.templates.invite_candidate_to_selection_day="THE_GOVUK_NOTIFY_TEMPLATE_ID"
+  const templateId = functions.config().notify.templates.invite_candidate_to_selection_day;
 
   console.log('templateId = ', templateId);
-  if (templateId == null) {
+  if (templateId === null) {
     console.log('ERROR: invalid templateId: ', templateId);
     return null;
   }
@@ -31,12 +31,12 @@ const sendCandidateEmail = async (emailTemplateData) => {
   return sendEmail(emailTemplateData.applicantEmail, templateId, emailTemplateData)
     .then((sendEmailResponse) => {
       slog(`
-        INFO: Notified Candidate: ${emailTemplateData.applicantEmail} 
+        INFO: Invited Candidate: ${emailTemplateData.applicantEmail} 
         with ApplicationId: ${emailTemplateData.applicationId}
-        that they were recommended for a future appointment
+        to Selection Day
       `);
 
-      // set Application status to 'future-appt-recommended-email-sent' after sending email
+      // set Application status to 'selection-day-invite-sent' after sending email
       setApplicationDataAfterSendingEmail(emailTemplateData);
       return sendEmailResponse;
     })
@@ -47,9 +47,9 @@ const sendCandidateEmail = async (emailTemplateData) => {
 };
   
   
-const notifyCandidateRecommendedFutureAppt = async (applicationData, applicationId) => {
+const inviteCandidateToSelectionDay = async (applicationData, applicationId) => {
   const exerciseData = await getData('exercises', applicationData.exerciseId);
-  if (exerciseData == null) {
+  if (exerciseData === null) {
     slog(`
       ERROR: No data returned from Exercises with docId = ${applicationData.exerciseId}
     `);
@@ -57,7 +57,7 @@ const notifyCandidateRecommendedFutureAppt = async (applicationData, application
   }
 
   const candidateData = await getData('candidates', applicationData.userId);
-  if (candidateData == null) {
+  if (candidateData === null) {
     slog(`
       ERROR: No data returned from Candidates with docId = ${applicationData.userId}
     `);
@@ -70,6 +70,8 @@ const notifyCandidateRecommendedFutureAppt = async (applicationData, application
     applicationId: applicationId,
     exerciseName: exerciseData.name,
     selectionExerciseManager: exerciseData.selectionExerciseManagerFullName,
+    exerciseMailbox: exerciseData.exerciseMailbox,
+    exercisePhoneNumber: exerciseData.exercisePhoneNumber,
   };
 
   sendCandidateEmail(personalizedData);  
@@ -79,5 +81,5 @@ const notifyCandidateRecommendedFutureAppt = async (applicationData, application
 
 
 module.exports = {
-  notifyCandidateRecommendedFutureAppt,
+  inviteCandidateToSelectionDay,
 };
