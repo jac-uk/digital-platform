@@ -6,6 +6,15 @@ yarn-debug.log*
 yarn-error.log*
 firebase-debug.log*
 
+# service account
+service-account.json
+service-account.*.json
+
+# environment vars
+.env
+.env.local
+.env.*.local
+
 # Firebase cache
 .firebase/
 
