@@ -1,7 +1,7 @@
 rules_version = '2';
 service firebase.storage {
   function userIsAuthenticated() {
-    return request.auth.uid !== null;
+    return request.auth.uid != null;
   }
   function currentUser() {
     return request.auth.uid;
@@ -17,8 +17,13 @@ service firebase.storage {
     }
     match /exercise/{exerciseId}/user/{userId}/{fileName} {
       allow read: if userIsAuthenticated() && userIsJAC();
-      allow read: if userIsAuthenticated() && currentUser() === userId;
-      allow write: if userIsAuthenticated() && currentUser() === userId;
+      allow read: if userIsAuthenticated() && currentUser() == userId;
+      allow write: if userIsAuthenticated() && currentUser() == userId;
+    }
+    match /exercise/{exerciseId}/application/{applicationId}/assessor/{userId}/{fileName} {
+      allow read: if userIsAuthenticated() && userIsJAC();
+      allow read: if userIsAuthenticated() && currentUser() == userId;
+      allow write: if userIsAuthenticated() && currentUser() == userId;
     }
   }
 }
