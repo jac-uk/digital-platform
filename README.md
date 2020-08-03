@@ -1,89 +1,31 @@
 # JAC Digital Platform
 
-[![CircleCI](https://circleci.com/gh/jac-uk/digital-platform.svg?style=svg)](https://circleci.com/gh/jac-uk/digital-platform)
+This repository contains 'back end' components and configuration of the [JAC digital platform](https://github.com/jac-uk/documentation).
 
-This project contains components of the JAC Digital Platform which are concerned with handling user applications for 
-vacancies.
+We have kept folder and file names closely aligned to the corresponding Firebase and Google Cloud services.
 
-It's hosted in [Firebase](https://firebase.google.com) (part of [Google Cloud](https://cloud.google.com)).
+## Database
 
----
+See [database/firestore.rules](database/firestore.rules) for our current rules.
 
-### ℹ️ Project status
+See [database/firestore.indexes.json](database/firestore.indexes.json) for our current indexes.
 
-Our current focus is on developing functionality to handle applications. This includes the user-facing application form, and 
-associated admin functionality for internal staff.
+## Storage
 
-We will further develop qualifying test functionality at a later date.
+See [storage/storage.rules](storage/storage.rules) for our current rules.
 
----
 
-## Application form
+## Functions
 
-The application form is used by candidates when applying for a vacancy.
+See [functions/backgroundFunctions](functions/backgroundFunctions) for our functions which are triggered when defined events happen.
 
-Available at https://apply.judicialappointments.digital
+See [functions/callableFunctions](functions/callableFunctions) for our HTTPS callable functions.
 
-More info in [hosting/apply/README.md](hosting/apply/README.md)
+See [functions/scheduledFunctions](functions/scheduledFunctions) for functions triggered according to a pre-defined schedule.
 
-## Reference upload
 
-A page allowing referees ('assessors') to upload their references ('independent assessments') to support a candidate's 
-application.
 
-Available at https://reference.judicialappointments.digital
-
-More info in [hosting/reference/README.md](hosting/reference/README.md)
-
-## Cloud Functions
-
-[Cloud Functions](https://firebase.google.com/docs/functions/) form the 'backend' of this project. They are 
-[Node.js](https://nodejs.org/en/) functions which execute in a serverless environment based on defined triggers.
-For example, a function could be 
-[triggered every time a new user registers](https://firebase.google.com/docs/functions/auth-events).
-
-More info in [functions/README.md](functions/README.md)
-
-## Project architecture
-
-For the needs of this project, it makes sense for these components to be hosted in one shared Firebase project. 
-
-Conceptually, this works because all components within the project are built around progressing the user's 
-application for a vacancy.
-
-Technically, one of the advantages of this approach is that user authentication and application data can be shared 
-between components. This enables a Single Sign-on flow in which, for example, a user could create an account on the 
-application form whilst applying for a role, and later they'd be able to complete their Qualifying Test by logging in with the same 
-credentials.
-
-### Architecture diagram
-
-![Application architecture diagram](docs/jac-digital-platform-architecture.svg)
-
-### One project, multiple sites
-
-Each 'component' in this project (application form, reference upload, etc.) is hosted on its own Firebase Hosting site.
-
-Hosting multiple sites in one project is a feature 
-[supported and documented by Firebase](https://firebase.google.com/docs/hosting/multisites).
-
-### Staging and production environments
-
-We use separate Firebase projects as staging and production environments.
-
-For local development we use the staging environment. This allows us to develop and run tests without affecting production data.
-
-- **Staging:** [digital-platform-staging](https://console.firebase.google.com/project/digital-platform-staging/overview)
-- **Production:** [application-form-e08c9](https://console.firebase.google.com/project/application-form-e08c9/overview)
-
-### Database backups
-
-The Firestore and Firebase Authentication databases are backed up automatically every hour.
-
-Backups are performed using Cloud Functions triggered on a schedule.
-
-More info in [functions/backup/README.md](functions/backup/README.md)
-
+<!-- 
 ## Local development
 
 ### Node.js
@@ -121,17 +63,6 @@ cd functions
 npm install
 ```
 
-Install dependencies for Application Form app:
-```
-cd hosting/apply
-npm install
-```
-
-Install dependencies for Qualifying Tests app:
-```
-cd hosting/qt
-npm install
-```
 
 ### Deploy to staging
 
@@ -155,4 +86,4 @@ We use [CircleCI](https://circleci.com/gh/jac-uk/digital-platform) to deploy to 
 Open a Pull Request to merge your code into the `master` branch.
 
 Once approved, merge your Pull Request and it'll be deployed to production automatically.
-
+ -->
