@@ -1,0 +1,336 @@
+{
+  "appliedAt": "[native Date Thu Apr 23 2020 15:36:32 GMT+0100 (British Summer Time)]",
+  "applyingForWelshPost": false,
+  "applyingUnderSchedule2Three": true,
+  "applyingUnderSchedule2d": true,
+  "canGiveReasonableLOS": false,
+  "canReadAndWriteWelsh": false,
+  "canSpeakWelsh": false,
+  "cantGiveReasonableLOSDetails": "Body may not be willing but the mind is able",
+  "characterInformation": {
+    "criminalOffenceDetails": [
+      {
+        "date": "[native Date Sat Feb 01 1997 00:00:00 GMT+0000 (Greenwich Mean Time)]",
+        "details": "Details here",
+        "title": "Title here"
+      }
+    ],
+    "criminalOffences": true,
+    "declaredBankruptOrIVA": true,
+    "declaredBankruptOrIVADetails": [
+      {}
+    ],
+    "diciplinaryActionOrAskedToResign": true,
+    "diciplinaryActionOrAskedToResignDetails": [
+      {}
+    ],
+    "drivingDisqualificationDrinkDrugs": true,
+    "drivingDisqualificationDrinkDrugsDetails": [
+      {}
+    ],
+    "endorsementsOrMotoringFixedPenalties": true,
+    "endorsementsOrMotoringFixedPenaltiesDetails": [
+      {}
+    ],
+    "involvedInProfessionalMisconduct": true,
+    "involvedInProfessionalMisconductDetails": [
+      {}
+    ],
+    "lateTaxReturnOrFined": true,
+    "lateTaxReturnOrFinedDetails": [
+      {}
+    ],
+    "nonMotoringFixedPenaltyNotices": true,
+    "nonMotoringFixedPenaltyNoticesDetails": [
+      {
+        "date": "[native Date Mon Jan 01 1990 00:00:00 GMT+0000 (Greenwich Mean Time)]",
+        "details": "asd",
+        "title": "100"
+      }
+    ],
+    "otherCharacterIssues": true,
+    "otherCharacterIssuesDetails": [
+      {}
+    ]
+  },
+  "charteredAssociationBuildingEngineersDate": null,
+  "charteredAssociationBuildingEngineersInformation": null,
+  "charteredAssociationBuildingEngineersNumber": null,
+  "charteredInstituteBuildingDate": null,
+  "charteredInstituteBuildingInformation": null,
+  "charteredInstituteBuildingNumber": null,
+  "charteredInstituteEnvironmentalHealthDate": null,
+  "charteredInstituteEnvironmentalHealthInformation": null,
+  "charteredInstituteEnvironmentalHealthNumber": null,
+  "createdAt": 1586964174847,
+  "employmentGaps": [
+    {
+      "details": "travelling",
+      "endDate": "[native Date Fri May 01 1998 01:00:00 GMT+0100 (British Summer Time)]",
+      "otherTasks": "went to court",
+      "startDate": "[native Date Wed Jan 01 1997 00:00:00 GMT+0000 (Greenwich Mean Time)]",
+      "tasks": [
+        "other"
+      ]
+    }
+  ],
+  "equalityAndDiversitySurvey": {
+    "attendedOutreachEvents": false,
+    "changedGender": true,
+    "currentLegalRole": null,
+    "disability": false,
+    "disabilityDetails": null,
+    "ethnicGroup": "other-white",
+    "feePaidJudicialRole": false,
+    "firstGenerationStudent": true,
+    "gender": "male",
+    "hasTakenPAJE": null,
+    "otherCurrentFeePaidJudicialOfficeHolderDetails": null,
+    "otherCurrentLegalRoleDetails": null,
+    "otherCurrentSalariedJudicialOfficeHolderDetails": null,
+    "otherEthnicGroupAsianDetails": null,
+    "otherEthnicGroupBlackDetails": null,
+    "otherEthnicGroupDetails": null,
+    "otherEthnicGroupMixedDetails": null,
+    "otherEthnicGroupWhiteDetails": "Cornish",
+    "otherFeePaidJudicialRoleDetails": null,
+    "otherGenderDetails": null,
+    "otherProfessionalBackgroundDetails": null,
+    "otherReligionDetails": null,
+    "otherSexualOrientationDetails": null,
+    "oxbridgeUni": false,
+    "participatedInJudicialWorkshadowingScheme": null,
+    "professionalBackground": [
+      "prefer-not-to-say"
+    ],
+    "religionFaith": "no-religion",
+    "sexualOrientation": "heterosexual-straight",
+    "shareData": false,
+    "stateOrFeeSchool": "uk-state-non-selective"
+  },
+  "exerciseId": "wdpALbyICL7ZxxN5AQt8",
+  "exerciseName": "Warren non-legal",
+  "exerciseRef": "JAC00053",
+  "experience": [
+    {
+      "endDate": "[native Date Sun May 01 2005 01:00:00 GMT+0100 (British Summer Time)]",
+      "jobTitle": "Checkout assistant",
+      "orgBusinessName": "Corner Shop",
+      "startDate": "[native Date Sun Oct 01 1995 01:00:00 GMT+0100 (British Summer Time)]",
+      "tasks": []
+    },
+    {
+      "endDate": "[native Date Sat Mar 01 2008 00:00:00 GMT+0000 (Greenwich Mean Time)]",
+      "jobTitle": "Solicitor",
+      "orgBusinessName": "ACME",
+      "startDate": "[native Date Wed Jun 01 2005 01:00:00 GMT+0100 (British Summer Time)]",
+      "tasks": [
+        "judicial-functions"
+      ]
+    },
+    {
+      "jobTitle": "Solicitor",
+      "orgBusinessName": "ACME",
+      "otherTasks": "something",
+      "startDate": "[native Date Thu May 01 2008 01:00:00 GMT+0100 (British Summer Time)]",
+      "tasks": [
+        "other"
+      ]
+    }
+  ],
+  "experienceUnderSchedule2D": "dhhmgjh",
+  "experienceUnderSchedule2Three": "hjkl",
+  "firstAssessorEmail": "warren2@precise-minds.co.uk",
+  "firstAssessorFullName": "Assessor 1",
+  "firstAssessorPhone": "012345",
+  "firstAssessorSubmittedAssessment": false,
+  "firstAssessorTitle": "Manager",
+  "generalMedicalCouncilConditional": null,
+  "generalMedicalCouncilConditionalDetails": null,
+  "generalMedicalCouncilConditionalEndDate": null,
+  "generalMedicalCouncilConditionalStartDate": null,
+  "generalMedicalCouncilDate": null,
+  "generalMedicalCouncilInformation": null,
+  "generalMedicalCouncilNumber": null,
+  "interestedInPartTime": false,
+  "jurisdictionPreferences": "Jurisdiction 1",
+  "locationPreferences": [
+    "England"
+  ],
+  "memberships": {
+    "and-another": {
+      "date": null,
+      "information": null,
+      "number": null
+    },
+    "another": {
+      "date": null,
+      "information": null,
+      "number": null
+    },
+    "number-3": {
+      "date": null,
+      "information": null,
+      "number": null
+    }
+  },
+  "otherProfessionalMemberships": null,
+  "otherProfessionalMembershipsDate": null,
+  "otherProfessionalMembershipsInformation": null,
+  "otherProfessionalMembershipsNumber": null,
+  "partTimeWorkingPreferencesDetails": null,
+  "personalDetails": {
+    "citizenship": "other",
+    "dateOfBirth": "[native Date Thu Jul 05 1956 01:00:00 GMT+0100 (British Summer Time)]",
+    "email": "warren@precise-minds.co.uk",
+    "fullName": "Warren Searle",
+    "nationalInsuranceNumber": "JE842167D",
+    "phone": null,
+    "reasonableAdjustments": true,
+    "reasonableAdjustmentsDetails": "Testing out reasonable adjustments"
+  },
+  "processing": {
+    "characterIssues": [
+      {
+        "comments": "",
+        "result": "",
+        "summary": "",
+        "type": "criminalOffences"
+      },
+      {
+        "comments": "",
+        "result": "",
+        "summary": "",
+        "type": "nonMotoringFixedPenaltyNotices"
+      },
+      {
+        "comments": "",
+        "result": "",
+        "summary": "",
+        "type": "drivingDisqualificationDrinkDrugs"
+      },
+      {
+        "comments": "",
+        "result": "",
+        "summary": "",
+        "type": "endorsementsOrMotoringFixedPenalties"
+      },
+      {
+        "comments": "",
+        "result": "",
+        "summary": "",
+        "type": "declaredBankruptOrIVA"
+      },
+      {
+        "comments": "",
+        "result": "",
+        "summary": "",
+        "type": "lateTaxReturnOrFined"
+      },
+      {
+        "comments": "",
+        "result": "",
+        "summary": "",
+        "type": "involvedInProfessionalMisconduct"
+      },
+      {
+        "comments": "",
+        "result": "",
+        "summary": "",
+        "type": "diciplinaryActionOrAskedToResign"
+      },
+      {
+        "comments": "",
+        "result": "",
+        "summary": "",
+        "type": "otherCharacterIssues"
+      }
+    ],
+    "eligibilityIssues": [
+      {
+        "comments": "",
+        "result": "",
+        "summary": "Not a UK, RoI or Commonwealth citizen",
+        "type": "citizenship"
+      },
+      {
+        "comments": "",
+        "result": "",
+        "summary": "Self-declared. Candidate will be 73 years, 9 months and 6 days old at end of service",
+        "type": "rls"
+      },
+      {
+        "comments": "",
+        "result": "",
+        "summary": "Candidate has 2 years and 9 months of relevant experience and 13 years, 3 months and 10 days to be checked",
+        "type": "pqe"
+      }
+    ],
+    "flags": {
+      "characterIssues": true,
+      "eligibilityIssues": true
+    }
+  },
+  "professionalMemberships": [],
+  "progress": {
+    "assessorsDetails": true,
+    "characterInformation": true,
+    "employmentGaps": true,
+    "equalityAndDiversitySurvey": true,
+    "jurisdictionPreferences": true,
+    "locationPreferences": true,
+    "partTimeWorkingPreferences": true,
+    "personalDetails": true,
+    "postQualificationWorkExperience": true,
+    "reasonableLengthOfService": true,
+    "relevantExperience": true,
+    "relevantMemberships": true,
+    "relevantQualifications": true,
+    "started": true,
+    "statementOfEligibility": true,
+    "welshPosts": true
+  },
+  "qualifications": [
+    {
+      "date": "[native Date Sun Jan 01 1995 00:00:00 GMT+0000 (Greenwich Mean Time)]",
+      "location": "england-wales",
+      "type": "solicitor"
+    },
+    {
+      "date": "[native Date Fri May 01 2015 01:00:00 GMT+0100 (British Summer Time)]",
+      "location": "england-wales",
+      "type": "barrister"
+    }
+  ],
+  "referenceNumber": "JAC00053-hqr0028",
+  "royalCollegeOfPsychiatristsDate": null,
+  "royalCollegeOfPsychiatristsInformation": null,
+  "royalCollegeOfPsychiatristsNumber": null,
+  "royalInstituteBritishArchitectsDate": null,
+  "royalInstituteBritishArchitectsInformation": null,
+  "royalInstituteBritishArchitectsNumber": null,
+  "royalInstitutionCharteredSurveyorsDate": null,
+  "royalInstitutionCharteredSurveyorsInformation": null,
+  "royalInstitutionCharteredSurveyorsNumber": null,
+  "secondAssessorEmail": "warren3@precise-minds.co.uk",
+  "secondAssessorFullName": "assessor 2",
+  "secondAssessorPhone": "04567890",
+  "secondAssessorSubmittedAssessment": false,
+  "secondAssessorTitle": "Supervisor",
+  "selectionCriteriaAnswers": [
+    {
+      "answer": false,
+      "answerDetails": null,
+      "text": "Please answer in 500 words",
+      "title": "Why did the goose cross the road?"
+    },
+    {
+      "answer": false,
+      "answerDetails": null,
+      "text": "asdkjhl;",
+      "title": "jhgkljasd"
+    }
+  ],
+  "status": "applied",
+  "userId": "KnTFmjXqtDchIKLGuwkTC5Om4982"
+}
