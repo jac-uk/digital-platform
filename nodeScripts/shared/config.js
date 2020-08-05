@@ -5,6 +5,6 @@ module.exports = {
     SKILLS: 'skills',
     GENERAL: 'general',
   },
-  NOTIFY_KEY: process.env.NOTIFY_KEY,
+  NOTIFY_KEY: process.env.NOTIFY_LIMITED_KEY,
   SLACK_URL: process.env.SLACK_URL,
 };
