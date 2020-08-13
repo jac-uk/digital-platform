@@ -134,5 +134,28 @@ service cloud.firestore {
                        resource.data.dueDate >= request.time;
     }
 
+    match /qualifyingTests/{qualifyingTestId} {
+      // allow admins read, create and update permission
+      allow read: if userIsAuthenticated() && userIsJAC();
+      allow create: if userIsAuthenticated() && userIsJAC();
+      allow update: if userIsAuthenticated() && userIsJAC();
+    }
+
+    match /qualifyingTestResponses/{qualifyingTestResponseId} {
+      // allow admins read and update permission
+      allow read: if userIsAuthenticated() && userIsJAC();
+      allow update: if userIsAuthenticated() && userIsJAC();
+
+      // allow candidate to read their own document
+      allow read: if userIsAuthenticated() && debug(resource.data.candidate.id) == debug(currentUser());
+
+      // allow candidates to update their own document
+      // @TODO but only the responses field and only if within allowed duration from start time
+      allow update: if resource.data.candidate.id == currentUser() &&
+                       request.resource.data.candidate.id == currentUser();
+
+    }
+
+
   }
 }
