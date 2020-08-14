@@ -35,6 +35,15 @@ exports.sendCharacterCheckRequests = require('./callableFunctions/sendCharacterC
 // // exports.handleExerciseTimelineDates = require('./exercises/handleExerciseTimelineDates');
 
 
+// MALWARE SCANNER
+// const functions = require('firebase-functions');
+// exports.requestMalwareScan = functions.region('europe-west2').storage
+//   .object()
+//   .onFinalize((object) => {
+//     const handler = require('./virus-scanning/requestMalwareScan');
+//     return handler(object);
+//   });
+// @TODO enqueueMalwareScans
 
 
 
@@ -61,4 +70,3 @@ exports.sendCharacterCheckRequests = require('./callableFunctions/sendCharacterC
 // exports.sendVerificationEmailOnNewUser = functions.region('europe-west2').auth.user().onCreate((user) => {
 //   return sendVerificationEmail(user);
 // });
-
