@@ -44,29 +44,3 @@ exports.sendCharacterCheckRequests = require('./callableFunctions/sendCharacterC
 //     return handler(object);
 //   });
 // @TODO enqueueMalwareScans
-
-
-
-
-/*
- *  TODO: All functions below this comment should be refactored into separate files.
- */
-
-// const admin = require('firebase-admin');
-// const functions = require('firebase-functions');
-// const sendEmail = require('./sharedServices').sendEmail;
-
-// const sendVerificationEmail = async (user) => {
-//   const email = user.email;
-//   const returnUrl = functions.config().production.url;
-//   const templateId = functions.config().notify.templates.verification;
-//   const verificationLink = await admin.auth().generateEmailVerificationLink(email, {url: returnUrl});
-//   return sendEmail(email, templateId, {
-//     'applicantName': user.displayName,
-//     verificationLink,
-//   });
-// };
-
-// exports.sendVerificationEmailOnNewUser = functions.region('europe-west2').auth.user().onCreate((user) => {
-//   return sendVerificationEmail(user);
-// });

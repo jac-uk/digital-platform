@@ -24,3 +24,23 @@ const emailIsValid = (email) => {
   return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email);
 };
 ```
+
+
+Send verification email
+```
+const sendVerificationEmail = async (user) => {
+  const email = user.email;
+  const returnUrl = functions.config().production.url;
+  const templateId = functions.config().notify.templates.verification;
+  const verificationLink = await admin.auth().generateEmailVerificationLink(email, {url: returnUrl});
+  return sendEmail(email, templateId, {
+    'applicantName': user.displayName,
+    verificationLink,
+  });
+};
+
+exports.sendVerificationEmailOnNewUser = functions.region('europe-west2').auth.user().onCreate((user) => {
+  return sendVerificationEmail(user);
+});
+
+```
