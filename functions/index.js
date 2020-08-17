@@ -24,6 +24,8 @@ exports.generateSignInWithEmailLink = require('./callableFunctions/generateSignI
 exports.initialiseApplicationRecords = require('./callableFunctions/initialiseApplicationRecords');
 exports.sendCharacterCheckRequests = require('./callableFunctions/sendCharacterCheckRequests');
 exports.initialiseQualifyingTest = require('./callableFunctions/initialiseQualifyingTest');
+exports.activateQualifyingTest = require('./callableFunctions/activateQualifyingTest');
+
 
 // exports.onExerciseUpdate_PublishVacancy = require('./exercises/onExerciseUpdate_PublishVacancy');
 // exports.onWriteVacancyStats = require('./exercises/onWriteVacancyStats');
