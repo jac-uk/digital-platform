@@ -9,6 +9,7 @@ module.exports = {
   },
   QUALIFYINGTESTRESPONSES_STATUS: {
     CREATED: 'created',
+    ACTIVATED: 'activated',
     STARTED: 'started',
     COMPLETED: 'completed',
   },

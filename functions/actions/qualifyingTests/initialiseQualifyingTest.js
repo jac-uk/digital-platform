@@ -42,6 +42,7 @@ module.exports = (config, firebase, db) => {
         status: 'initialised',
         counts: {
           initialised: applicationRecords.length,
+          activated: 0,
           started: 0,
           inProgress: 0,
           completed: 0,
