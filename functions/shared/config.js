@@ -7,6 +7,11 @@ module.exports = {
     SKILLS: 'skills',
     GENERAL: 'general',
   },
+  QUALIFYINGTESTRESPONSES_STATUS: {
+    CREATED: 'created',
+    STARTED: 'started',
+    COMPLETED: 'completed',
+  },
   NOTIFY_KEY: functions.config().notify.key,
   SLACK_URL: functions.config().slack.url,
 };
