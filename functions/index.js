@@ -23,6 +23,7 @@ exports.sendAssessmentReminders = require('./callableFunctions/sendAssessmentRem
 exports.generateSignInWithEmailLink = require('./callableFunctions/generateSignInWithEmailLink');
 exports.initialiseApplicationRecords = require('./callableFunctions/initialiseApplicationRecords');
 exports.sendCharacterCheckRequests = require('./callableFunctions/sendCharacterCheckRequests');
+exports.initialiseQualifyingTest = require('./callableFunctions/initialiseQualifyingTest');
 
 // exports.onExerciseUpdate_PublishVacancy = require('./exercises/onExerciseUpdate_PublishVacancy');
 // exports.onWriteVacancyStats = require('./exercises/onWriteVacancyStats');
