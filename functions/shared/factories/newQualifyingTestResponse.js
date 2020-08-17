@@ -12,6 +12,7 @@ module.exports = (firebase, config) => {
         startDate: qualifyingTest.startDate,
         endDate: qualifyingTest.endDate,
         additionalInstructions: qualifyingTest.additionalInstructions,
+        questions: [],
       },
       application: {
         id: applicationRecord.application.id,
@@ -28,12 +29,15 @@ module.exports = (firebase, config) => {
         reasonableAdjustment: 0, // @TODO calculate reasonable adjustment
         testDurationAdjusted: 45,
       },
-      testQuestions: [],
-      created: firebase.firestore.Timestamp.fromDate(new Date()),
-      lastUpdated: null,
-      started: null,
-      completed: null,
+      responses: [],
+      statusLog: {
+        created: firebase.firestore.Timestamp.fromDate(new Date()),
+        activated: null,
+        started: null,
+        completed: null,
+      },
       status: config.QUALIFYINGTESTRESPONSES_STATUS.CREATED,
+      lastUpdated: firebase.firestore.Timestamp.fromDate(new Date()),
     };
   }
 }
