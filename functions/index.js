@@ -26,7 +26,7 @@ exports.initialiseApplicationRecords = require('./callableFunctions/initialiseAp
 exports.sendCharacterCheckRequests = require('./callableFunctions/sendCharacterCheckRequests');
 exports.initialiseQualifyingTest = require('./callableFunctions/initialiseQualifyingTest');
 exports.activateQualifyingTest = require('./callableFunctions/activateQualifyingTest');
-
+exports.initialiseMissingApplicationRecords = require('./callableFunctions/initialiseMissingApplicationRecords');
 
 // exports.onExerciseUpdate_PublishVacancy = require('./exercises/onExerciseUpdate_PublishVacancy');
 // exports.onWriteVacancyStats = require('./exercises/onWriteVacancyStats');

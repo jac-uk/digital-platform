@@ -74,7 +74,7 @@ module.exports = (config, firebase, db) => {
 
   /**
   * initialiseMissingApplicationRecords
-  * Creates applicationRecords for each application in an exercise that doesn't already have an exercise
+  * Creates applicationRecords for each application in an exercise that doesn't already have an applicationRecord
   * @param {*} `params` is an object containing
   *   `exerciseId` (required) ID of exercise
   */
@@ -97,8 +97,6 @@ module.exports = (config, firebase, db) => {
 
     // get applications without corresponding application record
     const missingApplications = applications.filter(item => applicationRecordIds.indexOf(item.id) < 0);
-
-    console.log('missingApplications', missingApplications.length);
 
     // construct db commands
     const commands = [];
