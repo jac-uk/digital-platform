@@ -47,7 +47,7 @@
     "firebase-functions-test": "^0.2.1",
     "firebase-tools": "^8.7.0",
     "googleapis": "^43.0.0",
-    "notifications-node-client": "^4.6.0"
+    "notifications-node-client": "^4.9.0"
   },
   "devDependencies": {
     "dotenv": "^8.2.0",
