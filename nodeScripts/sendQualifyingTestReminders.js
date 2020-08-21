@@ -2,13 +2,11 @@
 
 const config = require('./shared/config');
 const { firebase, app, db } = require('./shared/admin.js');
-const initialiseQualifyingTest = require('../functions/actions/qualifyingTests/initialiseQualifyingTest')(config, firebase, db);
+const sendQualifyingTestReminders = require('../functions/actions/qualifyingTests/sendQualifyingTestReminders')(config, firebase, db);
 
 const main = async () => {
-  return initialiseQualifyingTest({
+  return sendQualifyingTestReminders({
     qualifyingTestId: 'b1CXcAabEw95PQreh9T1',
-    stage: 'review',
-    // status: '', // @TODO only invite applications with a certain status
   });
 };
 

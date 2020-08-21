@@ -1,5 +1,5 @@
 
-module.exports = (firebase, config) => {
+module.exports = (config, firebase) => {
 
   return newQualifyingTestResponse;
 
