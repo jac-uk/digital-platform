@@ -1,4 +1,5 @@
 module.exports = {
+  APPLY_URL: process.env.APPLY_URL,
   ASSESSMENTS_URL: process.env.ASSESSMENTS_URL,
   ASSESSMENT_TYPE: {
     COMPETENCY: 'competency',

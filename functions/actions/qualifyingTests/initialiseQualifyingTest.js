@@ -1,7 +1,7 @@
 const { getDocument, getDocuments, applyUpdates } = require('../../shared/helpers');
 
 module.exports = (config, firebase, db) => {
-  const newQualifyingTestResponse = require('../../shared/factories/newQualifyingTestResponse')(firebase, config);
+  const newQualifyingTestResponse = require('../../shared/factories/newQualifyingTestResponse')(config, firebase);
 
   return initialiseQualifyingTest;
 
@@ -19,7 +19,7 @@ module.exports = (config, firebase, db) => {
 
     // get application records
     let applicationRecordsRef = db.collection('applicationRecords')
-      .where('exercise.id', '==', qualifyingTest.exercise.id)
+      .where('exercise.id', '==', qualifyingTest.vacancy.id)
       .where('stage', '==', params.stage);
     const applicationRecords = await getDocuments(applicationRecordsRef);
 
