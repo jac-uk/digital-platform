@@ -1,6 +1,7 @@
 const functions = require('firebase-functions');
 
 module.exports = {
+  APPLY_URL: functions.config().apply.url,
   ASSESSMENTS_URL: functions.config().assessments.url,
   ASSESSMENT_TYPE: {
     COMPETENCY: 'competency',
