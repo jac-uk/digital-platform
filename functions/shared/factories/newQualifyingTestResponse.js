@@ -20,6 +20,7 @@ module.exports = (config, firebase) => {
       },
       candidate: {
         id: applicationRecord.candidate.id,
+        fullName: applicationRecord.candidate.fullName,
       },
       vacancy: {
         id: applicationRecord.exercise.id,
