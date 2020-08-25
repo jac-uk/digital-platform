@@ -20,7 +20,7 @@
     "production:nodeScript": "export GOOGLE_APPLICATION_CREDENTIALS='service-account.production.json' && run(){ node -r dotenv/config nodeScripts/$1; }; run",
     "deploy:rules": "firebase deploy --project=digital-platform-develop --only firestore:rules",
     "deploy:indexes": "firebase deploy --project=digital-platform-develop --only firestore:indexes",
-    "deploy:functions": "firebase deploy --project=digital-platform-develop --only functions:initialiseQualifyingTest,functions:activateQualifyingTest,functions:onQualifyingTestResponseUpdate,functions:initialiseMissingApplicationRecords,functions:sendQualifyingTestReminders",
+    "deploy:functions": "firebase deploy --project=digital-platform-develop --only functions:initialiseQualifyingTest,functions:activateQualifyingTest,functions:onQualifyingTestResponseUpdate,functions:sendQualifyingTestReminders,functions:initialiseApplicationRecords,functions:initialiseMissingApplicationRecords",
     "deploy:storage-rules": "firebase deploy --project=digital-platform-develop --only storage:rules",
     "staging:deploy:rules": "firebase deploy --project=digital-platform-staging --only firestore:rules",
     "staging:deploy:indexes": "firebase deploy --project=digital-platform-staging --only firestore:indexes",

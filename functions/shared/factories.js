@@ -155,6 +155,8 @@ module.exports = (CONSTANTS) => {
       candidate: {
         id: application.userId,
         fullName: application.personalDetails.fullName,
+        reasonableAdjustments: application.personalDetails.reasonableAdjustments,
+        reasonableAdjustmentsDetails: application.personalDetails.reasonableAdjustmentsDetails,
       },
       application: {
         id: application.id,
@@ -167,6 +169,7 @@ module.exports = (CONSTANTS) => {
         characterIssues: false,
         eligibilityIssues: false,
         empApplied: false,
+        reasonableAdjustments: application.personalDetails.reasonableAdjustments,
       },
       issues: {
         characterIssues: [],

@@ -21,14 +21,16 @@ module.exports = (config, firebase) => {
       candidate: {
         id: applicationRecord.candidate.id,
         fullName: applicationRecord.candidate.fullName,
+        reasonableAdjustments: applicationRecord.candidate.reasonableAdjustments,
+        reasonableAdjustmentsDetails: applicationRecord.candidate.reasonableAdjustmentsDetails,
       },
       vacancy: {
         id: applicationRecord.exercise.id,
       },
       duration: {
-        testDuration: 45,
-        reasonableAdjustment: 0, // @TODO calculate reasonable adjustment
-        testDurationAdjusted: 45,
+        testDuration: qualifyingTest.testDuration,
+        reasonableAdjustment: 0,
+        testDurationAdjusted: qualifyingTest.testDuration,
       },
       responses: [],
       statusLog: {
