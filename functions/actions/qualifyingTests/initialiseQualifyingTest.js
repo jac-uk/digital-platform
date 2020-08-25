@@ -17,6 +17,8 @@ module.exports = (config, firebase, db) => {
     // get qualifying test
     const qualifyingTest = await getDocument(db.doc(`qualifyingTests/${params.qualifyingTestId}`));
 
+    if (qualifyingTest.status !== 'approved') { return false; }
+
     // get application records
     let applicationRecordsRef = db.collection('applicationRecords')
       .where('exercise.id', '==', qualifyingTest.vacancy.id)
@@ -29,7 +31,7 @@ module.exports = (config, firebase, db) => {
       const applicationRecord = applicationRecords[i];
       commands.push({
         command: 'set',
-        ref: db.collection('qualifyingTestResponses').doc(`${applicationRecord.application.id}`),
+        ref: db.collection('qualifyingTestResponses').doc(),
         data: newQualifyingTestResponse(qualifyingTest, applicationRecord),
       });
     }
