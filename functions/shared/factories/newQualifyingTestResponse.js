@@ -12,8 +12,9 @@ module.exports = (config, firebase) => {
         startDate: qualifyingTest.startDate,
         endDate: qualifyingTest.endDate,
         additionalInstructions: qualifyingTest.additionalInstructions,
-        questions: [],
+        // questions: [],  // @TODO move questions here instead of testQuestions
       },
+      testQuestions: [],
       application: {
         id: applicationRecord.application.id,
         referenceNumber: applicationRecord.application.referenceNumber,
@@ -21,8 +22,8 @@ module.exports = (config, firebase) => {
       candidate: {
         id: applicationRecord.candidate.id,
         fullName: applicationRecord.candidate.fullName,
-        reasonableAdjustments: applicationRecord.candidate.reasonableAdjustments,
-        reasonableAdjustmentsDetails: applicationRecord.candidate.reasonableAdjustmentsDetails,
+        reasonableAdjustments: applicationRecord.candidate.reasonableAdjustments ? true : false,
+        reasonableAdjustmentsDetails: applicationRecord.candidate.reasonableAdjustmentsDetails ? applicationRecord.candidate.reasonableAdjustmentsDetails : null,
       },
       vacancy: {
         id: applicationRecord.exercise.id,
@@ -34,13 +35,13 @@ module.exports = (config, firebase) => {
       },
       responses: [],
       statusLog: {
-        created: firebase.firestore.Timestamp.fromDate(new Date()),
+        created: firebase.firestore.FieldValue.serverTimestamp(),
         activated: null,
         started: null,
         completed: null,
       },
       status: config.QUALIFYINGTESTRESPONSES_STATUS.CREATED,
-      lastUpdated: firebase.firestore.Timestamp.fromDate(new Date()),
+      lastUpdated: firebase.firestore.FieldValue.serverTimestamp(),
     };
   }
 }

@@ -33,11 +33,12 @@ module.exports = (config, firebase, db) => {
         command: 'update',
         ref: db.collection('qualifyingTestResponses').doc(`${qualifyingTestResponse.id}`),
         data: {
-          'qualifyingTest.questions': qualifyingTest.testQuestions,
+          // @TODO store questions here instead of `testQuestions`: 'qualifyingTest.questions': qualifyingTest.testQuestions,
+          'testQuestions': qualifyingTest.testQuestions,
           'qualifyingTest.additionalInstructions': qualifyingTest.additionalInstructions,
           status: config.QUALIFYINGTESTRESPONSES_STATUS.ACTIVATED,
-          'statusLog.activated': firebase.firestore.Timestamp.fromDate(new Date()),
-          lastUpdated: firebase.firestore.Timestamp.fromDate(new Date()),
+          'statusLog.activated': firebase.firestore.FieldValue.serverTimestamp(),
+          lastUpdated: firebase.firestore.FieldValue.serverTimestamp(),
         },
       });
     }
