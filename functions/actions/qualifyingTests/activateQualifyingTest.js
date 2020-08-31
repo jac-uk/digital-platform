@@ -1,6 +1,7 @@
 const { getDocument, getDocuments, applyUpdates } = require('../../shared/helpers');
 
 module.exports = (config, firebase, db) => {
+  const newQuestionsWithoutSolutions = require('../../shared/factories/QualifyingTests/newQuestionsWithoutSolutions')();
 
   return activateQualifyingTest;
 
@@ -18,6 +19,9 @@ module.exports = (config, firebase, db) => {
     // get qualifying test
     const qualifyingTest = await getDocument(db.doc(`qualifyingTests/${params.qualifyingTestId}`));
 
+    // get qualifying test questions without answers!
+    const questions = newQuestionsWithoutSolutions(qualifyingTest.testQuestions);
+
     // get qualifying test responses
     let qualifyingTestResponsesRef = db.collection('qualifyingTestResponses')
       .where('qualifyingTest.id', '==', qualifyingTest.id)
@@ -33,8 +37,8 @@ module.exports = (config, firebase, db) => {
         command: 'update',
         ref: db.collection('qualifyingTestResponses').doc(`${qualifyingTestResponse.id}`),
         data: {
-          // @TODO store questions here instead of `testQuestions`: 'qualifyingTest.questions': qualifyingTest.testQuestions,
-          'testQuestions': qualifyingTest.testQuestions,
+          // 'qualifyingTest.questions': questions, // @TODO store questions here instead of `testQuestions`
+          'testQuestions': questions,
           'qualifyingTest.additionalInstructions': qualifyingTest.additionalInstructions,
           status: config.QUALIFYINGTESTRESPONSES_STATUS.ACTIVATED,
           'statusLog.activated': firebase.firestore.FieldValue.serverTimestamp(),
