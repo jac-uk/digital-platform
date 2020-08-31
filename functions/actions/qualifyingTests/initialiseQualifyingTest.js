@@ -1,7 +1,7 @@
 const { getDocument, getDocuments, applyUpdates } = require('../../shared/helpers');
 
 module.exports = (config, firebase, db) => {
-  const newQualifyingTestResponse = require('../../shared/factories/newQualifyingTestResponse')(config, firebase);
+  const newQualifyingTestResponse = require('../../shared/factories/QualifyingTests/newQualifyingTestResponse')(config, firebase);
 
   return initialiseQualifyingTest;
 

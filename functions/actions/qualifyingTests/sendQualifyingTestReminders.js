@@ -1,7 +1,7 @@
 const { getDocument, getDocuments, getAllDocuments, applyUpdates } = require('../../shared/helpers');
 
 module.exports = (config, firebase, db) => {
-  const newNotificationQualifyingTestReminder = require('../../shared/factories/newNotificationQualifyingTestReminder')(config, firebase);
+  const newNotificationQualifyingTestReminder = require('../../shared/factories/Notifications/newNotificationQualifyingTestReminder')(config, firebase);
 
   return sendQualifyingTestReminders;
 
