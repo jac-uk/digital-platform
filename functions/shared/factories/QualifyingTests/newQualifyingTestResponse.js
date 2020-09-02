@@ -40,7 +40,7 @@ module.exports = (config, firebase) => {
         started: null,
         completed: null,
       },
-      status: config.QUALIFYINGTESTRESPONSES_STATUS.CREATED,
+      status: config.QUALIFYING_TEST_RESPONSES.STATUS.CREATED,
       lastUpdated: firebase.firestore.FieldValue.serverTimestamp(),
     };
   }

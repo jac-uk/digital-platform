@@ -40,7 +40,7 @@ module.exports = (config, firebase, db) => {
           // 'qualifyingTest.questions': questions, // @TODO store questions here instead of `testQuestions`
           'testQuestions': questions,
           'qualifyingTest.additionalInstructions': qualifyingTest.additionalInstructions,
-          status: config.QUALIFYINGTESTRESPONSES_STATUS.ACTIVATED,
+          status: config.QUALIFYING_TEST_RESPONSES.STATUS.ACTIVATED,
           'statusLog.activated': firebase.firestore.FieldValue.serverTimestamp(),
           lastUpdated: firebase.firestore.FieldValue.serverTimestamp(),
         },

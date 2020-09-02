@@ -8,11 +8,29 @@ module.exports = {
     SKILLS: 'skills',
     GENERAL: 'general',
   },
-  QUALIFYINGTESTRESPONSES_STATUS: {
-    CREATED: 'created',
-    ACTIVATED: 'activated',
-    STARTED: 'started',
-    COMPLETED: 'completed',
+  QUALIFYING_TEST: {
+    TYPE: {
+      SCENARIO: 'scenario',
+      CRITICAL_ANALYSIS: 'critical-analysis',
+      SITUATIONAL_JUDGEMENT: 'situational-judgement',
+    },
+    STATUS: {
+      CREATED: 'created',
+      SUBMITTED: 'submitted-for-approval',
+      APPROVED: 'approved',
+      INITIALISED: 'initialised',
+      ACTIVATED: 'activated',
+      PAUSED: 'paused',
+      COMPLETED: 'completed',
+    },
+  },
+  QUALIFYING_TEST_RESPONSES: {
+    STATUS: {
+      CREATED: 'created',
+      ACTIVATED: 'activated',
+      STARTED: 'started',
+      COMPLETED: 'completed',
+    },
   },
   NOTIFY_KEY: functions.config().notify.key,
   SLACK_URL: functions.config().slack.url,

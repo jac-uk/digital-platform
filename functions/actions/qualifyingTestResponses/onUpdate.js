@@ -15,16 +15,16 @@ module.exports = (config, firebase, db) => {
       const statusAfter = dataAfter.status;
       // started test
       if (
-        statusBefore === config.QUALIFYINGTESTRESPONSES_STATUS.ACTIVATED &&
-        statusAfter === config.QUALIFYINGTESTRESPONSES_STATUS.STARTED
+        statusBefore === config.QUALIFYING_TEST_RESPONSES.STATUS.ACTIVATED &&
+        statusAfter === config.QUALIFYING_TEST_RESPONSES.STATUS.STARTED
       ) {
         data[`counts.${statusAfter}`] = increment;
         data[`counts.inProgress`] = increment;
       }
       // completed test
       if (
-        statusBefore === config.QUALIFYINGTESTRESPONSES_STATUS.STARTED &&
-        statusAfter === config.QUALIFYINGTESTRESPONSES_STATUS.COMPLETED
+        statusBefore === config.QUALIFYING_TEST_RESPONSES.STATUS.STARTED &&
+        statusAfter === config.QUALIFYING_TEST_RESPONSES.STATUS.COMPLETED
       ) {
         data[`counts.${statusAfter}`] = increment;
         data[`counts.inProgress`] = decrement;
