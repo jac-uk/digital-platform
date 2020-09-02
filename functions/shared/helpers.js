@@ -9,10 +9,13 @@ module.exports = {
 
 async function getDocument(query) {
   const doc = await query.get();
-  const document = doc.data();
-  document.id = doc.id;
-  document.ref = doc.ref;
-  return document;
+  if (doc.exists) {
+    const document = doc.data();
+    document.id = doc.id;
+    document.ref = doc.ref;
+    return document;
+  }
+  return false;
 }
 
 async function getDocuments(query) {

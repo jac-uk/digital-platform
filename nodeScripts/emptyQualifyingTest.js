@@ -6,7 +6,7 @@ const emptyQualifyingTest = require('../functions/actions/qualifyingTests/emptyQ
 
 const main = async () => {
   return emptyQualifyingTest({
-    qualifyingTestId: '8pTJRSXFUpTkZL0XAFyV',
+    qualifyingTestId: '2bpbIve3vKn9IJpVwUWC',
   });
 };
 

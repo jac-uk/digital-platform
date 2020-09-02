@@ -17,6 +17,9 @@ module.exports = (config, firebase, db) => {
 
     // get qualifying test
     const qualifyingTest = await getDocument(db.doc(`qualifyingTests/${params.qualifyingTestId}`));
+    if (!qualifyingTest) {
+      return false;
+    }
 
     // delete all qualifyingTestResponses
     let qualifyingTestResponsesRef = db.collection('qualifyingTestResponses')
