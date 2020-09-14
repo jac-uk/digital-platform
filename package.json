@@ -38,10 +38,11 @@
     "ci:test:rules": "firebase emulators:exec --only firestore 'npm run test:rules'"
   },
   "dependencies": {
-    "@firebase/testing": "^0.20.9",
+    "@firebase/testing": "^0.20.11",
+    "@google-cloud/storage": "^5.2.0",
     "@google-cloud/storage": "^5.0.0",
     "axios": "^0.20.0",
-    "firebase": "^7.17.2",
+    "firebase": "^7.18.0",
     "firebase-admin": "^9.0.0",
     "firebase-functions": "^3.9.1",
     "firebase-functions-test": "^0.2.1",
