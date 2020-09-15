@@ -3,8 +3,8 @@ module.exports = (config, firebase) => {
 
   return newQualifyingTestResponse;
 
-  function newQualifyingTestResponse(qualifyingTest, applicationRecord) {
-    return {
+  function newQualifyingTestResponse(qualifyingTest, inputData) {
+    const data = {
       qualifyingTest: {
         id: qualifyingTest.id,
         type: qualifyingTest.type,
@@ -15,19 +15,6 @@ module.exports = (config, firebase) => {
         // questions: [],  // @TODO move questions here instead of testQuestions
       },
       testQuestions: [],
-      application: {
-        id: applicationRecord.application.id,
-        referenceNumber: applicationRecord.application.referenceNumber,
-      },
-      candidate: {
-        id: applicationRecord.candidate.id,
-        fullName: applicationRecord.candidate.fullName,
-        reasonableAdjustments: applicationRecord.candidate.reasonableAdjustments ? true : false,
-        reasonableAdjustmentsDetails: applicationRecord.candidate.reasonableAdjustmentsDetails ? applicationRecord.candidate.reasonableAdjustmentsDetails : null,
-      },
-      vacancy: {
-        id: applicationRecord.exercise.id,
-      },
       duration: {
         testDuration: qualifyingTest.testDuration,
         reasonableAdjustment: 0,
@@ -43,5 +30,34 @@ module.exports = (config, firebase) => {
       status: config.QUALIFYING_TEST_RESPONSES.STATUS.CREATED,
       lastUpdated: firebase.firestore.FieldValue.serverTimestamp(),
     };
+    if (qualifyingTest.mode === 'dry-run') {
+      data.candidate = {
+        email: inputData,
+        id: null,
+        fullName: null,
+        reasonableAdjustments: false,
+      };
+    } else {
+      if (inputData.application) {
+        data.application = {
+          id: inputData.application.id,
+          referenceNumber: inputData.application.referenceNumber,
+        };
+      }
+      if (inputData.candidate) {
+        data.candidate = {
+          id: inputData.candidate.id,
+          fullName: inputData.candidate.fullName,
+          reasonableAdjustments: inputData.candidate.reasonableAdjustments ? true : false,
+          reasonableAdjustmentsDetails: inputData.candidate.reasonableAdjustmentsDetails ? inputData.candidate.reasonableAdjustmentsDetails : null,
+        };
+      }
+      if (inputData.exercise) {
+        data.vacancy = {
+          id: inputData.exercise.id,
+        };
+      }
+    }
+    return data;
   }
 }
