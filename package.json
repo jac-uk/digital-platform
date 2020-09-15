@@ -42,7 +42,7 @@
     "@google-cloud/storage": "^5.2.0",
     "axios": "^0.20.0",
     "firebase": "^7.18.0",
-    "firebase-admin": "^9.0.0",
+    "firebase-admin": "^9.1.1",
     "firebase-functions": "^3.9.1",
     "firebase-functions-test": "^0.2.1",
     "firebase-tools": "^8.7.0",
