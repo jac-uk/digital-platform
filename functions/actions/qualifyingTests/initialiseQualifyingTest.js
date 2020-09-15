@@ -10,7 +10,7 @@ module.exports = (config, firebase, db) => {
   * Creates qualifyingTestResponse document for each candidate invited to the qualifying test
   * @param {*} `params` is an object containing
   *   `qualifyingTestId` (required) ID of qualifying test
-  *   `stage` (required) exercise stage
+  *   `stage` (optional) exercise stage
   */
   async function initialiseQualifyingTest(params) {
 
@@ -19,20 +19,25 @@ module.exports = (config, firebase, db) => {
 
     if (qualifyingTest.status !== 'approved') { return false; }
 
-    // get application records
-    let applicationRecordsRef = db.collection('applicationRecords')
-      .where('exercise.id', '==', qualifyingTest.vacancy.id)
-      .where('stage', '==', params.stage);
-    const applicationRecords = await getDocuments(applicationRecordsRef);
+    // get participants
+    let participants = [];
+    if (qualifyingTest.mode === 'dry-run') {
+      participants = qualifyingTest.invitedEmails;
+    } else {
+      let applicationRecordsRef = db.collection('applicationRecords')
+        .where('exercise.id', '==', qualifyingTest.vacancy.id)
+        .where('stage', '==', params.stage);
+      participants = await getDocuments(applicationRecordsRef);
+    }
 
     // construct db commands
     const commands = [];
-    for (let i = 0, len = applicationRecords.length; i < len; ++i) {
-      const applicationRecord = applicationRecords[i];
+    for (let i = 0, len = participants.length; i < len; ++i) {
+      const participant = participants[i];
       commands.push({
         command: 'set',
         ref: db.collection('qualifyingTestResponses').doc(),
-        data: newQualifyingTestResponse(qualifyingTest, applicationRecord),
+        data: newQualifyingTestResponse(qualifyingTest, participant),
       });
     }
 
@@ -43,7 +48,7 @@ module.exports = (config, firebase, db) => {
       data: {
         status: 'initialised',
         counts: {
-          initialised: applicationRecords.length,
+          initialised: participants.length,
           activated: 0,
           started: 0,
           inProgress: 0,
@@ -54,7 +59,7 @@ module.exports = (config, firebase, db) => {
 
     // write to db
     const result = await applyUpdates(db, commands);
-    return result ? applicationRecords.length : false;
+    return result ? participants.length : false;
 
   }
 
