@@ -15,6 +15,7 @@ describe(COLLECTION_NAME, () => {
 
   const mockData = { 'qualifyingTestResponses/qtr1': { qualifyingTest: { type: 'critical_analysis', startDate: today, endDate: tomorrow } } };
   const mockDataOwnedByUser = { 'qualifyingTestResponses/qtr1': { qualifyingTest: { type: 'critical_analysis', startDate: today, endDate: tomorrow }, candidate: { id: 'user1' } } };
+  const mockDataOwnedByEmail = { 'qualifyingTestResponses/qtr1': { qualifyingTest: { type: 'critical_analysis', startDate: today, endDate: tomorrow }, candidate: { email: 'user@email.com' } } };
   const mockUnverifiedUser = { uid: 'user1', email: 'user@email.com', email_verified: false };
   const mockVerifiedUser = { uid: 'user1', email: 'user@email.com', email_verified: true };
   const mockUnverifiedJACUser = { uid: 'user1', email: 'user@judicialappointments.digital', email_verified: false };
@@ -79,6 +80,12 @@ describe(COLLECTION_NAME, () => {
       await assertSucceeds(db.collection(COLLECTION_NAME).where('candidate.id', '==', 'user1').get());
     });
 
+    it('allow authenticated user to list their own qualifying test dry run responses', async () => {
+      const db = await setup(mockVerifiedUser);
+      await setupAdmin(db, mockDataOwnedByEmail);
+      await assertSucceeds(db.collection(COLLECTION_NAME).where('candidate.email', '==', 'user@email.com').get());
+    });
+
     it('allow JAC admin to list qualifying test responses', async () => {
       const db = await setup(mockVerifiedJACDigitalUser);
       await setupAdmin(db, mockData);
@@ -94,7 +101,6 @@ describe(COLLECTION_NAME, () => {
     it('prevent authenticated user from reading qualifying test response', async () => {
       const db = await setup(mockVerifiedUser);
       await setupAdmin(db, mockData);
-      console.log(mockData);
       await assertFails(db.collection(COLLECTION_NAME).doc('qtr1').get());
     });
 
