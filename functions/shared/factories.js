@@ -189,7 +189,6 @@ module.exports = (CONSTANTS) => {
   function newVacancy(data) {
     const vacancyModel = {
       aboutTheRole: null,
-      additionalWorkingPreferences: null,
       applicationCloseDate: null,
       applicationOpenDate: null,
       appliedSchedule: null,
@@ -245,7 +244,7 @@ module.exports = (CONSTANTS) => {
       schedule2Apply: null,
       selectionCriteria: null,
       selectionDays: null,
-      selectionExerciseManagerFullName: null,
+      selectionExerciseManager: null,
       shortlistingMethods: null,
       shortlistingOutcomeDate: null,
       situationalJudgementTestDate: null,
@@ -260,6 +259,7 @@ module.exports = (CONSTANTS) => {
       welshRequirement: null,
       welshRequirementType: null,
       yesSalaryDetails: null,
+      pjeDays: null,      
     };
     const vacancy = { ...vacancyModel };
     for (var key in vacancyModel) {
