@@ -32,7 +32,7 @@ module.exports = (config, firebase) => {
     };
     if (qualifyingTest.mode === 'dry-run') {
       data.candidate = {
-        email: inputData,
+        email: inputData.toLowerCase(),
         id: null,
         fullName: null,
         reasonableAdjustments: false,
