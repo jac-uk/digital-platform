@@ -259,7 +259,8 @@ module.exports = (CONSTANTS) => {
       welshRequirement: null,
       welshRequirementType: null,
       yesSalaryDetails: null,
-      pjeDays: null,      
+      additionalWorkingPreferences: null,
+      pjeDays: null,
     };
     const vacancy = { ...vacancyModel };
     for (var key in vacancyModel) {
