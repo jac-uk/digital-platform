@@ -244,7 +244,7 @@ module.exports = (CONSTANTS) => {
       schedule2Apply: null,
       selectionCriteria: null,
       selectionDays: null,
-      selectionExerciseManager: null,
+      selectionExerciseManagerFullName: null,
       shortlistingMethods: null,
       shortlistingOutcomeDate: null,
       situationalJudgementTestDate: null,
