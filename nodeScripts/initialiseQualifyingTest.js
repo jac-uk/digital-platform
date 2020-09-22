@@ -6,7 +6,7 @@ const initialiseQualifyingTest = require('../functions/actions/qualifyingTests/i
 
 const main = async () => {
   return initialiseQualifyingTest({
-    qualifyingTestId: 'FdOGLjz1z42xVOhDX1IU',
+    qualifyingTestId: 'g8TgynU2YoHq9r3aLDdX',
     // status: '', // @TODO only invite applications with a certain status
   });
 };
