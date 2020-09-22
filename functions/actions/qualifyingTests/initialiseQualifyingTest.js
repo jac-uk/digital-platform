@@ -21,7 +21,9 @@ module.exports = (config, firebase, db) => {
 
     // get participants
     let participants = [];
-    if (qualifyingTest.mode === 'dry-run') {
+    if (qualifyingTest.mode === 'mop-up') {
+      // do nothing as there are no participants
+    } else if (qualifyingTest.mode === 'dry-run') {
       participants = qualifyingTest.invitedEmails;
     } else {
       let applicationRecordsRef = db.collection('applicationRecords')
