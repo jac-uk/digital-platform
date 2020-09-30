@@ -1,7 +1,7 @@
 const { getDocument, getDocuments, applyUpdates } = require('../../shared/helpers');
 
 module.exports = (config, firebase, db) => {
-  const newQuestionsWithScoredAnswers = require('../../shared/factories/QualifyingTests/newQuestionsWithScoredAnswers')(config);
+  const newResponsesWithScores = require('../../shared/factories/QualifyingTests/newResponsesWithScores')(config);
 
   return scoreQualifyingTest;
 
@@ -27,7 +27,7 @@ module.exports = (config, firebase, db) => {
     let qualifyingTestResponsesRef = db.collection('qualifyingTestResponses')
       .where('qualifyingTest.id', '==', qualifyingTest.id)
       // .where('activated', '==', null)
-      .select('testQuestions');
+      .select('responses');
     const qualifyingTestResponses = await getDocuments(qualifyingTestResponsesRef);
 
     // construct db commands
@@ -36,17 +36,17 @@ module.exports = (config, firebase, db) => {
     const questionsCompleted = [];
     for (let i = 0, len = qualifyingTestResponses.length; i < len; ++i) {
       const qualifyingTestResponse = qualifyingTestResponses[i];
-      const questionsWithMarks = newQuestionsWithScoredAnswers(qualifyingTest, qualifyingTestResponse);
-      const score = getScore(questionsWithMarks);
-      const totalQuestionsStarted = getTotalQuestionsStarted(questionsWithMarks);
-      const totalQuestionsCompleted = getTotalQuestionsCompleted(questionsWithMarks);
+      const responsesWithScores = newResponsesWithScores(qualifyingTest, qualifyingTestResponse);
+      const score = getScore(responsesWithScores);
+      const totalQuestionsStarted = getTotalQuestionsStarted(responsesWithScores);
+      const totalQuestionsCompleted = getTotalQuestionsCompleted(responsesWithScores);
       scores.push(score);
       questionsCompleted.push(totalQuestionsCompleted);
       commands.push({
         command: 'update',
         ref: qualifyingTestResponse.ref,
         data: {
-          'testQuestions.questions': questionsWithMarks,
+          responses: responsesWithScores,
           score: score,
           questionsStarted: totalQuestionsStarted,
           questionsCompleted: totalQuestionsCompleted,
@@ -76,30 +76,30 @@ module.exports = (config, firebase, db) => {
 
   }
 
-  function getScore(questions) {
+  function getScore(responses) {
     let totalScore = 0;
-    questions.forEach(question => {
-      if (question.response && question.response.score) {
-        totalScore += question.response.score;
+    responses.forEach(response => {
+      if (response && response.score) {
+        totalScore += response.score;
       }
     });
     return totalScore;
   }
 
-  function getTotalQuestionsStarted(questions) {
+  function getTotalQuestionsStarted(responses) {
     let totalQuestionsStarted = 0;
-    questions.forEach(question => {
-      if (question.response && question.response.started) {
+    responses.forEach(response => {
+      if (response && response.started) {
         totalQuestionsStarted++;
       }
     });
     return totalQuestionsStarted;
   }
 
-  function getTotalQuestionsCompleted(questions) {
+  function getTotalQuestionsCompleted(responses) {
     let totalQuestionsCompleted = 0;
-    questions.forEach(question => {
-      if (question.response && question.response.completed) {
+    responses.forEach(response => {
+      if (response && response.completed) {
         totalQuestionsCompleted++;
       }
     });
