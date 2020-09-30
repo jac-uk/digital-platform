@@ -47,7 +47,7 @@ function isEmpty(obj) {
 }
 
 async function applyUpdates(db, commands) {
-  const BATCH_SIZE = 500;
+  const BATCH_SIZE = 200;
   if (commands.length) {
     if (commands.length < BATCH_SIZE) {
       try {
