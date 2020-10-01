@@ -6,7 +6,7 @@ const { initialiseMissingApplicationRecords } = require('../functions/actions/ap
 
 const main = async () => {
   return initialiseMissingApplicationRecords({
-    exerciseId: 'OPwPPwNPeiNz4VmnFbNU',
+    exerciseId: 'wdpALbyICL7ZxxN5AQt8',
   });
 };
 
