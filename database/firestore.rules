@@ -165,5 +165,16 @@ service cloud.firestore {
                     && request.resource.data.candidate.id == currentUser();
     }
 
+    match /invitations/{invitationId} {
+      // allow admins to read and write invitations
+      allow read, write: if userIsAuthenticated() && userIsJAC();
+      
+      // allow candidates to read and update their own invitations
+      allow read, update: if userIsAuthenticated() && (
+                      fieldHasValue(resource.data.candidate, 'id', currentUser())
+                      || fieldHasValue(resource.data.candidate, 'email', request.auth.token.email)
+                    );
+    }
+
   }
 }
