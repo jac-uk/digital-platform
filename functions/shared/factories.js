@@ -261,6 +261,7 @@ module.exports = (CONSTANTS) => {
       yesSalaryDetails: null,
       additionalWorkingPreferences: null,
       pjeDays: null,
+      inviteOnly: null,
     };
     const vacancy = { ...vacancyModel };
     for (var key in vacancyModel) {
