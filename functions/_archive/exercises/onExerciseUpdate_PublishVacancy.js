@@ -91,7 +91,7 @@ exports.onExerciseUpdate_PublishVacancy = functions.region('europe-west2').fires
         welshRequirement: null,
         welshRequirementType: null,
         yesSalaryDetails: null,
-        inviteOnly: null,
+        // inviteOnly: null,
       };
       const vacancy = { ...vacancyModel };
       for (var key in vacancyModel) {
