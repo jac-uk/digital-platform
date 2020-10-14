@@ -6,7 +6,7 @@ const scoreQualifyingTest = require('../functions/actions/qualifyingTests/scoreQ
 
 const main = async () => {
   return scoreQualifyingTest({
-    qualifyingTestId: 'ExCnXLxi6OQHOaQonAr6',
+    qualifyingTestId: 'cmPKcqS0oDR9SGmX7EzE',
   });
 };
 

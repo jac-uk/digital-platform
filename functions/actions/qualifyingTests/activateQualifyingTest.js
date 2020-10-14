@@ -25,7 +25,7 @@ module.exports = (config, firebase, db) => {
     // get qualifying test responses
     let qualifyingTestResponsesRef = db.collection('qualifyingTestResponses')
       .where('qualifyingTest.id', '==', qualifyingTest.id)
-      // .where('activated', '==', null)
+      .where('status', '==', config.QUALIFYING_TEST_RESPONSES.STATUS.CREATED)
       .select('application.id');
     const qualifyingTestResponses = await getDocuments(qualifyingTestResponsesRef);
 
@@ -53,12 +53,12 @@ module.exports = (config, firebase, db) => {
       command: 'update',
       ref: qualifyingTest.ref,
       data: {
-        status: 'activated',
+        status: config.QUALIFYING_TEST.STATUS.ACTIVATED,
         'counts.activated': qualifyingTestResponses.length,
       },
     });
 
-    // write to db
+    // // write to db
     const result = await applyUpdates(db, commands);
 
     // @TODO send notifications

@@ -142,12 +142,12 @@ service cloud.firestore {
       allow read: if userIsAuthenticated() && userIsJAC();
       allow create: if userIsAuthenticated() && userIsJAC();
       allow update: if userIsAuthenticated() && userIsJAC();
+      allow delete: if userIsAuthenticated() && userIsJAC();  // TODO only super admins
     }
 
     match /qualifyingTestResponses/{qualifyingTestResponseId} {
-      // allow admins read and update permission
-      allow read: if userIsAuthenticated() && userIsJAC();
-      allow update: if userIsAuthenticated() && userIsJAC();
+      // allow admins read and create/update permission
+      allow read, update: if userIsAuthenticated() && userIsJAC();
 
       // allow candidate to read their own document
       allow read: if userIsAuthenticated() 
@@ -163,6 +163,17 @@ service cloud.firestore {
                       || fieldHasValue(resource.data.candidate, 'email', request.auth.token.email)
                     ) 
                     && request.resource.data.candidate.id == currentUser();
+    }
+
+    match /invitations/{invitationId} {
+      // allow admins to read and write invitations
+      allow read, write: if userIsAuthenticated() && userIsJAC();
+      
+      // allow candidates to read and update their own invitations
+      allow read, update: if userIsAuthenticated() && (
+                      fieldHasValue(resource.data.candidate, 'id', currentUser())
+                      || fieldHasValue(resource.data.candidate, 'email', request.auth.token.email)
+                    );
     }
 
   }

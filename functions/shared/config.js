@@ -30,6 +30,7 @@ module.exports = {
       ACTIVATED: 'activated',
       STARTED: 'started',
       COMPLETED: 'completed',
+      CANCELLED: 'cancelled',
     },
   },
   NOTIFY_KEY: functions.config().notify.key,

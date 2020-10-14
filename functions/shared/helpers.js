@@ -5,6 +5,7 @@ module.exports = {
   isEmpty,
   applyUpdates,
   checkArguments,
+  isDateInPast,
 };
 
 async function getDocument(query) {
@@ -47,7 +48,7 @@ function isEmpty(obj) {
 }
 
 async function applyUpdates(db, commands) {
-  const BATCH_SIZE = 500;
+  const BATCH_SIZE = 200;
   if (commands.length) {
     if (commands.length < BATCH_SIZE) {
       try {
@@ -110,4 +111,10 @@ function checkArguments(definitions, data) {
   }
   // @TODO perhaps make this return richer information like `{ isOK: Boolean, message: String }`
   return true;
+}
+
+function isDateInPast(date) {
+  const dateToCompare = new Date(date);
+  const today = new Date();
+  return dateToCompare < today;
 }
