@@ -7,7 +7,8 @@ const initialiseQualifyingTest = require('../actions/qualifyingTests/initialiseQ
 module.exports = functions.region('europe-west2').https.onCall(async (data, context) => {
   if (!checkArguments({
     qualifyingTestId: { required: true },
-    stage: { required: false }
+    stage: { required: false },
+    status: { required: false },
   }, data)) {
     throw new functions.https.HttpsError('invalid-argument', 'Please provide valid arguments');
   }
