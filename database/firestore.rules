@@ -23,7 +23,7 @@ service cloud.firestore {
   // }
 
   match /databases/{database}/documents {
-    
+
     match /{document=**} {
       allow read: if false;
       allow write: if false;
@@ -32,7 +32,7 @@ service cloud.firestore {
     match /exercises/{exerciseId} {
       allow read: if userIsAuthenticated() && userIsJAC();
       allow write: if userIsAuthenticated() && userIsJAC();
-      
+
       match /reports/{reportId} {
         allow read: if userIsAuthenticated() && userIsJAC();
       }
@@ -80,12 +80,12 @@ service cloud.firestore {
       allow read, write: if userIsAuthenticated() && userIsJAC();
 
       match /documents/{documentId} {
-        allow get, create, update: if request.auth.uid == candidateId && 
+        allow get, create, update: if request.auth.uid == candidateId &&
                                       documentId in ['personalDetails', 'characterInformation', 'equalityAndDiversitySurvey'];
         allow read, write: if userIsAuthenticated() && userIsJAC();
       }
     }
-                       
+
     function exerciseIsOpen(exerciseId) {
       // overide stored time and set to 13:00
       // @TODO Let's store time in database rather than having hardcoded all over and messing with DST
@@ -128,16 +128,24 @@ service cloud.firestore {
 
       // allow assessor to read and update own documents
       allow read: if userIsAuthenticated() && userHasEmail(resource.data.assessor.email);
-      allow update: if userIsAuthenticated() && userHasEmail(resource.data.assessor.email) && 
+      allow update: if userIsAuthenticated() && userHasEmail(resource.data.assessor.email) &&
                        (!('id' in resource.data.assessor) || resource.data.assessor.id == request.resource.data.assessor.id) &&
                        (!('id' in request.resource.data.assessor) || request.resource.data.assessor.id == currentUser()) &&
                        resource.data.assessor.email == request.resource.data.assessor.email &&
                        resource.data.status == 'pending' &&
-                       request.resource.data.status == 'completed' &&
-                       resource.data.dueDate >= request.time;
+                       request.resource.data.status == 'completed';
+                       // TODO allow uploads after the due date but before the hard limit resource.data.dueDate >= request.time;
     }
 
     match /qualifyingTests/{qualifyingTestId} {
+      // allow admins read, create and update permission
+      allow read: if userIsAuthenticated() && userIsJAC();
+      allow create: if userIsAuthenticated() && userIsJAC();
+      allow update: if userIsAuthenticated() && userIsJAC();
+      allow delete: if userIsAuthenticated() && userIsJAC();  // TODO only super admins
+    }
+
+    match /qualifyingTestReports/{qualifyingTestReportId} {
       // allow admins read, create and update permission
       allow read: if userIsAuthenticated() && userIsJAC();
       allow create: if userIsAuthenticated() && userIsJAC();
@@ -150,7 +158,7 @@ service cloud.firestore {
       allow read, update: if userIsAuthenticated() && userIsJAC();
 
       // allow candidate to read their own document
-      allow read: if userIsAuthenticated() 
+      allow read: if userIsAuthenticated()
                     && (
                       fieldHasValue(resource.data.candidate, 'id', currentUser())
                       || fieldHasValue(resource.data.candidate, 'email', request.auth.token.email)
@@ -161,14 +169,14 @@ service cloud.firestore {
       allow update: if (
                       fieldHasValue(resource.data.candidate, 'id', currentUser())
                       || fieldHasValue(resource.data.candidate, 'email', request.auth.token.email)
-                    ) 
+                    )
                     && request.resource.data.candidate.id == currentUser();
     }
 
     match /invitations/{invitationId} {
       // allow admins to read and write invitations
       allow read, write: if userIsAuthenticated() && userIsJAC();
-      
+
       // allow candidates to read and update their own invitations
       allow read, update: if userIsAuthenticated() && (
                       fieldHasValue(resource.data.candidate, 'id', currentUser())
