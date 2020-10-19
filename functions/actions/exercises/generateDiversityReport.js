@@ -147,7 +147,7 @@ const ethnicityStats = (applications) => {
         case 'other-ethnic-group':
           stats.other.total += 1;
           break;
-        default: // @todo check catch all is appropriate for bame 
+        default: // @todo check catch all is appropriate for bame
           stats.bame.total += 1;
       }
     } else {
