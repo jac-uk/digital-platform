@@ -169,7 +169,7 @@ describe('applyUpdates()', () => {
     const result = await applyUpdates(mockDb, commands);
     expect(result).toBe(NUMBER_OF_COMMANDS);
     expect(commandCount).toBe(NUMBER_OF_COMMANDS);
-    expect(commitCount).toBe(4);  // commands are executed in batches of 500
+    expect(commitCount).toBe(8);  // commands are executed in batches of 200
   });
 
 });

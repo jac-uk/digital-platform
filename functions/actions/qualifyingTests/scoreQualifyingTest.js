@@ -9,10 +9,10 @@ module.exports = (config, firebase, db) => {
   * scoreQualifyingTest
   * Scores the qualifying test by:
   * - getting test questions and answers
-  * - looping through responses and for each one 
+  * - looping through responses and for each one
   *   - marking the answers
   *   - populating the 'score'
-  *   - identifying whether the candidate completed the test or ran out of time
+  *   - updating the corresponding application record with score for this QT
   * - updating qualifyingTest document with some stats around score (average, highest, lowest, mode)
   * - updating qualifyingTest status to completed
   * @param {*} `params` is an object containing
@@ -22,12 +22,13 @@ module.exports = (config, firebase, db) => {
 
     // get qualifying test
     const qualifyingTest = await getDocument(db.doc(`qualifyingTests/${params.qualifyingTestId}`));
+    const mainQualifyingTestId = qualifyingTest.mode === config.QUALIFYING_TEST.MODE.MOP_UP ? qualifyingTest.relationship.copiedFrom : qualifyingTest.id;
 
     // get qualifying test responses
     let qualifyingTestResponsesRef = db.collection('qualifyingTestResponses')
       .where('qualifyingTest.id', '==', qualifyingTest.id)
       // .where('activated', '==', null)
-      .select('responses');
+      .select('responses', 'testQuestions', 'application');
     const qualifyingTestResponses = await getDocuments(qualifyingTestResponsesRef);
 
     // construct db commands
@@ -53,6 +54,22 @@ module.exports = (config, firebase, db) => {
           lastUpdated: firebase.firestore.FieldValue.serverTimestamp(),
         },
       });
+      // update corresponding application record, if we have one (dry run won't)
+      if (qualifyingTestResponse.application && qualifyingTestResponse.application.id) {
+        const data = {};
+        data[`qualifyingTests.${mainQualifyingTestId}`] = {
+          hasData: true,
+          responseId: qualifyingTestResponse.id,
+          score: score,
+          pass: null,
+          rank: null,
+        };
+        commands.push({
+          command: 'update',
+          ref: db.doc(`applicationRecords/${qualifyingTestResponse.application.id}`),
+          data: data,
+        });
+      }
     }
 
     // update qualifying test status and counts

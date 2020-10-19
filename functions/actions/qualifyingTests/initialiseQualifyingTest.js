@@ -59,6 +59,7 @@ module.exports = (config, firebase, db) => {
           activated: 0,
           started: 0,
           inProgress: 0,
+          outOfTime: 0,
           completed: 0,
         },
       },
