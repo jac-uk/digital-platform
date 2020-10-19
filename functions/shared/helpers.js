@@ -54,7 +54,13 @@ async function applyUpdates(db, commands) {
       try {
         const batch = db.batch();
         for (let i = 0, len = commands.length; i < len; ++i) {
-          batch[commands[i].command](commands[i].ref, commands[i].data);
+          switch (commands[i].command) {
+          case 'set':
+              batch.set(commands[i].ref, commands[i].data, { merge: true });
+            break;
+          default:
+              batch[commands[i].command](commands[i].ref, commands[i].data);
+          }
         }
         await batch.commit();
         return commands.length;
@@ -72,8 +78,8 @@ async function applyUpdates(db, commands) {
       return totalCommandsExecuted;
     }
   }
-  return false;  
-} 
+  return false;
+}
 
 function chunkArray(arr, size) {
   var myArray = [];
@@ -83,7 +89,7 @@ function chunkArray(arr, size) {
   return myArray;
 }
 
-function checkArguments(definitions, data) {  
+function checkArguments(definitions, data) {
   // check data only contains defined props
   const allowedKeys = Object.keys(definitions);
   const providedKeys = Object.keys(data);
