@@ -28,7 +28,7 @@ module.exports = (config, firebase, db) => {
     let qualifyingTestResponsesRef = db.collection('qualifyingTestResponses')
       .where('qualifyingTest.id', '==', qualifyingTest.id)
       // .where('activated', '==', null)
-      .select('responses', 'testQuestions', 'application');
+      .select('responses', 'testQuestions', 'application', 'status');
     const qualifyingTestResponses = await getDocuments(qualifyingTestResponsesRef);
 
     // construct db commands
@@ -61,6 +61,7 @@ module.exports = (config, firebase, db) => {
           hasData: true,
           responseId: qualifyingTestResponse.id,
           score: score,
+          status: qualifyingTestResponse.status,
           pass: null,
           rank: null,
         };
