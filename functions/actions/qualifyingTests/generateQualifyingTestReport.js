@@ -58,19 +58,22 @@ module.exports = (config, firebase, db) => {
           fullName: applicationRecord.candidate.fullName,
           // TODO email: applicationRecord.candidate.email,
         },
-        diversity: {
-          female: applicationRecord.diversity.gender === 'female'? true : false,
-          bame: applicationRecord.diversity.ethnicity === 'bame' ? true : false,
-          solicitor: applicationRecord.diversity.professionalBackground.solicitor ? true : false,
-          disability: applicationRecord.diversity.disability === true ? true : false,
-        },
         score: 0,
         qualifyingTests: {},
       };
+      if (applicationRecord.diversity) {
+        row.diversity = {
+          female: applicationRecord.diversity.gender === 'female' ? true : false,
+          bame: applicationRecord.diversity.ethnicity === 'bame' ? true : false,
+          solicitor: applicationRecord.diversity.professionalBackground.solicitor ? true : false,
+          disability: applicationRecord.diversity.disability === true ? true : false,
+        };
+      }
       qualifyingTests.forEach(qualifyingTest => {
         row.qualifyingTests[qualifyingTest.id] = {};
         row.qualifyingTests[qualifyingTest.id].responseId = applicationRecord.qualifyingTests[qualifyingTest.id].responseId;
         row.qualifyingTests[qualifyingTest.id].score = applicationRecord.qualifyingTests[qualifyingTest.id].score;
+        row.qualifyingTests[qualifyingTest.id].status = applicationRecord.qualifyingTests[qualifyingTest.id].status;
         row.score += applicationRecord.qualifyingTests[qualifyingTest.id].score;
       });
       data.push(row);

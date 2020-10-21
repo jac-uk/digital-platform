@@ -55,7 +55,8 @@
     "eslint-plugin-promise": "^3.6.0",
     "firebase-mock": "^2.2.10",
     "jest": "^25.2.1",
-    "mocha": "^6.2.3"
+    "mocha": "^6.2.3",
+    "csv-writer": "^1.6.0"
   },
   "private": true
 }
