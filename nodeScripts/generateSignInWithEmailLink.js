@@ -5,7 +5,7 @@ const { generateSignInWithEmailLink } = require('../functions/actions/users.js')
 
 const main = async () => {
   // return generateSignInWithEmailLink('assessments/testData-1-1', 'warren3@precise-minds.co.uk', 'http://localhost:8082/sign-in');
-  return generateSignInWithEmailLink('assessments/k4sDdUaiaN4r6XDlEttF-2', 'claire.troughton@judicialappointments.gov.uk', 'https://assessments-staging.judicialappointments.digital/sign-in');
+  return generateSignInWithEmailLink('assessments/testData-0-1', 'warren2@precise-minds.co.uk', 'https://assessments-develop.judicialappointments.digital/sign-in');
 };
 
 main()
