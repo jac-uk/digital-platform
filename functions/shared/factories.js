@@ -114,6 +114,9 @@ module.exports = (CONSTANTS) => {
       fileRef: '',
       status: 'draft',
     }
+    if (exercise.independentAssessmentsHardLimitDate) {
+      assessment.hardLimit = exercise.independentAssessmentsHardLimitDate
+    }
     switch (whichAssessor) {
       case 'first':
         assessment.assessor.fullName = application.firstAssessorFullName;
