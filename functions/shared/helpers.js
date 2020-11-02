@@ -1,6 +1,7 @@
 module.exports = {
   getDocument,
   getDocuments,
+  getDocumentsFromQueries,
   getAllDocuments,  // @TODO consider names used here
   isEmpty,
   applyUpdates,
@@ -27,6 +28,20 @@ async function getDocuments(query) {
     document.id = doc.id;
     document.ref = doc.ref;
     documents.push(document);
+  });
+  return documents;
+}
+
+async function getDocumentsFromQueries(queries) {
+  const documents = [];
+  const querySnapshots = await Promise.all(queries.map(query => query.get()));
+  querySnapshots.forEach((snapshot) => {
+    snapshot.forEach(doc => {
+    const document = doc.data();
+    document.id = doc.id;
+    document.ref = doc.ref;
+    documents.push(document);
+    });
   });
   return documents;
 }
