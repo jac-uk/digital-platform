@@ -115,7 +115,7 @@ module.exports = (CONSTANTS) => {
       status: 'draft',
     }
     if (exercise.independentAssessmentsHardLimitDate) {
-      assessment.hardLimit = exercise.independentAssessmentsHardLimitDate
+      assessment.hardLimitDate = exercise.independentAssessmentsHardLimitDate
     }
     switch (whichAssessor) {
       case 'first':
