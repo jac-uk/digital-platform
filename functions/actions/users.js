@@ -28,7 +28,7 @@ module.exports = (auth, db) => {
   async function canAccessAssessments(ref, email) {
     // @TODO improve ref validation
     let resource = await getDocument(db.doc(ref));
-    if (resource.assessor.email === email) {
+    if (resource && resource.assessor && resource.assessor.email === email) {
       return true;
     }
     return false;
