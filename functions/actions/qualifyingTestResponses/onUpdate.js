@@ -31,6 +31,9 @@ module.exports = (config, firebase, db) => {
       ) {
         data[`counts.${statusAfter}`] = increment;
         data[`counts.inProgress`] = decrement;
+        if (dataAfter.isOutOfTime) {
+          data['counts.outOfTime'] = increment;
+        }
       }
       if (Object.keys(data).length > 0) {
         await db.doc(`qualifyingTests/${qualifyingTestId}`).update(data);

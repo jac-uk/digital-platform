@@ -114,6 +114,9 @@ module.exports = (CONSTANTS) => {
       fileRef: '',
       status: 'draft',
     }
+    if (exercise.independentAssessmentsHardLimitDate) {
+      assessment.hardLimitDate = exercise.independentAssessmentsHardLimitDate
+    }
     switch (whichAssessor) {
       case 'first':
         assessment.assessor.fullName = application.firstAssessorFullName;
@@ -261,6 +264,7 @@ module.exports = (CONSTANTS) => {
       yesSalaryDetails: null,
       additionalWorkingPreferences: null,
       pjeDays: null,
+      inviteOnly: null,
     };
     const vacancy = { ...vacancyModel };
     for (var key in vacancyModel) {

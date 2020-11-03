@@ -2,11 +2,13 @@
 
 const config = require('./shared/config');
 const { firebase, app, db } = require('./shared/admin.js');
-const { initialiseMissingApplicationRecords } = require('../functions/actions/applicationRecords.js')(config, firebase, db);
+const setApplicationRecordStatus = require('../functions/actions/applicationRecords/setApplicationRecordStatus')(config, firebase, db);
 
 const main = async () => {
-  return initialiseMissingApplicationRecords({
+  return setApplicationRecordStatus({
     exerciseId: 'wdpALbyICL7ZxxN5AQt8',
+    referenceNumbers: ['testData-551', 'testData-552', 'testData-553', 'testData-554', 'testData-555'],
+    newStatus: 'passedFirstTest',
   });
 };
 
