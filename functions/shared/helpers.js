@@ -1,10 +1,12 @@
 module.exports = {
   getDocument,
   getDocuments,
+  getDocumentsFromQueries,
   getAllDocuments,  // @TODO consider names used here
   isEmpty,
   applyUpdates,
   checkArguments,
+  isDateInPast,
 };
 
 async function getDocument(query) {
@@ -30,6 +32,20 @@ async function getDocuments(query) {
   return documents;
 }
 
+async function getDocumentsFromQueries(queries) {
+  const documents = [];
+  const querySnapshots = await Promise.all(queries.map(query => query.get()));
+  querySnapshots.forEach((snapshot) => {
+    snapshot.forEach(doc => {
+    const document = doc.data();
+    document.id = doc.id;
+    document.ref = doc.ref;
+    documents.push(document);
+    });
+  });
+  return documents;
+}
+
 async function getAllDocuments(db, references) {
   const documents = [];
   const snapshot = await db.getAll(...references);
@@ -47,13 +63,19 @@ function isEmpty(obj) {
 }
 
 async function applyUpdates(db, commands) {
-  const BATCH_SIZE = 500;
+  const BATCH_SIZE = 200;
   if (commands.length) {
     if (commands.length < BATCH_SIZE) {
       try {
         const batch = db.batch();
         for (let i = 0, len = commands.length; i < len; ++i) {
-          batch[commands[i].command](commands[i].ref, commands[i].data);
+          switch (commands[i].command) {
+          case 'set':
+              batch.set(commands[i].ref, commands[i].data, { merge: true });
+            break;
+          default:
+              batch[commands[i].command](commands[i].ref, commands[i].data);
+          }
         }
         await batch.commit();
         return commands.length;
@@ -71,8 +93,8 @@ async function applyUpdates(db, commands) {
       return totalCommandsExecuted;
     }
   }
-  return false;  
-} 
+  return false;
+}
 
 function chunkArray(arr, size) {
   var myArray = [];
@@ -82,7 +104,7 @@ function chunkArray(arr, size) {
   return myArray;
 }
 
-function checkArguments(definitions, data) {  
+function checkArguments(definitions, data) {
   // check data only contains defined props
   const allowedKeys = Object.keys(definitions);
   const providedKeys = Object.keys(data);
@@ -110,4 +132,10 @@ function checkArguments(definitions, data) {
   }
   // @TODO perhaps make this return richer information like `{ isOK: Boolean, message: String }`
   return true;
+}
+
+function isDateInPast(date) {
+  const dateToCompare = new Date(date);
+  const today = new Date();
+  return dateToCompare < today;
 }

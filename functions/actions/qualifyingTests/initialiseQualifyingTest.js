@@ -11,6 +11,7 @@ module.exports = (config, firebase, db) => {
   * @param {*} `params` is an object containing
   *   `qualifyingTestId` (required) ID of qualifying test
   *   `stage` (optional) exercise stage
+  *   `status` (optional) candidate status
   */
   async function initialiseQualifyingTest(params) {
 
@@ -29,6 +30,10 @@ module.exports = (config, firebase, db) => {
       let applicationRecordsRef = db.collection('applicationRecords')
         .where('exercise.id', '==', qualifyingTest.vacancy.id)
         .where('stage', '==', params.stage);
+      if (params.status !== 'all') {
+        applicationRecordsRef = applicationRecordsRef.where('status', '==', params.status);
+      }
+        
       participants = await getDocuments(applicationRecordsRef);
     }
 
@@ -54,6 +59,7 @@ module.exports = (config, firebase, db) => {
           activated: 0,
           started: 0,
           inProgress: 0,
+          outOfTime: 0,
           completed: 0,
         },
       },

@@ -21,7 +21,10 @@ module.exports = (auth, db) => {
         url: `${returnUrl}?return=true`,
         handleCodeInApp: true,
       };
-      return auth.generateSignInWithEmailLink(email, actionCodeSettings);
+      console.log('generateSignInWithEmailLink', ref);
+      const emailLink = await auth.generateSignInWithEmailLink(email, actionCodeSettings);
+      console.log('generateSignInWithEmailLink DONE', ref);
+      return emailLink;
     }
   }
 

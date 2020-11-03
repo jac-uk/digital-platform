@@ -5,7 +5,6 @@ module.exports = (config, firebase, db) => {
   return {
     updateApplication,
     onApplicationCreate,
-    onApplicationUpdate,
     sendCharacterCheckRequests,
   };
 
@@ -31,26 +30,9 @@ module.exports = (config, firebase, db) => {
     slack.post(`${data.exerciseRef}. New application started`);
     return ref.set({
       createdAt: firebase.firestore.Timestamp.fromDate(new Date()),
-    }, { 
-      merge: true 
+    }, {
+      merge: true
     });
-  }
-
-  /**
-   * Application updated event handler
-   * - 
-   */
-  async function onApplicationUpdate(dataBefore, dataAfter) {
-    // if (dataBefore.status !== dataAfter.status) {
-    //   const exerciseId = dataBefore.exercise.id;
-    //   const data = {};
-    //   const increment = firebase.firestore.FieldValue.increment(1);
-    //   const decrement = firebase.firestore.FieldValue.increment(-1);
-    //   data[`applications.${dataBefore.status}`] = decrement;
-    //   data[`applications.${dataAfter.status}`] = increment;
-    //   await db.doc(`exercises/${exerciseId}`).update(data);
-    // }
-    return true;
   }
 
   /**

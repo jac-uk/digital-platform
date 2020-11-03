@@ -12,6 +12,10 @@ module.exports = {
       CRITICAL_ANALYSIS: 'critical-analysis',
       SITUATIONAL_JUDGEMENT: 'situational-judgement',
     },
+    MODE: {
+      DRY_RUN: 'dry-run',
+      MOP_UP: 'mop-up',
+    },
     STATUS: {
       CREATED: 'created',
       SUBMITTED: 'submitted-for-approval',
@@ -29,7 +33,7 @@ module.exports = {
       STARTED: 'started',
       COMPLETED: 'completed',
     },
-  },  
+  },
   NOTIFY_KEY: process.env.NOTIFY_LIMITED_KEY,
   SLACK_URL: process.env.SLACK_URL,
 };
