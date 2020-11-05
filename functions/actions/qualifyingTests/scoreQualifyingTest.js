@@ -37,27 +37,39 @@ module.exports = (config, firebase, db) => {
     const questionsCompleted = [];
     for (let i = 0, len = qualifyingTestResponses.length; i < len; ++i) {
       const qualifyingTestResponse = qualifyingTestResponses[i];
-      const responsesWithScores = newResponsesWithScores(qualifyingTest, qualifyingTestResponse);
-      const score = getScore(responsesWithScores);
-      const totalQuestionsStarted = getTotalQuestionsStarted(responsesWithScores);
-      const totalQuestionsCompleted = getTotalQuestionsCompleted(responsesWithScores);
-      scores.push(score);
-      questionsCompleted.push(totalQuestionsCompleted);
-      commands.push({
-        command: 'update',
-        ref: qualifyingTestResponse.ref,
-        data: {
-          responses: responsesWithScores,
-          score: score,
-          questionsStarted: totalQuestionsStarted,
-          questionsCompleted: totalQuestionsCompleted,
-          lastUpdated: firebase.firestore.FieldValue.serverTimestamp(),
-        },
-      });
+      const data = {};
+      let score = null;
+      // Add scores (not for scenario tests as these are manually scored)
+      if (qualifyingTest.type !== config.QUALIFYING_TEST.TYPE.SCENARIO) {
+        const responsesWithScores = newResponsesWithScores(qualifyingTest, qualifyingTestResponse);
+        score = getScore(responsesWithScores);
+        const totalQuestionsStarted = getTotalQuestionsStarted(responsesWithScores);
+        const totalQuestionsCompleted = getTotalQuestionsCompleted(responsesWithScores);
+        data.responses = responsesWithScores;
+        data.score = score;
+        data.questionsStarted = totalQuestionsStarted;
+        data.questionsCompleted = totalQuestionsCompleted;
+        scores.push(score);
+        questionsCompleted.push(totalQuestionsCompleted);
+      }
+      // Mark any tests still in progress as completed & out of time
+      if (qualifyingTestResponse.status === config.QUALIFYING_TEST_RESPONSES.STATUS.STARTED) {
+        data.isOutOfTime = true;
+        data.status = config.QUALIFYING_TEST_RESPONSES.STATUS.COMPLETED;
+        data['statusLog.completed'] = qualifyingTest.endDate;
+      }
+      if (Object.keys(data).length > 0) {
+        data.lastUpdated = firebase.firestore.FieldValue.serverTimestamp();
+        commands.push({
+          command: 'update',
+          ref: qualifyingTestResponse.ref,
+          data: data,
+        });
+      }
       // update corresponding application record, if we have one (dry run won't)
       if (qualifyingTestResponse.application && qualifyingTestResponse.application.id) {
-        const data = {};
-        data[`qualifyingTests.${mainQualifyingTestId}`] = {
+        const applicationRecordData = {};
+        applicationRecordData[`qualifyingTests.${mainQualifyingTestId}`] = {
           hasData: true,
           responseId: qualifyingTestResponse.id,
           score: score,
@@ -68,7 +80,7 @@ module.exports = (config, firebase, db) => {
         commands.push({
           command: 'update',
           ref: db.doc(`applicationRecords/${qualifyingTestResponse.application.id}`),
-          data: data,
+          data: applicationRecordData,
         });
       }
     }

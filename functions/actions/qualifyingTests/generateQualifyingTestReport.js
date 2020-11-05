@@ -50,17 +50,21 @@ module.exports = (config, firebase, db) => {
     for (let i = 0, len = applicationRecords.length; i < len; ++i) {
       const applicationRecord = applicationRecords[i];
       const row = {
-        application: {
-          id: applicationRecord.application.id,
-          referenceNumber: applicationRecord.application.referenceNumber,
-        },
-        candidate: {
-          fullName: applicationRecord.candidate.fullName,
-          // TODO email: applicationRecord.candidate.email,
-        },
         score: 0,
         qualifyingTests: {},
       };
+      if (applicationRecord.application) {
+        row.application = {
+          id: applicationRecord.application.id,
+          referenceNumber: applicationRecord.application.referenceNumber,
+        };
+      }
+      if (applicationRecord.candidate) {
+        row.candidate = {
+          fullName: applicationRecord.candidate.fullName,
+          // TODO email: applicationRecord.candidate.email,
+        };
+      }
       if (applicationRecord.diversity) {
         row.diversity = {
           female: applicationRecord.diversity.gender === 'female' ? true : false,
