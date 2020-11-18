@@ -121,8 +121,9 @@ service cloud.firestore {
       allow write: if userIsAuthenticated() && userIsJAC();
     }
 
-    match /logs/{document=**} {
-      allow read, write: if userIsAuthenticated();
+    match /logs/login/{id}/{logId} {
+      // allow candidates update their own logs
+      allow read, write: if userIsAuthenticated() && currentUser() == id;
       allow read: if userIsAuthenticated() && userIsJAC();
     }
 
