@@ -48,13 +48,15 @@ async function getDocumentsFromQueries(queries) {
 
 async function getAllDocuments(db, references) {
   const documents = [];
-  const snapshot = await db.getAll(...references);
-  snapshot.forEach((doc) => {
-    const document = doc.data();
-    document.id = doc.id;
-    document.ref = doc.ref;
-    documents.push(document);
-  });
+  if (references.length) {
+    const snapshot = await db.getAll(...references);
+    snapshot.forEach((doc) => {
+      const document = doc.data();
+      document.id = doc.id;
+      document.ref = doc.ref;
+      documents.push(document);
+    });
+  }
   return documents;
 }
 

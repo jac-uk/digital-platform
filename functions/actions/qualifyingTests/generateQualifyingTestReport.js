@@ -1,4 +1,4 @@
-const { getDocument, getDocuments, applyUpdates } = require('../../shared/helpers');
+const { getDocument, getDocuments, getDocumentsFromQueries } = require('../../shared/helpers');
 
 module.exports = (config, firebase, db) => {
 
@@ -18,14 +18,36 @@ module.exports = (config, firebase, db) => {
     // get qualifying test report
     const qualifyingTestReport = await getDocument(db.doc(`qualifyingTestReports/${reportId}`));
 
-    // get all relevant application records
-    let applicationRecordsRef = db.collection('applicationRecords')
-      .where('exercise.id', '==', qualifyingTestReport.exercise.id);
-    qualifyingTestReport.qualifyingTests.forEach(qualifyingTest => {
-      applicationRecordsRef = applicationRecordsRef.where(`qualifyingTests.${qualifyingTest.id}.hasData`, '==', true);
-    });
-    applicationRecordsRef = applicationRecordsRef.select('application', 'qualifyingTests', 'diversity', 'candidate');
-    const applicationRecords = await getDocuments(applicationRecordsRef);
+    // get application records
+    let applicationRecords;
+    if (qualifyingTestReport.filters && qualifyingTestReport.filters.jurisdiction) {  // TODO check for any filter rather than just jurisdiction
+      const applicationsRef = db.collection('applications')
+        .where('exerciseId', '==', qualifyingTestReport.exercise.id)
+        .where('jurisdictionPreferences', '==', qualifyingTestReport.filters.jurisdiction)
+        .where('status', '==', 'applied')
+        .select();
+      const applications = await getDocuments(applicationsRef);
+      const applicationIds = applications.map(item => item.id);
+      const queries = applicationIds.map(applicationId => {
+        let query = db.collection('applicationRecords')
+          .where('exercise.id', '==', qualifyingTestReport.exercise.id)
+          .where('application.id', '==', applicationId)
+        qualifyingTestReport.qualifyingTests.forEach(qualifyingTest => {
+          query = query.where(`qualifyingTests.${qualifyingTest.id}.hasData`, '==', true);
+        });
+        query = query.select('application', 'qualifyingTests', 'diversity', 'candidate');
+        return query;
+      });
+      applicationRecords = await getDocumentsFromQueries(queries);
+    } else {  // all application records
+      let applicationRecordsRef = db.collection('applicationRecords')
+        .where('exercise.id', '==', qualifyingTestReport.exercise.id);
+      qualifyingTestReport.qualifyingTests.forEach(qualifyingTest => {
+        applicationRecordsRef = applicationRecordsRef.where(`qualifyingTests.${qualifyingTest.id}.hasData`, '==', true);
+      });
+      applicationRecordsRef = applicationRecordsRef.select('application', 'qualifyingTests', 'diversity', 'candidate');
+      applicationRecords = await getDocuments(applicationRecordsRef);
+    }
 
     const rawData = qtReportRawData(qualifyingTestReport.qualifyingTests, applicationRecords);
     const lookupRank = qtReportLookupRank(rawData);
