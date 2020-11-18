@@ -2,11 +2,12 @@
 
 const config = require('./shared/config');
 const { firebase, app, db } = require('./shared/admin.js');
-const { initialiseMissingApplicationRecords } = require('../functions/actions/applicationRecords.js')(config, firebase, db);
+const { initialiseMissingAssessments } = require('../functions/actions/assessments.js')(config, firebase, db);
 
 const main = async () => {
-  return initialiseMissingApplicationRecords({
-    exerciseId: 'RWQnJPnzBoRvviG0JVzy',
+  return initialiseMissingAssessments({
+    exerciseId: 'LYybYFxgdeCzyC1vWZdY',
+    stage: 'review',
   });
 };
 
