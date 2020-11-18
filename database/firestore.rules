@@ -128,8 +128,8 @@ service cloud.firestore {
 
     match /assessments/{assessmentId} {
       // allow admins full read and update permission
-      allow read, get: if userIsAuthenticated() && userIsJAC();
-      allow update, create: if userIsAuthenticated();
+      allow read: if userIsAuthenticated() && userIsJAC();
+      allow update, create: if userIsAuthenticated() && userIsJAC();
 
       // allow assessor to read and update own documents
       allow read: if userIsAuthenticated() && userHasEmail(resource.data.assessor.email);
