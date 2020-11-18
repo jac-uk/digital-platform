@@ -119,15 +119,15 @@ module.exports = (CONSTANTS) => {
     }
     switch (whichAssessor) {
       case 'first':
-        assessment.assessor.fullName = application.firstAssessorFullName;
-        assessment.assessor.email = application.firstAssessorEmail;
+        assessment.assessor.fullName = application.firstAssessorFullName ? application.firstAssessorFullName : '';
+        assessment.assessor.email = application.firstAssessorEmail ? application.firstAssessorEmail : '';
         break;
       case 'second':
-        assessment.assessor.fullName = application.secondAssessorFullName;
-        assessment.assessor.email = application.secondAssessorEmail;
+        assessment.assessor.fullName = application.secondAssessorFullName ? application.secondAssessorFullName : '';
+        assessment.assessor.email = application.secondAssessorEmail ? application.secondAssessorEmail : '';
         break;
       default:
-        assessment = {};
+        assessment.assessor = {};
     }
     // assessment type
     switch (exercise.assessmentOptions) {
