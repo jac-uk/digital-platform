@@ -5,7 +5,7 @@ const { firebase, app, db } = require('./shared/admin.js');
 const { generateQualifyingTestReport } = require('../functions/actions/qualifyingTests/generateQualifyingTestReport')(config, firebase, db);
 
 const main = async () => {
-  return generateQualifyingTestReport('z4WuRZxkfRYvOpEeCuu0');
+  return generateQualifyingTestReport('4sfOuZLLpZcNqz2y5cOw');
 };
 
 main()
