@@ -121,15 +121,15 @@ service cloud.firestore {
       allow write: if userIsAuthenticated() && userIsJAC();
     }
 
-    match /logs/{id}/{document=**} {
-      // allow candidates update their own logs
-      allow get, read, create, write, update: if userIsAuthenticated();
+    match /logs/{document=**} {
+      allow read, write: if userIsAuthenticated();
+      allow read: if userIsAuthenticated() && userIsJAC();
     }
 
     match /assessments/{assessmentId} {
       // allow admins full read and update permission
       allow read, get: if userIsAuthenticated() && userIsJAC();
-      allow update, create: if userIsAuthenticated() && userIsJAC();
+      allow update, create: if userIsAuthenticated();
 
       // allow assessor to read and update own documents
       allow read: if userIsAuthenticated() && userHasEmail(resource.data.assessor.email);
