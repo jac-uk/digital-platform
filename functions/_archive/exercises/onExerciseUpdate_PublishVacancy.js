@@ -70,6 +70,7 @@ exports.onExerciseUpdate_PublishVacancy = functions.region('europe-west2').fires
         referenceNumber: null,
         retirementAge: null,
         roleSummary: null,
+        salary: null,
         salaryGrouping: null,
         scenarioTestDate: null,
         scenarioTestEndTime: null,
