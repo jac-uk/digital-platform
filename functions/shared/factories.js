@@ -237,6 +237,7 @@ module.exports = (CONSTANTS) => {
       referenceNumber: null,
       retirementAge: null,
       roleSummary: null,
+      salary: null,
       salaryGrouping: null,
       scenarioTestDate: null,
       scenarioTestEndTime: null,
