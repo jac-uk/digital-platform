@@ -1,0 +1,15 @@
+{
+  "rules": {
+    "qualifyingTest": {
+      "$qualifyingTestId": {
+				"userStatus": {
+		      "$uid": {
+    		    ".read": "$uid === auth.uid || auth.token.email.matches(/.*@judicialappointments[.](digital|gov[.]uk)/)",
+            ".write": "$uid === auth.uid"
+      		}
+        }
+      }
+
+    }
+  }
+}

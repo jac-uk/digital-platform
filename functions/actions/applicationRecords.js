@@ -2,6 +2,8 @@ const { getDocument, getDocuments, applyUpdates } = require('../shared/helpers')
 
 module.exports = (config, firebase, db) => {
   const { newApplicationRecord } = require('../shared/factories')(config);
+  const newQualifyingTestResponse = require('../shared/factories/QualifyingTests/newQualifyingTestResponse')(config, firebase);
+
   return {
     initialiseApplicationRecords,  // @TODO this will be removed once we have database triggers turned on *and* existing exercises have been initialised
     initialiseMissingApplicationRecords,  // @TODO this will be removed once we have database triggers turned on *and* existing exercises have been initialised
@@ -57,7 +59,7 @@ module.exports = (config, firebase, db) => {
     commands.push({
       command: 'update',
       ref: exercise.ref,
-      data: { 
+      data: {
         'applicationRecords.initialised': applications.length,
         'applicationRecords.review': applications.length,
         'applicationRecords.shortlisted': 0,
@@ -108,19 +110,53 @@ module.exports = (config, firebase, db) => {
         data: newApplicationRecord(exercise, application),
       });
     }
-    const increment = firebase.firestore.FieldValue.increment(missingApplications.length);
-    commands.push({
-      command: 'update',
-      ref: exercise.ref,
-      data: {
-        'applicationRecords.initialised': increment,
-        'applicationRecords.review': increment,
-      },
-    });
+    if (missingApplications.length) {
+      const increment = firebase.firestore.FieldValue.increment(missingApplications.length);
+      commands.push({
+        command: 'update',
+        ref: exercise.ref,
+        data: {
+          'applicationRecords.initialised': increment,
+          'applicationRecords.review': increment,
+        },
+      });
+    }
+
+    // check for initialised/activated qts
+    const qualifyingTests = await getDocuments(
+      db.collection('qualifyingTests')
+      .where('vacancy.id', '==', params.exerciseId)
+      .where('status', 'in', [
+        config.QUALIFYING_TEST.STATUS.INITIALISED,
+        config.QUALIFYING_TEST.STATUS.ACTIVATED,
+        config.QUALIFYING_TEST.STATUS.PAUSED,
+        config.QUALIFYING_TEST.STATUS.COMPLETED,
+      ])
+    );
+    if (qualifyingTests.length) {
+      qualifyingTests.forEach(qualifyingTest => {
+        if (!qualifyingTest.mode) {
+          if (
+            qualifyingTest.type === config.QUALIFYING_TEST.TYPE.CRITICAL_ANALYSIS ||
+            qualifyingTest.type === config.QUALIFYING_TEST.TYPE.SITUATIONAL_JUDGEMENT
+          ) {
+            // add qualifyingTestResponse for each application
+            for (let i = 0, len = missingApplications.length; i < len; ++i) {
+              const application = missingApplications[i];
+              commands.push({
+                command: 'set',
+                ref: db.collection('qualifyingTestResponses').doc(),
+                data: newQualifyingTestResponse(qualifyingTest, newApplicationRecord(exercise, application)),
+              });
+            }
+          }
+        }
+      });
+    }
 
     // write to db
     const result = await applyUpdates(db, commands);
-    return result ? missingApplications.length : false;
+    return result ? commands.length : false;
   }
 
 }

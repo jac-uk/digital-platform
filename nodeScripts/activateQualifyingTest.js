@@ -6,7 +6,7 @@ const activateQualifyingTest = require('../functions/actions/qualifyingTests/act
 
 const main = async () => {
   return activateQualifyingTest({
-    qualifyingTestId: 'FdOGLjz1z42xVOhDX1IU',
+    qualifyingTestId: 'DlFf28EV5JpJ19ZbhdvZ',
   });
 };
 

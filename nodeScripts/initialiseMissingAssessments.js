@@ -2,11 +2,12 @@
 
 const config = require('./shared/config');
 const { firebase, app, db } = require('./shared/admin.js');
-const scoreQualifyingTest = require('../functions/actions/qualifyingTests/scoreQualifyingTest')(config, firebase, db);
+const { initialiseMissingAssessments } = require('../functions/actions/assessments.js')(config, firebase, db);
 
 const main = async () => {
-  return scoreQualifyingTest({
-    qualifyingTestId: 'DlFf28EV5JpJ19ZbhdvZ',
+  return initialiseMissingAssessments({
+    exerciseId: 'LYybYFxgdeCzyC1vWZdY',
+    stage: 'review',
   });
 };
 

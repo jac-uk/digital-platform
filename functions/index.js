@@ -29,6 +29,7 @@ exports.activateQualifyingTest = require('./callableFunctions/activateQualifying
 exports.initialiseMissingApplicationRecords = require('./callableFunctions/initialiseMissingApplicationRecords');
 exports.sendQualifyingTestReminders = require('./callableFunctions/sendQualifyingTestReminders');
 exports.scoreQualifyingTest = require('./callableFunctions/scoreQualifyingTest');
+exports.generateQualifyingTestReport = require('./callableFunctions/generateQualifyingTestReport');
 
 // exports.onExerciseUpdate_PublishVacancy = require('./exercises/onExerciseUpdate_PublishVacancy');
 // exports.onWriteVacancyStats = require('./exercises/onWriteVacancyStats');

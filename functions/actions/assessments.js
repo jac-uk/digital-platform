@@ -1,11 +1,12 @@
 const { getDocument, getDocuments, getAllDocuments, applyUpdates } = require('../shared/helpers');
 
-module.exports = (config, firebase, db) => {  
+module.exports = (config, firebase, db) => {
   const { newAssessment, newNotificationAssessmentRequest, newNotificationAssessmentReminder } = require('../shared/factories')(config);
   const { testNotification } = require('./notifications')(config, db);
 
   return {
     initialiseAssessments,
+    initialiseMissingAssessments,
     cancelAssessments,
     sendAssessmentRequests,
     sendAssessmentReminders,
@@ -117,6 +118,76 @@ module.exports = (config, firebase, db) => {
   }
 
   /**
+  * initialiseMissingAssessments
+  * Creates assessment requests for each assessor of each application
+  * @param {*} `params` is an object containing
+  *   `exerciseId` (required) ID of exercise
+  *   `stage` (optional) exercise stage to send out to
+  */
+  async function initialiseMissingAssessments(params) {
+    // get exercise
+    const exercise = await getExercise(params.exerciseId);
+
+    // get application records to initialise assessments for
+    const applicationRecords = await getDocuments(
+      db.collection('applicationRecords')
+      .where('exercise.id', '==', params.exerciseId)
+      .where('stage', '==', params.stage)
+      .select()
+    );
+    const applicationIds = applicationRecords.map(item => item.id);
+
+    // get existing assesments
+    const assessments = await getDocuments(
+      db.collection('assessments')
+      .where('exercise.id', '==', params.exerciseId)
+      .select()
+    );
+    const assessmentIds = assessments.map(item => item.id);
+
+    // exclude applications where we have two assessments already
+    const missingApplicationIds = applicationIds.filter(applicationId => (assessmentIds.indexOf(`${applicationId}-1`) < 0 || assessmentIds.indexOf(`${applicationId}-2`) < 0));
+
+    // get applications
+    const applicationRefs = missingApplicationIds.map(applicationId => db.collection('applications').doc(applicationId));
+
+    const applications = await getAllDocuments(db, applicationRefs);
+
+    // construct db commands
+    const commands = [];
+    for (let i = 0, len = applications.length; i < len; ++i) {
+      const application = applications[i];
+      if (assessmentIds.indexOf(`${application.id}-1`) < 0) {
+        commands.push({
+          command: 'set',
+          ref: db.collection(`assessments`).doc(`${application.id}-1`),
+          data: newAssessment(exercise, application, 'first'),
+        });
+      }
+      if (assessmentIds.indexOf(`${application.id}-2`) < 0) {
+        commands.push({
+          command: 'set',
+          ref: db.collection(`assessments`).doc(`${application.id}-2`),
+          data: newAssessment(exercise, application, 'second'),
+        });
+      }
+    }
+    let totalInitialised = commands.length;
+    if (exercise.assessments && exercise.assessments.initialised) {
+      totalInitialised += exercise.assessments.initialised;
+    }
+    commands.push({
+      command: 'update',
+      ref: exercise.ref,
+      data: { 'assessments.initialised': totalInitialised },
+    });
+
+    // write to db
+    const result = await applyUpdates(db, commands);
+    return result ? applications.length : false;
+  }
+
+  /**
   * cancelAssessments
   * Cancels assessment requests. Currently deletes all assessments.
   * @TODO only delete draft assessments, mark others as cancelled
@@ -174,7 +245,7 @@ module.exports = (config, firebase, db) => {
   *   `exerciseId` (required) ID of exercise
   *   `assessmentId` (optional) ID of an assessment
   *   `assessmentIds` (optional) array of assessment IDs
-  *   `resend` (optional) boolean if true sends to 'pending' as well as 'draft' assessments 
+  *   `resend` (optional) boolean if true sends to 'pending' as well as 'draft' assessments
   *
   * Note: if neither `assessmentId` or `assessmentIds`
   *       are provided function will send requests for
@@ -185,7 +256,7 @@ module.exports = (config, firebase, db) => {
     const exercise = await getExercise(params.exerciseId);
 
     // if param is applicationId then we expect exercise to have started sending IAs. So check this.
-      // if this is the case then we need to initialise/create the IA, send the request and update exercise stats
+      // if this is not the case then we need to initialise/create the IA, send the request and update exercise stats
 
     // get assessments
     let assessmentsRef = db.collection('assessments')
@@ -194,14 +265,14 @@ module.exports = (config, firebase, db) => {
       assessmentsRef = assessmentsRef.where('status', 'in', ['draft','pending']);
     } else {
       assessmentsRef = assessmentsRef.where('status', '==', 'draft');
-    }       
+    }
     if (params.assessmentIds && params.assessmentIds.length) {
       assessmentsRef = assessmentsRef.where(firebase.firestore.FieldPath.documentId(), 'in', params.assessmentIds);
     }
     if (params.assessmentId) {
       assessmentsRef = assessmentsRef.where(firebase.firestore.FieldPath.documentId(), '==', params.assessmentId);
     }
-    const assessments = await getDocuments(assessmentsRef);    
+    const assessments = await getDocuments(assessmentsRef);
 
     // create database commands
     const commands = [];
@@ -279,6 +350,6 @@ module.exports = (config, firebase, db) => {
     // write to db
     const result = await applyUpdates(db, commands);
     return result ? assessments.length : false;
-  }  
+  }
 
 }

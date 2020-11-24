@@ -21,14 +21,17 @@ module.exports = (auth, db) => {
         url: `${returnUrl}?return=true`,
         handleCodeInApp: true,
       };
-      return auth.generateSignInWithEmailLink(email, actionCodeSettings);
+      console.log('generateSignInWithEmailLink', ref);
+      const emailLink = await auth.generateSignInWithEmailLink(email, actionCodeSettings);
+      console.log('generateSignInWithEmailLink DONE', ref);
+      return emailLink;
     }
   }
 
   async function canAccessAssessments(ref, email) {
     // @TODO improve ref validation
     let resource = await getDocument(db.doc(ref));
-    if (resource.assessor.email === email) {
+    if (resource && resource.assessor && resource.assessor.email === email) {
       return true;
     }
     return false;

@@ -14,6 +14,10 @@ module.exports = {
       CRITICAL_ANALYSIS: 'critical-analysis',
       SITUATIONAL_JUDGEMENT: 'situational-judgement',
     },
+    MODE: {
+      DRY_RUN: 'dry-run',
+      MOP_UP: 'mop-up',
+    },
     STATUS: {
       CREATED: 'created',
       SUBMITTED: 'submitted-for-approval',
@@ -30,6 +34,7 @@ module.exports = {
       ACTIVATED: 'activated',
       STARTED: 'started',
       COMPLETED: 'completed',
+      CANCELLED: 'cancelled',
     },
   },
   NOTIFY_KEY: functions.config().notify.key,

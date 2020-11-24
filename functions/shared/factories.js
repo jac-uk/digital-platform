@@ -114,17 +114,20 @@ module.exports = (CONSTANTS) => {
       fileRef: '',
       status: 'draft',
     }
+    if (exercise.independentAssessmentsHardLimitDate) {
+      assessment.hardLimitDate = exercise.independentAssessmentsHardLimitDate
+    }
     switch (whichAssessor) {
       case 'first':
-        assessment.assessor.fullName = application.firstAssessorFullName;
-        assessment.assessor.email = application.firstAssessorEmail;
+        assessment.assessor.fullName = application.firstAssessorFullName ? application.firstAssessorFullName : '';
+        assessment.assessor.email = application.firstAssessorEmail ? application.firstAssessorEmail : '';
         break;
       case 'second':
-        assessment.assessor.fullName = application.secondAssessorFullName;
-        assessment.assessor.email = application.secondAssessorEmail;
+        assessment.assessor.fullName = application.secondAssessorFullName ? application.secondAssessorFullName : '';
+        assessment.assessor.email = application.secondAssessorEmail ? application.secondAssessorEmail : '';
         break;
       default:
-        assessment = {};
+        assessment.assessor = {};
     }
     // assessment type
     switch (exercise.assessmentOptions) {
@@ -237,6 +240,7 @@ module.exports = (CONSTANTS) => {
       referenceNumber: null,
       retirementAge: null,
       roleSummary: null,
+      roleSummaryWelsh: null,
       salary: null,
       salaryGrouping: null,
       scenarioTestDate: null,
@@ -257,11 +261,13 @@ module.exports = (CONSTANTS) => {
       uploadedIndependentAssessorTemplate: null,
       uploadedJobDescriptionTemplate: null,
       uploadedTermsAndConditionsTemplate: null,
+      welshPosts: null,
       welshRequirement: null,
       welshRequirementType: null,
       yesSalaryDetails: null,
       additionalWorkingPreferences: null,
       pjeDays: null,
+      inviteOnly: null,
     };
     const vacancy = { ...vacancyModel };
     for (var key in vacancyModel) {
