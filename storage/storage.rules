@@ -19,7 +19,7 @@ service firebase.storage {
       allow read: if userIsAuthenticated() && userIsJAC();
       allow read: if userIsAuthenticated() && currentUser() == userId;
       allow write: if userIsAuthenticated() && currentUser() == userId;
-      // allow write: if userIsAuthenticated() && userIsJAC();
+      allow write: if userIsAuthenticated() && userIsJAC();
     }
     match /exercise/{exerciseId}/application/{applicationId}/assessor/{userId}/{fileName} {
       allow read: if userIsAuthenticated() && userIsJAC();
