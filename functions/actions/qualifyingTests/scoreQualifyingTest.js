@@ -24,6 +24,8 @@ module.exports = (config, firebase, db) => {
     const qualifyingTest = await getDocument(db.doc(`qualifyingTests/${params.qualifyingTestId}`));
     const mainQualifyingTestId = qualifyingTest.mode === config.QUALIFYING_TEST.MODE.MOP_UP ? qualifyingTest.relationship.copiedFrom : qualifyingTest.id;
 
+    const responsesReport = newQualifyingTestResponsesReport(qualifyingTest);
+
     // get qualifying test responses
     let qualifyingTestResponsesRef = db.collection('qualifyingTestResponses')
       .where('qualifyingTest.id', '==', qualifyingTest.id)
@@ -42,6 +44,7 @@ module.exports = (config, firebase, db) => {
       // Add scores (not for scenario tests as these are manually scored)
       if (qualifyingTest.type !== config.QUALIFYING_TEST.TYPE.SCENARIO) {
         const responsesWithScores = newResponsesWithScores(qualifyingTest, qualifyingTestResponse);
+        updateResponsesReport(qualifyingTest, responsesReport, responsesWithScores);
         score = getScore(responsesWithScores);
         const totalQuestionsStarted = getTotalQuestionsStarted(responsesWithScores);
         const totalQuestionsCompleted = getTotalQuestionsCompleted(responsesWithScores);
@@ -95,6 +98,7 @@ module.exports = (config, firebase, db) => {
           scores: scores,
           questionsCompleted: questionsCompleted,
         },
+        responsesReport: responsesReport,
       },
     });
 
@@ -104,6 +108,71 @@ module.exports = (config, firebase, db) => {
     // return
     return result ? qualifyingTestResponses.length : false;
 
+  }
+
+  function newQualifyingTestResponsesReport(qualifyingTest) {
+    const report = {
+      responses: 0,
+      questions: {},
+    };
+    if (qualifyingTest) {
+      qualifyingTest.testQuestions.questions.forEach((question, questionIndex) => {
+        const questionReport = {
+          responses: 0,
+          correct: 0,
+          incorrect: 0,
+          answers: {},
+        };
+        if (qualifyingTest.type === config.QUALIFYING_TEST.TYPE.SITUATIONAL_JUDGEMENT) {
+          questionReport.partial = 0;
+        }
+        question.options.forEach((answer, answerIndex) => {
+          const answerReport = {};
+          switch (qualifyingTest.type) {
+          case config.QUALIFYING_TEST.TYPE.SITUATIONAL_JUDGEMENT:
+            answerReport.mostAppropriate = 0;
+              answerReport.leastAppropriate = 0;
+            break;
+          case config.QUALIFYING_TEST.TYPE.CRITICAL_ANALYSIS:
+            answerReport.selected = 0;
+            break;
+          }
+          questionReport.answers[answerIndex] = answerReport;
+        })
+        report.questions[questionIndex] = questionReport;
+      });
+    }
+    return report;
+  }
+
+  function updateResponsesReport(qualifyingTest, responsesReport, responses) {
+    responsesReport.responses++;
+    responses.forEach((response, questionIndex) => {
+      if (response.started && response.completed) {
+        responsesReport.questions[questionIndex].responses++;
+        switch (qualifyingTest.type) {
+        case config.QUALIFYING_TEST.TYPE.SITUATIONAL_JUDGEMENT:
+          if (response.score === 2) {
+            responsesReport.questions[questionIndex].correct++;
+          } else if (response.score === 1) {
+            responsesReport.questions[questionIndex].partial++;
+          } else {
+            responsesReport.questions[questionIndex].incorrect++;
+          }
+          responsesReport.questions[questionIndex].answers[response.selection.mostAppropriate].mostAppropriate++;
+          responsesReport.questions[questionIndex].answers[response.selection.leastAppropriate].leastAppropriate++;
+          break;
+        case config.QUALIFYING_TEST.TYPE.CRITICAL_ANALYSIS:
+          if (response.score === 1) {
+            responsesReport.questions[questionIndex].correct++;
+          } else {
+            responsesReport.questions[questionIndex].incorrect++;
+          }
+          responsesReport.questions[questionIndex].answers[response.selection].selected++;
+          break;
+        }
+      }
+    });
   }
 
   function getScore(responses) {
