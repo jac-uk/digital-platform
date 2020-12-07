@@ -91,11 +91,8 @@ service cloud.firestore {
     }
 
     function exerciseIsOpen(exerciseId) {
-      // overide stored time and set to 13:00
-      // @TODO Let's store time in database rather than having hardcoded all over and messing with DST
-      // NB have added 12 hours rather than 13 as date is returned as +1 hour DST (at the moment)
-      let applicationOpenDate = get(/databases/$(database)/documents/exercises/$(exerciseId)).data.applicationOpenDate.date() + duration.time(13,0,0,0);
-      let applicationCloseDate = get(/databases/$(database)/documents/exercises/$(exerciseId)).data.applicationCloseDate.date() + duration.time(13,0,0,0);
+      let applicationOpenDate = get(/databases/$(database)/documents/exercises/$(exerciseId)).data.applicationOpenDate;
+      let applicationCloseDate = get(/databases/$(database)/documents/exercises/$(exerciseId)).data.applicationCloseDate;
       return applicationOpenDate <= request.time
 				&& request.resource.data.get("dateExtension", applicationCloseDate) > request.time;
     }
