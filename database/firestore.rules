@@ -91,8 +91,8 @@ service cloud.firestore {
     }
 
     function exerciseIsOpen(exerciseId) {
-      let applicationOpenDate = get(/databases/$(database)/documents/exercises/$(exerciseId)).data.applicationOpenDate.date();
-      let applicationCloseDate = get(/databases/$(database)/documents/exercises/$(exerciseId)).data.applicationCloseDate.date();
+      let applicationOpenDate = get(/databases/$(database)/documents/exercises/$(exerciseId)).data.applicationOpenDate;
+      let applicationCloseDate = get(/databases/$(database)/documents/exercises/$(exerciseId)).data.applicationCloseDate;
       return applicationOpenDate <= request.time
 				&& request.resource.data.get("dateExtension", applicationCloseDate) > request.time;
     }
