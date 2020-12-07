@@ -33,7 +33,7 @@
     "production:deploy:functions": "firebase deploy --project=platform-production-9207d --only functions:initialiseQualifyingTest,functions:activateQualifyingTest,functions:onQualifyingTestResponseUpdate,functions:sendQualifyingTestReminders,functions:initialiseApplicationRecords,functions:initialiseMissingApplicationRecords,functions:scoreQualifyingTest,functions:onExerciseUpdate,functions:initialiseAssessments,functions:cancelAssessments,functions:testAssessmentNotification,functions:sendAssessmentRequests,functions:sendAssessmentReminders,functions:generateQualifyingTestReport,functions:generateSignInWithEmailLink",
     "production:deploy:storage-rules": "firebase deploy --project=platform-production-9207d --only storage:rules",
     "production:deploy:realtime-rules": "firebase deploy --project=platform-production-9207d --only database",
-    "test:rules": "mocha './test/rules/**/9.*.spec.js' --timeout=10000",
+    "test:rules": "mocha './test/rules/**/6.*.spec.js' --timeout=10000",
     "test:functions": "mocha './test/functions/**/*.spec.js' --timeout=10000",
     "test:actions": "jest test/actions",
     "test:shared": "jest test/shared",
