@@ -97,7 +97,7 @@ service cloud.firestore {
       let applicationOpenDate = get(/databases/$(database)/documents/exercises/$(exerciseId)).data.applicationOpenDate.date() + duration.time(13,0,0,0);
       let applicationCloseDate = get(/databases/$(database)/documents/exercises/$(exerciseId)).data.applicationCloseDate.date() + duration.time(13,0,0,0);
       return applicationOpenDate <= request.time
-				&& resource.data.get("dateExtension", applicationCloseDate) > request.time;
+				&& request.resource.data.get("dateExtension", applicationCloseDate) > request.time;
     }
 
     match /applications/{applicationId} {
