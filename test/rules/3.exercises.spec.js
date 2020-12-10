@@ -38,25 +38,25 @@ describe('Exercises', () => {
     });
   });
 
-  context("Read", () => {
-    it("prevent un-authenticated user from reading exercises", async () => {
+  context('Read', () => {
+    it('prevent un-authenticated user from reading exercises', async () => {
       const db = await setup();
-      await assertFails(db.collection("exercises").get());
+      await assertFails(db.collection('exercises').get());
     });
   
-    it("prevent authenticated user from reading exercises", async () => {
+    it('prevent authenticated user from reading exercises', async () => {
       const db = await setup({ uid: 'user1', email: 'user@email.com', email_verified: false });
-      await assertFails(db.collection("exercises").get());
+      await assertFails(db.collection('exercises').get());
     });
   
-    it("prevent authenticated user with verified email from reading exercises", async () => {
+    it('prevent authenticated user with verified email from reading exercises', async () => {
       const db = await setup({ uid: 'user1', email: 'user@email.com', email_verified: true });
-      await assertFails(db.collection("exercises").get());
+      await assertFails(db.collection('exercises').get());
     });
   
-    it("prevent authenticated user with un-verified JAC email from reading exercises", async () => {
+    it('prevent authenticated user with un-verified JAC email from reading exercises', async () => {
       const db = await setup({ uid: 'user1', email: 'user@judicialappointments.digital', email_verified: false });
-      await assertFails(db.collection("exercises").get());
+      await assertFails(db.collection('exercises').get());
     });
   
     it('allow authenticated user with verified @judicialappointments.digital email to read exercises', async () => {

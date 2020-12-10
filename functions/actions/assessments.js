@@ -93,12 +93,12 @@ module.exports = (config, firebase, db) => {
       const application = applications[i];
       commands.push({
         command: 'set',
-        ref: db.collection(`assessments`).doc(`${application.id}-1`),
+        ref: db.collection('assessments').doc(`${application.id}-1`),
         data: newAssessment(exercise, application, 'first'),
       });
       commands.push({
         command: 'set',
-        ref: db.collection(`assessments`).doc(`${application.id}-2`),
+        ref: db.collection('assessments').doc(`${application.id}-2`),
         data: newAssessment(exercise, application, 'second'),
       });
     }
@@ -160,14 +160,14 @@ module.exports = (config, firebase, db) => {
       if (assessmentIds.indexOf(`${application.id}-1`) < 0) {
         commands.push({
           command: 'set',
-          ref: db.collection(`assessments`).doc(`${application.id}-1`),
+          ref: db.collection('assessments').doc(`${application.id}-1`),
           data: newAssessment(exercise, application, 'first'),
         });
       }
       if (assessmentIds.indexOf(`${application.id}-2`) < 0) {
         commands.push({
           command: 'set',
-          ref: db.collection(`assessments`).doc(`${application.id}-2`),
+          ref: db.collection('assessments').doc(`${application.id}-2`),
           data: newAssessment(exercise, application, 'second'),
         });
       }
@@ -206,7 +206,7 @@ module.exports = (config, firebase, db) => {
 
     // update exercise
     await db.collection('exercises').doc(params.exerciseId).update({
-      assessments: {}
+      assessments: {},
     });
   }
 
@@ -352,4 +352,4 @@ module.exports = (config, firebase, db) => {
     return result ? assessments.length : false;
   }
 
-}
+};

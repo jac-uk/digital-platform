@@ -138,7 +138,7 @@ module.exports = (config, firebase, db) => {
             break;
           }
           questionReport.answers[answerIndex] = answerReport;
-        })
+        });
         report.questions[questionIndex] = questionReport;
       });
     }
@@ -207,4 +207,4 @@ module.exports = (config, firebase, db) => {
     return totalQuestionsCompleted;
   }
 
-}
+};

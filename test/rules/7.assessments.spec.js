@@ -61,7 +61,7 @@ describe('Assessments', () => {
     it('allow JAC admin to list all assessments', async () => {
       const db = await setup(
         { uid: 'user1', email: 'user@judicialappointments.gov.uk', email_verified: true },
-        { 'assessments/assessment1': { assessor: { email: 'user1@user1.user1' } } },
+        { 'assessments/assessment1': { assessor: { email: 'user1@user1.user1' } } }
       );
       await assertSucceeds(db.collection('applications').get());
     });

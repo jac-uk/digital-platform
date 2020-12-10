@@ -60,4 +60,4 @@ module.exports = (config, firebase) => {
     }
     return data;
   }
-}
+};

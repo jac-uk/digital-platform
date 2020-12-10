@@ -82,7 +82,7 @@ module.exports = (config, firebase, db) => {
       exerciseIds,
       columns,
       rows,
-    }
+    };
     return report;
   }
 
@@ -104,7 +104,7 @@ module.exports = (config, firebase, db) => {
         default:
           reportRow[column.ref] = getValueAtObjectPath(row, column.ref);
         }
-      })
+      });
       reportData.push(reportRow);
     });
     return reportData;
@@ -129,4 +129,4 @@ module.exports = (config, firebase, db) => {
     }
   }
 
-}
+};

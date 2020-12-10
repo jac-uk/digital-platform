@@ -52,4 +52,4 @@ module.exports = (config, firebase, db) => {
     return false;
   }
 
-}
+};

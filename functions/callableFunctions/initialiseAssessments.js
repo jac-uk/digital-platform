@@ -7,7 +7,7 @@ const { initialiseAssessments } = require('../actions/assessments')(config, fire
 module.exports = functions.region('europe-west2').https.onCall(async (data, context) => {
   if (!checkArguments({
     exerciseId: { required: true },
-    stage: { required: true }
+    stage: { required: true },
   }, data)) {
     throw new functions.https.HttpsError('invalid-argument', 'Please provide valid arguments');
   }

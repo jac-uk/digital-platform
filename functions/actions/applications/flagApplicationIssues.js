@@ -206,7 +206,7 @@ module.exports = (db) => {
                   issues.push(newIssue('pqe', `Candidate has ${relevantExperience.toString()} of relevant experience`));
                 }
               } else {
-                issues.push(newIssue('pqe', `Candidate has no relevant experience`));
+                issues.push(newIssue('pqe', 'Candidate has no relevant experience'));
               }
             }
           } else {
@@ -350,4 +350,4 @@ const newIssue = (type, summary) => {
     result: '',
     comments: '',
   };
-}
+};

@@ -172,7 +172,7 @@ const hasEnoughWorkExperience = (applicantWorkExperienceData, requiredExperience
 
     totalDaysWorkExperience += getNumberOfDaysBetween2Dates(
       startDate.toDate(),
-      endDateJS,
+      endDateJS
     );
   }
 
@@ -307,7 +307,7 @@ const checkCitizenship = async (userId, applicationId) => {
   `);
   return await flagApplication(
     `PQE: Candidate ${candidateData.email} has 0 citizenships or has marked 'other' citizenships`,
-    applicationId,
+    applicationId
   ); 
 };
 
@@ -325,7 +325,7 @@ const checkCharacter = async (data, applicationId) => {
 
       return await flagApplication(
         'PQE: has character issues',
-        applicationId,
+        applicationId
       ); 
   }
 
@@ -338,7 +338,7 @@ const checkPostQualificationExperience = async (data, applicationId) => {
   if (exerciseData === null) {
     return await flagApplication(
       `ERROR: No data returned from Exercises with docId = ${data.exerciseId}`, 
-      applicationId,
+      applicationId
     );
   }
 
@@ -358,12 +358,12 @@ const checkPostQualificationExperience = async (data, applicationId) => {
   const hasEnoughWorkExperienceResponse = hasEnoughWorkExperience(
     data.experience,
     exerciseData.postQualificationExperience,
-    applicationId,
+    applicationId
   );
   if (hasEnoughWorkExperienceResponse === false) {
     return await flagApplication(
       'PQE: Not enough work experience',
-      applicationId,
+      applicationId
     );
   }
 
@@ -371,12 +371,12 @@ const checkPostQualificationExperience = async (data, applicationId) => {
   // Check if Candidate's tasks were lawyer-type tasks
   //
   const didLawyerlyThingsResponse = didLawyerlyThings(
-    data.experience,
+    data.experience
   );
   if (didLawyerlyThingsResponse === false) {
     return await flagApplication(
       'PQE: Candidate did not do any lawyer-related tasks or Candidate selected -None of the Above- for law-related tasks',
-      applicationId,
+      applicationId
     );
   }
 
@@ -385,12 +385,12 @@ const checkPostQualificationExperience = async (data, applicationId) => {
   //
   const isQualifiedResponse = isQualified(
     data.qualifications,
-    exerciseData.qualifications,
+    exerciseData.qualifications
   );
   if (isQualifiedResponse === false) {
     return await flagApplication(
       'PQE: Not qualified as a solicitor, barrister or member of Cilex',
-      applicationId,
+      applicationId
     );    
   }  
 
@@ -412,7 +412,7 @@ const checkReasonableLengthOfService = async (data, applicationId) => {
     // flag applicant if they forgot to enter their date of birth
     return await flagApplication(
       `RLS: Candidate ${candidateData.email} has no birthday`,
-      applicationId,
+      applicationId
     );   
   }
 
@@ -431,7 +431,7 @@ const checkReasonableLengthOfService = async (data, applicationId) => {
       `RLS: Candidate born in ${candidateBirthday.toDate().getFullYear()}. 
       Candidate is 70 years old or older and may not be able to complete a
       reasonable length of service.`,
-      applicationId,
+      applicationId
     );     
   }
 
@@ -447,7 +447,7 @@ const checkReasonableLengthOfService = async (data, applicationId) => {
       exercise reasonable length of service = ${exerciseLengthOfService} and 
       exercise selection SSC year = ${selectionSCCDateJS.getFullYear()},
       the candidate should be born on or after ${maxReasonableBirthYear}.`,
-      applicationId,
+      applicationId
     ); 
   }
 

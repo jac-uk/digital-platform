@@ -31,7 +31,7 @@ module.exports = (config, firebase, db) => {
       const queries = applicationIds.map(applicationId => {
         let query = db.collection('applicationRecords')
           .where('exercise.id', '==', qualifyingTestReport.exercise.id)
-          .where('application.id', '==', applicationId)
+          .where('application.id', '==', applicationId);
         qualifyingTestReport.qualifyingTests.forEach(qualifyingTest => {
           query = query.where(`qualifyingTests.${qualifyingTest.id}.hasData`, '==', true);
         });
@@ -182,4 +182,4 @@ module.exports = (config, firebase, db) => {
     return data;
   }
 
-}
+};

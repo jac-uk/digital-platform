@@ -6,12 +6,12 @@ const { exportExerciseData } = require('../actions/exercises/exportExerciseData'
 
 const runtimeOptions = {
   timeoutSeconds: 300,
-  memory: '1GB'
-}
+  memory: '1GB',
+};
 
 module.exports = functions.runWith(runtimeOptions).region('europe-west2').https.onCall(async (data, context) => {
   if (!checkArguments({
-    exerciseIds: { required: true }
+    exerciseIds: { required: true },
   }, data)) {
     throw new functions.https.HttpsError('invalid-argument', 'Please provide valid arguments');
   }

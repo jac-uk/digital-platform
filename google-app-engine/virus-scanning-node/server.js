@@ -30,11 +30,11 @@ app.use(bodyParser.json());
 const storage = new Storage();
 
 // Get the bucket which is declared as an environment variable
-let srcbucket = storage.bucket(CLOUD_STORAGE_BUCKET);
+// let srcbucket = storage.bucket(CLOUD_STORAGE_BUCKET);
 
 const run = () => app.listen(PORT, () => {
   console.log(`Server started on port ${PORT}`);
-})
+});
 
 /**
  * Route that is invoked by a Cloud Function when a malware scan is requested
@@ -49,7 +49,7 @@ app.post('/scan', async (req, res) => {
     const filename = req.body.filename;
 
     const options = {
-      destination: `/unscanned_files/${filename}`
+      destination: `/unscanned_files/${filename}`,
     };
 
     //Downloads the file
@@ -62,53 +62,53 @@ app.post('/scan', async (req, res) => {
 
     const result = await scanner.scanFile(`/unscanned_files/${filename}`);
     if (result.indexOf('OK') > -1) {
-      
+
       // Add metadata with scan result
       addMetadata(filename, 'clean');
 
       // Log scan outcome for document
-      console.log(`Scan status for ${filename}: CLEAN`)
+      console.log(`Scan status for ${filename}: CLEAN`);
 
       // Respond to API client
       res.json({status: 'clean'});
     } else {
 
-      // Add metadata with scan result 
+      // Add metadata with scan result
       addMetadata(filename, 'infected');
 
       // Log scan outcome for document
-      console.log(`Scan status for ${filename}: INFECTED`)
+      console.log(`Scan status for ${filename}: INFECTED`);
 
       // Respond to API client
       res.json({
         message: result,
-        status: 'infected'
+        status: 'infected',
       });
     }
   } catch(e) {
-    console.error(`Error processing the file`, e)
+    console.error('Error processing the file', e);
     res.status(500).json({
       message: e.toString(),
-      status: 'error'
+      status: 'error',
     });
-  } 
-})
+  }
+});
 
 
 const addMetadata = (filename, status) => {
   // Add meta data to the file to indicate it has been scanned
   const metadata = {
-    metadata: { 
+    metadata: {
       'scanned': Date.now().toString(),
-      'status': status
-    }
-  }
+      'status': status,
+    },
+  };
 
-  storage.bucket(CLOUD_STORAGE_BUCKET).file(filename).setMetadata(metadata).then(function(returned) {
+  storage.bucket(CLOUD_STORAGE_BUCKET).file(filename).setMetadata(metadata).then((returned) => {
     return returned;
-  }).catch(function(error) {
+  }).catch(() => {
     return false;
   });
-}
+};
 
 run();

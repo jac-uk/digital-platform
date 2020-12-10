@@ -3,7 +3,7 @@ const axios = require('axios');
 module.exports = (config) => {
 
   return {
-    post
+    post,
   };
 
   async function post(msgString) {
@@ -16,4 +16,4 @@ module.exports = (config) => {
     return result;
   }
 
-}
+};

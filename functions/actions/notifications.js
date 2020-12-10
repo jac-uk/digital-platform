@@ -81,7 +81,7 @@ module.exports = (config, firebase, db) => {
 
   async function previewNotification(notificationId) {
     console.log('previewNotification', notificationId);
-    return previewEmail(notificationId)
+    return previewEmail(notificationId);
   }
 
   function testNotification(notification, email) {
@@ -104,4 +104,4 @@ module.exports = (config, firebase, db) => {
     return notifications.length;
   }
 
-}
+};

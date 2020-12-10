@@ -22,7 +22,7 @@ module.exports = (config) => {
             selection: qualifyingTest.type === config.QUALIFYING_TEST.TYPE.SITUATIONAL_JUDGEMENT ? {} : null,
             started: null,
             completed: null,
-          }
+          };
         }
         switch (qualifyingTest.type) {
           case config.QUALIFYING_TEST.TYPE.SCENARIO:
@@ -53,4 +53,4 @@ module.exports = (config) => {
     return responses;
   }
 
-}
+};
