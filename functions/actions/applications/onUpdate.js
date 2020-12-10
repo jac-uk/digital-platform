@@ -43,4 +43,4 @@ module.exports = (config, firebase, db) => {
     return true;
   }
 
-}
+};

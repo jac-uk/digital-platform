@@ -31,7 +31,7 @@ module.exports = (config, firebase, db) => {
     return ref.set({
       createdAt: firebase.firestore.Timestamp.fromDate(new Date()),
     }, {
-      merge: true
+      merge: true,
     });
   }
 
@@ -75,4 +75,4 @@ module.exports = (config, firebase, db) => {
   }
 
 
-}
+};

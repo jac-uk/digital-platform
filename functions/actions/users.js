@@ -37,4 +37,4 @@ module.exports = (auth, db) => {
     return false;
   }
 
-}
+};

@@ -159,4 +159,4 @@ module.exports = (config, firebase, db) => {
     return result ? commands.length : false;
   }
 
-}
+};

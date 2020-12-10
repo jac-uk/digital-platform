@@ -6,7 +6,7 @@ const { generateQualifyingTestReport } = require('../actions/qualifyingTests/gen
 
 module.exports = functions.region('europe-west2').https.onCall(async (data, context) => {
   if (!checkArguments({
-    qualifyingTestReportId: { required: true }
+    qualifyingTestReportId: { required: true },
   }, data)) {
     throw new functions.https.HttpsError('invalid-argument', 'Please provide valid arguments');
   }

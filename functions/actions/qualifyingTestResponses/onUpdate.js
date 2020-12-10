@@ -22,7 +22,7 @@ module.exports = (config, firebase, db) => {
         statusAfter === config.QUALIFYING_TEST_RESPONSES.STATUS.STARTED
       ) {
         data[`counts.${statusAfter}`] = increment;
-        data[`counts.inProgress`] = increment;
+        data['counts.inProgress'] = increment;
       }
       // completed test
       if (
@@ -30,7 +30,7 @@ module.exports = (config, firebase, db) => {
         statusAfter === config.QUALIFYING_TEST_RESPONSES.STATUS.COMPLETED
       ) {
         data[`counts.${statusAfter}`] = increment;
-        data[`counts.inProgress`] = decrement;
+        data['counts.inProgress'] = decrement;
         if (dataAfter.isOutOfTime) {
           data['counts.outOfTime'] = increment;
         }
@@ -65,4 +65,4 @@ module.exports = (config, firebase, db) => {
     return true;
   }
 
-}
+};

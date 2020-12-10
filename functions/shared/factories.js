@@ -113,9 +113,9 @@ module.exports = (CONSTANTS) => {
       dueDate: exercise.independentAssessmentsReturnDate,
       fileRef: '',
       status: 'draft',
-    }
+    };
     if (exercise.independentAssessmentsHardLimitDate) {
-      assessment.hardLimitDate = exercise.independentAssessmentsHardLimitDate
+      assessment.hardLimitDate = exercise.independentAssessmentsHardLimitDate;
     }
     switch (whichAssessor) {
       case 'first':
@@ -180,7 +180,7 @@ module.exports = (CONSTANTS) => {
       },
       history: [],
       notes: [],
-    }
+    };
     return applicationRecord;
   }
 
@@ -277,4 +277,4 @@ module.exports = (CONSTANTS) => {
     }
     return vacancy;
   }
-}
+};

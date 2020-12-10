@@ -8,7 +8,7 @@ const { generateDiversityReport } = require('../actions/exercises/generateDivers
 
 module.exports = functions.region('europe-west2').https.onCall(async (data, context) => {
   if (!checkArguments({
-    exerciseId: { required: true }
+    exerciseId: { required: true },
   }, data)) {
     throw new functions.https.HttpsError('invalid-argument', 'Please provide valid arguments');
   }
