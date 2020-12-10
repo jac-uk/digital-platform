@@ -30,6 +30,7 @@ exports.initialiseMissingApplicationRecords = require('./callableFunctions/initi
 exports.sendQualifyingTestReminders = require('./callableFunctions/sendQualifyingTestReminders');
 exports.scoreQualifyingTest = require('./callableFunctions/scoreQualifyingTest');
 exports.generateQualifyingTestReport = require('./callableFunctions/generateQualifyingTestReport');
+exports.exportExerciseData = require('./callableFunctions/exportExerciseData');
 
 // exports.onExerciseUpdate_PublishVacancy = require('./exercises/onExerciseUpdate_PublishVacancy');
 // exports.onWriteVacancyStats = require('./exercises/onWriteVacancyStats');
