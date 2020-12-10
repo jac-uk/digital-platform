@@ -7,7 +7,7 @@ const { getDocument } = require('../functions/shared/helpers');
 
 const main = async () => {
 
-  const qualifyingTestId = 'DlFf28EV5JpJ19ZbhdvZ';
+  const qualifyingTestId = 'VnxfyYqV5NfLFheEbOjf';
 
   // get data
   const qualifyingTest = await getDocument(db.collection('qualifyingTests').doc(qualifyingTestId));
@@ -48,7 +48,7 @@ const main = async () => {
     { id: 'incorrect', title: 'Incorrect' },
   ];
   if (qualifyingTest.type === config.QUALIFYING_TEST.TYPE.SITUATIONAL_JUDGEMENT) {
-    answerReportHeaders.push({ id: 'partial', title: 'Partial' });
+    questionReportHeaders.push({ id: 'partial', title: 'Partial' });
   }
   const questionReport = createCsvWriter({
     path: 'questionReport.csv',

@@ -159,8 +159,10 @@ module.exports = (config, firebase, db) => {
           } else {
             responsesReport.questions[questionIndex].incorrect++;
           }
-          responsesReport.questions[questionIndex].answers[response.selection.mostAppropriate].mostAppropriate++;
-          responsesReport.questions[questionIndex].answers[response.selection.leastAppropriate].leastAppropriate++;
+          if (response.selection && response.selection.mostAppropriate !== null && response.selection.leastAppropriate !== null) {
+            responsesReport.questions[questionIndex].answers[response.selection.mostAppropriate].mostAppropriate++;
+            responsesReport.questions[questionIndex].answers[response.selection.leastAppropriate].leastAppropriate++;
+          }
           break;
         case config.QUALIFYING_TEST.TYPE.CRITICAL_ANALYSIS:
           if (response.score === 1) {
