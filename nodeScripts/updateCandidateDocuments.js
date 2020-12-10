@@ -4,7 +4,7 @@ const { app, db } = require('./shared/admin.js');
 const { getDocuments, applyUpdates } = require('../functions/shared/helpers');
 
 const main = async () => {
-  
+
   // for each candidate
     // get personal details
     // get applications draft
@@ -21,10 +21,19 @@ const main = async () => {
   }
 
   // get personal details
-  const personalDetailsDocs = await db.getAll(...personalDetailsRefs, { fieldMask: ['fullName'] });
+  const personalDetailsDocs = await db.getAll(...personalDetailsRefs, { fieldMask: ['fullName', 'email', 'nationalInsuranceNumber'] });
   personalDetailsDocs.forEach((doc) => {
     let candidateId = doc.ref.path.replace('candidates/', '').replace('/documents/personalDetails', '');
-    candidateData[candidateId].fullName = doc.exists ? doc.data().fullName : '';
+    if (doc.exists) {
+      const personalDetails = doc.data();
+      candidateData[candidateId].fullName = personalDetails.fullName;
+      candidateData[candidateId].email = personalDetails.email;
+      candidateData[candidateId].nationalInsuranceNumber = personalDetails.nationalInsuranceNumber;
+    } else {
+      candidateData[candidateId].fullName = '';
+      candidateData[candidateId].email = '';
+      candidateData[candidateId].nationalInsuranceNumber = '';
+    }
   });
 
   // get applied applications count
@@ -33,15 +42,17 @@ const main = async () => {
     candidateData[candidates[i].id].applied = snap.docs.length;
   }
 
-  console.log(candidateData);
   // construct update commands
   const commands = [];
   for (let i = 0, len = candidates.length; i < len; ++i) {
+    let searchString = `${candidateData[candidates[i].id].fullName} ${candidateData[candidates[i].id].email} ${candidateData[candidates[i].id].nationalInsuranceNumber}`;
     commands.push({
       command: 'update',
       ref: db.collection('candidates').doc(candidates[i].id),
       data: {
         fullName: candidateData[candidates[i].id].fullName,
+        email: candidateData[candidates[i].id].email.toLowerCase(),
+        keywords: searchString.toLowerCase().split(' '),
         'applications.applied': candidateData[candidates[i].id].applied,
       },
     });

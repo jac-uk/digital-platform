@@ -2,12 +2,10 @@
 
 const config = require('./shared/config');
 const { firebase, app, db } = require('./shared/admin.js');
-const scoreQualifyingTest = require('../functions/actions/qualifyingTests/scoreQualifyingTest')(config, firebase, db);
+const { exportExerciseData } = require('../functions/actions/exercises/exportExerciseData')(config, firebase, db);
 
 const main = async () => {
-  return scoreQualifyingTest({
-    qualifyingTestId: 'VnxfyYqV5NfLFheEbOjf',
-  });
+  return exportExerciseData(['wdpALbyICL7ZxxN5AQt8','wdpALbyICL7ZxxN5AQt8']);
 };
 
 main()
