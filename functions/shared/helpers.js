@@ -89,7 +89,7 @@ async function applyUpdates(db, commands) {
         console.log(error);
         return false;
       }
-    } else { // process in batches of 499
+    } else { // process in batches of 199
       let totalCommandsExecuted = 0;
       const chunkedCommands = chunkArray(commands, BATCH_SIZE - 1);
       for (let i = 0, len = chunkedCommands.length; i < len; ++i) {
