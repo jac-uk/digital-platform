@@ -15,6 +15,7 @@ exports.onQualifyingTestResponseUpdate = require('./backgroundFunctions/onQualif
 
 // Callable
 exports.generateDiversityReport = require('./callableFunctions/generateDiversityReport');
+exports.generateOutreachReport = require('./callableFunctions/generateOutreachReport');
 exports.flagApplicationIssuesForExercise = require('./callableFunctions/flagApplicationIssuesForExercise');
 exports.initialiseAssessments = require('./callableFunctions/initialiseAssessments');
 exports.cancelAssessments = require('./callableFunctions/cancelAssessments');
