@@ -10,7 +10,7 @@ module.exports = (firebase, db) => {
     // get submitted applications
     const applications = await getDocuments(db.collection('applications')
       .where('exerciseId', '==', exerciseId)
-      .where('status', '==', 'applied')
+      .where('status', 'in', ['applied', 'withdrawn'])
     );
 
     const report = {
@@ -32,7 +32,7 @@ module.exports = (firebase, db) => {
       const recommendedApplications = handoverApplications.concat(applications.filter(doc => recommendedIds.indexOf(doc.id) >= 0));
       const selectedApplications = recommendedApplications.concat(applications.filter(doc => selectedIds.indexOf(doc.id) >= 0));
       const shortlistedApplications = selectedApplications.concat(applications.filter(doc => shortlistedIds.indexOf(doc.id) >= 0));
-      
+
       report.handover = outreachReport(handoverApplications);
       report.recommended = outreachReport(recommendedApplications);
       report.selected = outreachReport(selectedApplications);
@@ -53,15 +53,14 @@ const calculatePercents = (report) => {
   if (report.total) {
     let keys = Object.keys(report);
     keys = keys.filter( item => !item.startsWith('total'));
-    
-    keys.map(item => {
+
+    keys.forEach(item => {
       const itemTotal = report[item].total;
       const reportTotal = report.total;
       const myPercent = 100 * itemTotal / reportTotal;
       report[item].percent = myPercent;
     });
-      
-    
+
   }
 };
 
@@ -79,10 +78,10 @@ const outreachStats = (applications) => {
         application.additionalInfo.listedSources.map(item => {
           if (stats[item] === undefined) {
             stats[item] = {
-              total: 0, 
-            }
+              total: 0,
+            };
           }
-          stats[item].total += 1
+          stats[item].total += 1;
           stats.total += 1;
           return item;
         });

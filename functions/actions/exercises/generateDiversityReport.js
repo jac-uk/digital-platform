@@ -10,7 +10,7 @@ module.exports = (firebase, db) => {
     // get submitted applications
     const applications = await getDocuments(db.collection('applications')
       .where('exerciseId', '==', exerciseId)
-      .where('status', '==', 'applied')
+      .where('status', 'in', ['applied', 'withdrawn'])
     );
 
     const report = {
