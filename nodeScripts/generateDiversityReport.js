@@ -4,7 +4,7 @@ const { firebase, app, db } = require('./shared/admin.js');
 const { generateDiversityReport } = require('../functions/actions/exercises/generateDiversityReport')(firebase, db);
 
 const main = async () => {
-  return generateDiversityReport('wdpALbyICL7ZxxN5AQt8');
+  return generateDiversityReport('D7vODO7AVyTTlctVmA5Y');
 };
 
 main()
