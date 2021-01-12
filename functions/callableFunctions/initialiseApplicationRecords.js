@@ -4,7 +4,7 @@ const { firebase, db } = require('../shared/admin.js');
 const { checkArguments } = require('../shared/helpers.js');
 const { initialiseApplicationRecords } = require('../actions/applicationRecords')(config, firebase, db);
 const { generateDiversityReport } = require('../actions/exercises/generateDiversityReport')(firebase, db);
-// const { flagApplicationIssuesForExercise } = require('../actions/applications/flagApplicationIssues')(db);
+// const { flagApplicationIssuesForExercise } = require('../actions/applications/flagApplicationIssues')(config, db);
 
 module.exports = functions.region('europe-west2').https.onCall(async (data, context) => {
   if (!checkArguments({
@@ -16,7 +16,7 @@ module.exports = functions.region('europe-west2').https.onCall(async (data, cont
     throw new functions.https.HttpsError('failed-precondition', 'The function must be called while authenticated.');
   }
   const result = await initialiseApplicationRecords(data);
-  
+
   // once we have application records we can generate reports
   await generateDiversityReport(data.exerciseId);  // @TODO use pub/sub instead?
   // await flagApplicationIssuesForExercise(data.exerciseId);

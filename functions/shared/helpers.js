@@ -11,6 +11,7 @@ module.exports = {
   checkArguments,
   isDateInPast,
   formatDate,
+  getDate,
 };
 
 async function getDocument(query) {
@@ -146,8 +147,28 @@ function isDateInPast(date) {
   return dateToCompare < today;
 }
 
+function getDate(value) {
+  let returnValue;
+  if (value && (value.seconds || value._seconds)) { // convert firestore timestamp to date
+    const seconds = value.seconds || value._seconds;
+    const nanoseconds = value.nanoseconds || value._nanoseconds;
+    returnValue = new Timestamp(seconds, nanoseconds);
+    returnValue = returnValue.toDate();
+  } else if (value && !isNaN(new Date(value).valueOf())) {
+    returnValue = new Date(value);
+  } else {
+    returnValue = new Date(); // NOTE: returns today's date by default
+  }
+  return returnValue;
+}
 
-function formatDate(value, type) {
+function toDateString(date) {
+  return new Date(date.getTime() - (date.getTimezoneOffset() * 60000))
+    .toISOString()
+    .split('T')[0];
+}
+
+function formatDate(value) {
   if (value && (value.seconds || value._seconds)) { // convert firestore timestamp to date
     const seconds = value.seconds || value._seconds;
     const nanoseconds = value.nanoseconds || value._nanoseconds;
@@ -155,31 +176,10 @@ function formatDate(value, type) {
     value = value.toDate();
   }
   if (!isNaN(new Date(value).valueOf()) && value !== null) {
-    if (!type) {
-      if (value instanceof Date) {
-        value = value.toLocaleDateString('en-GB');
-      } else if (value instanceof Array) {
-        value = new Date(value).toLocaleDateString('en-GB');
-      } else {
-        value = new Date(value).toLocaleDateString('en-GB');
-      }
-    } else {
+    if (!(value instanceof Date)) {
       value = new Date(value);
-      switch (type) {
-        case 'month':
-          value = `${value.toLocaleString('en-GB', { month: 'long' })} ${value.getUTCFullYear()}`;
-          break;
-        case 'datetime':
-          value = value.toLocaleString('en-GB');
-          break;
-        case 'long':
-          value = value.toLocaleDateString('en-GB', { year: 'numeric', month: 'long', day: 'numeric' });
-          break;
-        case 'longdatetime':
-          value = value.toLocaleDateString('en-GB', { year: 'numeric', month: 'long', day: 'numeric', hour: 'numeric', minute: 'numeric' });
-          break;
-      }
     }
+    value = toDateString(value);
   }
-  return value;
+  return value ? value : '';
 }
