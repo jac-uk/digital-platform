@@ -4,7 +4,7 @@ const { firebase, db } = require('../shared/admin.js');
 const { checkArguments } = require('../shared/helpers.js');
 const { initialiseMissingApplicationRecords } = require('../actions/applicationRecords')(config, firebase, db);
 const { generateDiversityReport } = require('../actions/exercises/generateDiversityReport')(firebase, db);
-// const { flagApplicationIssuesForExercise } = require('../actions/applications/flagApplicationIssues')(db);
+// const { flagApplicationIssuesForExercise } = require('../actions/applications/flagApplicationIssues')(config, db);
 
 module.exports = functions.region('europe-west2').https.onCall(async (data, context) => {
   if (!checkArguments({

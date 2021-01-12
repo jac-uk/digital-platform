@@ -1,6 +1,7 @@
 const functions = require('firebase-functions');
+const config = require('../shared/config.js');
 const { db } = require('../shared/admin.js');
-const flagApplicationIssues = require('../actions/applications/flagApplicationIssues')(db);
+const flagApplicationIssues = require('../actions/applications/flagApplicationIssues')(config, db);
 
 module.exports = functions.region('europe-west2').https.onCall(async (data, context) => {
   if (!(typeof data.exerciseId === 'string') || data.exerciseId.length === 0) {
