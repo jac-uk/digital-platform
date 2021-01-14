@@ -1,6 +1,6 @@
-const { getDocument, getDocuments, isEmpty } = require('../../shared/helpers');
+const { getDocument, getDocuments, isEmpty, applyUpdates, getDate, formatDate } = require('../../shared/helpers');
 
-module.exports = (db) => {
+module.exports = (config, db) => {
   return {
     flagApplicationIssues,
     flagApplicationIssuesForExercise,
@@ -20,8 +20,8 @@ module.exports = (db) => {
    * flagApplicationIssues
    * Works through an application and marks it with any issues.
    * The application document is always updated, therefore resetting previous issue data.
-   * @param {*} applicationId 
-   * 
+   * @param {*} applicationId
+   *
    * Note: this behaves differently to `flagApplicationIssuesForExercise` which does not reset previous issue data
    */
   async function flagApplicationIssues(applicationId) {
@@ -68,55 +68,40 @@ module.exports = (db) => {
       .where('status', '==', 'applied')
     );
 
-    // construct updates
-    const updates = [];
+    // construct commands
+    const commands = [];
     for (let i = 0, len = applications.length; i < len; ++i) {
       const eligibilityIssues = getEligibilityIssues(exercise, applications[i]);
       const characterIssues = getCharacterIssues(exercise, applications[i]);
       const data = {};
-      // reset previous values
-      if (applications[i].processing) {
-        if (applications[i].processing.eligibilityIssues && applications[i].processing.eligibilityIssues.length) {
-          data['processing.flags.eligibilityIssues'] = false;
-          data['processing.eligibilityIssues'] = [];
-        }
-        if (applications[i].processing.characterIssues && applications[i].processing.characterIssues.length) {
-          data['processing.flags.characterIssues'] = false;
-          data['processing.characterIssues'] = [];
-        }
-      }
       if (eligibilityIssues && eligibilityIssues.length > 0) {
-        data['processing.flags.eligibilityIssues'] = true;
-        data['processing.eligibilityIssues'] = eligibilityIssues;
+        data['flags.eligibilityIssues'] = true;
+        data['issues.eligibilityIssues'] = eligibilityIssues;
+      } else {
+        data['flags.eligibilityIssues'] = false;
+        data['issues.eligibilityIssues'] = [];
       }
       if (characterIssues && characterIssues.length > 0) {
-        data['processing.flags.characterIssues'] = true;
-        data['processing.characterIssues'] = characterIssues;
+        data['flags.characterIssues'] = true;
+        data['issues.characterIssues'] = characterIssues;
+      } else {
+        data['flags.characterIssues'] = false;
+        data['issues.characterIssues'] = [];
       }
       if (!isEmpty(data)) {
-        updates.push({
-          ref: applications[i].ref,
+        commands.push({
+          command: 'update',
+          ref: db.collection('applicationRecords').doc(`${applications[i].id}`),
           data: data,
         });
       }
     }
 
     // write to db
-    if (updates.length) {
-      if (updates.length < 500) {
-        const batch = db.batch();
-        for (let i = 0, len = updates.length; i < len; ++i) {
-          batch.update(updates[i].ref, updates[i].data);
-        }
-        await batch.commit();
-        return updates.length;
-      } else { // @TODO handle multiple batches or > 500 updates
-        // slack.post(`WARNING! Flag Application Issues. Trying to update more than 500 documents for ${exerciseId}`);
-        console.log(`WARNING! Flag Application Issues. Trying to update more than 500 documents for ${exerciseId}`);
-        return false;
-      }
-    }
-    return true;
+    const result = await applyUpdates(db, commands);
+
+    // return
+    return result ? commands.length : false;
   }
 
   function getEligibilityIssues(exercise, application) {
@@ -136,16 +121,16 @@ module.exports = (db) => {
     if (application.personalDetails && application.personalDetails.dateOfBirth) {
       const reasonableLengthOfService = parseInt(exercise.reasonableLengthService === 'other' ? exercise.otherLOS : exercise.reasonableLengthService);
       const retirementAge = parseInt(exercise.retirementAge === 'other' ? exercise.otherRetirement : exercise.retirementAge);
-      const expectedStartDate = exercise.characterAndSCCDate.toDate();
+      const expectedStartDate = getDate(exercise.characterAndSCCDate);
       const expectedEndDate = new Date(expectedStartDate.getFullYear() + reasonableLengthOfService, expectedStartDate.getMonth(), expectedStartDate.getDate());
-      const dateOfBirth = application.personalDetails.dateOfBirth.toDate();
+      const dateOfBirth = getDate(application.personalDetails.dateOfBirth);
       const dateOfRetirement = new Date(dateOfBirth.getFullYear() + retirementAge, dateOfBirth.getMonth(), dateOfBirth.getDate());
       const age = new Duration(dateOfBirth, expectedEndDate).toString();
       if (application.canGiveReasonableLOS === false) {
-        issues.push(newIssue('rls', `Self-declared. Candidate will be ${age} old at end of service`));
-      } else {        
+        issues.push(newIssue('rls', `Self-declared. Candidate will be ${age} old at end of service. DOB: ${formatDate(dateOfBirth)}. Candidate comments: ${application.cantGiveReasonableLOSDetails}`));
+      } else {
         if (expectedEndDate > dateOfRetirement) {
-          issues.push(newIssue('rls', `Candidate will be ${age} old at end of service`));
+          issues.push(newIssue('rls', `Candidate will be ${age} old at end of service. DOB: ${formatDate(dateOfBirth)}`));
         }
       }
     } else {
@@ -160,9 +145,9 @@ module.exports = (db) => {
         application.qualifications = application.qualifications.filter((el) => el.date);
         if (application.qualifications.length) {
           if (application.qualifications.length > 1) {
-            application.qualifications.sort((a, b) => (a.date.toDate() >= b.date.toDate()) ? 1 : -1);
+            application.qualifications.sort((a, b) => (getDate(a.date) >= getDate(b.date)) ? 1 : -1);
           }
-          const firstQualificationDate = application.qualifications[0].date.toDate();
+          const firstQualificationDate = getDate(application.qualifications[0].date);
           if (application.experience && application.experience.length) {
             let experienceSinceFirstQualification = application.experience;
             if (application.employmentGaps && application.employmentGaps.length) {
@@ -171,22 +156,22 @@ module.exports = (db) => {
             experienceSinceFirstQualification = experienceSinceFirstQualification.filter((el) => {
               if (el.startDate) {
                 if (el.endDate) {
-                  return el.endDate.toDate() >= firstQualificationDate;
+                  return getDate(el.endDate) >= firstQualificationDate;
                 } else {
                   return true; // no end date, so current position
                 }
               }
               return false;
             });
-            experienceSinceFirstQualification.sort((a, b) => (a.startDate.toDate() >= b.startDate.toDate()) ? 1 : -1);
+            experienceSinceFirstQualification.sort((a, b) => (getDate(a.startDate) >= getDate(b.startDate)) ? 1 : -1);
             const relevantExperience = new Duration();
             const otherExperience = new Duration();
             let latestValidEndDate = firstQualificationDate;
             for (let i = 0, len = experienceSinceFirstQualification.length; i < len; ++i) {
               // @TODO look for any un-explained gaps > 1 year
               const el = experienceSinceFirstQualification[i];
-              const startDate = el.startDate.toDate() < latestValidEndDate ? latestValidEndDate : el.startDate.toDate();
-              const endDate = el.endDate ? el.endDate.toDate() : exercise.characterAndSCCDate.toDate();
+              const startDate = getDate(el.startDate) < latestValidEndDate ? latestValidEndDate : getDate(el.startDate);
+              const endDate = el.endDate ? getDate(el.endDate) : getDate(exercise.characterAndSCCDate);
               if (el.tasks && el.tasks.length > 0) {
                 if (el.tasks.indexOf('other') >= 0) {
                   otherExperience.add(new Duration(startDate, endDate));
@@ -229,33 +214,11 @@ module.exports = (db) => {
 
     // character
     if (application.characterInformation) {
-      if (application.characterInformation.criminalOffences) {
-        issues.push(newIssue('criminalOffences'));
-      }
-      if (application.characterInformation.nonMotoringFixedPenaltyNotices) {
-        issues.push(newIssue('nonMotoringFixedPenaltyNotices'));
-      }
-      if (application.characterInformation.drivingDisqualificationDrinkDrugs) {
-        issues.push(newIssue('drivingDisqualificationDrinkDrugs'));
-      }
-      if (application.characterInformation.endorsementsOrMotoringFixedPenalties) {
-        issues.push(newIssue('endorsementsOrMotoringFixedPenalties'));
-      }
-      if (application.characterInformation.declaredBankruptOrIVA) {
-        issues.push(newIssue('declaredBankruptOrIVA'));
-      }
-      if (application.characterInformation.lateTaxReturnOrFined) {
-        issues.push(newIssue('lateTaxReturnOrFined'));
-      }
-      if (application.characterInformation.involvedInProfessionalMisconduct) {
-        issues.push(newIssue('involvedInProfessionalMisconduct'));
-      }
-      if (application.characterInformation.diciplinaryActionOrAskedToResign) {
-        issues.push(newIssue('diciplinaryActionOrAskedToResign'));
-      }
-      if (application.characterInformation.otherCharacterIssues) {
-        issues.push(newIssue('otherCharacterIssues'));
-      }
+      Object.keys(config.APPLICATION.CHARACTER_ISSUES).forEach(key => {
+        if (application.characterInformation[key]) {
+          issues.push(newIssue(key));
+        }
+      });
     } else {
       issues.push(newIssue('character', 'No character information'));
     }

@@ -1,7 +1,8 @@
 'use strict';
 
+const config = require('./shared/config');
 const { app, db } = require('./shared/admin.js');
-const eligibility = require('../functions/actions/applications/flagApplicationIssues')(db);
+const eligibility = require('../functions/actions/applications/flagApplicationIssues')(config, db);
 
 const main = async () => {
   // return eligibility.flagApplicationIssues('5RViNnHWNTppMumUKcPt');
