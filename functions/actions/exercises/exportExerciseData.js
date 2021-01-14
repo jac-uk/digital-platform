@@ -46,7 +46,7 @@ module.exports = (config, firebase, db) => {
       { title: 'Fee-paid or salaried judge', ref: 'application.feePaidOrSalariedJudge' },
       { title: 'Stage', ref: 'applicationRecord.stage' },
       { title: 'Status', ref: 'applicationRecord.status' },
-      { title: 'QT scores ', ref: 'applicationRecord.qualifyingTests', type: 'json' },
+      { title: 'QT scores', ref: 'applicationRecord.qualifyingTests', type: 'json' },
     ];
 
     // get rows for all selected exercises

@@ -2,6 +2,46 @@ const functions = require('firebase-functions');
 
 module.exports = {
   APPLY_URL: functions.config().apply.url,
+  APPLICATION: {
+    CHARACTER_ISSUES: { // this gives a map from issue to corresponding details field TODO improve naming or where we store this
+      criminalOffences: {
+        title: 'Criminal Offences',
+        details: 'criminalOffenceDetails',
+      },
+      declaredBankruptOrIVA: {
+        title: 'Declared Bankrupt Or IVA',
+        details: 'declaredBankruptOrIVADetails',
+      },
+      diciplinaryActionOrAskedToResign: {
+        title: 'Disciplinary Action Or Asked To Resign',
+        details: 'diciplinaryActionOrAskedToResignDetails',
+      },
+      drivingDisqualificationDrinkDrugs: {
+        title: 'Driving Disqualification Drink Drugs',
+        details: 'drivingDisqualificationDrinkDrugsDetails',
+      },
+      endorsementsOrMotoringFixedPenalties: {
+        title: 'Endorsements Or Motoring Fixed Penalties',
+        details: 'endorsementsOrMotoringFixedPenaltiesDetails',
+      },
+      involvedInProfessionalMisconduct: {
+        title: 'Involved In Professional Misconduct',
+        details: 'involvedInProfessionalMisconductDetails',
+      },
+      lateTaxReturnOrFined: {
+        title: 'Late Tax Return Or Fined',
+        details: 'lateTaxReturnOrFinedDetails',
+      },
+      nonMotoringFixedPenaltyNotices: {
+        title: 'Non Motoring Fixed Penalty Notices',
+        details: 'nonMotoringFixedPenaltyNoticesDetails',
+      },
+      otherCharacterIssues: {
+        title: 'Other Character Issues',
+        details: 'otherCharacterIssuesDetails',
+      },
+    },
+  },
   ASSESSMENTS_URL: functions.config().assessments.url,
   ASSESSMENT_TYPE: {
     COMPETENCY: 'competency',

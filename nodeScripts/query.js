@@ -2,78 +2,106 @@
 
 const config = require('./shared/config.js');
 const { app, db } = require('./shared/admin.js');
-const { getDocument } = require('../functions/shared/helpers');
+const { getDocuments, getAllDocuments, formatDate } = require('../functions/shared/helpers');
 
+// function flattenArrayProperty(data, prop, formatter) {
+//   if (!data) {
+//     return '';
+//   }
+//   return data.map((item) => {
+//     if (typeof formatter !== 'undefined') {
+//       return formatter(item[prop]);
+//     } else {
+//       return item[prop];
+//     }
+//   }).join(', ');
+// }
+
+function upperCase(value) {
+  if (value) {
+    return value.toUpperCase();
+  }
+  return value;
+}
+
+function flattenQualifications(data) {
+  if (!data) {
+    return '';
+  }
+  return data.map((item) => {
+    if (item.type === 'barrister' && item.qualificationNotComplete) {
+      return `${upperCase(item.type)}\n${item.details}`;
+    } else {
+      return `${upperCase(item.type)}\n${formatDate(item.date)}`;
+    }
+  }).join('\n\n');
+}
+
+function flattenCharacterInformation(data) {
+  if (!data) {
+    return '';
+  }
+  const issues = [];
+  Object.entries(config.APPLICATION.CHARACTER_ISSUES).forEach(([key, value]) => {
+    if (data[key]) {
+      const details = data[value.details].map(detail => {
+        return `${formatDate(detail.date)} ${detail.title ? detail.title : ''}\n${detail.details}`;
+      }).join('\n\n');
+      issues.push(`${value.title.toUpperCase()}\n${details}`);
+    }
+  });
+  return issues.join('\n\n');
+}
 
 const main = async () => {
 
-  const qualifyingTestId = 'DlFf28EV5JpJ19ZbhdvZ';
+  const exerciseId = 'fgQ7Uw3sLseDPk5ike5p';
 
   // get data
-  const qualifyingTest = await getDocument(db.collection('qualifyingTests').doc(qualifyingTestId));
+  const applicationRecords = await getDocuments(
+    db.collection('applicationRecords')
+    .where('exercise.id', '==', exerciseId)
+    .where('status', '==', 'passedScenarioTest')
+    .select()
+  );
+  const applicationIds = applicationRecords.map(item => item.id);
+  const applicationRefs = applicationIds.map(id => db.collection('applications').doc(id));
+  const applications = await getAllDocuments(db, applicationRefs);
 
-  // question report
-  const questionData = [];
-  qualifyingTest.testQuestions.questions.forEach((question, questionIndex) => {
-    const rowData = {
-      questionNumber: questionIndex + 1,
-      questionResponses: qualifyingTest.responsesReport.questions[questionIndex].responses,
-      correct: qualifyingTest.responsesReport.questions[questionIndex].correct,
-      incorrect: qualifyingTest.responsesReport.questions[questionIndex].incorrect,
+  const filteredData = applications;
+
+  // row data
+  const rows = [];
+  filteredData.forEach(application => {
+    const row = {
+      referenceNumber: application.referenceNumber,
+      fullName: application.personalDetails.fullName,
+      email: application.personalDetails.email,
+      citizenship: application.personalDetails.citizenship,
+      dateOfBirth: formatDate(application.personalDetails.dateOfBirth),
+      qualifications: flattenQualifications(application.qualifications),
+      character: flattenCharacterInformation(application.characterInformation),
     };
-    if (qualifyingTest.type === config.QUALIFYING_TEST.TYPE.SITUATIONAL_JUDGEMENT) {
-      rowData.partial = qualifyingTest.responsesReport.questions[questionIndex].partial;
-    }
-    questionData.push(rowData);
-  });
-
-  // answer report
-  const answerData = [];
-  qualifyingTest.testQuestions.questions.forEach((question, questionIndex) => {
-    question.options.forEach((answer, answerIndex) => {
-      const rowData = qualifyingTest.responsesReport.questions[questionIndex].answers[answerIndex];
-      rowData.questionNumber = questionIndex + 1;
-      rowData.answerNumber = answerIndex + 1;
-      rowData.questionResponses = qualifyingTest.responsesReport.questions[questionIndex].responses;
-      answerData.push(rowData);
-    });
+    rows.push(row);
   });
 
   const createCsvWriter = require('csv-writer').createObjectCsvWriter;
-
-  const questionReportHeaders = [
-    { id: 'questionNumber', title: 'Question' },
-    { id: 'questionResponses', title: 'Responses' },
-    { id: 'correct', title: 'Correct' },
-    { id: 'incorrect', title: 'Incorrect' },
+  const headers = [
+    { id: 'referenceNumber', title: 'Ref' },
+    { id: 'fullName', title: 'Name' },
+    { id: 'email', title: 'Email' },
+    { id: 'citizenship', title: 'Citizenship' },
+    { id: 'dateOfBirth', title: 'Date of Birth' },
+    { id: 'qualifications', title: 'Qualifications' },
+    { id: 'character', title: 'Character' },
   ];
-  if (qualifyingTest.type === config.QUALIFYING_TEST.TYPE.SITUATIONAL_JUDGEMENT) {
-    answerReportHeaders.push({ id: 'partial', title: 'Partial' });
-  }
-  const questionReport = createCsvWriter({
-    path: 'questionReport.csv',
-    header: questionReportHeaders,
+  const output = createCsvWriter({
+    path: 'output.csv',
+    header: headers,
   });
-  await questionReport.writeRecords(questionData);
+  await output.writeRecords(rows);
 
-  const answerReportHeaders = [
-    { id: 'questionNumber', title: 'Question' },
-    { id: 'answerNumber', title: 'Answer' },
-    { id: 'questionResponses', title: 'Responses' },
-  ];
-  if (qualifyingTest.type === config.QUALIFYING_TEST.TYPE.SITUATIONAL_JUDGEMENT) {
-    answerReportHeaders.push({ id: 'mostAppropriate', title: 'Selected as Most Appropriate' });
-    answerReportHeaders.push({ id: 'leastAppropriate', title: 'Selected as Least Appropriate' });
-  } else {
-    answerReportHeaders.push({ id: 'selected', title: 'Selected' });
-  }
-  const answerReport = createCsvWriter({
-    path: 'answerReport.csv',
-    header: answerReportHeaders,
-  });
-  await answerReport.writeRecords(answerData);
-
-  return true;
+  return rows.length;
 };
 
 main()
