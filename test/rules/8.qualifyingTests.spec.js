@@ -1,5 +1,5 @@
 const { setup, teardown, setupAdmin } = require('./helpers');
-const { assertFails, assertSucceeds } = require('@firebase/testing');
+const { assertFails, assertSucceeds } = require('@firebase/rules-unit-testing');
 const COLLECTION_NAME = 'qualifyingTests';
 
 describe(COLLECTION_NAME, () => {

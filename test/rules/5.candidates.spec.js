@@ -1,5 +1,5 @@
 const { setup, teardown } = require('./helpers');
-const { assertFails, assertSucceeds } = require('@firebase/testing');
+const { assertFails, assertSucceeds } = require('@firebase/rules-unit-testing');
 
 describe('Candidates', () => {
   afterEach(async () => {
@@ -26,22 +26,22 @@ describe('Candidates', () => {
       const db = await setup();
       await assertFails(db.collection('candidates').get());
     });
-  
+
     it('prevent authenticated user from reading candidate data', async () => {
       const db = await setup({ uid: 'user1' });
       await assertFails(db.collection('candidates').get());
     });
-  
+
     it('allow authenticated user to read their own candidate data', async () => {
       const db = await setup({ uid: 'user1' });
       await assertSucceeds(db.doc('candidates/user1').get());
     });
-  
+
     it('prevent authenticated user from reading anothers candidate data', async () => {
       const db = await setup({ uid: 'user1' });
       await assertFails(db.doc('candidates/user2').get());
     });
-  });  
+  });
 
   context('Update', () => {
     it('prevent un-authenticated user from updating candidate data', async () => {
