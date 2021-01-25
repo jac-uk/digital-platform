@@ -1,5 +1,5 @@
 const { setup, teardown, setupAdmin, getTimeStamp } = require('./helpers');
-const { assertFails, assertSucceeds } = require('@firebase/testing');
+const { assertFails, assertSucceeds } = require('@firebase/rules-unit-testing');
 
 describe('Applications', () => {
   afterEach(async () => {
@@ -57,19 +57,19 @@ describe('Applications', () => {
       await setupAdmin(db, { 'applications/app1': { userId: 'user1' } });
       await assertFails(db.collection('applications').get());
     });
-  
+
     it('prevent authenticated user from reading application data', async () => {
       const db = await setup({ uid: 'user1' });
       await setupAdmin(db, { 'applications/app1': { userId: 'user2' } });
       await assertFails(db.collection('applications').get());
     });
-  
+
     it('allow authenticated user to read their own application data', async () => {
       const db = await setup({ uid: 'user1' });
       await setupAdmin(db, { 'applications/app1': { userId: 'user1' } });
       await assertSucceeds(db.collection('applications').where('userId', '==', 'user1').get());
     });
-  
+
     it('prevent authenticated user from reading anothers application data', async () => {
       const db = await setup({ uid: 'user1' });
       await setupAdmin(db, { 'applications/app1': { userId: 'user2' } });
@@ -82,8 +82,8 @@ describe('Applications', () => {
         { 'applications/app1': { }, 'applications/app2': { } }
       );
       await assertSucceeds(db.collection('applications').get());
-    });    
-  });  
+    });
+  });
 
   context('Update', () => {
     it('prevent un-authenticated user from updating application data', async () => {

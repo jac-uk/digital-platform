@@ -1,5 +1,5 @@
 const { setup, teardown, setupAdmin, getTimeStamp } = require('./helpers');
-const { assertFails, assertSucceeds } = require('@firebase/testing');
+const { assertFails, assertSucceeds } = require('@firebase/rules-unit-testing');
 
 describe('Assessments', () => {
   afterEach(async () => {

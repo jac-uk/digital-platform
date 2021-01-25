@@ -94,3 +94,9 @@ functions/pendingReferences.csv
 hosting/reference/cypress/screenshots/
 
 .DS_Store
+
+# nodeScript output
+output.csv
+
+# JSDoc
+out/

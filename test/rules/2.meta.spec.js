@@ -1,11 +1,11 @@
 const { setup, teardown } = require('./helpers');
-const { assertFails, assertSucceeds } = require('@firebase/testing');
+const { assertFails, assertSucceeds } = require('@firebase/rules-unit-testing');
 
 describe('Meta', () => {
   afterEach(async () => {
     await teardown();
   });
-  
+
   context('Create', () => {
     it('prevent un-authenticated user from creating meta documents', async () => {
       const db = await setup();
@@ -29,7 +29,7 @@ describe('Meta', () => {
     it('prevent un-authenticated user from reading meta', async () => {
       const db = await setup();
       await assertFails(db.collection('meta').get());
-    });    
+    });
     it('prevent authenticated user from reading meta', async () => {
       const db = await setup({ uid: 'user1' });
       await assertFails(db.collection('meta').get());
@@ -37,7 +37,7 @@ describe('Meta', () => {
     it('prevent un-authenticated user from reading stats', async () => {
       const db = await setup();
       await assertFails(db.doc('meta/stats').get());
-    });    
+    });
     it('prevent authenticated user from reading stats', async () => {
       const db = await setup({ uid: 'user1' });
       await assertFails(db.doc('meta/stats').get());
@@ -53,11 +53,11 @@ describe('Meta', () => {
     it('allow authenticated user with verified @judicialappointments.digital email to read stats', async () => {
       const db = await setup({ uid: 'user1', email: 'user@judicialappointments.digital', email_verified: true });
       await assertSucceeds(db.doc('meta/stats').get());
-    });    
+    });
     it('allow authenticated user with verified @judicialappointments.gov.uk email to read stats', async () => {
       const db = await setup({ uid: 'user1', email: 'user@judicialappointments.gov.uk', email_verified: true });
       await assertSucceeds(db.doc('meta/stats').get());
-    });    
+    });
   });
 
   context('Update', () => {
@@ -76,7 +76,7 @@ describe('Meta', () => {
     it('prevent authenticated user with verified @judicialappointments.gov.uk email from updating stats', async () => {
       const db = await setup({ uid: 'user1', email: 'user@judicialappointments.gov.uk', email_verified: true });
       await assertFails(db.doc('meta/stats').update({}));
-    });   
+    });
     it('allow authenticated JAC user to increment exercisesCount by 1', async () => {
       const db = await setup(
         { uid: 'user1', email: 'user@judicialappointments.gov.uk', email_verified: true },
@@ -112,7 +112,7 @@ describe('Meta', () => {
     it('prevent authenticated user with verified @judicialappointments.gov.uk email from deleting stats', async () => {
       const db = await setup({ uid: 'user1', email: 'user@judicialappointments.gov.uk', email_verified: true });
       await assertFails(db.doc('meta/stats').delete());
-    }); 
+    });
   });
 
 
