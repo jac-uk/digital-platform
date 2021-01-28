@@ -1,18 +1,9 @@
 'use strict';
 
-const config = require('./shared/config');
-const { firebase, app, db } = require('./shared/admin.js');
+const { app } = require('./shared/admin.js');
 const { google } = require('googleapis');
-// const { getDocument } = require('../functions/shared/helpers');
-// const { object } = require('firebase-functions/lib/providers/storage');
-// const { promisify } = require('util');
 
 const main = async (spreadsheetId, range) => {
-  // const application = await getDocument(db.collection('applications').doc('testData-1'));
-  // console.log(Object.keys(application));
-  // console.table(application);
-  // console.table(app);
-  // console.table(db);
 
   return google.auth.getClient({
     scopes: ['https://www.googleapis.com/auth/spreadsheets'],
