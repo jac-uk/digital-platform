@@ -16,6 +16,14 @@ const main = async (spreadsheetId, range) => {
       requestBody: {
         values: [
           ['Candidate Ref', 'Score'],
+          ['Candidate1'],
+          ['Candidate2'],
+          ['Candidate3'],
+          ['Candidate4'],
+          ['Candidate5'],
+          ['Candidate6'],
+          ['Candidate7'],
+          ['Candidate8'],
         ],
       },
     });
