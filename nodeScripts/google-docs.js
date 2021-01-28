@@ -20,8 +20,37 @@ const main = async () => {
           insertText: {
             location: {
               index: 1,
+              },
+            text: `Welsh posts - TEST1 Applying for a Welsh post ${toYesNo(application.applyingForWelshPost)} \n`,
             },
-            text: `Hello from ${application.personalDetails.fullName}\n`,
+          },
+        {
+          insertText: {
+            location: {
+              index: 1,
+            },
+            text: `Welsh posts - TEST2 Applying for a Welsh post ${toYesNo(application.applyingForWelshPost)} \n`,
+          },
+        },
+        {
+          updateTextStyle: {
+            range: {
+              startIndex: 1,
+              endIndex: 12,
+            },
+            textStyle: {
+              bold: true,
+              backgroundColor: {
+                color: {
+                  rgbColor: {
+                    red: 0.3,
+                    green: 0.5,
+                    blue: 0.9,
+                  },
+                },
+              },
+            },
+            fields: '*',
           },
         },
       ],
@@ -29,6 +58,10 @@ const main = async () => {
   });
   return true;
 };
+
+const toYesNo = (input) => {
+  return input ? 'Yes' : 'No';
+}
 
 main()
   .then((result) => {
