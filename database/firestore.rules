@@ -48,6 +48,11 @@ service cloud.firestore {
       allow write: if userIsAuthenticated() && userIsJAC();
     }
 
+    match /panels/{panelId} {
+      allow read: if userIsAuthenticated() && userIsJAC();
+      allow write: if userIsAuthenticated() && userIsJAC();
+    }
+
     match /meta/stats {
       allow read: if userIsAuthenticated() && userIsJAC();
       // Admin users can increment stats.exercisesCount by 1
