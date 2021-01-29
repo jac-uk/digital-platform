@@ -27,10 +27,14 @@ const stylesheet = `
       }
       table {
         border-spacing: 0; 
+        padding-bottom: 20px;
         width: 800px;
       }
       .sectionStart th, .sectionStart td {
         padding: 30px 8px 8px 8px;
+      }
+      h2 {
+        padding-top: 10px;
       }
    </style>  
   `;
@@ -52,11 +56,23 @@ const main = async () =>
   createTable([{label: 'Are you applying under Schedule 2(3)?', value: toYesNo(application.applyingForSchedule2Three)}]);
   createTable([{label: 'Explain how you\'ve gained experience in law', value: application.experienceUnderSchedule2Three}]);
 
+  createTitle('Memberships');
+  createTable(getMembershipData(application));
+
   createTitle('Post-qualification experience');
   createTable(getPostQualificationData(application));
 
   createTitle('Judicial experience');
   createTable([{label: 'Fee-paid or salaried judge', value: lookup((application.feePaidOrSalariedJudge))}]);
+
+  createTitle('Employment gaps');
+  createTable(getEmploymentGaps(application));
+
+  createTitle('Independent assessors');
+  createTable(getAssessorsData(application));
+
+  createTitle('Additional selection criteria');
+  createTable(getAdditionalSelectionCriteria(application));
 
   html += pageFooter();
   console.log(html);
@@ -68,7 +84,7 @@ const getQualificationData = (application) => {
   qualificationData.forEach(q => {
     addField(data,'Qualification', lookup(q.type));
     addField(data, 'Location', lookup(q.location));
-    addField(data, 'Date qualified', new Date()); // to do conversion
+    addField(data, 'Date qualified', q.date._seconds); // to do conversion
   })
   return data;
 }
@@ -81,6 +97,108 @@ const getPostQualificationData = (application) => {
     addField(data, 'Organisation or business', e.orgBusinessName);
     addField(data, 'Dates worked', new Date());
     addField(data,'Law related tasks', formatLawRelatedTasks(e));
+})
+  return data;
+}
+
+const getMembershipData = (application) =>
+{
+  let membershipData = [];
+
+  const charteredAssociationBuildingEngineersDate = application.charteredAssociationBuildingEngineersDate;
+  const charteredAssociationBuildingEngineersInformation = application.charteredAssociationBuildingEngineersInformation;
+  const charteredAssociationBuildingEngineersNumber = application.charteredAssociationBuildingEngineersNumber;
+
+  // const charteredInstituteBuildingDate = application.charteredInstituteBuildingDate;
+  // const charteredInstituteBuildingInformation = application. charteredInstituteBuildingInformation;
+  // const charteredInstituteBuildingNumber = application.charteredInstituteBuildingNumber;
+
+  // const charteredInstituteEnvironmentalHealthDate = charteredInstituteEnvironmentalHealthDate;
+  // const charteredInstituteEnvironmentalHealthInformation = charteredInstituteEnvironmentalHealthInformation;
+  // const charteredInstituteEnvironmentalHealthNumber = charteredInstituteEnvironmentalHealthNumber;
+  //
+  // const generalMedicalCouncilConditional = generalMedicalCouncilConditional;
+  // const generalMedicalCouncilConditionalDetails = generalMedicalCouncilConditionalDetails;
+  // const generalMedicalCouncilConditionalEndDate = generalMedicalCouncilConditionalEndDate;
+  // const generalMedicalCouncilConditionalStartDate = generalMedicalCouncilConditionalStartDate;
+
+  // const generalMedicalCouncilDate = application.generalMedicalCouncilDate;
+  // const generalMedicalCouncilInformation = application.generalMedicalCouncilInformation;
+  // const generalMedicalCouncilNumber = application.generalMedicalCouncilNumber;
+  //
+  // const otherProfessionalMemberships = application.otherProfessionalMemberships;
+  // const otherProfessionalMembershipsDate = application.otherProfessionalMembershipsDate;
+  // const otherProfessionalMembershipsInformation = application.otherProfessionalMembershipsInformation;
+  // const otherProfessionalMembershipsNumber = application.otherProfessionalMembershipsNumber;
+  //
+  // const royalCollegeOfPsychiatristsDate = application.royalCollegeOfPsychiatristsDate;
+  // const royalCollegeOfPsychiatristsInformation = application.royalCollegeOfPsychiatristsInformation;
+  // const royalCollegeOfPsychiatristsNumber = application.royalCollegeOfPsychiatristsInformation;
+
+  // const royalInstituteBritishArchitectsDate = application.royalInstituteBritishArchitectsDate;
+  // const royalInstituteBritishArchitectsInformation = application.royalInstituteBritishArchitectsInformation;
+  // const royalInstituteBritishArchitectsNumber = application.royalInstituteBritishArchitectsNumber;
+  //
+  // const royalInstitutionCharteredSurveyorsDate = application.royalInstitutionCharteredSurveyorsDate;
+  // const royalInstitutionCharteredSurveyorsInformation = application.royalInstitutionCharteredSurveyorsInformation;
+  // const royalInstitutionCharteredSurveyorsNumber = application.royalInstitutionCharteredSurveyorsNumber;
+
+  // const charteredAssociation = [charteredAssociationBuildingEngineersDate, charteredAssociationBuildingEngineersInformation, charteredAssociationBuildingEngineersNumber];
+   let charteredAssociationBuildingEngineers = [charteredAssociationBuildingEngineersDate, charteredAssociationBuildingEngineersInformation, charteredAssociationBuildingEngineersNumber];
+  // const charteredInstituteEnvironmentalHealth = [charteredInstituteEnvironmentalHealthDate, charteredInstituteEnvironmentalHealthInformation, charteredInstituteEnvironmentalHealthNumber];
+  // const generalMedicalCouncilCond = [generalMedicalCouncilConditional, generalMedicalCouncilConditionalDetails, generalMedicalCouncilConditionalEndDate, generalMedicalCouncilConditionalStartDate];
+
+  membershipData = [charteredAssociationBuildingEngineers];
+
+  const data = [];
+
+  membershipData.forEach((m, idx) => {
+    addField(data,'Details', m[1], idx !== 0);
+})
+  return data;
+}
+
+const getEmploymentGaps = (application) => {
+  const employmentGapsData = application.employmentGaps;
+  const data = [];
+  employmentGapsData.forEach((eG, idx) => {
+    addField(data, 'Date of gap', eG.startDate);
+    addField(data, 'Details', eG.details);
+    addField(data,'Law related tasks', formatLawRelatedTasks(eG));
+})
+  return data;
+}
+
+  const getAdditionalSelectionCriteria = (application) => {
+    const additionalSelectionCriteria = application.selectionCriteriaAnswers;
+    const data = [];
+    additionalSelectionCriteria.forEach((sC, idx) => {
+      addField(data, sC.title, sC.answerDetails);
+  })
+    return data;
+  }
+
+const getAssessorsData = (application) => {
+  const firstAssessorFullName = application.firstAssessorFullName;
+  const firstAssessorEmail = application.firstAssessorEmail;
+  const firstAssessorPhone = application.firstAssessorPhone;
+  const firstAssessorTitle = application.firstAssessorTitle;
+
+  const secondAssessorFullName = application.secondAssessorFullName;
+  const secondAssessorEmail = application.secondAssessorEmail;
+  const secondAssessorPhone = application.secondAssessorPhone;
+  const secondAssessorTitle = application.secondAssessorTitle;
+
+  const firstAssessor = [firstAssessorFullName, firstAssessorTitle, firstAssessorEmail, firstAssessorPhone];
+  const secondAssessor = [secondAssessorFullName, secondAssessorTitle, secondAssessorEmail, secondAssessorPhone];
+  const data = [];
+  const assessorData = [firstAssessor, secondAssessor];
+
+  assessorData.forEach((d, idx) => {
+    addField(data,'Full name', d[0], idx !== 0);
+    addField(data, 'Title or position', d[1]);
+    addField(data, 'Email', d[2]);
+    addField(data, 'Phone', d[3]);
 })
   return data;
 }
