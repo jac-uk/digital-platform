@@ -48,10 +48,16 @@ const main = async () =>
 
   createTitle('Qualifications');
   createTable(getQualificationData(application));
-  html += pageFooter();
+
+  createTable([{label: 'Are you applying under Schedule 2(3)?', value: toYesNo(application.applyingForSchedule2Three)}]);
+  createTable([{label: 'Explain how you\'ve gained experience in law', value: application.experienceUnderSchedule2Three}]);
 
   createTitle('Post-qualification experience');
   createTable(getPostQualificationData(application));
+
+  createTitle('Judicial experience');
+  createTable([{label: 'Fee-paid or salaried judge', value: lookup((application.feePaidOrSalariedJudge))}]);
+
   html += pageFooter();
   console.log(html);
 }
@@ -71,10 +77,10 @@ const getPostQualificationData = (application) => {
   const experienceData = application.experience;
   const data = [];
   experienceData.forEach((e, idx) => {
-    addField(data, 'Job title', e.jobTitle, idx !== 0); // to do lookup
-    addField(data, 'Organisation or business', e.orgBusinessName); // to do lookup
-    addField(data, 'Dates worked', new Date()); // to do conversion
-    addField(data,'Law related tasks', formatLawRelatedTasks(e)); // to do conversion
+    addField(data, 'Job title', e.jobTitle, idx !== 0);
+    addField(data, 'Organisation or business', e.orgBusinessName);
+    addField(data, 'Dates worked', new Date());
+    addField(data,'Law related tasks', formatLawRelatedTasks(e));
 })
   return data;
 }
