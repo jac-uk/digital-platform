@@ -8,6 +8,7 @@ const drive = require('../functions/shared/google-drive')();
 const main = async () =>
 {
   const driveId = '0AHs0fIN6F04CUk9PVA';
+  const folderId = '1_Dy3YeKBvaflReY5Cifqt6_lJcoeYBPT';
   const applicationId = 'testData-1';
   const fileName = 'application-test';
 
@@ -16,7 +17,7 @@ const main = async () =>
   await drive.login();
   drive.setDriveId(driveId);
   await drive.createFile(fileName, {
-    folderId: '1_Dy3YeKBvaflReY5Cifqt6_lJcoeYBPT',
+    folderId: folderId,
     sourceType: drive.MIME_TYPE.HTML,
     sourceContent: htmlString,
     destinationType: drive.MIME_TYPE.DOCUMENT,
