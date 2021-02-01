@@ -59,7 +59,7 @@ class htmlWriter {
     this.html += `<h2>${data}</h2>`;
   }
   addHeading(data) {
-    data = data.match(/[A-Z][a-z]+|[0-9]+/g).join(' ');
+    // data = data.match(/[A-Z][a-z]+|[0-9]+/g).join(' ');
     this.html += `<h4>${data}</h4>`;
   }
   addTable(data) {
