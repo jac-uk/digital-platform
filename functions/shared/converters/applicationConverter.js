@@ -10,49 +10,160 @@ module.exports = () => {
   };
 
   function getHtmlApplication(application, params) {
-    return 'coming soon';
-  }
-
-  function getHtmlPanelPack(application, params) {
-
     const html = new htmlWriter();
-    html.addTitle('Welsh posts');
-    html.addTable([{ label: 'Applying for Welsh posts', value: toYesNo(application.applyingForWelshPost) }]);
 
-    html.addTitle('Qualifications');
-    html.addTable(getQualificationData(application));
+    html.addTitle('coming soon');
 
-    html.addTable([{ label: 'Are you applying under Schedule 2(3)?', value: toYesNo(application.applyingForSchedule2Three) }]);
-    html.addTable([{ label: 'Explain how you\'ve gained experience in law', value: application.experienceUnderSchedule2Three }]);
+    // html.addHeading('Created On')
+    // html.addTable([{ label: 'Date', value: application.createdAt }]);
 
-    html.addTitle('Memberships');
-    html.addTable(getMembershipData(application));
+    // html.addHeading('Submitted On')
+    // html.addTable([{ label: 'Date', value: application.appliedAt }]);
 
-    html.addTitle('Post-qualification experience');
-    html.addTable(getPostQualificationData(application));
+    // html.addHeading('Personal Details');
+    // html.addTable(getPersonalDetails(application));
+    
+    // html.addHeading('Character Info');
+    // html.addTable(getCharacterInformation(application));
+    
+    // html.addHeading('Equality and Diversity Information');
+    // html.addTable(getEqualityAndDiversityInfo(application));
+    
+    // html.addHeading('Location Preferences')
+    // html.addTable([{ label: 'Location ', value: application.locationPreferences }]);
+    
+    // html.addHeading('Jurisdiction Preferences')
+    // html.addTable([{ label: 'Jurisdiction Preferences', value: application.jurisdictionPreferences }]);
+    
+    // html.addHeading('Uploaded Self Assessment')
+    // html.addTable([{ label: 'Self Assessment', value: application.uploadedSelfAssessment }]);
+    
+    // html.addHeading('Uploaded Covering Letter')
+    // html.addTable([{ label: 'Covering Letter', value: application.uploadedCoveringLetter }]);
 
-    html.addTitle('Judicial experience');
-    html.addTable([{ label: 'Fee-paid or salaried judge', value: lookup((application.feePaidOrSalariedJudge)) }]);
+    // html.addHeading('Uploaded leadership sustainability')
+    // html.addTable([{ label: 'Leadership sustainability', value: application.uploadedLeadershipSustainabilityAssessment }]);
+    
+    // html.addHeading('Uploaded suitability statement')
+    // html.addTable([{ label: 'Suitability Statement', value: application.uploadedSuitabilityStatement }]);
 
-    html.addTitle('Employment gaps');
-    html.addTable(getEmploymentGaps(application));
+    // html.addHeading('Can give Reasonable Length of service')
+    // html.addTable([{ label: 'Can Give RLOS', value: application.canGiveReasonableLOS }]);
+    
+    // if (!application.canGiveReasonableLOS) {
+    //   html.addTable([{ label: 'Cant give RLOS details', value: application.cantGiveReasonableLOSDetails }]);
+    // } 
 
     // NOTE: don't need IAs as we will have their uploaded files
-    // html.addTitle('Independent assessors');
+    // html.addHeading('Independent assessors');
     // html.addTable(getAssessorsData(application));
-
-    html.addTitle('Additional selection criteria');
-    html.addTable(getAdditionalSelectionCriteria(application));
 
     return html.toString();
 
   }
 
+  function getHtmlPanelPack(application, params) {
+
+    const html = new htmlWriter();
+
+    html.addTitle(`Panel Pack Candidate Ref: ${application.referenceNumber}`);
+
+    html.addHeading('Welsh posts');
+    html.addTable([{ label: 'Applying for Welsh posts', value: toYesNo(application.applyingForWelshPost) }]);
+    
+    // @note@ required for 0021
+    if (application.additionalWorkingPreferences) {
+      html.addHeading('Additional Working Preferences');
+      html.addTable(getAdditionalWorkingPreferences(application));
+    }
+
+    // IF LEGAL
+    html.addHeading('Qualifications');
+    html.addTable(getQualificationData(application));
+    html.addTable([{ label: 'Are you applying under Schedule 2(3)?', value: toYesNo(application.applyingForSchedule2Three) }]);
+    html.addTable([{ label: 'Explain how you\'ve gained experience in law', value: application.experienceUnderSchedule2Three }]);
+    
+    // @note@ Checked 0021 and memberships === null
+    // IF SHOW MEMBERSHIPS 
+    // (return this.exercise.memberships && this.exercise.memberships.indexOf('none') === -1;)
+    // html.addHeading('Memberships');
+    // html.addTable(getMembershipData(application));
+    
+    // IF NON-LEGAL 
+    // html.addHeading('Experience');
+    // html.addTable(getExperienceData(application));
+
+    // IF LEGAL
+    html.addHeading('Post-qualification experience');
+    html.addTable(getPostQualificationData(application));
+
+    // @note@ not required for 0021
+    // IF LEGAL && exercise.previousJudicialExperienceApply"
+    // html.addHeading('Judicial experience');
+    // html.addTable([{ label: 'Fee-paid or salaried judge', value: lookup((application.feePaidOrSalariedJudge)) }]);
+
+    html.addHeading('Employment gaps');
+    html.addTable(getEmploymentGaps(application));
+
+    // IF ADDITIONAL CRITERIA
+    html.addHeading('Additional selection criteria');
+    html.addTable(getAdditionalSelectionCriteria(application));
+
+    return html.toString();
+
+  }
+  
+  function getAdditionalWorkingPreferences(application) {  
+    const additionalWorkingPreferenceData = application.additionalWorkingPreferences;
+    const data = [];
+    additionalWorkingPreferenceData.forEach((item, index) => {
+      addField(data, index , item);
+    })
+    return data;
+  }
+
+  function getEqualityAndDiversityInfo(application) {  
+    const EqualityAndDiversityData = application.equalityAndDiversitySurvey;
+    const data = [];
+    Object.keys(EqualityAndDiversityData).forEach(key => {
+      addField(data, key, EqualityAndDiversityData[key]);
+    })
+    return data;
+  }
+
+  function getCharacterInformation(application) {  
+    const characterData = application.characterInformation;
+    const data = [];
+    Object.keys(characterData).forEach(key => {
+      addField(data, key, characterData[key]);
+    })
+    return data;
+  }
+
+  function getPersonalDetails(application) {  
+    const personalDetailsData = application.personalDetails;
+    const data = [];
+    Object.keys(personalDetailsData).forEach(key => {
+      addField(data, key, personalDetailsData[key]);
+    })
+    return data;
+  }
 
   function getQualificationData(application) {
     const qualificationData = application.qualifications;
     const data = [];
     qualificationData.forEach(q => {
+      addField(data, 'Qualification', lookup(q.type));
+      addField(data, 'Location', lookup(q.location));
+      addField(data, 'Date qualified', q.date._seconds); // to do conversion
+    })
+    return data;
+  }
+
+  function getExperienceData(application) {
+    const experienceData = application.experience;
+    const data = [];
+    experienceData.forEach(q => {
       addField(data, 'Qualification', lookup(q.type));
       addField(data, 'Location', lookup(q.location));
       addField(data, 'Date qualified', q.date._seconds); // to do conversion
@@ -132,7 +243,7 @@ module.exports = () => {
     const employmentGapsData = application.employmentGaps;
     const data = [];
     employmentGapsData.forEach((eG, idx) => {
-      addField(data, 'Date of gap', eG.startDate);
+      addField(data, 'Date of gap', `${eG.startDate} - ${eG.endDate}`);
       addField(data, 'Details', eG.details);
       addField(data, 'Law related tasks', formatLawRelatedTasks(eG));
     })
@@ -198,6 +309,10 @@ module.exports = () => {
 
   function toYesNo(input) {
     return input ? 'Yes' : 'No';
+  }
+
+  function isLegal() {
+    return this.exercise.typeOfExercise === 'legal' || this.exercise.typeOfExercise === 'leadership';
   }
 
   // function formatDate(value, type) {
