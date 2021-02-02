@@ -28,6 +28,9 @@ const DEFAULT_STYLESHEET = `
     h2 {
       padding-top: 10px;
     }
+    h4 {
+      padding-top: 10px;
+    }
   </style>
 `;
 
