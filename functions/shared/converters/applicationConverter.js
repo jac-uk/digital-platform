@@ -1,4 +1,5 @@
 
+const { formatDate } = require('../helpers');
 const htmlWriter = require('../htmlWriter');
 
 module.exports = () => {
@@ -33,9 +34,11 @@ module.exports = () => {
     // html.addHeading('Location Preferences')
     // html.addTable([{ label: 'Location ', value: application.locationPreferences }]);
     
-    // html.addHeading('Jurisdiction Preferences')
-    // html.addTable([{ label: 'Jurisdiction Preferences', value: application.jurisdictionPreferences }]);
-    
+    // if (exercise.jurisdictionQuestion) {
+    html.addHeading('Jurisdiction Preferences')
+    html.addTable(exercise.jurisdictionQuestion, application.jurisdictionPreferences);
+    // }
+
     // html.addHeading('Uploaded Self Assessment')
     // html.addTable([{ label: 'Self Assessment', value: application.uploadedSelfAssessment }]);
     
@@ -112,7 +115,6 @@ module.exports = () => {
 
     // IF ADDITIONAL CRITERIA
     if (application.selectionCriteriaAnswers) {
-      console.log(application.selectionCriteriaAnswers);
       html.addHeading('Additional selection criteria');
       html.addTable(getAdditionalSelectionCriteria(application));  
     }
@@ -124,9 +126,21 @@ module.exports = () => {
     const additionalWorkingPreferenceData = application.additionalWorkingPreferences;
     const data = [];
     additionalWorkingPreferenceData.forEach((item, index) => {
-      addField(data, exercise.additionalWorkingPreferences[index].questionType );
-      addField(data, exercise.additionalWorkingPreferences[index].question, item.selection);
-    })
+      addField(data, exercise.additionalWorkingPreferences[index].questionType | lookup);
+      if (exercise.additionalWorkingPreferences[index].questionType === 'single-choice') {
+        addField(data, exercise.additionalWorkingPreferences[index].question, item.selection);
+      }
+      // if (exercise.additionalWorkingPreferences[index].questionType === 'multiple-choice') {
+      //   addField(data, exercise.additionalWorkingPreferences[index].question, `options: ${exercise.additionalWorkingPreferences[index].answers}`, `answer: ${item.selection}`);
+      // }
+      // if (exercise.additionalWorkingPreferences[index].questionType === 'ranked-choice') {
+      //   const rankedAnswer = [];
+      //   item.selection.forEach((choice, index) => {
+      //     rankedAnswer.push(`${count+1}: ${choice}`);
+      //   });
+      //   addField(data, exercise.additionalWorkingPreferences[index].question, `answer: ${rankedAnswer}`);
+      // }
+    });
     return data;
   }
 
@@ -163,7 +177,7 @@ module.exports = () => {
     qualificationData.forEach(q => {
       addField(data, 'Qualification', lookup(q.type));
       addField(data, 'Location', lookup(q.location));
-      addField(data, 'Date qualified', q.date._seconds); // to do conversion
+      addField(data, 'Date qualified', formatDate(q.date)); // to do conversion
     })
     return data;
   }
@@ -174,7 +188,7 @@ module.exports = () => {
     experienceData.forEach(q => {
       addField(data, 'Qualification', lookup(q.type));
       addField(data, 'Location', lookup(q.location));
-      addField(data, 'Date qualified', q.date._seconds); // to do conversion
+      addField(data, 'Date qualified', formatDate(q.date)); // to do conversion
     })
     return data;
   }
@@ -185,7 +199,8 @@ module.exports = () => {
     experienceData.forEach((e, idx) => {
       addField(data, 'Job title', e.jobTitle, idx !== 0);
       addField(data, 'Organisation or business', e.orgBusinessName);
-      addField(data, 'Dates worked', new Date());
+      // addField(data, 'Dates worked', `${formatDate(e.startDate)} - ${formatDate(e.endDate) || 'Ongoing'}`);
+      addField(data, 'Dates worked', `${formatDate(e.startDate)} - ${formatDate(e.endDate)}`);
       addField(data, 'Law related tasks', formatLawRelatedTasks(e));
     })
     return data;
@@ -251,7 +266,7 @@ module.exports = () => {
     const employmentGapsData = application.employmentGaps;
     const data = [];
     employmentGapsData.forEach((eG, idx) => {
-      addField(data, 'Date of gap', `${eG.startDate} - ${eG.endDate}`);
+      addField(data, 'Date of gap', `${formatDate(eG.startDate)} - ${formatDate(eG.endDate)}`);
       addField(data, 'Details', eG.details);
       addField(data, 'Law related tasks', formatLawRelatedTasks(eG));
     })
@@ -262,7 +277,7 @@ module.exports = () => {
     const additionalSelectionCriteria = application.selectionCriteriaAnswers;
     const data = [];
     additionalSelectionCriteria.forEach((sC, idx) => {
-      addField(data, sC.title, sC.answerDetails);
+      addField(data, sC.title, sC.answerDetails || 'unanswered');
     })
     return data;
   }
