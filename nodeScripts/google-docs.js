@@ -9,7 +9,7 @@ const main = async () =>
 {
   const driveId = '0AHs0fIN6F04CUk9PVA';
   const folderId = '1_Dy3YeKBvaflReY5Cifqt6_lJcoeYBPT';
-  const applicationId = 'dVopiVvVJoCCBTNOjrT4';
+  const applicationId = 'testData-1';
   const exerciseId = 'Gzi2qUtL39ZEKP7yaJ58';
   const fileName = 'application-test';
 
