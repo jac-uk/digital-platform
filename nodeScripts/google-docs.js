@@ -9,11 +9,16 @@ const main = async () =>
 {
   const driveId = '0AHs0fIN6F04CUk9PVA';
   const folderId = '1_Dy3YeKBvaflReY5Cifqt6_lJcoeYBPT';
-  const applicationId = 'testData-1';
+  const applicationId = 'dVopiVvVJoCCBTNOjrT4';
+  const exerciseId = 'Gzi2qUtL39ZEKP7yaJ58';
   const fileName = 'application-test';
 
   const application = await getDocument(db.collection('applications').doc(applicationId));
-  const htmlString = applicationConverter.getHtmlPanelPack(application);
+  const exercise = await getDocument(db.collection('exercises').doc(exerciseId));
+
+  
+
+  const htmlString = applicationConverter.getHtmlPanelPack(application, exercise);
   await drive.login();
   drive.setDriveId(driveId);
   await drive.createFile(fileName, {

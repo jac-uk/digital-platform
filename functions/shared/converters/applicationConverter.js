@@ -2,14 +2,15 @@
 const htmlWriter = require('../htmlWriter');
 
 module.exports = () => {
-
+  
   return {
     getHtmlApplication,
     getHtmlPanelPack,
     // TODO include other converters
   };
-
+  
   function getHtmlApplication(application, params) {
+    
     const html = new htmlWriter();
 
     html.addTitle('coming soon');
@@ -62,19 +63,19 @@ module.exports = () => {
 
   }
 
-  function getHtmlPanelPack(application, params) {
+  function getHtmlPanelPack(application, exercise, params) {
 
     const html = new htmlWriter();
 
-    html.addTitle(`Panel Pack Candidate Ref: ${application.referenceNumber}`);
+    html.addTitle(`${application.personalDetails.fullName} ${application.referenceNumber}`);
 
     html.addHeading('Welsh posts');
     html.addTable([{ label: 'Applying for Welsh posts', value: toYesNo(application.applyingForWelshPost) }]);
     
     // @note@ required for 0021
     if (application.additionalWorkingPreferences) {
-      html.addHeading('Additional Working Preferences');
-      html.addTable(getAdditionalWorkingPreferences(application));
+      html.addHeading('Additional Preferences');
+      html.addTable(getAdditionalWorkingPreferences(application, exercise));
     }
 
     // IF LEGAL
@@ -103,21 +104,28 @@ module.exports = () => {
     // html.addTable([{ label: 'Fee-paid or salaried judge', value: lookup((application.feePaidOrSalariedJudge)) }]);
 
     html.addHeading('Employment gaps');
-    html.addTable(getEmploymentGaps(application));
+    if (application.employmentGaps.length > 0) {
+      html.addTable(getEmploymentGaps(application));
+    } else {
+      html.addParagraph('No Gaps in Employment')
+    }
 
     // IF ADDITIONAL CRITERIA
-    html.addHeading('Additional selection criteria');
-    html.addTable(getAdditionalSelectionCriteria(application));
-
+    if (application.selectionCriteriaAnswers) {
+      console.log(application.selectionCriteriaAnswers);
+      html.addHeading('Additional selection criteria');
+      html.addTable(getAdditionalSelectionCriteria(application));  
+    }
+    
     return html.toString();
-
   }
   
-  function getAdditionalWorkingPreferences(application) {  
+  function getAdditionalWorkingPreferences(application, exercise) {  
     const additionalWorkingPreferenceData = application.additionalWorkingPreferences;
     const data = [];
     additionalWorkingPreferenceData.forEach((item, index) => {
-      addField(data, index , item);
+      addField(data, exercise.additionalWorkingPreferences[index].questionType );
+      addField(data, exercise.additionalWorkingPreferences[index].question, item.selection);
     })
     return data;
   }
