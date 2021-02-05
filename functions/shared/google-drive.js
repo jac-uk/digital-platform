@@ -6,6 +6,11 @@ module.exports = () => {
     FOLDER: 'application/vnd.google-apps.folder',
     DOCUMENT: 'application/vnd.google-apps.document',
     HTML: 'text/html',
+    DOCX: 'application/vnd.openxmlformats-officedocument.wordprocessingml.document',
+    DOC: 'application/msword',
+    PDF: 'application/pdf',
+    ODT: 'application/vnd.oasis.opendocument.text',
+    TXT: 'text/plain',
   };
 
   let drive;
@@ -17,6 +22,7 @@ module.exports = () => {
     createFolder,
     createFile,
     addPermission,
+    getMimeType,
     MIME_TYPE,
   };
 
@@ -53,14 +59,18 @@ module.exports = () => {
 
   async function createFile(fileName, { folderId, sourceType, destinationType, sourceContent }) {
     const source = {
-      mimeType: sourceType,
       body: sourceContent,
     };
+    if (sourceType) {
+      source.mimeType = sourceType;
+    }
     const metaData = {
       name: fileName,
       driveId: currentDriveId,
-      mimeType: destinationType,
     };
+    if (destinationType) {
+      metaData.mimeType = destinationType;
+    }
     if (folderId) {
       metaData.parents = [folderId];
     } else {
@@ -82,4 +92,24 @@ module.exports = () => {
     });
   }
 
-}
+  function getMimeType(fileName) {
+    const fileNameParts = fileName.split('.');
+    switch (fileNameParts[fileNameParts.length - 1].toLowerCase()) {
+      case 'htm':
+      case 'html':
+        return MIME_TYPE.HTML;
+      case 'docx':
+        return MIME_TYPE.DOCX;
+      case 'doc':
+        return MIME_TYPE.DOC;
+      case 'odt':
+      case 'fodt':
+        return MIME_TYPE.ODT;
+      case 'txt':
+        return MIME_TYPE.TXT;
+      case 'pdf':
+        return MIME_TYPE.PDF;
+    }
+    return '';
+  }
+};

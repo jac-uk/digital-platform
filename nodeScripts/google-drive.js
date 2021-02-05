@@ -2,60 +2,15 @@
 
 const config = require('./shared/config');
 const { firebase, app, db } = require('./shared/admin.js');
-const { getDocument } = require('../functions/shared/helpers');
-const uuid = require('uuid');
-const drive = require('../functions/shared/google-drive')();
+const { exportToGoogleDrive } = require('../functions/actions/exercises/exportToGoogleDrive')(config, firebase, db);
 
 const main = async () => {
-  // const application = await getDocument(db.collection('applications').doc('testData-1'));
 
-  const strHtml = `<!DOCTYPE html>
-    <html>
-    <head>
-      <style>
-        table,
-        th,
-        td {
-          border: 1px solid black;
-        }
-      </style>
-    </head>
-    <body>
-      <h1>JAC0001-abc123</h1>
-      <table>
-        <tr>
-          <th>Qualification</th>
-          <td>Solicitor</td>
-        </tr>
-        <tr>
-          <th>Location</th>
-          <td>Wales</td>
-        </tr>
-      </table>
-    </body>
-  </html>`;
+  const driveId = '0AN9QJOw_we0gUk9PVA';
+  const rootFolderId = '1Ad7fEy9Lz4Xxh7569oExSz5uO47xcWzK';
+  const exerciseId = 'kVlymRGRhZndRaQuqDTf';
 
-  // const driveId = '0AIKGIGesrczjUk9PVA';
-  const driveId = '0AHs0fIN6F04CUk9PVA';
-  await drive.login();
-  drive.setDriveId(driveId);
-  // let folderId = await drive.createFolder('JAC0001');
-  // folderId = await drive.createFolder('applications', {
-  //   parentId: folderId,
-  // });
-  // folderId = await drive.createFolder('JAC0001-abc123', {
-  //   parentId: folderId,
-  // });
-  const fileId = await drive.createFile('application-abc123', {
-    // folderId: folderId,
-    sourceType: drive.MIME_TYPE.HTML,
-    sourceContent: strHtml,
-    destinationType: drive.MIME_TYPE.DOCUMENT,
-  });
-  console.log(fileId);
-
-  // const fileId = '1YhurwpUxtiLMuwCQQXs5fkrGOTI0pbj9AtMEpCSyIDQ';
-
+  await exportToGoogleDrive(driveId, rootFolderId, exerciseId);
 
   // // set permissions on specific folder
   // const permission = {
@@ -127,22 +82,16 @@ const main = async () => {
 
 //  const permissionIds = ['03272123945758523532', '12344764715895508609', '18189088842950959214'];
 
-
-
-
-
-
   return true;
-
 };
 
 main()
-  .then((result) => {
-    console.log(result);
-    app.delete();
-    return process.exit();
-  })
-  .catch((error) => {
-    console.error(error);
-    process.exit();
-  });
+.then((result) => {
+  console.log(result);
+  app.delete();
+  return process.exit();
+})
+.catch((error) => {
+  console.error(error);
+  process.exit();
+});

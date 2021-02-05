@@ -29,7 +29,7 @@ const DEFAULT_STYLESHEET = `
       padding-top: 10px;
     }
     h4 {
-      padding-top: 10px;
+      padding-top: 30px;
     }
   </style>
 `;
