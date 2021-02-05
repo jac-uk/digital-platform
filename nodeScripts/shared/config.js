@@ -76,4 +76,5 @@ module.exports = {
   },
   NOTIFY_KEY: process.env.NOTIFY_LIMITED_KEY,
   SLACK_URL: process.env.SLACK_URL,
+  STORAGE_URL: process.env.PROJECT_ID + '.appspot.com',
 };

@@ -1,17 +1,19 @@
+// TODO sort out firestore date formatting
+const firebase = require('firebase-admin');
+const Timestamp = firebase.firestore.Timestamp;
 
-const { formatDate } = require('../helpers');
 const htmlWriter = require('../htmlWriter');
 
 module.exports = () => {
-  
+
   return {
     getHtmlApplication,
     getHtmlPanelPack,
     // TODO include other converters
   };
-  
+
   function getHtmlApplication(application, params) {
-    
+
     const html = new htmlWriter();
 
     html.addTitle('coming soon');
@@ -24,39 +26,39 @@ module.exports = () => {
 
     // html.addHeading('Personal Details');
     // html.addTable(getPersonalDetails(application));
-    
+
     // html.addHeading('Character Info');
     // html.addTable(getCharacterInformation(application));
-    
+
     // html.addHeading('Equality and Diversity Information');
     // html.addTable(getEqualityAndDiversityInfo(application));
-    
+
     // html.addHeading('Location Preferences')
     // html.addTable([{ label: 'Location ', value: application.locationPreferences }]);
-    
+
     // if (exercise.jurisdictionQuestion) {
-    html.addHeading('Jurisdiction Preferences')
+    html.addHeading('Jurisdiction Preferences');
     html.addTable(exercise.jurisdictionQuestion, application.jurisdictionPreferences);
     // }
 
     // html.addHeading('Uploaded Self Assessment')
     // html.addTable([{ label: 'Self Assessment', value: application.uploadedSelfAssessment }]);
-    
+
     // html.addHeading('Uploaded Covering Letter')
     // html.addTable([{ label: 'Covering Letter', value: application.uploadedCoveringLetter }]);
 
     // html.addHeading('Uploaded leadership sustainability')
     // html.addTable([{ label: 'Leadership sustainability', value: application.uploadedLeadershipSustainabilityAssessment }]);
-    
+
     // html.addHeading('Uploaded suitability statement')
     // html.addTable([{ label: 'Suitability Statement', value: application.uploadedSuitabilityStatement }]);
 
     // html.addHeading('Can give Reasonable Length of service')
     // html.addTable([{ label: 'Can Give RLOS', value: application.canGiveReasonableLOS }]);
-    
+
     // if (!application.canGiveReasonableLOS) {
     //   html.addTable([{ label: 'Cant give RLOS details', value: application.cantGiveReasonableLOSDetails }]);
-    // } 
+    // }
 
     // NOTE: don't need IAs as we will have their uploaded files
     // html.addHeading('Independent assessors');
@@ -72,28 +74,21 @@ module.exports = () => {
 
     html.addTitle(`${application.personalDetails.fullName} ${application.referenceNumber}`);
 
-    html.addHeading('Welsh posts');
-    html.addTable([{ label: 'Applying for Welsh posts', value: toYesNo(application.applyingForWelshPost) }]);
-    
-    // @note@ required for 0021
-    if (application.additionalWorkingPreferences) {
-      html.addHeading('Additional Preferences');
-      html.addTable(getAdditionalWorkingPreferences(application, exercise));
-    }
-
     // IF LEGAL
     html.addHeading('Qualifications');
     html.addTable(getQualificationData(application));
     html.addTable([{ label: 'Are you applying under Schedule 2(3)?', value: toYesNo(application.applyingForSchedule2Three) }]);
-    html.addTable([{ label: 'Explain how you\'ve gained experience in law', value: application.experienceUnderSchedule2Three }]);
-    
+    if (application.applyingForSchedule2Three) {
+      html.addTable([{ label: 'Explain how you\'ve gained experience in law', value: application.experienceUnderSchedule2Three }]);
+    }
+
     // @note@ Checked 0021 and memberships === null
-    // IF SHOW MEMBERSHIPS 
+    // IF SHOW MEMBERSHIPS
     // (return this.exercise.memberships && this.exercise.memberships.indexOf('none') === -1;)
     // html.addHeading('Memberships');
     // html.addTable(getMembershipData(application));
-    
-    // IF NON-LEGAL 
+
+    // IF NON-LEGAL
     // html.addHeading('Experience');
     // html.addTable(getExperienceData(application));
 
@@ -107,29 +102,51 @@ module.exports = () => {
     // html.addTable([{ label: 'Fee-paid or salaried judge', value: lookup((application.feePaidOrSalariedJudge)) }]);
 
     html.addHeading('Employment gaps');
-    if (application.employmentGaps.length > 0) {
+    if (application.employmentGaps && application.employmentGaps.length > 0) {
       html.addTable(getEmploymentGaps(application));
     } else {
-      html.addParagraph('No Gaps in Employment')
+      html.addParagraph('No Gaps in Employment declared');
     }
 
-    // IF ADDITIONAL CRITERIA
-    if (application.selectionCriteriaAnswers) {
-      html.addHeading('Additional selection criteria');
-      html.addTable(getAdditionalSelectionCriteria(application));  
+    // html.addHeading('Welsh posts');
+    // html.addTable([{ label: 'Applying for Welsh posts', value: toYesNo(application.applyingForWelshPost) }]);
+
+
+    if (application.jurisdictionPreferences) {
+      html.addHeading('Jurisdiction Preferences');
+      html.addTable(getJurisdictionPreferences(application, exercise));
     }
-    
+
+    if (application.additionalWorkingPreferences) {
+      html.addHeading('Additional Preferences');
+      html.addTable(getAdditionalWorkingPreferences(application, exercise));
+    }
+
+
+    // // IF ADDITIONAL CRITERIA
+    // if (application.selectionCriteriaAnswers) {
+    //   html.addHeading('Additional selection criteria');
+    //   html.addTable(getAdditionalSelectionCriteria(application));
+    // }
+
     return html.toString();
   }
-  
-  function getAdditionalWorkingPreferences(application, exercise) {  
-    const additionalWorkingPreferenceData = application.additionalWorkingPreferences;
+
+  // Note: this is specific to JAC00021 and needs writing properly :)
+  function getJurisdictionPreferences(application, exercise) {
     const data = [];
-    additionalWorkingPreferenceData.forEach((item, index) => {
-      addField(data, exercise.additionalWorkingPreferences[index].questionType | lookup);
-      if (exercise.additionalWorkingPreferences[index].questionType === 'single-choice') {
-        addField(data, exercise.additionalWorkingPreferences[index].question, item.selection);
-      }
+    addField(data, exercise.jurisdictionQuestion, application.jurisdictionPreferences.join('\n'));
+    return data;
+  }
+
+  function getAdditionalWorkingPreferences(application, exercise) {
+    const additionalWorkingPreferenceData = application.additionalWorkingPreferences[0];  // First entry only for exercise 21
+    const data = [];
+    // additionalWorkingPreferenceData.forEach((item, index) => {
+      // addField(data, exercise.additionalWorkingPreferences[index].questionType | lookup);
+      // if (exercise.additionalWorkingPreferences[index].questionType === 'single-choice') {
+    addField(data, exercise.additionalWorkingPreferences[0].question, additionalWorkingPreferenceData.selection);
+      //}
       // if (exercise.additionalWorkingPreferences[index].questionType === 'multiple-choice') {
       //   addField(data, exercise.additionalWorkingPreferences[index].question, `options: ${exercise.additionalWorkingPreferences[index].answers}`, `answer: ${item.selection}`);
       // }
@@ -140,34 +157,34 @@ module.exports = () => {
       //   });
       //   addField(data, exercise.additionalWorkingPreferences[index].question, `answer: ${rankedAnswer}`);
       // }
-    });
+    // });
     return data;
   }
 
-  function getEqualityAndDiversityInfo(application) {  
+  function getEqualityAndDiversityInfo(application) {
     const EqualityAndDiversityData = application.equalityAndDiversitySurvey;
     const data = [];
     Object.keys(EqualityAndDiversityData).forEach(key => {
       addField(data, key, EqualityAndDiversityData[key]);
-    })
+    });
     return data;
   }
 
-  function getCharacterInformation(application) {  
+  function getCharacterInformation(application) {
     const characterData = application.characterInformation;
     const data = [];
     Object.keys(characterData).forEach(key => {
       addField(data, key, characterData[key]);
-    })
+    });
     return data;
   }
 
-  function getPersonalDetails(application) {  
+  function getPersonalDetails(application) {
     const personalDetailsData = application.personalDetails;
     const data = [];
     Object.keys(personalDetailsData).forEach(key => {
       addField(data, key, personalDetailsData[key]);
-    })
+    });
     return data;
   }
 
@@ -178,7 +195,7 @@ module.exports = () => {
       addField(data, 'Qualification', lookup(q.type));
       addField(data, 'Location', lookup(q.location));
       addField(data, 'Date qualified', formatDate(q.date)); // to do conversion
-    })
+    });
     return data;
   }
 
@@ -189,7 +206,7 @@ module.exports = () => {
       addField(data, 'Qualification', lookup(q.type));
       addField(data, 'Location', lookup(q.location));
       addField(data, 'Date qualified', formatDate(q.date)); // to do conversion
-    })
+    });
     return data;
   }
 
@@ -200,9 +217,9 @@ module.exports = () => {
       addField(data, 'Job title', e.jobTitle, idx !== 0);
       addField(data, 'Organisation or business', e.orgBusinessName);
       // addField(data, 'Dates worked', `${formatDate(e.startDate)} - ${formatDate(e.endDate) || 'Ongoing'}`);
-      addField(data, 'Dates worked', `${formatDate(e.startDate)} - ${formatDate(e.endDate)}`);
+      addField(data, 'Dates worked', `${formatDate(e.startDate)} - ${formatDate(e.endDate) || 'current'}`);
       addField(data, 'Law related tasks', formatLawRelatedTasks(e));
-    })
+    });
     return data;
   }
 
@@ -258,7 +275,7 @@ module.exports = () => {
 
     membershipData.forEach((m, idx) => {
       addField(data, 'Details', m[1], idx !== 0);
-    })
+    });
     return data;
   }
 
@@ -269,7 +286,7 @@ module.exports = () => {
       addField(data, 'Date of gap', `${formatDate(eG.startDate)} - ${formatDate(eG.endDate)}`);
       addField(data, 'Details', eG.details);
       addField(data, 'Law related tasks', formatLawRelatedTasks(eG));
-    })
+    });
     return data;
   }
 
@@ -278,7 +295,7 @@ module.exports = () => {
     const data = [];
     additionalSelectionCriteria.forEach((sC, idx) => {
       addField(data, sC.title, sC.answerDetails || 'unanswered');
-    })
+    });
     return data;
   }
 
@@ -303,7 +320,7 @@ module.exports = () => {
       addField(data, 'Title or position', d[1]);
       addField(data, 'Email', d[2]);
       addField(data, 'Phone', d[3]);
-    })
+    });
     return data;
   }
 
@@ -311,8 +328,8 @@ module.exports = () => {
     let value = '';
     if (experience.tasks) {
       experience.tasks.forEach(task => {
-        value += lookup(task) + '<br/>'
-      })
+        value += lookup(task) + '<br/>';
+      });
     }
     if (experience.otherTasks) {
       value += experience.otherTasks;
@@ -327,7 +344,7 @@ module.exports = () => {
     if (typeof (value) === 'boolean') {
       value = toYesNo(value);
     }
-    array.push({ value: value, label: label, lineBreak: lineBreak })
+    array.push({ value: value, label: label, lineBreak: lineBreak });
   }
 
   function toYesNo(input) {
@@ -338,19 +355,29 @@ module.exports = () => {
     return this.exercise.typeOfExercise === 'legal' || this.exercise.typeOfExercise === 'leadership';
   }
 
-  // function formatDate(value, type) {
-  //   if (value) {
-  //     const objDate = new Date(Date.parse(value));
-  //     switch (type) {
-  //       case 'month':
-  //         return `${objDate.toLocaleString('en-GB', { month: 'long' })} ${objDate.getUTCFullYear()}`;
-  //       case 'datetime':
-  //         return objDate.toLocaleString('en-GB');
-  //       default:
-  //         return objDate.toLocaleDateString('en-GB');
-  //     }
-  //   }
-  // };
+  function toDateString(date) {
+    const dateParts = new Date(date.getTime() - (date.getTimezoneOffset() * 60000))
+      .toISOString()
+      .split('T')[0]
+      .split('-');
+    return `${dateParts[2]}/${dateParts[1]}/${dateParts[0]}`;
+  }
+
+  function formatDate(value) {
+    if (value && (value.seconds || value._seconds)) { // convert firestore timestamp to date
+      const seconds = value.seconds || value._seconds;
+      const nanoseconds = value.nanoseconds || value._nanoseconds;
+      value = new Timestamp(seconds, nanoseconds);
+      value = value.toDate();
+    }
+    if (!isNaN(new Date(value).valueOf()) && value !== null) {
+      if (!(value instanceof Date)) {
+        value = new Date(value);
+      }
+      value = toDateString(value);
+    }
+    return value ? value : '';
+  }
 
   function lookup(value) {
     if (typeof value === 'string') {
@@ -536,6 +563,6 @@ module.exports = () => {
       return 'Answer not supplied';
     }
     return value;
-  };
+  }
 
-}
+};
