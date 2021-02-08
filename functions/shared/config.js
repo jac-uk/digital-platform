@@ -79,4 +79,5 @@ module.exports = {
   },
   NOTIFY_KEY: functions.config().notify.key,
   SLACK_URL: functions.config().slack.url,
+  STORAGE_URL: functions.config().project.id + '.appspot.com',
 };
