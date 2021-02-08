@@ -7,18 +7,17 @@ const drive = require('../functions/shared/google-drive')();
 
 const main = async () =>
 {
-  const driveId = '0AHs0fIN6F04CUk9PVA';
-  const folderId = '1_Dy3YeKBvaflReY5Cifqt6_lJcoeYBPT';
+  const driveId = '0ABjk7Pjwe4RVUk9PVA';
+  const folderId = '1T6bcgjcyX0u6gZsIXTp79aHkiQrSQNoG';
   const applicationId = 'testData-1';
-  const exerciseId = 'Gzi2qUtL39ZEKP7yaJ58';
+  const exerciseId = 'wdpALbyICL7ZxxN5AQt8';
   const fileName = 'application-test';
 
   const application = await getDocument(db.collection('applications').doc(applicationId));
   const exercise = await getDocument(db.collection('exercises').doc(exerciseId));
 
-  
-
   const htmlString = applicationConverter.getHtmlPanelPack(application, exercise);
+
   await drive.login();
   drive.setDriveId(driveId);
   await drive.createFile(fileName, {
