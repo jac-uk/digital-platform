@@ -112,12 +112,12 @@ module.exports = () => {
     // html.addTable([{ label: 'Applying for Welsh posts', value: toYesNo(application.applyingForWelshPost) }]);
 
 
-    if (application.jurisdictionPreferences) {
+    if (application.jurisdictionPreferences && application.jurisdictionPreferences.length) {
       html.addHeading('Jurisdiction Preferences');
       html.addTable(getJurisdictionPreferences(application, exercise));
     }
 
-    if (application.additionalWorkingPreferences) {
+    if (application.additionalWorkingPreferences && application.additionalWorkingPreferences.length) {
       html.addHeading('Additional Preferences');
       html.addTable(getAdditionalWorkingPreferences(application, exercise));
     }
@@ -135,7 +135,11 @@ module.exports = () => {
   // Note: this is specific to JAC00021 and needs writing properly :)
   function getJurisdictionPreferences(application, exercise) {
     const data = [];
-    addField(data, exercise.jurisdictionQuestion, application.jurisdictionPreferences.join('\n'));
+    if (typeof(application.jurisdictionPreferences) === 'string') {
+      addField(data, exercise.jurisdictionQuestion, application.jurisdictionPreferences);
+    } else {
+      addField(data, exercise.jurisdictionQuestion, application.jurisdictionPreferences.join('\n'));
+    }
     return data;
   }
 
@@ -213,13 +217,15 @@ module.exports = () => {
   function getPostQualificationData(application) {
     const experienceData = application.experience;
     const data = [];
-    experienceData.forEach((e, idx) => {
-      addField(data, 'Job title', e.jobTitle, idx !== 0);
-      addField(data, 'Organisation or business', e.orgBusinessName);
-      // addField(data, 'Dates worked', `${formatDate(e.startDate)} - ${formatDate(e.endDate) || 'Ongoing'}`);
-      addField(data, 'Dates worked', `${formatDate(e.startDate)} - ${formatDate(e.endDate) || 'current'}`);
-      addField(data, 'Law related tasks', formatLawRelatedTasks(e));
-    });
+    if (experienceData && experienceData.length) {
+      experienceData.forEach((e, idx) => {
+        addField(data, 'Job title', e.jobTitle, idx !== 0);
+        addField(data, 'Organisation or business', e.orgBusinessName);
+        // addField(data, 'Dates worked', `${formatDate(e.startDate)} - ${formatDate(e.endDate) || 'Ongoing'}`);
+        addField(data, 'Dates worked', `${formatDate(e.startDate)} - ${formatDate(e.endDate) || 'current'}`);
+        addField(data, 'Law related tasks', formatLawRelatedTasks(e));
+      });
+    }
     return data;
   }
 
