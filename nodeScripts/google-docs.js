@@ -9,8 +9,8 @@ const main = async () =>
 {
   const driveId = '0ABjk7Pjwe4RVUk9PVA';
   const folderId = '1T6bcgjcyX0u6gZsIXTp79aHkiQrSQNoG';
-  const applicationId = 'testData-1';
-  const exerciseId = 'wdpALbyICL7ZxxN5AQt8';
+  const applicationId = 'bT9tzMtsVgs1hafhDgfk';
+  const exerciseId = 'umjxBon2GRlc6rshqEfG';
   const fileName = 'application-test';
 
   const application = await getDocument(db.collection('applications').doc(applicationId));
