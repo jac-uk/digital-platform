@@ -6,11 +6,27 @@ const { exportToGoogleDrive } = require('../functions/actions/exercises/exportTo
 
 const main = async () => {
 
-  const driveId = '0AN9QJOw_we0gUk9PVA';
-  const rootFolderId = '1Ad7fEy9Lz4Xxh7569oExSz5uO47xcWzK';
-  const exerciseId = 'kVlymRGRhZndRaQuqDTf';
+  // develop - warren's exercise
+  // const driveId = '0ABjk7Pjwe4RVUk9PVA';
+  // const rootFolderId = '1yHfxJFvc96khzRq1VbjZ-sRSlJ-S8uqb';
+  // const exerciseId = 'wdpALbyICL7ZxxN5AQt8';
+  // const panelId = 'E1PyKUnQT4XoryScxggt';
 
-  await exportToGoogleDrive(driveId, rootFolderId, exerciseId);
+  // prod - 21
+  const driveId = '0AN9QJOw_we0gUk9PVA';
+  const rootFolderId = '1H2vnVHtq-K2xqBRyGsZIG0WVNm7ESOQw';
+  const exerciseId = 'kVlymRGRhZndRaQuqDTf';
+  const panelId = 'A9R2v6qV01zsmk0EqORl';
+
+  const excludedApplicationIds = [];
+
+  console.log('started', new Date());
+  try {
+    await exportToGoogleDrive(driveId, rootFolderId, exerciseId, panelId, excludedApplicationIds);
+  } catch (e) {
+    console.log('error:::', e);
+  }
+  console.log('finished', new Date());
 
   // // set permissions on specific folder
   // const permission = {

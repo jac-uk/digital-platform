@@ -1,6 +1,7 @@
 const { getDocument, getDocuments, applyUpdates, getAllDocuments, formatDate } = require('../../shared/helpers');
 const applicationConverter = require('../../shared/converters/applicationConverter')();
 const drive = require('../../shared/google-drive')();
+const Bottleneck = require('bottleneck');
 
 module.exports = (config, firebase, db) => {
 
@@ -13,112 +14,211 @@ module.exports = (config, firebase, db) => {
   *
   * @param {*} `exerciseId` (required) ID of exercises to export
   */
-  async function exportToGoogleDrive(driveId, rootFolderId, exerciseId) {
-
-    const already_processed = [];
+  async function exportToGoogleDrive(driveId, rootFolderId, exerciseId, panelId, excludedApplicationIds) {
 
     // get exercise
     const exercise = await getDocument(db.collection('exercises').doc(exerciseId));
 
-    // get applications
-    let applications = await getDocuments(
-      db.collection('applications')
-        .where('exerciseId', '==', exerciseId)
-        .where('status', '==', 'applied')
-    );
-
-    if (already_processed.length) {
-      applications = applications.filter(application => {
-        return already_processed.indexOf(application.id) < 0;
-      })
-    }
+    // get panel
+    const panel = await getDocument(db.collection('panels').doc(panelId));
 
     // get drive service
     await drive.login();
     drive.setDriveId(driveId);
+    console.log('logged in to drive', new Date());
+
+    // remove previous files
+    // if (panel.status === 'created') {
+    //   const promises = [];
+    //   if (panel.applicationFiles) {
+    //     Object.keys(panel.applicationFiles).forEach(async (applicationId) => {
+    //       const folderId = panel.applicationFiles[applicationId].folderId;
+    //       const fileIds = panel.applicationFiles[applicationId].fileIds;
+    //       fileIds.forEach(async (fileId) => {
+    //         promises.push(drive.deleteFile(fileId))
+    //       });
+    //       promises.push(drive.deleteFolder(folderId));
+    //     });
+    //   }
+    //   if (panel.folderId) {
+    //     promises.push(drive.deleteFolder(panel.folderId));
+    //   }
+    //   await Promise.all(promises);
+    // }
+
+    // get application records
+    let applicationRecords = await getDocuments(
+      db.collection('applicationRecords')
+        .where('exercise.id', '==', exerciseId)
+        .where(`panelIds.${panel.type}`, '==', panelId)
+        .select()
+        //.limit(50)
+    );
+    if (excludedApplicationIds && excludedApplicationIds.length) {
+      applicationRecords = applicationRecords.filter(applicationRecord => {
+        return excludedApplicationIds.indexOf(applicationRecord.id) < 0;
+      });
+    }
+
+    // get applications
+    const applications = await getAllDocuments(db, applicationRecords.map(item => db.collection('applications').doc(item.id)));
+
+    console.log('got applications data', new Date());
+    console.log('applications', applications.length);
+
+    // create panel folder
+    let panelFolderId = await drive.createFolder(`${panel.name}`, {
+      parentId: rootFolderId,
+    });
+
+    // // create candidates sub-folder
+    // let parentFolderId = await drive.createFolder('_candidates', {
+    //   parentId: parentFolderId,
+    // });
+    let parentFolderId = panelFolderId;
 
     // get storage services
     const bucket = firebase.storage().bucket(config.STORAGE_URL);
 
-    // for each application
-    console.log('Applications: ' + applications.length);
-    for (let i = 0, len = applications.length; i < len; ++i) {
-      const application = applications[i];
-      const applicationId = application.id;
+    const applicationFiles = {};
 
-      // create candidate folder
-      const folderId = await drive.createFolder(`${application.personalDetails.fullName} ${application.referenceNumber}`, {
-        parentId: rootFolderId,
-      });
+    // create candidate application folders
+    const folderIds = await Promise.all(
+      applications.map(application => {
+        return drive.createFolder(`${application.personalDetails.fullName} ${application.referenceNumber}`, {
+          parentId: parentFolderId,
+        });
+      })
+    );
+    applications.forEach((application, index) => {
+      applicationFiles[application.id] = {
+        folderId: folderIds[index],
+        fileIds: [],
+      };
+    });
 
-      // create application doc
-      const htmlString = applicationConverter.getHtmlPanelPack(application, exercise);
-      await drive.createFile('Application Data', {
-        folderId: folderId,
-        sourceType: drive.MIME_TYPE.HTML,
-        sourceContent: htmlString,
-        destinationType: drive.MIME_TYPE.DOCUMENT,
-      });
+    console.log('folders created', new Date());
 
-      // transfer files
-      if (application.uploadedSelfAssessment) {
-        const file = bucket.file(`exercise/${exerciseId}/user/${application.userId}/${application.uploadedSelfAssessment}`);
-        const exists = await file.exists();
-        if (exists) {
-          await drive.createFile('Self Assessment', {
-            folderId: folderId,
-            sourceType: drive.getMimeType(application.uploadedSelfAssessment),
-            sourceContent: file.createReadStream(),
-            destinationType: drive.MIME_TYPE.DOCUMENT,
+
+    // create application google docs
+    const docIds = await Promise.all(
+      applications.map(application => {
+        const htmlString = applicationConverter.getHtmlPanelPack(application, exercise);
+        return drive.createFile('Application Data', {
+          folderId: applicationFiles[application.id].folderId,
+          sourceType: drive.MIME_TYPE.HTML,
+          sourceContent: htmlString,
+          destinationType: drive.MIME_TYPE.DOCUMENT,
+        });
+      })
+    );
+    console.log('application docs created', new Date());
+
+    // self-assessment
+    const assessmentIds = await Promise.all(
+      applications.map(application => {
+        if (application.uploadedSelfAssessment) {
+          const file = bucket.file(`exercise/${exerciseId}/user/${application.userId}/${application.uploadedSelfAssessment}`);
+          return file.exists().then(exists => {
+            if (exists) {
+              return drive.createFile('Self Assessment', {
+                folderId: applicationFiles[application.id].folderId,
+                sourceType: drive.getMimeType(application.uploadedSelfAssessment),
+                sourceContent: file.createReadStream(),
+                destinationType: drive.MIME_TYPE.DOCUMENT,
+              });
+            } else {
+              return false;
+            }
           });
+        } else {
+          return false;
         }
-      }
+      })
+    );
+    console.log('self-assessment transfered', new Date());
 
-      // get first assessment
-      const assessment1 = await getDocument(db.collection('assessments').doc(`${applicationId}-1`));
-      if (assessment1 && assessment1.filePath) {
-        let filePath = assessment1.filePath;
-        if (filePath.charAt(0) === '/') {
-          filePath = filePath.substr(1);
-        }
-        const file = bucket.file(filePath);
-        const exists = await file.exists();
-        if (exists) {
-          await drive.createFile('Independent Assessment 1', {
-            folderId: folderId,
-            sourceType: drive.getMimeType(filePath),
-            sourceContent: file.createReadStream(),
-            destinationType: drive.MIME_TYPE.DOCUMENT,
-          });
-        }
-      }
-
-      // get second assessment
-      const assessment2 = await getDocument(db.collection('assessments').doc(`${applicationId}-2`));
-      if (assessment2 && assessment2.filePath) {
-        let filePath = assessment2.filePath;
-        if (filePath.charAt(0) === '/') {
-          filePath = filePath.substr(1);
-        }
-        const file = bucket.file(filePath);
-        const exists = await file.exists();
-        if (exists) {
-          const params = {
-            folderId: folderId,
-            sourceType: drive.getMimeType(filePath),
-            sourceContent: file.createReadStream(),
-          };
-          if (params.sourceType !== drive.MIME_TYPE.PDF) {
-            params.destinationType = drive.MIME_TYPE.DOCUMENT;
+    // first independent assessment
+    const firstIAIds = await Promise.all(
+      applications.map(application => {
+        return getDocument(db.collection('assessments').doc(`${application.id}-1`)).then(assessment => {
+          if (assessment && assessment.filePath) {
+            let filePath = assessment.filePath;
+            if (filePath.charAt(0) === '/') {
+              filePath = filePath.substr(1);
+            }
+            const file = bucket.file(filePath);
+            return file.exists().then(exists => {
+              if (exists) {
+                return drive.createFile('Independent Assessment 1', {
+                  folderId: applicationFiles[application.id].folderId,
+                  sourceType: drive.getMimeType(filePath),
+                  sourceContent: file.createReadStream(),
+                  destinationType: drive.MIME_TYPE.DOCUMENT,
+                });
+              } else {
+                return false;
+              }
+            });
+          } else {
+            return false;
           }
-          await drive.createFile('Independent Assessment 2', params);
-        }
+        });
+      })
+    );
+    console.log('IA1 transfered', new Date());
+
+    // second independent assessment
+    const secondIAIds = await Promise.all(
+      applications.map(application => {
+        return getDocument(db.collection('assessments').doc(`${application.id}-2`)).then(assessment => {
+          if (assessment && assessment.filePath) {
+            let filePath = assessment.filePath;
+            if (filePath.charAt(0) === '/') {
+              filePath = filePath.substr(1);
+            }
+            const file = bucket.file(filePath);
+            return file.exists().then(exists => {
+              if (exists) {
+                return drive.createFile('Independent Assessment 2', {
+                  folderId: applicationFiles[application.id].folderId,
+                  sourceType: drive.getMimeType(filePath),
+                  sourceContent: file.createReadStream(),
+                  destinationType: drive.MIME_TYPE.DOCUMENT,
+                });
+              } else {
+                return false;
+              }
+            });
+          } else {
+            return false;
+          }
+        });
+      })
+    );
+    console.log('IA2 transfered', new Date());
+
+    // store file ids
+    applications.forEach((application, index) => {
+      applicationFiles[application.id].fileIds.push(docIds[index]);
+      if (assessmentIds[index]) {
+        applicationFiles[application.id].fileIds.push(assessmentIds[index]);
       }
+      if (firstIAIds[index]) {
+        applicationFiles[application.id].fileIds.push(firstIAIds[index]);
+      }
+      if (secondIAIds[index]) {
+        applicationFiles[application.id].fileIds.push(secondIAIds[index]);
+      }
+    });
+    // console.log(applicationFiles);
 
-      console.log(applicationId);
-
-    }
-
+    // update panel
+    await panel.ref.update({
+      status: 'created',
+      folderId: panelFolderId,
+      applicationFiles: applicationFiles,
+    });
 
   }
 
