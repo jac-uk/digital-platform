@@ -40,5 +40,5 @@ const formatDate = (value) => {
 };
 
 module.exports = {
-  addField, toYesNo, formatDate, toDateString
+  addField, toYesNo, formatDate, toDateString,
 };
