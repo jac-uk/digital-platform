@@ -16,7 +16,7 @@ const main = async () => {
   const driveId = '0AN9QJOw_we0gUk9PVA';
   const rootFolderId = '1H2vnVHtq-K2xqBRyGsZIG0WVNm7ESOQw';
   const exerciseId = 'kVlymRGRhZndRaQuqDTf';
-  const panelId = 'A9R2v6qV01zsmk0EqORl';
+  const panelId = 'p6a1AccI8k7Hq3CiAbcR';
 
   const excludedApplicationIds = [];
 
