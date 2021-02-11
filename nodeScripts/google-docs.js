@@ -16,7 +16,7 @@ const main = async () =>
   const application = await getDocument(db.collection('applications').doc(applicationId));
   const exercise = await getDocument(db.collection('exercises').doc(exerciseId));
 
-  const htmlString = applicationConverter.getHtmlPanelPack(application, exercise);
+  const htmlString = applicationConverter.getHtmlPanelPack(application, exercise, { showNames: true});
 
   await drive.login();
   drive.setDriveId(driveId);

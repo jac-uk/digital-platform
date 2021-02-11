@@ -15,8 +15,11 @@ module.exports = () => {
 
     const html = new htmlWriter();
 
-    // sifts are name-blind, selection days include names(?)
-    html.addTitle(`${application.personalDetails.fullName} ${application.referenceNumber}`);
+    if (params && params.showNames) {
+      html.addTitle(`${application.personalDetails.fullName} ${application.referenceNumber}`);
+    } else {
+      html.addTitle(application.referenceNumber);
+    }
 
     if (application.jurisdictionPreferences && application.jurisdictionPreferences.length) {
       html.addHeading('Jurisdiction Preferences');
@@ -69,12 +72,16 @@ module.exports = () => {
           addField(data, exercise.additionalWorkingPreferences[index].question, additionalWorkingPreferenceData.selection);
         }
         if (exercise.additionalWorkingPreferences[index].questionType === 'multiple-choice') {
-          addField(data, exercise.additionalWorkingPreferences[index].question, `options: ${exercise.additionalWorkingPreferences[index].answers}`, `answer: ${item.selection}`);
+          const multipleChoice = [];
+          item.selection.forEach((choice) => {
+            multipleChoice.push(`<br/>${choice}`);
+          });
+          addField(data, exercise.additionalWorkingPreferences[index].question, `answer: ${multipleChoice}`);
         }
         if (exercise.additionalWorkingPreferences[index].questionType === 'ranked-choice') {
           const rankedAnswer = [];
           item.selection.forEach((choice, index) => {
-            rankedAnswer.push(`${index + 1}: ${choice}`);
+            rankedAnswer.push(`<br/>${index + 1}: ${choice}`);
           });
           addField(data, exercise.additionalWorkingPreferences[index].question, `answer: ${rankedAnswer}`);
         }
@@ -128,22 +135,6 @@ module.exports = () => {
       return data;
     }
 
-    if (exercise.typeOfExercise === 'non-legal' || exercise.typeOfExercise === 'leadership-non-legal') {
-      html.addHeading('Experience');
-      html.addTable(getExperienceData(application));
-    }
-
-    function getExperienceData(application) {
-      const experienceData = application.experience;
-      const data = [];
-      experienceData.forEach(eD => {
-        addField(data, 'Organisation or business', eD.orgBusinessName);
-        addField(data, 'Job title', eD.jobTitle);
-        addField(data, 'Date qualified', `${formatDate(eD.startDate)} - ${formatDate(eD.endDate) || 'current'}`);
-      });
-      return data;
-    }
-
     if (exercise.typeOfExercise === 'legal') {
       html.addHeading('Post-qualification experience');
       html.addTable(getPostQualificationData(application));
@@ -192,13 +183,29 @@ module.exports = () => {
       return data;
     }
 
-    // not required for non-legal
+    if (exercise.typeOfExercise === 'non-legal' || exercise.typeOfExercise === 'leadership-non-legal') {
+      html.addHeading('Experience');
+      html.addTable(getExperienceData(application));
+    }
+
+    function getExperienceData(application) {
+      const experienceData = application.experience;
+      const data = [];
+      experienceData.forEach(eD => {
+        addField(data, 'Organisation or business', eD.orgBusinessName);
+        addField(data, 'Job title', eD.jobTitle);
+        addField(data, 'Date qualified', `${formatDate(eD.startDate)} - ${formatDate(eD.endDate) || 'current'}`);
+      });
+      return data;
+    }
+
     if (exercise.typeOfExercise === 'legal' || exercise.typeOfExercise === 'leadership') {
       html.addHeading('Employment gaps');
-      if (application.employmentGaps && application.employmentGaps.length > 0) {
-        html.addTable(getEmploymentGaps(application));
+      const data = getEmploymentGaps(application);
+      if (data.length > 0) {
+        html.addTable(data);
       } else {
-        html.addParagraph('No Gaps in Employment declared');
+        html.addParagraph('No gaps in employment declared');
       }
     }
 
@@ -206,14 +213,16 @@ module.exports = () => {
       const employmentGapsData = application.employmentGaps;
       const data = [];
       employmentGapsData.forEach((eG, idx) => {
-        addField(data, 'Date of gap', `${formatDate(eG.startDate)} - ${formatDate(eG.endDate)}`);
-        addField(data, 'Details', eG.details);
-        addField(data, 'Law related tasks', formatLawRelatedTasks(eG));
+        if ((eG.startDate)) {
+          addField(data, 'Date of gap', `${formatDate(eG.startDate)} - ${formatDate(eG.endDate) || 'current'}`);
+          addField(data, 'Details', eG.details);
+          addField(data, 'Law related tasks', formatLawRelatedTasks(eG));
+        }
       });
       return data;
     }
 
-    if (application.selectionCriteriaAnswers) {
+    if (application.selectionCriteriaAnswers && application.selectionCriteriaAnswers.length) {
       html.addHeading('Additional selection criteria');
       html.addTable(getAdditionalSelectionCriteria(application));
     }
@@ -228,9 +237,13 @@ module.exports = () => {
     }
 
     if (exercise.memberships && exercise.memberships.indexOf('none') === -1) {
-      html.addHeading('Memberships');
-      html.addTable(getMembershipData(application));
+      const data = getMembershipData(application);
+      if (data.length) {
+        html.addHeading('Memberships');
+        html.addTable(data);
+      }
     }
+
     return html.toString();
   }
 
@@ -304,7 +317,7 @@ module.exports = () => {
       }
       Object.keys(application.memberships).forEach(key => {
         const membership = application.memberships[key];
-        data.push(`${lookup(key)}</br>${formatDate(membership.date)}<br/>${membership.number}<br/>${membership.information}</br>`);
+        data.push(`${lookup(key)}</br>${formatDate(membership.date)}<br/>${membership.number}<br/>${membership.information}`);
       });
     }
     return data;
