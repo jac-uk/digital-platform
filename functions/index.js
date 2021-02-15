@@ -12,6 +12,7 @@ exports.onApplicationCreate = require('./backgroundFunctions/onApplicationCreate
 exports.onAssessmentUpdate = require('./backgroundFunctions/onAssessmentUpdate');
 exports.onApplicationRecordUpdate = require('./backgroundFunctions/onApplicationRecordUpdate');
 exports.onQualifyingTestResponseUpdate = require('./backgroundFunctions/onQualifyingTestResponseUpdate');
+exports.onPanelUpdate = require('./backgroundFunctions/onPanelUpdate');
 
 // Callable
 exports.generateDiversityReport = require('./callableFunctions/generateDiversityReport');

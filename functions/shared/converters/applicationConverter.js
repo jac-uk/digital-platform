@@ -212,13 +212,15 @@ module.exports = () => {
     function getEmploymentGaps(application) {
       const employmentGapsData = application.employmentGaps;
       const data = [];
-      employmentGapsData.forEach((eG, idx) => {
-        if ((eG.startDate)) {
-          addField(data, 'Date of gap', `${formatDate(eG.startDate)} - ${formatDate(eG.endDate) || 'current'}`);
-          addField(data, 'Details', eG.details);
-          addField(data, 'Law related tasks', formatLawRelatedTasks(eG));
-        }
-      });
+      if (employmentGapsData && employmentGapsData.length) {
+        employmentGapsData.forEach((eG, idx) => {
+          if ((eG.startDate)) {
+            addField(data, 'Date of gap', `${formatDate(eG.startDate)} - ${formatDate(eG.endDate) || 'current'}`);
+            addField(data, 'Details', eG.details);
+            addField(data, 'Law related tasks', formatLawRelatedTasks(eG));
+          }
+        });
+      }
       return data;
     }
 
@@ -313,7 +315,7 @@ module.exports = () => {
 
     if (application.memberships) {
       if (otherProfessionalMemberships) {
-        data.push(`<br/>`);
+        data.push('<br/>');
       }
       Object.keys(application.memberships).forEach(key => {
         const membership = application.memberships[key];
@@ -336,7 +338,7 @@ module.exports = () => {
     const data = [generalMedicalCouncilDate, generalMedicalCouncilNumber, generalMedicalCouncilInformation];
 
     if (generalMedicalCouncilConditional) {
-      data.push(`<br/>Conditions<br/>`);
+      data.push('<br/>Conditions<br/>');
       if (generalMedicalCouncilConditionalStartDate) {
         data.push(`${formatDate(generalMedicalCouncilConditionalStartDate)} to ${formatDate(generalMedicalCouncilConditionalEndDate) || 'current'}<br>${generalMedicalCouncilConditionalDetails}`);
       }

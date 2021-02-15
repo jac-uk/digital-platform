@@ -7,16 +7,16 @@ const { exportToGoogleDrive } = require('../functions/actions/exercises/exportTo
 const main = async () => {
 
   // develop - warren's exercise
-  // const driveId = '0ABjk7Pjwe4RVUk9PVA';
-  // const rootFolderId = '1yHfxJFvc96khzRq1VbjZ-sRSlJ-S8uqb';
-  // const exerciseId = 'wdpALbyICL7ZxxN5AQt8';
-  // const panelId = 'E1PyKUnQT4XoryScxggt';
+  const driveId = '0ABjk7Pjwe4RVUk9PVA';
+  const rootFolderId = '1dOhgREFvqG6gk20-dwRj1y4jHWjCfJrB';
+  const exerciseId = 'wdpALbyICL7ZxxN5AQt8';
+  const panelId = 'E1PyKUnQT4XoryScxggt';
 
-  // prod - 21
-  const driveId = '0AN9QJOw_we0gUk9PVA';
-  const rootFolderId = '1H2vnVHtq-K2xqBRyGsZIG0WVNm7ESOQw';
-  const exerciseId = 'kVlymRGRhZndRaQuqDTf';
-  const panelId = 'p6a1AccI8k7Hq3CiAbcR';
+  // // prod - 21
+  // const driveId = '0AN9QJOw_we0gUk9PVA';
+  // const rootFolderId = '1H2vnVHtq-K2xqBRyGsZIG0WVNm7ESOQw';
+  // const exerciseId = 'kVlymRGRhZndRaQuqDTf';
+  // const panelId = 'X2dCy2p4pVSf8gsQZjOh';
 
   const excludedApplicationIds = [];
 
