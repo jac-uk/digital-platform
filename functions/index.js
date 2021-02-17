@@ -12,6 +12,7 @@ exports.onApplicationCreate = require('./backgroundFunctions/onApplicationCreate
 exports.onAssessmentUpdate = require('./backgroundFunctions/onAssessmentUpdate');
 exports.onApplicationRecordUpdate = require('./backgroundFunctions/onApplicationRecordUpdate');
 exports.onQualifyingTestResponseUpdate = require('./backgroundFunctions/onQualifyingTestResponseUpdate');
+exports.onPanelUpdate = require('./backgroundFunctions/onPanelUpdate');
 
 // Callable
 exports.generateDiversityReport = require('./callableFunctions/generateDiversityReport');
@@ -32,6 +33,7 @@ exports.sendQualifyingTestReminders = require('./callableFunctions/sendQualifyin
 exports.scoreQualifyingTest = require('./callableFunctions/scoreQualifyingTest');
 exports.generateQualifyingTestReport = require('./callableFunctions/generateQualifyingTestReport');
 exports.exportExerciseData = require('./callableFunctions/exportExerciseData');
+exports.exportToGoogleDrive = require('./callableFunctions/exportToGoogleDrive');
 
 // exports.onExerciseUpdate_PublishVacancy = require('./exercises/onExerciseUpdate_PublishVacancy');
 // exports.onWriteVacancyStats = require('./exercises/onWriteVacancyStats');
