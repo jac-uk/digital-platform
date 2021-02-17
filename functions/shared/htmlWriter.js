@@ -59,11 +59,11 @@ class htmlWriter {
     this.stylesheet = data;
   }
   addTitle(data) {
-    this.html += `<h2>${data}</h2>`;
+    this.html += `<h2 id="title">${data}</h2>`;
   }
   addHeading(data) {
     // data = data.match(/[A-Z][a-z]+|[0-9]+/g).join(' ');
-    this.html += `<h4>${data}</h4>`;
+    this.html += `<h4 id="${data.split(' ').join('_')}_heading" >${data}</h4>`;
   }
   addTable(data) {
     const tableStart = '<table>';
