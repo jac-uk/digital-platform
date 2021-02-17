@@ -1,4 +1,5 @@
 const { google } = require('googleapis');
+const Bottleneck = require('bottleneck');
 
 module.exports = () => {
 
@@ -15,12 +16,16 @@ module.exports = () => {
 
   let drive;
   let currentDriveId;
+  let limiter;
 
   return {
     login,
     setDriveId,
     createFolder,
     createFile,
+    copyFile,
+    deleteFolder,
+    deleteFile,
     addPermission,
     getMimeType,
     MIME_TYPE,
@@ -31,6 +36,10 @@ module.exports = () => {
       scopes: ['https://www.googleapis.com/auth/drive'],
     });
     drive = google.drive({ version: 'v3', auth });
+    limiter = new Bottleneck({
+      minTime: 150,
+      maxConcurrent: 10,
+    });
     return drive;
   }
 
@@ -38,7 +47,7 @@ module.exports = () => {
     currentDriveId = driveId;
   }
 
-  async function createFolder(folderName, params) {
+  function createFolder(folderName, params) {
     const metaData = {
       'name': folderName,
       'mimeType': 'application/vnd.google-apps.folder',
@@ -49,15 +58,22 @@ module.exports = () => {
     } else {
       metaData.parents = [currentDriveId];
     }
-    const folder = await drive.files.create({
-      resource: metaData,
-      supportsAllDrives: true,
-      fields: ['id'],
+    return limiter.schedule(
+      () => {
+        // console.log('createFolder started', new Date());
+        return drive.files.create({
+          resource: metaData,
+          supportsAllDrives: true,
+          fields: ['id'],
+        });
+      }
+    ).then(folder => {
+      // console.log('createFolder finished', new Date());
+      return folder.data.id;
     });
-    return folder.data.id;
   }
 
-  async function createFile(fileName, { folderId, sourceType, destinationType, sourceContent }) {
+  function createFile(fileName, { folderId, sourceType, destinationType, sourceContent }) {
     const source = {
       body: sourceContent,
     };
@@ -76,13 +92,47 @@ module.exports = () => {
     } else {
       metaData.parents = [currentDriveId];
     }
-    const file = await drive.files.create({
-      resource: metaData,
-      media: source,
+    return limiter.schedule(
+      () => {
+        // console.log('createFile started', new Date());
+        return drive.files.create({
+          resource: metaData,
+          media: source,
+          supportsAllDrives: true,
+          fields: 'id',
+        });
+      }).then(file => {
+        // console.log('createFile finished', new Date());
+        return file.data.id;
+    });
+  }
+
+  function copyFile(fileId, folderId) {
+    return drive.files.copy({
+      fileId: fileId,
+      resource: {
+        parents: [folderId],
+      },
       supportsAllDrives: true,
       fields: 'id',
-    });
-    return file.data.id;
+    }).then(file => file.data.id);
+  }
+
+  function deleteFile(fileId) {
+    if (fileId) {
+      return limiter.schedule(
+        () => drive.files.delete({
+          fileId: fileId,
+          driveId: currentDriveId,
+          supportsAllDrives: true,
+        })
+      );
+    }
+    return false;
+  }
+
+  function deleteFolder(folderId) {
+    return deleteFile(folderId);
   }
 
   async function addPermission(fileId, permission) {

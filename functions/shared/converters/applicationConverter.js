@@ -161,7 +161,17 @@ module.exports = () => {
           addField(data, 'Explain how you\'ve gained experience in law', application.experienceUnderSchedule2Three);
         }
         if (exercise.appliedSchedule === 'schedule-2-d') {
-          addField(data, 'Explain how you\'ve gained experience in law', application.experienceUnderSchedule2D);
+          addField(data, 'Are you applying under Schedule 2(d)?', toYesNo(application.applyingUnderSchedule2d));
+        }
+        if ((exercise.appliedSchedule === 'schedule-2-3' && application.applyingUnderSchedule2Three)
+          || (exercise.appliedSchedule === 'schedule-2-d' && application.applyingUnderSchedule2d)) {
+
+          if (exercise.appliedSchedule === 'schedule-2-3') {
+            addField(data, 'Explain how you\'ve gained experience in law', application.experienceUnderSchedule2Three);
+          }
+          if (exercise.appliedSchedule === 'schedule-2-d') {
+            addField(data, 'Explain how you\'ve gained experience in law', application.experienceUnderSchedule2D);
+          }
         }
       }
     }
@@ -226,18 +236,20 @@ module.exports = () => {
     return data;
   }
 
-  function getEmploymentGaps(application) {
-    const employmentGapsData = application.employmentGaps;
-    const data = [];
-    employmentGapsData.forEach((eG, idx) => {
-      if ((eG.startDate)) {
-        addField(data, 'Date of gap', `${formatDate(eG.startDate)} - ${formatDate(eG.endDate) || 'current'}`);
-        addField(data, 'Details', eG.details);
-        addField(data, 'Law related tasks', formatLawRelatedTasks(eG));
+    function getEmploymentGaps(application) {
+      const employmentGapsData = application.employmentGaps;
+      const data = [];
+      if (employmentGapsData && employmentGapsData.length) {
+        employmentGapsData.forEach((eG, idx) => {
+          if ((eG.startDate)) {
+            addField(data, 'Date of gap', `${formatDate(eG.startDate)} - ${formatDate(eG.endDate) || 'current'}`);
+            addField(data, 'Details', eG.details);
+            addField(data, 'Law related tasks', formatLawRelatedTasks(eG));
+          }
+        });
       }
-    });
-    return data;
-  }
+      return data;
+    }
 
   function getWelshData(application) {
     const data = [];

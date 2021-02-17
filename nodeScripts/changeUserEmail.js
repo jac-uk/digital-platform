@@ -4,8 +4,10 @@ const { app, auth } = require('./shared/admin.js');
 
 const main = async () => {
   try {
-    const user = await auth.getUserByEmail('warren2@precise-minds.co.uk');
-    return auth.updateUser(user.uid, { email: 'warren2@precise-minds.co.uk' });
+    const emailBefore = 'warren2@precise-minds.co.uk';
+    const emailAfter = 'warren@precise-minds.co.uk';
+    const user = await auth.getUserByEmail(emailBefore);
+    return auth.updateUser(user.uid, { email: emailAfter });
   } catch(e) {
     // console.log(e);
     return false;
