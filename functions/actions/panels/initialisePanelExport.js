@@ -23,6 +23,10 @@ module.exports = (config, firebase, db) => {
       return false;
     }
 
+    // get exercise
+    // TODO store `panel.exercise.referenceNumber` instead of getting exercise
+    const exercise = await getDocument(db.collection('exercises').doc(panel.exerciseId));
+
     // get application ids
     const applicationRecords = await getDocuments(
       db.collection('applicationRecords')
@@ -45,9 +49,9 @@ module.exports = (config, firebase, db) => {
     // get settings
     const settings = await getDocument(db.collection('settings').doc('services'));
 
-    //get exercise ref number and make a folder name
+    // get exercise ref number and make a folder name
     const folderName =
-      (applicationRecords[0].exercise.referenceNumber).slice(3) + '-' + panel.name;
+      (exercise.referenceNumber).slice(3) + ' ' + panel.name;
 
     // login to google drive and create panel folder
     await drive.login();
