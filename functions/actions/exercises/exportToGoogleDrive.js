@@ -22,6 +22,9 @@ module.exports = (config, firebase, db) => {
     // get panel
     const panel = await getDocument(db.collection('panels').doc(panelId));
 
+    //show candidate name
+    const showNames = panel.type === 'selection';
+
     // get drive service
     await drive.login();
     drive.setDriveId(driveId);
@@ -102,7 +105,7 @@ module.exports = (config, firebase, db) => {
       // create application google docs
       const docIds = await Promise.all(
         applications.map(application => {
-          const htmlString = applicationConverter.getHtmlPanelPack(application, exercise);
+          const htmlString = applicationConverter.getHtmlPanelPack(application, exercise, { showNames });
           return drive.createFile('Application Data', {
             folderId: applicationFiles[application.id].folderId,
             sourceType: drive.MIME_TYPE.HTML,
