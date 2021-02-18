@@ -1,7 +1,6 @@
 const { getDocument } = require('../../shared/helpers');
 const applicationConverter = require('../../shared/converters/applicationConverter')();
 const drive = require('../../shared/google-drive')();
-const Bottleneck = require('bottleneck');
 
 module.exports = (config, firebase, db) => {
 
@@ -43,8 +42,20 @@ module.exports = (config, firebase, db) => {
       const bucket = firebase.storage().bucket(config.STORAGE_URL);
       // console.log('bucket', bucket);
 
+      // show candidate name
+      const showNames = panel.type === 'selection';
+
       // create application folder
-      const folderId = await drive.createFolder(`${application.personalDetails.fullName} ${application.referenceNumber}`, {
+      let applicationFolderName;
+      if (showNames) {
+        applicationFolderName = `${application.personalDetails.fullName} ${application.referenceNumber}`;
+      } else {
+        applicationFolderName = application.referenceNumber.replace(`${exercise.referenceNumber}-`, '');
+        // TODO need to account for sifts that are NOT name-blind (i.e. where we do want to include candidate name, as above)
+        // We could look at `exercise.shortlistingMethods` to see whether sift or name-blind-sift was selected however user can currently select both of these which might need simplifying
+        // (plus the default should be name-blind)
+      }
+      const folderId = await drive.createFolder(applicationFolderName, {
         parentId: panel.drive.folderId,
       });
 
@@ -55,7 +66,7 @@ module.exports = (config, firebase, db) => {
         drive.createFile('Application Data', {
           folderId: folderId,
           sourceType: drive.MIME_TYPE.HTML,
-          sourceContent: applicationConverter.getHtmlPanelPack(application, exercise),
+          sourceContent: applicationConverter.getHtmlPanelPack(application, exercise, { showNames }),
           destinationType: drive.MIME_TYPE.DOCUMENT,
         }).catch(e => 'Error: Application Data')
       );
