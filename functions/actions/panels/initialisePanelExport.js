@@ -45,10 +45,14 @@ module.exports = (config, firebase, db) => {
     // get settings
     const settings = await getDocument(db.collection('settings').doc('services'));
 
+    //get exercise ref number and make a folder name
+    const folderName =
+      (applicationRecords[0].exercise.referenceNumber).slice(3) + '-' + panel.name;
+
     // login to google drive and create panel folder
     await drive.login();
     drive.setDriveId(settings.google.driveId);
-    const panelFolderId = await drive.createFolder(`${panel.name}`, {
+    const panelFolderId = await drive.createFolder(folderName, {
       parentId: settings.google.rootFolderId,
     });
 
