@@ -641,6 +641,78 @@
       ]
     },
     {
+      "collectionGroup": "panels",
+      "queryScope": "COLLECTION",
+      "fields": [
+        {
+          "fieldPath": "exerciseId",
+          "order": "ASCENDING"
+        },
+        {
+          "fieldPath": "type",
+          "order": "ASCENDING"
+        },
+        {
+          "fieldPath": "name",
+          "order": "ASCENDING"
+        }
+      ]
+    },
+    {
+      "collectionGroup": "panels",
+      "queryScope": "COLLECTION",
+      "fields": [
+        {
+          "fieldPath": "exerciseId",
+          "order": "ASCENDING"
+        },
+        {
+          "fieldPath": "type",
+          "order": "ASCENDING"
+        },
+        {
+          "fieldPath": "name",
+          "order": "DESCENDING"
+        }
+      ]
+    },
+    {
+      "collectionGroup": "panels",
+      "queryScope": "COLLECTION",
+      "fields": [
+        {
+          "fieldPath": "exerciseId",
+          "order": "ASCENDING"
+        },
+        {
+          "fieldPath": "type",
+          "order": "ASCENDING"
+        },
+        {
+          "fieldPath": "title",
+          "order": "ASCENDING"
+        }
+      ]
+    },
+    {
+      "collectionGroup": "panels",
+      "queryScope": "COLLECTION",
+      "fields": [
+        {
+          "fieldPath": "exerciseId",
+          "order": "ASCENDING"
+        },
+        {
+          "fieldPath": "type",
+          "order": "ASCENDING"
+        },
+        {
+          "fieldPath": "title",
+          "order": "DESCENDING"
+        }
+      ]
+    },
+    {
       "collectionGroup": "qualifyingTestReports",
       "queryScope": "COLLECTION",
       "fields": [
