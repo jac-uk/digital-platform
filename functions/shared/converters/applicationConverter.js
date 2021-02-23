@@ -13,110 +13,152 @@ module.exports = () => {
 
   function getHtmlPanelPack(application, exercise, params) {
 
-    const html = new htmlWriter();
+    let html = new htmlWriter();
 
-    if (params && params.showNames) {
-      html.addTitle(`${application.personalDetails.fullName} ${application.referenceNumber}`);
-    } else {
-      html.addTitle(application.referenceNumber);
-    }
-
-    if (application.jurisdictionPreferences && application.jurisdictionPreferences.length) {
-      html.addHeading('Jurisdiction Preferences');
-      html.addTable(getJurisdictionPreferences(application, exercise));
-    }
-
-    function getJurisdictionPreferences(application, exercise) {
-      const data = [];
-      if (typeof (application.jurisdictionPreferences) === 'string') {
-        addField(data, exercise.jurisdictionQuestion, application.jurisdictionPreferences);
+    if (application && Object.keys(application).length) {
+      // console.log(application);
+      if (params && params.showNames) {
+        html.addTitle(`${application.personalDetails.fullName} ${application.referenceNumber}`);
       } else {
-        addField(data, exercise.jurisdictionQuestion, application.jurisdictionPreferences.join('\n'));
+        html.addTitle(application.referenceNumber);
       }
-      return data;
+
+      if (application.jurisdictionPreferences && application.jurisdictionPreferences.length) {
+        html.addHeading('Jurisdiction Preferences');
+        html.addTable(getJurisdictionPreferences(application, exercise));
+      }
+
+      if (application.additionalWorkingPreferences && application.additionalWorkingPreferences.length) {
+        html.addHeading('Additional Preferences');
+        html.addTable(getAdditionalWorkingPreferences(application, exercise));
+      }
+
+      if (application.selectionCriteriaAnswers && application.selectionCriteriaAnswers.length) {
+        html.addHeading('Additional selection criteria');
+        html.addTable(getAdditionalSelectionCriteria(application));
+      }
+    } else {
+      html.addTitle('Error - Missing Application information');
     }
 
-    if (exercise.welshRequirement) {
-      html.addHeading('Welsh posts');
-      html.addTable(getWelshData(application));
-    }
+    if (exercise && Object.keys(exercise).length) {
+      if (exercise.welshRequirement) {
+        html.addHeading('Welsh posts');
+        html.addTable(getWelshData(application));
+      }
 
-    function getWelshData(application) {
-      const data = [];
-      addField(data, 'Applying for Welsh posts', toYesNo(application.applyingForWelshPost));
-      if (application.applyingForWelshPost) {
-        addField(data, 'Can speak Welsh?', toYesNo(application.canSpeakWelsh));
+      if (exercise.typeOfExercise === 'legal' || exercise.typeOfExercise === 'leadership') {
+        html.addHeading('Qualifications');
+        html.addTable(getQualificationData(exercise, application));
+      }
 
-        if (application.canReadAndWriteWelsh === false) {
-          addField(data, 'Can write and read in Welsh?', toYesNo(application.canReadAndWriteWelsh));
-        }
+      if (exercise.typeOfExercise === 'legal') {
+        html.addHeading('Post-qualification experience');
+        html.addTable(getPostQualificationData(application));
+      }
 
-        if (application.canReadAndWriteWelsh) {
-          addField(data, 'Can write and read in Welsh?', lookup(application.canReadAndWriteWelsh));
+      if ((exercise.typeOfExercise === 'legal' || exercise.typeOfExercise === 'leadership') && exercise.previousJudicialExperienceApply) {
+        html.addHeading('Judicial experience');
+        html.addTable(getJudicialExperience(application, exercise));
+      }
+
+      if (exercise.typeOfExercise === 'non-legal' || exercise.typeOfExercise === 'leadership-non-legal') {
+        html.addHeading('Experience');
+        html.addTable(getExperienceData(application));
+      }
+
+      if (exercise.typeOfExercise === 'legal' || exercise.typeOfExercise === 'leadership') {
+        html.addHeading('Employment gaps');
+        const data = getEmploymentGaps(application);
+        if (data.length > 0) {
+          html.addTable(data);
+        } else {
+          html.addParagraph('No gaps in employment declared');
         }
       }
-      return data;
+
+      if (exercise.memberships && exercise.memberships.indexOf('none') === -1) {
+        const data = getMembershipData(application);
+        if (data.length) {
+          html.addHeading('Memberships');
+          html.addTable(data);
+        }
+      }
+    } else {
+      html.addTitle('Error - Missing Exercise information');
     }
 
-    if (application.additionalWorkingPreferences && application.additionalWorkingPreferences.length) {
-      html.addHeading('Additional Preferences');
-      html.addTable(getAdditionalWorkingPreferences(application, exercise));
+    return html.toString();
+  }
+
+  function getJurisdictionPreferences(application, exercise) {
+    const data = [];
+    if (typeof (application.jurisdictionPreferences) === 'string') {
+      addField(data, exercise.jurisdictionQuestion, application.jurisdictionPreferences);
+    } else {
+      addField(data, exercise.jurisdictionQuestion, application.jurisdictionPreferences.join('\n'));
     }
+    return data;
+  }
 
-    function getAdditionalWorkingPreferences(application, exercise) {
-      const additionalWorkingPreferenceData = application.additionalWorkingPreferences;
-      const data = [];
-      additionalWorkingPreferenceData.forEach((item, index) => {
-        addField(data, lookup(exercise.additionalWorkingPreferences[index].questionType));
-        if (exercise.additionalWorkingPreferences[index].questionType === 'single-choice') {
-          addField(data, exercise.additionalWorkingPreferences[index].question, additionalWorkingPreferenceData.selection);
-        }
-        if (exercise.additionalWorkingPreferences[index].questionType === 'multiple-choice') {
-          const multipleChoice = [];
-          item.selection.forEach((choice) => {
-            multipleChoice.push(`<br/>${choice}`);
-          });
-          addField(data, exercise.additionalWorkingPreferences[index].question, `answer: ${multipleChoice}`);
-        }
-        if (exercise.additionalWorkingPreferences[index].questionType === 'ranked-choice') {
-          const rankedAnswer = [];
-          item.selection.forEach((choice, index) => {
-            rankedAnswer.push(`<br/>${index + 1}: ${choice}`);
-          });
-          addField(data, exercise.additionalWorkingPreferences[index].question, `answer: ${rankedAnswer}`);
-        }
-      });
-      return data;
-    }
+  function getAdditionalWorkingPreferences(application, exercise) {
+    const additionalWorkingPreferenceData = application.additionalWorkingPreferences;
+    const data = [];
+    additionalWorkingPreferenceData.forEach((item, index) => {
+      addField(data, lookup(exercise.additionalWorkingPreferences[index].questionType));
+      if (exercise.additionalWorkingPreferences[index].questionType === 'single-choice') {
+        addField(data, exercise.additionalWorkingPreferences[index].question, item.selection);
+      }
+      if (exercise.additionalWorkingPreferences[index].questionType === 'multiple-choice') {
+        const multipleChoice = [];
+        item.selection.forEach((choice) => {
+          multipleChoice.push(`<br/>${choice}`);
+        });
+        addField(data, exercise.additionalWorkingPreferences[index].question, `answer: ${multipleChoice}`);
+      }
+      if (exercise.additionalWorkingPreferences[index].questionType === 'ranked-choice') {
+        const rankedAnswer = [];
+        item.selection.forEach((choice, index) => {
+          rankedAnswer.push(`<br/>${index + 1}: ${choice}`);
+        });
+        addField(data, exercise.additionalWorkingPreferences[index].question, `answer: ${rankedAnswer}`);
+      }
+    });
+    return data;
+  }
 
-    if (exercise.typeOfExercise === 'legal' || exercise.typeOfExercise === 'leadership') {
-      html.addHeading('Qualifications');
-      html.addTable(getQualificationData(exercise, application));
-    }
+  function getQualificationData(exercise, application) {
+    const qualificationData = application.qualifications;
+    const data = [];
+    qualificationData.forEach(q => {
+      addField(data, 'Qualification', lookup(q.type));
+      addField(data, 'Location', lookup(q.location));
 
-    function getQualificationData(exercise, application) {
-      const qualificationData = application.qualifications;
-      const data = [];
-      qualificationData.forEach(q => {
-        addField(data, 'Qualification', lookup(q.type));
-        addField(data, 'Location', lookup(q.location));
-
-        if (q.date) {
-          if (q.type === 'barrister') {
-            addField(data, 'Date completed pupillage', formatDate(q.date));
-          } else {
-            addField(data, 'Date qualified', formatDate(q.date));
-          }
+      if (q.date) {
+        if (q.type === 'barrister') {
+          addField(data, 'Date completed pupillage', formatDate(q.date));
+        } else {
+          addField(data, 'Date qualified', formatDate(q.date));
         }
-        if (q.qualificationNotComplete && q.details) {
-          addField(data, 'Completed pupillage', 'No');
-          addField(data, 'Did not complete pupillage notes', q.details);
-        }
-      });
+      }
+      if (q.qualificationNotComplete && q.details) {
+        addField(data, 'Completed pupillage', 'No');
+        addField(data, 'Did not complete pupillage notes', q.details);
+      }
+    });
 
-      if (exercise.schedule2Apply) {
+    if (exercise.schedule2Apply) {
+      if (exercise.appliedSchedule === 'schedule-2-3') {
+        addField(data, 'Are you applying under Schedule 2(3)?', toYesNo(application.applyingForSchedule2Three));
+      }
+      if (exercise.appliedSchedule === 'schedule-2-d') {
+        addField(data, 'Are you applying under Schedule 2(d)?', toYesNo(application.applyingUnderSchedule2d));
+      }
+      if ((exercise.appliedSchedule === 'schedule-2-3' && application.applyingUnderSchedule2Three)
+        || (exercise.appliedSchedule === 'schedule-2-d' && application.applyingUnderSchedule2d)) {
+
         if (exercise.appliedSchedule === 'schedule-2-3') {
-          addField(data, 'Are you applying under Schedule 2(3)?', toYesNo(application.applyingForSchedule2Three));
+          addField(data, 'Explain how you\'ve gained experience in law', application.experienceUnderSchedule2Three);
         }
         if (exercise.appliedSchedule === 'schedule-2-d') {
           addField(data, 'Are you applying under Schedule 2(d)?', toYesNo(application.applyingUnderSchedule2d));
@@ -132,82 +174,67 @@ module.exports = () => {
           }
         }
       }
-      return data;
     }
+    return data;
+  }
 
-    if (exercise.typeOfExercise === 'legal') {
-      html.addHeading('Post-qualification experience');
-      html.addTable(getPostQualificationData(application));
-    }
-
-    function getPostQualificationData(application) {
-      const experienceData = application.experience;
-      const data = [];
-      if (experienceData && experienceData.length) {
-        experienceData.forEach((e, idx) => {
-          addField(data, 'Job title', e.jobTitle, idx !== 0);
-          addField(data, 'Organisation or business', e.orgBusinessName);
-          addField(data, 'Dates worked', `${formatDate(e.startDate)} - ${formatDate(e.endDate) || 'current'}`);
-          addField(data, 'Law related tasks', formatLawRelatedTasks(e));
-        });
-      }
-      return data;
-    }
-
-    if ((exercise.typeOfExercise === 'legal' || exercise.typeOfExercise === 'leadership') && exercise.previousJudicialExperienceApply) {
-      html.addHeading('Judicial experience');
-      html.addTable(getJudicialExperience(application));
-    }
-
-    function getJudicialExperience(application) {
-      const data = [];
-      addField(data, 'Fee-paid or salaried judge', lookup(toYesNo(application.feePaidOrSalariedJudge)));
-      if (application.feePaidOrSalariedJudge === true) {
-        addField(data, `Sat for at least ${application.pjeDays || 30} days`, toYesNo(application.feePaidOrSalariedSatForThirtyDays));
-        if (application.feePaidOrSalariedSittingDaysDetails) {
-          addField(data, 'Details', application.feePaidOrSalariedSittingDaysDetails);
-        }
-      }
-      if (application.feePaidOrSalariedSatForThirtyDays === false || application.feePaidOrSalariedJudge === false) {
-        addField(data, 'Declared an appointment or appointments in a quasi-judicial body in this application', toYesNo(application.declaredAppointmentInQuasiJudicialBody));
-        if (application.declaredAppointmentInQuasiJudicialBody === true) {
-          addField(data, `Sat for at least ${application.pjeDays || 30} days in one or all of these appointments`, toYesNo(application.quasiJudicialSatForThirtyDays));
-          if (application.quasiJudicialSittingDaysDetails) {
-            addField(data, 'Details', application.quasiJudicialSittingDaysDetails);
-          }
-        }
-      }
-      if (application.declaredAppointmentInQuasiJudicialBody === false || application.quasiJudicialSatForThirtyDays === false) {
-        addField(data, 'Skills acquisition details', application.skillsAquisitionDetails);
-      }
-      return data;
-    }
-
-    if (exercise.typeOfExercise === 'non-legal' || exercise.typeOfExercise === 'leadership-non-legal') {
-      html.addHeading('Experience');
-      html.addTable(getExperienceData(application));
-    }
-
-    function getExperienceData(application) {
-      const experienceData = application.experience;
-      const data = [];
-      experienceData.forEach(eD => {
-        addField(data, 'Organisation or business', eD.orgBusinessName);
-        addField(data, 'Job title', eD.jobTitle);
-        addField(data, 'Date qualified', `${formatDate(eD.startDate)} - ${formatDate(eD.endDate) || 'current'}`);
+  function getPostQualificationData(application) {
+    const experienceData = application.experience;
+    const data = [];
+    if (experienceData && experienceData.length) {
+      experienceData.forEach((e, idx) => {
+        addField(data, 'Job title', e.jobTitle, idx !== 0);
+        addField(data, 'Organisation or business', e.orgBusinessName);
+        addField(data, 'Dates worked', `${formatDate(e.startDate)} - ${formatDate(e.endDate) || 'current'}`);
+        addField(data, 'Law related tasks', formatLawRelatedTasks(e));
       });
-      return data;
     }
+    return data;
+  }
 
-    if (exercise.typeOfExercise === 'legal' || exercise.typeOfExercise === 'leadership') {
-      html.addHeading('Employment gaps');
-      const data = getEmploymentGaps(application);
-      if (data.length > 0) {
-        html.addTable(data);
-      } else {
-        html.addParagraph('No gaps in employment declared');
+  function getJudicialExperience(application, exercise) {
+    const data = [];
+    addField(data, 'Fee-paid or salaried judge', lookup(toYesNo(application.feePaidOrSalariedJudge)));
+    if (application.feePaidOrSalariedJudge === true) {
+      addField(data, `Sat for at least ${exercise.pjeDays || 30} days`, toYesNo(application.feePaidOrSalariedSatForThirtyDays));
+      if (application.feePaidOrSalariedSittingDaysDetails) {
+        addField(data, 'Details', application.feePaidOrSalariedSittingDaysDetails);
       }
     }
+    if (application.feePaidOrSalariedSatForThirtyDays === false || application.feePaidOrSalariedJudge === false) {
+      addField(data, 'Declared an appointment or appointments in a quasi-judicial body in this application', toYesNo(application.declaredAppointmentInQuasiJudicialBody));
+      if (application.declaredAppointmentInQuasiJudicialBody === true) {
+        addField(data, `Sat for at least ${exercise.pjeDays || 30} days in one or all of these appointments`, toYesNo(application.quasiJudicialSatForThirtyDays));
+        if (application.quasiJudicialSittingDaysDetails) {
+          addField(data, 'Details', application.quasiJudicialSittingDaysDetails);
+        }
+      }
+    }
+    if (application.declaredAppointmentInQuasiJudicialBody === false || application.quasiJudicialSatForThirtyDays === false) {
+      addField(data, 'Skills acquisition details', application.skillsAquisitionDetails);
+    }
+    return data;
+  }
+
+  function getExperienceData(application) {
+    const experienceData = application.experience;
+    const data = [];
+    experienceData.forEach(eD => {
+      addField(data, 'Organisation or business', eD.orgBusinessName);
+      addField(data, 'Job title', eD.jobTitle);
+      addField(data, 'Date qualified', `${formatDate(eD.startDate)} - ${formatDate(eD.endDate) || 'current'}`);
+    });
+    return data;
+  }
+
+  function getAdditionalSelectionCriteria(application) {
+    const additionalSelectionCriteria = application.selectionCriteriaAnswers;
+    const data = [];
+    additionalSelectionCriteria.forEach(sC => {
+      addField(data, sC.title, sC.answerDetails || 'Does not meet this requirement');
+    });
+    return data;
+  }
 
     function getEmploymentGaps(application) {
       const employmentGapsData = application.employmentGaps;
@@ -224,29 +251,21 @@ module.exports = () => {
       return data;
     }
 
-    if (application.selectionCriteriaAnswers && application.selectionCriteriaAnswers.length) {
-      html.addHeading('Additional selection criteria');
-      html.addTable(getAdditionalSelectionCriteria(application));
-    }
+  function getWelshData(application) {
+    const data = [];
+    addField(data, 'Applying for Welsh posts', toYesNo(application.applyingForWelshPost));
+    if (application.applyingForWelshPost) {
+      addField(data, 'Can speak Welsh?', toYesNo(application.canSpeakWelsh));
 
-    function getAdditionalSelectionCriteria(application) {
-      const additionalSelectionCriteria = application.selectionCriteriaAnswers;
-      const data = [];
-      additionalSelectionCriteria.forEach(sC => {
-        addField(data, sC.title, sC.answerDetails || 'Does not meet this requirement');
-      });
-      return data;
-    }
+      if (application.canReadAndWriteWelsh === false) {
+        addField(data, 'Can write and read in Welsh?', toYesNo(application.canReadAndWriteWelsh));
+      }
 
-    if (exercise.memberships && exercise.memberships.indexOf('none') === -1) {
-      const data = getMembershipData(application);
-      if (data.length) {
-        html.addHeading('Memberships');
-        html.addTable(data);
+      if (application.canReadAndWriteWelsh) {
+        addField(data, 'Can write and read in Welsh?', lookup(application.canReadAndWriteWelsh));
       }
     }
-
-    return html.toString();
+    return data;
   }
 
   function getMembershipData(application) {
