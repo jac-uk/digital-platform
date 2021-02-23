@@ -1,19 +1,33 @@
 'use strict';
 
-const config = require('./shared/config');
-const { firebase, app, db } = require('./shared/admin.js');
+const { app } = require('./shared/admin.js');
 const { google } = require('googleapis');
-const { promisify } = require('util');
 
-const main = async () => {
+const main = async (spreadsheetId, range) => {
+
   return google.auth.getClient({
     scopes: ['https://www.googleapis.com/auth/spreadsheets'],
-  }).then(auth => {
-    const api = google.sheets({ version: 'v4', auth });
-    const getSheets = promisify(api.spreadsheets.get.bind(api.spreadsheets));
-    return getSheets({ spreadsheetId: '1kOLipXEe657tKsreRbxc9uIC5x5TmOzLmpdAQONNsLA' });
   })
-  // This just prints out all Worksheet names as an example
+  .then(auth => {
+      return google.sheets({ version: 'v4', auth }).spreadsheets.values.append({
+      spreadsheetId,
+      range,
+      valueInputOption: 'USER_ENTERED',
+      requestBody: {
+        values: [
+          ['Candidate Ref', 'Score'],
+          ['Candidate1'],
+          ['Candidate2'],
+          ['Candidate3'],
+          ['Candidate4'],
+          ['Candidate5'],
+          ['Candidate6'],
+          ['Candidate7'],
+          ['Candidate8'],
+        ],
+      },
+    });
+  })
   .then(({ data: { sheets } }) => {
     return sheets;
   })
@@ -22,7 +36,8 @@ const main = async () => {
   });
 };
 
-main()
+
+main('1kOLipXEe657tKsreRbxc9uIC5x5TmOzLmpdAQONNsLA', 'A1:Z1000')
   .then((result) => {
     console.log(result);
     app.delete();
