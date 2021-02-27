@@ -5,14 +5,12 @@ const { app, db } = require('./shared/admin.js');
 
 const main = async () => {
   const stats = {};
-  // const applications = await db.collection('applications').get();
-  // stats.applications = applications.docs.length;
-  // const candidates = await db.collection('candidates').get();
-  // stats.candidates = candidates.docs.length;
-  // const exercises = await db.collection('exercises').get();
-  // stats.exercises = exercises.docs.length;
-  const applications = await db.collection('applications').where('exerciseId', '==', 'wdpALbyICL7ZxxN5AQt8').get();
+  const applications = await db.collection('applications').select().get();
   stats.applications = applications.docs.length;
+  const candidates = await db.collection('candidates').select().get();
+  stats.candidates = candidates.docs.length;
+  const exercises = await db.collection('exercises').select().get();
+  stats.exercises = exercises.docs.length;
   return stats;
 };
 
