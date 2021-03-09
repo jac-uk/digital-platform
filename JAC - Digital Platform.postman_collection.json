@@ -89,6 +89,126 @@
 				}
 			},
 			"response": []
+		},
+		{
+			"name": "Generate Diversity Report",
+			"request": {
+				"auth": {
+					"type": "noauth"
+				},
+				"method": "POST",
+				"header": [
+					{
+						"key": "Content-Type",
+						"value": "application/json",
+						"type": "text"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\r\n    \"data\": {\r\n        \"exerciseId\": \"4Ufg5bAC2Gjx2YRve9WZ\"\r\n    }\r\n}"
+				},
+				"url": {
+					"raw": "{{host}}/generateDiversityReport",
+					"host": [
+						"{{host}}"
+					],
+					"path": [
+						"generateDiversityReport"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Generate Outreach Report",
+			"request": {
+				"auth": {
+					"type": "noauth"
+				},
+				"method": "POST",
+				"header": [
+					{
+						"key": "Content-Type",
+						"value": "application/json",
+						"type": "text"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\r\n    \"data\": {\r\n        \"exerciseId\": \"4Ufg5bAC2Gjx2YRve9WZ\"\r\n    }\r\n}"
+				},
+				"url": {
+					"raw": "{{host}}/generateOutreachReport",
+					"host": [
+						"{{host}}"
+					],
+					"path": [
+						"generateOutreachReport"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Generate Qualifying Test Report",
+			"request": {
+				"auth": {
+					"type": "noauth"
+				},
+				"method": "POST",
+				"header": [
+					{
+						"key": "Content-Type",
+						"value": "application/json",
+						"type": "text"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\r\n    \"data\": {\r\n        \"qualifyingTestReportId\": \"11upv9nVGEgU74PCJ4Li\"\r\n    }\r\n}"
+				},
+				"url": {
+					"raw": "{{host}}/generateQualifyingTestReport",
+					"host": [
+						"{{host}}"
+					],
+					"path": [
+						"generateQualifyingTestReport"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Generate Handover Report",
+			"request": {
+				"auth": {
+					"type": "noauth"
+				},
+				"method": "POST",
+				"header": [
+					{
+						"key": "Content-Type",
+						"value": "application/json",
+						"type": "text"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\r\n    \"data\": {\r\n        \"exerciseId\": \"wdpALbyICL7ZxxN5AQt8\"\r\n    }\r\n}"
+				},
+				"url": {
+					"raw": "{{host}}/generateHandoverReport",
+					"host": [
+						"{{host}}"
+					],
+					"path": [
+						"generateHandoverReport"
+					]
+				}
+			},
+			"response": []
 		}
 	]
 }
