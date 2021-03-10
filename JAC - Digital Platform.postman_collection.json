@@ -209,6 +209,36 @@
 				}
 			},
 			"response": []
+		},
+		{
+			"name": "Generate Reasonable Adjustments Report",
+			"request": {
+				"auth": {
+					"type": "noauth"
+				},
+				"method": "POST",
+				"header": [
+					{
+						"key": "Content-Type",
+						"value": "application/json",
+						"type": "text"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\r\n    \"data\": {\r\n        \"exerciseId\": \"aRrY8ad5TwiznZZhBqee\"\r\n    }\r\n}"
+				},
+				"url": {
+					"raw": "{{host}}/generateReasonableAdjustmentsReport",
+					"host": [
+						"{{host}}"
+					],
+					"path": [
+						"generateReasonableAdjustmentsReport"
+					]
+				}
+			},
+			"response": []
 		}
 	]
 }

@@ -36,6 +36,8 @@ exports.exportExerciseData = require('./callableFunctions/exportExerciseData');
 exports.transferHandoverData = require('./callableFunctions/transferHandoverData');
 exports.exportApplicationContactsData = require('./callableFunctions/exportApplicationContactsData');
 exports.generateHandoverReport = require('./callableFunctions/generateHandoverReport');
+exports.generateReasonableAdjustmentsReport = require('./callableFunctions/generateReasonableAdjustmentsReport');
+
 
 // exports.onExerciseUpdate_PublishVacancy = require('./exercises/onExerciseUpdate_PublishVacancy');
 // exports.onWriteVacancyStats = require('./exercises/onWriteVacancyStats');
