@@ -141,11 +141,11 @@ const reportData = (db, exercise, applications) => {
     }
 
     // return report data for this application
-    return [
+    return {
       ...formatPersonalDetails(application.personalDetails),
       ...qualifications,
       ...formatDiversityData(application.equalityAndDiversitySurvey),
-    ];
+    };
 
   });
 };
@@ -169,19 +169,19 @@ const formatPersonalDetails = (personalDetails) => {
     }).join('\n\n');
   }
 
-  return [
-    personalDetails.title,
-    personalDetails.fullName,
-    personalDetails.otherNames,
-    personalDetails.suffix,
-    personalDetails.email,
-    helpers.formatDate(personalDetails.dateOfBirth),
-    helpers.formatNIN(personalDetails.nationalInsuranceNumber),
-    lookup(personalDetails.citizenship),
-    personalDetails.address ? formatAddress(personalDetails.address.current) : null,
-    formattedPreviousAddresses,
-    personalDetails.phone,
-  ];
+  return {
+    title: personalDetails.title || null,
+    fullName: personalDetails.fullName || null,
+    otherNames: personalDetails.otherNames || null,
+    suffix: personalDetails.suffix || null,
+    email: personalDetails.email || null,
+    dateOfBirth: helpers.formatDate(personalDetails.dateOfBirth),
+    nationalInsuranceNumber: helpers.formatNIN(personalDetails.nationalInsuranceNumber),
+    citizenship: lookup(personalDetails.citizenship),
+    address: personalDetails.address ? formatAddress(personalDetails.address.current) : null,
+    previousAddresses: formattedPreviousAddresses || null,
+    phone: personalDetails.phone || null,
+  };
 };
 
 const formatDiversityData = (survey) => {
@@ -195,25 +195,23 @@ const formatDiversityData = (survey) => {
     }
   }
 
-  const formattedDiversityData = [
-    helpers.toYesNo(survey.shareData),
-    share(survey.professionalBackground.map(position => lookup(position)).join(', ')),
-    formattedFeePaidJudicialRole,
-    share(lookup(survey.stateOrFeeSchool)),
-    share(helpers.toYesNo(lookup(survey.firstGenerationStudent))),
-    share(lookup(survey.ethnicGroup)),
-    share(lookup(survey.gender)),
-    share(lookup(survey.sexualOrientation)),
-    share(survey.disability ? survey.disabilityDetails : helpers.toYesNo(survey.disability)),
-    share(lookup(survey.religionFaith)),
-    share(helpers.toYesNo(lookup(survey.attendedOutreachEvents))),
-  ];
+  const formattedDiversityData = {
+    shareData: helpers.toYesNo(survey.shareData),
+    professionalBackground: share(survey.professionalBackground.map(position => lookup(position)).join(', ')),
+    formattedFeePaidJudicialRole: formattedFeePaidJudicialRole || null,
+    stateOrFeeSchool: share(lookup(survey.stateOrFeeSchool)),
+    firstGenerationStudent: share(helpers.toYesNo(lookup(survey.firstGenerationStudent))),
+    ethnicGroup: share(lookup(survey.ethnicGroup)),
+    gender: share(lookup(survey.gender)),
+    sexualOrientation: share(lookup(survey.sexualOrientation)),
+    disability: share(survey.disability ? survey.disabilityDetails : helpers.toYesNo(survey.disability)),
+    religionFaith: share(lookup(survey.religionFaith)),
+    attendedOutreachEvents : share(helpers.toYesNo(lookup(survey.attendedOutreachEvents))),
+  };
 
   if (this.exerciseType === 'legal' || this.exerciseType === 'leadership') {
-    formattedDiversityData.push(
-      share(helpers.toYesNo(lookup(survey.participatedInJudicialWorkshadowingScheme))),
-      share(helpers.toYesNo(lookup(survey.hasTakenPAJE))),
-    );
+    formattedDiversityData.participatedInJudicialWorkshadowingScheme = share(helpers.toYesNo(lookup(survey.participatedInJudicialWorkshadowingScheme)));
+    formattedDiversityData.hasTakenPAJE = share(helpers.toYesNo(lookup(survey.hasTakenPAJE)));
   }
 
   return formattedDiversityData;
@@ -239,10 +237,10 @@ const formatLegalData = (application) => {
     judicialExperience = `Acquired skills in other way\n${lookup(application.skillsAquisitionDetails)}`;
   }
 
-  return [
-    qualifications,
-    judicialExperience,
-  ];
+  return {
+    qualifications: qualifications,
+    judicialExperience: judicialExperience,
+  };
 };
 
 const formatNonLegalData = (application) => {
@@ -275,10 +273,12 @@ const formatNonLegalData = (application) => {
       return formattedMembership;
     }).join('\n');
 
-    return [
-      professionalMemberships,
-    ];
+    return {
+      professionalMemberships: professionalMemberships,
+    };
   } else {
-    return [''];
+    return {
+      professionalMemberships: null,
+    };
   }
 };
