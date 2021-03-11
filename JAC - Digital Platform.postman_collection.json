@@ -91,6 +91,36 @@
 			"response": []
 		},
 		{
+			"name": "Export Qualifying Test Responses",
+			"request": {
+				"auth": {
+					"type": "noauth"
+				},
+				"method": "POST",
+				"header": [
+					{
+						"key": "Content-Type",
+						"value": "application/json",
+						"type": "text"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\r\n    \"data\": {\r\n        \"qualifyingTestId\": \"hfYsGDT85QopB9zq7eTY\"\r\n    }\r\n}"
+				},
+				"url": {
+					"raw": "{{host}}/exportQualifyingTestResponses",
+					"host": [
+						"{{host}}"
+					],
+					"path": [
+						"exportQualifyingTestResponses"
+					]
+				}
+			},
+			"response": []
+		},
+		{
 			"name": "Generate Diversity Report",
 			"request": {
 				"auth": {
