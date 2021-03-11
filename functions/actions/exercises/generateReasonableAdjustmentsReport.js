@@ -47,10 +47,10 @@ module.exports = (firebase, db) => {
  */
 const reportHeaders = () => {
   return [
-    'Name',
-    'Email',
-    'Phone number',
-    'Details',
+    { title: 'Name', ref: 'name' },
+    { title: 'Email', ref: 'email' },
+    { title: 'Phone number', ref: 'phone' },
+    { title: 'Details', ref: 'details' },
   ];
 };
 
