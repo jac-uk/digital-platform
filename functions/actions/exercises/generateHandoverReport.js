@@ -190,7 +190,7 @@ const formatDiversityData = (survey) => {
   let formattedFeePaidJudicialRole;
   if (survey.shareData) {
     formattedFeePaidJudicialRole = helpers.toYesNo(lookup(survey.feePaidJudicialRole));
-    if (survey.feePaidJudicialRole == 'other-fee-paid-judicial-office') {
+    if (survey.feePaidJudicialRole === 'other-fee-paid-judicial-office') {
       formattedFeePaidJudicialRole = `${formattedFeePaidJudicialRole}\n${survey.otherFeePaidJudicialRoleDetails}`;
     }
   }
