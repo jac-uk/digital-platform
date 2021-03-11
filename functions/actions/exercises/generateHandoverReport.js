@@ -55,59 +55,59 @@ const reportHeaders = (exercise) => {
 
   const headers = {
     personalDetails: [
-      'Candidate Title',
-      'Candidate Name',
-      'Other Names',
-      'Suffix',
-      'Email address',
-      'Date of Birth',
-      'National Insurance Number',
-      'Citizenship',
-      'Current Address',
-      'Previous addresses',
-      'Telephone number',
+      { title: 'Candidate Title', ref: 'title' },
+      { title: 'Candidate Name', ref: 'fullName' },
+      { title: 'Other Names', ref: 'otherNames' },
+      { title: 'Suffix', ref: 'suffix' },
+      { title: 'Email address', ref: 'email' },
+      { title: 'Date of Birth', ref: 'dateOfBirth' },
+      { title: 'National Insurance Number', ref: 'nationalInsuranceNumber' },
+      { title: 'Citizenship', ref: 'citizenship' },
+      { title: 'Current Address', ref: 'address' },
+      { title: 'Previous addresses', ref: 'previousAddresses' },
+      { title: 'Telephone number', ref: 'phone' },
     ],
     qualifications: {
       legal: [
-        'Legal qualifications',
-        'Judicial experience',
+        { title: 'Legal qualifications', ref: 'qualifications' },
+        { title: 'Judicial experience', ref: 'judicialExperience' },
       ],
       'non-legal': [
-        'Professional Memberships',
+        { title: 'Professional Memberships', ref: 'professionalMemeberships' },
       ],
       leadership: [
-        'Legal qualifications',
-        'Judicial experience',
+        { title: 'Legal qualifications', ref: 'qualifications' },
+        { title: 'Judicial experience', ref: 'judicialExperience' },
       ],
     },
     diversity: {
       common: [
-        'Agreed to share Diversity',
-        'Professional Background',
-        'Previous roles',
-        'School type',
-        'Attended university',
-        'Ethnicity',
-        'Gender',
-        'Sexual orientation',
-        'Disability',
-        'Religion or belief',
+        { title: 'Agreed to share Diversity', ref: 'shareData' },
+        { title: 'Professional Background', ref: 'professionalBackground' },
+        { title: 'Previous roles', ref: 'formattedFeePaidJudicialRole' },
+        { title: 'School type', ref: 'stateOrFeeSchool' },
+        { title: 'Attended university', ref: 'firstGenerationStudent' },
+        { title: 'Ethnicity', ref: 'ethnicGroup' },
+        { title: 'Gender', ref: 'gender' },
+        { title: 'Sexual orientation', ref: 'sexualOrientation' },
+        { title: 'Disability', ref: 'disability' },
+        { title: 'Religion or belief', ref: 'religionFaith' },
       ],
       legal: [
-        'JAC Presentation',
-        'Judicial workshadowing',
-        'PAJE',
+        { title: 'JAC Presentation', ref: 'jacPresentation' },
+        { title: 'Judicial workshadowing', ref: 'participatedInJudicialWorkshadowingScheme' },
+        { title: 'PAJE', ref: 'hasTakenPAJE' },
       ],
       'non-legal': [
-        'JAC Presentation',
+        { title: 'JAC Presentation', ref: 'jacPresentation' },
       ],
       'leadership-non-legal': [
-        'JAC Presentation',
+        { title: 'JAC Presentation', ref: 'jacPresentation' },
       ],
       leadership: [
-        'JAC Presentation',
-        'Judicial workshadowing',
-        'PAJE',
+        { title:  'JAC Presentation', ref: 'jacPresentation' },
+        { title: 'Judicial workshadowing', ref: 'participatedInJudicialWorkshadowingScheme' },
+        { title: 'PAJE', ref: 'hasTakenPAJE' },
       ],
     },
   };
@@ -260,16 +260,12 @@ const formatNonLegalData = (application) => {
       let formattedMembership;
       if (organisations[membership]) {
         const fieldName = organisations[membership];
-
         formattedMembership = `${lookup(membership)}, ${helpers.formatDate(application[`${fieldName}Date`])}, ${application[`${fieldName}Number`]}`;
       }
-
       if (application.memberships[membership]) {
         const otherMembershipLabel = this.exercise.otherMemberships.find(m => m.value === membership).label;
-
         formattedMembership = `${lookup(otherMembershipLabel)}, ${helpers.formatDate(application.memberships[membership].date)}, ${application.memberships[membership].number}`;
       }
-
       return formattedMembership;
     }).join('\n');
 
