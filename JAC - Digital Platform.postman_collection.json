@@ -1,6 +1,6 @@
 {
 	"info": {
-		"_postman_id": "511d80db-e56b-40e7-8040-2adb37bd9494",
+		"_postman_id": "33530389-3749-439f-80be-9ca02fc89efe",
 		"name": "JAC - Digital Platform",
 		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
 	},
@@ -265,6 +265,36 @@
 					],
 					"path": [
 						"generateReasonableAdjustmentsReport"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Generate Agency Report",
+			"request": {
+				"auth": {
+					"type": "noauth"
+				},
+				"method": "POST",
+				"header": [
+					{
+						"key": "Content-Type",
+						"value": "application/json",
+						"type": "text"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\r\n    \"data\": {\r\n        \"exerciseId\": \"7eUXHjgVdBmol9qZ6xVD\"\r\n    }\r\n}"
+				},
+				"url": {
+					"raw": "{{host}}/generateAgencyReport",
+					"host": [
+						"{{host}}"
+					],
+					"path": [
+						"generateAgencyReport"
 					]
 				}
 			},

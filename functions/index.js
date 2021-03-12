@@ -38,6 +38,7 @@ exports.exportApplicationContactsData = require('./callableFunctions/exportAppli
 exports.generateHandoverReport = require('./callableFunctions/generateHandoverReport');
 exports.generateReasonableAdjustmentsReport = require('./callableFunctions/generateReasonableAdjustmentsReport');
 exports.exportQualifyingTestResponses = require('./callableFunctions/exportQualifyingTestResponses');
+exports.generateAgencyReport = require('./callableFunctions/generateAgencyReport');
 
 
 // exports.onExerciseUpdate_PublishVacancy = require('./exercises/onExerciseUpdate_PublishVacancy');
