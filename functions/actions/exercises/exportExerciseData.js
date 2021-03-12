@@ -1,4 +1,4 @@
-const { getDocument, getDocuments, getAllDocuments, formatDate } = require('../../shared/helpers');
+const { getDocuments, getAllDocuments, formatDate } = require('../../shared/helpers');
 
 module.exports = (config, firebase, db) => {
 
