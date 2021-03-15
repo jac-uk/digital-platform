@@ -1,6 +1,4 @@
-const helpers = require('../../shared/converters/helpers');
-const lookup = require('../../shared/converters/lookup');
-const { getDocument, getDocuments, getAllDocuments } = require('../../shared/helpers');
+const { getDocuments } = require('../../shared/helpers');
 
 module.exports = (firebase, db) => {
   return {
@@ -8,9 +6,6 @@ module.exports = (firebase, db) => {
   };
 
   async function generateReasonableAdjustmentsReport(exerciseId) {
-
-    // get exercise
-    const exercise = await getDocument(db.collection('exercises').doc(exerciseId));
 
     // get submitted applications that have reasonable adjustments
     const applications = await getDocuments(db.collection('applications')
@@ -55,10 +50,9 @@ const reportHeaders = () => {
 };
 
 /**
- * Get the report data for the given exercise and applications
+ * Get the report data
  *
  * @param {db} db
- * @param {document} exercise
  * @param {array} applications
  * @returns {array}
  */
