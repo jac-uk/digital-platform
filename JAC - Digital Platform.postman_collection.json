@@ -1,274 +1,336 @@
 {
 	"info": {
-		"_postman_id": "511d80db-e56b-40e7-8040-2adb37bd9494",
+		"_postman_id": "33530389-3749-439f-80be-9ca02fc89efe",
 		"name": "JAC - Digital Platform",
 		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
 	},
 	"item": [
 		{
-			"name": "~TODO - Auth/Login",
-			"request": {
-				"method": "POST",
-				"header": [
-					{
-						"key": "Content-Type",
-						"value": "application/json",
-						"type": "text"
-					}
-				],
-				"body": {
-					"mode": "raw",
-					"raw": "{\r\n}"
-				},
-				"url": {
-					"raw": "{{host}}/auth/login",
-					"host": [
-						"{{host}}"
-					],
-					"path": [
-						"auth",
-						"login"
-					]
+			"name": "Authentication",
+			"item": [
+				{
+					"name": "Login",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"email\": \"{{auth_email}}\",\r\n    \"password\": \"{{auth_password}}\",\r\n    \"returnSecureToken\": true\r\n}"
+						},
+						"url": {
+							"raw": "https://www.googleapis.com/identitytoolkit/v3/relyingparty/verifyPassword?key={{api_key}}",
+							"protocol": "https",
+							"host": [
+								"www",
+								"googleapis",
+								"com"
+							],
+							"path": [
+								"identitytoolkit",
+								"v3",
+								"relyingparty",
+								"verifyPassword"
+							],
+							"query": [
+								{
+									"key": "key",
+									"value": "{{api_key}}"
+								}
+							]
+						}
+					},
+					"response": []
 				}
-			},
-			"response": []
+			]
 		},
 		{
-			"name": "Export Exercises",
-			"request": {
-				"method": "POST",
-				"header": [
-					{
-						"key": "Content-Type",
-						"value": "application/json",
-						"type": "text"
-					}
-				],
-				"body": {
-					"mode": "raw",
-					"raw": "{\r\n    \"data\": {\r\n        \"exerciseIds\": [\r\n            \"4Ufg5bAC2Gjx2YRve9WZ\"\r\n        ]\r\n    }\r\n}"
+			"name": "Exports",
+			"item": [
+				{
+					"name": "Export Exercises",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"data\": {\r\n        \"exerciseIds\": [\r\n            \"4Ufg5bAC2Gjx2YRve9WZ\"\r\n        ]\r\n    }\r\n}"
+						},
+						"url": {
+							"raw": "{{host}}/exportExerciseData",
+							"host": [
+								"{{host}}"
+							],
+							"path": [
+								"exportExerciseData"
+							]
+						}
+					},
+					"response": []
 				},
-				"url": {
-					"raw": "{{host}}/exportExerciseData",
-					"host": [
-						"{{host}}"
-					],
-					"path": [
-						"exportExerciseData"
-					]
+				{
+					"name": "Export Application Contacts",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"data\": {\r\n        \"exerciseId\": \"4Ufg5bAC2Gjx2YRve9WZ\",\r\n        \"status\": \"applied\"\r\n    }\r\n}"
+						},
+						"url": {
+							"raw": "{{host}}/exportApplicationContactsData",
+							"host": [
+								"{{host}}"
+							],
+							"path": [
+								"exportApplicationContactsData"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Export Qualifying Test Responses",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"data\": {\r\n        \"qualifyingTestId\": \"hfYsGDT85QopB9zq7eTY\"\r\n    }\r\n}"
+						},
+						"url": {
+							"raw": "{{host}}/exportQualifyingTestResponses",
+							"host": [
+								"{{host}}"
+							],
+							"path": [
+								"exportQualifyingTestResponses"
+							]
+						}
+					},
+					"response": []
 				}
-			},
-			"response": []
+			]
 		},
 		{
-			"name": "Export Application Contacts",
-			"request": {
-				"auth": {
-					"type": "noauth"
+			"name": "Reports",
+			"item": [
+				{
+					"name": "Generate Diversity Report",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"data\": {\r\n        \"exerciseId\": \"4Ufg5bAC2Gjx2YRve9WZ\"\r\n    }\r\n}"
+						},
+						"url": {
+							"raw": "{{host}}/generateDiversityReport",
+							"host": [
+								"{{host}}"
+							],
+							"path": [
+								"generateDiversityReport"
+							]
+						}
+					},
+					"response": []
 				},
-				"method": "POST",
-				"header": [
-					{
-						"key": "Content-Type",
-						"value": "application/json",
-						"type": "text"
-					}
-				],
-				"body": {
-					"mode": "raw",
-					"raw": "{\r\n    \"data\": {\r\n        \"exerciseId\": \"4Ufg5bAC2Gjx2YRve9WZ\",\r\n        \"status\": \"applied\"\r\n    }\r\n}"
+				{
+					"name": "Generate Outreach Report",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"data\": {\r\n        \"exerciseId\": \"4Ufg5bAC2Gjx2YRve9WZ\"\r\n    }\r\n}"
+						},
+						"url": {
+							"raw": "{{host}}/generateOutreachReport",
+							"host": [
+								"{{host}}"
+							],
+							"path": [
+								"generateOutreachReport"
+							]
+						}
+					},
+					"response": []
 				},
-				"url": {
-					"raw": "{{host}}/exportApplicationContactsData",
-					"host": [
-						"{{host}}"
-					],
-					"path": [
-						"exportApplicationContactsData"
-					]
+				{
+					"name": "Generate Qualifying Test Report",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"data\": {\r\n        \"qualifyingTestReportId\": \"11upv9nVGEgU74PCJ4Li\"\r\n    }\r\n}"
+						},
+						"url": {
+							"raw": "{{host}}/generateQualifyingTestReport",
+							"host": [
+								"{{host}}"
+							],
+							"path": [
+								"generateQualifyingTestReport"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Generate Handover Report",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"data\": {\r\n        \"exerciseId\": \"aRrY8ad5TwiznZZhBqee\"\r\n    }\r\n}"
+						},
+						"url": {
+							"raw": "{{host}}/generateHandoverReport",
+							"host": [
+								"{{host}}"
+							],
+							"path": [
+								"generateHandoverReport"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Generate Reasonable Adjustments Report",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"data\": {\r\n        \"exerciseId\": \"aRrY8ad5TwiznZZhBqee\"\r\n    }\r\n}"
+						},
+						"url": {
+							"raw": "{{host}}/generateReasonableAdjustmentsReport",
+							"host": [
+								"{{host}}"
+							],
+							"path": [
+								"generateReasonableAdjustmentsReport"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Generate Agency Report",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"data\": {\r\n        \"exerciseId\": \"7eUXHjgVdBmol9qZ6xVD\"\r\n    }\r\n}"
+						},
+						"url": {
+							"raw": "{{host}}/generateAgencyReport",
+							"host": [
+								"{{host}}"
+							],
+							"path": [
+								"generateAgencyReport"
+							]
+						}
+					},
+					"response": []
 				}
-			},
-			"response": []
+			]
+		}
+	],
+	"auth": {
+		"type": "bearer",
+		"bearer": [
+			{
+				"key": "token",
+				"value": "eyJhbGciOiJSUzI1NiIsImtpZCI6IjQ4OTQ5ZDdkNDA3ZmVjOWIyYWM4ZDYzNWVjYmEwYjdhOTE0ZWQ4ZmIiLCJ0eXAiOiJKV1QifQ.eyJuYW1lIjoiSGFsY3lvbiBIYWxjeW9uIiwicGljdHVyZSI6Imh0dHBzOi8vbGg0Lmdvb2dsZXVzZXJjb250ZW50LmNvbS8tTDNYZ1VuRWMxaFEvQUFBQUFBQUFBQUkvQUFBQUFBQUFBQUEvQU1adXVjazdiRkNNMHFRVjVjOEdoN3hqQVpOeVlkLUJhZy9zOTYtYy9waG90by5qcGciLCJpc3MiOiJodHRwczovL3NlY3VyZXRva2VuLmdvb2dsZS5jb20vZGlnaXRhbC1wbGF0Zm9ybS1kZXZlbG9wIiwiYXVkIjoiZGlnaXRhbC1wbGF0Zm9ybS1kZXZlbG9wIiwiYXV0aF90aW1lIjoxNjE1NTY5NjUwLCJ1c2VyX2lkIjoiUlc5bkhMZWpLUVJ6VGI3UUFDQzZjdGUxVUp1MiIsInN1YiI6IlJXOW5ITGVqS1FSelRiN1FBQ0M2Y3RlMVVKdTIiLCJpYXQiOjE2MTU1Njk2NTAsImV4cCI6MTYxNTU3MzI1MCwiZW1haWwiOiJoYWxjeW9uQGp1ZGljaWFsYXBwb2ludG1lbnRzLmRpZ2l0YWwiLCJlbWFpbF92ZXJpZmllZCI6dHJ1ZSwiZmlyZWJhc2UiOnsiaWRlbnRpdGllcyI6eyJnb29nbGUuY29tIjpbIjEwNzk2MjE1NjI2ODA3MDUxNDM3NiJdLCJlbWFpbCI6WyJoYWxjeW9uQGp1ZGljaWFsYXBwb2ludG1lbnRzLmRpZ2l0YWwiXX0sInNpZ25faW5fcHJvdmlkZXIiOiJwYXNzd29yZCJ9fQ.pPMFRzbth2uKUtdQMp6-1aTXgOrjWyu9L9v4MoEirvzEznwlZxYt8TtLmJUpt-5TmTRA44Ioz7966TYVDYSxrewsA0rZ806-HY8p3wEp9WUx827Jh_ZXLEeLMjL0FMXo72mviBe0lQJ96_mHIV9iHtpbFKH8_DTZkkivlm5DKtsMDIn6Kt2x3We4FyiyRNV8FngUStEiWEdo1nbGcpnfieEPTUU8_BMBY4WIGnwy7B7NN_epACcw3s-9tjnVCgq42R3TkqlTYElYzQU4FXJmkmtzW5pkjY0Ud6JyfYx1sxejZ9lmR0MH4gymAu6lm5e4QD2HaBhJOTQjmY8nOFejgw",
+				"type": "string"
+			}
+		]
+	},
+	"event": [
+		{
+			"listen": "prerequest",
+			"script": {
+				"type": "text/javascript",
+				"exec": [
+					""
+				]
+			}
 		},
 		{
-			"name": "Export Qualifying Test Responses",
-			"request": {
-				"auth": {
-					"type": "noauth"
-				},
-				"method": "POST",
-				"header": [
-					{
-						"key": "Content-Type",
-						"value": "application/json",
-						"type": "text"
-					}
-				],
-				"body": {
-					"mode": "raw",
-					"raw": "{\r\n    \"data\": {\r\n        \"qualifyingTestId\": \"hfYsGDT85QopB9zq7eTY\"\r\n    }\r\n}"
-				},
-				"url": {
-					"raw": "{{host}}/exportQualifyingTestResponses",
-					"host": [
-						"{{host}}"
-					],
-					"path": [
-						"exportQualifyingTestResponses"
-					]
-				}
-			},
-			"response": []
-		},
-		{
-			"name": "Generate Diversity Report",
-			"request": {
-				"auth": {
-					"type": "noauth"
-				},
-				"method": "POST",
-				"header": [
-					{
-						"key": "Content-Type",
-						"value": "application/json",
-						"type": "text"
-					}
-				],
-				"body": {
-					"mode": "raw",
-					"raw": "{\r\n    \"data\": {\r\n        \"exerciseId\": \"4Ufg5bAC2Gjx2YRve9WZ\"\r\n    }\r\n}"
-				},
-				"url": {
-					"raw": "{{host}}/generateDiversityReport",
-					"host": [
-						"{{host}}"
-					],
-					"path": [
-						"generateDiversityReport"
-					]
-				}
-			},
-			"response": []
-		},
-		{
-			"name": "Generate Outreach Report",
-			"request": {
-				"auth": {
-					"type": "noauth"
-				},
-				"method": "POST",
-				"header": [
-					{
-						"key": "Content-Type",
-						"value": "application/json",
-						"type": "text"
-					}
-				],
-				"body": {
-					"mode": "raw",
-					"raw": "{\r\n    \"data\": {\r\n        \"exerciseId\": \"4Ufg5bAC2Gjx2YRve9WZ\"\r\n    }\r\n}"
-				},
-				"url": {
-					"raw": "{{host}}/generateOutreachReport",
-					"host": [
-						"{{host}}"
-					],
-					"path": [
-						"generateOutreachReport"
-					]
-				}
-			},
-			"response": []
-		},
-		{
-			"name": "Generate Qualifying Test Report",
-			"request": {
-				"auth": {
-					"type": "noauth"
-				},
-				"method": "POST",
-				"header": [
-					{
-						"key": "Content-Type",
-						"value": "application/json",
-						"type": "text"
-					}
-				],
-				"body": {
-					"mode": "raw",
-					"raw": "{\r\n    \"data\": {\r\n        \"qualifyingTestReportId\": \"11upv9nVGEgU74PCJ4Li\"\r\n    }\r\n}"
-				},
-				"url": {
-					"raw": "{{host}}/generateQualifyingTestReport",
-					"host": [
-						"{{host}}"
-					],
-					"path": [
-						"generateQualifyingTestReport"
-					]
-				}
-			},
-			"response": []
-		},
-		{
-			"name": "Generate Handover Report",
-			"request": {
-				"auth": {
-					"type": "noauth"
-				},
-				"method": "POST",
-				"header": [
-					{
-						"key": "Content-Type",
-						"value": "application/json",
-						"type": "text"
-					}
-				],
-				"body": {
-					"mode": "raw",
-					"raw": "{\r\n    \"data\": {\r\n        \"exerciseId\": \"aRrY8ad5TwiznZZhBqee\"\r\n    }\r\n}"
-				},
-				"url": {
-					"raw": "{{host}}/generateHandoverReport",
-					"host": [
-						"{{host}}"
-					],
-					"path": [
-						"generateHandoverReport"
-					]
-				}
-			},
-			"response": []
-		},
-		{
-			"name": "Generate Reasonable Adjustments Report",
-			"request": {
-				"auth": {
-					"type": "noauth"
-				},
-				"method": "POST",
-				"header": [
-					{
-						"key": "Content-Type",
-						"value": "application/json",
-						"type": "text"
-					}
-				],
-				"body": {
-					"mode": "raw",
-					"raw": "{\r\n    \"data\": {\r\n        \"exerciseId\": \"aRrY8ad5TwiznZZhBqee\"\r\n    }\r\n}"
-				},
-				"url": {
-					"raw": "{{host}}/generateReasonableAdjustmentsReport",
-					"host": [
-						"{{host}}"
-					],
-					"path": [
-						"generateReasonableAdjustmentsReport"
-					]
-				}
-			},
-			"response": []
+			"listen": "test",
+			"script": {
+				"type": "text/javascript",
+				"exec": [
+					""
+				]
+			}
 		}
 	]
 }
