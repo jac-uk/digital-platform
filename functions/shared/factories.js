@@ -193,11 +193,13 @@ module.exports = (CONSTANTS) => {
     const vacancyModel = {
       _applicationVersion: null,
       aboutTheRole: null,
+      additionalWorkingPreferences: null,
       applicationCloseDate: null,
       applicationOpenDate: null,
       appliedSchedule: null,
       appointmentType: null,
       aSCApply: null,
+      assessmentMethods: null,
       assessmentOptions: null,
       authorisations: null,
       characterChecks: null,
@@ -214,6 +216,7 @@ module.exports = (CONSTANTS) => {
       futureStart: null,
       immediateStart: null,
       independentAssessmentsReturnDate: null,
+      inviteOnly: null,
       isCourtOrTribunal: null,
       isSPTWOffered: null,
       jurisdiction: null,
@@ -234,6 +237,7 @@ module.exports = (CONSTANTS) => {
       otherRetirement: null,
       otherShortlistingMethod: null,
       otherYears: null,
+      pjeDays: null,
       postQualificationExperience: null,
       previousJudicialExperienceApply: null,
       qualifications: null,
@@ -266,9 +270,6 @@ module.exports = (CONSTANTS) => {
       welshRequirement: null,
       welshRequirementType: null,
       yesSalaryDetails: null,
-      additionalWorkingPreferences: null,
-      pjeDays: null,
-      inviteOnly: null,
     };
     const vacancy = { ...vacancyModel };
     for (var key in vacancyModel) {
