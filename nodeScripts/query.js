@@ -37,25 +37,39 @@ function flattenQualifications(data) {
   }).join('\n\n');
 }
 
-function flattenCharacterInformation(data) {
-  if (!data) {
+function flattenCharacterInformation(application) {
+
+  let questions;
+  let answers;
+
+  if (application.characterInformationV2) {
+    questions = config.APPLICATION.CHARACTER_ISSUES_V2;
+    answers = application.characterInformationV2;
+  } else if (application.characterInformation) {
+    questions = config.APPLICATION.CHARACTER_ISSUES;
+    answers = application.characterInformation;
+  }
+
+  if (!questions) {
     return '';
   }
+
   const issues = [];
-  Object.entries(config.APPLICATION.CHARACTER_ISSUES).forEach(([key, value]) => {
-    if (data[key]) {
-      const details = data[value.details].map(detail => {
+  Object.entries(questions).forEach(([key, value]) => {
+    if (answers[key]) {
+      const details = answers[value.details].map(detail => {
         return `${formatDate(detail.date)} ${detail.title ? detail.title : ''}\n${detail.details}`;
       }).join('\n\n');
       issues.push(`${value.title.toUpperCase()}\n${details}`);
     }
   });
+
   return issues.join('\n\n');
 }
 
 const main = async () => {
 
-  const exerciseId = 'fgQ7Uw3sLseDPk5ike5p';
+  const exerciseId = 'wdpALbyICL7ZxxN5AQt8';
 
   // get data
   const applicationRecords = await getDocuments(
@@ -80,7 +94,7 @@ const main = async () => {
       citizenship: application.personalDetails.citizenship,
       dateOfBirth: formatDate(application.personalDetails.dateOfBirth),
       qualifications: flattenQualifications(application.qualifications),
-      character: flattenCharacterInformation(application.characterInformation),
+      character: flattenCharacterInformation(application),
     };
     rows.push(row);
   });

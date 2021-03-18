@@ -39,6 +39,116 @@ module.exports = {
         details: 'otherCharacterIssuesDetails',
       },
     },
+    CHARACTER_ISSUES_V2: { // this gives a map from issue to corresponding details field TODO improve naming or where we store this
+      bankruptcies: {
+        title: 'Bankruptcies',
+        details: 'bankruptcyDetails',
+      },
+      complaintOrDiciplinaryAction: {
+        title: 'Complaint Or Diciplinary Action',
+        details: 'complaintOrDiciplinaryActionDetails',
+      },
+      criminalCautions: {
+        title: 'criminal Cautions',
+        details: 'criminalCautionsDetails',
+      },
+      criminalConvictions: {
+        title: 'criminal Convictions',
+        details: 'criminalConvictionDetails',
+      },
+      criminalOffences: {
+        title: 'Criminal Offences',
+        details: 'criminalOffenceDetails',
+      },
+      declaredBankruptOrIVA: {
+        title: 'Declared Bankrupt Or IVA',
+        details: 'declaredBankruptOrIVADetails',
+      },
+      diciplinaryActionOrAskedToResign: {
+        title: 'Disciplinary Action Or Asked To Resign',
+        details: 'diciplinaryActionOrAskedToResignDetails',
+      },
+      drivingDisqualifications: {
+        title: 'Driving Disqualifications',
+        details: 'drivingDisqualificationDetails',
+      },
+      drivingDisqualificationDrinkDrugs: {
+        title: 'Driving Disqualification Drink Drugs',
+        details: 'drivingDisqualificationDrinkDrugsDetails',
+      },
+      endorsementsOrMotoringFixedPenalties: {
+        title: 'Endorsements Or Motoring Fixed Penalties',
+        details: 'endorsementsOrMotoringFixedPenaltiesDetails',
+      },
+      fixedPenalties: {
+        title: 'Fixed Penalties',
+        details: 'fixedPenaltiesDetails',
+      },
+      furtherInformation: {
+        title: 'Further Information',
+        details: 'furtherInformationDetails',
+      },
+      hmrcFines: {
+        title: 'HMRC Fines',
+        details: 'hmrcFinenDetails',
+      },
+      involvedInProfessionalMisconduct: {
+        title: 'Involved In Professional Misconduct',
+        details: 'involvedInProfessionalMisconductDetails',
+      },
+      ivas: {
+        title: 'IVAs',
+        details: 'ivaDetails',
+      },
+      lateTaxReturns: {
+        title: 'Late Tax Returns',
+        details: 'lateTaxReturnDetails',
+      },
+      lateTaxReturnOrFined: {
+        title: 'Late Tax Return Or Fined',
+        details: 'lateTaxReturnOrFinedDetails',
+      },
+      lateVatxReturns: {
+        title: 'Late VAT Returns',
+        details: 'lateVatReturnDetails',
+      },
+      nonMotoringFixedPenaltyNotices: {
+        title: 'Non Motoring Fixed Penalty Notices',
+        details: 'nonMotoringFixedPenaltyNoticesDetails',
+      },
+      otherCharacterIssues: {
+        title: 'Other Character Issues',
+        details: 'otherCharacterIssuesDetails',
+      },
+      recentDrivingConvictions: {
+        title: 'Recent Driving Convictions',
+        details: 'recentDrivingConvictionDetails',
+      },
+      requestedToResign: {
+        title: 'Requested To Resign',
+        details: 'requestedToResignDetails',
+      },
+      subjectOfAllegationOrClaimOfDiscriminationProceeding: {
+        title: 'Subject Of Allegation Or Claim Of Discrimination Proceeding',
+        details: 'subjectOfAllegationOrClaimOfDiscriminationProceedingDetails',
+      },
+      subjectOfAllegationOrClaimOfHarassmentProceeding: {
+        title: 'Subject Of Allegation Or Claim Of Harassment Proceeding',
+        details: 'subjectOfAllegationOrClaimOfHarassmentProceedingDetails',
+      },
+      subjectOfAllegationOrClaimOfNegligence: {
+        title: 'Subject Of Allegation Or Claim Of Negligence',
+        details: 'subjectOfAllegationOrClaimOfNegligenceDetails',
+      },
+      subjectOfAllegationOrClaimOfProfessionalMisconduct: {
+        title: 'Subject Of Allegation Or Claim Of Professional Misconduct',
+        details: 'subjectOfAllegationOrClaimOfProfessionalMisconductDetails',
+      },
+      subjectOfAllegationOrClaimOfWrongfulDismissal: {
+        title: 'Subject Of Allegation Or Claim Of Wrongful Dismissal',
+        details: 'subjectOfAllegationOrClaimOfWrongfulDismissalDetails',
+      },
+    },
   },
   ASSESSMENTS_URL: process.env.ASSESSMENTS_URL,
   ASSESSMENT_TYPE: {
