@@ -299,6 +299,33 @@
 						}
 					},
 					"response": []
+				},
+				{
+					"name": "Flag Application Issues for Exercise",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"data\": {\r\n        \"exerciseId\": \"P4BWVWQBynf72vwboUg6\"\r\n    }\r\n}"
+						},
+						"url": {
+							"raw": "{{host}}/flagApplicationIssuesForExercise",
+							"host": [
+								"{{host}}"
+							],
+							"path": [
+								"flagApplicationIssuesForExercise"
+							]
+						}
+					},
+					"response": []
 				}
 			]
 		}
