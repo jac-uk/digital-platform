@@ -9,7 +9,7 @@ module.exports = {
   isEmpty,
   applyUpdates,
   checkArguments,
-  isDateInPast,
+  isDateInPast, // @TODO we want one set of date & exercise helpers (see actions/shared/converters)
   formatDate,
   getDate,
 };
@@ -169,7 +169,7 @@ function toDateString(date) {
 }
 
 function formatDate(value) {
-  if (value && (value.seconds || value._seconds)) { // convert firestore timestamp to date
+  if (value && (value.seconds !== undefined || value._seconds !== undefined)) { // convert firestore timestamp to date
     const seconds = value.seconds || value._seconds;
     const nanoseconds = value.nanoseconds || value._nanoseconds;
     value = new Timestamp(seconds, nanoseconds);
