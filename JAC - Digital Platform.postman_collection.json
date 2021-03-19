@@ -1,6 +1,6 @@
 {
 	"info": {
-		"_postman_id": "33530389-3749-439f-80be-9ca02fc89efe",
+		"_postman_id": "5594e654-a815-43f2-8191-8a517b02a2a1",
 		"name": "JAC - Digital Platform",
 		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
 	},
@@ -11,6 +11,9 @@
 				{
 					"name": "Login",
 					"request": {
+						"auth": {
+							"type": "noauth"
+						},
 						"method": "POST",
 						"header": [
 							{
@@ -65,15 +68,15 @@
 						],
 						"body": {
 							"mode": "raw",
-							"raw": "{\r\n    \"data\": {\r\n        \"exerciseIds\": [\r\n            \"4Ufg5bAC2Gjx2YRve9WZ\"\r\n        ]\r\n    }\r\n}"
+							"raw": "{\r\n    \"data\": {\r\n        \"exerciseId\": \r\n            \"4Ufg5bAC2Gjx2YRve9WZ\"\r\n    }\r\n}"
 						},
 						"url": {
-							"raw": "{{host}}/exportExerciseData",
+							"raw": "{{host}}/cancelAssessments",
 							"host": [
 								"{{host}}"
 							],
 							"path": [
-								"exportExerciseData"
+								"cancelAssessments"
 							]
 						}
 					},
@@ -301,6 +304,38 @@
 					"response": []
 				}
 			]
+		},
+		{
+			"name": "Functions",
+			"item": [
+				{
+					"name": "Cancel Assessments",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"data\": {\r\n        \"exerciseIds\": [\r\n            \"4Ufg5bAC2Gjx2YRve9WZ\"\r\n        ]\r\n    }\r\n}"
+						},
+						"url": {
+							"raw": "{{host}}/exportExerciseData",
+							"host": [
+								"{{host}}"
+							],
+							"path": [
+								"exportExerciseData"
+							]
+						}
+					},
+					"response": []
+				}
+			]
 		}
 	],
 	"auth": {
@@ -308,7 +343,7 @@
 		"bearer": [
 			{
 				"key": "token",
-				"value": "eyJhbGciOiJSUzI1NiIsImtpZCI6IjQ4OTQ5ZDdkNDA3ZmVjOWIyYWM4ZDYzNWVjYmEwYjdhOTE0ZWQ4ZmIiLCJ0eXAiOiJKV1QifQ.eyJuYW1lIjoiSGFsY3lvbiBIYWxjeW9uIiwicGljdHVyZSI6Imh0dHBzOi8vbGg0Lmdvb2dsZXVzZXJjb250ZW50LmNvbS8tTDNYZ1VuRWMxaFEvQUFBQUFBQUFBQUkvQUFBQUFBQUFBQUEvQU1adXVjazdiRkNNMHFRVjVjOEdoN3hqQVpOeVlkLUJhZy9zOTYtYy9waG90by5qcGciLCJpc3MiOiJodHRwczovL3NlY3VyZXRva2VuLmdvb2dsZS5jb20vZGlnaXRhbC1wbGF0Zm9ybS1kZXZlbG9wIiwiYXVkIjoiZGlnaXRhbC1wbGF0Zm9ybS1kZXZlbG9wIiwiYXV0aF90aW1lIjoxNjE1NTY5NjUwLCJ1c2VyX2lkIjoiUlc5bkhMZWpLUVJ6VGI3UUFDQzZjdGUxVUp1MiIsInN1YiI6IlJXOW5ITGVqS1FSelRiN1FBQ0M2Y3RlMVVKdTIiLCJpYXQiOjE2MTU1Njk2NTAsImV4cCI6MTYxNTU3MzI1MCwiZW1haWwiOiJoYWxjeW9uQGp1ZGljaWFsYXBwb2ludG1lbnRzLmRpZ2l0YWwiLCJlbWFpbF92ZXJpZmllZCI6dHJ1ZSwiZmlyZWJhc2UiOnsiaWRlbnRpdGllcyI6eyJnb29nbGUuY29tIjpbIjEwNzk2MjE1NjI2ODA3MDUxNDM3NiJdLCJlbWFpbCI6WyJoYWxjeW9uQGp1ZGljaWFsYXBwb2ludG1lbnRzLmRpZ2l0YWwiXX0sInNpZ25faW5fcHJvdmlkZXIiOiJwYXNzd29yZCJ9fQ.pPMFRzbth2uKUtdQMp6-1aTXgOrjWyu9L9v4MoEirvzEznwlZxYt8TtLmJUpt-5TmTRA44Ioz7966TYVDYSxrewsA0rZ806-HY8p3wEp9WUx827Jh_ZXLEeLMjL0FMXo72mviBe0lQJ96_mHIV9iHtpbFKH8_DTZkkivlm5DKtsMDIn6Kt2x3We4FyiyRNV8FngUStEiWEdo1nbGcpnfieEPTUU8_BMBY4WIGnwy7B7NN_epACcw3s-9tjnVCgq42R3TkqlTYElYzQU4FXJmkmtzW5pkjY0Ud6JyfYx1sxejZ9lmR0MH4gymAu6lm5e4QD2HaBhJOTQjmY8nOFejgw",
+				"value": "eyJhbGciOiJSUzI1NiIsImtpZCI6IjRlMDBlOGZlNWYyYzg4Y2YwYzcwNDRmMzA3ZjdlNzM5Nzg4ZTRmMWUiLCJ0eXAiOiJKV1QifQ.eyJuYW1lIjoiTWFyaWEgQnJvb2tlcyIsInBpY3R1cmUiOiJodHRwczovL2xoNi5nb29nbGV1c2VyY29udGVudC5jb20vLWlwb2I4dVVhNzgwL0FBQUFBQUFBQUFJL0FBQUFBQUFBQUFBL0FNWnV1Y2xzU2IxUU10bDU1UlQ2Sl9KSFBValhuNEEzZ2cvczk2LWMvcGhvdG8uanBnIiwiaXNzIjoiaHR0cHM6Ly9zZWN1cmV0b2tlbi5nb29nbGUuY29tL2RpZ2l0YWwtcGxhdGZvcm0tZGV2ZWxvcCIsImF1ZCI6ImRpZ2l0YWwtcGxhdGZvcm0tZGV2ZWxvcCIsImF1dGhfdGltZSI6MTYxNjE2NTIyNiwidXNlcl9pZCI6IkRkdkpjUENJWWhncFpERk5oYWhPNW5Odk1NQTIiLCJzdWIiOiJEZHZKY1BDSVloZ3BaREZOaGFoTzVuTnZNTUEyIiwiaWF0IjoxNjE2MTY1MjI2LCJleHAiOjE2MTYxNjg4MjYsImVtYWlsIjoibWFyaWEuYnJvb2tlc0BqdWRpY2lhbGFwcG9pbnRtZW50cy5kaWdpdGFsIiwiZW1haWxfdmVyaWZpZWQiOnRydWUsImZpcmViYXNlIjp7ImlkZW50aXRpZXMiOnsiZ29vZ2xlLmNvbSI6WyIxMDQzMTU0ODQ3MTg3MDQ1OTQ1NDAiXSwiZW1haWwiOlsibWFyaWEuYnJvb2tlc0BqdWRpY2lhbGFwcG9pbnRtZW50cy5kaWdpdGFsIl19LCJzaWduX2luX3Byb3ZpZGVyIjoicGFzc3dvcmQifX0.Y-9zWWfZ2h1sj1jSPmg0GYt735A4ttPEY5WHve0Le7FQhZWCRA0G3BdXCL4sX3ogcIELglgiPwR2izOwwYs6e8yIwt3F7lawJsfVDVr9Aze3-TMflT_KFGREyyLM_59hxEFC0NFzydAghAfqfx_UaFcbKWTVYG49YLkfPbwl0If6IfzbA0lCNoew0A1oaB0IeTolUhxrHA3ELhtQp8qvCldREzXFlIbvZGlObByMSxyClcYywb9ckoEIhIh3iIlUKygW5XFkHv2JL-AVRL4a-1xTeIfqNEZtpaXRparuwL8UB1EfwXpRqLnLTcNGy6gwgjsLUkGSTRa_vMMr1UpuBA",
 				"type": "string"
 			}
 		]
