@@ -49,7 +49,7 @@
     "firebase-functions": "^3.13.1",
     "firebase-functions-test": "^0.2.3",
     "firebase-tools": "^8.20.0",
-    "googleapis": "^49.0.0",
+    "googleapis": "^67.0.0",
     "notifications-node-client": "^4.9.0"
   },
   "devDependencies": {
