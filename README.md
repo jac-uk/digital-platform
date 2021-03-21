@@ -17,7 +17,6 @@ See [database/firestore.indexes.json](database/firestore.indexes.json) for our c
 
 See [storage/storage.rules](storage/storage.rules) for our current rules.
 
-
 ## Functions
 
 See [functions/backgroundFunctions](functions/backgroundFunctions) for our functions which are triggered when defined events happen.
