@@ -13,9 +13,14 @@ const addField = (array, label, value, lineBreak = false) => {
   array.push({ value: value, label: label, lineBreak: lineBreak });
 };
 
-const toYesNo = (input) => {
-  return input ? 'Yes' : 'No';
+const toYesNo = (value) => {
+  // Only convert booleans, not all falsy values mean "no"
+  if (typeof value === 'boolean') {
+    return value ? 'Yes' : 'No';
+  }
+  return value;
 };
+
 
 const toDateString = (date) => {
   const dateParts = new Date(date.getTime() - (date.getTimezoneOffset() * 60000))

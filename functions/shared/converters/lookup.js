@@ -172,6 +172,37 @@ const lookup = (value) => {
       'write': 'Write',
       'schedule-2-d': 'Schedule 2(d)',
       'schedule-2-3': 'Schedule 2(3)',
+      /* Exercise stages: start */
+      'review': 'Review',
+      'shortlisted': 'Shortlisted',
+      'selected': 'Selected',
+      'recommended': 'Recommended',
+      'handover': 'Handover',
+      /* Exercise stages: end */
+      /* ApplicationRecord statuses: start */
+      passedSift: 'Passed Sift',
+      failedSift: 'Failed Sift',
+      submittedFirstTest: 'Submitted first test',
+      failedFirstTest: 'Failed First test',
+      submittedScenarioTest: 'Submitted scenario test',
+      passedFirstTest: 'Passed first test',
+      failedScenarioTest: 'Failed scenario test',
+      passedScenarioTest: 'Passed scenario test',
+      failedTelephoneAssessment: 'Failed telephone assessment',
+      passedTelephoneAssessment: 'Passed telephone assessment',
+      noTestSubmitted: 'No test Submitted',
+      testSubmittedOverTime: 'Test submitted over time',
+      withdrewApplication: 'Withdrew application',
+      rejectedAsIneligible: 'Rejected as ineligible',
+      passedSelection: 'Passed Selection',
+      failedSelection: 'Failed Selection',
+      passedButNotRecommended: 'Passed but not Recommended',
+      rejectedByCharacter: 'Rejected by character',
+      approvedForImmediateAppointment: 'Approved for immediate appointment',
+      approvedForFutureAppointment: 'Approved for future appointment',
+      sccToReconsider: 'SCC to reconsider',
+      invitedToSelectionDay: 'Invited To Selection Day',
+      /* ApplicationRecords statuses: end */
       // 'xxx': 'xxx',`
     };
 
