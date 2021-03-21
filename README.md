@@ -7,7 +7,9 @@ We have kept folder and file names closely aligned to the corresponding Firebase
 
 ## Database
 
-See [database/firestore.rules](database/firestore.rules) for our current rules.
+See [database/firestore.rules](database/firestore.rules) for our Firestore database rules.
+
+See [database/realtime.rules.json](database/realtime.rules.json) for our Realtime Database rules.
 
 See [database/firestore.indexes.json](database/firestore.indexes.json) for our current indexes.
 
