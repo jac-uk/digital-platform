@@ -36,7 +36,7 @@ module.exports = (config, db) => {
 
     // check for eligibility issues and update document
     const eligibilityIssues = getEligibilityIssues(exercise, application);
-    const characterIssues = getCharacterIssues(exercise, application);
+    const characterIssues = getCharacterIssues(application);
     const data = {};
     data['processing.flags.eligibilityIssues'] = eligibilityIssues && eligibilityIssues.length > 0;
     data['processing.eligibilityIssues'] = eligibilityIssues;
@@ -72,7 +72,8 @@ module.exports = (config, db) => {
     const commands = [];
     for (let i = 0, len = applications.length; i < len; ++i) {
       const eligibilityIssues = getEligibilityIssues(exercise, applications[i]);
-      const characterIssues = getCharacterIssues(exercise, applications[i]);
+      const characterIssues = getCharacterIssues(applications[i]);
+
       const data = {};
       if (eligibilityIssues && eligibilityIssues.length > 0) {
         data['flags.eligibilityIssues'] = true;
@@ -88,6 +89,7 @@ module.exports = (config, db) => {
         data['flags.characterIssues'] = false;
         data['issues.characterIssues'] = [];
       }
+
       if (!isEmpty(data)) {
         commands.push({
           command: 'update',
@@ -208,14 +210,24 @@ module.exports = (config, db) => {
     return issues;
   }
 
-  function getCharacterIssues(exercise, application) {
+  function getCharacterIssues(application) {
+
+    let questions;
+    let answers;
+
+    if (application.characterInformationV2) {
+      questions = config.APPLICATION.CHARACTER_ISSUES_V2;
+      answers = application.characterInformationV2;
+    } else if (application.characterInformation) {
+      questions = config.APPLICATION.CHARACTER_ISSUES;
+      answers = application.characterInformation;
+    }
 
     const issues = [];
 
-    // character
-    if (application.characterInformation) {
-      Object.keys(config.APPLICATION.CHARACTER_ISSUES).forEach(key => {
-        if (application.characterInformation[key]) {
+    if (questions) {
+      Object.keys(questions).forEach(key => {
+        if (answers[key]) {
           issues.push(newIssue(key));
         }
       });
