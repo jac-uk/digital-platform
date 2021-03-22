@@ -33,7 +33,7 @@
     "production:deploy:functions": "firebase deploy --project=platform-production-9207d --only functions:initialiseQualifyingTest,functions:activateQualifyingTest,functions:onQualifyingTestResponseUpdate,functions:sendQualifyingTestReminders,functions:initialiseApplicationRecords,functions:initialiseMissingApplicationRecords,functions:scoreQualifyingTest,functions:onExerciseUpdate,functions:initialiseAssessments,functions:cancelAssessments,functions:testAssessmentNotification,functions:sendAssessmentRequests,functions:sendAssessmentReminders,functions:generateQualifyingTestReport,functions:generateSignInWithEmailLink,functions:exportExerciseData,functions:generateOutreachReport,functions:generateDiversityReport,functions:onPanelUpdate,functions:transferHandoverData,functions:exportApplicationContactsData,functions:generateHandoverReport,functions:generateReasonableAdjustmentsReport,functions:exportQualifyingTestResponses,functions:generateAgencyReport",
     "production:deploy:storage-rules": "firebase deploy --project=platform-production-9207d --only storage:rules",
     "production:deploy:realtime-rules": "firebase deploy --project=platform-production-9207d --only database",
-    "test:rules": "mocha './test/rules/**/*.spec.js' --timeout=10000",
+    "test:rules": "mocha './test/rules/**/*.database.spec.js' --timeout=10000",
     "test:functions": "mocha './test/functions/**/*.spec.js' --timeout=10000",
     "test:actions": "jest test/actions",
     "test:shared": "jest test/shared",
@@ -48,7 +48,7 @@
     "firebase-admin": "^9.4.2",
     "firebase-functions": "^3.13.1",
     "firebase-functions-test": "^0.2.3",
-    "firebase-tools": "^8.20.0",
+    "firebase-tools": "^9.6.1",
     "googleapis": "^67.0.0",
     "notifications-node-client": "^4.9.0"
   },
