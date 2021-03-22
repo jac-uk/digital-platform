@@ -1,0 +1,17 @@
+
+name: Firestore Rules
+'on':
+  pull_request:
+    paths:
+    - 'database/firestore.rules'
+jobs:
+  tests:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v2
+      - uses: actions/setup-node@master
+      - name: Installing project dependencies
+        run: npm ci
+      - name: Test rules
+        run: npm run ci:test:rules
+
