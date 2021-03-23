@@ -2,6 +2,8 @@
 name: Firestore Rules
 'on':
   pull_request:
+    branches:
+      - develop
     paths:
     - 'database/firestore.rules'
 jobs:
