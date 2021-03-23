@@ -2,8 +2,10 @@
 name: Firestore Rules
 'on':
   pull_request:
-    branches: test/*
-    paths: 'database/firestore.rules'
+    branches:
+      - test/*
+    paths:
+      - 'database/firestore.rules'
 jobs:
   tests:
     name: Run Tests
