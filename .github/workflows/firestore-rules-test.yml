@@ -5,14 +5,18 @@ name: Firestore Rules
     paths:
     - 'database/firestore.rules'
 jobs:
-  tests:
-    name: Run Tests
+  setup:
+    name: Setup
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v2
       - uses: actions/setup-node@master
       - name: Installing project dependencies
         run: npm ci
+  tests:
+    name: Run Tests
+    needs: setup
+    runs-on: ubuntu-latest
+    steps:
       - name: Run rules tests
         run: npm run ci:test:rules
-
