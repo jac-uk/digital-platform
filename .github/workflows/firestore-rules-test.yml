@@ -4,7 +4,6 @@ name: Firestore Rules
 jobs:
   tests:
     name: Run Tests
-    needs: setup
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v2
