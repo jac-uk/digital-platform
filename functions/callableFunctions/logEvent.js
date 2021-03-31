@@ -1,6 +1,6 @@
 const functions = require('firebase-functions');
 const { firebase, db } = require('../shared/admin.js');
-const { logEvent } = require('../actions/logs/events')(firebase, db);
+const { logEvent } = require('../actions/logs/logEvent')(firebase, db);
 
 module.exports = functions.region('europe-west2').https.onCall(async (data, context) => {
 
@@ -25,8 +25,13 @@ module.exports = functions.region('europe-west2').https.onCall(async (data, cont
     throw new functions.https.HttpsError('invalid-argument', 'Please specify the event details');
   }
 
+  let user = {
+    id: context.auth.token.user_id,
+    name: context.auth.token.name,
+  };
+
   // generate the report
-  const result = await logEvent(data.type, data.description, data.details, context.auth.uid);
+  const result = await logEvent(data.type, data.description, data.details, user);
   return {
     result: result,
   };

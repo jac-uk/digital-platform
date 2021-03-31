@@ -6,12 +6,12 @@ module.exports = (firebase, db) => {
   /**
    * Logs an event in the firestore database
    */
-  async function logEvent(type, description, details, userId) {
+  async function logEvent(type, description, details, user) {
 
     // construct the event document
     const event = {
       timestamp: firebase.firestore.Timestamp.now(),
-      userId: userId || null,
+      user: user,
       description: description,
       details: details,
     };
