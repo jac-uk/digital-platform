@@ -1,3 +1,5 @@
+const { auth } = require('../../shared/admin.js');
+
 module.exports = (firebase, db) => {
   return {
     logEvent,
@@ -5,8 +7,22 @@ module.exports = (firebase, db) => {
 
   /**
    * Logs an event in the firestore database
+   *
+   * @param {string} type - The type of event (info, warning or error)
+   * @param {string} description - Description of the event
+   * @param {object} details - Details of the event
+   * @param {ojbect} user - If not specified, the current logged in user will be used
+   * @returns {string} - Document ref for the event
    */
   async function logEvent(type, description, details, user) {
+
+    // if a user has not been specified in the function call, attempt to get the currently logged in user
+    if (typeof(user) === 'undefined' && auth.currentUser) {
+      user = {
+        id: auth.currentUser.uid,
+        name: auth.currentUser.displayName,
+      };
+    }
 
     // construct the event document
     const event = {
