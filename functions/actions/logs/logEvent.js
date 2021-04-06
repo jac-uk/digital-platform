@@ -27,7 +27,7 @@ module.exports = (firebase, db) => {
     // construct the event document
     const event = {
       timestamp: firebase.firestore.Timestamp.now(),
-      user: user,
+      user: user || null,
       description: description,
       details: details,
     };
