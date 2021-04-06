@@ -137,15 +137,7 @@ service cloud.firestore {
 
     // allow any logged in user to create event log entries
     // but only allow JAC users to read them
-    match /logs/info {
-      allow create: if userIsAuthenticated();
-      allow read: if userIsAuthenticated() && userIsJAC();
-    }
-    match /logs/warning {
-      allow create: if userIsAuthenticated();
-      allow read: if userIsAuthenticated() && userIsJAC();
-    }
-    match /logs/error {
+    match /logs/{type}/events/{eventId} {
       allow create: if userIsAuthenticated();
       allow read: if userIsAuthenticated() && userIsJAC();
     }
