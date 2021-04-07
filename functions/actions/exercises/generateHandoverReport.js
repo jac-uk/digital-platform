@@ -27,7 +27,7 @@ module.exports = (firebase, db) => {
     const headers = reportHeaders(exercise);
 
     // get report rows
-    const rows = reportData(db, exercise, applications);
+    const rows = reportData(db, exercise, applicationRecords, applications);
 
     // construct the report document
     const report = {
@@ -55,6 +55,7 @@ const reportHeaders = (exercise) => {
 
   const headers = {
     personalDetails: [
+      { title: 'Candidate ID', ref: 'candidateId'},
       { title: 'Candidate Title', ref: 'title' },
       { title: 'Candidate Name', ref: 'fullName' },
       { title: 'Other Names', ref: 'otherNames' },
@@ -113,6 +114,8 @@ const reportHeaders = (exercise) => {
   };
 
   return [
+    { title: 'Application ID', ref: 'applicationId' },
+    { title: 'Reference Number', ref: 'referenceNumber' },
     ...headers.personalDetails,
     ...headers.qualifications[exercise.typeOfExercise],
     ...headers.diversity.common,
@@ -125,10 +128,11 @@ const reportHeaders = (exercise) => {
  *
  * @param {db} db
  * @param {document} exercise
+ * @param {array} applicationRecords
  * @param {array} applications
  * @returns {array}
  */
-const reportData = (db, exercise, applications) => {
+const reportData = (db, exercise, applicationRecords, applications) => {
 
   return applications.map((application) => {
 
@@ -142,12 +146,20 @@ const reportData = (db, exercise, applications) => {
 
     // return report data for this application
     return {
+      applicationId: application.id,
+      referenceNumber: application.referenceNumber || null,
+      candidateId: getCandidateId(applicationRecords, application),
       ...formatPersonalDetails(application.personalDetails),
       ...qualifications,
       ...formatDiversityData(application.equalityAndDiversitySurvey),
     };
 
   });
+};
+
+const getCandidateId = (applicationRecords, application) => {
+  const applicationRecord = applicationRecords.find(e => e.application.id === application.id);
+  return applicationRecord.candidate.id;
 };
 
 const formatPersonalDetails = (personalDetails) => {

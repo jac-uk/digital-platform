@@ -153,7 +153,6 @@ module.exports = (config, firebase, db) => {
   function formatDisability(equalityAndDiversitySurvey) {
     if (!equalityAndDiversitySurvey) { return equalityAndDiversitySurvey; }
     let data = formatYesNoLookup(equalityAndDiversitySurvey.disability);
-    if (equalityAndDiversitySurvey.disability === true) { data = `${data} - ${equalityAndDiversitySurvey.disabilityDetails}`; }
     return data;
   }
   function formatQualifications(data) {
