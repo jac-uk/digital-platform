@@ -305,7 +305,7 @@
 						],
 						"body": {
 							"mode": "raw",
-							"raw": "{\r\n    \"data\": {\r\n        \"exerciseId\": \"aRrY8ad5TwiznZZhBqee\"\r\n    }\r\n}"
+							"raw": "{\r\n    \"data\": {\r\n        \"exerciseId\": \"kJKbG9TOQToEzB4AlEV1\"\r\n    }\r\n}"
 						},
 						"url": {
 							"raw": "{{host}}/generateHandoverReport",
@@ -379,7 +379,7 @@
 						],
 						"body": {
 							"mode": "raw",
-							"raw": "{\r\n    \"data\": {\r\n        \"exerciseId\": \"7eUXHjgVdBmol9qZ6xVD\"\r\n    }\r\n}"
+							"raw": "{\r\n    \"data\": {\r\n        \"exerciseId\": \"aRrY8ad5TwiznZZhBqee\"\r\n    }\r\n}"
 						},
 						"url": {
 							"raw": "{{host}}/generateAgencyReport",
@@ -392,10 +392,25 @@
 						}
 					},
 					"response": []
-				},
+				}
+			]
+		},
+		{
+			"name": "Functions",
+			"item": [
 				{
-					"name": "Flag Application Issues for Exercise",
+					"name": "Log Event",
 					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{token}}",
+									"type": "string"
+								}
+							]
+						},
 						"method": "POST",
 						"header": [
 							{
@@ -406,25 +421,20 @@
 						],
 						"body": {
 							"mode": "raw",
-							"raw": "{\r\n    \"data\": {\r\n        \"exerciseId\": \"P4BWVWQBynf72vwboUg6\"\r\n    }\r\n}"
+							"raw": "{\r\n    \"data\": {\r\n        \"type\": \"error\",\r\n        \"description\": \"Boom\",\r\n        \"details\": {\r\n            \"stuff\": \"An error occured\",\r\n            \"things\": \"Here\"\r\n        }\r\n    }\r\n}\r\n"
 						},
 						"url": {
-							"raw": "{{host}}/flagApplicationIssuesForExercise",
+							"raw": "{{host}}/logEvent",
 							"host": [
 								"{{host}}"
 							],
 							"path": [
-								"flagApplicationIssuesForExercise"
+								"logEvent"
 							]
 						}
 					},
 					"response": []
-				}
-			]
-		},
-		{
-			"name": "Functions",
-			"item": [
+				},
 				{
 					"name": "Cancel Assessments",
 					"request": {
@@ -457,6 +467,43 @@
 							],
 							"path": [
 								"cancelAssessments"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Initialise Qualifiying Test",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{token}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"data\": {\r\n        \"qualifyingTestId\": \"arV1wmW6qBpSGeMmRiou\"\r\n    }\r\n}"
+						},
+						"url": {
+							"raw": "{{host}}/initialiseQualifyingTest",
+							"host": [
+								"{{host}}"
+							],
+							"path": [
+								"initialiseQualifyingTest"
 							]
 						}
 					},
