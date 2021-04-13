@@ -60,10 +60,14 @@ module.exports = (config, firebase, db) => {
         const testDurationAdjusted = qualifyingTestResponse.duration.testDurationAdjusted;
         const started = new Date(qualifyingTestResponse.statusLog.started.toDate());
         const ended = new Date(started.getTime() + (testDurationAdjusted * 60000));
+        const endedTimestamp = firebase.firestore.Timestamp.fromDate(ended);
         data.isOutOfTime = true;
         data.exitedTest = true;
         data.status = config.QUALIFYING_TEST_RESPONSES.STATUS.COMPLETED;
-        data['statusLog.completed'] = ended;
+        // TODO: if the endDate is smaller than ended use the endDate
+        // qualifyingTest.endDate < ended ? qualifyingTest.endDate : ended; 
+        data['statusLog.completed'] = endedTimestamp;
+        
       }
       if (Object.keys(data).length > 0) {
         data.lastUpdated = firebase.firestore.FieldValue.serverTimestamp();
