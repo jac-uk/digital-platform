@@ -30,7 +30,7 @@ module.exports = (config, firebase, db) => {
     let qualifyingTestResponsesRef = db.collection('qualifyingTestResponses')
       .where('qualifyingTest.id', '==', qualifyingTest.id)
       // .where('activated', '==', null)
-      .select('responses', 'testQuestions', 'application', 'status');
+      .select('responses', 'testQuestions', 'application', 'status', 'duration', 'statusLog');
     const qualifyingTestResponses = await getDocuments(qualifyingTestResponsesRef);
 
     // construct db commands
@@ -57,9 +57,17 @@ module.exports = (config, firebase, db) => {
       }
       // Mark any tests still in progress as completed & out of time
       if (qualifyingTestResponse.status === config.QUALIFYING_TEST_RESPONSES.STATUS.STARTED) {
+        const testDurationAdjusted = qualifyingTestResponse.duration.testDurationAdjusted;
+        const started = new Date(qualifyingTestResponse.statusLog.started.toDate());
+        const ended = new Date(started.getTime() + (testDurationAdjusted * 60000));
+        const endedTimestamp = firebase.firestore.Timestamp.fromDate(ended);
         data.isOutOfTime = true;
+        data.exitedTest = true;
         data.status = config.QUALIFYING_TEST_RESPONSES.STATUS.COMPLETED;
-        data['statusLog.completed'] = qualifyingTest.endDate;
+        // TODO: if the endDate is smaller than ended use the endDate
+        // qualifyingTest.endDate < ended ? qualifyingTest.endDate : ended; 
+        data['statusLog.completed'] = endedTimestamp;
+        
       }
       if (Object.keys(data).length > 0) {
         data.lastUpdated = firebase.firestore.FieldValue.serverTimestamp();
