@@ -1,4 +1,4 @@
-const { getDocument, getDocuments, applyUpdates, formatDate } = require('../../shared/helpers');
+const { getDocument, getDocuments, applyUpdates } = require('../../shared/helpers');
 
 module.exports = (config, firebase, db) => {
   const newResponsesWithScores = require('../../shared/factories/QualifyingTests/newResponsesWithScores')(config);
@@ -63,8 +63,8 @@ module.exports = (config, firebase, db) => {
         data.isOutOfTime = true;
         data.exitedTest = true;
         data.status = config.QUALIFYING_TEST_RESPONSES.STATUS.COMPLETED;
-        data['statusLog.completed'] = ended || qualifyingTest.endDate;
-      }      
+        data['statusLog.completed'] = ended;
+      }
       if (Object.keys(data).length > 0) {
         data.lastUpdated = firebase.firestore.FieldValue.serverTimestamp();
         commands.push({
