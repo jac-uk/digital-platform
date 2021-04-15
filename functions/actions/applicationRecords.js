@@ -15,15 +15,34 @@ module.exports = (config, firebase, db) => {
   }
 
   async function onApplicationRecordUpdate(dataBefore, dataAfter) {
+
+    const increment = firebase.firestore.FieldValue.increment(1);
+    const decrement = firebase.firestore.FieldValue.increment(-1);
+
     if (dataBefore.stage !== dataAfter.stage) {
       const exerciseId = dataBefore.exercise.id;
       const data = {};
-      const increment = firebase.firestore.FieldValue.increment(1);
-      const decrement = firebase.firestore.FieldValue.increment(-1);
       data[`applicationRecords.${dataBefore.stage}`] = decrement;
       data[`applicationRecords.${dataAfter.stage}`] = increment;
       await db.doc(`exercises/${exerciseId}`).update(data);
     }
+
+    // increment/decrement the xxxEMP counters (if they exist on the Firestore document)
+    if (typeof dataBefore.flags.empApplied !== 'undefined') {
+      if (dataBefore.stage !== dataAfter.stage) { // stage has changed
+        if (dataBefore.flags.empApplied) {
+          data[`applicationRecords.${dataBefore.stage}EMP`] = decrement;
+        }
+        if (dataAfter.flags.empApplied) {
+          data[`applicationRecords.${dataAfter.stage}EMP`] = increment;
+        }
+      } else { // stage has not changed
+        if (dataBefore.flags.empApplied !== dataAfter.flags.empApplied) { // EMP flag has changed
+          data[`applicationRecords.${dataAfter.stage}EMP`] = dataAfter.flags.empApplied ? increment : decrement;
+        }
+      }
+    }
+
     return true;
   }
 
@@ -66,6 +85,12 @@ module.exports = (config, firebase, db) => {
         'applicationRecords.selected': 0,
         'applicationRecords.recommended': 0,
         'applicationRecords.handover': 0,
+        'applicationRecords.initialisedEMP': 0,
+        'applicationRecords.reviewEMP': 0,
+        'applicationRecords.shortlistedEMP': 0,
+        'applicationRecords.selectedEMP': 0,
+        'applicationRecords.recommendedEMP': 0,
+        'applicationRecords.handoverEMP': 0,
       },
     });
 
