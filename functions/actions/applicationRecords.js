@@ -16,18 +16,18 @@ module.exports = (config, firebase, db) => {
 
   async function onApplicationRecordUpdate(dataBefore, dataAfter) {
 
+    const exerciseId = dataBefore.exercise.id;
+    const data = {};
     const increment = firebase.firestore.FieldValue.increment(1);
     const decrement = firebase.firestore.FieldValue.increment(-1);
 
+    // figure out what updates we need to make to the applicationRecords.<stage> counters
     if (dataBefore.stage !== dataAfter.stage) {
-      const exerciseId = dataBefore.exercise.id;
-      const data = {};
       data[`applicationRecords.${dataBefore.stage}`] = decrement;
       data[`applicationRecords.${dataAfter.stage}`] = increment;
-      await db.doc(`exercises/${exerciseId}`).update(data);
     }
 
-    // increment/decrement the xxxEMP counters (if they exist on the Firestore document)
+    // figure out what updates we need to make to the applicationRecords.<stage>EMP counters
     if (typeof dataBefore.flags.empApplied !== 'undefined') {
       if (dataBefore.stage !== dataAfter.stage) { // stage has changed
         if (dataBefore.flags.empApplied) {
@@ -40,6 +40,11 @@ module.exports = (config, firebase, db) => {
         if (dataBefore.flags.empApplied !== dataAfter.flags.empApplied) { // EMP flag has changed
           data[`applicationRecords.${dataAfter.stage}EMP`] = dataAfter.flags.empApplied ? increment : decrement;
         }
+      }
+
+      // do the updates
+      if (Object.keys(data).length > 0) {
+        await db.doc(`exercises/${exerciseId}`).update(data);
       }
     }
 
