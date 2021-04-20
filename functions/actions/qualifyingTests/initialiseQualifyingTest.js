@@ -33,7 +33,10 @@ module.exports = (config, firebase, db) => {
       if (params.status !== 'all') {
         applicationRecordsRef = applicationRecordsRef.where('status', '==', params.status);
       }
-        
+      if (qualifyingTest.isTieBreaker) { // for EMP tie-breaker tests, only include EMP candidates
+        applicationRecordsRef = applicationRecordsRef.where('flags.empApplied', '==', true);
+      }
+
       participants = await getDocuments(applicationRecordsRef);
     }
 
