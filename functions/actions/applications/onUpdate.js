@@ -2,6 +2,7 @@ const { getDocument, applyUpdates, isDateInPast } = require('../../shared/helper
 
 module.exports = (config, firebase, db) => {
   const { newApplicationRecord } = require('../../shared/factories')(config);
+  const { updateCandidate } = require('../candidates/search')(db);
 
   return onUpdate;
 
@@ -24,6 +25,9 @@ module.exports = (config, firebase, db) => {
         ref: db.doc(`exercises/${exerciseId}`),
         data: data,
       });
+
+      // update candidate document
+      await updateCandidate(dataAfter.userId);
 
       // // applied
       // if (dataAfter.status === 'applied') {
