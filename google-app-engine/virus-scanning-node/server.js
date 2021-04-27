@@ -48,46 +48,45 @@ app.post('/scan', async (req, res) => {
   try {
     const filename = req.body.filename;
 
+    // download the file
     const options = {
       destination: `/unscanned_files/${filename}`,
     };
-
-    //Downloads the file
-    await storage
-      .bucket(CLOUD_STORAGE_BUCKET)
-      .file(filename)
-      .download(options);
+    await storage.bucket(CLOUD_STORAGE_BUCKET).file(filename).download(options);
 
     console.log(`Filename is: /unscanned_files/${filename}`);
 
+    // scan the file
     const result = await scanner.scanFile(`/unscanned_files/${filename}`);
+
     if (result.indexOf('OK') > -1) {
+
+      // Log scan outcome for document
+      console.log(`Scan status for ${filename}: CLEAN`);
 
       // Add metadata with scan result
       addMetadata(filename, 'clean');
 
-      // Log scan outcome for document
-      console.log(`Scan status for ${filename}: CLEAN`);
-      // make sure the file has no suffix (so it can be downloaded)
+      // Make sure the file has no suffix, so it can be downloaded
       addSuffix(filename, '');
 
       // Respond to API client
-      res.json({status: 'clean'});
+      res.json({ message: result, status: 'clean' });
+
     } else {
+
+      // Log scan outcome for document
+      console.log(`Scan status for ${filename}: INFECTED`);
 
       // Add metadata with scan result
       addMetadata(filename, 'infected');
 
-      // Log scan outcome for document
-      console.log(`Scan status for ${filename}: INFECTED`);
-      // rename the file (to prevent it from being downloaded)
+      // Rename the file, to prevent it from being downloaded
       addSuffix(filename, '.infected');
 
       // Respond to API client
-      res.json({
-        message: result,
-        status: 'infected',
-      });
+      res.json({ message: result, status: 'infected' });
+
     }
   } catch(e) {
     console.error('Error processing the file', e);
@@ -98,16 +97,19 @@ app.post('/scan', async (req, res) => {
   }
 });
 
-
+/**
+ * Add metadata to a file, to indicate the outcome of the virus scan
+ *
+ * @param {string} filename
+ * @param {string} status
+ */
 const addMetadata = (filename, status) => {
-  // Add meta data to the file to indicate it has been scanned
   const metadata = {
     metadata: {
       'scanned': Date.now().toString(),
       'status': status,
     },
   };
-
   storage.bucket(CLOUD_STORAGE_BUCKET).file(filename).setMetadata(metadata).then((returned) => {
     return returned;
   }).catch(() => {
