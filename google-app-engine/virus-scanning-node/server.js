@@ -68,6 +68,8 @@ app.post('/scan', async (req, res) => {
 
       // Log scan outcome for document
       console.log(`Scan status for ${filename}: CLEAN`);
+      // make sure the file has no suffix (so it can be downloaded)
+      addSuffix(filename, '');
 
       // Respond to API client
       res.json({status: 'clean'});
@@ -78,6 +80,8 @@ app.post('/scan', async (req, res) => {
 
       // Log scan outcome for document
       console.log(`Scan status for ${filename}: INFECTED`);
+      // rename the file (to prevent it from being downloaded)
+      addSuffix(filename, '.infected');
 
       // Respond to API client
       res.json({
@@ -109,6 +113,25 @@ const addMetadata = (filename, status) => {
   }).catch(() => {
     return false;
   });
+};
+
+/**
+ * Add a suffix to a filename
+ * Note: existing suffixes (i.e., .unscanned and .infected) will be removed first
+ *
+ * @param {string} filename
+ * @param {string} suffix
+ */
+const addSuffix = (filename, suffix) => {
+  const cleanFilename = filename.replace('.unscanned', '').replace('.infected', '');
+  const newFileName = cleanFilename + suffix;
+  if (filename != newFileName) {
+    storage.bucket(CLOUD_STORAGE_BUCKET).file(filename).move(newFileName).then((returned) => {
+      return returned;
+    }).catch(() => {
+      return false;
+    });
+  }
 };
 
 run();
