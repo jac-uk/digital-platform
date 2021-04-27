@@ -40,7 +40,7 @@ exports.generateReasonableAdjustmentsReport = require('./callableFunctions/gener
 exports.exportQualifyingTestResponses = require('./callableFunctions/exportQualifyingTestResponses');
 exports.generateAgencyReport = require('./callableFunctions/generateAgencyReport');
 exports.logEvent = require('./callableFunctions/logEvent');
-
+exports.scanFile = require('./callableFunctions/scanFile');
 
 // exports.onExerciseUpdate_PublishVacancy = require('./exercises/onExerciseUpdate_PublishVacancy');
 // exports.onWriteVacancyStats = require('./exercises/onWriteVacancyStats');
