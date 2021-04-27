@@ -25,9 +25,7 @@ env: flex
 service: default
 
 env_variables:
-  UNSCANNED_BUCKET: unscanned-digital-platform-sandbox
-  CLEAN_BUCKET: scanned-digital-platform-sandbox
-  QUARANTINED_BUCKET: quarantined-digital-platform-sandbox
+  PROJECT_ID: digital-platform-develop
 automatic_scaling:
   min_num_instances: 1
   max_num_instances: 2

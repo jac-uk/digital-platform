@@ -21,7 +21,6 @@ const {Storage} = require('@google-cloud/storage');
 const app = express();
 const PORT = process.env.PORT || 8080;
 const scanner = clamd.createScanner('127.0.0.1', 3310);
-const CLOUD_STORAGE_BUCKET = process.env.UNSCANNED_BUCKET;
 
 app.use(express.json());
 app.use(express.urlencoded({
@@ -32,8 +31,10 @@ app.use(express.urlencoded({
 const storage = new Storage();
 
 // Get the bucket which is declared as an environment variable
-// let srcbucket = storage.bucket(CLOUD_STORAGE_BUCKET);
+const STORAGE_URL = process.env.PROJECT_ID + '.appspot.com';
+const bucket = storage.bucket(STORAGE_URL);
 
+// start the app server
 const run = () => app.listen(PORT, () => {
   console.log(`Server started on port ${PORT}`);
 });
@@ -50,11 +51,11 @@ app.post('/scan', async (req, res) => {
   try {
     const filename = req.body.filename;
 
-    // download the file
+    // download the file so it can be scanned locally
     const options = {
       destination: `/unscanned_files/${filename}`,
     };
-    await storage.bucket(CLOUD_STORAGE_BUCKET).file(filename).download(options);
+    await bucket.file(filename).download(options);
 
     console.log(`Filename is: /unscanned_files/${filename}`);
 
@@ -112,7 +113,7 @@ const addMetadata = (filename, status) => {
       'status': status,
     },
   };
-  storage.bucket(CLOUD_STORAGE_BUCKET).file(filename).setMetadata(metadata).then((returned) => {
+  bucket.file(filename).setMetadata(metadata).then((returned) => {
     return returned;
   }).catch(() => {
     return false;
@@ -130,7 +131,7 @@ const addSuffix = (filename, suffix) => {
   const cleanFilename = filename.replace('.unscanned', '').replace('.infected', '');
   const newFileName = cleanFilename + suffix;
   if (filename != newFileName) {
-    storage.bucket(CLOUD_STORAGE_BUCKET).file(filename).move(newFileName).then((returned) => {
+    bucket.file(filename).move(newFileName).then((returned) => {
       return returned;
     }).catch(() => {
       return false;
