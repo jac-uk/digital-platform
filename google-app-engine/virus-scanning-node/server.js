@@ -16,7 +16,6 @@
 
 const clamd = require('clamdjs');
 const express = require('express');
-const bodyParser = require('body-parser');
 const {Storage} = require('@google-cloud/storage');
 
 const app = express();
@@ -24,7 +23,10 @@ const PORT = process.env.PORT || 8080;
 const scanner = clamd.createScanner('127.0.0.1', 3310);
 const CLOUD_STORAGE_BUCKET = process.env.UNSCANNED_BUCKET;
 
-app.use(bodyParser.json());
+app.use(express.json());
+app.use(express.urlencoded({
+  extended: true,
+}));
 
 // Creates a client
 const storage = new Storage();
