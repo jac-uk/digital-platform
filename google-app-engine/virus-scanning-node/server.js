@@ -81,7 +81,7 @@ app.post('/scan', async (req, res) => {
       addMetadata(filename, 'clean');
 
       // Make sure the file has no suffix, so it can be downloaded
-      addSuffix(filename, '');
+      // addSuffix(filename, '');
 
       // Respond to API client
       res.json({ message: result, status: 'clean' });
@@ -95,7 +95,7 @@ app.post('/scan', async (req, res) => {
       addMetadata(filename, 'infected');
 
       // Rename the file, to prevent it from being downloaded
-      addSuffix(filename, '.infected');
+      // addSuffix(filename, '.infected');
 
       // Respond to API client
       res.json({ message: result, status: 'infected' });
