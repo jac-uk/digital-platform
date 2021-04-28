@@ -50,7 +50,9 @@ const run = () => app.listen(PORT, () => {
 app.post('/scan', async (req, res) => {
   console.log('Request body', req.body);
   try {
+    // get inputs
     const filename = req.body.filename;
+    console.log(`Filename = ${filename}`);
 
     // validate inputs
     const bucketExists = await (bucket.exists())[0]; // the exists() function returns an array with a single boolean element in it
@@ -77,7 +79,7 @@ app.post('/scan', async (req, res) => {
     if (result.indexOf('OK') > -1) {
 
       // Log scan outcome for document
-      console.log(`Scan status for ${filename}: CLEAN`);
+      console.log(` - Scan status for ${filename}: CLEAN`);
 
       // Add metadata with scan result
       addMetadata(filename, 'clean');
@@ -91,7 +93,7 @@ app.post('/scan', async (req, res) => {
     } else {
 
       // Log scan outcome for document
-      console.log(`Scan status for ${filename}: INFECTED`);
+      console.log(` - Scan status for ${filename}: INFECTED`);
 
       // Add metadata with scan result
       addMetadata(filename, 'infected');
@@ -104,7 +106,7 @@ app.post('/scan', async (req, res) => {
 
     }
   } catch(e) {
-    console.error('Error processing the file', e);
+    console.error(' - Error processing the file', e);
     res.status(500).json({
       message: e.toString(),
       status: 'error',
