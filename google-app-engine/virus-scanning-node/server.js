@@ -56,6 +56,16 @@ app.post('/scan', async (req, res) => {
       destination: `/unscanned_files/${filename}`,
     };
     await bucket.file(filename).download(options);
+    // validate inputs
+    const bucketExists = await (bucket.exists())[0]; // the exists() function returns an array with a single boolean element in it
+    if (!bucketExists) {
+      throw 'storage bucket not found';
+    }
+    const file = bucket.file(filename);
+    const fileExists = (await file.exists())[0]; // the exists() function returns an array with a single boolean element in it
+    if (!fileExists) {
+      throw 'file not found in bucket';
+    }
 
     console.log(`Filename is: /unscanned_files/${filename}`);
 
