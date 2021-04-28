@@ -48,3 +48,18 @@ Unless required by applicable law or agreed to in writing, software distributed
 under the License is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR
 CONDITIONS OF ANY KIND, either express or implied. See the License for the
 specific language governing permissions and limitations under the License.
+
+
+
+
+## Technical Notes
+
+Can view `console.log()` output for the malware scanner service here:
+
+https://console.cloud.google.com/logs/query;query=resource.type%3D%22gae_app%22%0Aresource.labels.project_id%3D%22digital-platform-develop%22%0Aresource.labels.module_id%3D%22malware-scanner%22;cursorTimestamp=2021-04-28T17:10:14.144Z?project=digital-platform-develop&folder=true&organizationId=376574071228&query=%0A
+
+...or by running this command:
+
+`gcloud app logs tail -s malware-scanner`
+
+Note: This option is slower ;)
