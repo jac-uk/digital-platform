@@ -48,7 +48,8 @@ const run = () => app.listen(PORT, () => {
  * @param {object} res The HTTP response object
  */
 app.post('/scan', async (req, res) => {
-  console.log('Request body', req.body);
+  console.log(`STORAGE_URL = ${STORAGE_URL}`);
+  console.log('Request body', JSON.stringify(req.body));
   try {
     // get inputs
     const filename = req.body.filename;
@@ -57,17 +58,17 @@ app.post('/scan', async (req, res) => {
     // validate inputs
     const bucketExists = await bucket.exists();
     if (!bucketExists) {
-      throw 'storage bucket not found';
+      throw 'Storage bucket not found';
     }
     const file = bucket.file(filename);
-    const fileExists = (await file.exists())[0]; // the exists() function returns an array with a single boolean element in it
+    const fileExists = (await file.exists())[0]; // the file.exists() function returns an array with a single boolean element in it
     if (!fileExists) {
-      throw 'file not found in bucket';
+      throw 'File not found in bucket';
     }
 
     // download the file so it can be scanned locally
     const tempPath = `/unscanned_files/${Date.now()}`;
-    console.log(` - Local temp path will be: ${tempPath}`);
+    console.log(` - Downloading file to local temp path: ${tempPath}`);
     await bucket.file(filename).download({ destination: tempPath });
 
     // scan the file
@@ -106,7 +107,7 @@ app.post('/scan', async (req, res) => {
 
     }
   } catch(e) {
-    console.error(' - Error processing the file', e);
+    console.error(' - Error processing the file: ', e);
     res.status(500).json({
       message: e.toString(),
       status: 'error',
