@@ -17,6 +17,7 @@
 const clamd = require('clamdjs');
 const express = require('express');
 const {Storage} = require('@google-cloud/storage');
+const fs = require('fs');
 
 const app = express();
 const PORT = process.env.PORT || 8080;
@@ -51,11 +52,6 @@ app.post('/scan', async (req, res) => {
   try {
     const filename = req.body.filename;
 
-    // download the file so it can be scanned locally
-    const options = {
-      destination: `/unscanned_files/${filename}`,
-    };
-    await bucket.file(filename).download(options);
     // validate inputs
     const bucketExists = await (bucket.exists())[0]; // the exists() function returns an array with a single boolean element in it
     if (!bucketExists) {
@@ -67,10 +63,16 @@ app.post('/scan', async (req, res) => {
       throw 'file not found in bucket';
     }
 
-    console.log(`Filename is: /unscanned_files/${filename}`);
+    // download the file so it can be scanned locally
+    const tempPath = `/unscanned_files/${Date.now()}`;
+    console.log(` - Local temp path will be: ${tempPath}`);
+    await bucket.file(filename).download({ destination: tempPath });
 
     // scan the file
-    const result = await scanner.scanFile(`/unscanned_files/${filename}`);
+    const result = await scanner.scanFile(tempPath);
+
+    // delete the temporary file
+    fs.unlink(tempPath);
 
     if (result.indexOf('OK') > -1) {
 
