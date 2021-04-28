@@ -20,9 +20,7 @@
 runtime: custom
 env: flex
 
-# Remove the following line if this is the first App Engine service in
-# your GCP account.
-service: default
+service: malware-scanner
 
 env_variables:
   PROJECT_ID: digital-platform-develop
