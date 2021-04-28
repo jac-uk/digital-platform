@@ -55,7 +55,7 @@ app.post('/scan', async (req, res) => {
     console.log(`Filename = ${filename}`);
 
     // validate inputs
-    const bucketExists = await (bucket.exists())[0]; // the exists() function returns an array with a single boolean element in it
+    const bucketExists = await bucket.exists();
     if (!bucketExists) {
       throw 'storage bucket not found';
     }
