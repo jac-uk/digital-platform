@@ -1,7 +1,7 @@
 const functions = require('firebase-functions');
 const config = require('../shared/config');
 const { firebase } = require('../shared/admin.js');
-const { scanFile } = require('../actions/scanFile')(config, firebase);
+const { scanFile } = require('../actions/malware-scanning/scanFile')(config, firebase);
 
 module.exports = functions.region('europe-west2').https.onCall(async (data, context) => {
 
