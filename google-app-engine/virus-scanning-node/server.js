@@ -55,8 +55,9 @@ app.post('/scan', async (req, res) => {
 
   try {
     // get inputs
+    console.log(' - Getting inputs...');
     const filename = req.body.filename;
-    console.log(`Filename = ${filename}`);
+    console.log(` - - filename = ${filename}`);
 
     // validate inputs
     console.log(' - Validating inputs...');
@@ -95,17 +96,21 @@ app.post('/scan', async (req, res) => {
     console.log(' - - Done');
 
   } catch(e) {
-    console.error(' - Error processing the file: ', e);
+    console.error('*** ERROR ***', JSON.stringify(e));
     res.status(500).json({
       message: e.toString(),
       status: 'error',
     });
   } finally {
-    // delete the temporary file
     if (tempPath) {
       console.log(' - Deleting temp file...');
-      fs.unlink(tempPath);
-      console.log(' - - Done');
+      fs.unlink(tempPath, (err) => {
+        if (err) {
+          console.error('*** ERROR ***', JSON.stringify(err));
+        } else {
+          console.log(' - - Done');
+        }
+      });
     }
   }
 });
