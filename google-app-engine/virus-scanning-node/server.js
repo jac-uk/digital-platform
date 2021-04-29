@@ -50,6 +50,9 @@ const run = () => app.listen(PORT, () => {
 app.post('/scan', async (req, res) => {
   console.log(`STORAGE_URL = ${STORAGE_URL}`);
   console.log('Request body', JSON.stringify(req.body));
+
+  let tempPath;
+
   try {
     // get inputs
     const filename = req.body.filename;
@@ -67,7 +70,7 @@ app.post('/scan', async (req, res) => {
     }
 
     // download the file so it can be scanned locally
-    const tempPath = `/unscanned_files/${Date.now()}`;
+    tempPath = `/unscanned_files/${Date.now()}`;
     console.log(` - Downloading file to local temp path: ${tempPath}`);
     await bucket.file(filename).download({ destination: tempPath });
 
@@ -112,6 +115,11 @@ app.post('/scan', async (req, res) => {
       message: e.toString(),
       status: 'error',
     });
+  } finally {
+    // delete the temporary file
+    if (tempPath) {
+      fs.unlink(tempPath);
+    }
   }
 });
 
