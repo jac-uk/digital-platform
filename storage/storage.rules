@@ -11,7 +11,7 @@ service firebase.storage {
       && request.auth.token.email.matches('.*@judicialappointments[.](digital|gov[.]uk)')
   }
   function isOkForDownload() {
-    // 'request.resource' is available when writing, but when reading reading you must use 'resource' directly.
+    // 'request.resource' is available when writing, but when reading you must use 'resource' directly.
     // ref: https://stackoverflow.com/questions/48401943/firebase-storage-rules-custommetadata-not-working
     return resource.metadata == null || resource.metadata.status == null || resource.metadata.status != 'infected';
   }
