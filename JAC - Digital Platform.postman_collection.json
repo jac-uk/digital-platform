@@ -473,12 +473,12 @@
 							"raw": "{\r\n    \"data\": {\r\n        \"type\": \"error\",\r\n        \"description\": \"Boom\",\r\n        \"details\": {\r\n            \"stuff\": \"An error occured\",\r\n            \"things\": \"Here\"\r\n        }\r\n    }\r\n}\r\n"
 						},
 						"url": {
-							"raw": "{{host}}/logFile",
+							"raw": "{{host}}/logEvent",
 							"host": [
 								"{{host}}"
 							],
 							"path": [
-								"logFile"
+								"logEvent"
 							]
 						}
 					},
