@@ -59,6 +59,7 @@ app.post('/scan', async (req, res) => {
     console.log(`Filename = ${filename}`);
 
     // validate inputs
+    console.log(' - Validating inputs...');
     const bucketExists = await bucket.exists();
     if (!bucketExists) {
       throw 'Storage bucket not found';
@@ -68,22 +69,30 @@ app.post('/scan', async (req, res) => {
     if (!fileExists) {
       throw 'File not found in bucket';
     }
+    console.log(' - - Done');
 
     // download the file so it can be scanned locally
     tempPath = `/unscanned_files/${Date.now()}`;
-    console.log(` - Downloading file to local temp path: ${tempPath}`);
+    console.log(` - Downloading file to local temp path: ${tempPath}...`);
     await bucket.file(filename).download({ destination: tempPath });
+    console.log(' - - Done');
 
     // scan the file
+    console.log(' - Starting malware scan...');
     const result = await scanner.scanFile(tempPath);
     const status = result.indexOf('OK') > -1 ? 'clean' : 'infected';
-    console.log(` - Scan status: ${status}`);
+    console.log(' - - Done');
+    console.log(` - - File status: ${status}`);
 
     // add metadata with scan result
+    console.log(' - Adding metadata to file...');
     addMetadata(filename, status);
+    console.log(' - - Done');
 
-    // respond to API client
+    // respond to HTTP client
+    console.log(' - Returning HTTP respnose...');
     res.json({ message: result, status: status });
+    console.log(' - - Done');
 
   } catch(e) {
     console.error(' - Error processing the file: ', e);
@@ -94,7 +103,9 @@ app.post('/scan', async (req, res) => {
   } finally {
     // delete the temporary file
     if (tempPath) {
+      console.log(' - Deleting temp file...');
       fs.unlink(tempPath);
+      console.log(' - - Done');
     }
   }
 });
