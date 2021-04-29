@@ -76,33 +76,15 @@ app.post('/scan', async (req, res) => {
 
     // scan the file
     const result = await scanner.scanFile(tempPath);
+    const status = result.indexOf('OK') > -1 ? 'clean' : 'infected';
+    console.log(` - Scan status: ${status}`);
 
-    // delete the temporary file
-    fs.unlink(tempPath);
+    // add metadata with scan result
+    addMetadata(filename, status);
 
-    if (result.indexOf('OK') > -1) {
+    // respond to API client
+    res.json({ message: result, status: status });
 
-      // Log scan outcome for document
-      console.log(` - Scan status for ${filename}: CLEAN`);
-
-      // Add metadata with scan result
-      addMetadata(filename, 'clean');
-
-      // Respond to API client
-      res.json({ message: result, status: 'clean' });
-
-    } else {
-
-      // Log scan outcome for document
-      console.log(` - Scan status for ${filename}: INFECTED`);
-
-      // Add metadata with scan result
-      addMetadata(filename, 'infected');
-
-      // Respond to API client
-      res.json({ message: result, status: 'infected' });
-
-    }
   } catch(e) {
     console.error(' - Error processing the file: ', e);
     res.status(500).json({
