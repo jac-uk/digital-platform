@@ -1,12 +1,38 @@
 
 module.exports = (CONSTANTS) => {
   return {
+    newNotificationCharacterCheckRequest,
     newNotificationAssessmentRequest,
     newNotificationAssessmentReminder,
     newAssessment,
     newApplicationRecord,
     newVacancy,
   };
+
+  function newNotificationCharacterCheckRequest(firebase, replyTo, application) {
+    return {
+      email: application.personalDetails.email,
+      replyTo: replyTo,
+      template: {
+        name: 'Character Check Request',
+        id: '5a4e7cbb-ab66-49a4-a8ad-7cbb399a8aa9',
+      },
+      personalisation: {
+        exerciseName: 'exercise name',
+        dueDate: 'DUE DATE',
+        urlRequired: 'URL_HERE',
+        applicantName: application.personalDetails.fullName,
+        selectionExerciseManager: 'SE MANAGER',
+        exerciseMailbox: 'exercise-mailbox',
+      },
+      reference: {
+        collection: 'applications',
+        id: application.id,
+      },
+      createdAt: firebase.firestore.Timestamp.fromDate(new Date()),
+      status: 'ready',
+    };
+  }
 
   function newNotificationAssessmentRequest(firebase, assessment) {
     const link = `${CONSTANTS.ASSESSMENTS_URL}/sign-in?email=${assessment.assessor.email}&ref=assessments/${assessment.id}`;

@@ -1,6 +1,7 @@
 const { getAllDocuments, applyUpdates } = require('../../shared/helpers');
 
 module.exports = (config, firebase, db) => {
+  const { newNotificationCharacterCheckRequest } = require('../../shared/factories')(config);
   const slack = require('../../shared/slack')(config);
   return {
     updateApplication,
@@ -42,6 +43,7 @@ module.exports = (config, firebase, db) => {
   *   `items` (required) IDs of applications
   */
   async function sendCharacterCheckRequests(params) {
+    console.log('hey maria');
     const applicationIds = params.items;
     // get applications
     const applicationRefs = applicationIds.map(id => db.collection('applications').doc(id));
@@ -51,18 +53,19 @@ module.exports = (config, firebase, db) => {
     const commands = [];
     for (let i = 0, len = applications.length; i < len; ++i) {
       const application = applications[i];
-      // // create notification
-      // commands.push({
-      //   command: 'set',
-      //   ref: db.collection('notifications').doc(),
-      //   data: newNotificationCharacterCheckRequest(firebase, application),
-      // });
+      // create notification
+      commands.push({
+        command: 'set',
+        ref: db.collection('notifications').doc(),
+        data: newNotificationCharacterCheckRequest(firebase, 'maria.brookes@judicialappointments.digital', application),
+      });
       // update application
       commands.push({
         command: 'update',
         ref: application.ref,
         data: {
           'characterChecks.requestedAt': firebase.firestore.Timestamp.fromDate(new Date()),
+          'characterChecks.status': 'requested',
         },
       });
     }
