@@ -1,7 +1,7 @@
 const functions = require('firebase-functions');
 const config = require('../shared/config');
 const { firebase, db } = require('../shared/admin');
-const { onCandidatePersonalDetailsUpdate } = require('../actions/candidates/personalDetails/onUpdate')(config, firebase, db);
+const onCandidatePersonalDetailsUpdate = require('../actions/candidates/personalDetails/onUpdate')(config, firebase, db);
 
 module.exports = functions.region('europe-west2').firestore
   .document('candidates/{candidateId}/documents/personalDetails')

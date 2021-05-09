@@ -1,7 +1,7 @@
 const { applyUpdates } = require('../../../shared/helpers');
 
 module.exports = (config, firebase, db) => {
-  const { updateCandidate } = require('../candidates/search')(db);
+  const { updateCandidate } = require('../search')(db);
 
   return onUpdate;
 
