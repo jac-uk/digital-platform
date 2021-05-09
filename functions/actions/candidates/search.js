@@ -85,7 +85,6 @@ module.exports = (db) => {
     const commands = [];
     for (let i = 0, len = candidates.length; i < len; ++i) {
       const search = [];
-      search.push(candidateData[candidates[i].id].email);
       search.push(candidateData[candidates[i].id].nationalInsuranceNumber);
       // split full name into words
       const words = candidateData[candidates[i].id].fullName.toLowerCase().split(' ');
@@ -115,6 +114,16 @@ module.exports = (db) => {
             if (k > 0) { search.push(referenceNumber.substr(k, lenK)); }
           }
         }
+      }
+      // add email to search
+      for (let j = 0, lenJ = candidateData[candidates[i].id].email.length; j < lenJ; ++j) {
+        const letters = candidateData[candidates[i].id].email.substr(0, j + 1);
+        search.push(letters);
+      }
+      const domainPosition = candidateData[candidates[i].id].email.indexOf('@') + 1;
+      for (let j = 0, lenJ = candidateData[candidates[i].id].email.length - domainPosition; j < lenJ; ++j) {
+        const letters = candidateData[candidates[i].id].email.substr(domainPosition, j + 1);
+        search.push(letters);
       }
 
       commands.push({
