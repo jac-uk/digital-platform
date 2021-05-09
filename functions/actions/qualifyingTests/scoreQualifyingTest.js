@@ -64,10 +64,11 @@ module.exports = (config, firebase, db) => {
         data.isOutOfTime = true;
         data.exitedTest = true;
         data.status = config.QUALIFYING_TEST_RESPONSES.STATUS.COMPLETED;
-        // TODO: if the endDate is smaller than ended use the endDate
-        // qualifyingTest.endDate < ended ? qualifyingTest.endDate : ended; 
-        data['statusLog.completed'] = endedTimestamp;
-        
+        if (qualifyingTest.endDate.toMillis() < endedTimestamp.toMillis()) {
+          data['statusLog.completed'] = qualifyingTest.endDate;  
+        } else {
+          data['statusLog.completed'] = endedTimestamp;
+        }
       }
       if (Object.keys(data).length > 0) {
         data.lastUpdated = firebase.firestore.FieldValue.serverTimestamp();
