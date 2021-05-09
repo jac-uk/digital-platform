@@ -16,7 +16,7 @@ module.exports = (config, firebase, db) => {
       // update stats if status has changed
       const increment = firebase.firestore.FieldValue.increment(1);
       const decrement = firebase.firestore.FieldValue.increment(-1);
-      const exerciseId = dataBefore.exercise.id;
+      const exerciseId = dataBefore.exerciseId;
       const data = {};
       data[`applications.${dataBefore.status}`] = decrement;
       data[`applications.${dataAfter.status}`] = increment;
