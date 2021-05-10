@@ -8,11 +8,12 @@ exports.processNotifications = require('./scheduledFunctions/processNotification
 // exports.onExerciseCreate = require('./backgroundFunctions/onExerciseCreate');
 exports.onExerciseUpdate = require('./backgroundFunctions/onExerciseUpdate');
 exports.onApplicationCreate = require('./backgroundFunctions/onApplicationCreate');
-// exports.onApplicationUpdate = require('./backgroundFunctions/onApplicationUpdate');
+exports.onApplicationUpdate = require('./backgroundFunctions/onApplicationUpdate');
 exports.onAssessmentUpdate = require('./backgroundFunctions/onAssessmentUpdate');
 exports.onApplicationRecordUpdate = require('./backgroundFunctions/onApplicationRecordUpdate');
 exports.onQualifyingTestResponseUpdate = require('./backgroundFunctions/onQualifyingTestResponseUpdate');
 exports.onPanelUpdate = require('./backgroundFunctions/onPanelUpdate');
+exports.onCandidatePersonalDetailsUpdate = require('./backgroundFunctions/onCandidatePersonalDetailsUpdate');
 
 // Callable
 exports.generateDiversityReport = require('./callableFunctions/generateDiversityReport');
