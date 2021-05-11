@@ -5,15 +5,15 @@ const { checkArguments } = require('../shared/helpers.js');
 const { sendAssessmentReminders } = require('../actions/assessments')(config, firebase, db);
 
 module.exports = functions.region('europe-west2').https.onCall(async (data, context) => {
+  if (!context.auth) {
+    throw new functions.https.HttpsError('failed-precondition', 'The function must be called while authenticated.');
+  }
   if (!checkArguments({
     exerciseId: { required: true },
     assessmentId: { required: false },
     assessmentIds: { required: false },
   }, data)) {
     throw new functions.https.HttpsError('invalid-argument', 'Please provide valid arguments');
-  }
-  if (!context.auth) {
-    throw new functions.https.HttpsError('failed-precondition', 'The function must be called while authenticated.');
   }
   const result = await sendAssessmentReminders(data);
   return {
