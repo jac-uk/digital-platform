@@ -1,4 +1,4 @@
-const { getDocuments } = require('../../shared/helpers');
+const { getDocument, getDocuments } = require('../../shared/helpers');
 
 module.exports = (firebase, db) => {
   return {
@@ -6,6 +6,10 @@ module.exports = (firebase, db) => {
   };
 
   async function generateDiversityReport(exerciseId) {
+
+    // get exercise
+    const exercise = await getDocument(db.collection('exercises').doc(exerciseId));
+    if (!exercise) { return false; }
 
     // get submitted applications
     const applications = await getDocuments(db.collection('applications')
@@ -44,6 +48,7 @@ module.exports = (firebase, db) => {
 
 const diversityReport = (applications) => {
   return {
+    totalApplications: applications.length,
     gender: genderStats(applications),
     ethnicity: ethnicityStats(applications),
     disability: disabilityStats(applications),

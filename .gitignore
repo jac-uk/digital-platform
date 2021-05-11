@@ -100,3 +100,6 @@ output.csv
 
 # JSDoc
 out/
+
+# Local nodeScripts
+/nodeScripts/local

@@ -12,6 +12,7 @@ module.exports = {
   isDateInPast, // @TODO we want one set of date & exercise helpers (see actions/shared/converters)
   formatDate,
   getDate,
+  timeDifference,
 };
 
 async function getDocument(query) {
@@ -168,7 +169,27 @@ function toDateString(date) {
     .split('T')[0];
 }
 
-function formatDate(value) {
+function toTimeString(date) {
+  return new Date(date.getTime() - (date.getTimezoneOffset() * 60000))
+    .toISOString()
+    .split('T')[1];
+}
+
+function formatDate(value, type) {
+  value = convertToDate(value);
+  if (value) {
+    switch (type) {
+      case 'time':
+        value = toTimeString(value);
+        break;
+      default:
+        value = toDateString(value);
+    }
+  }
+  return value ? value : '';
+}
+
+function convertToDate(value) {
   if (value && (value.seconds !== undefined || value._seconds !== undefined)) { // convert firestore timestamp to date
     const seconds = value.seconds || value._seconds;
     const nanoseconds = value.nanoseconds || value._nanoseconds;
@@ -177,9 +198,20 @@ function formatDate(value) {
   }
   if (!isNaN(new Date(value).valueOf()) && value !== null) {
     if (!(value instanceof Date)) {
-      value = new Date(value);
+      return new Date(value);
     }
-    value = toDateString(value);
   }
-  return value ? value : '';
+  return value;
+}
+
+function timeDifference(date1, date2) {
+  date1 = convertToDate(date1);
+  date2 = convertToDate(date2);
+  if (date1 && date2) {
+    const timestamp1 = date1.getTime();
+    const timestamp2 = date2.getTime();
+    return timestamp2 - timestamp1;
+  } else {
+    return 0;
+  }
 }
