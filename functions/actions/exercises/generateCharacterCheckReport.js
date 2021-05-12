@@ -16,6 +16,20 @@ module.exports = (firebase, db) => {
   }
 
   function getHeaders() {
+    return [
+      {title: 'Ref', name: 'ref'},
+      {title: 'Name', name: 'name'},
+      {title: 'Email', name: 'email'},
+      {title: 'Citizenship', name: 'citizenship'},
+      {title: 'Date of Birth', name: 'dob'},
+      {title: 'Qualifications', name: 'qualifications'},
+      {title: 'Character', name: 'character'},
+    ];
+  }
 
+  function getRows(applications) {
+    return applications.map(application => {
+
+    });
   }
 };
