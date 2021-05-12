@@ -41,6 +41,7 @@ exports.generateReasonableAdjustmentsReport = require('./callableFunctions/gener
 exports.exportQualifyingTestResponses = require('./callableFunctions/exportQualifyingTestResponses');
 exports.generateAgencyReport = require('./callableFunctions/generateAgencyReport');
 exports.logEvent = require('./callableFunctions/logEvent');
+exports.generateCharacterCheckReport = require('./callableFunctions/generateCharacterCheckReport');
 
 
 // exports.onExerciseUpdate_PublishVacancy = require('./exercises/onExerciseUpdate_PublishVacancy');
