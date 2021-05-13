@@ -1,8 +1,8 @@
 const functions = require('firebase-functions');
-const config = require('../shared/config');
+const {getDocument} = require('../shared/helpers');
 const { firebase, db } = require('../shared/admin.js');
-const { checkArguments } = require('../shared/helpers.js');
-const { generateCharacterCheckReport } = require('../actions/exercises/generateCharacterCheckReport');
+const { getCharacterReport } = require('../actions/exercises/generateCharacterCheckReport')(firebase, db);
+const { logEvent } = require('../actions/logs/logEvent')(firebase, db);
 
 module.exports = functions.region('europe-west2').https.onCall(async (data, context) => {
   if (!context.auth) {
@@ -12,7 +12,7 @@ module.exports = functions.region('europe-west2').https.onCall(async (data, cont
   if (!(typeof data.exerciseId === 'string') || data.exerciseId.length === 0) {
     throw new functions.https.HttpsError('invalid-argument', 'Please specify an "exerciseId"');
   }
-  const result = await generateCharacterCheckReport(data.exerciseId);
+  const result = await getCharacterReport(data.exerciseId);
 
   // log character generation report generation request
   const exercise = await getDocument(db.collection('exercises').doc(data.exerciseId));

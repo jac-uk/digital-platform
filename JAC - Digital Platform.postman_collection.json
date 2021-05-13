@@ -1,6 +1,6 @@
 {
 	"info": {
-		"_postman_id": "793be5d7-47f2-4808-867b-ed60645daffc",
+		"_postman_id": "6fc71fa3-3200-4c33-808d-034589c2dfcc",
 		"name": "JAC - Digital Platform",
 		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
 	},
@@ -240,6 +240,43 @@
 							],
 							"path": [
 								"generateOutreachReport"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Generate Character Report",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{token}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"data\": {\r\n        \"exerciseId\": \"4Ufg5bAC2Gjx2YRve9WZ\"\r\n    }\r\n}"
+						},
+						"url": {
+							"raw": "{{host}}/generateCharacterCheckReport",
+							"host": [
+								"{{host}}"
+							],
+							"path": [
+								"generateCharacterCheckReport"
 							]
 						}
 					},
