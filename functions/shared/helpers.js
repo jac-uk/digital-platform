@@ -13,6 +13,7 @@ module.exports = {
   formatDate,
   getDate,
   timeDifference,
+  convertStringToSearchParts,
 };
 
 async function getDocument(query) {
@@ -214,4 +215,28 @@ function timeDifference(date1, date2) {
   } else {
     return 0;
   }
+}
+
+function convertStringToSearchParts(value, delimiter) {
+  const wordDelimiter = delimiter ? delimiter : ' ';
+  const words = value.toLowerCase().split(wordDelimiter);
+  const search = [];
+  for (let j = 0, lenJ = words.length; j < lenJ; ++j) {
+    // add previous word with word delimiter
+    for (let k = 0; k < j; ++k) {
+      const previousWords = words.slice(k, j).join(wordDelimiter);
+      search.push(`${previousWords}${wordDelimiter}`);
+    }
+    // add letters from word
+    for (let k = 0, lenK = words[j].length; k < lenK; ++k) {
+      const letters = words[j].substr(0, k + 1);
+      search.push(letters);
+      // add letters to previous word(s)
+      for (let l = 0; l < j; ++l) {
+        const previousWords = words.slice(l, j).join(wordDelimiter);
+        search.push(`${previousWords}${wordDelimiter}${letters}`);
+      }
+    }
+  }
+  return search;
 }
