@@ -167,7 +167,7 @@ module.exports = (firebase, db) => {
   }
 
   function getRows(applications) {
-    return applications.map(application => {
+    return applications.filter(a => (Boolean(a.referenceNumber))).map(application => {
       return {
         ref: application.referenceNumber,
         name: (application.personalDetails && application.personalDetails.fullName) ? application.personalDetails.fullName : '',
