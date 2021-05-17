@@ -125,12 +125,15 @@ module.exports = (firebase, db) => {
     if (info.furtherInformation) {
       characterInfo.push(condenseOffenceDetails(info.furtherInformationDetails, 'Further Information'));
     }
-    return characterInfo.join('\r\n\r\n\r\n'); //Each separate section should have space in the cell between them.
+    return characterInfo.filter(Boolean).join('\r\n\r\n\r\n'); //Each separate section should have space in the cell between them.
   }
 
   function condenseOffenceDetails(details, title) {
     //Join the offence details into 'date - title <br> details <br><br>date - title <br>....'...etc
-    const offences = details.filter(Boolean).map(detail => (`${formatDate(detail.date)}${typeof detail.title !== 'undefined' ? ` - ${detail.title}` : ''}\r\n${detail.details}`)).join('\r\n\r\n');
+    const offences = details.filter(Boolean).filter(d => (typeof d.details !== 'undefined')).map(detail => (`${formatDate(detail.date)}${typeof detail.title !== 'undefined' ? ` - ${detail.title}` : ''}\r\n${detail.details}`)).join('\r\n\r\n');
+    if (offences.length === 0) {
+      return false;
+    }
     return `${title.toUpperCase()}\r\n${offences}`;
   }
 
