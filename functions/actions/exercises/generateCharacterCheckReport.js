@@ -143,6 +143,9 @@ module.exports = (firebase, db) => {
       return '';
     }
     return application.qualifications.map(qualification => {
+      if (typeof qualification.type === 'undefined' || typeof qualification.data === 'undefined') {
+        return '';
+      }
       let description = `${qualification.type.toUpperCase()} - ${formatDate(qualification.date)}\r\n`;
       if (qualification.location) {
         description = description + qualification.location.replace('-', '/').toUpperCase() + '\r\n';
