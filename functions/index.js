@@ -36,6 +36,7 @@ exports.generateQualifyingTestReport = require('./callableFunctions/generateQual
 exports.exportExerciseData = require('./callableFunctions/exportExerciseData');
 exports.transferHandoverData = require('./callableFunctions/transferHandoverData');
 exports.exportApplicationContactsData = require('./callableFunctions/exportApplicationContactsData');
+exports.exportApplicationEligibilityIssues = require('./callableFunctions/exportApplicationEligibilityIssues');
 exports.generateHandoverReport = require('./callableFunctions/generateHandoverReport');
 exports.generateReasonableAdjustmentsReport = require('./callableFunctions/generateReasonableAdjustmentsReport');
 exports.exportQualifyingTestResponses = require('./callableFunctions/exportQualifyingTestResponses');
