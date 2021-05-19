@@ -8,6 +8,7 @@ exports.processNotifications = require('./scheduledFunctions/processNotification
 // exports.onExerciseCreate = require('./backgroundFunctions/onExerciseCreate');
 exports.onExerciseUpdate = require('./backgroundFunctions/onExerciseUpdate');
 exports.onApplicationCreate = require('./backgroundFunctions/onApplicationCreate');
+exports.onApplicationDelete = require('./backgroundFunctions/onApplicationDelete');
 exports.onApplicationUpdate = require('./backgroundFunctions/onApplicationUpdate');
 exports.onAssessmentUpdate = require('./backgroundFunctions/onAssessmentUpdate');
 exports.onApplicationRecordUpdate = require('./backgroundFunctions/onApplicationRecordUpdate');
