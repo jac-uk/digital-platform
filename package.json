@@ -13,7 +13,6 @@
     "serve": "firebase serve --only functions",
     "shell": "firebase functions:shell",
     "start": "npm run shell",
-    "deploy": "firebase deploy --only functions",
     "logs": "firebase functions:log",
     "nodeScript": "export GOOGLE_APPLICATION_CREDENTIALS='service-account.json' && run(){ node -r dotenv/config nodeScripts/$1; }; run",
     "staging:nodeScript": "export GOOGLE_APPLICATION_CREDENTIALS='service-account.staging.json' && run(){ node -r dotenv/config nodeScripts/$1; }; run",
