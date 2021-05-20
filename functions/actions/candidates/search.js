@@ -3,7 +3,7 @@
  * A set of methods to help keep candidate search & relationships data up to date
  */
 
-const { getDocument, getDocuments, applyUpdates } = require('../../shared/helpers');
+const { getDocument, getDocuments, applyUpdates, convertStringToSearchParts } = require('../../shared/helpers');
 
 module.exports = (db) => {
   return {
@@ -32,7 +32,9 @@ module.exports = (db) => {
     let candidates = [];
     if (candidateId) {
       const candidate = await getDocument(db.collection('candidates').doc(candidateId));
-      candidates.push(candidate);
+      if (candidate) {
+        candidates.push(candidate);
+      }
     } else {
       candidates = await getDocuments(db.collection('candidates').orderBy('created'));
     }
@@ -84,26 +86,10 @@ module.exports = (db) => {
     // construct update commands
     const commands = [];
     for (let i = 0, len = candidates.length; i < len; ++i) {
-      const search = [];
+      let search = [];
       search.push(candidateData[candidates[i].id].nationalInsuranceNumber);
-      // split full name into words
-      const words = candidateData[candidates[i].id].fullName.toLowerCase().split(' ');
-      for (let j = 0, lenJ = words.length; j < lenJ; ++j) {
-        // add letters from word
-        for (let k = 0, lenK = words[j].length; k < lenK; ++k) {
-          const letters = words[j].substr(0, k + 1);
-          search.push(letters);
-          if (j > 0) {
-            for (let l = j - 1; l >= 0; --l) {
-              search.push(`${words[l]} ${letters}`);
-            }
-          }
-        }
-        // add previous word with space
-        if (j > 0) {
-          search.push(`${words[j - 1]} `);
-        }
-      }
+      search = search.concat(convertStringToSearchParts(candidateData[candidates[i].id].fullName));
+
       // add reference numbers to search
       for (let j = 0, lenJ = candidateData[candidates[i].id].referenceNumbers.length; j < lenJ; ++j) {
         let referenceNumber = candidateData[candidates[i].id].referenceNumbers[j];
@@ -116,15 +102,7 @@ module.exports = (db) => {
         }
       }
       // add email to search
-      for (let j = 0, lenJ = candidateData[candidates[i].id].email.length; j < lenJ; ++j) {
-        const letters = candidateData[candidates[i].id].email.substr(0, j + 1);
-        search.push(letters);
-      }
-      const domainPosition = candidateData[candidates[i].id].email.indexOf('@') + 1;
-      for (let j = 0, lenJ = candidateData[candidates[i].id].email.length - domainPosition; j < lenJ; ++j) {
-        const letters = candidateData[candidates[i].id].email.substr(domainPosition, j + 1);
-        search.push(letters);
-      }
+      search = search.concat(convertStringToSearchParts(candidateData[candidates[i].id].email, '@'));
 
       commands.push({
         command: 'update',
