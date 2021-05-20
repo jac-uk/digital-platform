@@ -14,6 +14,6 @@
     "body-parser": "^1.19.0",
     "clamdjs": "^1.0.2",
     "express": "^4.17.1",
-    "nodemon": "^2.0.4"
+    "nodemon": "^2.0.7"
   }
 }
