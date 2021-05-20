@@ -48,12 +48,13 @@
     "firebase-admin": "^9.4.2",
     "firebase-functions": "^3.13.1",
     "firebase-functions-test": "^0.2.3",
-    "firebase-tools": "^8.20.0",
+    "firebase-tools": "^9.11.0",
     "googleapis": "^67.0.0",
     "notifications-node-client": "^4.9.0"
   },
   "devDependencies": {
     "@firebase/rules-unit-testing": "^1.1.9",
+    "@firebase/util": "^1.1.0",
     "csv-writer": "^1.6.0",
     "dotenv": "^8.2.0",
     "eslint": "^7.18.0",
