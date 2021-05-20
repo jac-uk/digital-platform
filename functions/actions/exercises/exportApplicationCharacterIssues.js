@@ -1,15 +1,14 @@
-const helpers = require('../../shared/converters/helpers');
 const { getDocuments, formatDate } = require('../../shared/helpers');
 
 module.exports = (firebase, db) => {
   return {
-    getCharacterReport,
+    exportApplicationCharacterIssues,
   };
 
-  async function getCharacterReport(eId) {
+  async function exportApplicationCharacterIssues(exerciseId) {
     // get submitted applications that have character check declarations
     const applications = await getDocuments(db.collection('applications')
-      .where('exerciseId', '==', eId));
+      .where('exerciseId', '==', exerciseId));
 
     return {
       total: applications.length,
