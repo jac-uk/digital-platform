@@ -5,6 +5,7 @@
 exports.processNotifications = require('./scheduledFunctions/processNotifications');
 
 // Background
+exports.onDelete = require('./backgroundFunctions/onDelete');
 // exports.onExerciseCreate = require('./backgroundFunctions/onExerciseCreate');
 exports.onExerciseUpdate = require('./backgroundFunctions/onExerciseUpdate');
 exports.onApplicationCreate = require('./backgroundFunctions/onApplicationCreate');
@@ -36,11 +37,13 @@ exports.generateQualifyingTestReport = require('./callableFunctions/generateQual
 exports.exportExerciseData = require('./callableFunctions/exportExerciseData');
 exports.transferHandoverData = require('./callableFunctions/transferHandoverData');
 exports.exportApplicationContactsData = require('./callableFunctions/exportApplicationContactsData');
+exports.exportApplicationEligibilityIssues = require('./callableFunctions/exportApplicationEligibilityIssues');
 exports.generateHandoverReport = require('./callableFunctions/generateHandoverReport');
 exports.generateReasonableAdjustmentsReport = require('./callableFunctions/generateReasonableAdjustmentsReport');
 exports.exportQualifyingTestResponses = require('./callableFunctions/exportQualifyingTestResponses');
 exports.generateAgencyReport = require('./callableFunctions/generateAgencyReport');
 exports.logEvent = require('./callableFunctions/logEvent');
+exports.generateCharacterCheckReport = require('./callableFunctions/generateCharacterCheckReport');
 
 
 // exports.onExerciseUpdate_PublishVacancy = require('./exercises/onExerciseUpdate_PublishVacancy');

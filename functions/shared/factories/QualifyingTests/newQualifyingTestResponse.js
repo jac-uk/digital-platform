@@ -8,7 +8,7 @@ module.exports = (config, firebase) => {
       qualifyingTest: {
         id: qualifyingTest.id,
         type: qualifyingTest.type,
-        isTieBreaker: qualifyingTest.isTieBreaker,
+        isTieBreaker: qualifyingTest.isTieBreaker ? qualifyingTest.isTieBreaker : false,
         title: qualifyingTest.title,
         startDate: qualifyingTest.startDate,
         endDate: qualifyingTest.endDate,
