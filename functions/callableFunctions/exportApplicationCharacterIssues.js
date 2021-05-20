@@ -1,7 +1,7 @@
 const functions = require('firebase-functions');
 const {getDocument} = require('../shared/helpers');
 const { firebase, db } = require('../shared/admin.js');
-const { getCharacterReport } = require('../actions/exercises/generateCharacterCheckReport')(firebase, db);
+const { exportApplicationCharacterIssues } = require('../actions/exercises/exportApplicationCharacterIssues')(firebase, db);
 const { logEvent } = require('../actions/logs/logEvent')(firebase, db);
 
 module.exports = functions.region('europe-west2').https.onCall(async (data, context) => {
@@ -12,7 +12,7 @@ module.exports = functions.region('europe-west2').https.onCall(async (data, cont
   if (!(typeof data.exerciseId === 'string') || data.exerciseId.length === 0) {
     throw new functions.https.HttpsError('invalid-argument', 'Please specify an "exerciseId"');
   }
-  const result = await getCharacterReport(data.exerciseId);
+  const result = await exportApplicationCharacterIssues(data.exerciseId);
 
   // log character generation report generation request
   const exercise = await getDocument(db.collection('exercises').doc(data.exerciseId));
@@ -24,7 +24,7 @@ module.exports = functions.region('europe-west2').https.onCall(async (data, cont
     id: context.auth.token.user_id,
     name: context.auth.token.name,
   };
-  await logEvent('info', 'Character Check report generated', details, user);
+  await logEvent('info', 'Application character issues exported', details, user);
 
   return result;
 });

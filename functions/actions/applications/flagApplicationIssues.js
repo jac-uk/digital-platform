@@ -85,9 +85,11 @@ module.exports = (config, db) => {
       if (characterIssues && characterIssues.length > 0) {
         data['flags.characterIssues'] = true;
         data['issues.characterIssues'] = characterIssues;
+        data['issues.characterInformation'] = applications[i].characterInformation ? applications[i].characterInformation : {};   // TODO this required data from this object needs to be included within the `issues.characterIssues` array itself. Just the **Details text I believe (see Admin UI)
       } else {
         data['flags.characterIssues'] = false;
         data['issues.characterIssues'] = [];
+        data['issues.characterInformation'] = {};
       }
 
       if (!isEmpty(data)) {

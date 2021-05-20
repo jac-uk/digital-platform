@@ -1,6 +1,6 @@
 {
 	"info": {
-		"_postman_id": "6fc71fa3-3200-4c33-808d-034589c2dfcc",
+		"_postman_id": "a2d09ee2-ee09-424e-bc16-f62d87315b22",
 		"name": "JAC - Digital Platform",
 		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
 	},
@@ -216,6 +216,40 @@
 					"response": []
 				},
 				{
+					"name": "Export Application Character Issues",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{token}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"data\": {\r\n        \"exerciseId\": \"4Ufg5bAC2Gjx2YRve9WZ\"\r\n    }\r\n}"
+						},
+						"url": {
+							"raw": "{{host}}exportApplicationCharacterIssues",
+							"host": [
+								"{{host}}exportApplicationCharacterIssues"
+							]
+						}
+					},
+					"response": []
+				},
+				{
 					"name": "Export Qualifying Test Responses",
 					"request": {
 						"auth": {
@@ -326,43 +360,6 @@
 							],
 							"path": [
 								"generateOutreachReport"
-							]
-						}
-					},
-					"response": []
-				},
-				{
-					"name": "Generate Character Report",
-					"request": {
-						"auth": {
-							"type": "bearer",
-							"bearer": [
-								{
-									"key": "token",
-									"value": "{{token}}",
-									"type": "string"
-								}
-							]
-						},
-						"method": "POST",
-						"header": [
-							{
-								"key": "Content-Type",
-								"value": "application/json",
-								"type": "text"
-							}
-						],
-						"body": {
-							"mode": "raw",
-							"raw": "{\r\n    \"data\": {\r\n        \"exerciseId\": \"4Ufg5bAC2Gjx2YRve9WZ\"\r\n    }\r\n}"
-						},
-						"url": {
-							"raw": "{{host}}/generateCharacterCheckReport",
-							"host": [
-								"{{host}}"
-							],
-							"path": [
-								"generateCharacterCheckReport"
 							]
 						}
 					},
@@ -627,6 +624,43 @@
 							],
 							"path": [
 								"initialiseQualifyingTest"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Scan File",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{token}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"data\": {\r\n        \"fileURL\": \"exercise/7Dw4spkbYr58Y0ITiiCS/application/QRIGGKZVRnEtPYrl7Jrg/assessor/j1q4dgAdTkWTJYQJHVFkPYcJgMm1/QRIGGKZVRnEtPYrl7Jrg-1.docx\"\r\n    }\r\n}\r\n"
+						},
+						"url": {
+							"raw": "{{host}}/scanFile",
+							"host": [
+								"{{host}}"
+							],
+							"path": [
+								"scanFile"
 							]
 						}
 					},
