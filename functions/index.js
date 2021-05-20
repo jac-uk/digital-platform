@@ -5,6 +5,7 @@
 exports.processNotifications = require('./scheduledFunctions/processNotifications');
 
 // Background
+exports.onDelete = require('./backgroundFunctions/onDelete');
 // exports.onExerciseCreate = require('./backgroundFunctions/onExerciseCreate');
 exports.onExerciseUpdate = require('./backgroundFunctions/onExerciseUpdate');
 exports.onApplicationCreate = require('./backgroundFunctions/onApplicationCreate');
