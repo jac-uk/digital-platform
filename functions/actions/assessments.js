@@ -238,6 +238,32 @@ module.exports = (config, firebase, db) => {
     return false;
   }
 
+
+  /**
+   * Checks that email addresses are present and valid for all assessments
+   *
+   * @param {collection} assessments to check
+   * @return true if all are valid and a {collection} of errors otherwise
+   */
+  async function validateAssessorEmailAddresses(assessments) {
+    const errors = [];
+
+    const emailRegEx = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    assessments.forEach(assessment => {
+      if (emailRegEx.test(assessment.assessor.email) === false) {
+        errors.push({
+          applicationRef: assessment.application.referenceNumber,
+          assessor: assessment.assessor,
+        });
+      }
+    });
+
+    if (errors.length) {
+      return { errors: errors };
+    }
+    return true;
+  }
+
   /**
   * sendAssessmentRequests
   * Sends a 'request for assessment' notification for each assessment
@@ -274,6 +300,11 @@ module.exports = (config, firebase, db) => {
     }
     const assessments = await getDocuments(assessmentsRef);
 
+    let result = validateAssessorEmailAddresses(assessments);
+    if (result !== true) {
+      return result;
+    }
+
     // create database commands
     const commands = [];
     let countDraft = 0;
@@ -305,7 +336,7 @@ module.exports = (config, firebase, db) => {
     }
 
     // write to db
-    const result = await applyUpdates(db, commands);
+    result = await applyUpdates(db, commands);
     return result ? assessments.length : false;
   }
 
@@ -335,6 +366,11 @@ module.exports = (config, firebase, db) => {
     }
     const assessments = await getDocuments(assessmentsRef);
 
+    let result = validateAssessorEmailAddresses(assessments);
+    if (result !== true) {
+      return result;
+    }
+
     // create database commands
     const commands = [];
     for (let i = 0, len = assessments.length; i < len; ++i) {
@@ -348,7 +384,7 @@ module.exports = (config, firebase, db) => {
     }
 
     // write to db
-    const result = await applyUpdates(db, commands);
+    result = await applyUpdates(db, commands);
     return result ? assessments.length : false;
   }
 
