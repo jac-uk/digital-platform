@@ -188,11 +188,11 @@ module.exports = (firebase, db) => {
     return applicationRecords.map((applicationRecord) => {
       const application = applicationRecord.application;
       return {
-        ref: application.referenceNumber,
-        name: (application.personalDetails && application.personalDetails.fullName) ? application.personalDetails.fullName : '',
-        email: (application.personalDetails && application.personalDetails.email) ? application.personalDetails.email : '',
-        citizenship: (application.personalDetails && application.personalDetails.citizenship) ? application.personalDetails.citizenship : '',
-        dob: (application.personalDetails && application.personalDetails.dateOfBirth) ? formatDate(application.personalDetails.dateOfBirth) : '',
+        ref: _.get(applicationRecord, 'application.referenceNumber', ''),
+        name: _.get(applicationRecord,'candidate.fullName', ''),
+        email: _.get(applicationRecord, 'application.personalDetails.email', ''),
+        citizenship: _.get(applicationRecord, 'application.personalDetails.citizenship', ''),
+        dob: formatDate(_.get(applicationRecord, 'application.personalDetails.dateOfBirth', '')),
         qualifications: getQualificationInformationString(application),
         character: getCharacterInformationString(application),
       };
