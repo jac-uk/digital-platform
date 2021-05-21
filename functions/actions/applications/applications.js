@@ -43,7 +43,6 @@ module.exports = (config, firebase, db) => {
   *   `items` (required) IDs of applications
   */
   async function sendCharacterCheckRequests(params) {
-    console.log('hey maria');
     const applicationIds = params.items;
     // get applications
     const applicationRefs = applicationIds.map(id => db.collection('applications').doc(id));

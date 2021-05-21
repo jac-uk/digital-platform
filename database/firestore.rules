@@ -118,6 +118,13 @@ service cloud.firestore {
                        resource.data.status == "draft" &&
                        request.resource.data.status in ['draft', 'applied'] &&
                        exerciseIsOpen(resource.data.exerciseId);
+      //Allow update if application status is in 'applied', but consent checks form not submitted
+       allow update: if resource.data.userId == currentUser() &&
+                        request.resource.data.userId == currentUser() &&
+                        (resource.data.status == "applied") &&
+                        (resource.data.characterChecks.status != "not requested") &&
+                        (request.resource.data.characterChecks.status in ['requested', 'submitted'];
+
       // allow JAC admins to edit an application @TODO restrict what can be changed and by which role
       allow update: if userIsAuthenticated() && userIsJAC();
     }
