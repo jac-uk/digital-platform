@@ -46,7 +46,7 @@
     "bottleneck": "^2.19.5",
     "firebase": "^8.4.2",
     "firebase-admin": "^9.4.2",
-    "firebase-functions": "^3.13.1",
+    "firebase-functions": "^3.13.2",
     "firebase-functions-test": "^0.2.3",
     "firebase-tools": "^9.11.0",
     "googleapis": "^67.0.0",
