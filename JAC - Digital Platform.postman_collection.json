@@ -559,6 +559,80 @@
 					"response": []
 				},
 				{
+					"name": "Send Assessment Requests",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{token}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"data\": {\r\n        \"exerciseId\": \"ZFF4xU8zNvneljZ8Ynsm\",\r\n        \"assessmentId\": \"07446ZzS5WFWuOn4ZPpV-1\"\r\n    }\r\n}"
+						},
+						"url": {
+							"raw": "{{host}}/sendAssessmentRequests",
+							"host": [
+								"{{host}}"
+							],
+							"path": [
+								"sendAssessmentRequests"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Send Assessment Reminders",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{token}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"data\": {\r\n        \"exerciseId\": \"ZFF4xU8zNvneljZ8Ynsm\",\r\n        \"assessmentId\": \"07446ZzS5WFWuOn4ZPpV-1\"\r\n    }\r\n}"
+						},
+						"url": {
+							"raw": "{{host}}/sendAssessmentReminders",
+							"host": [
+								"{{host}}"
+							],
+							"path": [
+								"sendAssessmentReminders"
+							]
+						}
+					},
+					"response": []
+				},
+				{
 					"name": "Cancel Assessments",
 					"request": {
 						"auth": {
