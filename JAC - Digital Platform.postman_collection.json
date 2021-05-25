@@ -238,7 +238,7 @@
 						],
 						"body": {
 							"mode": "raw",
-							"raw": "{\r\n    \"data\": {\r\n        \"exerciseId\": \"wdpALbyICL7ZxxN5AQt8\"\r\n    }\r\n}"
+							"raw": "{\r\n    \"data\": {\r\n        \"exerciseId\": \"wdpALbyICL7ZxxN5AQt8\",\r\n        \"stage\": \"selected\",\r\n        \"status\": \"invitedToSelectionDay\"\r\n    }\r\n}"
 						},
 						"url": {
 							"raw": "{{host}}/exportApplicationCharacterIssues",

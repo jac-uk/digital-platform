@@ -6,12 +6,21 @@ module.exports = (firebase, db) => {
     exportApplicationCharacterIssues,
   };
 
-  async function exportApplicationCharacterIssues(exerciseId) {
+  async function exportApplicationCharacterIssues(exerciseId, stage, status) {
 
     // get applicationRecords
-    const applicationRecords = await getDocuments(db.collection('applicationRecords')
+    let firestoreRef = db.collection('applicationRecords')
       .where('exercise.id', '==', exerciseId)
-      .where('flags.characterIssues', '==', true));
+      .where('flags.characterIssues', '==', true);
+    if (stage !== 'all') {
+      firestoreRef = firestoreRef.where('stage', '==', stage);
+    }
+    if (status !== 'all') {
+      firestoreRef = firestoreRef.where('status', '==', status);
+    } else {
+      firestoreRef = firestoreRef.where('status', '!=', 'withdrewApplication');
+    }
+    const applicationRecords = await getDocuments(firestoreRef);
 
     // add applications
     for (let i = 0, len = applicationRecords.length; i < len; i++) {
