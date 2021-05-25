@@ -238,12 +238,15 @@
 						],
 						"body": {
 							"mode": "raw",
-							"raw": "{\r\n    \"data\": {\r\n        \"exerciseId\": \"4Ufg5bAC2Gjx2YRve9WZ\"\r\n    }\r\n}"
+							"raw": "{\r\n    \"data\": {\r\n        \"exerciseId\": \"wdpALbyICL7ZxxN5AQt8\"\r\n    }\r\n}"
 						},
 						"url": {
-							"raw": "{{host}}exportApplicationCharacterIssues",
+							"raw": "{{host}}/exportApplicationCharacterIssues",
 							"host": [
-								"{{host}}exportApplicationCharacterIssues"
+								"{{host}}"
+							],
+							"path": [
+								"exportApplicationCharacterIssues"
 							]
 						}
 					},

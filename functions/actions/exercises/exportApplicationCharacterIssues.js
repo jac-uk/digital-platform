@@ -1,4 +1,5 @@
-const { getDocuments, formatDate } = require('../../shared/helpers');
+const { getDocuments, getDocument, formatDate } = require('../../shared/helpers');
+const _ = require('lodash');
 
 module.exports = (firebase, db) => {
   return {
@@ -6,16 +7,28 @@ module.exports = (firebase, db) => {
   };
 
   async function exportApplicationCharacterIssues(exerciseId) {
-    // get submitted applications that have character check declarations
-    const applications = await getDocuments(db.collection('applications')
-      .where('exerciseId', '==', exerciseId));
 
+    // get applicationRecords
+    const applicationRecords = await getDocuments(db.collection('applicationRecords')
+      .where('exercise.id', '==', exerciseId)
+      .where('flags.characterIssues', '==', true));
+
+    // add applications
+    for (let i = 0, len = applicationRecords.length; i < len; i++) {
+      const applicationRecord = applicationRecords[i];
+      applicationRecords[i].application = await getDocument(
+        db.collection('applications').doc(applicationRecord.application.id)
+      );
+    }
+
+    // return data for export
     return {
-      total: applications.length,
+      total: applicationRecords.length,
       createdAt: firebase.firestore.Timestamp.fromDate(new Date()),
       headers: getHeaders(),
-      rows: getRows(applications),
+      rows: getRows(applicationRecords),
     };
+
   }
 
   function getCharacterInformationString(application) {
@@ -171,14 +184,15 @@ module.exports = (firebase, db) => {
     ];
   }
 
-  function getRows(applications) {
-    return applications.filter(a => (Boolean(a.referenceNumber))).map(application => {
+  function getRows(applicationRecords) {
+    return applicationRecords.map((applicationRecord) => {
+      const application = applicationRecord.application;
       return {
-        ref: application.referenceNumber,
-        name: (application.personalDetails && application.personalDetails.fullName) ? application.personalDetails.fullName : '',
-        email: (application.personalDetails && application.personalDetails.email) ? application.personalDetails.email : '',
-        citizenship: (application.personalDetails && application.personalDetails.citizenship) ? application.personalDetails.citizenship : '',
-        dob: (application.personalDetails && application.personalDetails.dateOfBirth) ? formatDate(application.personalDetails.dateOfBirth) : '',
+        ref: _.get(applicationRecord, 'application.referenceNumber', ''),
+        name: _.get(applicationRecord,'candidate.fullName', ''),
+        email: _.get(applicationRecord, 'application.personalDetails.email', ''),
+        citizenship: _.get(applicationRecord, 'application.personalDetails.citizenship', ''),
+        dob: formatDate(_.get(applicationRecord, 'application.personalDetails.dateOfBirth', '')),
         qualifications: getQualificationInformationString(application),
         character: getCharacterInformationString(application),
       };
