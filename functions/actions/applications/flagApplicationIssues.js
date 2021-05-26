@@ -85,11 +85,9 @@ module.exports = (config, db) => {
       if (characterIssues && characterIssues.length > 0) {
         data['flags.characterIssues'] = true;
         data['issues.characterIssues'] = characterIssues;
-        data['issues.characterInformation'] = applications[i].characterInformation ? applications[i].characterInformation : {};   // TODO this required data from this object needs to be included within the `issues.characterIssues` array itself. Just the **Details text I believe (see Admin UI)
       } else {
         data['flags.characterIssues'] = false;
         data['issues.characterIssues'] = [];
-        data['issues.characterInformation'] = {};
       }
 
       if (!isEmpty(data)) {
@@ -230,7 +228,17 @@ module.exports = (config, db) => {
     if (questions) {
       Object.keys(questions).forEach(key => {
         if (answers[key]) {
-          issues.push(newIssue(key));
+          const summary = questions[key].summary;
+          if (answers[questions[key].details]) {
+            if (Array.isArray(answers[questions[key].details])) { // if the answer contains more than one issue, create an issue for each
+              issues.push(newIssue(key, summary, answers[questions[key].details]));
+            } else {
+              const ans = answers[questions[key].details]; // else just create one issue for the answer
+              issues.push(newIssue(key, summary, [ans]));
+            }
+          } else { // answer has no details
+            issues.push(newIssue(key, summary));
+          }
         }
       });
     } else {
@@ -320,10 +328,11 @@ class Duration {
   }
 }
 
-const newIssue = (type, summary) => {
+const newIssue = (type, summary, events) => {
   return {
     type: type,
     summary: summary ? summary : '',
+    events: events ? events : '',
     result: '',
     comments: '',
   };
