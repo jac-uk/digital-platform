@@ -9,21 +9,30 @@ module.exports = (CONSTANTS) => {
     newVacancy,
   };
 
-  function newNotificationCharacterCheckRequest(firebase, replyTo, application) {
+  function newNotificationCharacterCheckRequest(firebase, application, type, exerciseMailbox, exerciseManagerName, dueDate) {
+    let templateId = '';
+    let templateName = '';
+    if (type === 'request') {
+      templateId = '5a4e7cbb-ab66-49a4-a8ad-7cbb399a8aa9';
+      templateName = 'Character Check Request';
+    } else {
+      templateId = '5a4e7cbb-ab66-49a4-a8ad-7cbb399a8aa9'; // need a different reminder template
+      templateName = 'Character Check Reminder';
+    }
     return {
       email: application.personalDetails.email,
-      replyTo: replyTo,
+      replyTo: exerciseMailbox,
       template: {
-        name: 'Character Check Request',
-        id: '5a4e7cbb-ab66-49a4-a8ad-7cbb399a8aa9',
+        name: templateName,
+        id: templateId,
       },
       personalisation: {
-        exerciseName: 'exercise name',
-        dueDate: 'DUE DATE',
-        urlRequired: 'URL_HERE',
+        exerciseName: application.exerciseName,
+        dueDate: dueDate,
+        urlRequired: `${CONSTANTS.APPLY_URL}/sign-in`,
         applicantName: application.personalDetails.fullName,
-        selectionExerciseManager: 'SE MANAGER',
-        exerciseMailbox: 'exercise-mailbox',
+        selectionExerciseManager: exerciseManagerName,
+        exerciseMailbox: exerciseMailbox,
       },
       reference: {
         collection: 'applications',
@@ -190,6 +199,9 @@ module.exports = (CONSTANTS) => {
       application: {
         id: application.id,
         referenceNumber: application.referenceNumber,
+      },
+      characterChecks: {
+        status: 'not requested',
       },
       active: true,
       stage: 'review',

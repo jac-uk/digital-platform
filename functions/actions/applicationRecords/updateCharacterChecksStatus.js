@@ -1,4 +1,4 @@
-const { getDocument, getDocuments, applyUpdates, getDocumentsFromQueries } = require('../../shared/helpers');
+const { applyUpdates, getDocumentsFromQueries } = require('../../shared/helpers');
 
 module.exports = (config, firebase, db) => {
 
@@ -19,27 +19,39 @@ module.exports = (config, firebase, db) => {
     // get application records from reference numbers
     if (params.referenceNumbers && params.referenceNumbers.length) {
       const queries = params.referenceNumbers.map(referenceNumber => {
-        console.log('r', referenceNumber);
-        console.log('r2', params.exerciseId);
         return db.collection('applicationRecords')
           .where('exercise.id', '==', params.exerciseId)
           .where('application.id', '==', referenceNumber)
           .select('ref');
       });
       applicationRecords = await getDocumentsFromQueries(queries);
-      console.log(applicationRecords);
+    }
+    let field = '';
+    switch (params.status) {
+      case 'requested':
+        field = 'characterChecks.requestedAt';
+        break;
+      case 'reminder sent':
+        field = 'characterChecks.reminderSentAt';
+        break;
+      case 'completed':
+        field = 'characterChecks.completedAt';
+        break;
+      case null || undefined:
+        throw 'Error';
     }
 
     //construct db commands
     const commands = [];
     for (let i = 0, len = applicationRecords.length; i < len; ++i) {
       const applicationRecord = applicationRecords[i];
-      commands.push({
-        command: 'update',
-        ref: applicationRecord.ref,
-        data: {
-          'characterChecks.status': params.status,
-          'characterChecks.requestedAt': firebase.firestore.FieldValue.serverTimestamp(),
+
+        commands.push({
+          command: 'update',
+          ref: applicationRecord.ref,
+          data: {
+            'characterChecks.status': params.status,
+            [field]: firebase.firestore.Timestamp.fromDate(new Date()),
         },
       });
     }

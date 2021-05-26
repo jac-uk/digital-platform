@@ -44,6 +44,10 @@ module.exports = (config, firebase, db) => {
   */
   async function sendCharacterCheckRequests(params) {
     const applicationIds = params.items;
+    const type = params.type;
+    const exerciseMailbox = params.exerciseMailbox;
+    const exerciseManagerName = params.exerciseManagerName;
+    const dueDate = params.dueDate;
     // get applications
     const applicationRefs = applicationIds.map(id => db.collection('applications').doc(id));
     const applications = await getAllDocuments(db, applicationRefs);
@@ -56,7 +60,7 @@ module.exports = (config, firebase, db) => {
       commands.push({
         command: 'set',
         ref: db.collection('notifications').doc(),
-        data: newNotificationCharacterCheckRequest(firebase, 'maria.brookes@judicialappointments.digital', application),
+        data: newNotificationCharacterCheckRequest(firebase, application, type, exerciseMailbox, exerciseManagerName, dueDate),
       });
       // update application
       commands.push({

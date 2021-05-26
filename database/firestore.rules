@@ -123,7 +123,7 @@ service cloud.firestore {
                         request.resource.data.userId == currentUser() &&
                         (resource.data.status == "applied") &&
                         (resource.data.characterChecks.status != "not requested") &&
-                        (request.resource.data.characterChecks.status in ['requested', 'submitted'];
+                        (request.resource.data.characterChecks.status in ['requested', 'reminder sent', 'completed'];
 
       // allow JAC admins to edit an application @TODO restrict what can be changed and by which role
       allow update: if userIsAuthenticated() && userIsJAC();

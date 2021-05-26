@@ -7,6 +7,10 @@ const { sendCharacterCheckRequests } = require('../actions/applications/applicat
 module.exports = functions.region('europe-west2').https.onCall(async (data, context) => {
   if (!checkArguments({
     items: { required: true },
+    type: { required: true },
+    exerciseMailbox: { required: true },
+    exerciseManagerName: { required: true },
+    dueDate: { required: true }
   }, data)) {
     throw new functions.https.HttpsError('invalid-argument', 'Please provide valid arguments');
   }

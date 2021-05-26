@@ -19,7 +19,6 @@ module.exports = functions.region('europe-west2').https.onCall(async (data, cont
   }
   const result = await updateCharacterChecksStatus(data);
   return {
-    //result: result,
-    result: 'OKAY!',
+    result: result,
   };
 });
