@@ -5,7 +5,7 @@
 
 const { getDocument, getDocuments, applyUpdates, convertStringToSearchParts } = require('../../shared/helpers');
 
-module.exports = (db) => {
+module.exports = (firebase, db) => {
   return {
     updateAllCandidates,
     updateCandidate,
@@ -16,6 +16,7 @@ module.exports = (db) => {
    * @returns boolean (true => success)
    */
   async function updateCandidate(candidateId) {
+    if (!candidateId) { return false; }
     const qtyUpdated = await updateAllCandidates(candidateId);
     return qtyUpdated !== false;
   }
@@ -117,6 +118,7 @@ module.exports = (db) => {
             referenceNumbers: candidateData[candidates[i].id].referenceNumbers,
             totalApplications: Object.keys(candidateData[candidates[i].id].applicationsMap).length,
           },
+          lastUpdated: firebase.firestore.FieldValue.serverTimestamp(),
         },
       });
     }
