@@ -72,17 +72,6 @@ module.exports = (firebase, db) => {
       { title: 'Location Preferences', name: 'locationPreferences' },
       { title: 'Jurisdiction Preferences', name: 'jurisdictionPreferences' },
       { title: 'Qualifications', name: 'qualifications' },
-      { title: 'SRA - Admission to the roll', name: 'sraDate' },
-      { title: 'SRA - Registration No.', name: 'sraNumber' },
-      { title: 'BSB - Called to the Bar', name: 'bsbDate' },
-      { title: 'BSB - Registration No.', name: 'bsbNumber' },
-      { title: 'JCIO - Juidicial Office', ref: 'jcioOffice' },
-      { title: 'JCIO - Juidicial Posts', name: 'jcioPosts' },
-      { title: 'HMRC - VAT Number(s)', name: 'hmrcVATNumbers' },
-      { title: 'GMC - Membership Date', name: 'gmcDate' },
-      { title: 'GMC - Membership No.', name: 'gmcNumber' },
-      { title: 'RISC - Membership Date', name: 'riscDate' },
-      { title: 'RISC - Membership No.', name: 'riscNumber' },
       { title: 'Post-qualification Experience', name: 'postQualificationExperience' },
       { title: 'Judicial Experience', name: 'judicialExperience' },
     ];
@@ -106,7 +95,6 @@ module.exports = (firebase, db) => {
         locationPreferences: getLocationPreferencesString(application),
         jurisdictionPreferences: getJurisdictionPreferencesString(application),
         qualifications: getQualificationInformationString(application),
-        ...getMembershipData(application),
         postQualificationExperience: getPostQualificationExperienceString(application),
         judicialExperience: getJudicialExperienceString(application),
       };
@@ -308,25 +296,6 @@ module.exports = (firebase, db) => {
       return false;
     }
     return `${title.toUpperCase()}\r\n${offences}`;
-  }
-
-  function getMembershipData(application) {
-    const qualifications = application.qualifications || [];
-    const sra = qualifications.find((qualification) => qualification.type === 'solicitor');
-    const bsb = qualifications.find((qualification) => qualification.type === 'barrister');
-    return {
-      sraDate: sra ? helpers.formatDate(sra.date) : '',
-      sraNumber: sra ? sra.membershipNumber || '' : '',
-      bsbDate: bsb ? helpers.formatDate(bsb.date) : '',
-      bsbNumber: bsb ? bsb.membershipNumber || '' : '',
-      jcioOffice: helpers.toYesNo(application.feePaidOrSalariedJudge) || '',
-      jcioPosts: application.experience ? application.experience.map(e => e.jobTitle).join(', ') : '',
-      hmrcVATNumbers: application.personalDetails.hasVATNumbers ? application.personalDetails.VATNumbers.map(e => e.VATNumber).join(', ') : '',
-      gmcDate: helpers.formatDate(application.generalMedicalCouncilDate) || '',
-      gmcNumber: application.generalMedicalCouncilNumber || '',
-      riscDate: helpers.formatDate(application.royalInstitutionCharteredSurveyorsDate) || '',
-      riscNumber: application.royalInstitutionCharteredSurveyorsNumber || '',
-    };
   }
 
   function getPostQualificationExperienceString(application)
