@@ -3,6 +3,7 @@ const { getDocument, getDocuments, applyUpdates } = require('../shared/helpers')
 module.exports = (config, firebase, db) => {
   const { newApplicationRecord } = require('../shared/factories')(config);
   const newQualifyingTestResponse = require('../shared/factories/QualifyingTests/newQualifyingTestResponse')(config, firebase);
+  const { logEvent } = require('./logs/logEvent')(firebase, db);
 
   return {
     initialiseApplicationRecords,  // @TODO this will be removed once we have database triggers turned on *and* existing exercises have been initialised
@@ -45,6 +46,15 @@ module.exports = (config, firebase, db) => {
       // do the updates
       if (Object.keys(data).length > 0) {
         await db.doc(`exercises/${exerciseId}`).update(data);
+
+        logEvent('info', 'Application status/stage changed', {
+          applicationId: dataAfter.application.id,
+          candidateName: dataAfter.candidate.fullName,
+          exerciseRef: dataAfter.exercise.referenceNumber,
+          status: dataAfter.status,
+          stage: dataAfter.stage,
+          empApplied: dataAfter.flags.empApplied,
+        });
       }
     }
 
