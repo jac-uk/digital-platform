@@ -72,7 +72,7 @@ module.exports = {
       declaredBankruptOrIVA: {
         title: 'Declared Bankrupt Or IVA',
         details: 'declaredBankruptOrIVADetails',
-        summary: 'Candidate has been convicted of a criminal offence',
+        summary: 'Candidate has been declared bankrupt or entered into an Individual Voluntary Agreement (IVA)',
       },
       diciplinaryActionOrAskedToResign: {
         title: 'Disciplinary Action Or Asked To Resign',
