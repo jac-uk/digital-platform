@@ -339,6 +339,10 @@
           "order": "ASCENDING"
         },
         {
+          "fieldPath": "stage",
+          "order": "ASCENDING"
+        },
+        {
           "fieldPath": "status",
           "order": "ASCENDING"
         }
@@ -354,6 +358,10 @@
         },
         {
           "fieldPath": "flags.characterIssues",
+          "order": "ASCENDING"
+        },
+        {
+          "fieldPath": "stage",
           "order": "ASCENDING"
         },
         {
@@ -376,6 +384,10 @@
         },
         {
           "fieldPath": "flags.characterIssues",
+          "order": "ASCENDING"
+        },
+        {
+          "fieldPath": "stage",
           "order": "ASCENDING"
         },
         {
@@ -401,10 +413,6 @@
           "order": "ASCENDING"
         },
         {
-          "fieldPath": "stage",
-          "order": "ASCENDING"
-        },
-        {
           "fieldPath": "status",
           "order": "ASCENDING"
         }
@@ -420,10 +428,6 @@
         },
         {
           "fieldPath": "flags.characterIssues",
-          "order": "ASCENDING"
-        },
-        {
-          "fieldPath": "stage",
           "order": "ASCENDING"
         },
         {
@@ -446,10 +450,6 @@
         },
         {
           "fieldPath": "flags.characterIssues",
-          "order": "ASCENDING"
-        },
-        {
-          "fieldPath": "stage",
           "order": "ASCENDING"
         },
         {
