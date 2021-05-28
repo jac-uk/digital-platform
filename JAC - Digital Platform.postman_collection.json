@@ -238,7 +238,7 @@
 						],
 						"body": {
 							"mode": "raw",
-							"raw": "{\r\n    \"data\": {\r\n        \"exerciseId\": \"wdpALbyICL7ZxxN5AQt8\"\r\n    }\r\n}"
+							"raw": "{\r\n    \"data\": {\r\n        \"exerciseId\": \"wdpALbyICL7ZxxN5AQt8\",\r\n        \"stage\": \"selected\",\r\n        \"status\": \"invitedToSelectionDay\"\r\n    }\r\n}"
 						},
 						"url": {
 							"raw": "{{host}}/exportApplicationCharacterIssues",
@@ -553,6 +553,43 @@
 							],
 							"path": [
 								"logEvent"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Flag Application Issues",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{token}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"data\": {\r\n        \"exerciseId\": \"wdpALbyICL7ZxxN5AQt8\"\r\n    }\r\n}\r\n"
+						},
+						"url": {
+							"raw": "{{host}}/flagApplicationIssuesForExercise",
+							"host": [
+								"{{host}}"
+							],
+							"path": [
+								"flagApplicationIssuesForExercise"
 							]
 						}
 					},

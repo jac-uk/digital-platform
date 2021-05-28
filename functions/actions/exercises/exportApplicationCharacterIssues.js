@@ -1,3 +1,5 @@
+const lookup = require('../../shared/converters/lookup');
+const helpers = require('../../shared/converters/helpers');
 const { getDocuments, getDocument, formatDate } = require('../../shared/helpers');
 const _ = require('lodash');
 
@@ -6,12 +8,21 @@ module.exports = (firebase, db) => {
     exportApplicationCharacterIssues,
   };
 
-  async function exportApplicationCharacterIssues(exerciseId) {
+  async function exportApplicationCharacterIssues(exerciseId, stage, status) {
 
     // get applicationRecords
-    const applicationRecords = await getDocuments(db.collection('applicationRecords')
+    let firestoreRef = db.collection('applicationRecords')
       .where('exercise.id', '==', exerciseId)
-      .where('flags.characterIssues', '==', true));
+      .where('flags.characterIssues', '==', true);
+    if (stage !== 'all') {
+      firestoreRef = firestoreRef.where('stage', '==', stage);
+    }
+    if (status !== 'all') {
+      firestoreRef = firestoreRef.where('status', '==', status);
+    } else {
+      firestoreRef = firestoreRef.where('status', '!=', 'withdrewApplication');
+    }
+    const applicationRecords = await getDocuments(firestoreRef);
 
     // add applications
     for (let i = 0, len = applicationRecords.length; i < len; i++) {
@@ -29,6 +40,144 @@ module.exports = (firebase, db) => {
       rows: getRows(applicationRecords),
     };
 
+  }
+
+  function getHeaders() {
+    return [
+      { title: 'Ref', name: 'ref' },
+      { title: 'Name', name: 'name' },
+      { title: 'Email', name: 'email' },
+      { title: 'Phone', name: 'phone' },
+      { title: 'Date of Birth', name: 'dob' },
+      { title: 'NI Number', name: 'nationalInsuranceNumber' },
+      { title: 'Citizenship', name: 'citizenship '},
+      { title: 'Reasonable Adjustments', name: 'reasonableAdjustments' },
+      { title: 'Character Information', name: 'characterInformation' },
+      { title: 'Agreed to share data', name: 'shareData' },
+      { title: 'Professional background', name: 'professionalBackground' },
+      { title: 'Current legal role', name: 'currentLegalRole' },
+      { title: 'Held fee-paid judicial role', name: 'feePaidJudicialRole' },
+      { title: 'Attended state or fee-paying school', name: 'stateOrFeeSchool' },
+      { title: 'Attended Oxbridge universities', name: 'oxbridgeUni' },
+      { title: 'First generation to go to university', name: 'firstGenerationStudent' },
+      { title: 'Ethnic group', name: 'ethnicGroup' },
+      { title: 'Gender', name: 'gender' },
+      { title: 'Gender is the same as sex assigned at birth', name: 'changedGender' },
+      { title: 'Sexual orientation', name: 'sexualOrientation' },
+      { title: 'Disability', name: 'disability' },
+      { title: 'Religion or faith', name: 'religionFaith' },
+      { title: 'Attended Outreach events', name: 'attendedOutreachEvents'},
+      { title: 'Participated in a Judicial Workshadowing Scheme', name: 'participatedInJudicialWorkshadowingScheme' },
+      { title: 'Participated in Pre-Application Judicial Education programme', name: 'hasTakenPAJE' },
+      { title: 'Location Preferences', name: 'locationPreferences' },
+      { title: 'Jurisdiction Preferences', name: 'jurisdictionPreferences' },
+      { title: 'Qualifications', name: 'qualifications' },
+      { title: 'Post-qualification Experience', name: 'postQualificationExperience' },
+      { title: 'Judicial Experience', name: 'judicialExperience' },
+    ];
+  }
+
+  function getRows(applicationRecords) {
+    return applicationRecords.map((applicationRecord) => {
+      const application = applicationRecord.application;
+
+      return {
+        ref: _.get(applicationRecord, 'application.referenceNumber', ''),
+        name: _.get(applicationRecord,'candidate.fullName', ''),
+        email: _.get(applicationRecord, 'application.personalDetails.email', ''),
+        phone: _.get(applicationRecord, 'application.personalDetails.phone', ''),
+        dob: formatDate(_.get(applicationRecord, 'application.personalDetails.dateOfBirth', '')),
+        nationalInsuranceNumber: _.get(applicationRecord, 'application.personalDetails.nationalInsuranceNumber', ''),
+        citizenship: _.get(applicationRecord, 'application.personalDetails.citizenship', ''),
+        reasonableAdjustments: _.get(applicationRecord, 'application.personalDetails.reasonableAdjustmentsDetails', ''),
+        characterInformation: getCharacterInformationString(application),
+        ...getEqualityAndDiversityData(application),
+        locationPreferences: getLocationPreferencesString(application),
+        jurisdictionPreferences: getJurisdictionPreferencesString(application),
+        qualifications: getQualificationInformationString(application),
+        postQualificationExperience: getPostQualificationExperienceString(application),
+        judicialExperience: getJudicialExperienceString(application),
+      };
+    });
+  }
+
+  function getEqualityAndDiversityData (application) {
+    const survey = application.equalityAndDiversitySurvey;
+    const share = (value) => survey.shareData ? value : null;
+
+    let formattedFeePaidJudicialRole;
+    if (survey.shareData) {
+      formattedFeePaidJudicialRole = helpers.toYesNo(lookup(survey.feePaidJudicialRole));
+      if (survey.feePaidJudicialRole === 'other-fee-paid-judicial-office') {
+        formattedFeePaidJudicialRole = `${formattedFeePaidJudicialRole}\n${survey.otherFeePaidJudicialRoleDetails}`;
+      }
+    }
+
+    const formattedDiversityData = {
+      shareData: helpers.toYesNo(survey.shareData),
+      professionalBackground: share(survey.professionalBackground.map(position => lookup(position)).join(', ')),
+      formattedFeePaidJudicialRole: formattedFeePaidJudicialRole || null,
+      stateOrFeeSchool: share(lookup(survey.stateOrFeeSchool)),
+      firstGenerationStudent: share(helpers.toYesNo(lookup(survey.firstGenerationStudent))),
+      ethnicGroup: share(lookup(survey.ethnicGroup)),
+      gender: share(lookup(survey.gender)),
+      sexualOrientation: share(lookup(survey.sexualOrientation)),
+      disability: share(survey.disability ? survey.disabilityDetails : helpers.toYesNo(survey.disability)),
+      religionFaith: share(lookup(survey.religionFaith)),
+      attendedOutreachEvents : share(helpers.toYesNo(lookup(survey.attendedOutreachEvents))),
+    };
+
+    if (this.exerciseType === 'legal' || this.exerciseType === 'leadership') {
+      formattedDiversityData.participatedInJudicialWorkshadowingScheme = share(helpers.toYesNo(lookup(survey.participatedInJudicialWorkshadowingScheme)));
+      formattedDiversityData.hasTakenPAJE = share(helpers.toYesNo(lookup(survey.hasTakenPAJE)));
+    }
+
+    return formattedDiversityData;
+  }
+
+  function getLocationPreferencesString(application)
+  {
+    if (!application.locationPreferences) {
+      return '';
+    }
+    if (Array.isArray(application.locationPreferences)) {
+      return application.locationPreferences.join('\r\n');
+    }
+    return application.locationPreferences;
+  }
+
+  function getJurisdictionPreferencesString(application)
+  {
+    if (!application.jurisdictionPreferences) {
+      return '';
+    }
+    if (Array.isArray(application.jurisdictionPreferences)) {
+      return application.jurisdictionPreferences.join('\r\n');
+    }
+    return application.jurisdictionPreferences;
+  }
+
+  function getQualificationInformationString(application)
+  {
+    if (!application.qualifications || application.qualifications.length === 0) {
+      return '';
+    }
+    return application.qualifications.map(qualification => {
+      if (typeof qualification.type === 'undefined' || typeof qualification.data === 'undefined') {
+        return '';
+      }
+      let description = `${qualification.type.toUpperCase()} - ${formatDate(qualification.date)}\r\n`;
+      if (qualification.location) {
+        description = description + qualification.location.replace('-', '/').toUpperCase() + '\r\n';
+      }
+      if (qualification.calledToBarDate) {
+        description = description + `Called to the bar: ${formatDate(qualification.calledToBarDate)}\r\n`;
+      }
+      if (qualification.details) {
+        description = description + `${qualification.details}\r\n`;
+      }
+      return description;
+    }).join('\r\n\r\n\r\n').trim();
   }
 
   function getCharacterInformationString(application) {
@@ -149,53 +298,25 @@ module.exports = (firebase, db) => {
     return `${title.toUpperCase()}\r\n${offences}`;
   }
 
-  function getQualificationInformationString(application)
+  function getPostQualificationExperienceString(application)
   {
-    if (!application.qualifications || application.qualifications.length === 0) {
+    if (!application.experience || application.experience.length === 0 ) {
       return '';
+    } else {
+      return application.experience.map((job) => {
+        return formatDate(job.startDate) + ' - ' + job.jobTitle + ' at ' + job.orgBusinessName;
+      }).join('\r\n\r\n\r\n').trim();
     }
-    return application.qualifications.map(qualification => {
-      if (typeof qualification.type === 'undefined' || typeof qualification.data === 'undefined') {
-        return '';
-      }
-      let description = `${qualification.type.toUpperCase()} - ${formatDate(qualification.date)}\r\n`;
-      if (qualification.location) {
-        description = description + qualification.location.replace('-', '/').toUpperCase() + '\r\n';
-      }
-      if (qualification.calledToBarDate) {
-        description = description + `Called to the bar: ${formatDate(qualification.calledToBarDate)}\r\n`;
-      }
-      if (qualification.details) {
-        description = description + `${qualification.details}\r\n`;
-      }
-      return description;
-    }).join('\r\n\r\n\r\n');
   }
 
-  function getHeaders() {
-    return [
-      {title: 'Ref', name: 'ref'},
-      {title: 'Name', name: 'name'},
-      {title: 'Email', name: 'email'},
-      {title: 'Citizenship', name: 'citizenship'},
-      {title: 'Date of Birth', name: 'dob'},
-      {title: 'Qualifications', name: 'qualifications'},
-      {title: 'Character', name: 'character'},
-    ];
-  }
-
-  function getRows(applicationRecords) {
-    return applicationRecords.map((applicationRecord) => {
-      const application = applicationRecord.application;
-      return {
-        ref: _.get(applicationRecord, 'application.referenceNumber', ''),
-        name: _.get(applicationRecord,'candidate.fullName', ''),
-        email: _.get(applicationRecord, 'application.personalDetails.email', ''),
-        citizenship: _.get(applicationRecord, 'application.personalDetails.citizenship', ''),
-        dob: formatDate(_.get(applicationRecord, 'application.personalDetails.dateOfBirth', '')),
-        qualifications: getQualificationInformationString(application),
-        character: getCharacterInformationString(application),
-      };
-    });
+  function getJudicialExperienceString(application)
+  {
+    if (application.feePaidOrSalariedJudge) {
+      return `Fee paid or salaried judge\n${lookup(application.feePaidOrSalariedSittingDaysDetails)}`;
+    } else if (application.declaredAppointmentInQuasiJudicialBody) {
+      return `Quasi-judicial body\n${lookup(application.quasiJudicialSittingDaysDetails)}`;
+    } else {
+      return `Acquired skills in other way\n${lookup(application.skillsAquisitionDetails)}`;
+    }
   }
 };
