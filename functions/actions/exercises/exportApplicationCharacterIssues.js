@@ -195,7 +195,7 @@ module.exports = (firebase, db) => {
       return issue.events.map((event) => {
         return `${issue.summary.toUpperCase()}\r\n${swapDY(formatDate(event.date))} - ${event.title || ''}\r\n${event.details}`;
       }).join('\r\n\r\n\r\n').trim(); //Each separate section should have space in the cell between them.
-    });
+    }).join('\r\n\r\n\r\n').trim(); //Each separate section should have space in the cell between them.
   }
 
   function swapDY(d) {
