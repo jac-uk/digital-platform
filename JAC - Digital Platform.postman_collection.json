@@ -1,6 +1,6 @@
 {
 	"info": {
-		"_postman_id": "793be5d7-47f2-4808-867b-ed60645daffc",
+		"_postman_id": "a2d09ee2-ee09-424e-bc16-f62d87315b22",
 		"name": "JAC - Digital Platform",
 		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
 	},
@@ -39,6 +39,55 @@
 								"v3",
 								"relyingparty",
 								"verifyPassword"
+							],
+							"query": [
+								{
+									"key": "key",
+									"value": "{{api_key}}"
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Logout",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{token}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": ""
+						},
+						"url": {
+							"raw": "https://www.googleapis.com/identitytoolkit/v3/relyingparty/signOutUser?key={{api_key}}",
+							"protocol": "https",
+							"host": [
+								"www",
+								"googleapis",
+								"com"
+							],
+							"path": [
+								"identitytoolkit",
+								"v3",
+								"relyingparty",
+								"signOutUser"
 							],
 							"query": [
 								{
@@ -124,6 +173,80 @@
 							],
 							"path": [
 								"exportApplicationContactsData"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Export Application Eligibility Issues",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{token}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"data\": {\r\n        \"exerciseId\": \"4Ufg5bAC2Gjx2YRve9WZ\"\r\n    }\r\n}"
+						},
+						"url": {
+							"raw": "{{host}}/exportApplicationEligibilityIssues",
+							"host": [
+								"{{host}}"
+							],
+							"path": [
+								"exportApplicationEligibilityIssues"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Export Application Character Issues",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{token}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"data\": {\r\n        \"exerciseId\": \"wdpALbyICL7ZxxN5AQt8\",\r\n        \"stage\": \"selected\",\r\n        \"status\": \"invitedToSelectionDay\"\r\n    }\r\n}"
+						},
+						"url": {
+							"raw": "{{host}}/exportApplicationCharacterIssues",
+							"host": [
+								"{{host}}"
+							],
+							"path": [
+								"exportApplicationCharacterIssues"
 							]
 						}
 					},
@@ -436,6 +559,117 @@
 					"response": []
 				},
 				{
+					"name": "Flag Application Issues",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{token}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"data\": {\r\n        \"exerciseId\": \"wdpALbyICL7ZxxN5AQt8\"\r\n    }\r\n}\r\n"
+						},
+						"url": {
+							"raw": "{{host}}/flagApplicationIssuesForExercise",
+							"host": [
+								"{{host}}"
+							],
+							"path": [
+								"flagApplicationIssuesForExercise"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Send Assessment Requests",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{token}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"data\": {\r\n        \"exerciseId\": \"ZFF4xU8zNvneljZ8Ynsm\",\r\n        \"assessmentId\": \"07446ZzS5WFWuOn4ZPpV-1\"\r\n    }\r\n}"
+						},
+						"url": {
+							"raw": "{{host}}/sendAssessmentRequests",
+							"host": [
+								"{{host}}"
+							],
+							"path": [
+								"sendAssessmentRequests"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Send Assessment Reminders",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{token}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"data\": {\r\n        \"exerciseId\": \"ZFF4xU8zNvneljZ8Ynsm\",\r\n        \"assessmentId\": \"07446ZzS5WFWuOn4ZPpV-1\"\r\n    }\r\n}"
+						},
+						"url": {
+							"raw": "{{host}}/sendAssessmentReminders",
+							"host": [
+								"{{host}}"
+							],
+							"path": [
+								"sendAssessmentReminders"
+							]
+						}
+					},
+					"response": []
+				},
+				{
 					"name": "Cancel Assessments",
 					"request": {
 						"auth": {
@@ -504,6 +738,43 @@
 							],
 							"path": [
 								"initialiseQualifyingTest"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Scan File",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{token}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"data\": {\r\n        \"fileURL\": \"exercise/7Dw4spkbYr58Y0ITiiCS/application/QRIGGKZVRnEtPYrl7Jrg/assessor/j1q4dgAdTkWTJYQJHVFkPYcJgMm1/QRIGGKZVRnEtPYrl7Jrg-1.docx\"\r\n    }\r\n}\r\n"
+						},
+						"url": {
+							"raw": "{{host}}/scanFile",
+							"host": [
+								"{{host}}"
+							],
+							"path": [
+								"scanFile"
 							]
 						}
 					},

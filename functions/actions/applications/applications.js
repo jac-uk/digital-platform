@@ -3,6 +3,7 @@ const { getAllDocuments, applyUpdates } = require('../../shared/helpers');
 module.exports = (config, firebase, db) => {
   const { newNotificationCharacterCheckRequest } = require('../../shared/factories')(config);
   const slack = require('../../shared/slack')(config);
+  const { updateCandidate } = require('../candidates/search')(firebase, db);
   return {
     updateApplication,
     onApplicationCreate,
@@ -27,8 +28,9 @@ module.exports = (config, firebase, db) => {
    * - Posts message to slack
    * - Add timestamp to document
    */
-  function onApplicationCreate(ref, data) {
+  async function onApplicationCreate(ref, data) {
     slack.post(`${data.exerciseRef}. New application started`);
+    if (data.userId) { await updateCandidate(data.userId); }
     return ref.set({
       createdAt: firebase.firestore.Timestamp.fromDate(new Date()),
     }, {
