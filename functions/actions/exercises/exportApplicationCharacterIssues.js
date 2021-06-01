@@ -209,7 +209,11 @@ module.exports = (firebase, db) => {
       return '';
     } else {
       return application.experience.map((job) => {
-        return formatDate(job.startDate) + ' - ' + job.jobTitle + ' at ' + job.orgBusinessName;
+        if (job.jobTitle) {
+          return formatDate(job.startDate) + ' - ' + job.jobTitle + ' at ' + job.orgBusinessName;
+        } else {
+          return '';
+        }
       }).join('\r\n\r\n\r\n').trim();
     }
   }
