@@ -1,6 +1,7 @@
 const functions = require('firebase-functions');
 
 module.exports = {
+  PROJECT_ID: functions.config().project.id,
   APPLY_URL: functions.config().apply.url,
   APPLICATION: {
     CHARACTER_ISSUES: { // this gives a map from issue to corresponding details field TODO improve naming or where we store this
