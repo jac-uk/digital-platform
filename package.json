@@ -12,6 +12,7 @@
     "lint:fix": "eslint . --fix",
     "serve": "firebase serve --only functions",
     "shell": "firebase functions:shell",
+    "emulators:firestore": "firebase emulators:start --only firestore",
     "start": "npm run shell",
     "logs": "firebase functions:log",
     "nodeScript": "export GOOGLE_APPLICATION_CREDENTIALS='service-account.json' && run(){ node -r dotenv/config nodeScripts/$1; }; run",

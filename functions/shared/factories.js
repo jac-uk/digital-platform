@@ -195,6 +195,7 @@ module.exports = (CONSTANTS) => {
       aboutTheRole: null,
       additionalWorkingPreferences: null,
       applicationCloseDate: null,
+      applicationContent: null,
       applicationOpenDate: null,
       appliedSchedule: null,
       appointmentType: null,
