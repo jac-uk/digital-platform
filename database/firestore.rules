@@ -17,6 +17,11 @@ service cloud.firestore {
   function fieldHasValue(data, field, value) {
     return !(field in data) || data[field] == value;
   }
+  function verifyFields(required, optional) {
+    let all = required.concat(optional);
+    return request.resource.data.keys().hasAll(required) &&
+      request.resource.data.keys().hasOnly(all);
+  }
   // function notChanged(field) {
   //   return !(field in request.resource.data)
   //     || resource.data[field] == request.resource.data[field]
@@ -30,6 +35,7 @@ service cloud.firestore {
     }
 
     match /exercises/{exerciseId} {
+      allow create: if userIsAuthenticated() && userIsJAC() && verifyFields(['referenceNumber', 'progress', 'state', 'createdBy'], []);
       allow read: if userIsAuthenticated() && userIsJAC();
       allow write: if userIsAuthenticated() && userIsJAC();
 
