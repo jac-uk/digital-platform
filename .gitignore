@@ -17,6 +17,7 @@ service-account.*.json
 
 # Firebase cache
 .firebase/
+data
 
 # Firebase config
 
