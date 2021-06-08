@@ -51,6 +51,25 @@ module.exports.setupAdmin = async (db, data) => {
   return adminDb;
 };
 
+// module.exports.getTimeStamp = (date) => {
+//   return firebase.firestore.Timestamp.fromDate(date);
+// };
+
 module.exports.getTimeStamp = (date) => {
-  return firebase.firestore.Timestamp.fromDate(date);
+  return date.getTime();
+};
+
+const getRandomInt = (min, max) => {
+    min = Math.ceil(min);
+    max = Math.floor(max);
+    return Math.floor(Math.random() * (max - min) + min); //The maximum is exclusive and the minimum is inclusive
+};
+
+module.exports.getValidExerciseData = () => {
+  return {
+    referenceNumber: '000' + getRandomInt(100, 1000),
+    progress: {started: true},
+    state: 'draft',
+    createdBy: 'user1',
+  };
 };
