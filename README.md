@@ -36,6 +36,14 @@ Once the emulator is running, you may import the local copy made into the emulat
 This command will set the environment variables and import into the local copy. You only need to do this once,
 data will be re-exported and then automatically imported on restart of the firestore emulator.
 
+To run the jest tests with `npm run test:rules` against your local emulator, you'll have to export or set the environment variable.
+
+```set FIRESTORE_EMULATOR_HOST=localhost:8282```
+
+```export FIRESTORE_EMULATOR_HOST="localhost:8282"```
+
+depending on your operating system.
+
 ## Functions
 
 See [functions/backgroundFunctions](functions/backgroundFunctions) for our functions which are triggered when defined events happen.
