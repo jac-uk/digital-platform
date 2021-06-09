@@ -1,7 +1,7 @@
 
 // Scheduled
 exports.backupFirestore = require('./scheduledFunctions/backupFirestore');
-// exports.backupAuthentication = require('./scheduledFunctions/backupAuthentication');
+exports.backupAuthentication = require('./scheduledFunctions/backupAuthentication');
 exports.processNotifications = require('./scheduledFunctions/processNotifications');
 
 // Background
