@@ -9,17 +9,18 @@ const path = require('path');
 
 module.exports = (config) => {
   const BACKUP_BUCKET = `${config.PROJECT_ID}-backups`;
-  const BACKUP_PATH = '/authentication/';
+  const BACKUP_PATH = 'authentication/';
+  const PROJECT_ID = config.PROJECT_ID;
   const slack = require('../../shared/slack')(config);
   return {
-    backupFirestore,
+    backupAuthentication,
   };
 
-  async function backupFirestore() {
+  async function backupAuthentication() {
     // Download auth export file to the local filesystem
-    const downloadAuthExport = async (filePath, config) => {
+    const downloadAuthExport = async (filePath) => {
       await firebaseTools.auth.export(filePath, {
-        project: config.PROJECT_ID,
+        project: PROJECT_ID,
       });
     };
 
