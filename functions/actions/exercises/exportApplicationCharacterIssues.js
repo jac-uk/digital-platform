@@ -115,16 +115,21 @@ module.exports = (firebase, db) => {
 
     const formattedDiversityData = {
       shareData: helpers.toYesNo(survey.shareData),
-      professionalBackground: share(survey.professionalBackground.map(position => lookup(position)).join(', ')),
-      formattedFeePaidJudicialRole: formattedFeePaidJudicialRole || null,
+      professionalBackground: share(helpers.flattenProfessionalBackground(application.equalityAndDiversitySurvey)),
+      currentLegalRole: share(helpers.flattenCurrentLegalRole(application.equalityAndDiversitySurvey)),
+      formattedFeePaidJudicialRole: share(formattedFeePaidJudicialRole || null),
       stateOrFeeSchool: share(lookup(survey.stateOrFeeSchool)),
+      oxbridgeUni: share(helpers.toYesNo(survey.oxbridgeUni)),
       firstGenerationStudent: share(helpers.toYesNo(lookup(survey.firstGenerationStudent))),
       ethnicGroup: share(lookup(survey.ethnicGroup)),
       gender: share(lookup(survey.gender)),
+      changedGender: share(helpers.toYesNo(survey.changedGender)),
       sexualOrientation: share(lookup(survey.sexualOrientation)),
       disability: share(survey.disability ? survey.disabilityDetails : helpers.toYesNo(survey.disability)),
       religionFaith: share(lookup(survey.religionFaith)),
       attendedOutreachEvents : share(helpers.toYesNo(lookup(survey.attendedOutreachEvents))),
+      participatedInJudicialWorkshadowingScheme : 'No', // default (see below)
+      hasTakenPAJE : 'No', // default (see below)
     };
 
     if (this.exerciseType === 'legal' || this.exerciseType === 'leadership') {
