@@ -2,7 +2,7 @@ const { getDocument, applyUpdates, isDateInPast } = require('../../shared/helper
 
 module.exports = (config, firebase, db) => {
   const { newApplicationRecord } = require('../../shared/factories')(config);
-  const { updateCandidate } = require('../candidates/search')(db);
+  const { updateCandidate } = require('../candidates/search')(firebase, db);
 
   return onUpdate;
 
