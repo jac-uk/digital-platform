@@ -2,7 +2,7 @@ const { getAllDocuments, applyUpdates } = require('../../shared/helpers');
 
 module.exports = (config, firebase, db) => {
   const slack = require('../../shared/slack')(config);
-  const { updateCandidate } = require('../candidates/search')(db);
+  const { updateCandidate } = require('../candidates/search')(firebase, db);
   return {
     updateApplication,
     onApplicationCreate,
