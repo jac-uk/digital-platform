@@ -1,4 +1,5 @@
 module.exports = {
+  PROJECT_ID: process.env.PROJECT_ID,
   APPLY_URL: process.env.APPLY_URL,
   APPLICATION: {
     CHARACTER_ISSUES: { // this gives a map from issue to corresponding details field TODO improve naming or where we store this
