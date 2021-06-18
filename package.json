@@ -45,7 +45,7 @@
     "@google-cloud/storage": "^5.7.2",
     "axios": "^0.21.1",
     "bottleneck": "^2.19.5",
-    "firebase": "^8.4.2",
+    "firebase": "^8.4.3",
     "firebase-admin": "^9.4.2",
     "firebase-functions": "^3.13.1",
     "firebase-functions-test": "^0.2.3",
