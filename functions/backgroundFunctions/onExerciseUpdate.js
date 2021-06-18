@@ -8,7 +8,7 @@ module.exports = functions.region('europe-west2').firestore
   .onUpdate(async (change, context) => {
     const after = change.after.data();
     const before = change.before.data();
-    
+
     // TODO:-
     // We may need to perform more than one task/check.
     // Consider whether to do them here, in seperate cloud functions, or
