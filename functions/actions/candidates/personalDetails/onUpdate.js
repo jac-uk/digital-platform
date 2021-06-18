@@ -1,7 +1,7 @@
 const { applyUpdates } = require('../../../shared/helpers');
 
 module.exports = (config, firebase, db) => {
-  const { updateCandidate } = require('../search')(db);
+  const { updateCandidate } = require('../search')(firebase, db);
 
   return onUpdate;
 
@@ -11,9 +11,9 @@ module.exports = (config, firebase, db) => {
   async function onUpdate(candidateId, dataBefore, dataAfter) {
 
     // update candidate document
-    await updateCandidate(candidateId);
+    const result = await updateCandidate(candidateId);
 
-    return true;
+    return result;
   }
 
 };

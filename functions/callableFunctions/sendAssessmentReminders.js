@@ -15,8 +15,5 @@ module.exports = functions.region('europe-west2').https.onCall(async (data, cont
   }, data)) {
     throw new functions.https.HttpsError('invalid-argument', 'Please provide valid arguments');
   }
-  const result = await sendAssessmentReminders(data);
-  return {
-    result: result,
-  };
+  return await sendAssessmentReminders(data);
 });
