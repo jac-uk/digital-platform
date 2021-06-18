@@ -35,7 +35,7 @@ module.exports = () => {
 
       if (application.selectionCriteriaAnswers && application.selectionCriteriaAnswers.length) {
         html.addHeading('Additional selection criteria');
-        html.addTable(getAdditionalSelectionCriteria(application));
+        html.addTable(getAdditionalSelectionCriteria(application, exercise));
       }
     } else {
       html.addTitle('Error - Missing Application information');
@@ -227,11 +227,11 @@ module.exports = () => {
     return data;
   }
 
-  function getAdditionalSelectionCriteria(application) {
+  function getAdditionalSelectionCriteria(application, exercise) {
     const additionalSelectionCriteria = application.selectionCriteriaAnswers;
     const data = [];
-    additionalSelectionCriteria.forEach(sC => {
-      addField(data, sC.title, sC.answerDetails || 'Does not meet this requirement');
+    additionalSelectionCriteria.forEach(sC, index => {
+      addField(data, exercise.selectionCriteria[index].title, sC.answerDetails || 'Does not meet this requirement');
     });
     return data;
   }
