@@ -13,7 +13,6 @@ module.exports = (auth) => {
       return user.email;
       }
       catch(e) {
-      //console.log(e);
       return false;
     }
   }
