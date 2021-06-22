@@ -12,6 +12,7 @@ module.exports = () => {
     PDF: 'application/pdf',
     ODT: 'application/vnd.oasis.opendocument.text',
     TXT: 'text/plain',
+    XLSX: 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet',
   };
 
   let drive;
@@ -159,6 +160,8 @@ module.exports = () => {
         return MIME_TYPE.TXT;
       case 'pdf':
         return MIME_TYPE.PDF;
+      case 'xlsx':
+        return MIME_TYPE.XLSX;
     }
     return '';
   }

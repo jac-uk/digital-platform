@@ -10,34 +10,42 @@ service firebase.storage {
     return request.auth.token.email_verified
       && request.auth.token.email.matches('.*@judicialappointments[.](digital|gov[.]uk)')
   }
-  function isValidFile() {
+  function isOkForDownload() {
+    // 'request.resource' is available when writing, but when reading reading you must use 'resource' directly.
+    // ref: https://stackoverflow.com/questions/48401943/firebase-storage-rules-custommetadata-not-working
+    return resource.metadata == null || resource.metadata.status == null || resource.metadata.status != 'infected';
+  }
+  function isOkForUpload() {
     return request.resource.size > 0
       && request.resource.size <= 2 * 1024 * 1024
-      && request.resource.name.matches('.*\\.(pdf|docx|doc|odt|txt|fodt)');
+      && request.resource.name.matches('.*\\.(pdf|docx|doc|odt|txt|fodt|xlsx)');
   }
   match /b/{bucket}/o {
     match /exercise/{exerciseId}/{fileName} {
-      allow read;
-      allow write: if userIsAuthenticated() && userIsJAC() && isValidFile();
+      allow read: if isOkForDownload();
+      allow write: if userIsAuthenticated() && userIsJAC() && isOkForUpload();
     }
     match /exercise/{exerciseId}/user/{userId}/{fileName} {
-      allow read: if userIsAuthenticated() && userIsJAC();
-      allow read: if userIsAuthenticated() && currentUser() == userId;
-      allow write: if userIsAuthenticated() && currentUser() == userId && isValidFile();
-      allow write: if userIsAuthenticated() && userIsJAC() && isValidFile();
+      allow read: if userIsAuthenticated() && userIsJAC() && isOkForDownload();
+      allow read: if userIsAuthenticated() && currentUser() == userId && isOkForDownload();
+      allow write: if userIsAuthenticated() && currentUser() == userId && isOkForUpload();
+      allow write: if userIsAuthenticated() && userIsJAC() && isOkForUpload();
     }
     match /exercise/{exerciseId}/application/{applicationId}/assessor/{userId}/{fileName} {
-      allow read: if userIsAuthenticated() && userIsJAC();
-      allow read: if userIsAuthenticated() && currentUser() == userId;
-      allow write: if userIsAuthenticated() && currentUser() == userId && isValidFile();
+      allow read: if userIsAuthenticated() && userIsJAC() && isOkForDownload();
+      allow read: if userIsAuthenticated() && currentUser() == userId && isOkForDownload();
+      allow write: if userIsAuthenticated() && currentUser() == userId && isOkForUpload();
     }
     match /exercise/{exerciseId}/application/{applicationId}/assessor/jac/{fileName} {
-      allow read: if userIsAuthenticated() && userIsJAC();
-      allow write: if userIsAuthenticated() && userIsJAC() && isValidFile();
+      allow read: if userIsAuthenticated() && userIsJAC() && isOkForDownload();
+      allow write: if userIsAuthenticated() && userIsJAC() && isOkForUpload();
     }
     match /exercise/{exerciseId}/application/{applicationId}/jac/{fileName} {
-      allow read: if userIsAuthenticated() && userIsJAC();
-      allow write: if userIsAuthenticated() && userIsJAC() && isValidFile();
+      allow read: if userIsAuthenticated() && userIsJAC() && isOkForDownload();
+      allow write: if userIsAuthenticated() && userIsJAC() && isOkForUpload();
+    }
+    match /exercise/{exerciseId}/qualifying-tests/{qualifyingTestId}/{fileName} {
+      allow write: if userIsAuthenticated() && userIsJAC() && isOkForUpload();
     }
   }
 }
