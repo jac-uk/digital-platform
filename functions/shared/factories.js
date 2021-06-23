@@ -261,6 +261,7 @@ module.exports = (CONSTANTS) => {
       situationalJudgementTestDate: null,
       situationalJudgementTestEndTime: null,
       situationalJudgementTestStartTime: null,
+      state: null,
       subscriberAlertsUrl: null,
       typeOfExercise: null,
       uploadedCandidateAssessmentFormTemplate: null,
