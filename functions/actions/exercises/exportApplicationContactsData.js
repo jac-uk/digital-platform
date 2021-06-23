@@ -55,6 +55,9 @@ module.exports = (firebase, db) => {
 
 const contactsExport = (applications) => {
   return applications.map((application) => {
+    // the following ensure application has sufficient fields for the export
+    if (!Object.keys(application).includes('personalDetails')) { application.personalDetails = {}; }
+    if (!Object.keys(application).includes('equalityAndDiversitySurvey')) { application.equalityAndDiversitySurvey = {}; }
     return {
       referenceNumber: application.referenceNumber,
       status: lookup(application.status),
