@@ -101,6 +101,12 @@ service cloud.firestore {
       return applicationOpenDate <= request.time
 				&& request.resource.data.get("dateExtension", applicationCloseDate) > request.time;
     }
+    function exerciseNeedsMoreInformation(exerciseId) {
+      let exercise = get(/databases/$(database)/documents/exercises/$(exerciseId)).data;
+      return exercise.keys().hasAll(['state', 'applicationContent'])
+        && exercise.state in exercise.applicationContent
+        && exercise.applicationContent[exercise.state].keys().size() > 0;
+    }
 
     match /applications/{applicationId} {
       // allow admins full read access to all applications
@@ -115,9 +121,18 @@ service cloud.firestore {
       // But only if the application is in 'draft' state and exercise is open
       allow update: if resource.data.userId == currentUser() &&
                        request.resource.data.userId == currentUser() &&
-                       resource.data.status == "draft" &&
-                       request.resource.data.status in ['draft', 'applied'] &&
-                       exerciseIsOpen(resource.data.exerciseId);
+                       (
+                         (  // draft application for an open vacancy
+                            resource.data.status == "draft" &&
+                            request.resource.data.status in ['draft', 'applied'] &&
+                            exerciseIsOpen(resource.data.exerciseId)
+                         )
+                         ||
+                         (  // current application with more info requested
+                            resource.data.status == "applied" && request.resource.data.status == "applied" &&  // remains in applied status
+                            exerciseNeedsMoreInformation(resource.data.exerciseId)
+                         )
+                       );
       // allow JAC admins to edit an application @TODO restrict what can be changed and by which role
       allow update: if userIsAuthenticated() && userIsJAC();
     }

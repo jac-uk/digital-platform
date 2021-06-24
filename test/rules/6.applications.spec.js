@@ -118,14 +118,6 @@ describe('Applications', () => {
       });
       await assertFails(db.collection('applications').doc('app1').update({ userId: 'user2' }));
     });
-    it('prevent authenticated user from updating own application after they have applied', async () => {
-      const db = await setup({ uid: 'user1' });
-      await setupAdmin(db, {
-        'applications/app1': { userId: 'user1', status: 'applied', exerciseId: 'ex1' },
-        'exercises/ex1': { applicationOpenDate: getTimeStamp(yesterday), applicationCloseDate: getTimeStamp(tomorrow) },
-      });
-      await assertFails(db.collection('applications').doc('app1').update({}));
-    });
     it('prevent authenticated user from updating own application before exercise has opened', async () => {
       const db = await setup({ uid: 'user1' });
       await setupAdmin(db, {
@@ -139,6 +131,48 @@ describe('Applications', () => {
       await setupAdmin(db, {
         'applications/app1': { userId: 'user1', status: 'draft', exerciseId: 'ex1' },
         'exercises/ex1': { applicationOpenDate: getTimeStamp(dayBeforeYesterday), applicationCloseDate: getTimeStamp(yesterday) },
+      });
+      await assertFails(db.collection('applications').doc('app1').update({}));
+    });
+    it('prevent authenticated user from updating own application after they have applied', async () => {
+      const db = await setup({ uid: 'user1' });
+      await setupAdmin(db, {
+        'applications/app1': { userId: 'user1', status: 'applied', exerciseId: 'ex1' },
+        'exercises/ex1': { applicationOpenDate: getTimeStamp(yesterday), applicationCloseDate: getTimeStamp(tomorrow) },
+      });
+      await assertFails(db.collection('applications').doc('app1').update({}));
+    });
+    it('allow authenticated user to update own application after they have applied if the exercise requires more information', async () => {
+      const db = await setup({ uid: 'user1' });
+      await setupAdmin(db, {
+        'applications/app1': { userId: 'user1', status: 'applied', exerciseId: 'ex1' },
+        'exercises/ex1': {
+          applicationOpenDate: getTimeStamp(dayBeforeYesterday),
+          applicationCloseDate: getTimeStamp(yesterday),
+          state: 'selection',
+          applicationContent: {
+            selection: {
+              personalDetails: true,
+            },
+          },
+        },
+      });
+      await assertSucceeds(db.collection('applications').doc('app1').update({}));
+    });
+    it('prevent authenticated user from updating own application after they have applied if the exercise requires more information for a different state', async () => {
+      const db = await setup({ uid: 'user1' });
+      await setupAdmin(db, {
+        'applications/app1': { userId: 'user1', status: 'applied', exerciseId: 'ex1' },
+        'exercises/ex1': {
+          applicationOpenDate: getTimeStamp(dayBeforeYesterday),
+          applicationCloseDate: getTimeStamp(yesterday),
+          state: 'selection',
+          applicationContent: {
+            shortlisting: {
+              personalDetails: true,
+            },
+          },
+        },
       });
       await assertFails(db.collection('applications').doc('app1').update({}));
     });

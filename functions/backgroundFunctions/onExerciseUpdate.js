@@ -8,20 +8,8 @@ module.exports = functions.region('europe-west2').firestore
   .onUpdate(async (change, context) => {
     const after = change.after.data();
     const before = change.before.data();
-
-    // TODO:-
-    // We may need to perform more than one task/check.
-    // Consider whether to do them here, in seperate cloud functions, or
-    // perhaps use Pub/Sub.
     if (after.published === true) {
-      if (
-        before.published !== true || (
-          before.published === true &&
-          (before.state === 'draft' || before.state === 'ready')
-        )
-      ) {
-        return updateVacancy(context.params.exerciseId, after);
-      }
+      return updateVacancy(context.params.exerciseId, after);
     } else if (after.published === false) {
       if (before.published === true) {
         return deleteVacancy(context.params.exerciseId);
