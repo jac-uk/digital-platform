@@ -1,7 +1,7 @@
 const functions = require('firebase-functions');
 const { auth } = require('../shared/admin.js');
 const { checkArguments } = require('../shared/helpers.js');
-const { updateEmailAddress } = require('../actions/candidates/updateEmailAddress')(auth);
+const updateEmailAddress = require('../actions/candidates/updateEmailAddress')(auth);
 
 module.exports = functions.region('europe-west2').https.onCall(async (data, context) => {
   if (!context.auth) {
@@ -13,8 +13,6 @@ module.exports = functions.region('europe-west2').https.onCall(async (data, cont
   }, data)) {
     throw new functions.https.HttpsError('invalid-argument', 'Please provide valid arguments');
   }
-  const result = await updateEmailAddress(data);
-  return {
-    result: result,
-  };
+  return await updateEmailAddress(data);
+
 });

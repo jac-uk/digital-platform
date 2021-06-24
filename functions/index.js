@@ -44,7 +44,7 @@ exports.exportQualifyingTestResponses = require('./callableFunctions/exportQuali
 exports.generateAgencyReport = require('./callableFunctions/generateAgencyReport');
 exports.logEvent = require('./callableFunctions/logEvent');
 exports.exportApplicationCharacterIssues = require('./callableFunctions/exportApplicationCharacterIssues');
-exports.getUserEmailByID = require('./callableFunctions/getUserEmailbyID');
+exports.getUserEmailByID = require('./callableFunctions/getUserEmailByID');
 exports.updateEmailAddress = require('./callableFunctions/updateEmailAddress');
 
 // exports.onExerciseUpdate_PublishVacancy = require('./exercises/onExerciseUpdate_PublishVacancy');

@@ -14,13 +14,12 @@ module.exports = (auth) => {
 
       if (emailRegEx.test(currentEmailAddress) === true && (emailRegEx.test(newEmailAddress) === true)) {
         const user = await auth.getUserByEmail(currentEmailAddress);
-        const updatedUser = auth.updateUser(user.uid, {email: newEmailAddress});
+        const updatedUser = await auth.updateUser(user.uid, {email: newEmailAddress});
         return updatedUser.email;
       } else {
         return false;
       }
     } catch(e) {
-      //console.log(e);
       return false;
     }
   }
