@@ -103,9 +103,10 @@ service cloud.firestore {
     }
     function exerciseNeedsMoreInformation(exerciseId) {
       let exercise = get(/databases/$(database)/documents/exercises/$(exerciseId)).data;
-      return exercise.keys().hasAll(['state', 'applicationContent'])
-        && exercise.state in exercise.applicationContent
-        && exercise.applicationContent[exercise.state].keys().size() > 0;
+      return exercise.keys().hasAll(['_applicationContent'])
+        && exercise._applicationContent.keys().hasAll(['_currentStep'])
+        && exercise._applicationContent._currentStep.step in exercise._applicationContent
+        && exercise._applicationContent[exercise._applicationContent._currentStep.step].keys().size() > 0;
     }
 
     match /applications/{applicationId} {
