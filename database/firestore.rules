@@ -1,22 +1,30 @@
 rules_version = '2';
 service cloud.firestore {
+
   function userIsAuthenticated() {
     return request.auth.uid != null;
   }
+
   function currentUser() {
     return request.auth.uid;
   }
+
   function userIsJAC() {
-    return request.auth.token.email_verified
-      && request.auth.token.email.matches('.*@judicialappointments[.](digital|gov[.]uk)');
+  	return request.auth.token.email.matches('.*@judicialappointments[.](digital|gov[.]uk)');
+    //return request.auth.token.email_verified
+      //&& request.auth.token.email.matches('.*@judicialappointments[.](digital|gov[.]uk)');
   }
+
   function userHasEmail(email) {
-    return request.auth.token.email_verified
-      && request.auth.token.email.lower() == email.lower();
+  return request.auth.token.email.lower() == email.lower();
+    //return request.auth.token.email_verified
+      //&& request.auth.token.email.lower() == email.lower();
   }
+
   function fieldHasValue(data, field, value) {
     return !(field in data) || data[field] == value;
   }
+
   // function notChanged(field) {
   //   return !(field in request.resource.data)
   //     || resource.data[field] == request.resource.data[field]
@@ -86,7 +94,7 @@ service cloud.firestore {
 
       match /documents/{documentId} {
         allow get, create, update: if request.auth.uid == candidateId &&
-                                      documentId in ['personalDetails', 'characterInformation', 'equalityAndDiversitySurvey'];
+          documentId in ['personalDetails', 'characterInformation', 'equalityAndDiversitySurvey'];
         allow read, write: if userIsAuthenticated() && userIsJAC();
       }
     }
@@ -112,35 +120,41 @@ service cloud.firestore {
     match /applications/{applicationId} {
       // allow admins full read access to all applications
       allow read: if userIsAuthenticated() && userIsJAC();
+
       // Allow existing records which belong to the current user
       allow read: if resource.data.userId == currentUser();
+
       // Allow new records if they will belong to the current user, are draft and the exercise is open
       allow create: if request.resource.data.userId == currentUser() &&
-                      request.resource.data.status == "draft" &&
-                      exerciseIsOpen(request.resource.data.exerciseId);
+        request.resource.data.status == "draft" &&
+        exerciseIsOpen(request.resource.data.exerciseId);
+
       // Allow updates on records which belong, and will continue to belong, to the current user
       // But only if the application is in 'draft' state and exercise is open
       allow update: if resource.data.userId == currentUser() &&
-                       request.resource.data.userId == currentUser() &&
-                       (
-                         (  // draft application for an open vacancy
-                            resource.data.status == "draft" &&
-                            request.resource.data.status in ['draft', 'applied'] &&
-                            exerciseIsOpen(resource.data.exerciseId)
-                         )
-                         ||
-                         (  // current application with more info requested
-                            resource.data.status == "applied" && request.resource.data.status == "applied" &&  // remains in applied status
-                            exerciseNeedsMoreInformation(resource.data.exerciseId)
-                         )
-                       );
+        request.resource.data.userId == currentUser() &&
+        (
+          (  // draft application for an open vacancy
+            resource.data.status == "draft" &&
+            request.resource.data.status in ['draft', 'applied'] &&
+            exerciseIsOpen(resource.data.exerciseId)
+          )
+          ||
+          (  // current application with more info requested
+            resource.data.status == "applied" && request.resource.data.status == "applied" &&  // remains in applied status
+            exerciseNeedsMoreInformation(resource.data.exerciseId)
+          )
+        );
+
       // allow JAC admins to edit an application @TODO restrict what can be changed and by which role
       allow update: if userIsAuthenticated() && userIsJAC();
     }
 
     match /applicationRecords/{applicationId} {
+
       // allow admins full read access to all applicationRecords
       allow read: if userIsAuthenticated() && userIsJAC();
+
       // allow admins full write access to all applicationRecords
       allow write: if userIsAuthenticated() && userIsJAC();
     }
@@ -153,6 +167,7 @@ service cloud.firestore {
 
     // allow any logged in user to create event log entries
     // but only allow JAC users to read them
+
     match /logs/{type}/events/{eventId} {
       allow create: if userIsAuthenticated();
       allow read: if userIsAuthenticated() && userIsJAC();
@@ -166,12 +181,12 @@ service cloud.firestore {
       // allow assessor to read and update own documents
       allow read: if userIsAuthenticated() && userHasEmail(resource.data.assessor.email);
       allow update: if userIsAuthenticated() && userHasEmail(resource.data.assessor.email) &&
-                       (!('id' in resource.data.assessor) || resource.data.assessor.id == request.resource.data.assessor.id) &&
-                       (!('id' in request.resource.data.assessor) || request.resource.data.assessor.id == currentUser()) &&
-                       resource.data.assessor.email == request.resource.data.assessor.email &&
-                       resource.data.status == 'pending' &&
-                       request.resource.data.status == 'completed';
-                       // TODO allow uploads after the due date but before the hard limit resource.data.dueDate >= request.time;
+        (!('id' in resource.data.assessor) || resource.data.assessor.id == request.resource.data.assessor.id) &&
+        (!('id' in request.resource.data.assessor) || request.resource.data.assessor.id == currentUser()) &&
+        resource.data.assessor.email == request.resource.data.assessor.email &&
+        resource.data.status == 'pending' &&
+        request.resource.data.status == 'completed';
+        // TODO allow uploads after the due date but before the hard limit resource.data.dueDate >= request.time;
     }
 
     match /qualifyingTests/{qualifyingTestId} {
@@ -196,18 +211,18 @@ service cloud.firestore {
 
       // allow candidate to read their own document
       allow read: if userIsAuthenticated()
-                    && (
-                      fieldHasValue(resource.data.candidate, 'id', currentUser())
-                      || fieldHasValue(resource.data.candidate, 'email', request.auth.token.email)
-                    );
+        && (
+          fieldHasValue(resource.data.candidate, 'id', currentUser())
+          || fieldHasValue(resource.data.candidate, 'email', request.auth.token.email)
+        );
 
       // allow candidates to update their own document
       // @TODO but only the responses field and only if within allowed duration from start time
       allow update: if (
-                      fieldHasValue(resource.data.candidate, 'id', currentUser())
-                      || fieldHasValue(resource.data.candidate, 'email', request.auth.token.email)
-                    )
-                    && request.resource.data.candidate.id == currentUser();
+          fieldHasValue(resource.data.candidate, 'id', currentUser())
+          || fieldHasValue(resource.data.candidate, 'email', request.auth.token.email)
+        )
+        && request.resource.data.candidate.id == currentUser();
     }
 
     match /invitations/{invitationId} {
@@ -216,9 +231,9 @@ service cloud.firestore {
 
       // allow candidates to read and update their own invitations
       allow read, update: if userIsAuthenticated() && (
-                      fieldHasValue(resource.data.candidate, 'id', currentUser())
-                      || fieldHasValue(resource.data.candidate, 'email', request.auth.token.email)
-                    );
+        fieldHasValue(resource.data.candidate, 'id', currentUser())
+        || fieldHasValue(resource.data.candidate, 'email', request.auth.token.email)
+      );
     }
 
   }
