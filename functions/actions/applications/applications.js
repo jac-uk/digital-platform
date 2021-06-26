@@ -25,16 +25,14 @@ module.exports = (config, firebase, db) => {
   /**
    * Application created event handler
    * - Posts message to slack
-   * - Add timestamp to document
+   * - Increment exercise applications count
    */
   async function onApplicationCreate(ref, data) {
     slack.post(`${data.exerciseRef}. New application started`);
     if (data.userId) { await updateCandidate(data.userId); }
-    return ref.set({
-      createdAt: firebase.firestore.Timestamp.fromDate(new Date()),
-    }, {
-      merge: true,
-    });
+    const saveData = {};
+    saveData[`applications.${data.status}`] = firebase.firestore.FieldValue.increment(1);
+    await db.doc(`exercises/${data.exerciseId}`).update(saveData);
   }
 
   /**
