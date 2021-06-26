@@ -191,11 +191,11 @@ module.exports = (CONSTANTS) => {
    */
   function newVacancy(data) {
     const vacancyModel = {
+      _applicationContent: null,
       _applicationVersion: null,
       aboutTheRole: null,
       additionalWorkingPreferences: null,
       applicationCloseDate: null,
-      applicationContent: null,
       applicationOpenDate: null,
       appliedSchedule: null,
       appointmentType: null,

@@ -149,8 +149,10 @@ describe('Applications', () => {
         'exercises/ex1': {
           applicationOpenDate: getTimeStamp(dayBeforeYesterday),
           applicationCloseDate: getTimeStamp(yesterday),
-          state: 'selection',
-          applicationContent: {
+          _applicationContent: {
+            _currentStep: {
+              step: 'selection',
+            },
             selection: {
               personalDetails: true,
             },
@@ -166,8 +168,10 @@ describe('Applications', () => {
         'exercises/ex1': {
           applicationOpenDate: getTimeStamp(dayBeforeYesterday),
           applicationCloseDate: getTimeStamp(yesterday),
-          state: 'selection',
-          applicationContent: {
+          _applicationContent: {
+            _currentStep: {
+              step: 'selection',
+            },
             shortlisting: {
               personalDetails: true,
             },
@@ -176,7 +180,7 @@ describe('Applications', () => {
       });
       await assertFails(db.collection('applications').doc('app1').update({}));
     });
-
+    // TODO also check currentStep dates and application status
   });
 
   context('Delete', () => {

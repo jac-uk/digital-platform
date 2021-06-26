@@ -25,6 +25,7 @@ module.exports = (config, firebase, db) => {
         ref: db.doc(`exercises/${exerciseId}`),
         data: data,
       });
+      await applyUpdates(db, commands);
 
       // update candidate document
       await updateCandidate(dataAfter.userId);
