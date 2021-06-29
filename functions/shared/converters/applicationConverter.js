@@ -8,6 +8,7 @@ module.exports = () => {
 
   return {
     getHtmlPanelPack,
+    getAdditionalSelectionCriteria,
     // TODO include other converters
   };
 
