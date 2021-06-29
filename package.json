@@ -38,7 +38,6 @@
     "test:functions": "mocha './test/functions/**/*.spec.js' --timeout=10000",
     "test:actions": "jest test/actions",
     "test:shared": "jest test/shared",
-    "test:appConv": "jest test/shared/applicationConverter",
     "watch:test:rules": "mocha './test/rules/**/*.spec.js' --timeout=10000 --reporter=min --watch --watch-extensions=rules",
     "ci:test:rules": "firebase emulators:exec --only firestore 'npm run test:rules'"
   },
