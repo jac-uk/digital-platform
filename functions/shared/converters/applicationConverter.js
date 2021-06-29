@@ -8,6 +8,7 @@ module.exports = () => {
 
   return {
     getHtmlPanelPack,
+    getAdditionalSelectionCriteria,
     // TODO include other converters
   };
 
@@ -230,7 +231,7 @@ module.exports = () => {
   function getAdditionalSelectionCriteria(application, exercise) {
     const additionalSelectionCriteria = application.selectionCriteriaAnswers;
     const data = [];
-    additionalSelectionCriteria.forEach(sC, index => {
+    additionalSelectionCriteria.forEach((sC, index) => {
       addField(data, exercise.selectionCriteria[index].title, sC.answerDetails || 'Does not meet this requirement');
     });
     return data;
