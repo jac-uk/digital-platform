@@ -10,7 +10,7 @@ describe('applicationConverter', () => {
   let mockApplication;
   let mockParams;
   
-  xdescribe('given only', () => {
+  describe('given only', () => {
     it('empty objects', () => {
       // set up
       htmlNode = document.createElement('div');
@@ -77,7 +77,7 @@ describe('applicationConverter', () => {
     });
   });
 
-  xdescribe('exercise', () => {
+  describe('exercise', () => {
     
     describe('type of exercise', () => {
 
@@ -595,7 +595,7 @@ describe('applicationConverter', () => {
 
   });
 
-  xdescribe('application', () => {
+  describe('application', () => {
 
     describe('Jurisdiction Question', () => {
       it('string', () => {
