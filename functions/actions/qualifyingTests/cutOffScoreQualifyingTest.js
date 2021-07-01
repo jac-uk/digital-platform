@@ -2,11 +2,10 @@ const { getDocument, applyUpdates } = require('../../shared/helpers');
 
 module.exports = (config, firebase, db) => {
 
-  const commands = [];
-
   return updateStatuses;
 
   async function updateStatuses(params) {
+    const commands = [];
     for(const application of params.applicationIds) {
       //set the status
       let status = null;
@@ -17,7 +16,10 @@ module.exports = (config, firebase, db) => {
       }
 
       // get existing applicationRecord and add update command to batch
-      await updateApplicationRecords(application.applicationId, status);
+      const command = await updateApplicationRecords(application.applicationId, status);
+      if(command) {
+        commands.push(command);
+      }
     }
 
     const result = await applyUpdates(db, commands);
@@ -30,13 +32,15 @@ module.exports = (config, firebase, db) => {
 
     // check if applicant has withdrawn or has been rejected as ineligible
     if (applicationRecord.status !== 'rejectedAsIneligible' && applicationRecord.status !== 'withdrewApplication') {
-      commands.push({
+      return {
         command: 'update',
         ref: db.collection('applicationRecords').doc(applicationId),
         data: {
           status: status,
         },
-      });
+      };
+    } else {
+      return null;
     }
   }
 };
