@@ -1,6 +1,6 @@
 {
 	"info": {
-		"_postman_id": "a2d09ee2-ee09-424e-bc16-f62d87315b22",
+		"_postman_id": "649997ff-28e0-4855-ad14-55f5afcef961",
 		"name": "JAC - Digital Platform",
 		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
 	},
@@ -173,6 +173,43 @@
 							],
 							"path": [
 								"exportApplicationContactsData"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Export Exercise 021 Data",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{token}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"type": "text",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"data\": {\r\n        \"exerciseId\": \"4Ufg5bAC2Gjx2YRve9WZ\"\r\n    }\r\n}"
+						},
+						"url": {
+							"raw": "{{host}}/exportCustom021Data",
+							"host": [
+								"{{host}}"
+							],
+							"path": [
+								"exportCustom021Data"
 							]
 						}
 					},
