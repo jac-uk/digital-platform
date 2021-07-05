@@ -1,6 +1,6 @@
 const helpers = require('../../shared/converters/helpers');
 const lookup = require('../../shared/converters/lookup');
-const { getDocuments } = require('../../shared/helpers');
+const { getDocuments, getDocument } = require('../../shared/helpers');
 
 module.exports = (firebase, db) => {
   return {
@@ -13,12 +13,28 @@ module.exports = (firebase, db) => {
    */
   async function exportCustom021Data(exerciseId) {
 
-    // get submitted applications
-    const applications = await getDocuments(db.collection('applications')
-      .where('exerciseId', '==', exerciseId)
-      .where('_processing.stage', '==', 'recommended')
-    );
+    // get submitted applicationRecords
+    // const applicationRecords = [];
+    const applicationRecords = await getDocuments(db.collection('applicationRecords')
+      .where('exercise.id', '==', exerciseId)
+      .where('stage', '==', 'recommended')
+    ).then((res) => {
+      return res;
+    });
 
+    let applications = [];
+    applicationRecords.forEach(async (a, i) => {
+      console.log(applicationRecords[i] === a);
+      applications.push(await getDocument(db.collection('applications').doc(a.id))
+      .then((res) => {
+        return res;
+      })
+      .catch((err) => {
+        console.log('err', err);
+        return;
+      }));
+    });
+    
     const headers = [
       'Reference number',
       'Status',
@@ -41,23 +57,23 @@ module.exports = (firebase, db) => {
       'Second Assessor Name',
       'Second Assessor Email',
       'Second Assessor Phone',
+      'First-tier Tribunal, ranked preference',
     ];
-
+    
     const report = {
       headers: headers,
-      rows: contactsExport(applications),
+      rows: contactsExport(applications, applicationRecords),
     };
-
+    
     return report;
   }
+
 };
 
-const contactsExport = (applications) => {
-  console.log(applications.length);
-  return applications.map((application) => {
-    // the following ensure application has sufficient fields for the export
-    if (!Object.keys(application).includes('personalDetails')) { application.personalDetails = {}; }
-    if (!Object.keys(application).includes('equalityAndDiversitySurvey')) { application.equalityAndDiversitySurvey = {}; }
+const contactsExport = (applications, applicationRecords) => {
+  // console.log('applicationRecords', applicationRecords[0]);
+  // console.log('application', applications[0]);
+  return applications.map((application, index) => {
     return {
       referenceNumber: application.referenceNumber,
       status: lookup(application.status),
@@ -80,6 +96,7 @@ const contactsExport = (applications) => {
       secondAssessorFullName: application.secondAssessorFullName,
       secondAssessorEmail: application.secondAssessorEmail,
       secondAssessorPhone: application.secondAssessorPhone,
+      // additional: application.,
     };
   });
 };
