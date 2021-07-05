@@ -281,11 +281,12 @@ module.exports = (config, firebase, db) => {
     // get exercise
     const exercise = await getExercise(params.exerciseId);
 
+    
     // if param is applicationId then we expect exercise to have started sending IAs. So check this.
-      // if this is not the case then we need to initialise/create the IA, send the request and update exercise stats
+    // if this is not the case then we need to initialise/create the IA, send the request and update exercise stats
 
     // get assessments
-    let assessmentsRef = db.collection('assessments')
+    let assessmentsRef = await db.collection('assessments')
       .where('exercise.id', '==', params.exerciseId);
     if (params.resend) {
       assessmentsRef = assessmentsRef.where('status', 'in', ['draft','pending']);
@@ -298,18 +299,23 @@ module.exports = (config, firebase, db) => {
     if (params.assessmentId) {
       assessmentsRef = assessmentsRef.where(firebase.firestore.FieldPath.documentId(), '==', params.assessmentId);
     }
-    const assessments = await getDocuments(assessmentsRef);
 
-    let result = validateAssessorEmailAddresses(assessments);
+    const assessments = await getDocuments(assessmentsRef).then((res)=>{
+      return res;
+    });
+    
+    let result = await validateAssessorEmailAddresses(assessments).then((res) => {
+      return res;
+    });
+
     if (result !== true) {
-      return result;
+      return false;
     }
-
+    
     // create database commands
     const commands = [];
     let countDraft = 0;
-    for (let i = 0, len = assessments.length; i < len; ++i) {
-      const assessment = assessments[i];
+    assessments.forEach((assessment, i) => {
       // create notification
       commands.push({
         command: 'set',
@@ -325,7 +331,7 @@ module.exports = (config, firebase, db) => {
           status: 'pending',
         },
       });
-    }
+    });
     if (countDraft) {
       let currentSent = exercise.assessments.sent ? exercise.assessments.sent : 0;
       commands.push({
