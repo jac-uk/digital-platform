@@ -54,11 +54,47 @@ specific language governing permissions and limitations under the License.
 
 ## Technical Notes
 
+# gcloud CLI setup
+
+- Download and install the gcloud SDK from here https://cloud.google.com/sdk/?_ga=2.2868720.-1703087304.1614859887
+- Inititilise the SDK by running `gcloud init`
+- In the CLI, navigate to the `\google-app-engine\virus-scanning-node` folder
+- Now create gcloud configs for each environment:
+    - Develop:
+    - `gcloud config configurations create default`
+    - `gcloud config set account halcyon@judicialappointments.digital`
+    - `gcloud config set project digital-platform-develop`
+    - `gcloud config set compute/zone europe-west2-a`
+    - `gcloud config set compute/region europe-west2`
+    - Staging:
+    - `gcloud config configurations create staging`
+    - `gcloud config set account halcyon@judicialappointments.digital`
+    - `gcloud config set project digital-platform-staging`
+    - `gcloud config set compute/zone europe-west2-a`
+    - `gcloud config set compute/region europe-west2`
+    - Production:
+    - `gcloud config configurations create production`
+    - `gcloud config set account halcyon@judicialappointments.digital`
+    - `gcloud config set project platform-production-9207d`
+    - `gcloud config set compute/zone europe-west2-a`
+    - `gcloud config set compute/region europe-west2`
+- Activate the environment you want to work with, i.e.
+  - `gcloud config configurations activate default`
+- Check the environment have been setup correctly.
+  - `gcloud config configurations list`
+  - Note: It should look like this:
+```
+    NAME        IS_ACTIVE  ACCOUNT                               PROJECT                    COMPUTE_DEFAULT_ZONE  COMPUTE_DEFAULT_REGION
+    default     True       halcyon@judicialappointments.digital  digital-platform-develop   europe-west2-a        europe-west2
+    production  False      halcyon@judicialappointments.digital  platform-production-9207d  europe-west2-a        europe-west2
+    staging     False      halcyon@judicialappointments.digital  digital-platform-staging   europe-west2-a        europe-west2
+```
+
 # Deployment
 
 To deploy:
 
-- In the CLI, navigate to the \google-app-engine\virus-scanning-node folder
+- In the CLI, navigate to the `\google-app-engine\virus-scanning-node` folder
 - Make sure the `app.yaml` file contains the correct settings.
 - Run `gcloud app deploy`
 - Note: It takes about 5 mins to deploy (to a flex environment).
