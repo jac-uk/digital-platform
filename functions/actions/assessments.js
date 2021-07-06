@@ -337,9 +337,8 @@ module.exports = (config, firebase, db) => {
     }
 
     // write to db
-    return assessments.length;
-    // result = await applyUpdates(db, commands);
-    // return result ? assessments.length : false;
+    result = await applyUpdates(db, commands);
+    return result ? assessments.length : false;
   }
 
   /**
