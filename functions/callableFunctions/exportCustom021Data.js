@@ -1,6 +1,6 @@
 const functions = require('firebase-functions');
 const { firebase, db } = require('../shared/admin.js');
-const { exportCustom021Data } = require('../actions/exercises/exportCustom021Data')(firebase, db);
+const exportCustom021Data = require('../actions/exercises/exportCustom021Data')(firebase, db);
 const { getDocument } = require('../shared/helpers');
 const { logEvent } = require('../actions/logs/logEvent')(firebase, db);
 
@@ -30,5 +30,4 @@ module.exports = functions.region('europe-west2').https.onCall(async (data, cont
 
   // return the requested data
   return await exportCustom021Data(data.exerciseId);
-
 });
