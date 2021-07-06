@@ -54,6 +54,40 @@ specific language governing permissions and limitations under the License.
 
 ## Technical Notes
 
+# Deployment
+
+To deploy:
+
+- In the CLI, navigate to the \google-app-engine\virus-scanning-node folder
+- Make sure the `app.yaml` file contains the correct settings.
+- Run `gcloud app deploy`
+- Note: It takes about 5 mins to deploy (to a flex environment).
+- Note: I had to deploy twice to get it to install everything it needed.
+
+Can view the App Engine instances here: https://console.cloud.google.com/appengine?serviceId=default&versionId=20210428t161124&folder=true&organizationId=376574071228&project=digital-platform-develop
+
+SNAG - After depoyment the ClaAV service is not running...
+
+Solution: Manually restart the ClamAV service within the Docker container by doing the following:
+
+- Connect to the App Engine VM via SSH
+- List all docker containiners
+  - `docker container ls`
+- Launch a terminal in the docker container for the App Engine
+  - `docker exec -it gaeapp /bin/bash`
+- Check what listening ports are open
+  - `netstat -plnt`
+  - Note: we are expecting the malware scanning service to be running on 127.0.0.1 on port 3310, but it isn't
+- Restart ClamAV
+  - `service clamav-daemon force-reload`
+  - Note: This takes about 30 seconds
+- Check listening ports again
+  - `netstat -plnt`
+  - Now you should see that something is listening on 127.0.01 on port 3310
+
+
+# Debugging
+
 Can view `console.log()` output for the malware scanner service here:
 
 https://console.cloud.google.com/logs/query;query=resource.type%3D%22gae_app%22%0Aresource.labels.project_id%3D%22digital-platform-develop%22%0Aresource.labels.module_id%3D%22malware-scanner%22;cursorTimestamp=2021-04-28T17:10:14.144Z?project=digital-platform-develop&folder=true&organizationId=376574071228&query=%0A
