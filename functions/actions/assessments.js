@@ -286,7 +286,7 @@ module.exports = (config, firebase, db) => {
     // if this is not the case then we need to initialise/create the IA, send the request and update exercise stats
 
     // get assessments
-    let assessmentsRef = await db.collection('assessments')
+    let assessmentsRef = db.collection('assessments')
       .where('exercise.id', '==', params.exerciseId);
     if (params.resend) {
       assessmentsRef = assessmentsRef.where('status', 'in', ['draft','pending']);
