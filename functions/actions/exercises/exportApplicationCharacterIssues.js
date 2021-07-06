@@ -103,7 +103,6 @@ module.exports = (firebase, db) => {
 
   function getEqualityAndDiversityData (application) {
     const survey = application.equalityAndDiversitySurvey;
-    const share = (value) => survey.shareData ? value : null;
 
     let formattedFeePaidJudicialRole;
     if (survey.shareData) {
@@ -115,21 +114,26 @@ module.exports = (firebase, db) => {
 
     const formattedDiversityData = {
       shareData: helpers.toYesNo(survey.shareData),
-      professionalBackground: share(survey.professionalBackground.map(position => lookup(position)).join(', ')),
+      professionalBackground: helpers.flattenProfessionalBackground(application.equalityAndDiversitySurvey),
+      currentLegalRole: helpers.flattenCurrentLegalRole(application.equalityAndDiversitySurvey),
       formattedFeePaidJudicialRole: formattedFeePaidJudicialRole || null,
-      stateOrFeeSchool: share(lookup(survey.stateOrFeeSchool)),
-      firstGenerationStudent: share(helpers.toYesNo(lookup(survey.firstGenerationStudent))),
-      ethnicGroup: share(lookup(survey.ethnicGroup)),
-      gender: share(lookup(survey.gender)),
-      sexualOrientation: share(lookup(survey.sexualOrientation)),
-      disability: share(survey.disability ? survey.disabilityDetails : helpers.toYesNo(survey.disability)),
-      religionFaith: share(lookup(survey.religionFaith)),
-      attendedOutreachEvents : share(helpers.toYesNo(lookup(survey.attendedOutreachEvents))),
+      stateOrFeeSchool: lookup(survey.stateOrFeeSchool),
+      oxbridgeUni: helpers.toYesNo(survey.oxbridgeUni),
+      firstGenerationStudent: helpers.toYesNo(lookup(survey.firstGenerationStudent)),
+      ethnicGroup: lookup(survey.ethnicGroup),
+      gender: lookup(survey.gender),
+      changedGender: helpers.toYesNo(survey.changedGender),
+      sexualOrientation: lookup(survey.sexualOrientation),
+      disability: survey.disability ? survey.disabilityDetails : helpers.toYesNo(survey.disability),
+      religionFaith: lookup(survey.religionFaith),
+      attendedOutreachEvents : helpers.toYesNo(lookup(survey.attendedOutreachEvents)),
+      participatedInJudicialWorkshadowingScheme : 'No', // default (see below)
+      hasTakenPAJE : 'No', // default (see below)
     };
 
     if (this.exerciseType === 'legal' || this.exerciseType === 'leadership') {
-      formattedDiversityData.participatedInJudicialWorkshadowingScheme = share(helpers.toYesNo(lookup(survey.participatedInJudicialWorkshadowingScheme)));
-      formattedDiversityData.hasTakenPAJE = share(helpers.toYesNo(lookup(survey.hasTakenPAJE)));
+      formattedDiversityData.participatedInJudicialWorkshadowingScheme = helpers.toYesNo(lookup(survey.participatedInJudicialWorkshadowingScheme));
+      formattedDiversityData.hasTakenPAJE = helpers.toYesNo(lookup(survey.hasTakenPAJE));
     }
 
     return formattedDiversityData;
@@ -209,7 +213,11 @@ module.exports = (firebase, db) => {
       return '';
     } else {
       return application.experience.map((job) => {
-        return formatDate(job.startDate) + ' - ' + job.jobTitle + ' at ' + job.orgBusinessName;
+        if (job.jobTitle) {
+          return formatDate(job.startDate) + ' - ' + job.jobTitle + ' at ' + job.orgBusinessName;
+        } else {
+          return '';
+        }
       }).join('\r\n\r\n\r\n').trim();
     }
   }

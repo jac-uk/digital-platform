@@ -41,10 +41,20 @@ module.exports = (config, firebase, db) => {
           data[`applicationRecords.${dataAfter.stage}EMP`] = dataAfter.flags.empApplied ? increment : decrement;
         }
       }
+    }
 
-      // do the updates
-      if (Object.keys(data).length > 0) {
-        await db.doc(`exercises/${exerciseId}`).update(data);
+    // do the updates
+    if (Object.keys(data).length > 0) {
+      await db.doc(`exercises/${exerciseId}`).update(data);
+    }
+
+    // update application with stage/status changes (part of admin#1341 Staged Applications)
+    if (dataBefore.stage !== dataAfter.stage || dataBefore.status !== dataAfter.status) {
+      const applicationData = {};
+      applicationData['_processing.stage'] = dataAfter.stage;
+      applicationData['_processing.status'] = dataAfter.status;
+      if (dataBefore.application) {
+        await db.doc(`applications/${dataBefore.application.id}`).update(applicationData);
       }
     }
 

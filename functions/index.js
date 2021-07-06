@@ -1,7 +1,7 @@
 
 // Scheduled
-// exports.backupFirestore = require('./scheduledFunctions/backupFirestore');
-// exports.backupAuthentication = require('./scheduledFunctions/backupAuthentication');
+exports.backupFirestore = require('./scheduledFunctions/backupFirestore');
+exports.backupAuthentication = require('./scheduledFunctions/backupAuthentication');
 exports.processNotifications = require('./scheduledFunctions/processNotifications');
 
 // Background
@@ -27,11 +27,14 @@ exports.sendAssessmentRequests = require('./callableFunctions/sendAssessmentRequ
 exports.sendAssessmentReminders = require('./callableFunctions/sendAssessmentReminders');
 exports.generateSignInWithEmailLink = require('./callableFunctions/generateSignInWithEmailLink');
 exports.initialiseApplicationRecords = require('./callableFunctions/initialiseApplicationRecords');
+exports.sendCharacterCheckRequests = require('./callableFunctions/sendCharacterCheckRequests');
 exports.initialiseQualifyingTest = require('./callableFunctions/initialiseQualifyingTest');
 exports.activateQualifyingTest = require('./callableFunctions/activateQualifyingTest');
 exports.initialiseMissingApplicationRecords = require('./callableFunctions/initialiseMissingApplicationRecords');
 exports.sendQualifyingTestReminders = require('./callableFunctions/sendQualifyingTestReminders');
 exports.scoreQualifyingTest = require('./callableFunctions/scoreQualifyingTest');
+exports.cutOffScoreUpdateStatuses = require('./callableFunctions/cutOffScoreUpdateStatuses');
+exports.updateStatus = require('./callableFunctions/updateStatus');
 exports.generateQualifyingTestReport = require('./callableFunctions/generateQualifyingTestReport');
 exports.exportExerciseData = require('./callableFunctions/exportExerciseData');
 exports.transferHandoverData = require('./callableFunctions/transferHandoverData');
@@ -42,9 +45,9 @@ exports.generateReasonableAdjustmentsReport = require('./callableFunctions/gener
 exports.exportQualifyingTestResponses = require('./callableFunctions/exportQualifyingTestResponses');
 exports.generateAgencyReport = require('./callableFunctions/generateAgencyReport');
 exports.logEvent = require('./callableFunctions/logEvent');
-exports.sendCharacterCheckRequests = require('./callableFunctions/sendCharacterCheckRequests');
-exports.updateCharacterChecksStatus = require('./callableFunctions/updateCharacterChecksStatus');
 exports.exportApplicationCharacterIssues = require('./callableFunctions/exportApplicationCharacterIssues');
+exports.getUserEmailByID = require('./callableFunctions/getUserEmailByID');
+exports.updateEmailAddress = require('./callableFunctions/updateEmailAddress');
 
 // exports.onExerciseUpdate_PublishVacancy = require('./exercises/onExerciseUpdate_PublishVacancy');
 // exports.onWriteVacancyStats = require('./exercises/onWriteVacancyStats');

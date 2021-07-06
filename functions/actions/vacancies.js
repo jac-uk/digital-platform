@@ -26,12 +26,12 @@ module.exports = (config, db) => {
   async function updateVacancy(vacancyId, data) {
     const vacancy = newVacancy(data);
     try {
-      await db.collection('vacancies').doc(vacancyId).set(vacancy, { merge: true });
+      await db.collection('vacancies').doc(vacancyId).set(vacancy);
       return true;
     } catch (e) {
       console.error(`Error writing vacancy ${vacancyId}`, e);
       return false;
     }
-  }  
+  }
 
 };
