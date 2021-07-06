@@ -28,6 +28,17 @@ app.use(express.urlencoded({
   extended: true,
 }));
 
+// Setup a rate limiter
+const expressRateLimit = require('express-rate-limit');
+// Enable if you're behind a reverse proxy (Heroku, Bluemix, AWS ELB, Nginx, etc)
+// see https://expressjs.com/en/guide/behind-proxies.html
+// app.set('trust proxy', 1);
+const limiter = expressRateLimit({
+  windowMs: 1 * 60 * 1000, // 1 minute
+  max: 100, // limit each IP to X requests per windowMs
+});
+app.use(limiter);
+
 // Creates a client
 const storage = new Storage();
 
