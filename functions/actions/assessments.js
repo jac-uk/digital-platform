@@ -245,7 +245,7 @@ module.exports = (config, firebase, db) => {
    * @param {collection} assessments to check
    * @return true if all are valid and a {collection} of errors otherwise
    */
-  async function validateAssessorEmailAddresses(assessments) {
+  function validateAssessorEmailAddresses(assessments) {
     const errors = [];
 
     const emailRegEx = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
@@ -281,9 +281,8 @@ module.exports = (config, firebase, db) => {
     // get exercise
     const exercise = await getExercise(params.exerciseId);
 
-    
     // if param is applicationId then we expect exercise to have started sending IAs. So check this.
-    // if this is not the case then we need to initialise/create the IA, send the request and update exercise stats
+      // if this is not the case then we need to initialise/create the IA, send the request and update exercise stats
 
     // get assessments
     let assessmentsRef = db.collection('assessments')
@@ -299,23 +298,19 @@ module.exports = (config, firebase, db) => {
     if (params.assessmentId) {
       assessmentsRef = assessmentsRef.where(firebase.firestore.FieldPath.documentId(), '==', params.assessmentId);
     }
+    const assessments = await getDocuments(assessmentsRef);
 
-    const assessments = await getDocuments(assessmentsRef).then((res)=>{
-      return res;
-    });
-    
-    let result = await validateAssessorEmailAddresses(assessments).then((res) => {
-      return res;
-    });
+    let result = validateAssessorEmailAddresses(assessments);
 
     if (result !== true) {
-      return false;
+      return result;
     }
-    
+
     // create database commands
     const commands = [];
     let countDraft = 0;
-    assessments.forEach((assessment, i) => {
+    for (let i = 0, len = assessments.length; i < len; ++i) {
+      const assessment = assessments[i];
       // create notification
       commands.push({
         command: 'set',
@@ -331,7 +326,7 @@ module.exports = (config, firebase, db) => {
           status: 'pending',
         },
       });
-    });
+    }
     if (countDraft) {
       let currentSent = exercise.assessments.sent ? exercise.assessments.sent : 0;
       commands.push({
@@ -342,8 +337,9 @@ module.exports = (config, firebase, db) => {
     }
 
     // write to db
-    result = await applyUpdates(db, commands);
-    return result ? assessments.length : false;
+    return assessments.length;
+    // result = await applyUpdates(db, commands);
+    // return result ? assessments.length : false;
   }
 
   /**
