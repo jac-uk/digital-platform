@@ -179,6 +179,80 @@
 					"response": []
 				},
 				{
+					"name": "Export Application Eligibility Issues",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{token}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"data\": {\r\n        \"exerciseId\": \"4Ufg5bAC2Gjx2YRve9WZ\"\r\n    }\r\n}"
+						},
+						"url": {
+							"raw": "{{host}}/exportApplicationEligibilityIssues",
+							"host": [
+								"{{host}}"
+							],
+							"path": [
+								"exportApplicationEligibilityIssues"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Export Application Character Issues",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{token}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"data\": {\r\n        \"exerciseId\": \"wdpALbyICL7ZxxN5AQt8\",\r\n        \"stage\": \"selected\",\r\n        \"status\": \"invitedToSelectionDay\"\r\n    }\r\n}"
+						},
+						"url": {
+							"raw": "{{host}}/exportApplicationCharacterIssues",
+							"host": [
+								"{{host}}"
+							],
+							"path": [
+								"exportApplicationCharacterIssues"
+							]
+						}
+					},
+					"response": []
+				},
+				{
 					"name": "Export Qualifying Test Responses",
 					"request": {
 						"auth": {
@@ -479,6 +553,117 @@
 							],
 							"path": [
 								"logEvent"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Flag Application Issues",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{token}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"data\": {\r\n        \"exerciseId\": \"wdpALbyICL7ZxxN5AQt8\"\r\n    }\r\n}\r\n"
+						},
+						"url": {
+							"raw": "{{host}}/flagApplicationIssuesForExercise",
+							"host": [
+								"{{host}}"
+							],
+							"path": [
+								"flagApplicationIssuesForExercise"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Send Assessment Requests",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{token}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"data\": {\r\n        \"exerciseId\": \"ZFF4xU8zNvneljZ8Ynsm\",\r\n        \"assessmentId\": \"07446ZzS5WFWuOn4ZPpV-1\"\r\n    }\r\n}"
+						},
+						"url": {
+							"raw": "{{host}}/sendAssessmentRequests",
+							"host": [
+								"{{host}}"
+							],
+							"path": [
+								"sendAssessmentRequests"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Send Assessment Reminders",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{token}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"data\": {\r\n        \"exerciseId\": \"ZFF4xU8zNvneljZ8Ynsm\",\r\n        \"assessmentId\": \"07446ZzS5WFWuOn4ZPpV-1\"\r\n    }\r\n}"
+						},
+						"url": {
+							"raw": "{{host}}/sendAssessmentReminders",
+							"host": [
+								"{{host}}"
+							],
+							"path": [
+								"sendAssessmentReminders"
 							]
 						}
 					},

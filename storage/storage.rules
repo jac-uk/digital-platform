@@ -1,14 +1,18 @@
 rules_version = '2';
+
 service firebase.storage {
   function userIsAuthenticated() {
     return request.auth.uid != null;
   }
+
   function currentUser() {
     return request.auth.uid;
   }
+
   function userIsJAC() {
-    return request.auth.token.email_verified
-      && request.auth.token.email.matches('.*@judicialappointments[.](digital|gov[.]uk)')
+    return request.auth.token.email.matches('(.*@judicialappointments|.*@justice)[.](digital|gov[.]uk)');
+    //return request.auth.token.email_verified
+      //&& request.auth.token.email.matches('.*@judicialappointments[.](digital|gov[.]uk)')
   }
   function isOkForDownload() {
     // 'request.resource' is available when writing, but when reading you must use 'resource' directly.
@@ -18,8 +22,9 @@ service firebase.storage {
   function isOkForUpload() {
     return request.resource.size > 0
       && request.resource.size <= 2 * 1024 * 1024
-      && request.resource.name.matches('.*\\.(pdf|docx|doc|odt|txt|fodt)');
+      && request.resource.name.matches('.*\\.(pdf|docx|doc|odt|txt|fodt|xlsx)');
   }
+
   match /b/{bucket}/o {
     match /exercise/{exerciseId}/{fileName} {
       allow read: if isOkForDownload();
@@ -42,6 +47,9 @@ service firebase.storage {
     }
     match /exercise/{exerciseId}/application/{applicationId}/jac/{fileName} {
       allow read: if userIsAuthenticated() && userIsJAC() && isOkForDownload();
+      allow write: if userIsAuthenticated() && userIsJAC() && isOkForUpload();
+    }
+    match /exercise/{exerciseId}/qualifying-tests/{qualifyingTestId}/{fileName} {
       allow write: if userIsAuthenticated() && userIsJAC() && isOkForUpload();
     }
   }

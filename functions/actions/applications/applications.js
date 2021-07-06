@@ -2,6 +2,7 @@ const { getAllDocuments, applyUpdates } = require('../../shared/helpers');
 
 module.exports = (config, firebase, db) => {
   const slack = require('../../shared/slack')(config);
+  const { updateCandidate } = require('../candidates/search')(firebase, db);
   return {
     updateApplication,
     onApplicationCreate,
@@ -24,15 +25,14 @@ module.exports = (config, firebase, db) => {
   /**
    * Application created event handler
    * - Posts message to slack
-   * - Add timestamp to document
+   * - Increment exercise applications count
    */
-  function onApplicationCreate(ref, data) {
+  async function onApplicationCreate(ref, data) {
     slack.post(`${data.exerciseRef}. New application started`);
-    return ref.set({
-      createdAt: firebase.firestore.Timestamp.fromDate(new Date()),
-    }, {
-      merge: true,
-    });
+    if (data.userId) { await updateCandidate(data.userId); }
+    const saveData = {};
+    saveData[`applications.${data.status}`] = firebase.firestore.FieldValue.increment(1);
+    await db.doc(`exercises/${data.exerciseId}`).update(saveData);
   }
 
   /**
