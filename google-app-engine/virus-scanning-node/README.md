@@ -96,11 +96,16 @@ To deploy:
 
 - In the CLI, navigate to the `\google-app-engine\virus-scanning-node` folder
 - Make sure the `app.yaml` file contains the correct settings.
-- Run `gcloud app deploy`
+- To deploy to develop, run:
+  - `gcloud app deploy`
+- To deploy to staging, run:
+  - `gcloud app deploy app-staging.yaml --project=digital-platform-staging`
+- To deploy to production, run:
+  - `gcloud app deploy app-production.yaml --project=platform-production-9207d`
 - Note: It takes about 5 mins to deploy (to a flex environment).
 - Note: I had to deploy twice to get it to install everything it needed.
 
-Can view the App Engine instances here: https://console.cloud.google.com/appengine?serviceId=default&versionId=20210428t161124&folder=true&organizationId=376574071228&project=digital-platform-develop
+You can view the App Engine instances here: https://console.cloud.google.com/appengine?serviceId=default&versionId=20210428t161124&folder=true&organizationId=376574071228&project=digital-platform-develop
 
 SNAG - After depoyment the ClaAV service is not running...
 
