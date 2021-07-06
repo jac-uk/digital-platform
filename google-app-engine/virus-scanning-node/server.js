@@ -16,22 +16,37 @@
 
 const clamd = require('clamdjs');
 const express = require('express');
-const bodyParser = require('body-parser');
 const {Storage} = require('@google-cloud/storage');
+const fs = require('fs');
 
 const app = express();
 const PORT = process.env.PORT || 8080;
 const scanner = clamd.createScanner('127.0.0.1', 3310);
-const CLOUD_STORAGE_BUCKET = process.env.UNSCANNED_BUCKET;
 
-app.use(bodyParser.json());
+app.use(express.json());
+app.use(express.urlencoded({
+  extended: true,
+}));
+
+// Setup a rate limiter
+const expressRateLimit = require('express-rate-limit');
+// Enable if you're behind a reverse proxy (Heroku, Bluemix, AWS ELB, Nginx, etc)
+// see https://expressjs.com/en/guide/behind-proxies.html
+// app.set('trust proxy', 1);
+const limiter = expressRateLimit({
+  windowMs: 1 * 60 * 1000, // 1 minute
+  max: 100, // limit each IP to X requests per windowMs
+});
+app.use(limiter);
 
 // Creates a client
 const storage = new Storage();
 
 // Get the bucket which is declared as an environment variable
-// let srcbucket = storage.bucket(CLOUD_STORAGE_BUCKET);
+const STORAGE_URL = process.env.PROJECT_ID + '.appspot.com';
+const bucket = storage.bucket(STORAGE_URL);
 
+// start the app server
 const run = () => app.listen(PORT, () => {
   console.log(`Server started on port ${PORT}`);
 });
@@ -44,67 +59,87 @@ const run = () => app.listen(PORT, () => {
  * @param {object} res The HTTP response object
  */
 app.post('/scan', async (req, res) => {
-  console.log('Request body', req.body);
+  console.log(`STORAGE_URL = ${STORAGE_URL}`);
+  console.log('Request body', JSON.stringify(req.body));
+
+  let tempPath;
+
   try {
+    // get inputs
+    console.log(' - Getting inputs...');
     const filename = req.body.filename;
+    console.log(` - - filename = ${filename}`);
 
-    const options = {
-      destination: `/unscanned_files/${filename}`,
-    };
-
-    //Downloads the file
-    await storage
-      .bucket(CLOUD_STORAGE_BUCKET)
-      .file(filename)
-      .download(options);
-
-    console.log(`Filename is: /unscanned_files/${filename}`);
-
-    const result = await scanner.scanFile(`/unscanned_files/${filename}`);
-    if (result.indexOf('OK') > -1) {
-
-      // Add metadata with scan result
-      addMetadata(filename, 'clean');
-
-      // Log scan outcome for document
-      console.log(`Scan status for ${filename}: CLEAN`);
-
-      // Respond to API client
-      res.json({status: 'clean'});
-    } else {
-
-      // Add metadata with scan result
-      addMetadata(filename, 'infected');
-
-      // Log scan outcome for document
-      console.log(`Scan status for ${filename}: INFECTED`);
-
-      // Respond to API client
-      res.json({
-        message: result,
-        status: 'infected',
-      });
+    // validate inputs
+    console.log(' - Validating inputs...');
+    const bucketExists = await bucket.exists();
+    if (!bucketExists) {
+      throw 'Storage bucket not found';
     }
+    const file = bucket.file(filename);
+    const fileExists = (await file.exists())[0]; // the file.exists() function returns an array with a single boolean element in it
+    if (!fileExists) {
+      throw 'File not found in bucket';
+    }
+    console.log(' - - Done');
+
+    // download the file so it can be scanned locally
+    tempPath = `/unscanned_files/${Date.now()}`;
+    console.log(` - Downloading file to local temp path: ${tempPath}...`);
+    await bucket.file(filename).download({ destination: tempPath });
+    console.log(' - - Done');
+
+    // scan the file
+    console.log(' - Starting malware scan...');
+    const result = await scanner.scanFile(tempPath);
+    const status = result.indexOf('OK') > -1 ? 'clean' : 'infected';
+    console.log(' - - Done');
+    console.log(` - - File status: ${status}`);
+
+    // add metadata with scan result
+    console.log(' - Adding metadata to file...');
+    addMetadata(filename, status);
+    console.log(' - - Done');
+
+    // respond to HTTP client
+    console.log(' - Returning HTTP respnose...');
+    res.json({ message: result, status: status });
+    console.log(' - - Done');
+
   } catch(e) {
-    console.error('Error processing the file', e);
+    console.error('*** ERROR ***', JSON.stringify(e));
     res.status(500).json({
       message: e.toString(),
       status: 'error',
     });
+  } finally {
+    if (tempPath) {
+      console.log(' - Deleting temp file...');
+      fs.unlink(tempPath, (err) => {
+        if (err) {
+          console.error('*** ERROR ***', JSON.stringify(err));
+        } else {
+          console.log(' - - Done');
+        }
+      });
+    }
   }
 });
 
-
+/**
+ * Add metadata to a file, to indicate the outcome of the virus scan
+ *
+ * @param {string} filename
+ * @param {string} status
+ */
 const addMetadata = (filename, status) => {
-  // Add meta data to the file to indicate it has been scanned
   const metadata = {
     metadata: {
       'scanned': Date.now().toString(),
       'status': status,
     },
   };
-
-  storage.bucket(CLOUD_STORAGE_BUCKET).file(filename).setMetadata(metadata).then((returned) => {
+  bucket.file(filename).setMetadata(metadata).then((returned) => {
     return returned;
   }).catch(() => {
     return false;

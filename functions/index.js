@@ -14,6 +14,7 @@ exports.onAssessmentUpdate = require('./backgroundFunctions/onAssessmentUpdate')
 exports.onApplicationRecordUpdate = require('./backgroundFunctions/onApplicationRecordUpdate');
 exports.onQualifyingTestResponseUpdate = require('./backgroundFunctions/onQualifyingTestResponseUpdate');
 exports.onPanelUpdate = require('./backgroundFunctions/onPanelUpdate');
+exports.onDocumentUploaded = require('./backgroundFunctions/onDocumentUploaded');
 exports.onCandidatePersonalDetailsUpdate = require('./backgroundFunctions/onCandidatePersonalDetailsUpdate');
 
 // Callable
@@ -45,6 +46,7 @@ exports.generateReasonableAdjustmentsReport = require('./callableFunctions/gener
 exports.exportQualifyingTestResponses = require('./callableFunctions/exportQualifyingTestResponses');
 exports.generateAgencyReport = require('./callableFunctions/generateAgencyReport');
 exports.logEvent = require('./callableFunctions/logEvent');
+exports.scanFile = require('./callableFunctions/scanFile');
 exports.exportApplicationCharacterIssues = require('./callableFunctions/exportApplicationCharacterIssues');
 exports.getUserEmailByID = require('./callableFunctions/getUserEmailByID');
 exports.updateEmailAddress = require('./callableFunctions/updateEmailAddress');
@@ -58,14 +60,3 @@ exports.updateEmailAddress = require('./callableFunctions/updateEmailAddress');
 // exports.handleApplicationOnCreate = require('./applications/handleApplicationOnCreate');
 // // exports.handleApplicationOnUpdate = require('./applications/handleApplicationOnUpdate');
 // // exports.handleExerciseTimelineDates = require('./exercises/handleExerciseTimelineDates');
-
-
-// MALWARE SCANNER
-// const functions = require('firebase-functions');
-// exports.requestMalwareScan = functions.region('europe-west2').storage
-//   .object()
-//   .onFinalize((object) => {
-//     const handler = require('./virus-scanning/requestMalwareScan');
-//     return handler(object);
-//   });
-// @TODO enqueueMalwareScans
