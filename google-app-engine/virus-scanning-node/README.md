@@ -56,7 +56,7 @@ specific language governing permissions and limitations under the License.
 
 # gcloud CLI setup
 
-- Download and install the gcloud SDK from here https://cloud.google.com/sdk/?_ga=2.2868720.-1703087304.1614859887
+- Download and install the gcloud SDK from here https://cloud.google.com/sdk/docs/install
 - Inititilise the SDK by running `gcloud init`
 - In the CLI, navigate to the `\google-app-engine\virus-scanning-node` folder
 - Now create gcloud configs for each environment:
