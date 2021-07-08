@@ -1,0 +1,43 @@
+name: On pull request
+
+on:
+  pull_request:
+    branches:
+      - develop
+    paths:
+      - 'database/firestore.rules'
+  push:
+    branches:
+      - develop
+    paths:
+      - 'database/firestore.rules'
+
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v2
+      - uses: actions/setup-node@master
+        with:
+          node-version: '10'
+      - run: echo "TEST"
+      # - run: npm ci
+      # - run: npm run ci:test:rules
+
+  deploy_to_develop:
+    if: github.event.pull_request.merged == 'true'
+    needs: test
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v2
+      - uses: actions/setup-node@master
+        with:
+          node-version: '10'
+      - run: echo "MERGED"
+
+
+
+# TO DO
+#  - [ ] trigger on pr and merge
+#  - [ ] if tests pass AND it's a merge event then deploy
