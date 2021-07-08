@@ -22,6 +22,7 @@ service cloud.firestore {
   }
 
 
+
   function fieldHasValue(data, field, value) {
     return !(field in data) || data[field] == value;
   }
