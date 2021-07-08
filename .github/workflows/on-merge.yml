@@ -2,7 +2,8 @@ name: On pull request
 
 on:
   pull_request:
-    types: [opened, reopened, synchronize, edited]
+    paths:
+      - 'database/firestore.rules'
 
 jobs:
   test:
