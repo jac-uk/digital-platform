@@ -32,7 +32,7 @@ jobs:
       # - run: npm run ci:test:rules
 
   deploy_to_develop:
-    if: github.event.pull_request.merged == 'true'
+    if: github.event_name == 'push'
     needs: test
     runs-on: ubuntu-latest
     steps:
@@ -40,7 +40,7 @@ jobs:
       - uses: actions/setup-node@master
         with:
           node-version: '10'
-      - run: echo "MERGED"
+      - run: echo "PUSHED to develop"
 
 
 
