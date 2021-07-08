@@ -1,4 +1,4 @@
-name: On pull request
+name: Firestore rules
 
 on:
   pull_request:
@@ -12,7 +12,6 @@ on:
     paths:
       - 'database/firestore.rules'
 
-
 jobs:
   test:
     runs-on: ubuntu-latest
@@ -21,29 +20,7 @@ jobs:
       - uses: actions/setup-node@master
         with:
           node-version: '10'
-      - run: echo "TEST"
-      - name: Dump GitHub context
-        env:
-          GITHUB_CONTEXT: ${{ toJSON(github) }}
-        run: echo "$GITHUB_CONTEXT"
-      - if: ${{ github.event_name == 'push' }}
-        run: echo "Push to develop"
-      # - run: npm ci
-      # - run: npm run ci:test:rules
-
-  deploy_to_develop:
-    if: github.event_name == 'push'
-    needs: test
-    runs-on: ubuntu-latest
-    steps:
-      - uses: actions/checkout@v2
-      - uses: actions/setup-node@master
-        with:
-          node-version: '10'
-      - run: echo "PUSHED to develop"
-
-
-
-# TO DO
-#  - [ ] trigger on pr and merge
-#  - [ ] if tests pass AND it's a merge event then deploy
+      - run: npm ci
+      - run: npm run ci:test:rules
+      - if: ${{ github.event_name == 'push' && success() }}
+        run: npm run deploy:rules
