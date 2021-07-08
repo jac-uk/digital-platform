@@ -1,4 +1,4 @@
-name: On pull request
+name: Firestore rules
 
 on:
   pull_request:
@@ -21,15 +21,10 @@ jobs:
       - uses: actions/setup-node@master
         with:
           node-version: '10'
-      - run: echo "TEST"
-      - name: Dump GitHub context
-        env:
-          GITHUB_CONTEXT: ${{ toJSON(github) }}
-        run: echo "$GITHUB_CONTEXT"
-      - if: ${{ github.event_name == 'push' }}
-        run: echo "Push to develop"
-      # - run: npm ci
-      # - run: npm run ci:test:rules
+      - run: npm ci
+      - run: npm run ci:test:rules
+      - if: ${{ success() }}
+        run: echo "SUCCESS"
 
   deploy_to_develop:
     if: github.event_name == 'push'
