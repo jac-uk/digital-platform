@@ -5,10 +5,9 @@ module.exports = (config, firebase, db) => {
   return updateCharacterChecksStatus;
 
   /**
-   * setApplicationRecordCharacterChecksStatus
+   * updateCharacterChecksStatus
    * Updates specified applications records with the new character checks status
    * @param {*} `params` is an object containing
-   *   `exerciseId` (required) ID of exercise
    *   `referenceNumbers` (required) array of application record reference numbers
    *   `newStatus` (required) new status to update application records to have
    */
@@ -38,7 +37,7 @@ module.exports = (config, firebase, db) => {
         field = 'characterChecks.completedAt';
         break;
       case null || undefined:
-        throw 'Error';
+        throw new Error('Error');
     }
 
     //construct db commands
@@ -58,7 +57,6 @@ module.exports = (config, firebase, db) => {
 
     // write to db
     const result = await applyUpdates(db, commands);
-    console.log('result', result);
     // return
     return result ? applicationRecords.length : false;
 

@@ -73,8 +73,6 @@ module.exports = (config, firebase, db) => {
       });
     }
 
-    // @TODO update count/stat for how many consents have been requested
-
     // write to db
     const result = await applyUpdates(db, commands);
     return result ? applications.length : false;

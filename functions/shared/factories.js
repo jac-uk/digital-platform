@@ -29,7 +29,7 @@ module.exports = (CONSTANTS) => {
       personalisation: {
         exerciseName: application.exerciseName,
         dueDate: dueDate,
-        urlRequired: `https://apply.judicialappointments.digital/sign-in`,
+        urlRequired: 'https://apply.judicialappointments.digital/sign-in',
         applicantName: application.personalDetails.fullName,
         selectionExerciseManager: exerciseManagerName,
         exerciseMailbox: exerciseMailbox,

@@ -22,6 +22,7 @@
     "deploy:rules": "firebase deploy --project=digital-platform-develop --only firestore:rules",
     "deploy:indexes": "firebase deploy --project=digital-platform-develop --only firestore:indexes",
     "deploy:functions": "firebase deploy --project=digital-platform-develop --only functions",
+    "deploy:consentFormFunction": "firebase deploy --project=digital-platform-develop --only functions:updateCharacterChecksStatus,functions:sendCharacterCheckRequests",
     "deploy:storage-rules": "firebase deploy --project=digital-platform-develop --only storage:rules",
     "deploy:realtime-rules": "firebase deploy --project=digital-platform-develop --only database",
     "staging:deploy:rules": "firebase deploy --project=digital-platform-staging --only firestore:rules",
