@@ -26,8 +26,8 @@ jobs:
         env:
           GITHUB_CONTEXT: ${{ toJSON(github) }}
         run: echo "$GITHUB_CONTEXT"
-      - if: ${{ github.event.pull_request.merged == true }}
-        run: echo "MERGED"
+      - if: ${{ github.event_name == 'push' }}
+        run: echo "Push to develop"
       # - run: npm ci
       # - run: npm run ci:test:rules
 
