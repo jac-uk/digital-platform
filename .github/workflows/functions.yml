@@ -1,20 +1,20 @@
-name: Firestore rules
+name: Cloud functions for firebase
 
 on:
   pull_request:
     branches:
       - develop
     paths:
-      - 'database/firestore.rules'
+      - 'functions'
   push:
     branches:
       - develop
     paths:
-      - 'database/firestore.rules'
+      - 'functions'
   release:
     types: [released]
     paths:
-      - 'database/firestore.rules'
+      - 'functions'
 
 jobs:
   test_and_deploy:
@@ -28,8 +28,12 @@ jobs:
         with:
           node-version: '10'
       - run: npm ci
-      - name: Test
-        run: npm run ci:test:rules
+      - name: Test functions
+        run: npm run test:functions
+      - name: Test actions
+        run: npm run test:actions
+      - name: Test shared
+        run: npm run test:shared
 
       ## Update release notes and bump version (for pushes)
       - name: Update release notes (for pushes)
@@ -58,18 +62,18 @@ jobs:
       ## Deploy to develop and staging (for pushes)
       - name: Deploy to develop (for pushes)
         if: ${{ github.event_name == 'push' && success() }}
-        run: npm run deploy:rules
+        run: npm run deploy:functions
         env:
           FIREBASE_TOKEN: ${{ secrets.FIREBASE_CLI_TOKEN }}
       - name: Deploy to staging (for pushes)
         if: ${{ github.event_name == 'push' && success() }}
-        run: npm run staging:deploy:rules
+        run: npm run staging:deploy:functions
         env:
           FIREBASE_TOKEN: ${{ secrets.FIREBASE_CLI_TOKEN }}
 
       ## Deploy to production (for releases)
       - name: Deploy to production (for releases)
         if: ${{ github.event_name == 'release' && success() }}
-        run: npm run production:deploy:rules
+        run: npm run production:deploy:functions
         env:
           FIREBASE_TOKEN: ${{ secrets.FIREBASE_CLI_TOKEN }}
