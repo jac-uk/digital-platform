@@ -13,7 +13,7 @@ on:
       - 'database/firestore.rules'
 
 jobs:
-  test:
+  test_and_deploy:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v2
@@ -21,6 +21,10 @@ jobs:
         with:
           node-version: '10'
       - run: npm ci
-      - run: npm run ci:test:rules
-      - if: ${{ github.event_name == 'push' && success() }}
+      - name: Test
+        run: npm run ci:test:rules
+      - name: Deploy to develop
+        if: ${{ github.event_name == 'push' && success() }}
         run: npm run deploy:rules
+        env:
+          FIREBASE_TOKEN: ${{ secrets.DEPLOY_TOKEN }}

@@ -21,8 +21,6 @@ service cloud.firestore {
       //&& request.auth.token.email.lower() == email.lower();
   }
 
-
-
   function fieldHasValue(data, field, value) {
     return !(field in data) || data[field] == value;
   }
