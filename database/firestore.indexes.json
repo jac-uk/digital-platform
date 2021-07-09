@@ -26,6 +26,7 @@
         }
       ]
     },
+
     {
       "collectionGroup": "applicationRecords",
       "queryScope": "COLLECTION",

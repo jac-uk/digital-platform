@@ -13,8 +13,6 @@ on:
       - 'functions/**'
   release:
     types: [released]
-    paths:
-      - 'functions/**'
 
 jobs:
   test_and_deploy:
