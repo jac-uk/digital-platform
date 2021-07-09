@@ -25,7 +25,6 @@ service cloud.firestore {
     return !(field in data) || data[field] == value;
   }
 
-
   // function notChanged(field) {
   //   return !(field in request.resource.data)
   //     || resource.data[field] == request.resource.data[field]
