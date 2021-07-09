@@ -27,4 +27,4 @@ jobs:
         if: ${{ github.event_name == 'push' && success() }}
         run: npm run deploy:rules
         env:
-          FIREBASE_TOKEN: ${{ secrets.DEPLOY_TOKEN }}
+          FIREBASE_TOKEN: ${{ secrets.FIREBASE_CLI_TOKEN }}
