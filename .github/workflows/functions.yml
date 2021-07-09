@@ -5,16 +5,16 @@ on:
     branches:
       - develop
     paths:
-      - 'functions'
+      - 'functions/**'
   push:
     branches:
       - develop
     paths:
-      - 'functions'
+      - 'functions/**'
   release:
     types: [released]
     paths:
-      - 'functions'
+      - 'functions/**'
 
 jobs:
   test_and_deploy:
