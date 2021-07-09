@@ -1,6 +1,7 @@
 {
   "name": "jac-digital-platform",
-  "description": "The main project for the UK Judicial Appointments Commission",
+  "version": "1.0.0",
+  "description": "Firebase/GCP configuration and components for the JAC digital platform",
   "repository": "https://github.com/jac-uk/digital-platform",
   "license": "MIT",
   "readme": "README.md",
