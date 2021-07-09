@@ -13,6 +13,8 @@ on:
       - 'database/firestore.rules'
   release:
     types: [released]
+    paths:
+      - 'database/firestore.rules'
 
 jobs:
   test_and_deploy:
