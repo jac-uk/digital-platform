@@ -11,6 +11,8 @@ on:
       - develop
     paths:
       - 'database/firestore.rules'
+  # release:
+  #   types: [released]
 
 jobs:
   test_and_deploy:
@@ -23,13 +25,13 @@ jobs:
       - run: npm ci
       - name: Test
         run: npm run ci:test:rules
-      - name: Deploy to develop
-        if: ${{ github.event_name == 'push' && success() }}
+      - if: ${{ github.event_name == 'push' && success() }}
+        name: Deploy to develop
         run: npm run deploy:rules
         env:
           FIREBASE_TOKEN: ${{ secrets.FIREBASE_CLI_TOKEN }}
-      - name: Deploy to staging
-        if: ${{ github.event_name == 'push' && success() }}
+      - if: ${{ github.event_name == 'push' && success() }}
+        name: Deploy to staging
         run: npm run staging:deploy:rules
         env:
           FIREBASE_TOKEN: ${{ secrets.FIREBASE_CLI_TOKEN }}
