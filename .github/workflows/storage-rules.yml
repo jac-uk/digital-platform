@@ -1,11 +1,11 @@
 name: Storage rules
 
 on:
-  pull_request:
-    branches:
-      - develop
-    paths:
-      - 'storage/storage.rules'
+  # pull_request:
+  #   branches:
+  #     - develop
+  #   paths:
+  #     - 'storage/storage.rules'
   push:
     branches:
       - develop

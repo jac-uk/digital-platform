@@ -60,4 +60,3 @@ exports.updateEmailAddress = require('./callableFunctions/updateEmailAddress');
 // exports.handleApplicationOnCreate = require('./applications/handleApplicationOnCreate');
 // // exports.handleApplicationOnUpdate = require('./applications/handleApplicationOnUpdate');
 // // exports.handleExerciseTimelineDates = require('./exercises/handleExerciseTimelineDates');
-

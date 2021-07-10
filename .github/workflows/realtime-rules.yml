@@ -1,11 +1,11 @@
 name: Realtime rules
 
 on:
-  pull_request:
-    branches:
-      - develop
-    paths:
-      - 'database/realtime.rules.json'
+  # pull_request:
+  #   branches:
+  #     - develop
+  #   paths:
+  #     - 'database/realtime.rules.json'
   push:
     branches:
       - develop
