@@ -9,6 +9,7 @@ service firebase.storage {
     return request.auth.uid;
   }
 
+
   function userIsJAC() {
     return request.auth.token.email.matches('(.*@judicialappointments|.*@justice)[.](digital|gov[.]uk)');
     //return request.auth.token.email_verified
