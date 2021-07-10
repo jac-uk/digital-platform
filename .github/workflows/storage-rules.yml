@@ -11,8 +11,6 @@ on:
       - develop
     paths:
       - 'storage/storage.rules'
-  release:
-    types: [released]
 
 jobs:
   deploy:
@@ -60,12 +58,5 @@ jobs:
       - name: Deploy to staging (for pushes)
         if: ${{ github.event_name == 'push' && success() }}
         run: npm run staging:deploy:storage-rules
-        env:
-          FIREBASE_TOKEN: ${{ secrets.FIREBASE_CLI_TOKEN }}
-
-      ## Deploy to production (for releases)
-      - name: Deploy to production (for releases)
-        if: ${{ github.event_name == 'release' && success() }}
-        run: npm run production:deploy:storage-rules
         env:
           FIREBASE_TOKEN: ${{ secrets.FIREBASE_CLI_TOKEN }}

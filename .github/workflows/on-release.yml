@@ -1,0 +1,42 @@
+name: On release
+
+on:
+  release:
+    types: [released]
+
+jobs:
+  test_and_deploy:
+    runs-on: ubuntu-latest
+    steps:
+      ## Install and test
+      - uses: actions/checkout@v2
+        with:
+          token: ${{ secrets.DEPLOY_TOKEN }}
+      - uses: actions/setup-node@master
+        with:
+          node-version: '10'
+      - run: npm ci
+      - run: npm run ci:test:rules
+      - run: echo "Test functions"
+        # run: npm run test:functions
+      - run: echo "Test actions"
+        # run: npm run test:actions
+      - run: echo "Test shared"
+        # run: npm run test:shared
+
+      ## Deploy to production
+      - run: npm run production:deploy:rules
+        env:
+          FIREBASE_TOKEN: ${{ secrets.FIREBASE_CLI_TOKEN }}
+      - run: npm run production:deploy:storage-rules
+        env:
+          FIREBASE_TOKEN: ${{ secrets.FIREBASE_CLI_TOKEN }}
+      - run: npm run production:deploy:realtime-rules
+        env:
+          FIREBASE_TOKEN: ${{ secrets.FIREBASE_CLI_TOKEN }}
+      - run: npm run production:deploy:indexes
+        env:
+          FIREBASE_TOKEN: ${{ secrets.FIREBASE_CLI_TOKEN }}
+      - run: npm run production:deploy:functions
+        env:
+          FIREBASE_TOKEN: ${{ secrets.FIREBASE_CLI_TOKEN }}
