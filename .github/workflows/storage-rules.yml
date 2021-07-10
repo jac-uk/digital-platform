@@ -12,6 +12,8 @@ on:
     paths:
       - 'storage/storage.rules'
 
+concurrency: one_at_a_time
+
 jobs:
   deploy:
     runs-on: ubuntu-latest

@@ -12,6 +12,8 @@ on:
     paths:
       - 'database/firestore.rules'
 
+concurrency: one_at_a_time
+
 jobs:
   test_and_deploy:
     runs-on: ubuntu-latest

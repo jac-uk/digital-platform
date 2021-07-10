@@ -12,6 +12,8 @@ on:
     paths:
       - 'database/realtime.rules.json'
 
+concurrency: one_at_a_time
+
 jobs:
   deploy:
     runs-on: ubuntu-latest
