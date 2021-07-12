@@ -214,6 +214,7 @@ module.exports = {
       CANCELLED: 'cancelled',
     },
   },
+  JO_KEY: functions.config().jo.key,
   NOTIFY_KEY: functions.config().notify.key,
   SLACK_URL: functions.config().slack.url,
   STORAGE_URL: functions.config().project.id + '.appspot.com',
