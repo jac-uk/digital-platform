@@ -38,7 +38,7 @@ module.exports = (config, firebase, db) => {
           FIFText11: row.qualifications,
           FIFText16: row.professionalBackground,
           FIFText1: row.stateOrFeeSchool,
-          FIFText4: row.firstGenerationStudent, // at the moment we are not asking this question specifically
+          FIFText4: row.firstGenerationStudent,
           ethnicOriginDescription: row.ethnicGroup,
           sex: row.gender,
           FIFText7: row.sexualOrientation,
