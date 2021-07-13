@@ -14,93 +14,106 @@ module.exports = (config, firebase, db) => {
   */
   async function transferHandoverData(params) {
 
-    const validData = await getHandoverData(params.exerciseId);
+    const report = await getHandoverData(params.exerciseId);
+    if (report.valid === true) {
+      let handoverData = [];
+      // construct body for API request
+      report.data.forEach(row => handoverData.push(
+        {
+          id: row.candidateId, // or application ?
+          forenames: row.firstName,
+          knownAs: row.otherNames,
+          surname: row.lastName,
+          title: row.title, // or suffix ?
+          homeEmailAddress: row.email,
+          dateOfBirth: row.dateOfBirth,
+          nINumber: row.nationalInsuranceNumber,
+          citizenship: row.citizenship,
+          addressLine1: row.addressLine1,
+          addressLine2: row.addressLine2,
+          addressLine3: row.addressLine3,
+          addressLine4: row.addressLine4,
+          postCode: row.addressLine5,
+          homeTelephoneNo: row.phone,
+          FIFText11: row.qualifications,
+          FIFText16: row.professionalBackground,
+          FIFText1: row.stateOrFeeSchool,
+          FIFText4: row.firstGenerationStudent, // at the moment we are not asking this question specifically
+          ethnicOriginDescription: row.ethnicGroup,
+          sex: row.gender,
+          FIFText7: row.sexualOrientation,
+          FIFText18: row.disability + ', ' + row.religionFaith,
+          FIFText5: row.participatedInJudicialWorkshadowingScheme
+        }));
+      return handoverData;
+    } else {
+      return report;
+     }
 
-    let handoverData = [];
-    // construct body for API request
-    validData.forEach(row => handoverData.push(
-      {
-        id: row.applicationId,
-        Forenames: row.firstName,
-        KnownAs: row.otherNames,
-        Surname: row.lastName,
-        Title: row.suffix,
-        HomeEmailAddress: row.email,
-        DateOfBirth: row.dateOfBirth,
-        NINumber: row.nationalInsuranceNumber,
-        AddressLine1: row.address1,
-        AddressLine2: row.address2,
-        AddressLine3: row.address3,
-        AddressLine4: row.address4,
-        Postcode: row.postCode,
-        HomeTelephoneNo: row.phone,
-        FIFText11: row.qualifications,
-        FIFText16: row.professionalBackground,
-        FIFText1: row.stateOrFeeSchool,
-        FIFText4: row.attendedUniversity,
-        EthnicOriginDescription: row.ethnicGroup,
-        Sex: row.gender,
-        FIFText7: row.sexualOrientation,
-        FIFText18: row.disability + row.religionFaith,
-        FIFText5: row.judicialExperience
-      }));
-
-    const headers = {
-      'headers': {'x-api-key': config.JO_KEY},
-      'content-type': 'application/json'
-    };
-
-    const url = "place url into config";
-
-    try {
-      const response = await axios({
-        method: 'post',
-        headers: headers,
-        url: url,
-        data: handoverData,
-      });
-      console.log(response);
-      if (response.status === 200) {
-    return 'Success!';
-      }
-    } catch (error) {
-      console.error(error);
-    }
+    //
+    // const headers = {
+    //   'headers': {'x-api-key': config.JO_KEY},
+    //   'content-type': 'application/json'
+    // };
+    //
+    // const url = "place url into config";
+    //
+    // try {
+    //   const response = await axios({
+    //     method: 'post',
+    //     headers: headers,
+    //     url: url,
+    //     data: handoverData,
+    //   });
+    //   console.log(response);
+    //   if (response.status === 200) {
+    // return 'Success!';
+    //   }
+    // } catch (error) {
+    //   console.error(error);
+    // }
   }
 
   async function getHandoverData(exerciseId) {
     // get exercise
     const exercise = await getDocument(db.collection('exercises').doc(exerciseId));
-    // get submitted application records (which are at the handover stage)
+
+    // get submitted application records at handover stage
     const applicationRecords = await getDocuments(db.collection('applicationRecords')
       .where('exercise.id', '==', exerciseId)
       .where('stage', '==', 'handover')
     );
 
-    // get the parent application records for the above
+    // get applications
     const applicationIds = applicationRecords.map(item => item.id);
     const applicationRefs = applicationIds.map(id => db.collection('applications').doc(id));
     const applications = await getAllDocuments(db, applicationRefs);
 
-    // get report rows
-    return reportData(db, exercise, applicationRecords, applications);
+    const report = reportData(db, exercise, applicationRecords, applications);
 
     // store the report document in the database
     //await db.collection('exercises').doc(exerciseId).collection('reports').doc('handover').set(report);
 
     // check data to ensure it is valid and return
-    // let invalidDataReferenceNumbers = [];
-    // rows.forEach(function (row) {
-    //   if (isEmpty(row)) {
-    //     invalidDataReferenceNumbers.push(row.referenceNumber);
-    //   }
-    // });
-    //return rows.filter(row => invalidDataReferenceNumbers.includes(row.referenceNumber));
+    let invalidRefNumbers = [];
+
+    report.forEach(function (item) {
+      if (isEmpty(item)) {
+        invalidRefNumbers.push(item.referenceNumber);
+      }
+    });
+    //return report.filter(row => invalidDataReferenceNumbers.includes(row.referenceNumber));
+    if (invalidRefNumbers.length) {
+      return { valid: false, invalidRefNumbers: invalidRefNumbers };
+      //return { valid: true, data: report }
+    }
+    return { valid: true, data: report };
   }
 
   // Check whether data is valid
-  function isEmpty(value) {
-    return !Object.values(value).some(val => val !== null && val !== '');
+  function isEmpty(item) {
+    const values = Object.values(item);
+    return !!values.includes('' || undefined || null);
   }
 
   /**
@@ -119,8 +132,6 @@ module.exports = (config, firebase, db) => {
       let qualifications;
       if (exercise.typeOfExercise === 'legal' || exercise.typeOfExercise === 'leadership') {
         qualifications = formatLegalData(application);
-      } else if (exercise.typeOfExercise === 'non-legal') {
-        qualifications = formatNonLegalData(application);
       }
 
       // return data for this application
@@ -130,7 +141,7 @@ module.exports = (config, firebase, db) => {
         candidateId: getCandidateId(applicationRecords, application),
         ...formatPersonalDetails(application.personalDetails),
         ...qualifications,
-        ...formatDiversityData(application.equalityAndDiversitySurvey),
+        ...formatDiversityData(application.equalityAndDiversitySurvey, exercise),
       };
 
     });
@@ -146,56 +157,9 @@ module.exports = (config, firebase, db) => {
       ].join(', ');
     }).join('\n');
 
-    let judicialExperience;
-
-    if (application.feePaidOrSalariedJudge) {
-      judicialExperience = `Fee paid or salaried judge\n${lookup(application.feePaidOrSalariedSittingDaysDetails)}`;
-    } else if (application.declaredAppointmentInQuasiJudicialBody) {
-      judicialExperience = `Quasi-judicial body\n${lookup(application.quasiJudicialSittingDaysDetails)}`;
-    } else {
-      judicialExperience = `Acquired skills in other way\n${lookup(application.skillsAquisitionDetails)}`;
-    }
-
     return {
       qualifications: qualifications,
-      judicialExperience: judicialExperience,
     };
-  }
-
-  function formatNonLegalData(application) {
-    const organisations = {
-      'chartered-association-of-building-engineers': 'charteredAssociationBuildingEngineers',
-      'chartered-institute-of-building': 'charteredInstituteBuilding',
-      'chartered-institute-of-environmental-health': 'charteredInstituteEnvironmentalHealth',
-      'general-medical-council': 'generalMedicalCouncilDate',
-      'royal-college-of-psychiatrists': 'royalCollegeOfPsychiatrist',
-      'royal-institution-of-chartered-surveyors': 'royalInstitutionCharteredSurveyors',
-      'royal-institute-of-british-architects': 'royalInstituteBritishArchitects',
-      'other': 'otherProfessionalMemberships',
-    };
-
-    if (application.professionalMemberships) {
-      const professionalMemberships = application.professionalMemberships.map(membership => {
-        let formattedMembership;
-        if (organisations[membership]) {
-          const fieldName = organisations[membership];
-          formattedMembership = `${lookup(membership)}, ${helpers.formatDate(application[`${fieldName}Date`])}, ${application[`${fieldName}Number`]}`;
-        }
-        if (application.memberships[membership]) {
-          const otherMembershipLabel = this.exercise.otherMemberships.find(m => m.value === membership).label;
-          formattedMembership = `${lookup(otherMembershipLabel)}, ${helpers.formatDate(application.memberships[membership].date)}, ${application.memberships[membership].number}`;
-        }
-        return formattedMembership;
-      }).join('\n');
-
-      return {
-        professionalMemberships: professionalMemberships,
-      };
-    } else {
-      return {
-        professionalMemberships: null,
-      };
-    }
   }
 
   function getCandidateId(applicationRecords, application) {
@@ -204,54 +168,29 @@ module.exports = (config, firebase, db) => {
   }
 
   function formatPersonalDetails(personalDetails) {
-    const formatAddress = (address => [
-        address.street1,
-        address.street2,
-        address.town,
-        address.county,
-        address.postcode,
-      ].join('\n')
-    );
-
-    let formattedPreviousAddresses;
-    if (personalDetails.address && !personalDetails.address.currentMoreThan5Years) {
-      formattedPreviousAddresses = personalDetails.address.previous.map((address) => {
-        const dates = `${helpers.formatDate(address.startDate)} - ${helpers.formatDate(address.endDate)}`;
-        const formattedAddress = formatAddress(address);
-        return `${dates}\n${formattedAddress}`;
-      }).join('\n\n');
-    }
-
     return {
-      title: personalDetails.title || null,
-      fullName: personalDetails.fullName || null,
+      firstName: personalDetails.firstName || null,
       otherNames: personalDetails.otherNames || null,
-      suffix: personalDetails.suffix || null,
+      lastName: personalDetails.lastName || null,
+      title: personalDetails.title || null,
       email: personalDetails.email || null,
       dateOfBirth: helpers.formatDate(personalDetails.dateOfBirth),
       nationalInsuranceNumber: helpers.formatNIN(personalDetails.nationalInsuranceNumber),
       citizenship: lookup(personalDetails.citizenship),
-      address: personalDetails.address ? formatAddress(personalDetails.address.current) : null,
-      previousAddresses: formattedPreviousAddresses || null,
+      addressLine1: personalDetails.address.current.street || null,
+      addressLine2: personalDetails.address.current.street2 || null,
+      addressLine3: personalDetails.address.current.town || null,
+      addressLine4: personalDetails.address.current.county || null,
+      addressLine5: personalDetails.address.current.postcode || null,
       phone: personalDetails.phone || null,
     };
   }
 
-  function formatDiversityData(survey) {
+  function formatDiversityData(survey, exercise) {
     const share = (value) => survey.shareData ? value : null;
 
-    let formattedFeePaidJudicialRole;
-    if (survey.shareData) {
-      formattedFeePaidJudicialRole = helpers.toYesNo(lookup(survey.feePaidJudicialRole));
-      if (survey.feePaidJudicialRole === 'other-fee-paid-judicial-office') {
-        formattedFeePaidJudicialRole = `${formattedFeePaidJudicialRole}\n${survey.otherFeePaidJudicialRoleDetails}`;
-      }
-  }
-
     const formattedDiversityData = {
-      shareData: helpers.toYesNo(survey.shareData),
       professionalBackground: share(survey.professionalBackground.map(position => lookup(position)).join(', ')),
-      formattedFeePaidJudicialRole: formattedFeePaidJudicialRole || null,
       stateOrFeeSchool: share(lookup(survey.stateOrFeeSchool)),
       firstGenerationStudent: share(helpers.toYesNo(lookup(survey.firstGenerationStudent))),
       ethnicGroup: share(lookup(survey.ethnicGroup)),
@@ -259,14 +198,11 @@ module.exports = (config, firebase, db) => {
       sexualOrientation: share(lookup(survey.sexualOrientation)),
       disability: share(survey.disability ? survey.disabilityDetails : helpers.toYesNo(survey.disability)),
       religionFaith: share(lookup(survey.religionFaith)),
-      attendedOutreachEvents : share(helpers.toYesNo(lookup(survey.attendedOutreachEvents))),
     };
 
-    if (this.exerciseType === 'legal' || this.exerciseType === 'leadership') {
+    if (exercise.typeOfExercise === 'legal' || exercise.typeOfExercise === 'leadership') {
       formattedDiversityData.participatedInJudicialWorkshadowingScheme = share(helpers.toYesNo(lookup(survey.participatedInJudicialWorkshadowingScheme)));
-      formattedDiversityData.hasTakenPAJE = share(helpers.toYesNo(lookup(survey.hasTakenPAJE)));
     }
-
     return formattedDiversityData;
   }
 };
