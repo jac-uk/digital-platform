@@ -5,7 +5,7 @@ const { firebase, app, db } = require('./shared/admin.js');
 const updateCharacterChecksStatus = require('../functions/actions/applicationRecords/updateCharacterChecksStatus')(config, firebase, db);
 
 const main = async () => {
-  return updateCharacterChecksStatus({ applicationRecordId: 'REmvsipormCJ2sLaVYzb', exerciseId: 'ws8DOmg9UkBA2KrHnWdl' });
+  return updateCharacterChecksStatus({ applicationRecordId: 'number', exerciseId: 'number' });
 };
 
 main()

@@ -4,9 +4,9 @@ module.exports = (config, firebase, db) => {
 
   /**
    * updateCharacterChecksStatus
-   * Updates the specified applications record with the new character checks status and timestamp
+   * Updates the specified application record with the new character checks status and timestamp
    * @param {*} `params` is an object containing
-   *   `applicationRecordId` (required) an id of application record to update
+   * `applicationRecordId` (required) an id of application record to update
    */
   async function updateCharacterChecksStatus(params) {
     if (params.applicationRecordId) {

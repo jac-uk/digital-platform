@@ -6,7 +6,7 @@ const { sendCharacterCheckRequests } = require('../functions/actions/application
 
 const main = async () => {
   return sendCharacterCheckRequests({
-    items: ['xd3h9f5bouU7IYQaWcH8'],
+    items: ['number'],
     type: 'request',
     exerciseMailbox: 'email address',
     exerciseManagerName: 'Tom Jones',
