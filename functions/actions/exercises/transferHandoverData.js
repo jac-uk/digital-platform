@@ -38,7 +38,7 @@ module.exports = (config, firebase, db) => {
           FIFText11: row.qualifications,
           FIFText16: row.professionalBackground,
           FIFText1: row.stateOrFeeSchool,
-          FIFText4: row.firstGenerationStudent,
+          FIFText4: row.firstGenerationStudent, // not collecting specific data requested by JO
           ethnicOriginDescription: row.ethnicGroup,
           sex: row.gender,
           FIFText7: row.sexualOrientation,
@@ -102,10 +102,9 @@ module.exports = (config, firebase, db) => {
         invalidRefNumbers.push(item.referenceNumber);
       }
     });
-    //return report.filter(row => invalidDataReferenceNumbers.includes(row.referenceNumber));
+
     if (invalidRefNumbers.length) {
       return { valid: false, invalidRefNumbers: invalidRefNumbers };
-      //return { valid: true, data: report }
     }
     return { valid: true, data: report };
   }
