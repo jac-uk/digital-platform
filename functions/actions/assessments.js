@@ -245,7 +245,7 @@ module.exports = (config, firebase, db) => {
    * @param {collection} assessments to check
    * @return true if all are valid and a {collection} of errors otherwise
    */
-  async function validateAssessorEmailAddresses(assessments) {
+  function validateAssessorEmailAddresses(assessments) {
     const errors = [];
 
     const emailRegEx = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
@@ -301,6 +301,7 @@ module.exports = (config, firebase, db) => {
     const assessments = await getDocuments(assessmentsRef);
 
     let result = validateAssessorEmailAddresses(assessments);
+
     if (result !== true) {
       return result;
     }
