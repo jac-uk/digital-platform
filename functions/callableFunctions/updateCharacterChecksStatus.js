@@ -6,11 +6,8 @@ const updateCharacterChecksStatus = require('../actions/applicationRecords/updat
 
 module.exports = functions.region('europe-west2').https.onCall(async (data, context) => {
   if (!checkArguments({
-    exerciseId: { required: true },
     applicationRecordId: { required: false },
-    applicationRecordIds: { required: false },
-    status: { required: true },
-    resend: { required: false },
+    exerciseId: { required: true },
   }, data)) {
     throw new functions.https.HttpsError('invalid-argument', 'Please provide valid arguments');
   }

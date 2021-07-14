@@ -63,14 +63,25 @@ module.exports = (config, firebase, db) => {
         data: newNotificationCharacterCheckRequest(firebase, application, type, exerciseMailbox, exerciseManagerName, dueDate),
       });
       // update application
-      commands.push({
-        command: 'update',
-        ref: application.ref,
-        data: {
-          'characterChecks.requestedAt': firebase.firestore.Timestamp.fromDate(new Date()),
-          'characterChecks.status': 'requested',
-        },
-      });
+      if (type === 'request') {
+        commands.push({
+          command: 'update',
+          ref: application.ref,
+          data: {
+            'characterChecks.requestedAt': firebase.firestore.Timestamp.fromDate(new Date()),
+            'characterChecks.status': 'requested',
+          },
+        });
+      }
+      if (type !== 'request') {
+        commands.push({
+          command: 'update',
+          ref: application.ref,
+          data: {
+            'characterChecks.reminderSentAt': firebase.firestore.Timestamp.fromDate(new Date()),
+          },
+        });
+      }
     }
 
     // write to db
