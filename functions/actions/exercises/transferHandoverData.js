@@ -56,7 +56,7 @@ module.exports = (config, firebase, db) => {
     //   'content-type': 'application/json'
     // };
     //
-    // const url = "place url into config";
+    // const url = "config.TEST_JO_URL;
     //
     // try {
     //   const response = await axios({
