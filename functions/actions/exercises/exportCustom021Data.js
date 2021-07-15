@@ -52,6 +52,7 @@ module.exports = (firebase, db) => {
       'Second Assessor Name',
       'Second Assessor Email',
       'Second Assessor Phone',
+      'Jurisdiction Preferences',
       'First-tier Tribunal, ranked preference',
     ];
 
@@ -84,6 +85,7 @@ module.exports = (firebase, db) => {
             secondAssessorFullName: application.secondAssessorFullName,
             secondAssessorEmail: application.secondAssessorEmail,
             secondAssessorPhone: application.secondAssessorPhone,
+            jurisdictionPreferences: getJurisdictionPreferences(application),
             additionalWorkingPreferences: getAdditionalWorkingPreferences(application, 4),
           };
         });
@@ -107,6 +109,17 @@ module.exports = (firebase, db) => {
         } else {
           return additionalWorkingPreferenceData.selection;
         }
+    }
+
+    function getJurisdictionPreferences(application)
+    {
+      if (!application.jurisdictionPreferences || application.jurisdictionPreferences.length === 0) {
+        return 'not provided';
+      }
+      if (Array.isArray(application.jurisdictionPreferences)) {
+        return application.jurisdictionPreferences.join(', ');
+      }
+      return application.jurisdictionPreferences;
     }
 
     async function getContentById(ids, path) {
