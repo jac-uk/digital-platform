@@ -15,7 +15,7 @@ module.exports = (firebase, db) => {
     // get applicationRecords
     const applicationRecords = await getDocuments(db.collection('applicationRecords')
       .where('exercise.id', '==', exerciseId)
-      .where('stage', '==', 'recommended')
+      .where('stage', 'in', ['recommended','handover'])
     );
 
     // get applicationRecords ids
