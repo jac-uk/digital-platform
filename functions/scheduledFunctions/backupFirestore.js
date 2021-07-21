@@ -1,8 +1,9 @@
-const functions = require('firebase-functions');
 const config = require('../shared/config');
+const functions = require('firebase-functions');
 const { backupFirestore } = require('../actions/backup/firestore')(config);
 
-const SCHEDULE = 'every day 23:00';
+const SCHEDULE = 'every day 23:01';
+// const SCHEDULE = 'every 5 minutes';
 
 module.exports = functions.region('europe-west2')
   .pubsub
