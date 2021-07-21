@@ -34,13 +34,13 @@ module.exports = (config) => {
       console.log('Purging backup history...');
       const thirtyDaysAgo = new Date();
       thirtyDaysAgo.setDate(thirtyDaysAgo.getDate() - 30);
-      const bucket = admin.storage().bucket(BACKUP_BUCKET);
-      const [folders] = await bucket.getFiles({
-        'prefix': BACKUP_PATH,
-      });
-      // const [folders] = await admin.storage().getBuckets({
-      //   'prefix': `${BACKUP_BUCKET}/${BACKUP_PATH}`,
+      // const bucket = admin.storage().bucket(BACKUP_BUCKET);
+      // const [folders] = await bucket.getFiles({
+      //   'prefix': BACKUP_PATH,
       // });
+      const [folders] = await admin.storage().getBuckets({
+        'prefix': `${BACKUP_BUCKET}/${BACKUP_PATH}`,
+      });
       folders.forEach(async (folder) => {
         console.log('Processing folder: ' + folder.name);
         if (folder.name < `${BACKUP_PATH}/${thirtyDaysAgo.toISOString()}`) { // each backup is contained within a folder named as a timestamp converted to ISO strings
