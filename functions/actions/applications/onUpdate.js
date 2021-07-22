@@ -3,6 +3,7 @@ const { getDocument, applyUpdates, isDateInPast } = require('../../shared/helper
 module.exports = (config, firebase, db) => {
   const { newApplicationRecord } = require('../../shared/factories')(config);
   const { updateCandidate } = require('../candidates/search')(firebase, db);
+  const updateCharacterChecksStatus = require('../applicationRecords/updateCharacterChecksStatus')(config, firebase, db);
 
   return onUpdate;
 
@@ -29,6 +30,11 @@ module.exports = (config, firebase, db) => {
 
       // update candidate document
       await updateCandidate(dataAfter.userId);
+
+      // update application record
+      if (dataBefore.characterChecks.status !== dataAfter.characterChecks.status) {
+        await updateCharacterChecksStatus(dataAfter.applicationId);
+      }
 
       // // applied
       // if (dataAfter.status === 'applied') {

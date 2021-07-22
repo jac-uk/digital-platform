@@ -5,19 +5,18 @@ module.exports = (config, firebase, db) => {
   /**
    * updateCharacterChecksStatus
    * Updates the specified application record with the new character checks status and timestamp
-   * @param {*} `params` is an object containing
    * `applicationRecordId` (required) an id of application record to update
    */
-  async function updateCharacterChecksStatus(params) {
-    if (params.applicationRecordId) {
+  async function updateCharacterChecksStatus(applicationRecordId) {
+    if (applicationRecordId) {
       try {
-        await db.collection('applicationRecords').doc(params.applicationRecordId).update({
+        await db.collection('applicationRecords').doc(applicationRecordId).update({
           'characterChecks.status': 'completed',
           'characterChecks.completedAt': firebase.firestore.Timestamp.fromDate(new Date()),
         });
         return true;
       } catch (e) {
-        console.error(`Error updating application record ${params.applicationRecordId}`, e);
+        console.error(`Error updating application record ${applicationRecordId}`, e);
         return false;
       }
     } else {
