@@ -146,10 +146,11 @@ service cloud.firestore {
             exerciseNeedsMoreInformation(resource.data.exerciseId)
           )
           ||
-          ( // consent form information is requested
+          (  // consent form information is requested
            resource.data.status in ["draft", "applied"] && request.resource.data.status in ["draft", "applied"] &&
            resource.data.characterChecks.status != "not requested") &&
-           request.resource.data.characterChecks.status in ['requested', 'completed'];
+           request.resource.data.characterChecks.status in ['requested', 'completed']
+           )
         );
 
       // allow JAC admins to edit an application @TODO restrict what can be changed and by which role
