@@ -30,11 +30,7 @@ module.exports = (config, firebase, db) => {
 
       // update candidate document
       await updateCandidate(dataAfter.userId);
-
       // update application record
-      if (dataBefore.characterChecks.status !== dataAfter.characterChecks.status) {
-        await updateCharacterChecksStatus(dataAfter.applicationId);
-      }
 
       // // applied
       // if (dataAfter.status === 'applied') {
@@ -51,6 +47,11 @@ module.exports = (config, firebase, db) => {
       //   }
       // }
     }
+
+    if (dataBefore.characterChecks.status !== dataAfter.characterChecks.status) {
+      await updateCharacterChecksStatus(dataAfter.applicationId);
+    }
+
     return true;
   }
 
