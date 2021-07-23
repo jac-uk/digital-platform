@@ -34,22 +34,14 @@ module.exports = (config) => {
       console.log('Purging backup history...');
       const thirtyDaysAgo = new Date();
       thirtyDaysAgo.setDate(thirtyDaysAgo.getDate() - 30);
-      // const bucket = admin.storage().bucket(BACKUP_BUCKET);
-      // const [folders] = await bucket.getFiles({
-      //   'prefix': BACKUP_PATH,
-      // });
-      const [folders] = await admin.storage().getBuckets({
-        'prefix': `${BACKUP_BUCKET}/${BACKUP_PATH}`,
+      const dateThirtyDaysAgo = thirtyDaysAgo.toISOString().split('T')[0];
+      const bucket = admin.storage().bucket(BACKUP_BUCKET);
+      // delete files in the firestore directory that start with the date 30 days ago
+      await bucket.deleteFiles({
+        prefix: `firestore/${dateThirtyDaysAgo}`,
       });
-      folders.forEach(async (folder) => {
-        console.log('Processing folder: ' + folder.name);
-        if (folder.name < `${BACKUP_PATH}/${thirtyDaysAgo.toISOString()}`) { // each backup is contained within a folder named as a timestamp converted to ISO strings
-          console.log('Deleting ' + folder.name);
-          // await folder.delete();
-        }
-      });
-
-      return response;
+      slack.post(`SUCCESS: Firestore backup from ${dateThirtyDaysAgo} purged successfully`);
+      return true;
 
     } catch (err) {
       slack.post(`ERROR: Firestore backup to ${exportPath} failed`);
