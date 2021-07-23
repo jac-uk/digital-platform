@@ -47,9 +47,15 @@ module.exports = (config, firebase, db) => {
       //   }
       // }
     }
+    const before = dataBefore.characterChecks;
+    const after = dataAfter.characterChecks;
 
-    if (dataBefore.characterChecks.status !== dataAfter.characterChecks.status) {
-      await updateCharacterChecksStatus(dataAfter.applicationId);
+    if (!before || !after) {
+      return;
+    }
+
+    if (before.status !== after.status) {
+      await updateCharacterChecksStatus(after.applicationId);
     }
 
     return true;
