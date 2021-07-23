@@ -3,7 +3,6 @@ const { getDocument, applyUpdates, isDateInPast } = require('../../shared/helper
 module.exports = (config, firebase, db) => {
   const { newApplicationRecord } = require('../../shared/factories')(config);
   const { updateCandidate } = require('../candidates/search')(firebase, db);
-  //const updateCharacterChecksStatus = require('../applicationRecords/updateCharacterChecksStatus')(config, firebase, db);
 
   return onUpdate;
 
@@ -11,7 +10,7 @@ module.exports = (config, firebase, db) => {
    * Application event handler for Update
    * - if status has changed update the application counts on the exercise
    */
-  async function onUpdate(dataBefore, dataAfter) {
+  async function onUpdate(applicationId, dataBefore, dataAfter) {
     const commands = [];
     if (dataBefore.status !== dataAfter.status) {
       // update stats if status has changed
@@ -47,27 +46,24 @@ module.exports = (config, firebase, db) => {
       //   }
       // }
     }
-    const before = dataBefore.characterChecks.status;
-    const after = dataAfter.characterChecks.status;
 
-    if (!before || !after) {
-      return;
-    }
+    const characterChecksStatusBefore = dataBefore.characterChecks.status;
+    const characterChecksStatusAfter = dataAfter.characterChecks.status;
 
-    if ((before !== after) && after === 'completed') {
-      try {
-        await db.collection('applicationRecords').doc(`${dataAfter.id}`).update({
-          'characterChecks.status': 'completed',
-          'characterChecks.completedAt': firebase.firestore.Timestamp.fromDate(new Date()),
-        });
-        return true;
-      } catch (e) {
-        console.error(`Error updating application record ${dataAfter.id}`, e);
-        return false;
+    if (characterChecksStatusBefore && characterChecksStatusAfter) {
+      if ((characterChecksStatusBefore !== characterChecksStatusAfter) && characterChecksStatusAfter === 'completed') {
+        try {
+          await db.collection('applicationRecords').doc(`${applicationId}`).update({
+            'characterChecks.status': 'completed',
+            'characterChecks.completedAt': firebase.firestore.Timestamp.fromDate(new Date()),
+          });
+          return true;
+        } catch (e) {
+          console.error(`Error updating application record ${applicationId}`, e);
+          return false;
+        }
       }
     }
-
     return true;
   }
-
 };

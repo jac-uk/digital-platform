@@ -148,7 +148,7 @@ service cloud.firestore {
           ||
           (  // consent form information is requested
            resource.data.status in ["draft", "applied"] && request.resource.data.status in ["draft", "applied"] &&
-           resource.data.characterChecks.status in ["requested", "completed"] &&
+           resource.data.characterChecks.status == "requested" &&
            request.resource.data.characterChecks.status in ["requested", "completed"]
            )
         );
