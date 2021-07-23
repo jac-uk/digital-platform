@@ -3,7 +3,7 @@ const { getDocument, applyUpdates, isDateInPast } = require('../../shared/helper
 module.exports = (config, firebase, db) => {
   const { newApplicationRecord } = require('../../shared/factories')(config);
   const { updateCandidate } = require('../candidates/search')(firebase, db);
-  const updateCharacterChecksStatus = require('../applicationRecords/updateCharacterChecksStatus')(config, firebase, db);
+  //const updateCharacterChecksStatus = require('../applicationRecords/updateCharacterChecksStatus')(config, firebase, db);
 
   return onUpdate;
 
@@ -47,15 +47,24 @@ module.exports = (config, firebase, db) => {
       //   }
       // }
     }
-    const before = dataBefore.characterChecks;
-    const after = dataAfter.characterChecks;
+    const before = dataBefore.characterChecks.status;
+    const after = dataAfter.characterChecks.status;
 
     if (!before || !after) {
       return;
     }
 
-    if (before.status !== after.status) {
-      await updateCharacterChecksStatus(after.applicationId);
+    if ((before !== after) && after === 'completed') {
+      try {
+        await db.collection('applicationRecords').doc(`${dataAfter.id}`).update({
+          'characterChecks.status': 'completed',
+          'characterChecks.completedAt': firebase.firestore.Timestamp.fromDate(new Date()),
+        });
+        return true;
+      } catch (e) {
+        console.error(`Error updating application record ${dataAfter.id}`, e);
+        return false;
+      }
     }
 
     return true;

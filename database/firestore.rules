@@ -148,7 +148,7 @@ service cloud.firestore {
           ||
           (  // consent form information is requested
            resource.data.status in ["draft", "applied"] && request.resource.data.status in ["draft", "applied"] &&
-           resource.data.characterChecks.status == "requested" &&
+           resource.data.characterChecks.status in ["requested", "completed"] &&
            request.resource.data.characterChecks.status in ["requested", "completed"]
            )
         );
@@ -165,13 +165,6 @@ service cloud.firestore {
       // allow admins full write access to all applicationRecords
       allow write: if userIsAuthenticated() && userIsJAC();
 
-      // allow candidates update application record after they submitted filled in consent form
-      allow update: if userIsAuthenticated() &&
-      (
-      fieldHasValue(resource.data.candidate, "id", currentUser()) &&
-      resource.data.characterChecks.status == "requested" &&
-      request.resource.data.characterChecks.status in ["requested", "completed"]
-      );
     }
 
     match /logs/login/{id}/{logId} {
