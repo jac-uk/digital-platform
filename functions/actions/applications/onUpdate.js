@@ -9,6 +9,7 @@ module.exports = (config, firebase, db) => {
   /**
    * Application event handler for Update
    * - if status has changed update the application counts on the exercise
+   * - if application characterChecks.status changed, update application record
    */
   async function onUpdate(applicationId, dataBefore, dataAfter) {
     const commands = [];
