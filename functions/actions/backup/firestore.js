@@ -38,7 +38,7 @@ module.exports = (config) => {
       const bucket = admin.storage().bucket(BACKUP_BUCKET);
       // delete files in the firestore directory that start with the date 30 days ago
       await bucket.deleteFiles({
-        prefix: `firestore/${dateThirtyDaysAgo}`,
+        prefix: `${BACKUP_PATH}/${dateThirtyDaysAgo}`,
       });
       slack.post(`SUCCESS: Firestore backup from ${dateThirtyDaysAgo} purged successfully`);
       return true;
