@@ -48,11 +48,11 @@ module.exports = (config, firebase, db) => {
       // }
     }
 
-    const characterChecksStatusBefore = dataBefore.characterChecks.status;
-    const characterChecksStatusAfter = dataAfter.characterChecks.status;
+    const characterChecksStatusBefore = dataBefore.characterChecks;
+    const characterChecksStatusAfter = dataAfter.characterChecks;
 
-    if (characterChecksStatusBefore && characterChecksStatusAfter) {
-      if ((characterChecksStatusBefore !== characterChecksStatusAfter) && characterChecksStatusAfter === 'completed') {
+    if (characterChecksStatusBefore && characterChecksStatusAfter && characterChecksStatusBefore.status && characterChecksStatusAfter.status) {
+      if ((characterChecksStatusBefore.status !== characterChecksStatusAfter.status) && characterChecksStatusAfter.status === 'completed') {
         try {
           await db.collection('applicationRecords').doc(`${applicationId}`).update({
             'characterChecks.status': 'completed',
