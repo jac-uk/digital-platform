@@ -5,7 +5,7 @@ module.exports = (config, firebase, db) => {
   return enableCharacterChecks;
 
   /**
-   * updateApplicationRecords
+   * enableCharacterChecks
    * Inserts candidateChecks.status and sets it to 'not requested' to enable character checks functionality for older applications
    * Sets exercise characterChecksEnabled flag to true
    * @param {*} `params` is an object containing
