@@ -1,16 +1,20 @@
-const { getDocuments, applyUpdates } = require('../../shared/helpers');
+const { getDocument, getDocuments, applyUpdates } = require('../shared/helpers');
 
 module.exports = (config, firebase, db) => {
 
-  return updateApplicationRecords;
+  return enableCharacterChecks;
 
   /**
    * updateApplicationRecords
    * Inserts candidateChecks.status and sets it to 'not requested' to enable character checks functionality for older applications
+   * Sets exercise characterChecksEnabled flag to true
    * @param {*} `params` is an object containing
    *   `exerciseId` (required) ID of exercise
    */
-  async function updateApplicationRecords(params) {
+  async function enableCharacterChecks(params) {
+
+    // get exercise
+    const exercise = await getDocument(db.collection('exercises').doc(params.exerciseId));
 
     // get application records
     const applicationRecords = await getDocuments(db.collection('applicationRecords')
@@ -20,10 +24,11 @@ module.exports = (config, firebase, db) => {
     // construct db commands
     const commands = [];
     let appRecordCount = 0;
+
     for (let i = 0, len = applicationRecords.length; i < len; ++i) {
       const applicationRecord = applicationRecords[i];
 
-      if (!applicationRecord.hasOwnProperty('characterChecks')) {
+      if (!Object.prototype.hasOwnProperty.call(applicationRecord, 'characterChecks')) {
         appRecordCount++;
         commands.push({
           command: 'update',
@@ -36,10 +41,16 @@ module.exports = (config, firebase, db) => {
     }
 
    //write to db
-    const result = await applyUpdates(db, commands);
+    await applyUpdates(db, commands);
 
-    //return
-    return result ? `Updated: ${appRecordCount} application records` : false;
+    const exerciseData = {
+      'characterChecksEnabled': true,
+    };
 
+    if (exercise.characterChecksEnabled === null || exercise.characterChecksEnabled === undefined) {
+      await exercise.ref.update(exerciseData);
+      return true;
+    }
+    return false;
   }
 };

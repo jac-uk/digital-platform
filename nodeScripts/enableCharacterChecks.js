@@ -1,9 +1,9 @@
 const config = require('./shared/config');
 const { app, firebase, db } = require('./shared/admin');
-const updateApplicationRecords = require('../functions/actions/applicationRecords/updateApplicationRecords')(config, firebase, db);
+const enableCharacterChecks = require('../functions/actions/characterChecks')(config, firebase, db);
 
 const main = async () => {
-  return updateApplicationRecords({
+  return enableCharacterChecks({
     exerciseId: '',
   });
 };
