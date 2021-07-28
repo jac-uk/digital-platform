@@ -47,7 +47,7 @@ module.exports = (config, firebase, db) => {
       'characterChecksEnabled': true,
     };
 
-    if (exercise.characterChecksEnabled === null || exercise.characterChecksEnabled === undefined || exercise.characterChecksEnabled === false) {
+    if (!exercise.characterChecksEnabled === true) {
       await exercise.ref.update(exerciseData);
       return true;
     }
