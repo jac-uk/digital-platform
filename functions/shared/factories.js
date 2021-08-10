@@ -14,10 +14,10 @@ module.exports = (CONSTANTS) => {
     let templateName = '';
     if (type === 'request') {
       templateId = '5a4e7cbb-ab66-49a4-a8ad-7cbb399a8aa9';
-      templateName = 'Character check consent form request';
+      templateName = 'Character Check Request';
     } else {
-      templateId = '163487cb-f4c6-4b7a-95bf-37fd958a14de';
-      templateName = 'Character check consent form reminder';
+      templateId = '5a4e7cbb-ab66-49a4-a8ad-7cbb399a8aa9'; // need a different reminder template
+      templateName = 'Character Check Reminder';
     }
     return {
       email: application.personalDetails.email,
