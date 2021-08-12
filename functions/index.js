@@ -1,6 +1,7 @@
 
 // Scheduled
 exports.backupFirestore = require('./scheduledFunctions/backupFirestore');
+exports.getApplicationData = require('./callableFunctions/getApplicationData');
 exports.backupAuthentication = require('./scheduledFunctions/backupAuthentication');
 exports.processNotifications = require('./scheduledFunctions/processNotifications');
 
@@ -50,6 +51,7 @@ exports.scanFile = require('./callableFunctions/scanFile');
 exports.exportApplicationCharacterIssues = require('./callableFunctions/exportApplicationCharacterIssues');
 exports.getUserEmailByID = require('./callableFunctions/getUserEmailByID');
 exports.updateEmailAddress = require('./callableFunctions/updateEmailAddress');
+exports.customReport = require('./callableFunctions/customReport');
 
 // exports.onExerciseUpdate_PublishVacancy = require('./exercises/onExerciseUpdate_PublishVacancy');
 // exports.onWriteVacancyStats = require('./exercises/onWriteVacancyStats');

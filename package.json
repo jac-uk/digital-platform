@@ -52,7 +52,8 @@
     "firebase-functions-test": "^0.2.3",
     "firebase-tools": "^9.11.0",
     "googleapis": "^67.0.0",
-    "notifications-node-client": "^4.9.0"
+    "notifications-node-client": "^4.9.0",
+    "vuedraggable": "^2.24.3"
   },
   "devDependencies": {
     "@firebase/rules-unit-testing": "^1.1.9",
