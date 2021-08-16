@@ -1,4 +1,4 @@
-const userRoles = require('firebase-admin');
+const admin = require('firebase-admin');
 const { getDocument, getDocuments } = require('../shared/helpers');
 const PERMISSIONS = require('../shared/permissions');
 
@@ -28,7 +28,7 @@ module.exports = (db) => {
 
     try {
       // get all users
-      const users = await userRoles.auth().listUsers();
+      const users = await admin.auth().listUsers();
 
       for(const user of users.users) {
         let isJacAdmin = false;
@@ -132,8 +132,8 @@ module.exports = (db) => {
 
     try {
       // get user
-      const user = await userRoles.auth().getUser(params.uid);
-      const response = await userRoles.auth().updateUser(params.uid, {
+      const user = await admin.auth().getUser(params.uid);
+      const response = await admin.auth().updateUser(params.uid, {
         disabled: !user.disabled,
       });
       await revokeUserToken(params.uid);
@@ -152,11 +152,11 @@ module.exports = (db) => {
   async function adminSetUserRole(params) {
 
     try {
-      const user = await userRoles
+      const user = await admin
         .auth()
         .getUser(params.userId);
       user.customClaims.r = params.roleId;
-      await userRoles
+      await admin
         .auth()
         .setCustomUserClaims(params.userId, user.customClaims);
       await adminSyncUserRolePermissions(params.userId);
@@ -203,7 +203,7 @@ module.exports = (db) => {
    */
   async function disableNewUser(params) {
     try {
-      await userRoles.auth().updateUser(params.uid, {
+      await admin.auth().updateUser(params.uid, {
         disabled: true,
       });
       return true;
@@ -220,7 +220,7 @@ module.exports = (db) => {
   async function adminSyncUserRolePermissions(uid) {
     try {
 
-      const user = await userRoles
+      const user = await admin
         .auth()
         .getUser(uid);
       const role = await adminGetUserRole(user.customClaims.r);
@@ -234,7 +234,7 @@ module.exports = (db) => {
       if(JSON.stringify(user.customClaims.rp) !== JSON.stringify(convertedPermissions)) {
         console.log('Updating user permissions');
         user.customClaims.rp = convertedPermissions;
-        await userRoles
+        await admin
           .auth()
           .setCustomUserClaims(uid,  user.customClaims );
         await revokeUserToken(uid);
@@ -253,7 +253,7 @@ module.exports = (db) => {
   async function revokeUserToken(uid) {
 
     try {
-      await userRoles
+      await admin
         .auth()
         .revokeRefreshTokens(uid);
       return true;
