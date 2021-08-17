@@ -1,12 +1,47 @@
 
 module.exports = (CONSTANTS) => {
   return {
+    newNotificationCharacterCheckRequest,
     newNotificationAssessmentRequest,
     newNotificationAssessmentReminder,
     newAssessment,
     newApplicationRecord,
     newVacancy,
   };
+
+  function newNotificationCharacterCheckRequest(firebase, application, type, exerciseMailbox, exerciseManagerName, dueDate) {
+    let templateId = '';
+    let templateName = '';
+    if (type === 'request') {
+      templateId = '5a4e7cbb-ab66-49a4-a8ad-7cbb399a8aa9';
+      templateName = 'Character check consent form request';
+    } else {
+      templateId = '163487cb-f4c6-4b7a-95bf-37fd958a14de';
+      templateName = 'Character check consent form reminder';
+    }
+    return {
+      email: application.personalDetails.email,
+      replyTo: exerciseMailbox,
+      template: {
+        name: templateName,
+        id: templateId,
+      },
+      personalisation: {
+        exerciseName: application.exerciseName,
+        dueDate: dueDate,
+        urlRequired: `${CONSTANTS.APPLY_URL}/sign-in`,
+        applicantName: application.personalDetails.fullName,
+        selectionExerciseManager: exerciseManagerName,
+        exerciseMailbox: exerciseMailbox,
+      },
+      reference: {
+        collection: 'applications',
+        id: application.id,
+      },
+      createdAt: firebase.firestore.Timestamp.fromDate(new Date()),
+      status: 'ready',
+    };
+  }
 
   function newNotificationAssessmentRequest(firebase, assessment) {
     const link = `${CONSTANTS.ASSESSMENTS_URL}/sign-in?email=${assessment.assessor.email}&ref=assessments/${assessment.id}`;
@@ -231,6 +266,9 @@ module.exports = (CONSTANTS) => {
       application: {
         id: application.id,
         referenceNumber: application.referenceNumber,
+      },
+      characterChecks: {
+        status: 'not requested',
       },
       active: true,
       stage: 'review',
