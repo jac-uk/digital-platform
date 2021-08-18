@@ -102,4 +102,7 @@ output.csv
 out/
 
 # Local nodeScripts
-/nodeScripts/local
+/nodeScripts/
+
+#Firestore data for emulation
+/data/firestore.json
