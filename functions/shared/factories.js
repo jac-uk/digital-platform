@@ -186,9 +186,9 @@ module.exports = (CONSTANTS) => {
   function newDiversityFlags(application) {
     const applicationData = application.equalityAndDiversitySurvey ? application.equalityAndDiversitySurvey : application;
     const data = {
-      gender: applicationData.gender,
+      gender: applicationData.gender || null,
       ethnicity: null,
-      disability: applicationData.disability,
+      disability: applicationData.disability || null,
       professionalBackground: {
         barrister: null,
         cilex: null,
