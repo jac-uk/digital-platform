@@ -17,33 +17,6 @@ See [database/firestore.indexes.json](database/firestore.indexes.json) for our c
 
 See [storage/storage.rules](storage/storage.rules) for our current rules.
 
-
-To run the emulator on your local machine, create a `./data/firestore.json` file with the contents of `[]`.
-Install the dependency for this script globally:
-
-``` npm install -g node-firestore-import-export```
-
-Once installed, you can run `npm run db:export` to get a copy of the current `digital-platform-develop` repository, which will save
-a deep copy of the entire firestore DB into the `/data/firestore.json` file. Be aware this does cause a read for every document collection on google cloud.
-
-Set up the emulators by running `npm run firestore` which will just boot up the firestore gcloud emulation. You may need to
-install this by following [this guide](https://firebase.google.com/docs/firestore/security/test-rules-emulator#install_the_emulator).
-This will run on port **8282** to avoid port conflicts. The interface, however, will run on **4000** as normal.
-Once the emulator is running, you may import the local copy made into the emulator with
-
-```npm run db:emulator:import```
-
-This command will set the environment variables and import into the local copy. You only need to do this once,
-data will be re-exported and then automatically imported on restart of the firestore emulator.
-
-To run the jest tests with `npm run test:rules` against your local emulator, you'll have to export or set the environment variable.
-
-```set FIRESTORE_EMULATOR_HOST=localhost:8282```
-
-```export FIRESTORE_EMULATOR_HOST="localhost:8282"```
-
-depending on your operating system.
-
 ## Functions
 
 See [functions/backgroundFunctions](functions/backgroundFunctions) for our functions which are triggered when defined events happen.
