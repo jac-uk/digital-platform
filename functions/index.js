@@ -52,8 +52,6 @@ exports.exportApplicationCharacterIssues = require('./callableFunctions/exportAp
 exports.getUserEmailByID = require('./callableFunctions/getUserEmailByID');
 exports.updateEmailAddress = require('./callableFunctions/updateEmailAddress');
 
-exports.ensureEmailValidated = require('./callableFunctions/ensureEmailVerified');
-
 // exports.onExerciseUpdate_PublishVacancy = require('./exercises/onExerciseUpdate_PublishVacancy');
 // exports.onWriteVacancyStats = require('./exercises/onWriteVacancyStats');
 
