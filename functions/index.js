@@ -15,6 +15,7 @@ exports.onApplicationRecordUpdate = require('./backgroundFunctions/onApplication
 exports.onQualifyingTestResponseUpdate = require('./backgroundFunctions/onQualifyingTestResponseUpdate');
 exports.onPanelUpdate = require('./backgroundFunctions/onPanelUpdate');
 exports.onDocumentUploaded = require('./backgroundFunctions/onDocumentUploaded');
+exports.onCandidatePersonalDetailsCreate = require('./backgroundFunctions/onCandidatePersonalDetailsCreate');
 exports.onCandidatePersonalDetailsUpdate = require('./backgroundFunctions/onCandidatePersonalDetailsUpdate');
 
 // Callable
