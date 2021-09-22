@@ -2,6 +2,7 @@ const lookup = require('./lookup');
 
 const firebase = require('firebase-admin');
 const Timestamp = firebase.firestore.Timestamp;
+const _ = require('lodash');
 
 const addField = (array, label, value, lineBreak = false) => {
   if (value === undefined || value === null || value === '') {
@@ -113,6 +114,20 @@ const attendedUKStateSchool = (equalityAndDiversitySurvey) => {
   return toYesNo(['uk-state-selective', 'uk-state-non-selective'].indexOf(equalityAndDiversitySurvey.stateOrFeeSchool) >= 0);
 };
 
+// completely experimental method - please refactor :)
+const getApplicationRecordStatus = (applicationRecord, roleIndex = null) => {
+  const status = _.get(applicationRecord, 'status', null);
+  if(typeof status === 'object') {
+    if(roleIndex) {
+      return status[roleIndex];
+    } else {
+      return status['1'];
+    }
+  } else {
+    return status;
+  }
+};
+
 module.exports = {
   addField,
   toYesNo,
@@ -123,4 +138,5 @@ module.exports = {
   flattenCurrentLegalRole,
   flattenProfessionalBackground,
   attendedUKStateSchool,
+  getApplicationRecordStatus,
 };

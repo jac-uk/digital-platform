@@ -251,6 +251,30 @@ module.exports = (CONSTANTS) => {
   }
 
   function newApplicationRecord(exercise, application) {
+
+    let isMultiRoleExercise = false;
+    if(exercise.roles && exercise.roles.length > 1) {
+      isMultiRoleExercise = true;
+    }
+
+    let status = '';
+    if(isMultiRoleExercise) {
+      status = {};
+      const roleIds = application.roles;
+      for (const roleId of roleIds) {
+        status[roleId] = '';
+      }
+    }
+
+    let stage = 'review';
+    if(isMultiRoleExercise) {
+      stage = {};
+      const roleIds = application.roles;
+      for (const roleId of roleIds) {
+        stage[roleId] = 'review';
+      }
+    }
+
     let applicationRecord = {
       exercise: {
         id: exercise.id,
@@ -271,8 +295,8 @@ module.exports = (CONSTANTS) => {
         status: 'not requested',
       },
       active: true,
-      stage: 'review',
-      status: '',
+      stage: stage,
+      status: status,
       flags: {
         characterIssues: false,
         eligibilityIssues: false,
@@ -353,6 +377,7 @@ module.exports = (CONSTANTS) => {
       retirementAge: null,
       roleSummary: null,
       roleSummaryWelsh: null,
+      roles: null,
       salary: null,
       salaryGrouping: null,
       scenarioTestDate: null,
