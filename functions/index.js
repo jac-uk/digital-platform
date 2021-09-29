@@ -16,6 +16,7 @@ exports.onApplicationRecordUpdate = require('./backgroundFunctions/onApplication
 exports.onQualifyingTestResponseUpdate = require('./backgroundFunctions/onQualifyingTestResponseUpdate');
 exports.onPanelUpdate = require('./backgroundFunctions/onPanelUpdate');
 exports.onDocumentUploaded = require('./backgroundFunctions/onDocumentUploaded');
+exports.onCandidatePersonalDetailsCreate = require('./backgroundFunctions/onCandidatePersonalDetailsCreate');
 exports.onCandidatePersonalDetailsUpdate = require('./backgroundFunctions/onCandidatePersonalDetailsUpdate');
 
 // Callable
@@ -30,6 +31,7 @@ exports.sendAssessmentReminders = require('./callableFunctions/sendAssessmentRem
 exports.generateSignInWithEmailLink = require('./callableFunctions/generateSignInWithEmailLink');
 exports.initialiseApplicationRecords = require('./callableFunctions/initialiseApplicationRecords');
 exports.sendCharacterCheckRequests = require('./callableFunctions/sendCharacterCheckRequests');
+exports.enableCharacterChecks = require('./callableFunctions/enableCharacterChecks');
 exports.initialiseQualifyingTest = require('./callableFunctions/initialiseQualifyingTest');
 exports.activateQualifyingTest = require('./callableFunctions/activateQualifyingTest');
 exports.initialiseMissingApplicationRecords = require('./callableFunctions/initialiseMissingApplicationRecords');
