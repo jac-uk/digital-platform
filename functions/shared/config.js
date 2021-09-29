@@ -72,7 +72,7 @@ module.exports = {
         details: 'drivingDisqualificationDetails',
         summary: 'Candidate has been disqualified from driving',
       },
-      drivingConvictions: {
+      recentDrivingConvictions: {
         title: 'Driving Convictions',
         details: 'recentDrivingConvictionDetails',
         summary: 'Candidate has been convicted for a driving offence',
