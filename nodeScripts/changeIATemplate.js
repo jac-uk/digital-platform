@@ -6,7 +6,7 @@ const { changeIATemplate: changeIATemplate } = require('../functions/actions/cha
 
 const main = async () => {
   return changeIATemplate (
-    '');
+    ''); // enter exercise id
 };
 
 main()
