@@ -1,11 +1,25 @@
 'use strict';
 
-const config = require('./shared/config');
 const { app, db } = require('./shared/admin.js');
-const { checkApplications } = require('../functions/actions/applications/checkApplications')(config, db);
+const { getDocuments } = require('../functions/shared/helpers');
 
 const main = async () => {
-  return checkApplications('');
+  const exerciseId = ''; // enter exercise id
+
+  let applicationsCount = {
+    draft: 0,
+    applied: 0,
+    withdrawn: 0,
+  };
+  const applications = await getDocuments(db.collection('applications')
+    .where('exerciseId', '==', exerciseId)
+    .select('status'));
+
+  applications.forEach(a => {
+    applicationsCount[a.status]++;
+  });
+
+  return applicationsCount;
 };
 
 main()
@@ -18,3 +32,4 @@ main()
     console.error(error);
     process.exit();
   });
+
