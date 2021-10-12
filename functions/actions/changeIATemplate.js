@@ -23,7 +23,7 @@ module.exports = (config, firebase, db) => {
         command: 'update',
         ref: db.collection('assessments').doc(a.id),
         data: {
-          'exercise.template.file': correctFile,
+          'exercise.template.file': correctFile
         },
       });
     });
