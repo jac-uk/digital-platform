@@ -64,7 +64,7 @@ const reportHeaders = (exercise) => {
       { title: 'Date of Birth', ref: 'dateOfBirth' },
       { title: 'National Insurance Number', ref: 'nationalInsuranceNumber' },
       { title: 'Citizenship', ref: 'citizenship' },
-      { title: 'Current Address', ref: 'address' },
+      { title: 'Contact Address', ref: 'address' },
       { title: 'Previous addresses', ref: 'previousAddresses' },
       { title: 'Telephone number', ref: 'phone' },
     ],
@@ -74,7 +74,7 @@ const reportHeaders = (exercise) => {
         { title: 'Judicial experience', ref: 'judicialExperience' },
       ],
       'non-legal': [
-        { title: 'Professional Memberships', ref: 'professionalMemeberships' },
+        { title: 'Professional Memberships', ref: 'professionalMemberships' },
       ],
       leadership: [
         { title: 'Legal qualifications', ref: 'qualifications' },
@@ -181,9 +181,8 @@ const formatPersonalDetails = (personalDetails) => {
     }).join('\n\n');
   }
 
-  return {
+    let candidate = {
     title: personalDetails.title || null,
-    fullName: personalDetails.fullName || null,
     otherNames: personalDetails.otherNames || null,
     suffix: personalDetails.suffix || null,
     email: personalDetails.email || null,
@@ -194,6 +193,13 @@ const formatPersonalDetails = (personalDetails) => {
     previousAddresses: formattedPreviousAddresses || null,
     phone: personalDetails.phone || null,
   };
+
+  if (personalDetails.firstName && personalDetails.lastName) {
+    candidate.fullName = `${personalDetails.firstName} ${personalDetails.lastName}`;
+  } else {
+    candidate.fullName = personalDetails.fullName;
+  }
+  return candidate;
 };
 
 const formatDiversityData = (survey) => {
