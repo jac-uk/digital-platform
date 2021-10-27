@@ -52,6 +52,7 @@
     "firebase-functions-test": "^0.2.3",
     "firebase-tools": "^9.11.0",
     "googleapis": "^67.0.0",
+    "lodash": "^4.17.21",
     "notifications-node-client": "^4.9.0"
   },
   "devDependencies": {
