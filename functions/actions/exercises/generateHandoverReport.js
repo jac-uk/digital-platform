@@ -69,17 +69,13 @@ const reportHeaders = (exercise) => {
       { title: 'Telephone number', ref: 'phone' },
     ],
     qualifications: {
-      legal: [
+      legalOrLeadership: [
         { title: 'Legal qualifications', ref: 'qualifications' },
         { title: 'Judicial experience', ref: 'judicialExperience' },
       ],
-      'non-legal': [
-        { title: 'Professional Memberships', ref: 'professionalMemberships' },
-      ],
-      leadership: [
-        { title: 'Legal qualifications', ref: 'qualifications' },
-        { title: 'Judicial experience', ref: 'judicialExperience' },
-      ],
+    },
+    memberships: {
+      title: 'Professional Memberships', ref: 'professionalMemberships' ,
     },
     diversity: {
       common: [
@@ -94,33 +90,32 @@ const reportHeaders = (exercise) => {
         { title: 'Disability', ref: 'disability' },
         { title: 'Religion or belief', ref: 'religionFaith' },
       ],
-      legal: [
-        { title: 'JAC Presentation', ref: 'jacPresentation' },
+      legalOrLeadership: [
         { title: 'Judicial workshadowing', ref: 'participatedInJudicialWorkshadowingScheme' },
-        { title: 'PAJE', ref: 'hasTakenPAJE' },
-      ],
-      'non-legal': [
-        { title: 'JAC Presentation', ref: 'jacPresentation' },
-      ],
-      'leadership-non-legal': [
-        { title: 'JAC Presentation', ref: 'jacPresentation' },
-      ],
-      leadership: [
-        { title:  'JAC Presentation', ref: 'jacPresentation' },
-        { title: 'Judicial workshadowing', ref: 'participatedInJudicialWorkshadowingScheme' },
+        { title: 'Attended Outreach Events', ref: 'attendedOutreachEvents'},
         { title: 'PAJE', ref: 'hasTakenPAJE' },
       ],
     },
   };
 
-  return [
+  const reportHeaders = [
     { title: 'Application ID', ref: 'applicationId' },
     { title: 'Reference Number', ref: 'referenceNumber' },
     ...headers.personalDetails,
-    ...headers.qualifications[exercise.typeOfExercise],
-    ...headers.diversity.common,
-    ...headers.diversity[exercise.typeOfExercise],
   ];
+
+  if (exercise.typeOfExercise === 'legal' || exercise.typeOfExercise === 'leadership') {
+    reportHeaders.push(...headers.qualifications.legalOrLeadership);
+    reportHeaders.push(...headers.diversity.common);
+    reportHeaders.push(...headers.diversity.legalOrLeadership);
+  }
+
+  if (exercise.typeOfExercise === 'non-legal') {
+    reportHeaders.push(headers.memberships);
+    reportHeaders.push(...headers.diversity.common);
+  }
+
+  return reportHeaders;
 };
 
 /**
@@ -138,10 +133,11 @@ const reportData = (db, exercise, applicationRecords, applications) => {
 
     // format qualifications
     let qualifications;
+    let memberships;
     if (exercise.typeOfExercise === 'legal' || exercise.typeOfExercise === 'leadership') {
       qualifications = formatLegalData(application);
     } else if (exercise.typeOfExercise === 'non-legal') {
-      qualifications = formatNonLegalData(application);
+      memberships = formatNonLegalData(application, exercise);
     }
 
     // return report data for this application
@@ -151,7 +147,8 @@ const reportData = (db, exercise, applicationRecords, applications) => {
       candidateId: getCandidateId(applicationRecords, application),
       ...formatPersonalDetails(application.personalDetails),
       ...qualifications,
-      ...formatDiversityData(application.equalityAndDiversitySurvey),
+      ...memberships,
+      ...formatDiversityData(application.equalityAndDiversitySurvey, exercise),
     };
 
   });
@@ -163,13 +160,8 @@ const getCandidateId = (applicationRecords, application) => {
 };
 
 const formatPersonalDetails = (personalDetails) => {
-  const formatAddress = (address => [
-      address.street1,
-      address.street2,
-      address.town,
-      address.county,
-      address.postcode,
-    ].join('\n')
+  const formatAddress = (address =>
+    `${address.street} ${address.street2} ${address.town} ${address.county} ${address.postcode} `
   );
 
   let formattedPreviousAddresses;
@@ -177,7 +169,7 @@ const formatPersonalDetails = (personalDetails) => {
     formattedPreviousAddresses = personalDetails.address.previous.map((address) => {
       const dates = `${helpers.formatDate(address.startDate)} - ${helpers.formatDate(address.endDate)}`;
       const formattedAddress = formatAddress(address);
-      return `${dates}\n${formattedAddress}`;
+      return `${dates} ${formattedAddress}`;
     }).join('\n\n');
   }
 
@@ -202,14 +194,14 @@ const formatPersonalDetails = (personalDetails) => {
   return candidate;
 };
 
-const formatDiversityData = (survey) => {
+const formatDiversityData = (survey, exercise) => {
   const share = (value) => survey.shareData ? value : null;
 
   let formattedFeePaidJudicialRole;
   if (survey.shareData) {
     formattedFeePaidJudicialRole = helpers.toYesNo(lookup(survey.feePaidJudicialRole));
     if (survey.feePaidJudicialRole === 'other-fee-paid-judicial-office') {
-      formattedFeePaidJudicialRole = `${formattedFeePaidJudicialRole}\n${survey.otherFeePaidJudicialRoleDetails}`;
+      formattedFeePaidJudicialRole = `${formattedFeePaidJudicialRole} ${survey.otherFeePaidJudicialRoleDetails}`;
     }
   }
 
@@ -224,11 +216,11 @@ const formatDiversityData = (survey) => {
     sexualOrientation: share(lookup(survey.sexualOrientation)),
     disability: share(survey.disability ? survey.disabilityDetails : helpers.toYesNo(survey.disability)),
     religionFaith: share(lookup(survey.religionFaith)),
-    attendedOutreachEvents : share(helpers.toYesNo(lookup(survey.attendedOutreachEvents))),
   };
 
-  if (this.exerciseType === 'legal' || this.exerciseType === 'leadership') {
+  if (exercise.typeOfExercise === 'legal' || exercise.typeOfExercise === 'leadership') {
     formattedDiversityData.participatedInJudicialWorkshadowingScheme = share(helpers.toYesNo(lookup(survey.participatedInJudicialWorkshadowingScheme)));
+    formattedDiversityData.attendedOutreachEvents = share(helpers.toYesNo(lookup(survey.attendedOutreachEvents)));
     formattedDiversityData.hasTakenPAJE = share(helpers.toYesNo(lookup(survey.hasTakenPAJE)));
   }
 
@@ -242,17 +234,16 @@ const formatLegalData = (application) => {
       lookup(qualification.type),
       helpers.formatDate(qualification.date),
       qualification.membershipNumber,
-    ].join(', ');
+    ].join(' ');
   }).join('\n');
 
   let judicialExperience;
-
   if (application.feePaidOrSalariedJudge) {
-    judicialExperience = `Fee paid or salaried judge\n${lookup(application.feePaidOrSalariedSittingDaysDetails)}`;
+    judicialExperience = `Fee paid or salaried judge - ${lookup(application.feePaidOrSalariedSittingDaysDetails)} days`;
   } else if (application.declaredAppointmentInQuasiJudicialBody) {
-    judicialExperience = `Quasi-judicial body\n${lookup(application.quasiJudicialSittingDaysDetails)}`;
+    judicialExperience = `Quasi-judicial body - ${lookup(application.quasiJudicialSittingDaysDetails)} days`;
   } else {
-    judicialExperience = `Acquired skills in other way\n${lookup(application.skillsAquisitionDetails)}`;
+    judicialExperience = `Acquired skills in other way - ${lookup(application.skillsAquisitionDetails)}`;
   }
 
   return {
@@ -261,7 +252,7 @@ const formatLegalData = (application) => {
   };
 };
 
-const formatNonLegalData = (application) => {
+const formatNonLegalData = (application, exercise) => {
   const organisations = {
     'chartered-association-of-building-engineers': 'charteredAssociationBuildingEngineers',
     'chartered-institute-of-building': 'charteredInstituteBuilding',
@@ -278,10 +269,10 @@ const formatNonLegalData = (application) => {
       let formattedMembership;
       if (organisations[membership]) {
         const fieldName = organisations[membership];
-        formattedMembership = `${lookup(membership)}, ${helpers.formatDate(application[`${fieldName}Date`])}, ${application[`${fieldName}Number`]}`;
+        formattedMembership = `${lookup(membership)}, ${helpers.formatDate(application[`${fieldName}Date`])}, ${application[`${fieldName}Number`]} `;
       }
       if (application.memberships[membership]) {
-        const otherMembershipLabel = this.exercise.otherMemberships.find(m => m.value === membership).label;
+        const otherMembershipLabel = exercise.otherMemberships.find(m => m.value === membership).label;
         formattedMembership = `${lookup(otherMembershipLabel)}, ${helpers.formatDate(application.memberships[membership].date)}, ${application.memberships[membership].number}`;
       }
       return formattedMembership;
