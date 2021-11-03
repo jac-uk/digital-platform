@@ -20,11 +20,11 @@ module.exports = (config, firebase, db) => {
       // construct body for API request
       report.data.forEach(row => handoverData.push(
         {
-          id: row.candidateId, // or application ?
+          id: row.candidateId,
           forenames: row.firstName,
           knownAs: row.otherNames,
           surname: row.lastName,
-          title: row.title, // or suffix ?
+          title: row.title,
           homeEmailAddress: row.email,
           dateOfBirth: row.dateOfBirth,
           nINumber: row.nationalInsuranceNumber,
@@ -38,7 +38,7 @@ module.exports = (config, firebase, db) => {
           FIFText11: row.qualifications,
           FIFText16: row.professionalBackground,
           FIFText1: row.stateOrFeeSchool,
-          FIFText4: row.firstGenerationStudent, // not collecting specific data requested by JO
+          FIFText4: row.firstGenerationStudent,
           ethnicOriginDescription: row.ethnicGroup,
           sex: row.gender,
           FIFText7: row.sexualOrientation,
