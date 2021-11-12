@@ -1,4 +1,6 @@
+const { SSL_OP_NETSCAPE_DEMO_CIPHER_CHANGE_BUG } = require('constants');
 const { getAllDocuments, applyUpdates } = require('../../shared/helpers');
+
 
 module.exports = (config, firebase, db) => {
   const { newNotificationCharacterCheckRequest } = require('../../shared/factories')(config);
@@ -8,6 +10,8 @@ module.exports = (config, firebase, db) => {
     updateApplication,
     onApplicationCreate,
     sendCharacterCheckRequests,
+    createApplication,
+    createApplications,
   };
 
   /**
@@ -19,6 +23,38 @@ module.exports = (config, firebase, db) => {
       return true;
     } catch (e) {
       console.error(`Error writing application ${applicationId}`, e);
+      return false;
+    }
+  }
+
+  /**
+   * Create Multiple Application Records
+   * 
+   * @param {array} data 
+   */
+  async function createApplications(documents) {
+    let commands = [];
+    for(let i = 0; i < documents.length; i++) {
+      commands.push({
+        command: 'set',
+        ref: db.collection('applications').doc(),
+        data: documents[i],
+      });      
+    };
+    return await applyUpdates(db, commands);
+  }
+
+  /**
+   * 
+   * Create an application document
+   * 
+   * @param {*} data
+   */
+  async function createApplication(data) {
+    try {
+      return db.collection('applications').add(data)
+    } catch(e) {
+      console.error(`Error Adding Document: ${e}`);
       return false;
     }
   }
