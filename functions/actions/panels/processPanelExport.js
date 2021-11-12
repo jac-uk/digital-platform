@@ -1,5 +1,6 @@
-const { getDocument } = require('../../shared/helpers');
+const { getDocument, getDocuments } = require('../../shared/helpers');
 const applicationConverter = require('../../shared/converters/applicationConverter')();
+const qtConverter = require('../../shared/converters/qtConverter')();
 const drive = require('../../shared/google-drive')();
 
 module.exports = (config, firebase, db) => {
@@ -43,7 +44,7 @@ module.exports = (config, firebase, db) => {
       // console.log('bucket', bucket);
 
       // show candidate name
-      const showNames = panel.type === 'selection';
+      const showNames = panel.type !== 'sift';
 
       // create application folder
       let applicationFolderName;
@@ -61,104 +62,128 @@ module.exports = (config, firebase, db) => {
 
       const promises = [];
 
-      // Create application data document
-      promises.push(
-        drive.createFile('Application Data', {
-          folderId: folderId,
-          sourceType: drive.MIME_TYPE.HTML,
-          sourceContent: applicationConverter.getHtmlPanelPack(application, exercise, { showNames }),
-          destinationType: drive.MIME_TYPE.DOCUMENT,
-        }).catch(e => 'Error: Application Data')
-      );
-
-      // Transfer Self Assessment
-      if (application.uploadedSelfAssessment) {
+      if (panel.type === 'selection' || panel.type === 'sift') {
+        // Create application data document
         promises.push(
-          transferFileFromStorage({
-            storageBucket: bucket,
-            fileUrl: `exercise/${panel.exerciseId}/user/${application.userId}/${application.uploadedSelfAssessment}`,
-            destinationFolderId: folderId,
-            destinationFileName: 'Self Assessment',
-          }).catch(e => {
-            console.log(e);
-            return 'Error: Self Assessment';
-          })
+          drive.createFile('Application Data', {
+            folderId: folderId,
+            sourceType: drive.MIME_TYPE.HTML,
+            sourceContent: applicationConverter.getHtmlPanelPack(application, exercise, { showNames }),
+            destinationType: drive.MIME_TYPE.DOCUMENT,
+          }).catch(e => 'Error: Application Data')
         );
-      }
 
-      // Transfer Covering Letter
-      if (application.uploadedCoveringLetter) {
-        promises.push(
-          transferFileFromStorage({
-            storageBucket: bucket,
-            fileUrl: `exercise/${panel.exerciseId}/user/${application.userId}/${application.uploadedCoveringLetter}`,
-            destinationFolderId: folderId,
-            destinationFileName: 'Covering Letter',
-          }).catch(e => 'Error: Covering Letter')
-        );
-      }
-
-      // Transfer CVs
-      if (application.uploadedCV) {
-        promises.push(
-          transferFileFromStorage({
-            storageBucket: bucket,
-            fileUrl: `exercise/${panel.exerciseId}/user/${application.userId}/${application.uploadedCV}`,
-            destinationFolderId: folderId,
-            destinationFileName: 'CV',
-          }).catch(e => 'Error: CV')
-        );
-      }
-
-      // Transfer Statement of Suitability
-      if (application.uploadedSuitabilityStatement) {
-        promises.push(
-          transferFileFromStorage({
-            storageBucket: bucket,
-            fileUrl: `exercise/${panel.exerciseId}/user/${application.userId}/${application.uploadedSuitabilityStatement}`,
-            destinationFolderId: folderId,
-            destinationFileName: 'Statement of Suitability',
-          }).catch(e => 'Error: Statement of Suitability')
-        );
-      }
-
-      // First independent assessment
-      promises.push(
-        getDocument(db.collection('assessments').doc(`${application.id}-1`)).then(assessment => {
-          if (assessment && assessment.filePath) {
-            let filePath = assessment.filePath;
-            if (filePath.charAt(0) === '/') {
-              filePath = filePath.substr(1);
-            }
-            return transferFileFromStorage({
+        // Transfer Self Assessment
+        if (application.uploadedSelfAssessment) {
+          promises.push(
+            transferFileFromStorage({
               storageBucket: bucket,
-              fileUrl: filePath,
+              fileUrl: `exercise/${panel.exerciseId}/user/${application.userId}/${application.uploadedSelfAssessment}`,
               destinationFolderId: folderId,
-              destinationFileName: 'Independent Assessment 1',
-            });
-          }
-          return '';
-        }).catch(e => 'Error: Independent Assessment 1')
-      );
+              destinationFileName: 'Self Assessment',
+            }).catch(e => {
+              console.log(e);
+              return 'Error: Self Assessment';
+            })
+          );
+        }
 
-      // Second independent assessment
-      promises.push(
-        getDocument(db.collection('assessments').doc(`${application.id}-2`)).then(assessment => {
-          if (assessment && assessment.filePath) {
-            let filePath = assessment.filePath;
-            if (filePath.charAt(0) === '/') {
-              filePath = filePath.substr(1);
-            }
-            return transferFileFromStorage({
+        // Transfer Covering Letter
+        if (application.uploadedCoveringLetter) {
+          promises.push(
+            transferFileFromStorage({
               storageBucket: bucket,
-              fileUrl: filePath,
+              fileUrl: `exercise/${panel.exerciseId}/user/${application.userId}/${application.uploadedCoveringLetter}`,
               destinationFolderId: folderId,
-              destinationFileName: 'Independent Assessment 2',
-            });
-          }
-          return '';
-        }).catch(e => 'Error: Independent Assessment 2')
-      );
+              destinationFileName: 'Covering Letter',
+            }).catch(e => 'Error: Covering Letter')
+          );
+        }
+
+        // Transfer CVs
+        if (application.uploadedCV) {
+          promises.push(
+            transferFileFromStorage({
+              storageBucket: bucket,
+              fileUrl: `exercise/${panel.exerciseId}/user/${application.userId}/${application.uploadedCV}`,
+              destinationFolderId: folderId,
+              destinationFileName: 'CV',
+            }).catch(e => 'Error: CV')
+          );
+        }
+
+        // Transfer Statement of Suitability
+        if (application.uploadedSuitabilityStatement) {
+          promises.push(
+            transferFileFromStorage({
+              storageBucket: bucket,
+              fileUrl: `exercise/${panel.exerciseId}/user/${application.userId}/${application.uploadedSuitabilityStatement}`,
+              destinationFolderId: folderId,
+              destinationFileName: 'Statement of Suitability',
+            }).catch(e => 'Error: Statement of Suitability')
+          );
+        }
+
+        // First independent assessment
+        promises.push(
+          getDocument(db.collection('assessments').doc(`${application.id}-1`)).then(assessment => {
+            if (assessment && assessment.filePath) {
+              let filePath = assessment.filePath;
+              if (filePath.charAt(0) === '/') {
+                filePath = filePath.substr(1);
+              }
+              return transferFileFromStorage({
+                storageBucket: bucket,
+                fileUrl: filePath,
+                destinationFolderId: folderId,
+                destinationFileName: 'Independent Assessment 1',
+              });
+            }
+            return '';
+          }).catch(e => 'Error: Independent Assessment 1')
+        );
+
+        // Second independent assessment
+        promises.push(
+          getDocument(db.collection('assessments').doc(`${application.id}-2`)).then(assessment => {
+            if (assessment && assessment.filePath) {
+              let filePath = assessment.filePath;
+              if (filePath.charAt(0) === '/') {
+                filePath = filePath.substr(1);
+              }
+              return transferFileFromStorage({
+                storageBucket: bucket,
+                fileUrl: filePath,
+                destinationFolderId: folderId,
+                destinationFileName: 'Independent Assessment 2',
+              });
+            }
+            return '';
+          }).catch(e => 'Error: Independent Assessment 2')
+        );
+      } else if (panel.type === 'scenario') {
+        let qTests = await getDocuments(db.collection('qualifyingTests').where('vacancy.id', '==', panel.exerciseId));
+        qTests = qTests.map(qTest => qTest.id);
+        console.log('qualifying tests: ', JSON.stringify(qTests));
+        const qtResponses = await getDocuments(db.collection('qualifyingTestResponses').where('candidate.id', '==', application.userId)
+          .where('qualifyingTest.id', 'in', qTests));
+        console.log('qt responses: ', JSON.stringify(qtResponses));
+        qtResponses.forEach((qtResponse, idx) => {
+          promises.push(
+            drive.createFile(qtResponse.qualifyingTest.title, {
+              folderId: folderId,
+              sourceType: drive.MIME_TYPE.HTML,
+              sourceContent: qtConverter.getHtmlQualifyingTestResponse(qtResponse, exercise, application,{ showNames }),
+              destinationType: drive.MIME_TYPE.DOCUMENT,
+            }).catch(e => `Error: QT Response ${idx + 1}`)
+          );
+        });
+        if (!qtResponses.length) {
+          promises.push(
+            drive.deleteFolder(folderId) //If the candiate hasn't taken the test, delete their folder.
+          );
+        }
+      }
 
       // Get fileIds & errors
       const fileIds = [];
