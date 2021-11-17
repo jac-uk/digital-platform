@@ -18,9 +18,9 @@ const faker = require('faker')
  const main = async () => {
 
    const exerciseId = '8CIlAsDbtMfr2vnfjmYh';
-   const toGenerate = 10000;
+   const toGenerate = 1;
    const refPrefix = 'prefix3';
-   const clearOldApplications = false;
+   const clearOldApplications = true;
 
    if (clearOldApplications) {
     let applicationsRef = db.collection('applications')
