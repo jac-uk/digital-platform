@@ -12,13 +12,32 @@
 const config = require('./shared/config');
 const { firebase, app, db } = require('./shared/admin.js');
 const action = require('../functions/actions/applications/applications')(config, firebase, db);
-const {getDocument} = require('../functions/shared/helpers');
+const {getDocument, getDocuments, applyUpdates} = require('../functions/shared/helpers');
 const faker = require('faker')
 
  const main = async () => {
+
    const exerciseId = '8CIlAsDbtMfr2vnfjmYh';
-   const toGenerate = 1000;
-   const refPrefix = 'prefix2';
+   const toGenerate = 10000;
+   const refPrefix = 'prefix3';
+   const clearOldApplications = false;
+
+   if (clearOldApplications) {
+    let applicationsRef = db.collection('applications')
+    .where('exerciseId', '==', exerciseId);
+    const applications = await getDocuments(applicationsRef);
+
+    let commands = [];
+    for(let i = 0; i < applications.length; i++) {
+      commands.push({
+        command: 'delete',
+        ref: applications[i].ref,
+      });
+    };
+    console.info(`Removing ${commands.length} Applications...`);
+    await applyUpdates(db, commands);
+    console.info('Deleted Old Records');
+   }
    
    const exercise = await getDocument(db.collection('exercises').doc(exerciseId));
    const titles = ['Mr', 'Mrs', 'Ms', 'Dr'];
@@ -36,6 +55,8 @@ const faker = require('faker')
     data.exerciseName = exercise.name;
     data.exerciseRef = exercise.referenceNumber;
 
+    data.userId = 'RW9nHLejKQRzTb7QACC6cte1UJu2';
+
     const name = {
       firstName: faker.name.firstName(),
       lastName: faker.name.lastName(),
@@ -52,6 +73,8 @@ const faker = require('faker')
       reasonableAdjustments,
       reasonableAdjustmentDetails: reasonableAdjustments ? 'Some reasonable adjustment details...' : '',
       title: titles[Math.floor(Math.random() * titles.length)],
+      reasonableAdjustments: false,
+      reasonableAdjustmentsDetails: null,
     };
     data.progress = {
       started: true,
