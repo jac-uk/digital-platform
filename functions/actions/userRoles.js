@@ -1,8 +1,7 @@
-const admin = require('firebase-admin');
 const { getDocument, getDocuments } = require('../shared/helpers');
 const PERMISSIONS = require('../shared/permissions');
 
-module.exports = (db) => {
+module.exports = (db, auth) => {
 
   //TODO: add logging for all changes to roles
 
@@ -28,7 +27,7 @@ module.exports = (db) => {
 
     try {
       // get all users
-      const users = await admin.auth().listUsers();
+      const users = await auth.listUsers();
 
       for(const user of users.users) {
         let isJacAdmin = false;
@@ -132,8 +131,8 @@ module.exports = (db) => {
 
     try {
       // get user
-      const user = await admin.auth().getUser(params.uid);
-      const response = await admin.auth().updateUser(params.uid, {
+      const user = await auth.getUser(params.uid);
+      const response = await auth.updateUser(params.uid, {
         disabled: !user.disabled,
       });
       await revokeUserToken(params.uid);
@@ -203,7 +202,7 @@ module.exports = (db) => {
    */
   async function disableNewUser(params) {
     try {
-      await admin.auth().updateUser(params.uid, {
+      await auth.updateUser(params.uid, {
         disabled: true,
       });
       return true;

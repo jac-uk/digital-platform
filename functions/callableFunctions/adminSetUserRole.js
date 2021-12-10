@@ -1,7 +1,7 @@
 const functions = require('firebase-functions');
-const { db } = require('../shared/admin.js');
+const { db, auth } = require('../shared/admin.js');
 const { checkArguments } = require('../shared/helpers.js');
-const  { adminSetUserRole } = require('../actions/userRoles')(db);
+const  { adminSetUserRole } = require('../actions/userRoles')(db, auth);
 
 module.exports = functions.region('europe-west2').https.onCall(async (data, context) => {
   if (!context.auth) {

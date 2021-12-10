@@ -81,6 +81,7 @@ module.exports = (config, firebase, db, auth) => {
               // eslint-disable-next-line eqeqeq
               return value == whereClause.value;
           }
+          return false;
         });
       }
     }
