@@ -1,6 +1,6 @@
 {
   "name": "jac-digital-platform",
-  "version": "1.9.0",
+  "version": "1.11.0",
   "description": "Firebase/GCP configuration and components for the JAC digital platform",
   "repository": "https://github.com/jac-uk/digital-platform",
   "license": "MIT",
@@ -44,7 +44,7 @@
   },
   "dependencies": {
     "@google-cloud/storage": "^5.7.2",
-    "axios": "^0.21.1",
+    "axios": "^0.21.2",
     "bottleneck": "^2.19.5",
     "firebase": "^8.4.3",
     "firebase-admin": "^9.7.0",
@@ -52,6 +52,7 @@
     "firebase-functions-test": "^0.2.3",
     "firebase-tools": "^9.11.0",
     "googleapis": "^67.0.0",
+    "lodash": "^4.17.21",
     "notifications-node-client": "^4.9.0"
   },
   "devDependencies": {

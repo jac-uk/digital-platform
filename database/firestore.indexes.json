@@ -521,6 +521,20 @@
       "queryScope": "COLLECTION",
       "fields": [
         {
+          "fieldPath": "exercise.id",
+          "order": "ASCENDING"
+        },
+        {
+          "fieldPath": "status",
+          "order": "ASCENDING"
+        }
+      ]
+    },
+    {
+      "collectionGroup": "applicationRecords",
+      "queryScope": "COLLECTION",
+      "fields": [
+        {
           "fieldPath": "exerciseId",
           "order": "ASCENDING"
         },
@@ -820,6 +834,28 @@
         },
         {
           "fieldPath": "referenceNumber",
+          "order": "ASCENDING"
+        }
+      ]
+    },
+    {
+      "collectionGroup": "applications",
+      "queryScope": "COLLECTION",
+      "fields": [
+        {
+          "fieldPath": "roles",
+          "arrayConfig": "CONTAINS"
+        },
+        {
+          "fieldPath": "exerciseId",
+          "order": "ASCENDING"
+        },
+        {
+          "fieldPath": "status",
+          "order": "ASCENDING"
+        },
+        {
+          "fieldPath": "personalDetails.fullName",
           "order": "ASCENDING"
         }
       ]
