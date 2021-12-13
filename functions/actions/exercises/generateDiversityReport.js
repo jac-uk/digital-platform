@@ -17,37 +17,47 @@ module.exports = (firebase, db) => {
       .where('status', 'in', ['applied', 'withdrawn'])
     );
 
-    const report = {
-      totalApplications: applications.length,
-      createdAt: firebase.firestore.Timestamp.fromDate(new Date()),
-      applied: diversityReport(applications),
-    };
-
     // get application records
     const applicationRecords = await getDocuments(db.collection('applicationRecords')
       .where('exercise.id', '==', exerciseId)
     );
+
+    const report = {
+      totalApplications: applications.length,
+      createdAt: firebase.firestore.Timestamp.fromDate(new Date()),
+      applied: diversityReport(applications, applicationRecords),
+    };
+
+    
     if (applicationRecords.length) {
-      const handoverIds = applicationRecords.filter(doc => doc.stage === 'handover').map(doc => doc.id);
-      const recommendedIds = applicationRecords.filter(doc => doc.stage === 'recommended').map(doc => doc.id);
-      const selectedIds = applicationRecords.filter(doc => doc.stage === 'selected').map(doc => doc.id);
-      const shortlistedIds = applicationRecords.filter(doc => doc.stage === 'shortlisted').map(doc => doc.id);
+      const handoverApplicationRecords = applicationRecords.filter(doc => doc.stage === 'handover');
+      const handoverIds = handoverApplicationRecords.map(doc => doc.id);
       const handoverApplications = applications.filter(doc => handoverIds.indexOf(doc.id) >= 0);
+      
+      const recommendedApplicationRecords = applicationRecords.filter(doc => doc.stage === 'recommended');
+      const recommendedIds = recommendedApplicationRecords.map(doc => doc.id);
       const recommendedApplications = handoverApplications.concat(applications.filter(doc => recommendedIds.indexOf(doc.id) >= 0));
+
+      const selectedApplicationRecords = applicationRecords.filter(doc => doc.stage === 'selected');
+      const selectedIds = selectedApplicationRecords.map(doc => doc.id);
       const selectedApplications = recommendedApplications.concat(applications.filter(doc => selectedIds.indexOf(doc.id) >= 0));
+      
+      const shortlistedApplicationRecords = applicationRecords.filter(doc => doc.stage === 'shortlisted');
+      const shortlistedIds = shortlistedApplicationRecords.map(doc => doc.id);
       const shortlistedApplications = selectedApplications.concat(applications.filter(doc => shortlistedIds.indexOf(doc.id) >= 0));
-      report.shortlisted = diversityReport(shortlistedApplications);
-      report.selected = diversityReport(selectedApplications);
-      report.recommended = diversityReport(recommendedApplications);
-      report.handover = diversityReport(handoverApplications);
+
+      report.handover = diversityReport(handoverApplications, handoverApplicationRecords);
+      report.recommended = diversityReport(recommendedApplications, recommendedApplicationRecords);
+      report.selected = diversityReport(selectedApplications, selectedApplicationRecords);
+      report.shortlisted = diversityReport(shortlistedApplications, shortlistedApplicationRecords);
     }
     await db.collection('exercises').doc(exerciseId).collection('reports').doc('diversity').set(report);
     return report;
   }
 };
 
-const diversityReport = (applications) => {
-  return {
+const diversityReport = (applications, applicationRecords) => {
+  let report = {
     totalApplications: applications.length,
     gender: genderStats(applications),
     ethnicity: ethnicityStats(applications),
@@ -55,6 +65,10 @@ const diversityReport = (applications) => {
     professionalBackground: professionalBackgroundStats(applications),
     socialMobility: socialMobilityStats(applications),
   };
+  if (applicationRecords) {
+    report.emp = empStats(applicationRecords);
+  }
+  return report;
 };
 
 const calculatePercents = (report) => {
@@ -66,6 +80,44 @@ const calculatePercents = (report) => {
       }
     }
   }
+};
+
+const empStats = (applicationRecords) => {
+  const stats = {
+    total: 0,
+    applied: {
+      total: 0,
+    },
+    gender: {
+      total: 0,
+    },
+    ethnicity: {
+      total: 0,
+    },
+    noAnswer: {
+      total: 0,
+    },
+  };
+  for (let i = 0, len = applicationRecords.length; i < len; ++i) {
+    const empFlag = applicationRecords[i].flags ? applicationRecords[i].flags.empApplied : null;
+    switch (empFlag) {
+      case true:
+        stats.applied.total += 1;
+        break;
+      case 'gender':
+        stats.gender.total += 1;
+        break;
+      case 'ethnicity':
+        stats.ethnicity.total += 1;
+        break;
+      default:
+        stats.noAnswer.total += 1;
+    }
+    stats.total += 1;
+  }
+  calculatePercents(stats);
+  return stats;
+
 };
 
 const genderStats = (applications) => {

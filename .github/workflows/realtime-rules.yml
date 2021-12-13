@@ -1,24 +1,24 @@
-name: Firestore rules
+name: Realtime rules
 
 on:
-  pull_request:
-    branches:
-      - develop
-    paths:
-      - 'database/firestore.rules'
+  # pull_request:
+  #   branches:
+  #     - develop
+  #   paths:
+  #     - 'database/realtime.rules.json'
   push:
     branches:
       - develop
     paths:
-      - 'database/firestore.rules'
+      - 'database/realtime.rules.json'
 
 concurrency: one_at_a_time
 
 jobs:
-  test_and_deploy:
+  deploy:
     runs-on: ubuntu-latest
     steps:
-      ## Install and test
+      ## Install
       - uses: actions/checkout@v2
         with:
           token: ${{ secrets.DEPLOY_TOKEN }}
@@ -26,8 +26,6 @@ jobs:
         with:
           node-version: '10'
       - run: npm ci
-      - name: Test
-        run: npm run ci:test:rules
 
       ## Update release notes and bump version (for pushes)
       - name: Update release notes (for pushes)
@@ -56,11 +54,11 @@ jobs:
       ## Deploy to develop and staging (for pushes)
       - name: Deploy to develop (for pushes)
         if: ${{ github.event_name == 'push' && success() }}
-        run: npm run deploy:rules
+        run: npm run deploy:realtime-rules
         env:
           FIREBASE_TOKEN: ${{ secrets.FIREBASE_CLI_TOKEN }}
       - name: Deploy to staging (for pushes)
         if: ${{ github.event_name == 'push' && success() }}
-        run: npm run staging:deploy:rules
+        run: npm run staging:deploy:realtime-rules
         env:
           FIREBASE_TOKEN: ${{ secrets.FIREBASE_CLI_TOKEN }}

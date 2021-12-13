@@ -75,8 +75,8 @@ module.exports = (firebase, db) => {
       const applicationsMap = {};
       const referenceNumbers = [];
       applications.forEach(application => {
-        exercisesMap[application.exerciseId] = application.status;
-        applicationsMap[application.id] = application.status;
+        exercisesMap[application.exerciseId] = application.status ? application.status : 'draft';
+        applicationsMap[application.id] = application.status ? application.status : 'draft';
         if (application.referenceNumber) { referenceNumbers.push(application.referenceNumber); }
       });
       candidateData[candidates[i].id].exercisesMap = exercisesMap;

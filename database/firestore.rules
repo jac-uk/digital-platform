@@ -23,6 +23,7 @@ service cloud.firestore {
     return !(field in data) || data[field] == value;
   }
 
+
   // function notChanged(field) {
   //   return !(field in request.resource.data)
   //     || resource.data[field] == request.resource.data[field]
@@ -150,6 +151,12 @@ service cloud.firestore {
             resource.data.status == "applied" && request.resource.data.status == "applied" &&  // remains in applied status
             exerciseNeedsMoreInformation(resource.data.exerciseId)
           )
+          ||
+          (  // consent form information is requested
+           resource.data.status in ["draft", "applied"] && request.resource.data.status in ["draft", "applied"] &&
+           resource.data.characterChecks.status == "requested" &&
+           request.resource.data.characterChecks.status in ["requested", "completed"]
+           )
         );
 
       // allow JAC admins to edit an application @TODO restrict what can be changed and by which role
@@ -163,6 +170,7 @@ service cloud.firestore {
 
       // allow admins full write access to all applicationRecords
       allow write: if userIsAuthenticated() && userIsJAC();
+
     }
 
     match /logs/login/{id}/{logId} {
