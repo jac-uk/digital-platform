@@ -102,9 +102,4 @@ output.csv
 out/
 
 # Local nodeScripts
-/nodeScripts/
-
-#Firestore data for emulation
-/data/firestore.json
-/data/firestore_export/
-/data/firebase-export-metadata.json
+/nodeScripts/local
