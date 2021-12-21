@@ -1,7 +1,8 @@
 
 // Scheduled
-// exports.backupFirestore = require('./scheduledFunctions/backupFirestore');
-// exports.backupAuthentication = require('./scheduledFunctions/backupAuthentication');
+exports.backupFirestore = require('./scheduledFunctions/backupFirestore');
+exports.getApplicationData = require('./callableFunctions/getApplicationData');
+exports.backupAuthentication = require('./scheduledFunctions/backupAuthentication');
 exports.processNotifications = require('./scheduledFunctions/processNotifications');
 
 // Background
@@ -14,6 +15,8 @@ exports.onAssessmentUpdate = require('./backgroundFunctions/onAssessmentUpdate')
 exports.onApplicationRecordUpdate = require('./backgroundFunctions/onApplicationRecordUpdate');
 exports.onQualifyingTestResponseUpdate = require('./backgroundFunctions/onQualifyingTestResponseUpdate');
 exports.onPanelUpdate = require('./backgroundFunctions/onPanelUpdate');
+exports.onDocumentUploaded = require('./backgroundFunctions/onDocumentUploaded');
+exports.onCandidatePersonalDetailsCreate = require('./backgroundFunctions/onCandidatePersonalDetailsCreate');
 exports.onCandidatePersonalDetailsUpdate = require('./backgroundFunctions/onCandidatePersonalDetailsUpdate');
 
 // Callable
@@ -28,11 +31,14 @@ exports.sendAssessmentReminders = require('./callableFunctions/sendAssessmentRem
 exports.generateSignInWithEmailLink = require('./callableFunctions/generateSignInWithEmailLink');
 exports.initialiseApplicationRecords = require('./callableFunctions/initialiseApplicationRecords');
 exports.sendCharacterCheckRequests = require('./callableFunctions/sendCharacterCheckRequests');
+exports.enableCharacterChecks = require('./callableFunctions/enableCharacterChecks');
 exports.initialiseQualifyingTest = require('./callableFunctions/initialiseQualifyingTest');
 exports.activateQualifyingTest = require('./callableFunctions/activateQualifyingTest');
 exports.initialiseMissingApplicationRecords = require('./callableFunctions/initialiseMissingApplicationRecords');
 exports.sendQualifyingTestReminders = require('./callableFunctions/sendQualifyingTestReminders');
 exports.scoreQualifyingTest = require('./callableFunctions/scoreQualifyingTest');
+exports.cutOffScoreUpdateStatuses = require('./callableFunctions/cutOffScoreUpdateStatuses');
+exports.updateStatus = require('./callableFunctions/updateStatus');
 exports.generateQualifyingTestReport = require('./callableFunctions/generateQualifyingTestReport');
 exports.exportExerciseData = require('./callableFunctions/exportExerciseData');
 exports.transferHandoverData = require('./callableFunctions/transferHandoverData');
@@ -43,8 +49,20 @@ exports.generateReasonableAdjustmentsReport = require('./callableFunctions/gener
 exports.exportQualifyingTestResponses = require('./callableFunctions/exportQualifyingTestResponses');
 exports.generateAgencyReport = require('./callableFunctions/generateAgencyReport');
 exports.logEvent = require('./callableFunctions/logEvent');
+exports.scanFile = require('./callableFunctions/scanFile');
 exports.exportApplicationCharacterIssues = require('./callableFunctions/exportApplicationCharacterIssues');
-
+exports.getUserEmailByID = require('./callableFunctions/getUserEmailByID');
+exports.updateEmailAddress = require('./callableFunctions/updateEmailAddress');
+exports.adminGetUsers = require('./callableFunctions/adminGetUsers');
+exports.adminGetUserRoles = require('./callableFunctions/adminGetUserRoles');
+exports.adminDisableUser = require('./callableFunctions/adminDisableUser');
+exports.adminCreateUserRole = require('./callableFunctions/adminCreateUserRole');
+exports.adminUpdateUserRole = require('./callableFunctions/adminUpdateUserRole');
+exports.adminSetUserRole = require('./callableFunctions/adminSetUserRole');
+exports.adminSetDefaultRole = require('./callableFunctions/adminSetDefaultRole');
+exports.adminDisableNewUser = require('./callableFunctions/adminDisableNewUser');
+exports.adminSyncUserRolePermissions = require('./callableFunctions/adminSyncUserRolePermissions');
+exports.customReport = require('./callableFunctions/customReport');
 
 // exports.onExerciseUpdate_PublishVacancy = require('./exercises/onExerciseUpdate_PublishVacancy');
 // exports.onWriteVacancyStats = require('./exercises/onWriteVacancyStats');
@@ -55,14 +73,3 @@ exports.exportApplicationCharacterIssues = require('./callableFunctions/exportAp
 // exports.handleApplicationOnCreate = require('./applications/handleApplicationOnCreate');
 // // exports.handleApplicationOnUpdate = require('./applications/handleApplicationOnUpdate');
 // // exports.handleExerciseTimelineDates = require('./exercises/handleExerciseTimelineDates');
-
-
-// MALWARE SCANNER
-// const functions = require('firebase-functions');
-// exports.requestMalwareScan = functions.region('europe-west2').storage
-//   .object()
-//   .onFinalize((object) => {
-//     const handler = require('./virus-scanning/requestMalwareScan');
-//     return handler(object);
-//   });
-// @TODO enqueueMalwareScans

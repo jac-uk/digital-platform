@@ -1,12 +1,47 @@
 
 module.exports = (CONSTANTS) => {
   return {
+    newNotificationCharacterCheckRequest,
     newNotificationAssessmentRequest,
     newNotificationAssessmentReminder,
     newAssessment,
     newApplicationRecord,
     newVacancy,
   };
+
+  function newNotificationCharacterCheckRequest(firebase, application, type, exerciseMailbox, exerciseManagerName, dueDate) {
+    let templateId = '';
+    let templateName = '';
+    if (type === 'request') {
+      templateId = '5a4e7cbb-ab66-49a4-a8ad-7cbb399a8aa9';
+      templateName = 'Character check consent form request';
+    } else {
+      templateId = '163487cb-f4c6-4b7a-95bf-37fd958a14de';
+      templateName = 'Character check consent form reminder';
+    }
+    return {
+      email: application.personalDetails.email,
+      replyTo: exerciseMailbox,
+      template: {
+        name: templateName,
+        id: templateId,
+      },
+      personalisation: {
+        exerciseName: application.exerciseName,
+        dueDate: dueDate,
+        urlRequired: `${CONSTANTS.APPLY_URL}/sign-in`,
+        applicantName: application.personalDetails.fullName,
+        selectionExerciseManager: exerciseManagerName,
+        exerciseMailbox: exerciseMailbox,
+      },
+      reference: {
+        collection: 'applications',
+        id: application.id,
+      },
+      createdAt: firebase.firestore.Timestamp.fromDate(new Date()),
+      status: 'ready',
+    };
+  }
 
   function newNotificationAssessmentRequest(firebase, assessment) {
     const link = `${CONSTANTS.ASSESSMENTS_URL}/sign-in?email=${assessment.assessor.email}&ref=assessments/${assessment.id}`;
@@ -148,6 +183,73 @@ module.exports = (CONSTANTS) => {
     return assessment;
   }
 
+  function newDiversityFlags(application) {
+    const applicationData = application.equalityAndDiversitySurvey ? application.equalityAndDiversitySurvey : application;
+    const data = {
+      gender: applicationData.gender || null,
+      ethnicity: null,
+      disability: applicationData.disability || null,
+      professionalBackground: {
+        barrister: null,
+        cilex: null,
+        solicitor: null,
+        other: null,
+        preferNotToSay: null,
+      },
+      socialMobility: {
+        attendedUKStateSchool: null,
+        firstGenerationUniversity: null,
+      },
+    };
+    if (applicationData.ethnicGroup) {
+      switch (applicationData.ethnicGroup) {
+        case 'uk-ethnic':
+        case 'irish':
+        case 'gypsy-irish-traveller':
+        case 'other-white':
+          data.ethnicity = 'white';
+          break;
+        case 'prefer-not-to-say':
+          data.ethnicity = applicationData.ethnicGroup;
+          break;
+        case 'other-ethnic-group':
+          data.ethnicity = applicationData.ethnicGroup;
+          break;
+        default: // @todo check catch all is appropriate for bame
+          data.ethnicity = 'bame';
+      }
+    }
+    if (applicationData.professionalBackground && applicationData.professionalBackground.length) {
+      if (applicationData.professionalBackground.indexOf('barrister') >= 0) {
+        data.professionalBackground.barrister = true;
+      }
+      if (applicationData.professionalBackground.indexOf('cilex') >= 0) {
+        data.professionalBackground.cilex = true;
+      }
+      if (applicationData.professionalBackground.indexOf('solicitor') >= 0) {
+        data.professionalBackground.solicitor = true;
+      }
+      if (applicationData.professionalBackground.indexOf('other-professional-background') >= 0) {
+        data.professionalBackground.other = true;
+      }
+      if (applicationData.professionalBackground.indexOf('prefer-not-to-say') >= 0) {
+        data.professionalBackground.preferNotToSay = true;
+      }
+    }
+
+    if (
+      application.stateOrFeeSchool === 'uk-state-selective'
+      || application.stateOrFeeSchool === 'uk-state-non-selective'
+    ) {
+      data.socialMobility.attendedUKStateSchool = true;
+    }
+    if (application.firstGenerationStudent === true) {
+      data.socialMobility.firstGenerationUniversity = true;
+    }
+
+    return data;
+  }
+
   function newApplicationRecord(exercise, application) {
     let applicationRecord = {
       exercise: {
@@ -165,6 +267,9 @@ module.exports = (CONSTANTS) => {
         id: application.id,
         referenceNumber: application.referenceNumber,
       },
+      characterChecks: {
+        status: 'not requested',
+      },
       active: true,
       stage: 'review',
       status: '',
@@ -178,6 +283,7 @@ module.exports = (CONSTANTS) => {
         characterIssues: [],
         eligibilityIssues: [],
       },
+      diversity: newDiversityFlags(application),
       history: [],
       notes: [],
     };
@@ -191,6 +297,7 @@ module.exports = (CONSTANTS) => {
    */
   function newVacancy(data) {
     const vacancyModel = {
+      _applicationContent: null,
       _applicationVersion: null,
       aboutTheRole: null,
       additionalWorkingPreferences: null,
@@ -260,6 +367,7 @@ module.exports = (CONSTANTS) => {
       situationalJudgementTestDate: null,
       situationalJudgementTestEndTime: null,
       situationalJudgementTestStartTime: null,
+      state: null,
       subscriberAlertsUrl: null,
       typeOfExercise: null,
       uploadedCandidateAssessmentFormTemplate: null,

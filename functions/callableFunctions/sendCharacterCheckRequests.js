@@ -10,9 +10,12 @@ module.exports = functions.region('europe-west2').https.onCall(async (data, cont
   }
   if (!checkArguments({
     items: { required: true },
+    type: { required: true },
+    exerciseMailbox: { required: true },
+    exerciseManagerName: { required: true },
+    dueDate: { required: true },
   }, data)) {
     throw new functions.https.HttpsError('invalid-argument', 'Please provide valid arguments');
   }
-  const result = await sendCharacterCheckRequests(data);
-  return result;
+  return await sendCharacterCheckRequests(data);
 });

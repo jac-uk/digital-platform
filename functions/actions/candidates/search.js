@@ -13,12 +13,12 @@ module.exports = (firebase, db) => {
 
   /**
    * Update candidate document with full search & relationships data
-   * @returns boolean (true => success)
+   * @returns number|false (number > 0 => success)
    */
   async function updateCandidate(candidateId) {
     if (!candidateId) { return false; }
     const qtyUpdated = await updateAllCandidates(candidateId);
-    return qtyUpdated !== false;
+    return qtyUpdated || false;
   }
 
   /**
@@ -37,7 +37,7 @@ module.exports = (firebase, db) => {
         candidates.push(candidate);
       }
     } else {
-      candidates = await getDocuments(db.collection('candidates').orderBy('created'));
+      candidates = await getDocuments(db.collection('candidates'));
     }
     for (let i = 0, len = candidates.length; i < len; ++i) {
       candidateData[candidates[i].id] = {};
@@ -75,8 +75,8 @@ module.exports = (firebase, db) => {
       const applicationsMap = {};
       const referenceNumbers = [];
       applications.forEach(application => {
-        exercisesMap[application.exerciseId] = application.status;
-        applicationsMap[application.id] = application.status;
+        exercisesMap[application.exerciseId] = application.status ? application.status : 'draft';
+        applicationsMap[application.id] = application.status ? application.status : 'draft';
         if (application.referenceNumber) { referenceNumbers.push(application.referenceNumber); }
       });
       candidateData[candidates[i].id].exercisesMap = exercisesMap;

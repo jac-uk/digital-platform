@@ -25,9 +25,10 @@ See [functions/callableFunctions](functions/callableFunctions) for our HTTPS cal
 
 See [functions/scheduledFunctions](functions/scheduledFunctions) for functions triggered according to a pre-defined schedule.
 
-
-
 ## Local development
+
+
+
 
 
 ### Node.js

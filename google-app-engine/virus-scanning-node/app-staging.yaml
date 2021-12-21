@@ -1,0 +1,16 @@
+# https://cloud.google.com/appengine/docs/flexible/nodejs/configuring-your-app-with-app-yaml
+
+runtime: custom
+env: flex
+
+service: malware-scanner
+
+env_variables:
+  PROJECT_ID: digital-platform-staging
+automatic_scaling:
+  min_num_instances: 1
+  max_num_instances: 1
+resources:
+  cpu: 1
+  memory_gb: 4
+  disk_size_gb: 10

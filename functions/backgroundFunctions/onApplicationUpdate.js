@@ -9,10 +9,11 @@ module.exports = functions.region('europe-west2').firestore
   .onUpdate((change, context) => {
     const dataBefore = change.before.data();
     const dataAfter = change.after.data();
+    const applicationId = context.params.applicationId;
 
     if (dataBefore.status !== dataAfter.status) {
       const detail = {
-        applicationId: change.after.id,
+        applicationId: applicationId,
         candidateName: dataAfter.personalDetails.fullName,
         exerciseRef: dataAfter.exerciseRef,
         oldStatus: dataBefore.status,
@@ -21,5 +22,5 @@ module.exports = functions.region('europe-west2').firestore
       logEvent('info', 'Application status changed', detail);
     }
 
-    return onApplicationUpdate(dataBefore, dataAfter);
+    return onApplicationUpdate(applicationId, dataBefore, dataAfter);
   });

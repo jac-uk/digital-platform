@@ -118,14 +118,6 @@ describe('Applications', () => {
       });
       await assertFails(db.collection('applications').doc('app1').update({ userId: 'user2' }));
     });
-    it('prevent authenticated user from updating own application after they have applied', async () => {
-      const db = await setup({ uid: 'user1' });
-      await setupAdmin(db, {
-        'applications/app1': { userId: 'user1', status: 'applied', exerciseId: 'ex1' },
-        'exercises/ex1': { applicationOpenDate: getTimeStamp(yesterday), applicationCloseDate: getTimeStamp(tomorrow) },
-      });
-      await assertFails(db.collection('applications').doc('app1').update({}));
-    });
     it('prevent authenticated user from updating own application before exercise has opened', async () => {
       const db = await setup({ uid: 'user1' });
       await setupAdmin(db, {
@@ -142,7 +134,81 @@ describe('Applications', () => {
       });
       await assertFails(db.collection('applications').doc('app1').update({}));
     });
-
+    it('prevent authenticated user from updating own application after they have applied', async () => {
+      const db = await setup({ uid: 'user1' });
+      await setupAdmin(db, {
+        'applications/app1': { userId: 'user1', status: 'applied', exerciseId: 'ex1' },
+        'exercises/ex1': { applicationOpenDate: getTimeStamp(yesterday), applicationCloseDate: getTimeStamp(tomorrow) },
+      });
+      await assertFails(db.collection('applications').doc('app1').update({}));
+    });
+    it('allow authenticated user to update own application after they have applied if the exercise requires more information', async () => {
+      const db = await setup({ uid: 'user1' });
+      await setupAdmin(db, {
+        'applications/app1': { userId: 'user1', status: 'applied', exerciseId: 'ex1' },
+        'exercises/ex1': {
+          applicationOpenDate: getTimeStamp(dayBeforeYesterday),
+          applicationCloseDate: getTimeStamp(yesterday),
+          _applicationContent: {
+            _currentStep: {
+              step: 'selection',
+            },
+            selection: {
+              personalDetails: true,
+            },
+          },
+        },
+      });
+      await assertSucceeds(db.collection('applications').doc('app1').update({}));
+    });
+    it('prevent authenticated user from updating own application after they have applied if the exercise requires more information for a different state', async () => {
+      const db = await setup({ uid: 'user1' });
+      await setupAdmin(db, {
+        'applications/app1': { userId: 'user1', status: 'applied', exerciseId: 'ex1' },
+        'exercises/ex1': {
+          applicationOpenDate: getTimeStamp(dayBeforeYesterday),
+          applicationCloseDate: getTimeStamp(yesterday),
+          _applicationContent: {
+            _currentStep: {
+              step: 'selection',
+            },
+            shortlisting: {
+              personalDetails: true,
+            },
+          },
+        },
+      });
+      await assertFails(db.collection('applications').doc('app1').update({}));
+    });
+    // TODO also check currentStep dates and application status
+    it('allow authenticated user to update own application if it is in applied state to provide information for consent form', async () => {
+      const db = await setup({ uid: 'user1' });
+      await setupAdmin(db, {
+        'applications/app1': { userId: 'user1', status: 'applied', characterChecks: { status: 'requested' }, exerciseId: 'ex1' },
+      });
+      await assertSucceeds(db.collection('applications').doc('app1').update({characterChecks: {status: 'completed'}}));
+    });
+    it('allow authenticated user to update own application if it is in draft state to provide information for consent form', async () => {
+      const db = await setup({ uid: 'user1' });
+      await setupAdmin(db, {
+        'applications/app1': { userId: 'user1', status: 'draft', characterChecks: { status: 'requested' }, exerciseId: 'ex1' },
+      });
+      await assertSucceeds(db.collection('applications').doc('app1').update({characterChecks: {status: 'completed'}}));
+    });
+    it('dont allow authenticated user to update own application after they have applied if consent form was not requested', async () => {
+      const db = await setup({ uid: 'user1' });
+      await setupAdmin(db, {
+        'applications/app1': { userId: 'user1', status: 'applied', characterChecks: { status: 'not requested' }, exerciseId: 'ex1' },
+      });
+      await assertFails(db.collection('applications').doc('app1').update({characterChecks: {status: 'completed'}}));
+    });
+    it('dont allow authenticated user to update own application after they have applied if characterChecks property does not exist', async () => {
+      const db = await setup({ uid: 'user1' });
+      await setupAdmin(db, {
+        'applications/app1': { userId: 'user1', status: 'applied', exerciseId: 'ex1' },
+      });
+      await assertFails(db.collection('applications').doc('app1').update({characterChecks: {status: 'completed'}}));
+    });
   });
 
   context('Delete', () => {

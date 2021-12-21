@@ -1,4 +1,5 @@
 module.exports = {
+  PROJECT_ID: process.env.PROJECT_ID,
   APPLY_URL: process.env.APPLY_URL,
   APPLICATION: {
     CHARACTER_ISSUES: { // this gives a map from issue to corresponding details field TODO improve naming or where we store this
@@ -72,7 +73,7 @@ module.exports = {
       declaredBankruptOrIVA: {
         title: 'Declared Bankrupt Or IVA',
         details: 'declaredBankruptOrIVADetails',
-        summary: 'Candidate has been convicted of a criminal offence',
+        summary: 'Candidate has been declared bankrupt or entered into an Individual Voluntary Agreement (IVA)',
       },
       diciplinaryActionOrAskedToResign: {
         title: 'Disciplinary Action Or Asked To Resign',
