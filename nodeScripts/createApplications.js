@@ -15,36 +15,37 @@ const action = require('../functions/actions/applications/applications')(config,
 const {getDocument, getDocuments, applyUpdates} = require('../functions/shared/helpers');
 const faker = require('faker')
 
- const main = async () => {
+const main = async () => {
 
-   const exerciseId = '8CIlAsDbtMfr2vnfjmYh';
-   const toGenerate = 1;
-   const refPrefix = 'prefix3';
-   const clearOldApplications = true;
+  const exerciseId = '8CIlAsDbtMfr2vnfjmYh';
+  const toGenerate = 1;
+  const refPrefix = 'prefix3';
+  const clearOldApplications = true;
 
-   if (clearOldApplications) {
+  if (clearOldApplications) {
     let applicationsRef = db.collection('applications')
     .where('exerciseId', '==', exerciseId);
     const applications = await getDocuments(applicationsRef);
 
     let commands = [];
-    for(let i = 0; i < applications.length; i++) {
+    for (let i = 0; i < applications.length; i++) {
       commands.push({
         command: 'delete',
         ref: applications[i].ref,
       });
-    };
-    console.info(`Removing ${commands.length} Applications...`);
+    }
+
+    console.info(`Deleting ${commands.length} existing application(s)...`);
     await applyUpdates(db, commands);
-    console.info('Deleted Old Records');
-   }
-   
-   const exercise = await getDocument(db.collection('exercises').doc(exerciseId));
-   const titles = ['Mr', 'Mrs', 'Ms', 'Dr'];
+    console.info(' - Done');
+  }
 
-   const documents = [];
+  const exercise = await getDocument(db.collection('exercises').doc(exerciseId));
+  const titles = ['Mr', 'Mrs', 'Ms', 'Dr'];
 
-   for(let i = 0; i < toGenerate; i++) {
+  const documents = [];
+
+  for(let i = 0; i < toGenerate; i++) {
 
     let data = {};
 
@@ -60,8 +61,10 @@ const faker = require('faker')
     const name = {
       firstName: faker.name.firstName(),
       lastName: faker.name.lastName(),
-    }
+    };
+
     const reasonableAdjustments = !!(Math.random() > 0.5);
+
     data.personalDetails = {
       citizenship: 'uk',
       dateOfBirth: faker.date.between('1950-01-01', '1999-01-01'),
@@ -76,20 +79,25 @@ const faker = require('faker')
       reasonableAdjustments: false,
       reasonableAdjustmentsDetails: null,
     };
+
     data.progress = {
       started: true,
       personalDetails: true,
-    }
+    };
+
     data.status = 'applied';
     data.referenceNumber = exercise.referenceNumber + '-' + refPrefix + i;
     documents.push(data);
-   }
-   return action.createApplications(documents);
- };
- 
- main()
- .then((result) => {
-   console.log('Result', result);
+  }
+
+  console.info(`Creating ${toGenerate} application(s)...`);
+  const result = action.createApplications(documents);
+  console.info(' - Done');
+  return result;
+};
+
+main()
+ .then(() => {
    app.delete();
    return process.exit();
  })
@@ -97,4 +105,3 @@ const faker = require('faker')
    console.error(error);
    process.exit();
  });
- 
