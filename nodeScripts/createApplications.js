@@ -69,14 +69,13 @@ const main = async () => {
       citizenship: 'uk',
       dateOfBirth: faker.date.between('1950-01-01', '1999-01-01'),
       email: faker.internet.email(),
+      title: titles[Math.floor(Math.random() * titles.length)],
       ...name,
       fullName: name.firstName + ' ' + name.lastName,
       nationalInsuranceNumber: 'PP' + (Math.random() * 100000).toFixed(0).padStart(6, '0') + 'C',
       phone: faker.phone.phoneNumber(),
-      reasonableAdjustments,
+      reasonableAdjustments: reasonableAdjustments,
       reasonableAdjustmentDetails: reasonableAdjustments ? 'Some reasonable adjustment details...' : '',
-      title: titles[Math.floor(Math.random() * titles.length)],
-      reasonableAdjustments: false,
       reasonableAdjustmentsDetails: null,
     };
 
