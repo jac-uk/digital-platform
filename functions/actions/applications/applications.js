@@ -29,8 +29,8 @@ module.exports = (config, firebase, db) => {
 
   /**
    * Create Multiple Application Records
-   * 
-   * @param {array} data 
+   *
+   * @param {array} data
    */
   async function createApplications(documents) {
     let commands = [];
@@ -39,20 +39,20 @@ module.exports = (config, firebase, db) => {
         command: 'set',
         ref: db.collection('applications').doc(),
         data: documents[i],
-      });      
-    };
+      });
+    }
     return await applyUpdates(db, commands);
   }
 
   /**
-   * 
+   *
    * Create an application document
-   * 
+   *
    * @param {*} data
    */
   async function createApplication(data) {
     try {
-      return db.collection('applications').add(data)
+      return db.collection('applications').add(data);
     } catch(e) {
       console.error(`Error Adding Document: ${e}`);
       return false;
