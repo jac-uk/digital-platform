@@ -3,7 +3,7 @@
 This repository contains backend components and configuration of the [JAC digital platform](https://github.com/jac-uk/documentation/blob/master/docs/index.md).
 
 
-We have kept folder and file names closely aligned to the corresponding Firebase and Google Cloud services.
+We have kept folder and file names closely aligned to the corresponding Firebase and Google Cloud services..
 
 ## Database
 
