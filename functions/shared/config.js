@@ -218,3 +218,4 @@ module.exports = {
   SLACK_URL: functions.config().slack.url,
   STORAGE_URL: functions.config().project.id + '.appspot.com',
 };
+
