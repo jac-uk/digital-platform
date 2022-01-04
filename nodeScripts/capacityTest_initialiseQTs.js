@@ -17,11 +17,15 @@ const initialiseQualifyingTest = require('../functions/actions/qualifyingTests/i
 const {getDocument, getDocuments, applyUpdates} = require('../functions/shared/helpers');
 const faker = require('faker');
 
+const getNowString = () => {
+  return new Date().toJSON().slice(0,10).split('-').reverse().join('/');
+}
+
 const main = async () => {
 
   const exerciseId = '8CIlAsDbtMfr2vnfjmYh';
   const qualifyingTestId = '1zm5Q3LSRbSLBFakRbJ2';
-  const toGenerate = 1000;
+  const toGenerate = 200;
   const refPrefix = 'prefix3';
   const clearOldApplications = true;
 
@@ -33,26 +37,26 @@ const main = async () => {
 
   if (clearOldApplications) {
 
-    console.info(`${new Date().toLocaleTimeString()} - Fetching existing qualifying test responses...`);
+    console.info(`${getNowString()} - Fetching existing qualifying test responses...`);
     documentsRef = db.collection('qualifyingTestResponses').where('vacancy.id', '==', exerciseId);
     documents = await getDocuments(documentsRef);
-    console.info(`${new Date().toLocaleTimeString()} - - Done. ${documents.length} record(s) found`);
+    console.info(`${getNowString()} - - Done. ${documents.length} record(s) found`);
 
-    console.info(`${new Date().toLocaleTimeString()} - Deleting existing qualifying test responses(s)...`);
+    console.info(`${getNowString()} - Deleting existing qualifying test responses(s)...`);
     commands = documents.map((document) => {
       return { command: 'delete', ref: document.ref };
     });
     recordCount = await applyUpdates(db, commands);
-    console.info(`${new Date().toLocaleTimeString()} - - Done. ${recordCount ? recordCount : 0} record(s) affected`);
+    console.info(`${getNowString()} - - Done. ${recordCount ? recordCount : 0} record(s) affected`);
 
-    console.info(`${new Date().toLocaleTimeString()} - Checking number of QT response records...`);
+    console.info(`${getNowString()} - Checking number of QT response records...`);
     documentsRef = db.collection('qualifyingTestResponses').where('vacancy.id', '==', exerciseId);
     documents = await getDocuments(documentsRef);
-    console.info(`${new Date().toLocaleTimeString()} - - Done. ${documents.length} record(s) found`);
+    console.info(`${getNowString()} - - Done. ${documents.length} record(s) found`);
 
 
 
-    console.info(`${new Date().toLocaleTimeString()} - Setting status of QT to 'approved'...`);
+    console.info(`${getNowString()} - Setting status of QT to 'approved'...`);
     document = await getDocument(db.collection('qualifyingTests').doc(qualifyingTestId));
     commands.push({
       command: 'update',
@@ -63,26 +67,26 @@ const main = async () => {
       },
     });
     recordCount = await applyUpdates(db, commands);
-    console.info(`${new Date().toLocaleTimeString()} - - Done. ${recordCount ? recordCount : 0} record(s) affected`);
+    console.info(`${getNowString()} - - Done. ${recordCount ? recordCount : 0} record(s) affected`);
 
 
 
-    console.info(`${new Date().toLocaleTimeString()} - Fetching existing application records...`);
+    console.info(`${getNowString()} - Fetching existing application records...`);
     documentsRef = db.collection('applicationRecords').where('exercise.id', '==', exerciseId);
     documents = await getDocuments(documentsRef);
-    console.info(`${new Date().toLocaleTimeString()} - - Done. ${documents.length} record(s) found`);
+    console.info(`${getNowString()} - - Done. ${documents.length} record(s) found`);
 
     commands = documents.map((document) => {
       return { command: 'delete', ref: document.ref };
     });
 
-    console.info(`${new Date().toLocaleTimeString()} - Deleting existing application records...`);
+    console.info(`${getNowString()} - Deleting existing application records...`);
     recordCount = await applyUpdates(db, commands);
-    console.info(`${new Date().toLocaleTimeString()} - - Done. ${recordCount ? recordCount : 0} record(s) affected`);
+    console.info(`${getNowString()} - - Done. ${recordCount ? recordCount : 0} record(s) affected`);
 
 
 
-    console.info(`${new Date().toLocaleTimeString()} - Updating exercise (to 'not initialised')...`);
+    console.info(`${getNowString()} - Updating exercise (to 'not initialised')...`);
     document = await getDocument(db.collection('exercises').doc(exerciseId));
     commands = [{
       command: 'update',
@@ -93,22 +97,22 @@ const main = async () => {
     }];
 
     recordCount = await applyUpdates(db, commands);
-    console.info(`${new Date().toLocaleTimeString()} - - Done. ${recordCount ? recordCount : 0} record(s) affected`);
+    console.info(`${getNowString()} - - Done. ${recordCount ? recordCount : 0} record(s) affected`);
 
 
 
-    console.info(`${new Date().toLocaleTimeString()} - Fetching existing applications...`);
+    console.info(`${getNowString()} - Fetching existing applications...`);
     documentsRef = db.collection('applications').where('exerciseId', '==', exerciseId);
     documents = await getDocuments(documentsRef);
-    console.info(`${new Date().toLocaleTimeString()} - - Done. ${documents.length} record(s) found`);
+    console.info(`${getNowString()} - - Done. ${documents.length} record(s) found`);
 
     commands = documents.map((document) => {
       return { command: 'delete', ref: document.ref };
     });
 
-    console.info(`${new Date().toLocaleTimeString()} - Deleting application(s)...`);
+    console.info(`${getNowString()} - Deleting application(s)...`);
     recordCount = await applyUpdates(db, commands);
-    console.info(`${new Date().toLocaleTimeString()} - - Done. ${recordCount ? recordCount : 0} record(s) affected`);
+    console.info(`${getNowString()} - - Done. ${recordCount ? recordCount : 0} record(s) affected`);
  }
 
   const exercise = await getDocument(db.collection('exercises').doc(exerciseId));
@@ -160,49 +164,55 @@ const main = async () => {
     documents.push(data);
   }
 
-  console.info(`${new Date().toLocaleTimeString()} - Creating ${toGenerate} applications...`);
+  console.info(`${getNowString()} - Creating ${toGenerate} applications...`);
   await action.createApplications(documents);
-  console.info(`${new Date().toLocaleTimeString()} - - Done`);
+  console.info(`${getNowString()} - - Done`);
 
-  console.info(`${new Date().toLocaleTimeString()} - Checking number of applications...`);
+  console.info(`${getNowString()} - Checking number of applications...`);
   documentsRef = db.collection('applications').where('exerciseId', '==', exerciseId);
   documents = await getDocuments(documentsRef);
-  console.info(`${new Date().toLocaleTimeString()} - - Done. ${documents.length} record(s) found`);
+  console.info(`${getNowString()} - - Done. ${documents.length} record(s) found`);
 
 
 
-  console.info(`${new Date().toLocaleTimeString()} - Initialising application records...`);
+  console.info(`${getNowString()} - Initialising application records...`);
   await initialiseApplicationRecords({exerciseId: exerciseId});
-  console.info(`${new Date().toLocaleTimeString()} - - Done`);
+  console.info(`${getNowString()} - - Done`);
 
-  console.info(`${new Date().toLocaleTimeString()} - Checking number of application records...`);
+  console.info(`${getNowString()} - Checking number of application records...`);
   documentsRef = db.collection('applicationRecords').where('exercise.id', '==', exerciseId);
   documents = await getDocuments(documentsRef);
-  console.info(`${new Date().toLocaleTimeString()} - - Done. ${documents.length} record(s) found`);
+  console.info(`${getNowString()} - - Done. ${documents.length} record(s) found`);
 
 
 
-  console.info(`${new Date().toLocaleTimeString()} - Initialising qualifying test...`);
+  console.info(`${getNowString()} - Initialising qualifying test...`);
   await initialiseQualifyingTest({qualifyingTestId: qualifyingTestId, stage: 'review', status: 'all'});
-  console.info(`${new Date().toLocaleTimeString()} - - Done`);
+  console.info(`${getNowString()} - - Done`);
 
-  console.info(`${new Date().toLocaleTimeString()} - Checking number of QT response records...`);
+  console.info(`${getNowString()} - Checking number of QT response records...`);
   documentsRef = db.collection('qualifyingTestResponses').where('vacancy.id', '==', exerciseId);
   documents = await getDocuments(documentsRef);
-  console.info(`${new Date().toLocaleTimeString()} - - Done. ${documents.length} record(s) found`);
+  console.info(`${getNowString()} - - Done. ${documents.length} record(s) found`);
+
+
+
+  console.info(`${getNowString()} - Activating qualifying test...`);
+  await initialiseQualifyingTest({qualifyingTestId: qualifyingTestId});
+  console.info(`${getNowString()} - - Done`);
 
 };
 
-console.info(`${new Date().toLocaleTimeString()} - STARTED`);
+console.info(`${getNowString()} - STARTED`);
 
 main()
   .then(() => {
     app.delete();
-    console.info(`${new Date().toLocaleTimeString()} - FINISHED`);
+    console.info(`${getNowString()} - FINISHED`);
     return process.exit();
   })
   .catch((error) => {
     console.error(error);
-    console.info(`${new Date().toLocaleTimeString()} - FINISHED`);
+    console.info(`${getNowString()} - FINISHED`);
     process.exit();
   });
