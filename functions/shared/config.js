@@ -10,10 +10,15 @@ module.exports = {
         details: 'criminalOffenceDetails',
         summary: 'Candidate has been cautioned or convicted of a criminal offence',
       },
-      nonMotoringFixedPenaltyNotices: {
-        title: 'Non Motoring Fixed Penalty Notices',
-        details: 'nonMotoringFixedPenaltyNoticesDetails',
-        summary: 'Candidate has received a non-motoring penalty notice in the last 4 years',
+      declaredBankruptOrIVA: {
+        title: 'Declared Bankrupt Or IVA',
+        details: 'declaredBankruptOrIVADetails',
+        summary: 'Candidate has been declared bankrupt or entered into an Individual Voluntary Agreement (IVA)',
+      },
+      diciplinaryActionOrAskedToResign: {
+        title: 'Disciplinary Action Or Asked To Resign',
+        details: 'diciplinaryActionOrAskedToResignDetails',
+        summary: 'Candidate has been subject to complaints or disciplinary action, or been asked to resign from a position',
       },
       drivingDisqualificationDrinkDrugs: {
         title: 'Driving Disqualification Drink Drugs',
@@ -25,25 +30,20 @@ module.exports = {
         details: 'endorsementsOrMotoringFixedPenaltiesDetails',
         summary: 'Candidate has endorsements on their licence, or received any motoring fixed-penalty notices in the last 4 years',
       },
-      declaredBankruptOrIVA: {
-        title: 'Declared Bankrupt Or IVA',
-        details: 'declaredBankruptOrIVADetails',
-        summary: 'Candidate has been declared bankrupt or entered into an Individual Voluntary Agreement (IVA)',
+      involvedInProfessionalMisconduct: {
+        title: 'Involved In Professional Misconduct',
+        details: 'involvedInProfessionalMisconductDetails',
+        summary: 'Candidate has been, or is currently, subject to professional misconduct, negligence, wrongful dismissal, discrimination or harassment proceedings',
       },
       lateTaxReturnOrFined: {
         title: 'Late Tax Return Or Fined',
         details: 'lateTaxReturnOrFinedDetails',
         summary: 'Candidate has filed late tax returns or been fined by HMRC',
       },
-      involvedInProfessionalMisconduct: {
-        title: 'Involved In Professional Misconduct',
-        details: 'involvedInProfessionalMisconductDetails',
-        summary: 'Candidate has been, or is currently, subject to professional misconduct, negligence, wrongful dismissal, discrimination or harassment proceedings',
-      },
-      diciplinaryActionOrAskedToResign: {
-        title: 'Disciplinary Action Or Asked To Resign',
-        details: 'diciplinaryActionOrAskedToResignDetails',
-        summary: 'Candidate has been subject to complaints or disciplinary action, or been asked to resign from a position',
+      nonMotoringFixedPenaltyNotices: {
+        title: 'Non Motoring Fixed Penalty Notices',
+        details: 'nonMotoringFixedPenaltyNoticesDetails',
+        summary: 'Candidate has received a non-motoring penalty notice in the last 4 years',
       },
       otherCharacterIssues: {
         title: 'Other Character Issues',
@@ -52,35 +52,70 @@ module.exports = {
       },
     },
     CHARACTER_ISSUES_V2: { // this gives a map from issue to corresponding details field TODO improve naming or where we store this
-      criminalConvictions: {
-        title: 'Criminal Convictions',
-        details: 'criminalConvictionDetails',
-        summary: 'Candidate has been convicted for a criminal offence',
+      bankruptcies: {
+        title: 'Bankruptcies',
+        details: 'bankruptcyDetails',
+        summary: 'Candidate has filed for bankruptcy',
+      },
+      complaintOrDiciplinaryAction: {
+        title: 'Complaint Or Diciplinary Action',
+        details: 'complaintOrDiciplinaryActionDetails',
+        summary: 'Candidate has received a complaint or diciplinary action',
       },
       criminalCautions: {
         title: 'Criminal Cautions',
-        details: 'criminalCautionDetails',
+        details: 'criminalCautionsDetails',
         summary: 'Candidate has been cautioned for a criminal offence',
       },
-      fixedPenalties: {
-        title: 'Fixed Penalties',
-        details: 'fixedPenaltyDetails',
-        summary: 'Candidate has received a fixed-penalty',
+      criminalConvictions: {
+        title: 'Criminal Convictions',
+        details: 'criminalConvictionDetails',
+        summary: 'Candidate has been convicted of a criminal offence',
+      },
+      declaredBankruptOrIVA: {
+        title: 'Declared Bankrupt Or IVA',
+        details: 'declaredBankruptOrIVADetails',
+        summary: 'Candidate has been declared bankrupt or entered into an Individual Voluntary Agreement (IVA)',
+      },
+      diciplinaryActionOrAskedToResign: {
+        title: 'Disciplinary Action Or Asked To Resign',
+        details: 'diciplinaryActionOrAskedToResignDetails',
+        summary: 'Candidate has received disciplinary action or been asked to resign from position',
       },
       drivingDisqualifications: {
         title: 'Driving Disqualifications',
         details: 'drivingDisqualificationDetails',
         summary: 'Candidate has been disqualified from driving',
       },
-      recentDrivingConvictions: {
-        title: 'Driving Convictions',
-        details: 'recentDrivingConvictionDetails',
-        summary: 'Candidate has been convicted for a driving offence',
+      drivingDisqualificationDrinkDrugs: {
+        title: 'Driving Disqualification Drink Drugs',
+        details: 'drivingDisqualificationDrinkDrugsDetails',
+        summary: 'Candidate has been disqualified from driving for drink/drugs',
       },
-      bankruptcies: {
-        title: 'Bankruptcies',
-        details: 'bankruptcyDetails',
-        summary: 'Candidate has been declared bankrupt',
+      endorsementsOrMotoringFixedPenalties: {
+        title: 'Endorsements Or Motoring Fixed Penalties',
+        details: 'endorsementsOrMotoringFixedPenaltiesDetails',
+        summary: 'Candidate has endorsements or motoring fixed-penalties',
+      },
+      fixedPenalties: {
+        title: 'Fixed Penalties',
+        details: 'fixedPenaltiesDetails',
+        summary: 'Candidate has received a fixed-penalty',
+      },
+      furtherInformation: {
+        title: 'Further Information',
+        details: 'furtherInformationDetails',
+        summary: 'Candidate has declare further information',
+      },
+      hmrcFines: {
+        title: 'HMRC Fines',
+        details: 'hmrcFineDetails',
+        summary: 'Candidate has received a fine from HMRC',
+      },
+      involvedInProfessionalMisconduct: {
+        title: 'Involved In Professional Misconduct',
+        details: 'involvedInProfessionalMisconductDetails',
+        summary: 'Candidate has been involved in professional misconduct',
       },
       ivas: {
         title: 'IVAs',
@@ -88,59 +123,59 @@ module.exports = {
         summary: 'Candidate has been entered into an Individual Voluntary Agreement (IVA)',
       },
       lateTaxReturns: {
-        title: 'Late tax returns',
+        title: 'Late Tax Returns',
         details: 'lateTaxReturnDetails',
         summary: 'Candidate has filed late tax returns',
       },
       lateVatReturns: {
-        title: 'Late VAT returns',
+        title: 'Late VAT Returns',
         details: 'lateVatReturnDetails',
         summary: 'Candidate has filed late VAT returns',
       },
-      hmrcFines: {
-        title: 'HMRC fines',
-        details: 'hmrcFineDetails',
-        summary: 'Candidate has received a fine from HMRC',
+      nonMotoringFixedPenaltyNotices: {
+        title: 'Non Motoring Fixed Penalty Notices',
+        details: 'nonMotoringFixedPenaltyNoticesDetails',
+        summary: 'Candidate has non-motoring fixed-penalty notices',
       },
-      subjectOfAllegationOrClaimOfProfessionalMisconduct: {
-        title: 'Subject Of Allegation Or Claim Of Professional Misconduct',
-        details: 'subjectOfAllegationOrClaimOfProfessionalMisconductDetails',
-        summary: 'Candidate has been the subject of allegation or claim of misconduct',
+      otherCharacterIssues: {
+        title: 'Other Character Issues',
+        details: 'otherCharacterIssuesDetails',
+        summary: 'Candidate has declared other character issues',
+      },
+      recentDrivingConvictions: {
+        title: 'Recent Driving Convictions',
+        details: 'recentDrivingConvictionDetails',
+        summary: 'Candidate has recent driving convictions',
+      },
+      requestedToResign: {
+        title: 'Requested To Resign',
+        details: 'requestedToResignDetails',
+        summary: 'Candidate has been requested to resign',
+      },
+      subjectOfAllegationOrClaimOfDiscriminationProceeding: {
+        title: 'Subject Of Allegation Or Claim Of Discrimination Proceeding',
+        details: 'subjectOfAllegationOrClaimOfDiscriminationProceedingDetails',
+        summary: 'Candidate subject of allegation or claim of discrimination proceeding',
+      },
+      subjectOfAllegationOrClaimOfHarassmentProceeding: {
+        title: 'Subject Of Allegation Or Claim Of Harassment Proceeding',
+        details: 'subjectOfAllegationOrClaimOfHarassmentProceedingDetails',
+        summary: 'Candidate is subject of allegation or claim of harassment proceeding',
       },
       subjectOfAllegationOrClaimOfNegligence: {
         title: 'Subject Of Allegation Or Claim Of Negligence',
         details: 'subjectOfAllegationOrClaimOfNegligenceDetails',
         summary: 'Candidate has been the subject of allegation or claim of negligence',
       },
+      subjectOfAllegationOrClaimOfProfessionalMisconduct: {
+        title: 'Subject Of Allegation Or Claim Of Professional Misconduct',
+        details: 'subjectOfAllegationOrClaimOfProfessionalMisconductDetails',
+        summary: 'Candidate has been the subject of allegation or claim of misconduct',
+      },
       subjectOfAllegationOrClaimOfWrongfulDismissal: {
         title: 'Subject Of Allegation Or Claim Of Wrongful Dismissal',
         details: 'subjectOfAllegationOrClaimOfWrongfulDismissalDetails',
-        summary: 'Candidate has been the subject of allegation or claim of wrongful dismissal',
-      },
-      subjectOfAllegationOrClaimOfDiscriminationProceeding: {
-        title: 'Subject Of Allegation Or Claim Of Discrimination Proceeding',
-        details: 'subjectOfAllegationOrClaimOfDiscriminationProceedingDetails',
-        summary: 'Candidate has been the subject of allegation or claim of discrimination proceedings',
-      },
-      subjectOfAllegationOrClaimOfHarassmentProceeding: {
-        title: 'Subject Of Allegation Or Claim Of Harassment Proceeding',
-        details: 'subjectOfAllegationOrClaimOfHarassmentProceedingDetails',
-        summary: 'Candidate has been the subject of allegation or claim of harassment proceedings',
-      },
-      complaintOrDisciplinaryAction: {
-        title: 'Complaint Or Disciplinary Action',
-        details: 'complaintOrDisciplinaryActionDetails',
-        summary: 'Candidate has been the subject of a complaint or disciplinary action',
-      },
-      requestedToResign: {
-        title: 'Requested To Resign',
-        details: 'requestedToResignDetails',
-        summary: 'Candidate has been asked to resign',
-      },
-      furtherInformation: {
-        title: 'Further Information',
-        details: 'furtherInformationDetails',
-        summary: 'Candidate has declared further information',
+        summary: 'Candidate has been the subject of allegation or claim wrongful dismissal',
       },
     },
   },
