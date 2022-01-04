@@ -13,19 +13,22 @@ const config = require('./shared/config');
 const { firebase, app, db } = require('./shared/admin.js');
 const action = require('../functions/actions/applications/applications')(config, firebase, db);
 const {getDocument, getDocuments, applyUpdates} = require('../functions/shared/helpers');
-const faker = require('faker')
+const faker = require('faker');
 
 const main = async () => {
 
   const exerciseId = '8CIlAsDbtMfr2vnfjmYh';
-  const toGenerate = 1;
+  const toGenerate = 10000;
   const refPrefix = 'prefix3';
   const clearOldApplications = true;
 
   if (clearOldApplications) {
     let applicationsRef = db.collection('applications')
-    .where('exerciseId', '==', exerciseId);
+      .where('exerciseId', '==', exerciseId);
+
+    console.info(`${new Date().toLocaleTimeString()} - Fetching existing applications...`);
     const applications = await getDocuments(applicationsRef);
+    console.info(`${new Date().toLocaleTimeString()} - - Done`);
 
     let commands = [];
     for (let i = 0; i < applications.length; i++) {
@@ -35,10 +38,10 @@ const main = async () => {
       });
     }
 
-    console.info(`Deleting ${commands.length} existing application(s)...`);
+    console.info(`${new Date().toLocaleTimeString()} - Deleting ${commands.length} existing application(s)...`);
     await applyUpdates(db, commands);
-    console.info(' - Done');
-  }
+    console.info(`${new Date().toLocaleTimeString()} - - Done`);
+ }
 
   const exercise = await getDocument(db.collection('exercises').doc(exerciseId));
   const titles = ['Mr', 'Mrs', 'Ms', 'Dr'];
@@ -89,18 +92,28 @@ const main = async () => {
     documents.push(data);
   }
 
-  console.info(`Creating ${toGenerate} application(s)...`);
-  const result = action.createApplications(documents);
-  console.info(' - Done');
-  return result;
+  console.info(`${new Date().toLocaleTimeString()} - Creating ${toGenerate} application(s)...`);
+  await action.createApplications(documents);
+  console.info(`${new Date().toLocaleTimeString()} - - Done`);
+
+  console.info(`${new Date().toLocaleTimeString()} - Checking number of application(s)...`);
+  let applicationsRef = db.collection('applications')
+      .where('exerciseId', '==', exerciseId);
+  const applications = await getDocuments(applicationsRef);
+  console.info(`${new Date().toLocaleTimeString()} - - ${applications.length}`);
+
 };
 
+console.info(`${new Date().toLocaleTimeString()} - STARTED`);
+
 main()
- .then(() => {
-   app.delete();
-   return process.exit();
- })
- .catch((error) => {
-   console.error(error);
-   process.exit();
- });
+  .then(() => {
+    app.delete();
+    console.info(`${new Date().toLocaleTimeString()} - FINISHED`);
+    return process.exit();
+  })
+  .catch((error) => {
+    console.error(error);
+    console.info(`${new Date().toLocaleTimeString()} - FINISHED`);
+    process.exit();
+  });
