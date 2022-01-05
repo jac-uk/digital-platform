@@ -4,6 +4,7 @@
 const firebase = require('firebase/app');
 require('firebase/auth');
 require('firebase/firestore');
+const { initializeAppCheck, ReCaptchaV3Provider } = require('firebase/app-check');
 
 const config = {
   apiKey: process.env.FIREBASE_API_KEY,
@@ -15,8 +16,17 @@ const config = {
   appId: process.env.FIREBASE_APP_ID,
 };
 
-firebase.initializeApp(config);
+const app = firebase.initializeApp(config);
 
+// App check
+initializeAppCheck(app, {
+  provider: new ReCaptchaV3Provider(process.env.VUE_APP_RECAPTCHA_TOKEN),
+  // Optional argument. If true, the SDK automatically refreshes App Check
+  // tokens as needed.
+  isTokenAutoRefreshEnabled: true,
+});
+
+// Other firebase exports
 exports.firebase = firebase;
 exports.app = firebase.app();
 exports.db = firebase.firestore();
