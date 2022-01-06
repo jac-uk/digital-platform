@@ -16,38 +16,6 @@ module.exports = (config, firebase, db) => {
 
   async function onApplicationRecordUpdate(dataBefore, dataAfter) {
 
-    const exerciseId = dataBefore.exercise.id;
-    const data = {};
-    const increment = firebase.firestore.FieldValue.increment(1);
-    const decrement = firebase.firestore.FieldValue.increment(-1);
-
-    // figure out what updates we need to make to the applicationRecords.<stage> counters
-    if (dataBefore.stage !== dataAfter.stage) {
-      data[`applicationRecords.${dataBefore.stage}`] = decrement;
-      data[`applicationRecords.${dataAfter.stage}`] = increment;
-    }
-
-    // figure out what updates we need to make to the applicationRecords.<stage>EMP counters
-    if (typeof dataBefore.flags.empApplied !== 'undefined') {
-      if (dataBefore.stage !== dataAfter.stage) { // stage has changed
-        if (dataBefore.flags.empApplied) {
-          data[`applicationRecords.${dataBefore.stage}EMP`] = decrement;
-        }
-        if (dataAfter.flags.empApplied) {
-          data[`applicationRecords.${dataAfter.stage}EMP`] = increment;
-        }
-      } else { // stage has not changed
-        if (dataBefore.flags.empApplied !== dataAfter.flags.empApplied) { // EMP flag has changed
-          data[`applicationRecords.${dataAfter.stage}EMP`] = dataAfter.flags.empApplied ? increment : decrement;
-        }
-      }
-    }
-
-    // do the updates
-    if (Object.keys(data).length > 0) {
-      await db.doc(`exercises/${exerciseId}`).update(data);
-    }
-
     // update application with stage/status changes (part of admin#1341 Staged Applications)
     if (dataBefore.stage !== dataAfter.stage || dataBefore.status !== dataAfter.status) {
       const applicationData = {};
