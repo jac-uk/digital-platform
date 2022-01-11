@@ -8,6 +8,8 @@ module.exports = (firebase, db) => {
   async function refreshApplicationCounts(params) {
 
     const exerciseId = params.exerciseId;
+    let applications = params.applications;
+    let applicationRecords = params.applicationRecords;
 
     // get exercise
     const exerciseRef = db.collection('exercises').doc(exerciseId);
@@ -15,59 +17,83 @@ module.exports = (firebase, db) => {
     if (!exercise) { return false; }
 
     // get applications
-    const applications = await getDocuments(
-      db.collection('applications')
-      .where('exerciseId', '==', exerciseId)
-      .select('status')
-    );
+    if (!applications) {
+      applications = await getDocuments(
+        db.collection('applications')
+          .where('exerciseId', '==', exerciseId)
+          .select('status')
+      );
+    }
 
     // get application records
-    const applicationRecords = await getDocuments(
-      db.collection('applicationRecords')
-      .where('exercise.id', '==', exerciseId)
-      .select('stage', 'status', 'flags')
-    );
+    if (!applicationRecords) {
+      applicationRecords = await getDocuments(
+        db.collection('applicationRecords')
+          .where('exercise.id', '==', exerciseId)
+          .select('stage', 'status', 'flags')
+      );
+    }
 
-    const counts = {
-      applications: applicationCounts(applications),
-      applicationRecords: applicationRecordCounts(applicationRecords),
-      lastUpdated: firebase.firestore.FieldValue.serverTimestamp(),
+    const data = {
+      _applications: applicationCounts(applications),
+      _applicationRecords: applicationRecordCounts(applicationRecords),
     };
 
-    await exerciseRef.update({ _counts: counts });
+    // remove old fields from data
+    if (exercise._counts) {
+      data._counts = firebase.firestore.FieldValue.delete();
+    }
+    if (exercise.applicationsCount) {
+      data.applicationsCount = firebase.firestore.FieldValue.delete();
+    }
+    if (exercise.applications) {
+      data.applications = firebase.firestore.FieldValue.delete();
+    }
+    if (exercise.applicationRecords) {
+      data.applicationRecords = firebase.firestore.FieldValue.delete();
+    }
+
+    await exerciseRef.update(data);
+    return data;
+  }
+
+  function applicationCounts(applications) {
+    const counts = {
+      _total: applications.length,
+      _lastUpdated: firebase.firestore.FieldValue.serverTimestamp(),
+    };
+    applications.forEach(application => {
+      if (counts[application.status]) {
+        counts[application.status]++;
+      } else {
+        counts[application.status] = 1;
+      }
+    });
     return counts;
   }
-};
 
-const applicationCounts = (applications) => {
-  const counts = {};
-  applications.forEach(application => {
-    if (counts[application.status]) {
-      counts[application.status]++;
-    } else {
-      counts[application.status] = 1;
-    }
-  });
-  return counts;
-};
-
-const applicationRecordCounts = (applicationRecords) => {
-  const counts = {};
-  applicationRecords.forEach(applicationRecord => {
-    if (counts[applicationRecord.stage]) {
-      counts[applicationRecord.stage]++;
-    } else {
-      counts[applicationRecord.stage] = 1;
-    }
-    // EMP counts
-    if (applicationRecord.flags && applicationRecord.flags.empApplied) {
-      const countName = `${applicationRecord.stage}EMP`;
-      if (counts[countName]) {
-        counts[countName]++;
+  function applicationRecordCounts(applicationRecords) {
+    const counts = {
+      _total: applicationRecords.length,
+      _lastUpdated: firebase.firestore.FieldValue.serverTimestamp(),
+    };
+    applicationRecords.forEach(applicationRecord => {
+      if (counts[applicationRecord.stage]) {
+        counts[applicationRecord.stage]++;
       } else {
-        counts[countName] = 1;
+        counts[applicationRecord.stage] = 1;
       }
-    }
-  });
-  return counts;
+      // EMP counts
+      if (applicationRecord.flags && applicationRecord.flags.empApplied) {
+        const countName = `${applicationRecord.stage}EMP`;
+        if (counts[countName]) {
+          counts[countName]++;
+        } else {
+          counts[countName] = 1;
+        }
+      }
+    });
+    return counts;
+  }
+
 };

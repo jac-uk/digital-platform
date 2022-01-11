@@ -19,10 +19,10 @@ module.exports = (config, firebase, db) => {
       const decrement = firebase.firestore.FieldValue.increment(-1);
       const exerciseId = dataBefore.exerciseId;
       const data = {};
-      console.log(`Update application counts: applications.${dataBefore.status} decrease; applications.${dataAfter.status} increase`);
-      data[`_counts.applications.${dataBefore.status}`] = decrement;
-      data[`_counts.applications.${dataAfter.status}`] = increment;
-      data['_counts.lastUpdated'] = firebase.firestore.FieldValue.serverTimestamp();
+      console.log(`Update application counts: _applications.${dataBefore.status} decrease; _applications.${dataAfter.status} increase`);
+      data[`_applications.${dataBefore.status}`] = decrement;
+      data[`_applications.${dataAfter.status}`] = increment;
+      data['_applications._lastUpdated'] = firebase.firestore.FieldValue.serverTimestamp();
       commands.push({
         command: 'update',
         ref: db.doc(`exercises/${exerciseId}`),
