@@ -32,7 +32,9 @@ module.exports = (config, firebase, db) => {
     slack.post(`${data.exerciseRef}. New application started`);
     if (data.userId) { await updateCandidate(data.userId); }
     const saveData = {};
-    saveData[`applications.${data.status}`] = firebase.firestore.FieldValue.increment(1);
+    saveData[`_applications.${data.status}`] = firebase.firestore.FieldValue.increment(1);
+    saveData['_applications._total'] = firebase.firestore.FieldValue.increment(1);
+    saveData['_applications._lastUpdated'] = firebase.firestore.FieldValue.serverTimestamp();
     await db.doc(`exercises/${data.exerciseId}`).update(saveData);
   }
 

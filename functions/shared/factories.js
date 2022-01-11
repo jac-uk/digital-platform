@@ -259,9 +259,6 @@ module.exports = (CONSTANTS) => {
       },
       candidate: {
         id: application.userId,
-        fullName: application.personalDetails.fullName,
-        reasonableAdjustments: application.personalDetails.reasonableAdjustments,
-        reasonableAdjustmentsDetails: application.personalDetails.reasonableAdjustmentsDetails,
       },
       application: {
         id: application.id,
@@ -277,7 +274,6 @@ module.exports = (CONSTANTS) => {
         characterIssues: false,
         eligibilityIssues: false,
         empApplied: false,
-        reasonableAdjustments: application.personalDetails.reasonableAdjustments,
       },
       issues: {
         characterIssues: [],
@@ -287,6 +283,12 @@ module.exports = (CONSTANTS) => {
       history: [],
       notes: [],
     };
+    if (application.personalDetails) {
+      applicationRecord.candidate.fullName = application.personalDetails.fullName;
+      applicationRecord.candidate.reasonableAdjustments = application.personalDetails.reasonableAdjustments;
+      applicationRecord.candidate.reasonableAdjustmentsDetails = application.personalDetails.reasonableAdjustmentsDetails;
+      applicationRecord.flags.reasonableAdjustments = application.personalDetails.reasonableAdjustments;
+    }
     return applicationRecord;
   }
 

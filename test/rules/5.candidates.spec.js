@@ -19,6 +19,14 @@ describe('Candidates', () => {
       const db = await setup({ uid: 'user1' });
       await assertSucceeds(db.collection('candidates').doc('user1').set({}));
     });
+    it('allow authenticated JAC user to create candidate', async () => {
+      const db = await setup({ uid: 'user1', email: 'user1@judicialappointments.gov.uk', email_verified: true });
+      await assertSucceeds(db.collection('candidates').doc('random').set({}));
+    });
+    it('allow authenticated JAC user to create candidate documents', async () => {
+      const db = await setup({ uid: 'user1', email: 'user1@judicialappointments.gov.uk', email_verified: true });
+      await assertSucceeds(db.doc('candidates/random/documents/personalDetails').set({}));
+    });
   });
 
   context('Read', () => {
