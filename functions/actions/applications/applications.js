@@ -29,13 +29,17 @@ module.exports = (config, firebase, db) => {
    * - Increment exercise applications count
    */
   async function onApplicationCreate(ref, data) {
-    slack.post(`${data.exerciseRef}. New application started`);
+    console.log('application created');
+    // slack.post(`${data.exerciseRef}. New application started`);
     if (data.userId) { await updateCandidate(data.userId); }
+    // update counts
+    console.log(`Update application counts: _applications.${data.status}`);
     const saveData = {};
     saveData[`_applications.${data.status}`] = firebase.firestore.FieldValue.increment(1);
     saveData['_applications._total'] = firebase.firestore.FieldValue.increment(1);
     saveData['_applications._lastUpdated'] = firebase.firestore.FieldValue.serverTimestamp();
     await db.doc(`exercises/${data.exerciseId}`).update(saveData);
+    console.log('success');
   }
 
   /**
