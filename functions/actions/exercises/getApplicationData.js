@@ -30,10 +30,8 @@ module.exports = (config, firebase, db, auth) => {
           record[column] = '(blank)';
         }
 
-
         // Handle array values
         if(_.isArray(record[column])) {
-
           let formattedArray = '';
           for (const arrayItem of record[column]) {
             const arrayValuePaths = getArrayValuePath(column);
@@ -41,11 +39,15 @@ module.exports = (config, firebase, db, auth) => {
               for (const arrayValuePath of arrayValuePaths) {
                 formattedArray += _.get(arrayItem, arrayValuePath, '(blank)') + ' - ';
               }
-              //remove last ', ' from string
+              // remove the last ' - ' from string
               formattedArray = formattedArray.substring(0, formattedArray.length - 3);
-              formattedArray += '; ';
+            } else {
+              formattedArray += arrayItem ? arrayItem : '(blank)';
             }
+            formattedArray += ', ';
           }
+
+          // remove the last ', ' from string
           formattedArray = formattedArray.substring(0, formattedArray.length - 2);
 
           // if something went wrong with parsing the array, just return true
@@ -54,7 +56,6 @@ module.exports = (config, firebase, db, auth) => {
           } else {
             record[column] = formattedArray;
           }
-
         }
 
         // Handle time values
