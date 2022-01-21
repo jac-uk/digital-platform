@@ -1,6 +1,6 @@
 {
   "name": "jac-digital-platform",
-  "version": "1.12.0",
+  "version": "1.15.0",
   "description": "Firebase/GCP configuration and components for the JAC digital platform",
   "repository": "https://github.com/jac-uk/digital-platform",
   "license": "MIT",
@@ -23,6 +23,7 @@
     "deploy:rules": "firebase deploy --project=digital-platform-develop --only firestore:rules",
     "deploy:indexes": "firebase deploy --project=digital-platform-develop --only firestore:indexes",
     "deploy:functions": "firebase deploy --project=digital-platform-develop --only functions",
+    "deploy:function": "run(){ firebase deploy --project=digital-platform-develop --only functions:$1; }; run",
     "deploy:storage-rules": "firebase deploy --project=digital-platform-develop --only storage:rules",
     "deploy:realtime-rules": "firebase deploy --project=digital-platform-develop --only database",
     "staging:deploy:rules": "firebase deploy --project=digital-platform-staging --only firestore:rules",

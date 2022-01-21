@@ -7,13 +7,16 @@ module.exports = (config) => {
   };
 
   async function post(msgString) {
-    const result = await axios.post(
-      config.SLACK_URL,
-      {
-        text: msgString,
-      }
-    );
-    return result;
+    if (config.SLACK_URL) {
+      const result = await axios.post(
+        config.SLACK_URL,
+        {
+          text: msgString,
+        }
+      );
+      return result;
+    }
+    return false;
   }
 
 };
