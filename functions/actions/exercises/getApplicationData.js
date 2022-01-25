@@ -99,7 +99,8 @@ module.exports = (config, firebase, db, auth) => {
 
   function getArrayValuePath(column) {
     const arrayValuePaths = {
-      qualifications: ['type', 'location'],
+      qualifications: ['type', 'location', 'date'],
+      experience: ['jobTitle', 'orgBusinessName', 'startDate', 'endDate'],
     };
     return arrayValuePaths[column];
   }
