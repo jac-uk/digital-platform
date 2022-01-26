@@ -37,7 +37,9 @@ module.exports = (config, firebase, db, auth) => {
             const arrayValuePaths = getArrayValuePath(column);
             if(arrayValuePaths) {
               for (const arrayValuePath of arrayValuePaths) {
-                formattedArray += _.get(arrayItem, arrayValuePath, '(blank)') + ' - ';
+                const str = _.get(arrayItem, arrayValuePath, '(blank)');
+                // Handle time values
+                formattedArray += (_.get(str, '_seconds', null) ? formatDate(str) : str) + ' - ';
               }
               // remove the last ' - ' from string
               formattedArray = formattedArray.substring(0, formattedArray.length - 3);
@@ -100,7 +102,7 @@ module.exports = (config, firebase, db, auth) => {
   function getArrayValuePath(column) {
     const arrayValuePaths = {
       qualifications: ['type', 'location', 'date'],
-      experience: ['jobTitle', 'orgBusinessName', 'startDate', 'endDate'],
+      experience: ['jobTitle', 'startDate', 'endDate'],
     };
     return arrayValuePaths[column];
   }
