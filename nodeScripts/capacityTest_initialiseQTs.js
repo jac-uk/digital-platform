@@ -15,11 +15,11 @@ const action = require('../functions/actions/applications/applications')(config,
 const { initialiseApplicationRecords } = require('../functions/actions/applicationRecords')(config, firebase, db);
 const initialiseQualifyingTest = require('../functions/actions/qualifyingTests/initialiseQualifyingTest')(config, firebase, db);
 const {getDocument, getDocuments, applyUpdates} = require('../functions/shared/helpers');
-const faker = require('faker');
+const { faker } = require('@faker-js/faker');
 
 const getNowString = () => {
   return new Date().toJSON().slice(0,10).split('-').reverse().join('/');
-}
+};
 
 const main = async () => {
 

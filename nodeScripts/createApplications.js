@@ -13,7 +13,7 @@ const config = require('./shared/config');
 const { firebase, app, db } = require('./shared/admin.js');
 const action = require('../functions/actions/applications/applications')(config, firebase, db);
 const {getDocument, getDocuments, applyUpdates} = require('../functions/shared/helpers');
-const faker = require('faker');
+const { faker } = require('@faker-js/faker');
 
 const main = async () => {
 
