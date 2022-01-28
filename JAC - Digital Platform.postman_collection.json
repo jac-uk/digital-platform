@@ -779,6 +779,43 @@
 						}
 					},
 					"response": []
+				},
+				{
+					"name": "Custom Report",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{token}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"data\": {\r\n        \"exerciseId\": \"kJKbG9TOQToEzB4AlEV1\",\r\n        \"columns\": [\r\n            \"personalDetails.fullName\",\r\n            \"locationPreferences\",\r\n            \"jurisdictionPreferences\",\r\n            \"qualifications\"\r\n        ],\r\n        \"type\": \"showData\",\r\n        \"whereClauses\": []\r\n    }\r\n}"
+						},
+						"url": {
+							"raw": "{{host}}/getApplicationData",
+							"host": [
+								"{{host}}"
+							],
+							"path": [
+								"getApplicationData"
+							]
+						}
+					},
+					"response": []
 				}
 			]
 		}

@@ -53,7 +53,17 @@ exports.scanFile = require('./callableFunctions/scanFile');
 exports.exportApplicationCharacterIssues = require('./callableFunctions/exportApplicationCharacterIssues');
 exports.getUserEmailByID = require('./callableFunctions/getUserEmailByID');
 exports.updateEmailAddress = require('./callableFunctions/updateEmailAddress');
+exports.adminGetUsers = require('./callableFunctions/adminGetUsers');
+exports.adminGetUserRoles = require('./callableFunctions/adminGetUserRoles');
+exports.adminDisableUser = require('./callableFunctions/adminDisableUser');
+exports.adminCreateUserRole = require('./callableFunctions/adminCreateUserRole');
+exports.adminUpdateUserRole = require('./callableFunctions/adminUpdateUserRole');
+exports.adminSetUserRole = require('./callableFunctions/adminSetUserRole');
+exports.adminSetDefaultRole = require('./callableFunctions/adminSetDefaultRole');
+exports.adminDisableNewUser = require('./callableFunctions/adminDisableNewUser');
+exports.adminSyncUserRolePermissions = require('./callableFunctions/adminSyncUserRolePermissions');
 exports.customReport = require('./callableFunctions/customReport');
+exports.refreshApplicationCounts = require('./callableFunctions/refreshApplicationCounts');
 
 // exports.onExerciseUpdate_PublishVacancy = require('./exercises/onExerciseUpdate_PublishVacancy');
 // exports.onWriteVacancyStats = require('./exercises/onWriteVacancyStats');

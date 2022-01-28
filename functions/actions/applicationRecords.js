@@ -3,6 +3,8 @@ const { getDocument, getDocuments, applyUpdates } = require('../shared/helpers')
 module.exports = (config, firebase, db) => {
   const { newApplicationRecord } = require('../shared/factories')(config);
   const newQualifyingTestResponse = require('../shared/factories/QualifyingTests/newQualifyingTestResponse')(config, firebase);
+  const { logEvent } = require('./logs/logEvent')(firebase, db);
+  const { refreshApplicationCounts } = require('../actions/exercises/refreshApplicationCounts')(firebase, db);
 
   return {
     initialiseApplicationRecords,  // @TODO this will be removed once we have database triggers turned on *and* existing exercises have been initialised
@@ -15,39 +17,6 @@ module.exports = (config, firebase, db) => {
   }
 
   async function onApplicationRecordUpdate(dataBefore, dataAfter) {
-
-    const exerciseId = dataBefore.exercise.id;
-    const data = {};
-    const increment = firebase.firestore.FieldValue.increment(1);
-    const decrement = firebase.firestore.FieldValue.increment(-1);
-
-    // figure out what updates we need to make to the applicationRecords.<stage> counters
-    if (dataBefore.stage !== dataAfter.stage) {
-      data[`applicationRecords.${dataBefore.stage}`] = decrement;
-      data[`applicationRecords.${dataAfter.stage}`] = increment;
-    }
-
-    // figure out what updates we need to make to the applicationRecords.<stage>EMP counters
-    if (typeof dataBefore.flags.empApplied !== 'undefined') {
-      if (dataBefore.stage !== dataAfter.stage) { // stage has changed
-        if (dataBefore.flags.empApplied) {
-          data[`applicationRecords.${dataBefore.stage}EMP`] = decrement;
-        }
-        if (dataAfter.flags.empApplied) {
-          data[`applicationRecords.${dataAfter.stage}EMP`] = increment;
-        }
-      } else { // stage has not changed
-        if (dataBefore.flags.empApplied !== dataAfter.flags.empApplied) { // EMP flag has changed
-          data[`applicationRecords.${dataAfter.stage}EMP`] = dataAfter.flags.empApplied ? increment : decrement;
-        }
-      }
-    }
-
-    // do the updates
-    if (Object.keys(data).length > 0) {
-      await db.doc(`exercises/${exerciseId}`).update(data);
-    }
-
     // update application with stage/status changes (part of admin#1341 Staged Applications)
     if (dataBefore.stage !== dataAfter.stage || dataBefore.status !== dataAfter.status) {
       const applicationData = {};
@@ -55,9 +24,17 @@ module.exports = (config, firebase, db) => {
       applicationData['_processing.status'] = dataAfter.status;
       if (dataBefore.application) {
         await db.doc(`applications/${dataBefore.application.id}`).update(applicationData);
+        // activity log
+        logEvent('info', 'Application status/stage changed', {
+          applicationId: dataAfter.application.id,
+          candidateName: dataAfter.candidate.fullName,
+          exerciseRef: dataAfter.exercise.referenceNumber,
+          status: dataAfter.status,
+          stage: dataAfter.stage,
+          empApplied: dataAfter.flags.empApplied,
+        });
       }
     }
-
     return true;
   }
 
@@ -70,48 +47,41 @@ module.exports = (config, firebase, db) => {
   async function initialiseApplicationRecords(params) {
     // get exercise
     const exercise = await getExercise(params.exerciseId);
-    if (exercise.applicationRecords && exercise.applicationRecords.initialised) {
+
+    // exit if already initialised application records
+    if (exercise._applicationRecords && exercise._applicationRecords.total) {
       return false;
     }
 
     // get applications
     let applicationsRef = db.collection('applications')
-      .where('exerciseId', '==', params.exerciseId)
-      .where('status', '==', 'applied');
+      .where('exerciseId', '==', params.exerciseId);
     const applications = await getDocuments(applicationsRef);
+    const appliedApplications = applications.filter(application => application.status === 'applied');
 
     // construct db commands
     const commands = [];
-    for (let i = 0, len = applications.length; i < len; ++i) {
-      const application = applications[i];
+    for (let i = 0, len = appliedApplications.length; i < len; ++i) {
+      const application = appliedApplications[i];
       commands.push({
         command: 'set',
         ref: db.collection('applicationRecords').doc(`${application.id}`),
         data: newApplicationRecord(exercise, application),
       });
     }
-    commands.push({
-      command: 'update',
-      ref: exercise.ref,
-      data: {
-        'applicationRecords.initialised': applications.length,
-        'applicationRecords.review': applications.length,
-        'applicationRecords.shortlisted': 0,
-        'applicationRecords.selected': 0,
-        'applicationRecords.recommended': 0,
-        'applicationRecords.handover': 0,
-        'applicationRecords.initialisedEMP': 0,
-        'applicationRecords.reviewEMP': 0,
-        'applicationRecords.shortlistedEMP': 0,
-        'applicationRecords.selectedEMP': 0,
-        'applicationRecords.recommendedEMP': 0,
-        'applicationRecords.handoverEMP': 0,
-      },
-    });
 
     // write to db
     const result = await applyUpdates(db, commands);
-    return result ? applications.length : false;
+
+    if (result) {
+      // update counts (for all applications)
+      await refreshApplicationCounts({
+        exerciseId: params.exerciseId,
+        applications: applications,
+      });
+      return commands.length;
+    }
+    return false;
   }
 
   /**
@@ -126,19 +96,19 @@ module.exports = (config, firebase, db) => {
 
     // get all applications
     let applicationsRef = db.collection('applications')
-      .where('exerciseId', '==', params.exerciseId)
-      .where('status', '==', 'applied');
+      .where('exerciseId', '==', params.exerciseId);
     const applications = await getDocuments(applicationsRef);
+    const appliedApplications = applications.filter(application => application.status === 'applied');
 
     // get existing applicationRecords
     const applicationRecordsRef = db.collection('applicationRecords')
       .where('exercise.id', '==', params.exerciseId)
-      .select();
+      .select('stage', 'status', 'flags');
     const applicationRecords = await getDocuments(applicationRecordsRef);
     const applicationRecordIds = applicationRecords.map(item => item.id);
 
     // get applications without corresponding application record
-    const missingApplications = applications.filter(item => applicationRecordIds.indexOf(item.id) < 0);
+    const missingApplications = appliedApplications.filter(item => applicationRecordIds.indexOf(item.id) < 0);
 
     // construct db commands
     const commands = [];
@@ -150,17 +120,12 @@ module.exports = (config, firebase, db) => {
         data: newApplicationRecord(exercise, application),
       });
     }
-    if (missingApplications.length) {
-      const increment = firebase.firestore.FieldValue.increment(missingApplications.length);
-      commands.push({
-        command: 'update',
-        ref: exercise.ref,
-        data: {
-          'applicationRecords.initialised': increment,
-          'applicationRecords.review': increment,
-        },
-      });
-    }
+    // update counts
+    await refreshApplicationCounts({
+      exerciseId: params.exerciseId,
+      applications: applications,
+      applicationRecords: applicationRecords,
+    });
 
     // check for initialised/activated qts
     const qualifyingTests = await getDocuments(

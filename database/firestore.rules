@@ -11,12 +11,12 @@ service cloud.firestore {
 
   function userIsJAC() {
     return request.auth.token.email.matches('(.*@judicialappointments|.*@justice)[.](digital|gov[.]uk)');
-    //return request.auth.token.email_verified
-      //&& request.auth.token.email.matches('.*@judicialappointments[.](digital|gov[.]uk)');
+    // return request.auth.token.email_verified
+    //   && request.auth.token.email.matches('(.*@judicialappointments|.*@justice)[.](digital|gov[.]uk)');
   }
 
   function userHasEmail(email) {
-  return request.auth.token.email.lower() == email.lower();
+    return request.auth.token.email.lower() == email.lower();
     //return request.auth.token.email_verified
       //&& request.auth.token.email.lower() == email.lower();
   }
@@ -24,7 +24,6 @@ service cloud.firestore {
   function fieldHasValue(data, field, value) {
     return !(field in data) || data[field] == value;
   }
-
 
   // function notChanged(field) {
   //   return !(field in request.resource.data)
