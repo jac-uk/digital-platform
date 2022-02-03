@@ -19,6 +19,7 @@
     "nodeScript": "export GOOGLE_APPLICATION_CREDENTIALS='service-account.json' && run(){ node -r dotenv/config nodeScripts/$1; }; run",
     "staging:nodeScript": "export GOOGLE_APPLICATION_CREDENTIALS='service-account.staging.json' && run(){ node -r dotenv/config nodeScripts/$1; }; run",
     "production:nodeScript": "export GOOGLE_APPLICATION_CREDENTIALS='service-account.production.json' && run(){ node -r dotenv/config nodeScripts/$1; }; run",
+    "nodeScriptOnWindows": "set GOOGLE_APPLICATION_CREDENTIALS=service-account.json&& node nodeScripts/%SCRIPT%",
     "indexes:export": "firebase firestore:indexes > database/firestore.indexes.json",
     "deploy:rules": "firebase deploy --project=digital-platform-develop --only firestore:rules",
     "deploy:indexes": "firebase deploy --project=digital-platform-develop --only firestore:indexes",
@@ -57,6 +58,7 @@
     "notifications-node-client": "^4.9.0"
   },
   "devDependencies": {
+    "@faker-js/faker": "^6.0.0-alpha.5",
     "@firebase/rules-unit-testing": "^1.1.9",
     "@firebase/util": "^1.1.0",
     "csv-writer": "^1.6.0",

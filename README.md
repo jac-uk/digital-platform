@@ -106,3 +106,13 @@ firebase emulators:start --only functions
 ### Running a tests on an emulated firebase database locally
 
 firebase emulators:exec "npm run test:functions"
+
+
+
+### Running a JS script in the nodeScripts folder
+
+# on Unix or Mac
+npm run nodeScript createApplications.js
+
+# on Windows
+SET SCRIPT=createApplications.js && npm run nodeScriptOnWindows
