@@ -53,6 +53,7 @@ exports.scanFile = require('./callableFunctions/scanFile');
 exports.exportApplicationCharacterIssues = require('./callableFunctions/exportApplicationCharacterIssues');
 exports.getUserEmailByID = require('./callableFunctions/getUserEmailByID');
 exports.updateEmailAddress = require('./callableFunctions/updateEmailAddress');
+exports.ensureEmailValidated = require('./callableFunctions/ensureEmailVerified');
 exports.adminGetUsers = require('./callableFunctions/adminGetUsers');
 exports.adminGetUserRoles = require('./callableFunctions/adminGetUserRoles');
 exports.adminDisableUser = require('./callableFunctions/adminDisableUser');
