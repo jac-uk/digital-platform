@@ -65,6 +65,7 @@ exports.adminDisableNewUser = require('./callableFunctions/adminDisableNewUser')
 exports.adminSyncUserRolePermissions = require('./callableFunctions/adminSyncUserRolePermissions');
 exports.customReport = require('./callableFunctions/customReport');
 exports.refreshApplicationCounts = require('./callableFunctions/refreshApplicationCounts');
+exports.capacityTest_initialiseQTs = require('./callableFunctions/capacityTest_initialiseQTs');
 
 // exports.onExerciseUpdate_PublishVacancy = require('./exercises/onExerciseUpdate_PublishVacancy');
 // exports.onWriteVacancyStats = require('./exercises/onWriteVacancyStats');
