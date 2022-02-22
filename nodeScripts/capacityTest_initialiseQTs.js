@@ -18,7 +18,20 @@ const {getDocument, getDocuments, applyUpdates} = require('../functions/shared/h
 const { faker } = require('@faker-js/faker');
 
 const getNowString = () => {
-  return new Date().toJSON().slice(0,10).split('-').reverse().join('/');
+  // DD/MM/YY hh:mm:ss
+  let date = new Date();
+  let year = date.getFullYear(),
+      month = (date.getMonth() + 1).toString(),
+      formattedMonth = (month.length === 1) ? ('0' + month) : month,
+      day = date.getDate().toString(),
+      formattedDay = (day.length === 1) ? ('0' + day) : day,
+      hour = date.getHours().toString(),
+      formattedHour = (hour.length === 1) ? ('0' + hour) : hour,
+      minute = date.getMinutes().toString(),
+      formattedMinute = (minute.length === 1) ? ('0' + minute) : minute,
+      second = date.getSeconds().toString(),
+      formattedSecond = (second.length === 1) ? ('0' + second) : second;
+  return formattedDay + '/' + formattedMonth + '/' + year + ' ' + formattedHour + ':' + formattedMinute + ':' + formattedSecond;
 };
 
 const main = async () => {
