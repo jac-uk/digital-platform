@@ -1,8 +1,13 @@
 const functions = require('firebase-functions');
-const { firebase, db } = require('../shared/admin.js');
-const { initialiseQTs } = require('../actions/capacityTesting/initialiseQTs')(firebase, db);
+const { db } = require('../shared/admin.js');
+const { initialiseQTs } = require('../actions/capacityTesting/initialiseQTs')(db);
 
-module.exports = functions.region('europe-west2').https.onCall(async (data, context) => {
+const runtimeOptions = {
+  timeoutSeconds: 540, // the maximum value for timeoutSeconds is 540 seconds
+  memory: '1GB',
+};
+
+module.exports = functions.runWith(runtimeOptions).region('europe-west2').https.onCall(async (data, context) => {
 
   // authenticate the request
   if (!context.auth) {
@@ -19,11 +24,13 @@ module.exports = functions.region('europe-west2').https.onCall(async (data, cont
   if (!(typeof data.noOfCandidates === 'number')) {
     throw new functions.https.HttpsError('invalid-argument', 'Please specify a number of candidate');
   }
+  if (!(typeof data.refPrefix === 'string') || data.refPrefix.length === 0) {
+    throw new functions.https.HttpsError('invalid-argument', 'Please specify a reference prefix');
+  }
+  if (!(typeof data.userId === 'string') || data.userId.length === 0) {
+    throw new functions.https.HttpsError('invalid-argument', 'Please specify a userId');
+  }
 
   // initialise qualifying tests
-  const result = await initialiseQTs(data.exerciseId, data.qualifyingTestId, data.noOfCandidates);
-  return {
-    result: result,
-  };
-
+  return await initialiseQTs(data);
 });

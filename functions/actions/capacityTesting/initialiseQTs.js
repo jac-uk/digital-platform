@@ -7,24 +7,27 @@ const { getDocument, getDocuments, applyUpdates } = require('../../shared/helper
 const { faker } = require('@faker-js/faker');
 
 
-module.exports = (firebase, db) => {
+module.exports = (db) => {
   return {
     initialiseQTs,
   };
 
   /**
    * Initialise qualifying tests
+   * 
+   * @param {*} `params` is an object containing
+   *   `exerciseId` (required) ID of exercise
+   *   `qualifyingTestId` (required) ID of qualifying test
+   *   `noOfCandidates` (required) number of candidates
+   *   `refPrefix` (required) reference prefix
+   *   `userId` (required) ID of user
    *
-   * @param {string} exerciseId
-   * @param {string} qualifyingTestId
-   * @param {number} noOfCandidates
-   * @returns {boolean}
+   * @return
    */
-  async function initialiseQTs(exerciseId, qualifyingTestId, noOfCandidates) {
+  async function initialiseQTs(params) {
+    const { exerciseId, qualifyingTestId, noOfCandidates, refPrefix, userId } = params;
     const toGenerate = noOfCandidates;
-    const refPrefix = 'prefix3';
     const clearOldApplications = true;
-    const userId = 'RW9nHLejKQRzTb7QACC6cte1UJu2';
 
     let documentsRef;
     let documents;
@@ -33,6 +36,8 @@ module.exports = (firebase, db) => {
     let recordCount;
 
     // response data
+    let prevNoOfQualifyingTestResponses = 0;
+    let prevNoOfAffectedQualifyingTestResponses = 0;
     let noOfApplications = 0;
     let noOfApplicationRecords = 0;
     let noOfQualifyingTestResponses = 0;
@@ -41,17 +46,14 @@ module.exports = (firebase, db) => {
       // fetch existing qualifying test responses
       documentsRef = db.collection('qualifyingTestResponses').where('vacancy.id', '==', exerciseId);
       documents = await getDocuments(documentsRef);
-      
+      prevNoOfQualifyingTestResponses = documents.length;
       
       // delete existing qualifying test responses(s)
       commands = documents.map((document) => {
         return { command: 'delete', ref: document.ref };
       });
       recordCount = await applyUpdates(db, commands);
-
-      // check number of QT response records
-      documentsRef = db.collection('qualifyingTestResponses').where('vacancy.id', '==', exerciseId);
-      documents = await getDocuments(documentsRef);
+      prevNoOfAffectedQualifyingTestResponses = recordCount ? recordCount : 0;
 
       // set status of QT to 'approved'
       document = await getDocument(db.collection('qualifyingTests').doc(qualifyingTestId));
@@ -68,7 +70,6 @@ module.exports = (firebase, db) => {
       // fetch existing application records
       documentsRef = db.collection('applicationRecords').where('exercise.id', '==', exerciseId);
       documents = await getDocuments(documentsRef);
-
       commands = documents.map((document) => {
         return { command: 'delete', ref: document.ref };
       });
@@ -166,12 +167,14 @@ module.exports = (firebase, db) => {
     // check number of QT response records
     documentsRef = db.collection('qualifyingTestResponses').where('vacancy.id', '==', exerciseId);
     documents = await getDocuments(documentsRef);
-    noOfQualifyingTestResponses = document.length;
+    noOfQualifyingTestResponses = documents.length;
 
     // activate qualifying test
     await initialiseQualifyingTest({ qualifyingTestId: qualifyingTestId });
 
     return {
+      prevNoOfQualifyingTestResponses,
+      prevNoOfAffectedQualifyingTestResponses,
       noOfApplications,
       noOfApplicationRecords,
       noOfQualifyingTestResponses,
