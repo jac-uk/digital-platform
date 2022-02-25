@@ -45,7 +45,18 @@
     "service-offline:rules": "cp -f ./service-offline/firestore.rules ./database/firestore.rules; npm run deploy:rules",
     "service-offline:realtime-rules": "cp -f ./service-offline/realtime.rules.json ./database/realtime.rules.json; npm run deploy:realtime-rules",
     "service-offline:storage-rules": "cp -f ./service-offline/storage.rules ./storage/storage.rules; npm run deploy:storage-rules",
-    "service-offline": "npm run service-offline:rules; npm run service-offline:realtime-rules; npm run service-offline:storage-rules"
+    "service-offline": "npm run service-offline:rules; npm run service-offline:realtime-rules; npm run service-offline:storage-rules",
+    "service-online": "npm run deploy:rules; npm run deploy:realtime-rules; npm run deploy:storage-rules",
+    "staging:service-offline:rules": "cp -f ./service-offline/firestore.rules ./database/firestore.rules; npm run staging:deploy:rules",
+    "staging:service-offline:realtime-rules": "cp -f ./service-offline/realtime.rules.json ./database/realtime.rules.json; npm run staging:deploy:realtime-rules",
+    "staging:service-offline:storage-rules": "cp -f ./service-offline/storage.rules ./storage/storage.rules; npm run staging:deploy:storage-rules",
+    "staging:service-offline": "npm run staging:service-offline:rules; npm run staging:service-offline:realtime-rules; npm run staging:service-offline:storage-rules",
+    "staging:service-online": "npm run staging:deploy:rules; npm run staging:deploy:realtime-rules; npm run staging:deploy:storage-rules",
+    "production:service-offline:rules": "cp -f ./service-offline/firestore.rules ./database/firestore.rules; npm run production:deploy:rules",
+    "production:service-offline:realtime-rules": "cp -f ./service-offline/realtime.rules.json ./database/realtime.rules.json; npm run production:deploy:realtime-rules",
+    "production:service-offline:storage-rules": "cp -f ./service-offline/storage.rules ./storage/storage.rules; npm run production:deploy:storage-rules",
+    "production:service-offline": "npm run production:service-offline:rules; npm run production:service-offline:realtime-rules; npm run production:service-offline:storage-rules",
+    "production:service-online": "npm run production:deploy:rules; npm run production:deploy:realtime-rules; npm run production:deploy:storage-rules"
   },
   "dependencies": {
     "@google-cloud/storage": "^5.7.2",
