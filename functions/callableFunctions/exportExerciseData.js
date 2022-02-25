@@ -5,6 +5,7 @@ const { firebase, db } = require('../shared/admin.js');
 const { exportExerciseData } = require('../actions/exercises/exportExerciseData')(config, firebase, db);
 const { getAllDocuments } = require('../shared/helpers');
 const { logEvent } = require('../actions/logs/logEvent')(firebase, db);
+const { checkFunctionEnabled } = require('../shared/serviceSettings.js')(db);
 
 const runtimeOptions = {
   timeoutSeconds: 300,
@@ -12,6 +13,7 @@ const runtimeOptions = {
 };
 
 module.exports = functions.runWith(runtimeOptions).region('europe-west2').https.onCall(async (data, context) => {
+  await checkFunctionEnabled();
 
   // authenticate the request
   if (!context.auth) {
