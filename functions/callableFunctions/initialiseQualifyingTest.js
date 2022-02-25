@@ -3,8 +3,13 @@ const config = require('../shared/config');
 const { firebase, db } = require('../shared/admin.js');
 const { checkArguments } = require('../shared/helpers.js');
 const initialiseQualifyingTest = require('../actions/qualifyingTests/initialiseQualifyingTest')(config, firebase, db);
+const checkServiceStatus = require('../shared/checkServiceStatus.js')(firebase, db);
 
 module.exports = functions.region('europe-west2').https.onCall(async (data, context) => {
+  if (!checkServiceStatus()) {
+    throw new functions.https.HttpsError('unavailable', 'This function is not available');
+  }
+  
   if (!context.auth) {
     throw new functions.https.HttpsError('failed-precondition', 'The function must be called while authenticated.');
   }
@@ -15,5 +20,6 @@ module.exports = functions.region('europe-west2').https.onCall(async (data, cont
   }, data)) {
     throw new functions.https.HttpsError('invalid-argument', 'Please provide valid arguments');
   }
+
   return initialiseQualifyingTest(data);
 });
