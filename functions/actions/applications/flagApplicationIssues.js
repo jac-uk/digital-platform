@@ -36,7 +36,7 @@ module.exports = (config, db) => {
 
     // check for eligibility issues and update document
     const eligibilityIssues = getEligibilityIssues(exercise, application);
-    const characterIssues = getCharacterIssues(application);
+    const characterIssues = getCharacterIssues(exercise, application);
     const data = {};
     data['processing.flags.eligibilityIssues'] = eligibilityIssues && eligibilityIssues.length > 0;
     data['processing.eligibilityIssues'] = eligibilityIssues;
@@ -68,42 +68,61 @@ module.exports = (config, db) => {
       .where('status', '==', 'applied')
     );
 
-    // construct commands
-    const commands = [];
-    for (let i = 0, len = applications.length; i < len; ++i) {
-      const eligibilityIssues = getEligibilityIssues(exercise, applications[i]);
-      const characterIssues = getCharacterIssues(applications[i]);
+    // get application records at handover
+    const applicationRecords = await getDocuments(db.collection('applicationRecords')
+      .where('exercise.id', '==', exerciseId)
+      .where('stage', '==', 'handover')
+    );
 
-      const data = {};
-      if (eligibilityIssues && eligibilityIssues.length > 0) {
-        data['flags.eligibilityIssues'] = true;
-        data['issues.eligibilityIssues'] = eligibilityIssues;
-      } else {
-        data['flags.eligibilityIssues'] = false;
-        data['issues.eligibilityIssues'] = [];
-      }
-      if (characterIssues && characterIssues.length > 0) {
-        data['flags.characterIssues'] = true;
-        data['issues.characterIssues'] = characterIssues;
-      } else {
-        data['flags.characterIssues'] = false;
-        data['issues.characterIssues'] = [];
+    if (applicationRecords.length) {
+
+      const handoverApplications = applications.filter(application => applicationRecords.find(aR => aR.id === application.id));
+
+      const applicationsWithCharacterIssues = [];
+
+      // construct commands
+      const commands = [];
+      for (let i = 0, len = handoverApplications.length; i < len; ++i) {
+        const eligibilityIssues = getEligibilityIssues(exercise, handoverApplications[i]);
+        const characterIssues = getCharacterIssues(exercise, handoverApplications[i]);
+
+        const data = {};
+        if (eligibilityIssues && eligibilityIssues.length > 0) {
+          data['flags.eligibilityIssues'] = true;
+          data['issues.eligibilityIssues'] = eligibilityIssues;
+        } else {
+          data['flags.eligibilityIssues'] = false;
+          data['issues.eligibilityIssues'] = [];
+        }
+        if (characterIssues && characterIssues.length > 0) {
+          applicationsWithCharacterIssues.push({ id: handoverApplications[i].id, ref: handoverApplications[i].referenceNumber, name: handoverApplications[i].personalDetails.fullName, numberOfCharacterIssues: characterIssues.length });
+          data['flags.characterIssues'] = true;
+          data['issues.characterIssues'] = characterIssues;
+        } else {
+          data['flags.characterIssues'] = false;
+          data['issues.characterIssues'] = [];
+        }
+
+        if (!isEmpty(data)) {
+          commands.push({
+            command: 'update',
+            ref: db.collection('applicationRecords').doc(`${handoverApplications[i].id}`),
+            data: data,
+          });
+        }
       }
 
-      if (!isEmpty(data)) {
-        commands.push({
-          command: 'update',
-          ref: db.collection('applicationRecords').doc(`${applications[i].id}`),
-          data: data,
-        });
-      }
+      return applicationsWithCharacterIssues;
+
+    } else {
+      return [];
     }
 
-    // write to db
-    const result = await applyUpdates(db, commands);
+    // // write to db
+    // const result = await applyUpdates(db, commands);
 
-    // return
-    return result ? commands.length : false;
+    // // return
+    // return result ? commands.length : false;
   }
 
   function getEligibilityIssues(exercise, application) {
@@ -210,12 +229,12 @@ module.exports = (config, db) => {
     return issues;
   }
 
-  function getCharacterIssues(application) {
+  function getCharacterIssues(exercise, application) {
 
     let questions;
     let answers;
 
-    if (application.characterInformationV2) {
+    if (exercise._applicationVersion >= 2) {
       questions = config.APPLICATION.CHARACTER_ISSUES_V2;
       answers = application.characterInformationV2;
     } else if (application.characterInformation) {
@@ -225,7 +244,7 @@ module.exports = (config, db) => {
 
     const issues = [];
 
-    if (questions) {
+    if (questions && answers) {
       Object.keys(questions).forEach(key => {
         if (answers[key]) {
           const summary = questions[key].summary;

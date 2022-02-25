@@ -91,6 +91,14 @@ service cloud.firestore {
 
     }
 
+    match /panellists/{panellistId} {
+  		// Users can read & write to their own candidate document
+      allow get, create, update: if request.auth.uid == panellistId;
+
+      // Allow JAC to read and write
+      allow read, write: if userIsAuthenticated() && userIsJAC();
+    }
+
     match /candidates/{candidateId} {
   		// Users can read & write to their own candidate document
       allow get, create, update: if request.auth.uid == candidateId;
@@ -104,6 +112,7 @@ service cloud.firestore {
         allow read, write: if userIsAuthenticated() && userIsJAC();
       }
     }
+
 
     match /{path=**}/documents/{documentId} {
       allow read: if userIsAuthenticated() && userIsJAC();
