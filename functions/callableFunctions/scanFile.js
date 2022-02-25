@@ -2,8 +2,10 @@ const functions = require('firebase-functions');
 const config = require('../shared/config');
 const { firebase } = require('../shared/admin.js');
 const { scanFile } = require('../actions/malware-scanning/scanFile')(config, firebase);
+const { checkFunctionEnabled } = require('../shared/serviceSettings.js')(db);
 
 module.exports = functions.region('europe-west2').https.onCall(async (data, context) => {
+  await checkFunctionEnabled();
 
   // authenticate the request
   if (!context.auth) {

@@ -3,8 +3,10 @@ const { firebase, db } = require('../shared/admin.js');
 const { generateDiversityReport } = require('../actions/exercises/generateDiversityReport')(firebase, db);
 const { getDocument } = require('../shared/helpers');
 const { logEvent } = require('../actions/logs/logEvent')(firebase, db);
+const { checkFunctionEnabled } = require('../shared/serviceSettings.js')(db);
 
 module.exports = functions.region('europe-west2').https.onCall(async (data, context) => {
+  await checkFunctionEnabled();
 
   // authenticate the request
   if (!context.auth) {
