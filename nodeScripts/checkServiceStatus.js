@@ -1,10 +1,11 @@
 'use strict';
 
-const { app, firebase, db } = require('./shared/admin.js');
-const checkServiceStatus = require('../functions/shared/checkServiceStatus.js')(firebase, db);
+const { app, db } = require('./shared/admin.js');
+const { checkFunctionEnabled } = require('../functions/shared/serviceSettings.js')(db);
 
 const main = async () => {
-  return checkServiceStatus();
+  await checkFunctionEnabled();
+  return;
 };
 
 main()
