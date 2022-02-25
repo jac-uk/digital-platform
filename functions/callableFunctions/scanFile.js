@@ -1,6 +1,6 @@
 const functions = require('firebase-functions');
 const config = require('../shared/config');
-const { firebase } = require('../shared/admin.js');
+const { firebase, db } = require('../shared/admin.js');
 const { scanFile } = require('../actions/malware-scanning/scanFile')(config, firebase);
 const { checkFunctionEnabled } = require('../shared/serviceSettings.js')(db);
 
