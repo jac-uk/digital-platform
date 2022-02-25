@@ -1,6 +1,6 @@
 {
   "name": "jac-digital-platform",
-  "version": "1.14.0",
+  "version": "1.15.0",
   "description": "Firebase/GCP configuration and components for the JAC digital platform",
   "repository": "https://github.com/jac-uk/digital-platform",
   "license": "MIT",
@@ -19,6 +19,7 @@
     "nodeScript": "export GOOGLE_APPLICATION_CREDENTIALS='service-account.json' && run(){ node -r dotenv/config nodeScripts/$1; }; run",
     "staging:nodeScript": "export GOOGLE_APPLICATION_CREDENTIALS='service-account.staging.json' && run(){ node -r dotenv/config nodeScripts/$1; }; run",
     "production:nodeScript": "export GOOGLE_APPLICATION_CREDENTIALS='service-account.production.json' && run(){ node -r dotenv/config nodeScripts/$1; }; run",
+    "nodeScriptOnWindows": "set GOOGLE_APPLICATION_CREDENTIALS=service-account.json&& node nodeScripts/%SCRIPT%",
     "indexes:export": "firebase firestore:indexes > database/firestore.indexes.json",
     "deploy:rules": "firebase deploy --project=digital-platform-develop --only firestore:rules",
     "deploy:indexes": "firebase deploy --project=digital-platform-develop --only firestore:indexes",
@@ -57,6 +58,11 @@
     "production:service-offline:storage-rules": "cp -f ./service-offline/storage.rules ./storage/storage.rules; npm run production:deploy:storage-rules",
     "production:service-offline": "npm run production:service-offline:rules; npm run production:service-offline:realtime-rules; npm run production:service-offline:storage-rules",
     "production:service-online": "npm run production:deploy:rules; npm run production:deploy:realtime-rules; npm run production:deploy:storage-rules"
+    "db:export": "firestore-export -a ./service-account.json -b ./data/firestore.json",
+    "db:import": "firestore-import -a ./service-account.json -b ./data/firestore.json",
+    "db:emulator:export": "set \"FIRESTORE_EMULATOR_HOST=localhost:8282\" && npm run db:export",
+    "db:emulator:import": "set \"FIRESTORE_EMULATOR_HOST=localhost:8282\" && npm run db:import",
+    "firestore": "firebase emulators:start --only firestore --import=./data/ --export-on-exit=./data"
   },
   "dependencies": {
     "@google-cloud/storage": "^5.7.2",
@@ -72,6 +78,7 @@
     "notifications-node-client": "^4.9.0"
   },
   "devDependencies": {
+    "@faker-js/faker": "^6.0.0-alpha.5",
     "@firebase/rules-unit-testing": "^1.1.9",
     "@firebase/util": "^1.1.0",
     "csv-writer": "^1.6.0",
