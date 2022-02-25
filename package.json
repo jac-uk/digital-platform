@@ -41,7 +41,11 @@
     "test:actions": "jest test/actions",
     "test:shared": "jest test/shared",
     "watch:test:rules": "mocha './test/rules/**/*.spec.js' --timeout=10000 --reporter=min --watch --watch-extensions=rules",
-    "ci:test:rules": "firebase emulators:exec --only firestore 'npm run test:rules'"
+    "ci:test:rules": "firebase emulators:exec --only firestore 'npm run test:rules'",
+    "service-offline:rules": "cp -f ./service-offline/firestore.rules ./database/firestore.rules; npm run deploy:rules",
+    "service-offline:realtime-rules": "cp -f ./service-offline/realtime.rules.json ./database/realtime.rules.json; npm run deploy:realtime-rules",
+    "service-offline:storage-rules": "cp -f ./service-offline/storage.rules ./storage/storage.rules; npm run deploy:storage-rules",
+    "service-offline": "npm run service-offline:rules; npm run service-offline:realtime-rules; npm run service-offline:storage-rules"
   },
   "dependencies": {
     "@google-cloud/storage": "^5.7.2",
