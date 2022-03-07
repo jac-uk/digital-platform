@@ -286,7 +286,7 @@ module.exports = (CONSTANTS) => {
     if (application.personalDetails) {
       applicationRecord.candidate.fullName = application.personalDetails.fullName;
       applicationRecord.candidate.reasonableAdjustments = application.personalDetails.reasonableAdjustments;
-      applicationRecord.candidate.reasonableAdjustmentsDetails = application.personalDetails.reasonableAdjustmentsDetails;
+      applicationRecord.candidate.reasonableAdjustmentsDetails = application.personalDetails.reasonableAdjustments && application.personalDetails.reasonableAdjustmentsDetails ? application.personalDetails.reasonableAdjustmentsDetails : null;
       applicationRecord.flags.reasonableAdjustments = application.personalDetails.reasonableAdjustments;
     }
     return applicationRecord;
