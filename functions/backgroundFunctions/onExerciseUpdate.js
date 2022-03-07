@@ -3,7 +3,11 @@ const config = require('../shared/config');
 const { db } = require('../shared/admin.js');
 const { deleteVacancy, updateVacancy } = require('../actions/vacancies')(config, db);
 
-module.exports = functions.region('europe-west2').firestore
+const runtimeOptions = {
+  memory: '256MB',
+};
+
+module.exports = functions.runWith(runtimeOptions).region('europe-west2').firestore
   .document('exercises/{exerciseId}')
   .onUpdate(async (change, context) => {
     const after = change.after.data();

@@ -6,7 +6,11 @@ const { processNotifications } = require('../actions/notifications')(config, fir
 
 const SCHEDULE = 'every 1 minutes synchronized';
 
-module.exports = functions.region('europe-west2')
+const runtimeOptions = {
+  memory: '256MB',
+};
+
+module.exports = functions.runWith(runtimeOptions).region('europe-west2')
   .pubsub
   .schedule(SCHEDULE)
   .timeZone('Europe/London')

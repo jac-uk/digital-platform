@@ -1,7 +1,11 @@
 const admin = require('firebase-admin');
 const functions = require('firebase-functions');
 
-module.exports = functions.region('europe.west-2').https.onCall(async (data, context) => {
+const runtimeOptions = {
+  memory: '256MB',
+};
+
+module.exports = functions.runWith(runtimeOptions).region('europe.west-2').https.onCall(async (data, context) => {
   if (!context.auth) {
     throw new functions.https.HttpsError('failed-precondition', 'The function must be called while authenticated.');
   }

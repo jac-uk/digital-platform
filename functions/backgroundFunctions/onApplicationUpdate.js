@@ -4,7 +4,11 @@ const { firebase, db } = require('../shared/admin');
 const onApplicationUpdate = require('../actions/applications/onUpdate')(config, firebase, db);
 const { logEvent } = require('../actions/logs/logEvent')(firebase, db);
 
-module.exports = functions.region('europe-west2').firestore
+const runtimeOptions = {
+  memory: '256MB',
+};
+
+module.exports = functions.runWith(runtimeOptions).region('europe-west2').firestore
   .document('applications/{applicationId}')
   .onUpdate((change, context) => {
     const dataBefore = change.before.data();

@@ -7,7 +7,11 @@ const { generateDiversityReport } = require('../actions/exercises/generateDivers
 // const { flagApplicationIssuesForExercise } = require('../actions/applications/flagApplicationIssues')(config, db);
 const { checkFunctionEnabled } = require('../shared/serviceSettings.js')(db);
 
-module.exports = functions.region('europe-west2').https.onCall(async (data, context) => {
+const runtimeOptions = {
+  memory: '256MB',
+};
+
+module.exports = functions.runWith(runtimeOptions).region('europe-west2').https.onCall(async (data, context) => {
   await checkFunctionEnabled();
   if (!context.auth) {
     throw new functions.https.HttpsError('failed-precondition', 'The function must be called while authenticated.');

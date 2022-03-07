@@ -4,7 +4,11 @@ const { db } = require('../shared/admin.js');
 const flagApplicationIssues = require('../actions/applications/flagApplicationIssues')(config, db);
 const { checkFunctionEnabled } = require('../shared/serviceSettings.js')(db);
 
-module.exports = functions.region('europe-west2').https.onCall(async (data, context) => {
+const runtimeOptions = {
+  memory: '256MB',
+};
+
+module.exports = functions.runWith(runtimeOptions).region('europe-west2').https.onCall(async (data, context) => {
   await checkFunctionEnabled();
   // @TODO check auth.token for correct role, when we have implemented roles
   if (!context.auth) {

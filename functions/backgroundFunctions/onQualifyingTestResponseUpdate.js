@@ -3,7 +3,11 @@ const config = require('../shared/config');
 const { firebase, db } = require('../shared/admin.js');
 const onQualifyingTestResponseUpdate = require('../actions/qualifyingTestResponses/onUpdate')(config, firebase, db);
 
-module.exports = functions.region('europe-west2').firestore
+const runtimeOptions = {
+  memory: '256MB',
+};
+
+module.exports = functions.runWith(runtimeOptions).region('europe-west2').firestore
   .document('qualifyingTestResponses/{qualifyingTestResponseId}')
   .onUpdate((change, context) => {
     const dataBefore = change.before.data();

@@ -4,7 +4,11 @@ const { backupAuthentication } = require('../actions/backup/authentication')(con
 
 const SCHEDULE = 'every day 23:00';
 
-module.exports = functions.region('europe-west2')
+const runtimeOptions = {
+  memory: '256MB',
+};
+
+module.exports = functions.runWith(runtimeOptions).region('europe-west2')
   .pubsub
   .schedule(SCHEDULE)
   .timeZone('Europe/London')

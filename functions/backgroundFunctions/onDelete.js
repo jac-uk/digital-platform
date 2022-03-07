@@ -6,7 +6,11 @@ const { logEvent } = require('../actions/logs/logEvent')(firebase, db);
 // The purpose is to archive, not delete data from the database.
 // When a record is deleted, this function will take a copy and insert it into `{collectionName}_deleted`
 
-module.exports = functions.region('europe-west2').firestore
+const runtimeOptions = {
+  memory: '256MB',
+};
+
+module.exports = functions.runWith(runtimeOptions).region('europe-west2').firestore
   .document('{collection}/{documentId}')
   .onDelete((snap, context) => {
 

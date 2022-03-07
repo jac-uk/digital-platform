@@ -3,7 +3,11 @@ const config = require('../shared/config');
 const { firebase, db } = require('../shared/admin');
 const { logEvent } = require('../actions/logs/logEvent')(firebase, db);
 
-module.exports = functions.region('europe-west2').firestore
+const runtimeOptions = {
+  memory: '256MB',
+};
+
+module.exports = functions.runWith(runtimeOptions).region('europe-west2').firestore
   .document('applicationRecords/{applicationRecordId}')
   .onCreate((snap, context) => {
     const applicationRecord = snap.data();

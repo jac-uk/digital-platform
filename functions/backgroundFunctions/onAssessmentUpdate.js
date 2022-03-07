@@ -3,7 +3,11 @@ const config = require('../shared/config');
 const { firebase, db } = require('../shared/admin.js');
 const { onAssessmentCompleted } = require('../actions/assessments')(config, firebase, db);
 
-module.exports = functions.region('europe-west2').firestore
+const runtimeOptions = {
+  memory: '256MB',
+};
+
+module.exports = functions.runWith(runtimeOptions).region('europe-west2').firestore
   .document('assessments/{assessmentId}')
   .onUpdate((change, context) => {
     const after = change.after.data();

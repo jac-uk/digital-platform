@@ -4,7 +4,11 @@ const { checkArguments } = require('../shared/helpers.js');
 const  getUserEmailByID  = require('../actions/candidates/getUserEmailByID')(auth);
 const { checkFunctionEnabled } = require('../shared/serviceSettings.js')(db);
 
-module.exports = functions.region('europe-west2').https.onCall(async (data, context) => {
+const runtimeOptions = {
+  memory: '256MB',
+};
+
+module.exports = functions.runWith(runtimeOptions).region('europe-west2').https.onCall(async (data, context) => {
   await checkFunctionEnabled();
   console.log('getUserByID called');
   if (!context.auth) {

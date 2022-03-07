@@ -4,7 +4,11 @@ const { firebase, db } = require('../shared/admin.js');
 const { onApplicationRecordUpdate } = require('../actions/applicationRecords')(config, firebase, db);
 const { logEvent } = require('../actions/logs/logEvent')(firebase, db);
 
-module.exports = functions.region('europe-west2').firestore
+const runtimeOptions = {
+  memory: '256MB',
+};
+
+module.exports = functions.runWith(runtimeOptions).region('europe-west2').firestore
   .document('applicationRecords/{applicationRecordId}')
   .onUpdate(async (change, context) => {
 
