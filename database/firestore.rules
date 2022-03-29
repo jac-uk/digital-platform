@@ -162,6 +162,9 @@ service cloud.firestore {
 
       // allow JAC admins to edit an application @TODO restrict what can be changed and by which role
       allow update: if userIsAuthenticated() && userIsJAC();
+
+      // allow JAC admins ufll write access (i.e. so they can copy documents from the main Firestore to the QT Firestore)
+      allow write: if userIsAuthenticated() && userIsJAC();
     }
 
     match /applicationRecords/{applicationId} {
