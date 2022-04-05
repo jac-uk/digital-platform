@@ -72,7 +72,7 @@ module.exports = (config, db) => {
     const commands = [];
     for (let i = 0, len = applications.length; i < len; ++i) {
       const eligibilityIssues = getEligibilityIssues(exercise, applications[i]);
-      const characterIssues = getCharacterIssues(applications[i]);
+      const characterIssues = getCharacterIssues(exercise, applications[i]);
 
       const data = {};
       if (eligibilityIssues && eligibilityIssues.length > 0) {
