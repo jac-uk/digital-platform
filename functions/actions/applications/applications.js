@@ -1,7 +1,5 @@
 const { SSL_OP_NETSCAPE_DEMO_CIPHER_CHANGE_BUG } = require('constants');
 const { getAllDocuments, applyUpdates, getDocument, getDocuments } = require('../../shared/helpers');
-const { firebase, db } = require('../../shared/admin.js');
-const config = require('../../shared/config');
 const { initialiseApplicationRecords } = require('../../actions/applicationRecords')(config, firebase, db);
 const { refreshApplicationCounts } = require('../../actions/exercises/refreshApplicationCounts')(firebase, db);
 
