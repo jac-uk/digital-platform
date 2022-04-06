@@ -1,11 +1,11 @@
 const { SSL_OP_NETSCAPE_DEMO_CIPHER_CHANGE_BUG } = require('constants');
 const { getAllDocuments, applyUpdates, getDocument, getDocuments } = require('../../shared/helpers');
-const { initialiseApplicationRecords } = require('../../actions/applicationRecords')(config, firebase, db);
-const { refreshApplicationCounts } = require('../../actions/exercises/refreshApplicationCounts')(firebase, db);
 
 const testApplicationsFileName = 'test_applications.json';
 
 module.exports = (config, firebase, db) => {
+  const { initialiseApplicationRecords } = require('../../actions/applicationRecords')(config, firebase, db);
+  const { refreshApplicationCounts } = require('../../actions/exercises/refreshApplicationCounts')(firebase, db);
   const { newNotificationCharacterCheckRequest } = require('../../shared/factories')(config);
   const slack = require('../../shared/slack')(config);
   const { updateCandidate } = require('../candidates/search')(firebase, db);
