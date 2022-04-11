@@ -55,6 +55,7 @@ module.exports = (config, firebase, db) => {
 
     // login to google drive and create panel folder
     await drive.login();
+
     drive.setDriveId(settings.google.driveId);
     const panelFolderId = await drive.createFolder(folderName, {
       parentId: settings.google.rootFolderId,
