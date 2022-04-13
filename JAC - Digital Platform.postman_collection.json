@@ -818,6 +818,159 @@
 					"response": []
 				}
 			]
+		},
+    {
+			"name": "Test Applications",
+			"item": [
+				{
+					"name": "Create Test Applications",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{token}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"data\": {\r\n        \"exerciseId\": \"F650lJ93i1zN2yPfsZF6\",\r\n        \"noOfTestApplications\": 1\r\n    }\r\n}\r\n"
+						},
+						"url": {
+							"raw": "{{host}}/createTestApplications",
+							"host": [
+								"{{host}}"
+							],
+							"path": [
+								"createTestApplications"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Delete Applications",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{token}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"data\": {\r\n        \"exerciseId\": \"F650lJ93i1zN2yPfsZF6\"\r\n    }\r\n}\r\n"
+						},
+						"url": {
+							"raw": "{{host}}/deleteApplications",
+							"host": [
+								"{{host}}"
+							],
+							"path": [
+								"deleteApplications"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Create Test Users",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{token}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"data\": {\r\n        \"noOfTestUsers\": 1,\r\n        \"passwordBcryptHash\": \"$2a$12$cOSjUhBg.57ShQ3OxunJIOkmjV.N/LO0glzIoTTerJ5lBSlLrQYri\"\r\n    }\r\n}\r\n"
+						},
+						"url": {
+							"raw": "{{host}}/createTestUsers",
+							"host": [
+								"{{host}}"
+							],
+							"path": [
+								"createTestUsers"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Delete Test Users",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{token}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"data\": {\r\n        \"noOfTestUsers\": 1\r\n    }\r\n}\r\n"
+						},
+						"url": {
+							"raw": "{{host}}/deleteTestUsers",
+							"host": [
+								"{{host}}"
+							],
+							"path": [
+								"deleteTestUsers"
+							]
+						}
+					},
+					"response": []
+				}
+			]
 		}
 	],
 	"auth": {

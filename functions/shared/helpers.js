@@ -14,6 +14,7 @@ module.exports = {
   getDate,
   timeDifference,
   convertStringToSearchParts,
+  isProduction,
 };
 
 async function getDocument(query) {
@@ -239,4 +240,9 @@ function convertStringToSearchParts(value, delimiter) {
     }
   }
   return search;
+}
+
+function isProduction() {
+  const projectId = firebase.instanceId().app.options.projectId;
+  return projectId.includes('production');
 }
