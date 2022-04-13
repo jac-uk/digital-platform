@@ -1,6 +1,6 @@
 const functions = require('firebase-functions');
-const { firebase, db } = require('../shared/admin.js');
-const { logEvent } = require('../actions/logs/logEvent')(firebase, db);
+const { auth, firebase, db } = require('../shared/admin.js');
+const { logEvent } = require('../actions/logs/logEvent')(auth, firebase, db);
 const { checkFunctionEnabled } = require('../shared/serviceSettings.js')(db);
 
 module.exports = functions.region('europe-west2').https.onCall(async (data, context) => {

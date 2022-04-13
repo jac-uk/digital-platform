@@ -1,10 +1,10 @@
 const functions = require('firebase-functions');
 const { checkArguments } = require('../shared/helpers.js');
 const config = require('../shared/config');
-const { firebase, db } = require('../shared/admin.js');
+const { auth, firebase, db } = require('../shared/admin.js');
 const { exportExerciseData } = require('../actions/exercises/exportExerciseData')(config, firebase, db);
 const { getAllDocuments } = require('../shared/helpers');
-const { logEvent } = require('../actions/logs/logEvent')(firebase, db);
+const { logEvent } = require('../actions/logs/logEvent')(auth, firebase, db);
 const { checkFunctionEnabled } = require('../shared/serviceSettings.js')(db);
 
 const runtimeOptions = {

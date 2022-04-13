@@ -1,6 +1,5 @@
-const { auth } = require('../../shared/admin.js');
 
-module.exports = (firebase, db) => {
+module.exports = (auth, firebase, db) => {
   return {
     logEvent,
   };

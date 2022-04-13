@@ -1,8 +1,8 @@
 const functions = require('firebase-functions');
 const config = require('../shared/config');
-const { firebase, db } = require('../shared/admin.js');
-const { onApplicationRecordUpdate } = require('../actions/applicationRecords')(config, firebase, db);
-const { logEvent } = require('../actions/logs/logEvent')(firebase, db);
+const { auth, firebase, db } = require('../shared/admin.js');
+const { onApplicationRecordUpdate } = require('../actions/applicationRecords')(config, auth, firebase, db);
+const { logEvent } = require('../actions/logs/logEvent')(auth, firebase, db);
 
 module.exports = functions.region('europe-west2').firestore
   .document('applicationRecords/{applicationRecordId}')

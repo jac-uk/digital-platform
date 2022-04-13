@@ -1,9 +1,9 @@
 const { getDocument, getDocuments, applyUpdates } = require('../shared/helpers');
 
-module.exports = (config, firebase, db) => {
+module.exports = (config, auth, firebase, db) => {
   const { newApplicationRecord } = require('../shared/factories')(config);
   const newQualifyingTestResponse = require('../shared/factories/QualifyingTests/newQualifyingTestResponse')(config, firebase);
-  const { logEvent } = require('./logs/logEvent')(firebase, db);
+  const { logEvent } = require('./logs/logEvent')(auth, firebase, db);
   const { refreshApplicationCounts } = require('../actions/exercises/refreshApplicationCounts')(firebase, db);
 
   return {
