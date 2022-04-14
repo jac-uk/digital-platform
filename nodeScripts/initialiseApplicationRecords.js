@@ -2,10 +2,10 @@
 
 const config = require('./shared/config');
 const { auth, firebase, app, db } = require('./shared/admin.js');
-const { initialiseMissingApplicationRecords } = require('../functions/actions/applicationRecords')(config, auth, firebase, db);
+const { initialiseApplicationRecords } = require('../functions/actions/applicationRecords')(config, auth, firebase, db);
 
 const main = async () => {
-  return initialiseMissingApplicationRecords({
+  return initialiseApplicationRecords({
     exerciseId: '4xP8RY7GeoaS1yKqYJLw',
   });
 };
