@@ -65,6 +65,10 @@ exports.adminDisableNewUser = require('./callableFunctions/adminDisableNewUser')
 exports.adminSyncUserRolePermissions = require('./callableFunctions/adminSyncUserRolePermissions');
 exports.customReport = require('./callableFunctions/customReport');
 exports.refreshApplicationCounts = require('./callableFunctions/refreshApplicationCounts');
+exports.createTestApplications = require('./callableFunctions/createTestApplications');
+exports.deleteApplications = require('./callableFunctions/deleteApplications');
+exports.createTestUsers = require('./callableFunctions/createTestUsers');
+exports.deleteTestUsers = require('./callableFunctions/deleteTestUsers');
 exports.capacityTest_initialiseQTs = require('./callableFunctions/capacityTest_initialiseQTs');
 
 // exports.onExerciseUpdate_PublishVacancy = require('./exercises/onExerciseUpdate_PublishVacancy');

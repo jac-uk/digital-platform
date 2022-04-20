@@ -9,11 +9,12 @@
  */
 'use strict';
 
-const { app } = require('./shared/firebase.js');
-const { processPanelExport } = require('../functions/actions/panels/processPanelExport');
+const config = require('./shared/config');
+const { firebase, app, db } = require('./shared/admin.js');
+const { processPanelExport } = require('../functions/actions/panels/processPanelExport')(config, firebase, db);
 
 const main = async () => {
-  await processPanelExport('25GTawkJ0ic1XLYKG29B');
+  await processPanelExport('ozUWQ7ewwnA0RZOZ8nIP');
 };
 
 main()
