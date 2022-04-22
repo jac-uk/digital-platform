@@ -15,7 +15,7 @@ module.exports = (config, firebase, db) => {
 
     // get exercise
     const exercise = await getDocument(db.doc(`exercises/${params.exerciseId}`));
-    if (!exercise) return;
+    if (!exercise) return 0;
 
     // get application records
     let queryRef = db.collection('applicationRecords')
@@ -51,7 +51,7 @@ module.exports = (config, firebase, db) => {
 
     // write to db
     const result = await applyUpdates(db, commands);
-    return result ? applicationRecords.length : false;
+    return result ? applicationRecords.length : 0;
 
   }
 
