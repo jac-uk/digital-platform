@@ -1,6 +1,6 @@
 const functions = require('firebase-functions');
-const { auth, firebase, db } = require('../shared/admin');
-const { logEvent } = require('../actions/logs/logEvent')(auth, firebase, db);
+const { firebase, db, auth } = require('../shared/admin');
+const { logEvent } = require('../actions/logs/logEvent')(firebase, db, auth);
 
 // This function is triggered when records are deleted in firestore.
 // The purpose is to archive, not delete data from the database.

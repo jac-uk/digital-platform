@@ -2,7 +2,7 @@
 
 const config = require('./shared/config');
 const { auth, firebase, app, db } = require('./shared/admin.js');
-const { initialiseApplicationRecords } = require('../functions/actions/applicationRecords')(config, auth, firebase, db);
+const { initialiseApplicationRecords } = require('../functions/actions/applicationRecords')(config, firebase, db, auth);
 
 const main = async () => {
   return initialiseApplicationRecords({
