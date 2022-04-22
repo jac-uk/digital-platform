@@ -23,7 +23,7 @@
     "indexes:export": "firebase firestore:indexes > database/firestore.indexes.json",
     "deploy:rules": "firebase deploy --project=digital-platform-develop --only firestore:rules",
     "deploy:indexes": "firebase deploy --project=digital-platform-develop --only firestore:indexes",
-    "deploy:functions": "firebase deploy --project=digital-platform-develop --only functions",
+    "deploy:functions": "firebase deploy --project=digital-platform-develop --only functions --force",
     "deploy:function": "run(){ firebase deploy --project=digital-platform-develop --only functions:$1; }; run",
     "deploy:storage-rules": "firebase deploy --project=digital-platform-develop --only storage:rules",
     "deploy:realtime-rules": "firebase deploy --project=digital-platform-develop --only database",
