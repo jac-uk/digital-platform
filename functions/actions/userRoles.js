@@ -7,6 +7,7 @@ module.exports = (db, auth) => {
 
   return {
     adminGetUsers,
+    adminGetUserRole,
     adminGetUserRoles,
     adminCreateUserRole,
     adminUpdateUserRole,
@@ -110,13 +111,13 @@ module.exports = (db, auth) => {
   }
 
   /**
-   * Return all roles
+   * Return role by roleId
    */
-  async function adminGetUserRole(roleId) {
+  async function adminGetUserRole(params) {
 
     try {
       const rolesRef = db.collection('roles');
-      return await getDocument(rolesRef.doc(roleId));
+      return await getDocument(rolesRef.doc(params.roleId));
     }
     catch(e) {
       console.log(e);
@@ -151,14 +152,10 @@ module.exports = (db, auth) => {
   async function adminSetUserRole(params) {
 
     try {
-      const user = await admin
-        .auth()
-        .getUser(params.userId);
-      user.customClaims.r = params.roleId;
-      await admin
-        .auth()
-        .setCustomUserClaims(params.userId, user.customClaims);
-      await adminSyncUserRolePermissions(params.userId);
+      const user = await auth.getUser(params.userId);
+      let customClaims = user.customClaims || {};
+      customClaims.r = params.roleId;
+      await auth.setCustomUserClaims(params.userId, customClaims);
       await revokeUserToken(params.userId);
 
       return true;
@@ -219,9 +216,7 @@ module.exports = (db, auth) => {
   async function adminSyncUserRolePermissions(uid) {
     try {
 
-      const user = await admin
-        .auth()
-        .getUser(uid);
+      const user = await auth.getUser(uid);
       const role = await adminGetUserRole(user.customClaims.r);
       const convertedPermissions = [];
       if(role.enabledPermissions) {
@@ -233,9 +228,7 @@ module.exports = (db, auth) => {
       if(JSON.stringify(user.customClaims.rp) !== JSON.stringify(convertedPermissions)) {
         console.log('Updating user permissions');
         user.customClaims.rp = convertedPermissions;
-        await admin
-          .auth()
-          .setCustomUserClaims(uid,  user.customClaims );
+        await auth.setCustomUserClaims(uid,  user.customClaims );
         await revokeUserToken(uid);
       }
       return true;
@@ -252,9 +245,7 @@ module.exports = (db, auth) => {
   async function revokeUserToken(uid) {
 
     try {
-      await admin
-        .auth()
-        .revokeRefreshTokens(uid);
+      await auth.revokeRefreshTokens(uid);
       return true;
     }
     catch(e) {
@@ -262,5 +253,4 @@ module.exports = (db, auth) => {
       return false;
     }
   }
-
 };
