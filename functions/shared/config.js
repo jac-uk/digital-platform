@@ -214,6 +214,15 @@ module.exports = {
       CANCELLED: 'cancelled',
     },
   },
+  PANEL_STATUS: {
+    // TODO include all statuses
+    DRAFT: 'draft',
+    APPROVED: 'approved',
+    PROCESSING: 'processing',
+    CREATED: 'created',
+    SUBMITTED: 'submitted',
+  },
+  GRADES: ['A', 'B', 'C', 'D'],
   NOTIFY_KEY: functions.config().notify.key,
   SLACK_URL: functions.config().slack.url,
   STORAGE_URL: functions.config().project.id + '.appspot.com',

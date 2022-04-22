@@ -10,6 +10,8 @@ module.exports = (config, firebase, db) => {
   * @param {*} `params` is an object containing
   *   `exerciseId` (required) ID of exercise
   *   `type` (required) type of task
+  *   `stage` (required) exercise stage
+  *   `status` (optional) exercise status
   */
   async function initialiseTask(params) {
 
@@ -38,10 +40,8 @@ module.exports = (config, firebase, db) => {
       });
     });
 
-    // update exercise
+    // update exercise with count of applications
     const exerciseData = {};
-    exerciseData[`_processingProgress.${params.type}.status`] = 'initialised';
-    exerciseData[`_processingProgress.${params.type}.statusLog.initialised`] = firebase.firestore.FieldValue.serverTimestamp();
     exerciseData[`_processingProgress.${params.type}.applications`] = applicationRecords.length;
     commands.push({
       command: 'update',
