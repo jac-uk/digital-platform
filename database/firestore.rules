@@ -49,6 +49,11 @@ service cloud.firestore {
       match /reports/{reportId} {
         allow read: if userIsAuthenticated() && userIsJAC();
       }
+      match /tasks/{taskId} {
+        allow create, update: if userIsAuthenticated() && userIsJAC();
+        allow read: if userIsAuthenticated() && userIsJAC();
+      }
+
     }
 
     match /notifications/{notificationId} {
