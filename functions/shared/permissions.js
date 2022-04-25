@@ -8,11 +8,14 @@ const PERMISSIONS = {
   canEnableUsers: 'u1',
   canChangeUserRole: 'u2',
   canEditRolePermissions: 'u3',
+  canDeleteUsers: 'u4',
   // EXERCISE
   canApproveExercise: 'e1',
   canAddNotesToExercise: 'e2',
   canResetExercise: 'e3',
   canAmendAfterLaunch: 'e4',
+  canPublishExercise: 'e5',
+  canDeleteCandidateCharacterInformation: 'e6',
   //CANDIDATES
   canViewAllCandidates: 'c1',
   canAddNotesToCandidates: 'c2',

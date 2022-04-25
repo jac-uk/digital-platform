@@ -7,7 +7,6 @@ module.exports = (db, auth) => {
 
   return {
     adminGetUsers,
-    adminGetUserRole,
     adminGetUserRoles,
     adminCreateUserRole,
     adminUpdateUserRole,
@@ -113,11 +112,11 @@ module.exports = (db, auth) => {
   /**
    * Return role by roleId
    */
-  async function adminGetUserRole(params) {
+  async function adminGetUserRole(roleId) {
 
     try {
       const rolesRef = db.collection('roles');
-      return await getDocument(rolesRef.doc(params.roleId));
+      return await getDocument(rolesRef.doc(roleId));
     }
     catch(e) {
       console.log(e);
@@ -156,6 +155,7 @@ module.exports = (db, auth) => {
       let customClaims = user.customClaims || {};
       customClaims.r = params.roleId;
       await auth.setCustomUserClaims(params.userId, customClaims);
+      await adminSyncUserRolePermissions(params.userId);
       await revokeUserToken(params.userId);
 
       return true;
@@ -215,23 +215,29 @@ module.exports = (db, auth) => {
    */
   async function adminSyncUserRolePermissions(uid) {
     try {
-
       const user = await auth.getUser(uid);
-      const role = await adminGetUserRole(user.customClaims.r);
-      const convertedPermissions = [];
-      if(role.enabledPermissions) {
-        for(const permission of role.enabledPermissions) {
-          convertedPermissions.push(PERMISSIONS[permission]);
+      const roleId = user.customClaims.r;
+      if (roleId) {
+        const role = await adminGetUserRole(roleId);
+        const convertedPermissions = [];
+        if (role.enabledPermissions && role.enabledPermissions.length > 0) {
+          for (const permission of role.enabledPermissions) {
+            if (PERMISSIONS[permission]) {
+              convertedPermissions.push(PERMISSIONS[permission]);
+            }
+          }
         }
+  
+        if (JSON.stringify(user.customClaims.rp) !== JSON.stringify(convertedPermissions)) {
+          console.log('Updating user permissions');
+          user.customClaims.rp = convertedPermissions;
+          await auth.setCustomUserClaims(uid, user.customClaims);
+          await revokeUserToken(uid);
+        }
+        return convertedPermissions;
+      } else {
+        return [];
       }
-
-      if(JSON.stringify(user.customClaims.rp) !== JSON.stringify(convertedPermissions)) {
-        console.log('Updating user permissions');
-        user.customClaims.rp = convertedPermissions;
-        await auth.setCustomUserClaims(uid,  user.customClaims );
-        await revokeUserToken(uid);
-      }
-      return true;
     }
     catch(e) {
       console.log(e);

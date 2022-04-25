@@ -1013,43 +1013,6 @@
 					"response": []
 				},
 				{
-					"name": "adminGetUserRole",
-					"request": {
-						"auth": {
-							"type": "bearer",
-							"bearer": [
-								{
-									"key": "token",
-									"value": "{{token}}",
-									"type": "string"
-								}
-							]
-						},
-						"method": "POST",
-						"header": [
-							{
-								"key": "Content-Type",
-								"value": "application/json",
-								"type": "text"
-							}
-						],
-						"body": {
-							"mode": "raw",
-							"raw": "{\r\n    \"data\": {\r\n        \"roleId\": \"UCeDs5tNc7jA53tvLUVb\"\r\n    }\r\n}"
-						},
-						"url": {
-							"raw": "{{host}}/adminGetUserRole",
-							"host": [
-								"{{host}}"
-							],
-							"path": [
-								"adminGetUserRole"
-							]
-						}
-					},
-					"response": []
-				},
-				{
 					"name": "adminSetUserRole",
 					"request": {
 						"auth": {

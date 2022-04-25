@@ -55,7 +55,6 @@ exports.getUserEmailByID = require('./callableFunctions/getUserEmailByID');
 exports.updateEmailAddress = require('./callableFunctions/updateEmailAddress');
 exports.ensureEmailVerified = require('./callableFunctions/ensureEmailVerified');
 exports.adminGetUsers = require('./callableFunctions/adminGetUsers');
-exports.adminGetUserRole = require('./callableFunctions/adminGetUserRole');
 exports.adminGetUserRoles = require('./callableFunctions/adminGetUserRoles');
 exports.adminDisableUser = require('./callableFunctions/adminDisableUser');
 exports.adminCreateUserRole = require('./callableFunctions/adminCreateUserRole');
