@@ -10,7 +10,6 @@ module.exports = (config, firebase, db) => {
   * @param {*} `params` is an object containing
   *   `exerciseId` (required) ID of exercise
   *   `type` (required) type of task
-  *   `grades` (optional) override the default grades
   */
   async function activateTask(params) {
 
@@ -25,12 +24,10 @@ module.exports = (config, firebase, db) => {
       .where('type', '==', params.type)
       .select('panellistIds', 'applicationIds')
     );
-    console.log('panels', panels);
 
     // relevant panellists
     let panellists = [];
     const panellistIds = [].concat(...panels.map(panel => panel.panellistIds || []));
-    console.log('panellistIds', panellistIds);
     if (panellistIds.length) {
       const queries = panellistIds.map(panellistId => {
         // return db.doc(`panellists/${panellistId}`).select('fullName');
@@ -45,7 +42,6 @@ module.exports = (config, firebase, db) => {
     // relevant application records
     let applicationRecords = [];
     const applicationIds = [].concat(...panels.map(panel => panel.applicationIds || []));
-    console.log('applicationIds', applicationIds);
     if (applicationIds.length) {
       applicationRecords = await getDocumentsFromQueries(
         applicationIds.map(applicationId => {
@@ -61,7 +57,6 @@ module.exports = (config, firebase, db) => {
     const commands = [];
     panels.forEach(panel => {
       if (!panel.applicationIds || !panel.panellistIds) return;
-      console.log('panel', panel.id);
       const data = {
         applications: {},
         panellists: {},
@@ -96,23 +91,9 @@ module.exports = (config, firebase, db) => {
       });
     });
 
-    console.log('commands', commands);
-
-    // // update task
-    // const taskData = {};
-    // taskData['status'] = 'activated';
-    // taskdata['statusLog.activated'] = firebase.firestore.FieldValue.serverTimestamp();
-    // // TODO add extra stats around panels and applications
-    // commands.push({
-    //   command: 'update',
-    //   ref: db.doc(`exercises/${params.exerciseId}/tasks/${params.type}`),
-    //   data: taskData,
-    // });
-
-
-    // // write to db
-    // const result = await applyUpdates(db, commands);
-    // return result ? applicationRecords.length : 0;
+    // write to db
+    const result = await applyUpdates(db, commands);
+    return result ? applicationRecords.length : 0;
 
   }
 

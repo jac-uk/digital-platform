@@ -58,7 +58,7 @@ module.exports = (config, firebase, db) => {
       },
       grades: config.GRADES,
       capabilities: exercise.capabilities,
-      scoreSheet: scoreSheet({ type: params.type, capabilities: exercise.capabilities })
+      scoreSheet: scoreSheet({ type: params.type, exercise: exercise })
     };
     commands.push({
       command: 'set',
@@ -72,13 +72,13 @@ module.exports = (config, firebase, db) => {
 
   }
 
-  function scoreSheet({ type, capabilities }) {
+  function scoreSheet({ type, exercise }) {
     let scoreSheet = {};
     if (type === config.TASK_TYPE.SIFT) {
-      scoreSheet = capabilities.reduce((acc, curr) => (acc[curr] = '', acc), {});
+      scoreSheet = exercise.capabilities.reduce((acc, curr) => (acc[curr] = '', acc), {});
     }
+    // TODO selection & scenario
     return scoreSheet;
   }
-
 
 };
