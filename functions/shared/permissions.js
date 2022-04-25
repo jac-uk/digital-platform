@@ -16,6 +16,7 @@ const PERMISSIONS = {
   canAmendAfterLaunch: 'e4',
   canPublishExercise: 'e5',
   canDeleteCandidateCharacterInformation: 'e6',
+  canDeleteQualifyingTest: 'e7',
   //CANDIDATES
   canViewAllCandidates: 'c1',
   canAddNotesToCandidates: 'c2',

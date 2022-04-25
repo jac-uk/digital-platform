@@ -819,7 +819,7 @@
 				}
 			]
 		},
-    {
+		{
 			"name": "Test Applications",
 			"item": [
 				{
@@ -1044,6 +1044,43 @@
 							],
 							"path": [
 								"adminSetUserRole"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "adminSyncUserRolePermissions",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{token}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"data\": {}\r\n}"
+						},
+						"url": {
+							"raw": "{{host}}/adminSyncUserRolePermissions",
+							"host": [
+								"{{host}}"
+							],
+							"path": [
+								"adminSyncUserRolePermissions"
 							]
 						}
 					},
