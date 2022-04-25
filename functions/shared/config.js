@@ -214,6 +214,11 @@ module.exports = {
       CANCELLED: 'cancelled',
     },
   },
+  TASK_TYPE: {
+    SIFT: 'sift',
+    SELECTION: 'selection',
+    SCENARIO: 'scenario',
+  },
   PANEL_STATUS: {
     // TODO include all statuses
     DRAFT: 'draft',

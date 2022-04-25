@@ -19,6 +19,13 @@ module.exports = (config, firebase, db) => {
     const exercise = await getDocument(db.doc(`exercises/${params.exerciseId}`));
     if (!exercise) return 0;
 
+    // check if task already exists
+    const task = await getDocument(db.doc(`exercises/${params.exerciseId}/tasks/${params.type}`));
+    if (task) {
+      console.log('task already exists');
+      return 0;
+    }
+
     // get application records
     let queryRef = db.collection('applicationRecords')
       .where('exercise.id', '==', params.exerciseId)
@@ -40,13 +47,23 @@ module.exports = (config, firebase, db) => {
       });
     });
 
-    // update exercise with count of applications
-    const exerciseData = {};
-    exerciseData[`_processingProgress.${params.type}.applications`] = applicationRecords.length;
+    // create task
+    const taskData = {
+      status: 'initialised',
+      statusLog: {
+        initialised: firebase.firestore.FieldValue.serverTimestamp(),
+      },
+      _stats: {
+        totalApplications: applicationRecords.length,
+      },
+      grades: config.GRADES,
+      capabilities: exercise.capabilities,
+      scoreSheet: scoreSheet({ type: params.type, capabilities: exercise.capabilities })
+    };
     commands.push({
-      command: 'update',
-      ref: db.collection('exercises').doc(params.exerciseId),
-      data: exerciseData,
+      command: 'set',
+      ref: db.doc(`exercises/${params.exerciseId}/tasks/${params.type}`),
+      data: taskData,
     });
 
     // write to db
@@ -54,5 +71,14 @@ module.exports = (config, firebase, db) => {
     return result ? applicationRecords.length : 0;
 
   }
+
+  function scoreSheet({ type, capabilities }) {
+    let scoreSheet = {};
+    if (type === config.TASK_TYPE.SIFT) {
+      scoreSheet = capabilities.reduce((acc, curr) => (acc[curr] = '', acc), {});
+    }
+    return scoreSheet;
+  }
+
 
 };

@@ -1,4 +1,4 @@
-const { getDocument, getDocuments, applyUpdates } = require('../../shared/helpers');
+const { getDocument, getDocuments, getDocumentsFromQueries, applyUpdates } = require('../../shared/helpers');
 
 module.exports = (config, firebase, db) => {
 
@@ -14,60 +14,101 @@ module.exports = (config, firebase, db) => {
   */
   async function activateTask(params) {
 
-    // get exercise
-    const exercise = await getDocument(db.doc(`exercises/${params.exerciseId}`));
-    if (!exercise) return 0;
-
-    // get application records
-    const queryRef = db.collection('applicationRecords')
-      .where('exercise.id', '==', params.exerciseId)
-      .where('active', '==', true)
-      .where(`${params.type}.panelId`, '!=', '');  // ensure we only fetch applications which are part of current task
-    const applicationRecords = await getDocuments(queryRef.select());  //`${params.type}.panelId`, 'application.referenceNumber'));
+    // get task
+    const task = await getDocument(db.doc(`exercises/${params.exerciseId}/tasks/${params.type}`));
+    if (!task) return 0;
 
     // panels
     const panels = await getDocuments(
       db.collection('panels')
       .where('exercise.id', '==', params.exerciseId)
       .where('type', '==', params.type)
-      .select()
+      .select('panellistIds', 'applicationIds')
     );
+    console.log('panels', panels);
 
     // relevant panellists
-    const panellistIds = [].concat(panels.map(panel => panel.panellistIds));
+    let panellists = [];
+    const panellistIds = [].concat(...panels.map(panel => panel.panellistIds || []));
     console.log('panellistIds', panellistIds);
+    if (panellistIds.length) {
+      const queries = panellistIds.map(panellistId => {
+        // return db.doc(`panellists/${panellistId}`).select('fullName');
+        return db
+          .collection('panellists')
+          .where(firebase.firestore.FieldPath.documentId(), '==', panellistId)
+          .select('fullName');
+      });
+      panellists = await getDocumentsFromQueries(queries);
+    }
+
+    // relevant application records
+    let applicationRecords = [];
+    const applicationIds = [].concat(...panels.map(panel => panel.applicationIds || []));
+    console.log('applicationIds', applicationIds);
+    if (applicationIds.length) {
+      applicationRecords = await getDocumentsFromQueries(
+        applicationIds.map(applicationId => {
+          return db
+            .collection('applicationRecords')
+            .where(firebase.firestore.FieldPath.documentId(), '==', applicationId)
+            .select('application');
+        })
+      );
+    }
 
     // update panels
     const commands = [];
     panels.forEach(panel => {
+      if (!panel.applicationIds || !panel.panellistIds) return;
+      console.log('panel', panel.id);
       const data = {
-        applicationIds: applicationRecords.map(application => application.id),
         applications: {},
         panellists: {},
-        capabilities: exercise.capabilities,
-        grades: params.grades ? params.grades : config.GRADES,
+        capabilities: task.capabilities,
+        grades: task.grades,
         scoreSheet: {},
         status: config.PANEL_STATUS.CREATED,
       };
-      applicationRecords.forEach(applicationRecord => {
+      data[`statusLog.${config.PANEL_STATUS.CREATED}`] = firebase.firestore.FieldValue.serverTimestamp();
+
+      const relevantApplicationRecords = applicationRecords.filter(applicationRecord => panel.applicationIds.indexOf(applicationRecord.id) >= 0);
+      relevantApplicationRecords.forEach(applicationRecord => {
         data.applications[applicationRecord.id] = {
           referenceNumber: applicationRecord.application.referenceNumber,
           // TODO include fullName for non name-blind
         };
-        // data.scoreSheet[applicationRecord.id] = emptyScoreSheet({ type: panel.type, capabilities: exercise.capabilities }).scoreSheet;
+        data.scoreSheet[applicationRecord.id] = task.scoreSheet;
       });
-      // panellists.filter(panellist => this.panel.panellistIds.indexOf(panellist.id) >= 0).forEach(panellist => {
-      //   data.panellists[panellist.id] = {
-      //     fullName: panellist.fullName,
-      //     // TODO include other details e.g. phone, email?
-      //   };
-      // });
+
+      const relevantPanellists = panellists.filter(panellist => panel.panellistIds.indexOf(panellist.id) >= 0)
+      relevantPanellists.forEach(panellist => {
+        data.panellists[panellist.id] = {
+          fullName: panellist.fullName,
+          // TODO include other details e.g. phone, email?
+        };
+      });
+
       commands.push({
         command: 'update',
         ref: db.collection('panels').doc(panel.id),
         data: data,
       });
     });
+
+    console.log('commands', commands);
+
+    // // update task
+    // const taskData = {};
+    // taskData['status'] = 'activated';
+    // taskdata['statusLog.activated'] = firebase.firestore.FieldValue.serverTimestamp();
+    // // TODO add extra stats around panels and applications
+    // commands.push({
+    //   command: 'update',
+    //   ref: db.doc(`exercises/${params.exerciseId}/tasks/${params.type}`),
+    //   data: taskData,
+    // });
+
 
     // // write to db
     // const result = await applyUpdates(db, commands);

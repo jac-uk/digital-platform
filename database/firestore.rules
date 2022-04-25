@@ -72,6 +72,14 @@ service cloud.firestore {
       allow write: if userIsAuthenticated() && userIsJAC();
     }
 
+    match /panellists/{panellistId} {
+  		// Users can read & write to their own candidate document
+      allow get, create, update: if request.auth.uid == panellistId;
+
+      // Allow JAC to read and write
+      allow read, write: if userIsAuthenticated() && userIsJAC();
+    }
+
     match /meta/stats {
       allow read: if userIsAuthenticated() && userIsJAC();
       // Admin users can increment stats.exercisesCount by 1
