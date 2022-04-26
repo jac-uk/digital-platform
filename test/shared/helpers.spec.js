@@ -1,4 +1,4 @@
-const { checkArguments, applyUpdates, convertStringToSearchParts } = require('../../functions/shared/helpers');
+const { checkArguments, applyUpdates, convertStringToSearchParts, getEarliestDate, getLatestDate } = require('../../functions/shared/helpers');
 
 describe('checkArguments()', () => {
 
@@ -116,7 +116,6 @@ describe('checkArguments()', () => {
 
 });
 
-
 describe('applyUpdates()', () => {
   let commandCount = 0;
   let commitCount = 0;
@@ -173,7 +172,6 @@ describe('applyUpdates()', () => {
   });
 
 });
-
 
 describe('convertStringToSearchParts()', () => {
   describe('single word', () => {
@@ -326,4 +324,108 @@ describe('convertStringToSearchParts()', () => {
     });
   });
 
+});
+
+describe('getEarliestDate()', () => {
+  describe('two dates', () => {
+    const earlyDate = new Date(2022, 3, 10);
+    const laterDate = new Date(2022, 9, 11);
+    const arrayOfDates1 = [earlyDate, laterDate ];
+    const arrayOfDates2 = [laterDate, earlyDate ];
+    it('returns earliest date, no matter what order dates are in the original array', () => {
+      expect(getEarliestDate(arrayOfDates1)).toBe(earlyDate);
+      expect(getEarliestDate(arrayOfDates2)).toBe(earlyDate);
+    });
+  });
+  describe('three dates', () => {
+    const earlyDate = new Date(2022, 3, 10);
+    const middleDate = new Date(2022, 5, 4);
+    const laterDate = new Date(2022, 9, 11);
+    const arrayOfDates1 = [earlyDate, middleDate, laterDate];
+    const arrayOfDates2 = [middleDate, laterDate, earlyDate];
+    const arrayOfDates3 = [laterDate, earlyDate, middleDate];
+    it('returns earliest date, no matter what order dates are in the original array', () => {
+      expect(getEarliestDate(arrayOfDates1)).toBe(earlyDate);
+      expect(getEarliestDate(arrayOfDates2)).toBe(earlyDate);
+      expect(getEarliestDate(arrayOfDates3)).toBe(earlyDate);
+    });
+  });
+  describe('consecutive days', () => {
+    const earlyDate = new Date(2022, 3, 1);
+    const middleDate = new Date(2022, 3, 2);
+    const laterDate = new Date(2022, 3, 3);
+    const arrayOfDates1 = [earlyDate, middleDate, laterDate];
+    const arrayOfDates2 = [middleDate, laterDate, earlyDate];
+    const arrayOfDates3 = [laterDate, earlyDate, middleDate];
+    it('returns earliest date, no matter what order dates are in the original array', () => {
+      expect(getEarliestDate(arrayOfDates1)).toBe(earlyDate);
+      expect(getEarliestDate(arrayOfDates2)).toBe(earlyDate);
+      expect(getEarliestDate(arrayOfDates3)).toBe(earlyDate);
+    });
+  });
+  describe('same day, different time', () => {
+    const earlyDate = new Date(2022, 3, 1, 10, 30);
+    const middleDate = new Date(2022, 3, 1, 10, 31);
+    const laterDate = new Date(2022, 3, 1, 11, 0);
+    const arrayOfDates1 = [earlyDate, middleDate, laterDate];
+    const arrayOfDates2 = [middleDate, laterDate, earlyDate];
+    const arrayOfDates3 = [laterDate, earlyDate, middleDate];
+    it('returns earliest date, no matter what order dates are in the original array', () => {
+      expect(getEarliestDate(arrayOfDates1)).toBe(earlyDate);
+      expect(getEarliestDate(arrayOfDates2)).toBe(earlyDate);
+      expect(getEarliestDate(arrayOfDates3)).toBe(earlyDate);
+    });
+  });
+});
+
+describe('getLatestDate()', () => {
+  describe('two dates', () => {
+    const earlyDate = new Date(2022, 3, 10);
+    const laterDate = new Date(2022, 9, 11);
+    const arrayOfDates1 = [earlyDate, laterDate];
+    const arrayOfDates2 = [laterDate, earlyDate];
+    it('returns earliest date, no matter what order dates are in the original array', () => {
+      expect(getLatestDate(arrayOfDates1)).toBe(laterDate);
+      expect(getLatestDate(arrayOfDates2)).toBe(laterDate);
+    });
+  });
+  describe('three dates', () => {
+    const earlyDate = new Date(2022, 3, 10);
+    const middleDate = new Date(2022, 5, 4);
+    const laterDate = new Date(2022, 9, 11);
+    const arrayOfDates1 = [earlyDate, middleDate, laterDate];
+    const arrayOfDates2 = [middleDate, laterDate, earlyDate];
+    const arrayOfDates3 = [laterDate, earlyDate, middleDate];
+    it('returns earliest date, no matter what order dates are in the original array', () => {
+      expect(getLatestDate(arrayOfDates1)).toBe(laterDate);
+      expect(getLatestDate(arrayOfDates2)).toBe(laterDate);
+      expect(getLatestDate(arrayOfDates3)).toBe(laterDate);
+    });
+  });
+  describe('consecutive days', () => {
+    const earlyDate = new Date(2022, 3, 1);
+    const middleDate = new Date(2022, 3, 2);
+    const laterDate = new Date(2022, 3, 3);
+    const arrayOfDates1 = [earlyDate, middleDate, laterDate];
+    const arrayOfDates2 = [middleDate, laterDate, earlyDate];
+    const arrayOfDates3 = [laterDate, earlyDate, middleDate];
+    it('returns earliest date, no matter what order dates are in the original array', () => {
+      expect(getLatestDate(arrayOfDates1)).toBe(laterDate);
+      expect(getLatestDate(arrayOfDates2)).toBe(laterDate);
+      expect(getLatestDate(arrayOfDates3)).toBe(laterDate);
+    });
+  });
+  describe('same day, different time', () => {
+    const earlyDate = new Date(2022, 3, 1, 10, 30);
+    const middleDate = new Date(2022, 3, 1, 10, 31);
+    const laterDate = new Date(2022, 3, 1, 11, 0);
+    const arrayOfDates1 = [earlyDate, middleDate, laterDate];
+    const arrayOfDates2 = [middleDate, laterDate, earlyDate];
+    const arrayOfDates3 = [laterDate, earlyDate, middleDate];
+    it('returns earliest date, no matter what order dates are in the original array', () => {
+      expect(getLatestDate(arrayOfDates1)).toBe(laterDate);
+      expect(getLatestDate(arrayOfDates2)).toBe(laterDate);
+      expect(getLatestDate(arrayOfDates3)).toBe(laterDate);
+    });
+  });
 });

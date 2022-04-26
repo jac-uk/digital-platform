@@ -1,4 +1,4 @@
-const { getDocument, getDocuments, applyUpdates } = require('../../shared/helpers');
+const { getDocument, getDocuments, applyUpdates, convertToDate, getEarliestDate, getLatestDate } = require('../../shared/helpers');
 
 module.exports = (config, firebase, db) => {
 
@@ -58,7 +58,9 @@ module.exports = (config, firebase, db) => {
       },
       grades: config.GRADES,
       capabilities: exercise.capabilities,
-      scoreSheet: scoreSheet({ type: params.type, exercise: exercise })
+      scoreSheet: scoreSheet({ type: params.type, exercise: exercise }),
+      startDate: taskStartDate({ type: params.type, exercise: exercise }),
+      endDate: taskEndDate({ type: params.type, exercise: exercise }),
     };
     commands.push({
       command: 'set',
@@ -79,6 +81,26 @@ module.exports = (config, firebase, db) => {
     }
     // TODO selection & scenario
     return scoreSheet;
+  }
+
+  function taskStartDate({ type, exercise }) {
+    switch (type) {
+      case config.TASK_TYPE.SIFT:
+        return exercise.siftStartDate;
+      case config.TASK_TYPE.SELECTION:
+        return getEarliestDate(exercise.selectionDays.map(selectionDay => convertToDate(selectionDay.selectionDayStart)));
+    }
+    return null;
+  }
+
+  function taskEndDate({ type, exercise }) {
+    switch (type) {
+      case config.TASK_TYPE.SIFT:
+        return exercise.siftEndDate;
+      case config.TASK_TYPE.SELECTION:
+        return getLatestDate(exercise.selectionDays.map(selectionDay => convertToDate(selectionDay.selectionDayEnd)));
+    }
+    return null;
   }
 
 };
