@@ -1,12 +1,12 @@
 'use strict';
 
 const config = require('./shared/config');
-const { firebase, app, db } = require('./shared/admin.js');
-const { initialiseApplicationRecords } = require('../functions/actions/applicationRecords')(config, firebase, db);
+const { auth, firebase, app, db } = require('./shared/admin.js');
+const { initialiseApplicationRecords } = require('../functions/actions/applicationRecords')(config, firebase, db, auth);
 
 const main = async () => {
   return initialiseApplicationRecords({
-    exerciseId: '8CIlAsDbtMfr2vnfjmYh',
+    exerciseId: '4xP8RY7GeoaS1yKqYJLw',
   });
 };
 
