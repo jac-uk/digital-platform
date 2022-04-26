@@ -12,8 +12,11 @@ module.exports = functions.region('europe-west2').https.onCall(async (data, cont
     throw new functions.https.HttpsError('failed-precondition', 'The function must be called while authenticated.');
   }
 
-  // start the virus scanning (but don't wait for it to finish)
-  scanAllFiles(data.force || false, data.maxFiles || 999999);
+  if (data.async === false) {
+    await scanAllFiles(data.force || false, data.maxFiles || 999999);
+  } else {
+    scanAllFiles(data.force || false, data.maxFiles || 999999);
+  }
 
   // return the outcome
   return true;
