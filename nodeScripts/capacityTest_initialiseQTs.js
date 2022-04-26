@@ -10,9 +10,9 @@
  'use strict';
 
 const config = require('./shared/config');
-const { firebase, app, db } = require('./shared/admin.js');
-const action = require('../functions/actions/applications/applications')(config, firebase, db);
-const { initialiseApplicationRecords } = require('../functions/actions/applicationRecords')(config, firebase, db);
+const { auth, firebase, app, db } = require('./shared/admin.js');
+const action = require('../functions/actions/applications/applications')(config, firebase, db, auth);
+const { initialiseApplicationRecords } = require('../functions/actions/applicationRecords')(config, firebase, db, auth);
 const initialiseQualifyingTest = require('../functions/actions/qualifyingTests/initialiseQualifyingTest')(config, firebase, db);
 const {getDocument, getDocuments, applyUpdates} = require('../functions/shared/helpers');
 const { faker } = require('@faker-js/faker');

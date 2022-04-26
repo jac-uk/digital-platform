@@ -3,8 +3,8 @@ const { getAllDocuments, applyUpdates, getDocument, getDocuments } = require('..
 
 const testApplicationsFileName = 'test_applications.json';
 
-module.exports = (config, firebase, db) => {
-  const { initialiseApplicationRecords } = require('../../actions/applicationRecords')(config, firebase, db);
+module.exports = (config, firebase, db, auth) => {
+  const { initialiseApplicationRecords } = require('../../actions/applicationRecords')(config, firebase, db, auth);
   const { refreshApplicationCounts } = require('../../actions/exercises/refreshApplicationCounts')(firebase, db);
   const { newNotificationCharacterCheckRequest } = require('../../shared/factories')(config);
   const slack = require('../../shared/slack')(config);
@@ -138,12 +138,12 @@ module.exports = (config, firebase, db) => {
   }
 
   /**
-    * load test applications JSON file from cloud storage 
+    * load test applications JSON file from cloud storage
     */
   async function loadTestApplications() {
     const bucket = firebase.storage().bucket(config.STORAGE_URL);
     const file = bucket.file(testApplicationsFileName);
-    
+
     try {
       const data = await file.download();
       return JSON.parse(data[0]);
@@ -154,17 +154,17 @@ module.exports = (config, firebase, db) => {
 
   /**
    * Create test applications
-   * 
+   *
    * @param {string} exerciseId
    * @param {number} noOfTestApplications
    * @param {array} testApplications
-   * 
+   *
    * @return {object}
-   * 
+   *
    */
   async function createTestApplications(data) {
     const { exerciseId, noOfTestApplications, testApplications } = data;
-    
+
     // format test applications with exercise information
     const exercise = await getDocument(db.collection('exercises').doc(exerciseId));
     const applications = [];
@@ -189,7 +189,7 @@ module.exports = (config, firebase, db) => {
 
     // create applications
     let resCreateApplications = await createApplications(applications);
-    
+
     // initialise application records
     initialiseApplicationRecords({ exerciseId: exercise.id });
 
@@ -202,10 +202,10 @@ module.exports = (config, firebase, db) => {
 
   /**
    * Delete applications
-   * 
+   *
    * @param {string} exerciseId
-   * 
-   * @return {object} 
+   *
+   * @return {object}
    */
    async function deleteApplications(exerciseId) {
     let documentsRef;
@@ -216,7 +216,7 @@ module.exports = (config, firebase, db) => {
 
     let noOfDeletedApplications = 0;
     let noOfDeletedApplicationRecords = 0;
-    
+
     // fetch existing application records
     documentsRef = db.collection('applicationRecords').where('exercise.id', '==', exerciseId);
     documents = await getDocuments(documentsRef);

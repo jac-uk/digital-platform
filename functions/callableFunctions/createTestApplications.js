@@ -29,7 +29,7 @@ module.exports = functions.runWith(runtimeOptions).region('europe-west2').https.
   if (!testApplications) {
     throw new functions.https.HttpsError('failed-precondition', `Failed to load test applications from cloud storage (${fileName}).`);
   }
-  
+
   const maxNoOfTestApplications = testApplications.length;
   if (data.noOfTestApplications < 1 || data.noOfTestApplications > maxNoOfTestApplications) {
     throw new functions.https.HttpsError('invalid-argument', 'The number of test applications should be between 1 and ' + maxNoOfTestApplications);
