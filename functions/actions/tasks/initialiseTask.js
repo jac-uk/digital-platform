@@ -10,12 +10,21 @@ module.exports = (config, firebase, db) => {
   * @param {*} `params` is an object containing
   *   `exerciseId` (required) ID of exercise
   *   `type` (required) type of task
+  *   `stage` (required) exercise stage
+  *   `status` (optional) exercise status
   */
   async function initialiseTask(params) {
 
     // get exercise
     const exercise = await getDocument(db.doc(`exercises/${params.exerciseId}`));
     if (!exercise) return 0;
+
+    // check if task already exists
+    const task = await getDocument(db.doc(`exercises/${params.exerciseId}/tasks/${params.type}`));
+    if (task) {
+      console.log('task already exists');
+      return 0;
+    }
 
     // get application records
     let queryRef = db.collection('applicationRecords')
@@ -38,21 +47,38 @@ module.exports = (config, firebase, db) => {
       });
     });
 
-    // update exercise
-    const exerciseData = {};
-    exerciseData[`_processingProgress.${params.type}.status`] = 'initialised';
-    exerciseData[`_processingProgress.${params.type}.statusLog.initialised`] = firebase.firestore.FieldValue.serverTimestamp();
-    exerciseData[`_processingProgress.${params.type}.applications`] = applicationRecords.length;
+    // create task
+    const taskData = {
+      status: 'initialised',
+      statusLog: {
+        initialised: firebase.firestore.FieldValue.serverTimestamp(),
+      },
+      _stats: {
+        totalApplications: applicationRecords.length,
+      },
+      grades: config.GRADES,
+      capabilities: exercise.capabilities,
+      scoreSheet: scoreSheet({ type: params.type, exercise: exercise })
+    };
     commands.push({
-      command: 'update',
-      ref: db.collection('exercises').doc(params.exerciseId),
-      data: exerciseData,
+      command: 'set',
+      ref: db.doc(`exercises/${params.exerciseId}/tasks/${params.type}`),
+      data: taskData,
     });
 
     // write to db
     const result = await applyUpdates(db, commands);
     return result ? applicationRecords.length : 0;
 
+  }
+
+  function scoreSheet({ type, exercise }) {
+    let scoreSheet = {};
+    if (type === config.TASK_TYPE.SIFT) {
+      scoreSheet = exercise.capabilities.reduce((acc, curr) => (acc[curr] = '', acc), {});
+    }
+    // TODO selection & scenario
+    return scoreSheet;
   }
 
 };
