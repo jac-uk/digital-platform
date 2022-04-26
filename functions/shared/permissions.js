@@ -73,11 +73,11 @@ const PERMISSIONS = {
         value: 'e7',
       },
       canCreateExercises: {
-        label: 'Can ceate exercises',
+        label: 'Can create exercises',
         value: 'e8',
       },
       canUpdateExercises: {
-        label: 'Can edit exercises',
+        label: 'Can update exercises',
         value: 'e9',
       },
     },
@@ -89,12 +89,12 @@ const PERMISSIONS = {
         label: 'Can view all candidates',
         value: 'c1',
       },
-      canAddNotesToCandidates: {
-        label: 'Can add notes to candidates',
-        value: 'c2',
-      },
       canUpdateCandidates: {
         label: 'Can update candidates',
+        value: 'c2',
+      },
+      canAddNotesToCandidates: {
+        label: 'Can add notes to candidates',
         value: 'c3',
       },
     },
