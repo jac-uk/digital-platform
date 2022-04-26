@@ -222,8 +222,12 @@ module.exports = (db, auth) => {
         const convertedPermissions = [];
         if (role.enabledPermissions && role.enabledPermissions.length > 0) {
           for (const permission of role.enabledPermissions) {
-            if (PERMISSIONS[permission]) {
-              convertedPermissions.push(PERMISSIONS[permission]);
+            for (const group of Object.keys(PERMISSIONS)) {
+              for (const p of Object.keys(PERMISSIONS[group].permissions)) {
+                if (p === permission) {
+                  convertedPermissions.push(PERMISSIONS[group].permissions[p].value);
+                }
+              }
             }
           }
         }

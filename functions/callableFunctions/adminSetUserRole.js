@@ -10,7 +10,7 @@ module.exports = functions.region('europe-west2').https.onCall(async (data, cont
   if (!context.auth) {
     throw new functions.https.HttpsError('failed-precondition', 'The function must be called while authenticated.');
   }
-  if (!context.auth.token.rp || !context.auth.token.rp.includes(PERMISSIONS.canChangeUserRole)) {
+  if (!context.auth.token.rp || !context.auth.token.rp.includes(PERMISSIONS.users.permissions.canChangeUserRole.value)) {
     throw new functions.https.HttpsError('failed-precondition', 'Permission denied');
   }
   if (!checkArguments({
