@@ -76,7 +76,7 @@ module.exports = (config, firebase, db) => {
         data.scoreSheet[applicationRecord.id] = task.scoreSheet;
       });
 
-      const relevantPanellists = panellists.filter(panellist => panel.panellistIds.indexOf(panellist.id) >= 0)
+      const relevantPanellists = panellists.filter(panellist => panel.panellistIds.indexOf(panellist.id) >= 0);
       relevantPanellists.forEach(panellist => {
         data.panellists[panellist.id] = {
           fullName: panellist.fullName,
