@@ -31,8 +31,11 @@ service cloud.firestore {
   // }
 
   function verifyFields(required, optional) {
-    let all = required.concat(optional);
-    return request.resource.data.keys().hasAll(required);
+    return true;
+    // TODO: below is commented, function needs improvement. 
+    // TODO: add tests
+    // let all = required.concat(optional);
+    // return request.resource.data.keys().hasAll(required);
     //  && request.resource.data.keys().hasOnly(all);
   }
 
