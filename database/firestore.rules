@@ -31,8 +31,12 @@ service cloud.firestore {
   // }
 
   function verifyFields(required, optional) {
-    let all = required.concat(optional);
-    return request.resource.data.keys().hasAll(required) && request.resource.data.keys().hasOnly(all);
+    return true;
+    // TODO: below is commented, function needs improvement. 
+    // TODO: add tests
+    // let all = required.concat(optional);
+    // return request.resource.data.keys().hasAll(required);
+    //  && request.resource.data.keys().hasOnly(all);
   }
 
   match /databases/{database}/documents {
@@ -167,10 +171,10 @@ service cloud.firestore {
           )
           ||
           (  // consent form information is requested
-           resource.data.status in ["draft", "applied"] && request.resource.data.status in ["draft", "applied"] &&
-           resource.data.characterChecks.status == "requested" &&
-           request.resource.data.characterChecks.status in ["requested", "completed"]
-           )
+          resource.data.status in ["draft", "applied"] && request.resource.data.status in ["draft", "applied"] &&
+          resource.data.characterChecks.status == "requested" &&
+          request.resource.data.characterChecks.status in ["requested", "completed"]
+          )
         );
 
       // allow JAC admins to edit an application @TODO restrict what can be changed and by which role
