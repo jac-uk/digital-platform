@@ -1,4 +1,4 @@
-const { setup, teardown, setupAdmin } = require('./helpers');
+const { setup, teardown, setupAdmin, mockRoleId, getEnabledPermissions } = require('./helpers');
 const { assertFails, assertSucceeds } = require('@firebase/rules-unit-testing');
 const COLLECTION_NAME = 'qualifyingTestResponses';
 const PERMISSIONS = require('../../functions/shared/permissions');
@@ -94,7 +94,10 @@ describe(COLLECTION_NAME, () => {
     });
 
     it('allow JAC admin with permission to list qualifying test responses', async () => {
-      const db = await setup({ ...mockVerifiedJACDigitalUser, rp: [PERMISSIONS.qualifyingTestResponses.permissions.canReadQualifyingTestResponses.value] });
+      const db = await setup(
+        { ...mockVerifiedJACDigitalUser, ...mockRoleId },
+        getEnabledPermissions([PERMISSIONS.qualifyingTestResponses.permissions.canReadQualifyingTestResponses.value])
+      );
       await setupAdmin(db, mockData);
       await assertSucceeds(db.collection(COLLECTION_NAME).get());
     });
@@ -124,7 +127,10 @@ describe(COLLECTION_NAME, () => {
     });
 
     it('allow JAC admin with permission to read qualifying test response', async () => {
-      const db = await setup({ ...mockVerifiedJACDigitalUser, rp: [PERMISSIONS.qualifyingTestResponses.permissions.canReadQualifyingTestResponses.value] });
+      const db = await setup(
+        { ...mockVerifiedJACDigitalUser, ...mockRoleId },
+        getEnabledPermissions([PERMISSIONS.qualifyingTestResponses.permissions.canReadQualifyingTestResponses.value])
+      );
       await setupAdmin(db, mockData);
       await assertSucceeds(db.collection(COLLECTION_NAME).doc('qtr1').get());
     });
@@ -168,13 +174,19 @@ describe(COLLECTION_NAME, () => {
     });
 
     it('allow authenticated user with verified @judicialappointments.digital email and permission to update a qualifying test', async () => {
-      const db = await setup({ ...mockVerifiedJACDigitalUser, rp: [PERMISSIONS.qualifyingTestResponses.permissions.canUpdateQualifyingTestResponses.value] });
+      const db = await setup(
+        { ...mockVerifiedJACDigitalUser, ...mockRoleId },
+        getEnabledPermissions([PERMISSIONS.qualifyingTestResponses.permissions.canUpdateQualifyingTestResponses.value])
+      );
       await setupAdmin(db, mockData);
       await assertSucceeds(db.collection(COLLECTION_NAME).doc('qtr1').update({ type: 'critical_analysis', startDate: tomorrow, endDate: dayAfterTomorrow }));
     });
 
     it('allow authenticated user with verified @judicialappointments.gov.uk email and permission to update a qualifying test', async () => {
-      const db = await setup({ ...mockVerifiedJACUser, rp: [PERMISSIONS.qualifyingTestResponses.permissions.canUpdateQualifyingTestResponses.value] });
+      const db = await setup(
+        { ...mockVerifiedJACDigitalUser, ...mockRoleId },
+        getEnabledPermissions([PERMISSIONS.qualifyingTestResponses.permissions.canUpdateQualifyingTestResponses.value])
+      );
       await setupAdmin(db, mockData);
       await assertSucceeds(db.collection(COLLECTION_NAME).doc('qtr1').update({ type: 'critical_analysis', startDate: tomorrow, endDate: dayAfterTomorrow }));
     });

@@ -1,4 +1,4 @@
-const { setup, teardown } = require('./helpers');
+const { setup, teardown, mockRoleId, getEnabledPermissions } = require('./helpers');
 const { assertFails, assertSucceeds } = require('@firebase/rules-unit-testing');
 const PERMISSIONS = require('../../functions/shared/permissions');
 
@@ -14,7 +14,15 @@ describe('QualifyingTestReports', () => {
     });
 
     it('allow JAC admin with permission to create qualifyingTestReports', async () => {
-      const db = await setup({ uid: 'user1', email: 'user@judicialappointments.gov.uk', email_verified: true, rp: [PERMISSIONS.qualifyingTestReports.permissions.canCreateQualifyingTestReports.value] });
+      const db = await setup(
+        {
+          uid: 'user1',
+          email: 'user@judicialappointments.gov.uk',
+          email_verified: true,
+          ...mockRoleId,
+        },
+        getEnabledPermissions([PERMISSIONS.qualifyingTestReports.permissions.canCreateQualifyingTestReports.value])
+      );
       await assertSucceeds(db.collection('qualifyingTestReports').add({}));
     });
   });
@@ -26,7 +34,15 @@ describe('QualifyingTestReports', () => {
     });
 
     it('allow JAC admin with permission to read qualifyingTestReports', async () => {
-      const db = await setup({ uid: 'user1', email: 'user@judicialappointments.gov.uk', email_verified: true, rp: [PERMISSIONS.qualifyingTestReports.permissions.canReadQualifyingTestReports.value] });
+      const db = await setup(
+        {
+          uid: 'user1',
+          email: 'user@judicialappointments.gov.uk',
+          email_verified: true,
+          ...mockRoleId,
+        },
+        getEnabledPermissions([PERMISSIONS.qualifyingTestReports.permissions.canReadQualifyingTestReports.value])
+      );
       await assertSucceeds(db.collection('qualifyingTestReports').get());
     });
   });
@@ -42,8 +58,16 @@ describe('QualifyingTestReports', () => {
 
     it('allow JAC admin with permission to update qualifyingTestReports', async () => {
       const db = await setup(
-        { uid: 'user1', email: 'user@judicialappointments.gov.uk', email_verified: true, rp: [PERMISSIONS.qualifyingTestReports.permissions.canUpdateQualifyingTestReports.value] },
-        { 'qualifyingTestReports/report1': {} }
+        {
+          uid: 'user1',
+          email: 'user@judicialappointments.gov.uk',
+          email_verified: true,
+          ...mockRoleId,
+        },
+        { 
+          ...getEnabledPermissions([PERMISSIONS.qualifyingTestReports.permissions.canUpdateQualifyingTestReports.value]),
+          'qualifyingTestReports/report1': {},
+        }
       );
       await assertSucceeds(db.collection('qualifyingTestReports').doc('report1').update({}));
     });
@@ -60,8 +84,16 @@ describe('QualifyingTestReports', () => {
 
     it('allow JAC admin with permission to delete qualifyingTestReports', async () => {
       const db = await setup(
-        { uid: 'user1', email: 'user@judicialappointments.gov.uk', email_verified: true, rp: [PERMISSIONS.qualifyingTestReports.permissions.canDeleteQualifyingTestReports.value] },
-        { 'qualifyingTestReports/report1': {} }
+        {
+          uid: 'user1',
+          email: 'user@judicialappointments.gov.uk',
+          email_verified: true,
+          ...mockRoleId,
+        },
+        { 
+          ...getEnabledPermissions([PERMISSIONS.qualifyingTestReports.permissions.canDeleteQualifyingTestReports.value]),
+          'qualifyingTestReports/report1': {},
+        }
       );
       await assertSucceeds(db.collection('qualifyingTestReports').doc('report1').delete());
     });

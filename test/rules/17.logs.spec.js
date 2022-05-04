@@ -1,4 +1,4 @@
-const { setup, teardown } = require('./helpers');
+const { setup, teardown, mockRoleId, getEnabledPermissions } = require('./helpers');
 const { assertFails, assertSucceeds } = require('@firebase/rules-unit-testing');
 const PERMISSIONS = require('../../functions/shared/permissions');
 
@@ -14,7 +14,15 @@ describe('Logs', () => {
     });
 
     it('allow JAC admin with permission to read login logs', async () => {
-      const db = await setup({ uid: 'user1', email: 'user@judicialappointments.gov.uk', email_verified: true, rp: [PERMISSIONS.logs.permissions.canReadLogs.value] });
+      const db = await setup(
+        {
+          uid: 'user1',
+          email: 'user@judicialappointments.gov.uk',
+          email_verified: true,
+          ...mockRoleId,
+        },
+        getEnabledPermissions([PERMISSIONS.logs.permissions.canReadLogs.value])
+      );
       await assertSucceeds(db.collection('logs').doc('login/1/1').get());
     });
 
@@ -24,7 +32,15 @@ describe('Logs', () => {
     });
 
     it('allow JAC admin with permission to read event logs', async () => {
-      const db = await setup({ uid: 'user1', email: 'user@judicialappointments.gov.uk', email_verified: true, rp: [PERMISSIONS.logs.permissions.canReadLogs.value] });
+      const db = await setup(
+        {
+          uid: 'user1',
+          email: 'user@judicialappointments.gov.uk',
+          email_verified: true,
+          ...mockRoleId,
+        },
+        getEnabledPermissions([PERMISSIONS.logs.permissions.canReadLogs.value])
+      );
       await assertSucceeds(db.collection('logs').doc('type/events/1').get());
     });
   });
