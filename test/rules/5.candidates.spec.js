@@ -19,12 +19,20 @@ describe('Candidates', () => {
       const db = await setup({ uid: 'user1' });
       await assertSucceeds(db.collection('candidates').doc('user1').set({}));
     });
-    it('allow authenticated JAC user to create candidate', async () => {
+    it('prevent authenticated JAC user without permission from creating candidate', async () => {
       const db = await setup({ uid: 'user1', email: 'user1@judicialappointments.gov.uk', email_verified: true });
+      await assertFails(db.collection('candidates').doc('random').set({}));
+    });
+    it('allow authenticated JAC user with permission to create candidate', async () => {
+      const db = await setup({ uid: 'user1', email: 'user1@judicialappointments.gov.uk', email_verified: true, rp: ['c2'] });
       await assertSucceeds(db.collection('candidates').doc('random').set({}));
     });
-    it('allow authenticated JAC user to create candidate documents', async () => {
+    it('prevent authenticated JAC user without permission from creating candidate documents', async () => {
       const db = await setup({ uid: 'user1', email: 'user1@judicialappointments.gov.uk', email_verified: true });
+      await assertFails(db.doc('candidates/random/documents/personalDetails').set({}));
+    });
+    it('allow authenticated JAC user with permission to create candidate documents', async () => {
+      const db = await setup({ uid: 'user1', email: 'user1@judicialappointments.gov.uk', email_verified: true, rp: ['c2'] });
       await assertSucceeds(db.doc('candidates/random/documents/personalDetails').set({}));
     });
   });
@@ -49,6 +57,22 @@ describe('Candidates', () => {
       const db = await setup({ uid: 'user1' });
       await assertFails(db.doc('candidates/user2').get());
     });
+    it('prevent authenticated JAC user without permission from reading candidate', async () => {
+      const db = await setup({ uid: 'user1', email: 'user1@judicialappointments.gov.uk', email_verified: true });
+      await assertFails(db.collection('candidates').get());
+    });
+    it('allow authenticated JAC user with permission to read candidate', async () => {
+      const db = await setup({ uid: 'user1', email: 'user1@judicialappointments.gov.uk', email_verified: true, rp: ['c1'] });
+      await assertSucceeds(db.collection('candidates').get());
+    });
+    it('prevent authenticated JAC user without permission from reading candidate documents', async () => {
+      const db = await setup({ uid: 'user1', email: 'user1@judicialappointments.gov.uk', email_verified: true });
+      await assertFails(db.doc('candidates/user2').get());
+    });
+    it('allow authenticated JAC user with permission to read candidate documents', async () => {
+      const db = await setup({ uid: 'user1', email: 'user1@judicialappointments.gov.uk', email_verified: true, rp: ['c1'] });
+      await assertSucceeds(db.doc('candidates/user2').get());
+    });
   });
 
   context('Update', () => {
@@ -62,6 +86,22 @@ describe('Candidates', () => {
     });
     it('allow authenticated user to update own candidate data', async () => {
       const db = await setup({ uid: 'user1' });
+      await assertSucceeds(db.collection('candidates').doc('user1').update({}));
+    });
+    it('prevent authenticated JAC user without permission from updating candidate', async () => {
+      const db = await setup({ uid: 'user1', email: 'user1@judicialappointments.gov.uk', email_verified: true });
+      await assertFails(db.collection('candidates').doc('user2').update({}));
+    });
+    it('allow authenticated JAC user with permission to update candidate', async () => {
+      const db = await setup({ uid: 'user1', email: 'user1@judicialappointments.gov.uk', email_verified: true, rp: ['c3'] });
+      await assertSucceeds(db.collection('candidates').doc('user1').update({}));
+    });
+    it('prevent authenticated JAC user without permission from updating candidate documents', async () => {
+      const db = await setup({ uid: 'user1', email: 'user1@judicialappointments.gov.uk', email_verified: true });
+      await assertFails(db.collection('candidates').doc('user2').update({}));
+    });
+    it('allow authenticated JAC user with permission to update candidate documents', async () => {
+      const db = await setup({ uid: 'user1', email: 'user1@judicialappointments.gov.uk', email_verified: true, rp: ['c3'] });
       await assertSucceeds(db.collection('candidates').doc('user1').update({}));
     });
   });
@@ -78,6 +118,22 @@ describe('Candidates', () => {
     it('prevent authenticated user from deleting own candidate data', async () => {
       const db = await setup({ uid: 'user1' });
       await assertFails(db.collection('candidates').doc('user1').delete());
+    });
+    it('prevent authenticated JAC user without permission from deleting candidate', async () => {
+      const db = await setup({ uid: 'user1', email: 'user1@judicialappointments.gov.uk', email_verified: true });
+      await assertFails(db.collection('candidates').doc('user2').delete());
+    });
+    it('allow authenticated JAC user with permission to delete candidate', async () => {
+      const db = await setup({ uid: 'user1', email: 'user1@judicialappointments.gov.uk', email_verified: true, rp: ['c4'] });
+      await assertSucceeds(db.collection('candidates').doc('user2').delete());
+    });
+    it('prevent authenticated JAC user without permission from deleting candidate documents', async () => {
+      const db = await setup({ uid: 'user1', email: 'user1@judicialappointments.gov.uk', email_verified: true });
+      await assertFails(db.collection('candidates').doc('user2').delete());
+    });
+    it('allow authenticated JAC user with permission to delete candidate documents', async () => {
+      const db = await setup({ uid: 'user1', email: 'user1@judicialappointments.gov.uk', email_verified: true, rp: ['c4'] });
+      await assertSucceeds(db.collection('candidates').doc('user2').delete());
     });
   });
 

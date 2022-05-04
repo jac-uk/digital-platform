@@ -76,9 +76,17 @@ describe('Applications', () => {
       await assertFails(db.collection('applications').where('userId', '==', 'user2').get());
     });
 
-    it('allow JAC admin to list all applications', async () => {
+    it('prevent JAC admin without permission from listing all applications', async () => {
       const db = await setup(
         { uid: 'user1', email: 'user@judicialappointments.gov.uk', email_verified: true },
+        { 'applications/app1': { }, 'applications/app2': { } }
+      );
+      await assertFails(db.collection('applications').get());
+    });
+
+    it('allow JAC admin with permission to list all applications', async () => {
+      const db = await setup(
+        { uid: 'user1', email: 'user@judicialappointments.gov.uk', email_verified: true, rp: ['a1'] },
         { 'applications/app1': { }, 'applications/app2': { } }
       );
       await assertSucceeds(db.collection('applications').get());
@@ -208,6 +216,25 @@ describe('Applications', () => {
         'applications/app1': { userId: 'user1', status: 'applied', exerciseId: 'ex1' },
       });
       await assertFails(db.collection('applications').doc('app1').update({characterChecks: {status: 'completed'}}));
+    });
+
+
+    it('prevent JAC admin without permission from updating applications', async () => {
+      const db = await setup({ uid: 'user1', email: 'user@judicialappointments.gov.uk', email_verified: true });
+      await setupAdmin(db, {
+        'applications/app1': { userId: 'user2', status: 'draft', exerciseId: 'ex1' },
+        'exercises/ex1': { applicationOpenDate: getTimeStamp(yesterday), applicationCloseDate: getTimeStamp(tomorrow) },
+      });
+      await assertFails(db.collection('applications').doc('app1').update({ userId: 'user2' }));
+    });
+
+    it('allow JAC admin with permission to update applications', async () => {
+      const db = await setup({ uid: 'user1', email: 'user@judicialappointments.gov.uk', email_verified: true, rp: ['a3']  });
+      await setupAdmin(db, {
+        'applications/app1': { userId: 'user2', status: 'draft', exerciseId: 'ex1' },
+        'exercises/ex1': { applicationOpenDate: getTimeStamp(yesterday), applicationCloseDate: getTimeStamp(tomorrow) },
+      });
+      await assertSucceeds(db.collection('applications').doc('app1').update({ userId: 'user2' }));
     });
   });
 
