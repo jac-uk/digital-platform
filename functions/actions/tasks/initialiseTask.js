@@ -49,19 +49,20 @@ module.exports = (config, firebase, db) => {
 
     // create task
     const taskData = {
-      status: 'initialised',
-      statusLog: {
-        initialised: firebase.firestore.FieldValue.serverTimestamp(),
-      },
       _stats: {
         totalApplications: applicationRecords.length,
       },
       grades: config.GRADES,
       capabilities: exercise.capabilities,
-      scoreSheet: scoreSheet({ type: params.type, exercise: exercise }),
+      emptyScoreSheet: scoreSheet({ type: params.type, exercise: exercise }),
       startDate: taskStartDate({ type: params.type, exercise: exercise }),
       endDate: taskEndDate({ type: params.type, exercise: exercise }),
     };
+    if (params.type === config.TASK_TYPE.SELECTION) {
+      taskData['selectionCategories'] = exercise.selectionCategories;
+    }
+    taskData['status'] = config.TASK_STATUS.INITIALISED;
+    taskData[`statusLog.${config.TASK_STATUS.INITIALISED}`] = firebase.firestore.FieldValue.serverTimestamp();
     commands.push({
       command: 'set',
       ref: db.doc(`exercises/${params.exerciseId}/tasks/${params.type}`),
@@ -71,24 +72,38 @@ module.exports = (config, firebase, db) => {
     // write to db
     const result = await applyUpdates(db, commands);
     return result ? applicationRecords.length : 0;
-
   }
 
   function scoreSheet({ type, exercise }) {
     let scoreSheet = {};
-    if (type === config.TASK_TYPE.SIFT) {
-      scoreSheet = exercise.capabilities.reduce((acc, curr) => (acc[curr] = '', acc), {});
+    switch (type) {
+      case config.TASK_TYPE.SIFT:
+        scoreSheet = exercise.capabilities.reduce((acc, curr) => (acc[curr] = '', acc), {});
+        break;
+      case config.TASK_TYPE.SELECTION:
+        exercise.selectionCategories.forEach(category => {
+          scoreSheet[category] = exercise.capabilities.reduce((acc, curr) => (acc[curr] = '', acc), {});
+        });
+        break;
+      case config.TASK_TYPE.SCENARIO:
+        // TODO scenario
+        scoreSheet = exercise.capabilities.reduce((acc, curr) => (acc[curr] = '', acc), {});
+        break;
     }
-    // TODO selection & scenario
     return scoreSheet;
   }
 
   function taskStartDate({ type, exercise }) {
     switch (type) {
       case config.TASK_TYPE.SIFT:
-        return exercise.siftStartDate;
+        if (exercise.shortlistingMethods.indexOf('name-blind-paper-sift') >= 0 && exercise.nameBlindSiftStartDate) {
+          return exercise.nameBlindSiftStartDate;
+        } else {
+          return exercise.siftStartDate;
+        }
       case config.TASK_TYPE.SELECTION:
         return getEarliestDate(exercise.selectionDays.map(selectionDay => convertToDate(selectionDay.selectionDayStart)));
+        // TODO scenario
     }
     return null;
   }
@@ -96,9 +111,14 @@ module.exports = (config, firebase, db) => {
   function taskEndDate({ type, exercise }) {
     switch (type) {
       case config.TASK_TYPE.SIFT:
-        return exercise.siftEndDate;
+        if (exercise.shortlistingMethods.indexOf('name-blind-paper-sift') >= 0 && exercise.nameBlindSiftEndDate) {
+          return exercise.nameBlindSiftEndDate;
+        } else {
+          return exercise.siftEndDate;
+        }
       case config.TASK_TYPE.SELECTION:
         return getLatestDate(exercise.selectionDays.map(selectionDay => convertToDate(selectionDay.selectionDayEnd)));
+        // TODO scenario
     }
     return null;
   }
