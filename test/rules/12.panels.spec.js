@@ -1,5 +1,6 @@
 const { setup, teardown } = require('./helpers');
 const { assertFails, assertSucceeds } = require('@firebase/rules-unit-testing');
+const PERMISSIONS = require('../../functions/shared/permissions');
 
 describe('Panels', () => {
   afterEach(async () => {
@@ -13,7 +14,7 @@ describe('Panels', () => {
     });
 
     it('allow JAC admin with permission to create panels', async () => {
-      const db = await setup({ uid: 'user1', email: 'user@judicialappointments.gov.uk', email_verified: true, rp: ['p2'] });
+      const db = await setup({ uid: 'user1', email: 'user@judicialappointments.gov.uk', email_verified: true, rp: [PERMISSIONS.panels.permissions.canCreatePanels.value] });
       await assertSucceeds(db.collection('panels').add({}));
     });
   });
@@ -25,7 +26,7 @@ describe('Panels', () => {
     });
 
     it('allow JAC admin with permission to read panels', async () => {
-      const db = await setup({ uid: 'user1', email: 'user@judicialappointments.gov.uk', email_verified: true, rp: ['p1'] });
+      const db = await setup({ uid: 'user1', email: 'user@judicialappointments.gov.uk', email_verified: true, rp: [PERMISSIONS.panels.permissions.canReadPanels.value] });
       await assertSucceeds(db.collection('panels').get());
     });
   });
@@ -41,7 +42,7 @@ describe('Panels', () => {
 
     it('allow JAC admin with permission to update panels', async () => {
       const db = await setup(
-        { uid: 'user1', email: 'user@judicialappointments.gov.uk', email_verified: true, rp: ['p3'] },
+        { uid: 'user1', email: 'user@judicialappointments.gov.uk', email_verified: true, rp: [PERMISSIONS.panels.permissions.canUpdatePanels.value] },
         { 'panels/panel1': {} }
       );
       await assertSucceeds(db.collection('panels').doc('panel1').update({}));
@@ -59,7 +60,7 @@ describe('Panels', () => {
 
     it('allow JAC admin with permission to delete panels', async () => {
       const db = await setup(
-        { uid: 'user1', email: 'user@judicialappointments.gov.uk', email_verified: true, rp: ['p4'] },
+        { uid: 'user1', email: 'user@judicialappointments.gov.uk', email_verified: true, rp: [PERMISSIONS.panels.permissions.canDeletePanels.value] },
         { 'panels/panel1': {} }
       );
       await assertSucceeds(db.collection('panels').doc('panel1').delete());

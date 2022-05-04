@@ -1,5 +1,6 @@
 const { setup, teardown, setupAdmin, getValidExerciseData } = require('./helpers');
 const { assertFails, assertSucceeds } = require('@firebase/rules-unit-testing');
+const PERMISSIONS = require('../../functions/shared/permissions');
 
 describe('Exercises', () => {
   afterEach(async () => {
@@ -43,12 +44,12 @@ describe('Exercises', () => {
     });
 
     it('allow authenticated user with verified @judicialappointments.digital email and permission to create an exercise', async () => {
-      const db = await setup({ uid: 'user1', email: 'user@judicialappointments.digital', email_verified: true, rp: ['e2'] });
+      const db = await setup({ uid: 'user1', email: 'user@judicialappointments.digital', email_verified: true, rp: [PERMISSIONS.exercises.permissions.canCreateExercises.value] });
       await assertSucceeds(db.collection('exercises').add(getValidExerciseData()));
     });
 
     it('allow authenticated user with verified @judicialappointments.gov.uk email and permission to create an exercise', async () => {
-      const db = await setup({ uid: 'user1', email: 'user@judicialappointments.gov.uk', email_verified: true, rp: ['e2'] });
+      const db = await setup({ uid: 'user1', email: 'user@judicialappointments.gov.uk', email_verified: true, rp: [PERMISSIONS.exercises.permissions.canCreateExercises.value] });
       await assertSucceeds(db.collection('exercises').add(getValidExerciseData()));
     });
   });
@@ -85,12 +86,12 @@ describe('Exercises', () => {
     });
 
     it('allow authenticated user with verified @judicialappointments.digital email and permission to read exercises', async () => {
-      const db = await setup({ uid: 'user1', email: 'user@judicialappointments.digital', email_verified: true, rp: ['e1'] });
+      const db = await setup({ uid: 'user1', email: 'user@judicialappointments.digital', email_verified: true, rp: [PERMISSIONS.exercises.permissions.canReadExercises.value] });
       await assertSucceeds(db.collection('exercises').get());
     });
 
     it('allow authenticated user with verified @judicialappointments.gov.uk email and permission to read exercises', async () => {
-      const db = await setup({ uid: 'user1', email: 'user@judicialappointments.gov.uk', email_verified: true, rp: ['e1'] });
+      const db = await setup({ uid: 'user1', email: 'user@judicialappointments.gov.uk', email_verified: true, rp: [PERMISSIONS.exercises.permissions.canReadExercises.value] });
       await assertSucceeds(db.collection('exercises').get());
     });
   });
@@ -152,7 +153,7 @@ describe('Exercises', () => {
 
     it('allow authenticated user with verified @judicialappointments.digital email and permission to update an exercise', async () => {
       const db = await setup(
-        { uid: 'user1', email: 'user@judicialappointments.digital', email_verified: true, rp: ['e3'] },
+        { uid: 'user1', email: 'user@judicialappointments.digital', email_verified: true, rp: [PERMISSIONS.exercises.permissions.canUpdateExercises.value] },
         { 'exercises/ex1': { } }
       );
       await assertSucceeds(db.collection('exercises').doc('ex1').update(getValidExerciseData()));
@@ -160,7 +161,7 @@ describe('Exercises', () => {
 
     it('allow authenticated user with verified @judicialappointments.gov.uk email and permission to update an exercise', async () => {
       const db = await setup(
-        { uid: 'user1', email: 'user@judicialappointments.gov.uk', email_verified: true, rp: ['e3'] },
+        { uid: 'user1', email: 'user@judicialappointments.gov.uk', email_verified: true, rp: [PERMISSIONS.exercises.permissions.canUpdateExercises.value] },
         { 'exercises/ex1': { } }
       );
       await assertSucceeds(db.collection('exercises').doc('ex1').update(getValidExerciseData()));
@@ -199,12 +200,12 @@ describe('Exercises', () => {
     });
 
     it('allow authenticated user with verified @judicialappointments.digital email and permission to delete an exercise', async () => {
-      const db = await setup({ uid: 'user1', email: 'user@judicialappointments.digital', email_verified: true, rp: ['e4'] });
+      const db = await setup({ uid: 'user1', email: 'user@judicialappointments.digital', email_verified: true, rp: [PERMISSIONS.exercises.permissions.canDeleteExercises.value] });
       await assertSucceeds(db.collection('exercises').doc('ex1').delete());
     });
 
     it('prevent authenticated user with verified @judicialappointments.gov.uk email and permission to delete an exercise', async () => {
-      const db = await setup({ uid: 'user1', email: 'user@judicialappointments.gov.uk', email_verified: true, rp: ['e4'] });
+      const db = await setup({ uid: 'user1', email: 'user@judicialappointments.gov.uk', email_verified: true, rp: [PERMISSIONS.exercises.permissions.canDeleteExercises.value] });
       await assertSucceeds(db.collection('exercises').doc('ex1').delete());
     });
   });

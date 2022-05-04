@@ -1,5 +1,6 @@
 const { setup, teardown } = require('./helpers');
 const { assertFails, assertSucceeds } = require('@firebase/rules-unit-testing');
+const PERMISSIONS = require('../../functions/shared/permissions');
 
 describe('Settings', () => {
   afterEach(async () => {
@@ -13,7 +14,7 @@ describe('Settings', () => {
     });
 
     it('allow JAC admin with permission to read settings', async () => {
-      const db = await setup({ uid: 'user1', email: 'user@judicialappointments.gov.uk', email_verified: true, rp: ['s1'] });
+      const db = await setup({ uid: 'user1', email: 'user@judicialappointments.gov.uk', email_verified: true, rp: [PERMISSIONS.settings.permissions.canReadSettings.value] });
       await assertSucceeds(db.collection('settings').doc('services').get());
     });
   });
@@ -29,7 +30,7 @@ describe('Settings', () => {
 
     it('allow JAC admin with permission to update settings', async () => {
       const db = await setup(
-        { uid: 'user1', email: 'user@judicialappointments.gov.uk', email_verified: true, rp: ['s3'] },
+        { uid: 'user1', email: 'user@judicialappointments.gov.uk', email_verified: true, rp: [PERMISSIONS.settings.permissions.canUpdateSettings.value] },
         { 'settings/services': {} }
       );
       await assertSucceeds(db.collection('settings').doc('services').update({}));

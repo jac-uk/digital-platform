@@ -1,5 +1,6 @@
 const { setup, teardown } = require('./helpers');
 const { assertFails, assertSucceeds } = require('@firebase/rules-unit-testing');
+const PERMISSIONS = require('../../functions/shared/permissions');
 
 describe('ApplicationRecords', () => {
   afterEach(async () => {
@@ -13,7 +14,7 @@ describe('ApplicationRecords', () => {
     });
 
     it('allow JAC admin with permission to create applicationRecords', async () => {
-      const db = await setup({ uid: 'user1', email: 'user@judicialappointments.gov.uk', email_verified: true, rp: ['ar2'] });
+      const db = await setup({ uid: 'user1', email: 'user@judicialappointments.gov.uk', email_verified: true, rp: [PERMISSIONS.applicationRecords.permissions.canCreateApplicationRecords.value] });
       await assertSucceeds(db.collection('applicationRecords').add({}));
     });
   });
@@ -25,7 +26,7 @@ describe('ApplicationRecords', () => {
     });
 
     it('allow JAC admin with permission to read applicationRecords', async () => {
-      const db = await setup({ uid: 'user1', email: 'user@judicialappointments.gov.uk', email_verified: true, rp: ['ar1'] });
+      const db = await setup({ uid: 'user1', email: 'user@judicialappointments.gov.uk', email_verified: true, rp: [PERMISSIONS.applicationRecords.permissions.canReadApplicationRecords.value] });
       await assertSucceeds(db.collection('applicationRecords').get());
     });
   });
@@ -41,7 +42,7 @@ describe('ApplicationRecords', () => {
 
     it('allow JAC admin with permission to update applicationRecords', async () => {
       const db = await setup(
-        { uid: 'user1', email: 'user@judicialappointments.gov.uk', email_verified: true, rp: ['ar3'] },
+        { uid: 'user1', email: 'user@judicialappointments.gov.uk', email_verified: true, rp: [PERMISSIONS.applicationRecords.permissions.canUpdateApplicationRecords.value] },
         { 'applicationRecords/record1': {} }
       );
       await assertSucceeds(db.collection('applicationRecords').doc('record1').update({}));
@@ -59,7 +60,7 @@ describe('ApplicationRecords', () => {
 
     it('allow JAC admin with permission to delete applicationRecords', async () => {
       const db = await setup(
-        { uid: 'user1', email: 'user@judicialappointments.gov.uk', email_verified: true, rp: ['ar4'] },
+        { uid: 'user1', email: 'user@judicialappointments.gov.uk', email_verified: true, rp: [PERMISSIONS.applicationRecords.permissions.canDeleteApplicationRecords.value] },
         { 'applicationRecords/record1': {} }
       );
       await assertSucceeds(db.collection('applicationRecords').doc('record1').delete());

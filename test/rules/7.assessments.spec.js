@@ -1,5 +1,6 @@
 const { setup, teardown, setupAdmin, getTimeStamp } = require('./helpers');
 const { assertFails, assertSucceeds } = require('@firebase/rules-unit-testing');
+const PERMISSIONS = require('../../functions/shared/permissions');
 
 describe('Assessments', () => {
   afterEach(async () => {
@@ -26,7 +27,7 @@ describe('Assessments', () => {
       await assertFails(db.collection('assessments').add({ assessor: { email: 'user1@user1.user1' }, status: 'pending', dueDate: getTimeStamp(tomorrow) }));
     });
     it('allow JAC admin with permission to create an assessment', async () => {
-      const db = await setup({ uid: 'user1', email: 'user@judicialappointments.gov.uk', email_verified: true, rp: ['as2'] });
+      const db = await setup({ uid: 'user1', email: 'user@judicialappointments.gov.uk', email_verified: true, rp: [PERMISSIONS.assessments.permissions.canCreateAssessments.value] });
       await assertSucceeds(db.collection('assessments').add({ assessor: { email: 'user1@user1.user1' }, status: 'pending', dueDate: getTimeStamp(tomorrow) }));
     });
   });
@@ -76,7 +77,7 @@ describe('Assessments', () => {
 
     it('allow JAC admin with permission to list all assessments', async () => {
       const db = await setup(
-        { uid: 'user1', email: 'user@judicialappointments.gov.uk', email_verified: true, rp: ['as1'] },
+        { uid: 'user1', email: 'user@judicialappointments.gov.uk', email_verified: true, rp: [PERMISSIONS.assessments.permissions.canReadAssessments.value] },
         { 'assessments/assessment1': { assessor: { email: 'user1@user1.user1' } } }
       );
       await assertSucceeds(db.collection('assessments').get());
@@ -141,7 +142,7 @@ describe('Assessments', () => {
       await assertFails(db.collection('assessments').doc('assessment1').update({ status: 'completed' }));
     });
     it('allow JAC admin with permission to update assessment data', async () => {
-      const db = await setup({ uid: 'user1', email: 'user@judicialappointments.gov.uk', email_verified: true, rp: ['as3'] });
+      const db = await setup({ uid: 'user1', email: 'user@judicialappointments.gov.uk', email_verified: true, rp: [PERMISSIONS.assessments.permissions.canUpdateAssessments.value] });
       await setupAdmin(db, {
         'assessments/assessment1': { assessor: { email: 'user1@user1.user1' }, status: 'pending', dueDate: getTimeStamp(tomorrow) },
       });

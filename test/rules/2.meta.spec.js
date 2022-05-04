@@ -1,5 +1,6 @@
 const { setup, teardown } = require('./helpers');
 const { assertFails, assertSucceeds } = require('@firebase/rules-unit-testing');
+const PERMISSIONS = require('../../functions/shared/permissions');
 
 describe('Meta', () => {
   afterEach(async () => {
@@ -59,11 +60,11 @@ describe('Meta', () => {
       await assertFails(db.doc('meta/stats').get());
     });
     it('allow authenticated user with verified @judicialappointments.digital email and permission to read stats', async () => {
-      const db = await setup({ uid: 'user1', email: 'user@judicialappointments.digital', email_verified: true, rp: ['m1'] });
+      const db = await setup({ uid: 'user1', email: 'user@judicialappointments.digital', email_verified: true, rp: [PERMISSIONS.meta.permissions.canReadMeta.value] });
       await assertSucceeds(db.doc('meta/stats').get());
     });
     it('allow authenticated user with verified @judicialappointments.gov.uk email and permission to read stats', async () => {
-      const db = await setup({ uid: 'user1', email: 'user@judicialappointments.gov.uk', email_verified: true, rp: ['m1'] });
+      const db = await setup({ uid: 'user1', email: 'user@judicialappointments.gov.uk', email_verified: true, rp: [PERMISSIONS.meta.permissions.canReadMeta.value] });
       await assertSucceeds(db.doc('meta/stats').get());
     });
   });
@@ -94,14 +95,14 @@ describe('Meta', () => {
     });
     it('allow authenticated JAC user with permission to increment exercisesCount by 1', async () => {
       const db = await setup(
-        { uid: 'user1', email: 'user@judicialappointments.gov.uk', email_verified: true, rp: ['m3'] },
+        { uid: 'user1', email: 'user@judicialappointments.gov.uk', email_verified: true, rp: [PERMISSIONS.meta.permissions.canUpdateMeta.value] },
         { 'meta/stats': { exercisesCount: 4 } }
       );
       await assertSucceeds(db.doc('meta/stats').update({exercisesCount: 5}));
     });
     it('prevent authenticated JAC user with permission from changing exercisesCount by anything other than an increment of 1', async () => {
       const db = await setup(
-        { uid: 'user1', email: 'user@judicialappointments.gov.uk', email_verified: true, rp: ['m3'] },
+        { uid: 'user1', email: 'user@judicialappointments.gov.uk', email_verified: true, rp: [PERMISSIONS.meta.permissions.canUpdateMeta.value] },
         { 'meta/stats': { exercisesCount: 4 } }
       );
       await assertFails(db.doc('meta/stats').update({exercisesCount: 4}));
@@ -129,7 +130,5 @@ describe('Meta', () => {
       await assertFails(db.doc('meta/stats').delete());
     });
   });
-
-
 
 });

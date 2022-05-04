@@ -1,5 +1,6 @@
 const { setup, teardown } = require('./helpers');
 const { assertFails, assertSucceeds } = require('@firebase/rules-unit-testing');
+const PERMISSIONS = require('../../functions/shared/permissions');
 
 describe('Notes', () => {
   afterEach(async () => {
@@ -13,7 +14,7 @@ describe('Notes', () => {
     });
 
     it('allow JAC admin with permission to create notes', async () => {
-      const db = await setup({ uid: 'user1', email: 'user@judicialappointments.gov.uk', email_verified: true, rp: ['nt2'] });
+      const db = await setup({ uid: 'user1', email: 'user@judicialappointments.gov.uk', email_verified: true, rp: [PERMISSIONS.notes.permissions.canCreateNotes.value] });
       await assertSucceeds(db.collection('notes').add({ body: '', createdBy: '' }));
     });
   });
@@ -25,7 +26,7 @@ describe('Notes', () => {
     });
 
     it('allow JAC admin with permission to read notes', async () => {
-      const db = await setup({ uid: 'user1', email: 'user@judicialappointments.gov.uk', email_verified: true, rp: ['nt1'] });
+      const db = await setup({ uid: 'user1', email: 'user@judicialappointments.gov.uk', email_verified: true, rp: [PERMISSIONS.notes.permissions.canReadNotes.value] });
       await assertSucceeds(db.collection('notes').get());
     });
   });
@@ -41,7 +42,7 @@ describe('Notes', () => {
 
     it('allow JAC admin with permission to update notes', async () => {
       const db = await setup(
-        { uid: 'user1', email: 'user@judicialappointments.gov.uk', email_verified: true, rp: ['nt3'] },
+        { uid: 'user1', email: 'user@judicialappointments.gov.uk', email_verified: true, rp: [PERMISSIONS.notes.permissions.canUpdateNotes.value] },
         { 'notes/note1': {} }
       );
       await assertSucceeds(db.collection('notes').doc('note1').update({ body: '', createdBy: '' }));
@@ -59,7 +60,7 @@ describe('Notes', () => {
 
     it('allow JAC admin with permission to delete notes', async () => {
       const db = await setup(
-        { uid: 'user1', email: 'user@judicialappointments.gov.uk', email_verified: true, rp: ['nt4'] },
+        { uid: 'user1', email: 'user@judicialappointments.gov.uk', email_verified: true, rp: [PERMISSIONS.notes.permissions.canDeleteNotes.value] },
         { 'notes/note1': {} }
       );
       await assertSucceeds(db.collection('notes').doc('note1').delete());

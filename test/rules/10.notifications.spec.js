@@ -1,5 +1,6 @@
 const { setup, teardown } = require('./helpers');
 const { assertFails, assertSucceeds } = require('@firebase/rules-unit-testing');
+const PERMISSIONS = require('../../functions/shared/permissions');
 
 describe('Notifications', () => {
   afterEach(async () => {
@@ -13,7 +14,7 @@ describe('Notifications', () => {
     });
 
     it('allow JAC admin with permission to read notifications', async () => {
-      const db = await setup({ uid: 'user1', email: 'user@judicialappointments.gov.uk', email_verified: true, rp: ['n1'] });
+      const db = await setup({ uid: 'user1', email: 'user@judicialappointments.gov.uk', email_verified: true, rp: [PERMISSIONS.notifications.permissions.canReadNotifications.value] });
       await assertSucceeds(db.collection('notifications').get());
     });
   });

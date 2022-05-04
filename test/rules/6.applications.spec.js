@@ -1,5 +1,6 @@
 const { setup, teardown, setupAdmin, getTimeStamp } = require('./helpers');
 const { assertFails, assertSucceeds } = require('@firebase/rules-unit-testing');
+const PERMISSIONS = require('../../functions/shared/permissions');
 
 describe('Applications', () => {
   afterEach(async () => {
@@ -86,7 +87,7 @@ describe('Applications', () => {
 
     it('allow JAC admin with permission to list all applications', async () => {
       const db = await setup(
-        { uid: 'user1', email: 'user@judicialappointments.gov.uk', email_verified: true, rp: ['a1'] },
+        { uid: 'user1', email: 'user@judicialappointments.gov.uk', email_verified: true, rp: [PERMISSIONS.applications.permissions.canReadApplications.value] },
         { 'applications/app1': { }, 'applications/app2': { } }
       );
       await assertSucceeds(db.collection('applications').get());
@@ -229,7 +230,7 @@ describe('Applications', () => {
     });
 
     it('allow JAC admin with permission to update applications', async () => {
-      const db = await setup({ uid: 'user1', email: 'user@judicialappointments.gov.uk', email_verified: true, rp: ['a3']  });
+      const db = await setup({ uid: 'user1', email: 'user@judicialappointments.gov.uk', email_verified: true, rp: [PERMISSIONS.applications.permissions.canUpdateApplications.value]  });
       await setupAdmin(db, {
         'applications/app1': { userId: 'user2', status: 'draft', exerciseId: 'ex1' },
         'exercises/ex1': { applicationOpenDate: getTimeStamp(yesterday), applicationCloseDate: getTimeStamp(tomorrow) },
