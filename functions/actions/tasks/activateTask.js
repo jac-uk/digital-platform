@@ -14,23 +14,26 @@ module.exports = (config, firebase, db) => {
   async function activateTask(params) {
 
     // get task
-    const task = await getDocument(db.doc(`exercises/${params.exerciseId}/tasks/${params.type}`));
+    const taskRef = db.doc(`exercises/${params.exerciseId}/tasks/${params.type}`);
+    const task = await getDocument(taskRef);
     if (!task) return 0;
+    if (task.status !== config.TASK_STATUS.INITIALISED) return 0;
 
     // panels
     const panels = await getDocuments(
       db.collection('panels')
       .where('exercise.id', '==', params.exerciseId)
       .where('type', '==', params.type)
+      .where('applicationIds', '!=', '')
       .select('panellistIds', 'applicationIds')
     );
+    const panelIds = panels.map(panel => panel.id);
 
     // relevant panellists
     let panellists = [];
     const panellistIds = [].concat(...panels.map(panel => panel.panellistIds || []));
     if (panellistIds.length) {
       const queries = panellistIds.map(panellistId => {
-        // return db.doc(`panellists/${panellistId}`).select('fullName');
         return db
           .collection('panellists')
           .where(firebase.firestore.FieldPath.documentId(), '==', panellistId)
@@ -56,7 +59,6 @@ module.exports = (config, firebase, db) => {
     // update panels
     const commands = [];
     panels.forEach(panel => {
-      if (!panel.applicationIds || !panel.panellistIds) return;
       const data = {
         applications: {},
         panellists: {},
@@ -73,7 +75,7 @@ module.exports = (config, firebase, db) => {
           referenceNumber: applicationRecord.application.referenceNumber,
           // TODO include fullName for non name-blind
         };
-        data.scoreSheet[applicationRecord.id] = task.scoreSheet;
+        data.scoreSheet[applicationRecord.id] = task.emptyScoreSheet;
       });
 
       const relevantPanellists = panellists.filter(panellist => panel.panellistIds.indexOf(panellist.id) >= 0);
@@ -89,6 +91,17 @@ module.exports = (config, firebase, db) => {
         ref: db.collection('panels').doc(panel.id),
         data: data,
       });
+    });
+
+    // update task
+    const taskData = {};
+    taskData.panelIds = panelIds;
+    taskData['status'] = config.TASK_STATUS.ACTIVATED;
+    taskData[`statusLog.${config.TASK_STATUS.ACTIVATED}`] = firebase.firestore.FieldValue.serverTimestamp();
+    commands.push({
+      command: 'update',
+      ref: taskRef,
+      data: taskData,
     });
 
     // write to db

@@ -219,6 +219,14 @@ module.exports = {
     SELECTION: 'selection',
     SCENARIO: 'scenario',
   },
+  TASK_STATUS: {
+    INITIALISED: 'initialised',
+    ACTIVATED: 'activated',
+    MODERATION_INITIALISED: 'moderationInitialised',
+    MODERATION_ACTIVATED: 'moderationActivated',
+    FINALISED: 'finalised',
+    COMPLETED: 'completed',
+  },
   PANEL_STATUS: {
     // TODO include all statuses
     DRAFT: 'draft',
