@@ -1,4 +1,4 @@
-const { setup, teardown, mockRoleId, getEnabledPermissions } = require('./helpers');
+const { setup, teardown } = require('./helpers');
 const { assertFails, assertSucceeds } = require('@firebase/rules-unit-testing');
 const PERMISSIONS = require('../../functions/shared/permissions');
 
@@ -14,15 +14,7 @@ describe('Settings', () => {
     });
 
     it('allow JAC admin with permission to read settings', async () => {
-      const db = await setup(
-        {
-          uid: 'user1',
-          email: 'user@judicialappointments.gov.uk',
-          email_verified: true,
-          ...mockRoleId,
-        },
-        getEnabledPermissions([PERMISSIONS.settings.permissions.canReadSettings.value])
-      );
+      const db = await setup({ uid: 'user1', email: 'user@judicialappointments.gov.uk', email_verified: true, rp: [PERMISSIONS.settings.permissions.canReadSettings.value] });
       await assertSucceeds(db.collection('settings').doc('services').get());
     });
   });
@@ -38,16 +30,8 @@ describe('Settings', () => {
 
     it('allow JAC admin with permission to update settings', async () => {
       const db = await setup(
-        {
-          uid: 'user1',
-          email: 'user@judicialappointments.gov.uk',
-          email_verified: true,
-          ...mockRoleId,
-        },
-        {
-          ...getEnabledPermissions([PERMISSIONS.settings.permissions.canUpdateSettings.value]),
-          'settings/services': {},
-        }
+        { uid: 'user1', email: 'user@judicialappointments.gov.uk', email_verified: true, rp: [PERMISSIONS.settings.permissions.canUpdateSettings.value] },
+        { 'settings/services': {} }
       );
       await assertSucceeds(db.collection('settings').doc('services').update({}));
     });

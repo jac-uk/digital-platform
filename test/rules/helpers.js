@@ -1,7 +1,6 @@
 const firebase = require('@firebase/rules-unit-testing');
 const fs = require('fs');
 const admin = require('firebase-admin');
-const PERMISSIONS = require('../../functions/shared/permissions');
 
 const projectId = `rules-spec-${Date.now()}`;
 
@@ -70,23 +69,4 @@ module.exports.getValidExerciseData = () => {
     state: 'draft',
     createdBy: 'user1',
   };
-};
-
-const mockRoleId = 'role';
-module.exports.mockRoleId = { r: mockRoleId };
-
-// will return ["canReadExercises", "canCreateExercises"] if value is ["e1", "e2"]
-module.exports.getEnabledPermissions = value => {
-  const enabledPermissions = [];
-  for (const group of Object.keys(PERMISSIONS)) {
-    for (const p of Object.keys(PERMISSIONS[group].permissions)) {
-      if (value.includes(PERMISSIONS[group].permissions[p].value)) {
-        enabledPermissions.push(p);
-      }
-    }
-  }
-
-  let obj = {};
-  obj[`roles/${mockRoleId}`] = { enabledPermissions };
-  return obj;
 };

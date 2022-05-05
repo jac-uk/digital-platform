@@ -1,4 +1,4 @@
-const { setup, teardown, mockRoleId, getEnabledPermissions } = require('./helpers');
+const { setup, teardown } = require('./helpers');
 const { assertFails, assertSucceeds } = require('@firebase/rules-unit-testing');
 const PERMISSIONS = require('../../functions/shared/permissions');
 
@@ -14,15 +14,7 @@ describe('Invitations', () => {
     });
 
     it('allow JAC admin with permission to create invitations', async () => {
-      const db = await setup(
-        {
-          uid: 'user1',
-          email: 'user@judicialappointments.gov.uk',
-          email_verified: true,
-          ...mockRoleId,
-        },
-        getEnabledPermissions([PERMISSIONS.invitations.permissions.canCreateInvitations.value])
-      );
+      const db = await setup({ uid: 'user1', email: 'user@judicialappointments.gov.uk', email_verified: true, rp: [PERMISSIONS.invitations.permissions.canCreateInvitations.value] });
       await assertSucceeds(db.collection('invitations').add({}));
     });
   });
@@ -34,15 +26,7 @@ describe('Invitations', () => {
     });
 
     it('allow JAC admin with permission to read invitations', async () => {
-      const db = await setup(
-        {
-          uid: 'user1',
-          email: 'user@judicialappointments.gov.uk',
-          email_verified: true,
-          ...mockRoleId,
-        },
-        getEnabledPermissions([PERMISSIONS.invitations.permissions.canReadInvitations.value])
-      );
+      const db = await setup({ uid: 'user1', email: 'user@judicialappointments.gov.uk', email_verified: true, rp: [PERMISSIONS.invitations.permissions.canReadInvitations.value] });
       await assertSucceeds(db.collection('invitations').get());
     });
   });
@@ -58,16 +42,8 @@ describe('Invitations', () => {
 
     it('allow JAC admin with permission to update invitations', async () => {
       const db = await setup(
-        {
-          uid: 'user1',
-          email: 'user@judicialappointments.gov.uk',
-          email_verified: true,
-          ...mockRoleId,
-        },
-        {
-          ...getEnabledPermissions([PERMISSIONS.invitations.permissions.canUpdateInvitations.value]),
-          'invitations/invitation1': {},
-        }
+        { uid: 'user1', email: 'user@judicialappointments.gov.uk', email_verified: true, rp: [PERMISSIONS.invitations.permissions.canUpdateInvitations.value] },
+        { 'invitations/invitation1': {} }
       );
       await assertSucceeds(db.collection('invitations').doc('invitation1').update({}));
     });
@@ -84,16 +60,8 @@ describe('Invitations', () => {
 
     it('allow JAC admin with permission to delete invitations', async () => {
       const db = await setup(
-        {
-          uid: 'user1',
-          email: 'user@judicialappointments.gov.uk',
-          email_verified: true,
-          ...mockRoleId,
-        },
-        {
-          ...getEnabledPermissions([PERMISSIONS.invitations.permissions.canDeleteInvitations.value]),
-          'invitations/invitation1': {},
-        }
+        { uid: 'user1', email: 'user@judicialappointments.gov.uk', email_verified: true, rp: [PERMISSIONS.invitations.permissions.canDeleteInvitations.value] },
+        { 'invitations/invitation1': {} }
       );
       await assertSucceeds(db.collection('invitations').doc('invitation1').delete());
     });
