@@ -30,22 +30,26 @@ module.exports = (config, firebase, db, auth) => {
           record[column] = '(blank)';
         }
 
-
         // Handle array values
         if(_.isArray(record[column])) {
-
           let formattedArray = '';
           for (const arrayItem of record[column]) {
             const arrayValuePaths = getArrayValuePath(column);
             if(arrayValuePaths) {
               for (const arrayValuePath of arrayValuePaths) {
-                formattedArray += _.get(arrayItem, arrayValuePath, '(blank)') + ' - ';
+                const str = _.get(arrayItem, arrayValuePath, '(blank)');
+                // Handle time values
+                formattedArray += (_.get(str, '_seconds', null) ? formatDate(str) : str) + ' - ';
               }
-              //remove last ', ' from string
+              // remove the last ' - ' from string
               formattedArray = formattedArray.substring(0, formattedArray.length - 3);
-              formattedArray += '; ';
+            } else {
+              formattedArray += arrayItem ? arrayItem : '(blank)';
             }
+            formattedArray += ', ';
           }
+
+          // remove the last ', ' from string
           formattedArray = formattedArray.substring(0, formattedArray.length - 2);
 
           // if something went wrong with parsing the array, just return true
@@ -54,7 +58,6 @@ module.exports = (config, firebase, db, auth) => {
           } else {
             record[column] = formattedArray;
           }
-
         }
 
         // Handle time values
@@ -98,7 +101,8 @@ module.exports = (config, firebase, db, auth) => {
 
   function getArrayValuePath(column) {
     const arrayValuePaths = {
-      qualifications: ['type', 'location'],
+      qualifications: ['type', 'location', 'date'],
+      experience: ['jobTitle', 'startDate', 'endDate'],
     };
     return arrayValuePaths[column];
   }

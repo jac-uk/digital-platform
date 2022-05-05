@@ -3,6 +3,7 @@ const { getDocument, getDocuments, applyUpdates } = require('../shared/helpers')
 module.exports = (config, firebase, db) => {
   const { newApplicationRecord } = require('../shared/factories')(config);
   const newQualifyingTestResponse = require('../shared/factories/QualifyingTests/newQualifyingTestResponse')(config, firebase);
+  const { logEvent } = require('./logs/logEvent')(firebase, db);
   const { refreshApplicationCounts } = require('../actions/exercises/refreshApplicationCounts')(firebase, db);
 
   return {
@@ -16,7 +17,6 @@ module.exports = (config, firebase, db) => {
   }
 
   async function onApplicationRecordUpdate(dataBefore, dataAfter) {
-
     // update application with stage/status changes (part of admin#1341 Staged Applications)
     if (dataBefore.stage !== dataAfter.stage || dataBefore.status !== dataAfter.status) {
       const applicationData = {};
@@ -24,9 +24,17 @@ module.exports = (config, firebase, db) => {
       applicationData['_processing.status'] = dataAfter.status;
       if (dataBefore.application) {
         await db.doc(`applications/${dataBefore.application.id}`).update(applicationData);
+        // activity log
+        logEvent('info', 'Application status/stage changed', {
+          applicationId: dataAfter.application.id,
+          candidateName: dataAfter.candidate.fullName,
+          exerciseRef: dataAfter.exercise.referenceNumber,
+          status: dataAfter.status,
+          stage: dataAfter.stage,
+          empApplied: dataAfter.flags.empApplied,
+        });
       }
     }
-
     return true;
   }
 

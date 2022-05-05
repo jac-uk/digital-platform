@@ -2,11 +2,11 @@
 
 const config = require('./shared/config');
 const { firebase, app, db } = require('./shared/admin.js');
-const initialiseQualifyingTest = require('../functions/actions/qualifyingTests/initialiseQualifyingTest')(config, firebase, db);
+const { cancelAssessments } = require('../functions/actions/assessments')(config, firebase, db);
 
 const main = async () => {
-  return initialiseQualifyingTest({
-    qualifyingTestId: 'sKqACHtcOYBFfHcVQry8',
+  return cancelAssessments({
+    exerciseId: 'wdpALbyICL7ZxxN5AQt8',
   });
 };
 
@@ -17,6 +17,6 @@ main()
     return process.exit();
   })
   .catch((error) => {
-    console.log(error);
+    console.error(error);
     process.exit();
   });

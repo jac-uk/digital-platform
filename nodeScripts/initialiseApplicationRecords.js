@@ -2,11 +2,11 @@
 
 const config = require('./shared/config');
 const { firebase, app, db } = require('./shared/admin.js');
-const initialiseQualifyingTest = require('../functions/actions/qualifyingTests/initialiseQualifyingTest')(config, firebase, db);
+const { initialiseApplicationRecords } = require('../functions/actions/applicationRecords')(config, firebase, db);
 
 const main = async () => {
-  return initialiseQualifyingTest({
-    qualifyingTestId: 'sKqACHtcOYBFfHcVQry8',
+  return initialiseApplicationRecords({
+    exerciseId: '8CIlAsDbtMfr2vnfjmYh',
   });
 };
 
@@ -17,6 +17,7 @@ main()
     return process.exit();
   })
   .catch((error) => {
-    console.log(error);
+    console.log('Error encounted while processing');
+    console.error(error);
     process.exit();
   });

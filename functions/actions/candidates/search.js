@@ -26,7 +26,6 @@ module.exports = (firebase, db) => {
    * @returns Number of candidates updated or false if none
    */
   async function updateAllCandidates(candidateId) {
-
     // get candidate(s)
     const candidateData = {};
     const personalDetailsRefs = [];
@@ -37,7 +36,7 @@ module.exports = (firebase, db) => {
         candidates.push(candidate);
       }
     } else {
-      candidates = await getDocuments(db.collection('candidates'));
+      candidates = await getDocuments(db.collection('candidates').select());
     }
     for (let i = 0, len = candidates.length; i < len; ++i) {
       candidateData[candidates[i].id] = {};
@@ -48,19 +47,18 @@ module.exports = (firebase, db) => {
     const personalDetailsDocs = await db.getAll(...personalDetailsRefs, { fieldMask: ['firstName', 'lastName', 'fullName', 'email', 'nationalInsuranceNumber'] });
     personalDetailsDocs.forEach((doc) => {
       let candidateId = doc.ref.path.replace('candidates/', '').replace('/documents/personalDetails', '');
+      candidateData[candidateId].fullName = '';
+      candidateData[candidateId].email = '';
+      candidateData[candidateId].nationalInsuranceNumber = '';
       if (doc.exists) {
         const personalDetails = doc.data();
         if (personalDetails.firstName && personalDetails.lastName) {
           candidateData[candidateId].fullName = `${personalDetails.firstName} ${personalDetails.lastName}`;
         } else {
-          candidateData[candidateId].fullName = personalDetails.fullName;
+          candidateData[candidateId].fullName = personalDetails.fullName || '';
         }
-        candidateData[candidateId].email = personalDetails.email;
-        candidateData[candidateId].nationalInsuranceNumber = personalDetails.nationalInsuranceNumber;
-      } else {
-        candidateData[candidateId].fullName = '';
-        candidateData[candidateId].email = '';
-        candidateData[candidateId].nationalInsuranceNumber = '';
+        candidateData[candidateId].email = personalDetails.email || '';
+        candidateData[candidateId].nationalInsuranceNumber = personalDetails.nationalInsuranceNumber || '';
       }
     });
 
@@ -83,6 +81,8 @@ module.exports = (firebase, db) => {
       candidateData[candidates[i].id].applicationsMap = applicationsMap;
       candidateData[candidates[i].id].referenceNumbers = referenceNumbers;
     }
+
+
 
     // construct update commands
     const commands = [];

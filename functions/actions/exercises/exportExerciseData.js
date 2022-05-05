@@ -68,7 +68,7 @@ module.exports = (config, firebase, db) => {
       for (let j = 0, lenJ = applicationRecords.length; j < lenJ; j++) {
         const applicationRecord = applicationRecords[j];
         // const application = await getDocument(db.collection('application').doc(applicationRecord.id));
-        const application = applications.find(item => item.id === applicationRecord.id);
+        const application = applications.find(item => item.id === applicationRecord.id) || null;
         joinedData.push({
           id: applicationRecord.id,
           application: application,
