@@ -4,6 +4,7 @@ const { firebase, db } = require('../shared/admin.js');
 const { checkArguments } = require('../shared/helpers.js');
 const { checkFunctionEnabled } = require('../shared/serviceSettings.js')(db);
 const activateQualifyingTest = require('../actions/qualifyingTests/activateQualifyingTest')(config, firebase, db);
+const { checkFunctionEnabled } = require('../shared/serviceSettings.js')(db);
 
 module.exports = functions.region('europe-west2').https.onCall(async (data, context) => {
   await checkFunctionEnabled();

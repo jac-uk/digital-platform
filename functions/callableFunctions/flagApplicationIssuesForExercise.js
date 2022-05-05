@@ -2,8 +2,10 @@ const functions = require('firebase-functions');
 const config = require('../shared/config.js');
 const { db } = require('../shared/admin.js');
 const flagApplicationIssues = require('../actions/applications/flagApplicationIssues')(config, db);
+const { checkFunctionEnabled } = require('../shared/serviceSettings.js')(db);
 
 module.exports = functions.region('europe-west2').https.onCall(async (data, context) => {
+  await checkFunctionEnabled();
   // @TODO check auth.token for correct role, when we have implemented roles
   if (!context.auth) {
     throw new functions.https.HttpsError('failed-precondition', 'The function must be called while authenticated.');
