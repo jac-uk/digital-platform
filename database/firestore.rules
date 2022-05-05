@@ -31,8 +31,12 @@ service cloud.firestore {
   // }
 
   function verifyFields(required, optional) {
-    let all = required.concat(optional);
-    return request.resource.data.keys().hasAll(required) && request.resource.data.keys().hasOnly(all);
+    return true;
+    // TODO: below is commented, function needs improvement. 
+    // TODO: add tests
+    // let all = required.concat(optional);
+    // return request.resource.data.keys().hasAll(required);
+    //  && request.resource.data.keys().hasOnly(all);
   }
 
   match /databases/{database}/documents {
@@ -49,6 +53,11 @@ service cloud.firestore {
       match /reports/{reportId} {
         allow read: if userIsAuthenticated() && userIsJAC();
       }
+      match /tasks/{taskId} {
+        allow create, update: if userIsAuthenticated() && userIsJAC();
+        allow read: if userIsAuthenticated() && userIsJAC();
+      }
+
     }
 
     match /notifications/{notificationId} {
@@ -65,6 +74,14 @@ service cloud.firestore {
     match /panels/{panelId} {
       allow read: if userIsAuthenticated() && userIsJAC();
       allow write: if userIsAuthenticated() && userIsJAC();
+    }
+
+    match /panellists/{panellistId} {
+  		// Users can read & write to their own candidate document
+      allow get, create, update: if request.auth.uid == panellistId;
+
+      // Allow JAC to read and write
+      allow read, write: if userIsAuthenticated() && userIsJAC();
     }
 
     match /meta/stats {
@@ -154,10 +171,10 @@ service cloud.firestore {
           )
           ||
           (  // consent form information is requested
-           resource.data.status in ["draft", "applied"] && request.resource.data.status in ["draft", "applied"] &&
-           resource.data.characterChecks.status == "requested" &&
-           request.resource.data.characterChecks.status in ["requested", "completed"]
-           )
+          resource.data.status in ["draft", "applied"] && request.resource.data.status in ["draft", "applied"] &&
+          resource.data.characterChecks.status == "requested" &&
+          request.resource.data.characterChecks.status in ["requested", "completed"]
+          )
         );
 
       // allow JAC admins to edit an application @TODO restrict what can be changed and by which role

@@ -214,6 +214,28 @@ module.exports = {
       CANCELLED: 'cancelled',
     },
   },
+  TASK_TYPE: {
+    SIFT: 'sift',
+    SELECTION: 'selection',
+    SCENARIO: 'scenario',
+  },
+  TASK_STATUS: {
+    INITIALISED: 'initialised',
+    ACTIVATED: 'activated',
+    MODERATION_INITIALISED: 'moderationInitialised',
+    MODERATION_ACTIVATED: 'moderationActivated',
+    FINALISED: 'finalised',
+    COMPLETED: 'completed',
+  },
+  PANEL_STATUS: {
+    // TODO include all statuses
+    DRAFT: 'draft',
+    APPROVED: 'approved',
+    PROCESSING: 'processing',
+    CREATED: 'created',
+    SUBMITTED: 'submitted',
+  },
+  GRADES: ['A', 'B', 'C', 'D'],
   NOTIFY_KEY: functions.config().notify.key,
   SLACK_URL: functions.config().slack.url,
   STORAGE_URL: functions.config().project.id + '.appspot.com',

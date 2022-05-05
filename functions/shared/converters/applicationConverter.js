@@ -53,7 +53,7 @@ module.exports = () => {
         html.addTable(getQualificationData(exercise, application));
       }
 
-      if (exercise.typeOfExercise === 'legal') {
+      if (exercise.typeOfExercise === 'legal' || exercise.typeOfExercise === 'leadership') {
         html.addHeading('Post-qualification experience');
         html.addTable(getPostQualificationData(application));
       }

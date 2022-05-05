@@ -12,8 +12,12 @@ module.exports = {
   isDateInPast, // @TODO we want one set of date & exercise helpers (see actions/shared/converters)
   formatDate,
   getDate,
+  convertToDate,
   timeDifference,
+  getEarliestDate,
+  getLatestDate,
   convertStringToSearchParts,
+  isProduction,
 };
 
 async function getDocument(query) {
@@ -205,13 +209,23 @@ function convertToDate(value) {
   return value;
 }
 
+function getEarliestDate(arrDates) {
+  const sortedDates = arrDates.sort((a, b) => timeDifference(a, b));
+  return sortedDates[0];
+}
+
+function getLatestDate(arrDates) {
+  const sortedDates = arrDates.sort((a, b) => timeDifference(a, b));
+  return sortedDates[sortedDates.length - 1];
+}
+
 function timeDifference(date1, date2) {
   date1 = convertToDate(date1);
   date2 = convertToDate(date2);
   if (date1 && date2) {
     const timestamp1 = date1.getTime();
     const timestamp2 = date2.getTime();
-    return timestamp2 - timestamp1;
+    return timestamp1 - timestamp2;
   } else {
     return 0;
   }
@@ -239,4 +253,9 @@ function convertStringToSearchParts(value, delimiter) {
     }
   }
   return search;
+}
+
+function isProduction() {
+  const projectId = firebase.instanceId().app.options.projectId;
+  return projectId.includes('production');
 }

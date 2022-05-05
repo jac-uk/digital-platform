@@ -1,7 +1,6 @@
 
 // Scheduled
 exports.backupFirestore = require('./scheduledFunctions/backupFirestore');
-exports.getApplicationData = require('./callableFunctions/getApplicationData');
 exports.backupAuthentication = require('./scheduledFunctions/backupAuthentication');
 exports.processNotifications = require('./scheduledFunctions/processNotifications');
 
@@ -20,6 +19,7 @@ exports.onCandidatePersonalDetailsCreate = require('./backgroundFunctions/onCand
 exports.onCandidatePersonalDetailsUpdate = require('./backgroundFunctions/onCandidatePersonalDetailsUpdate');
 
 // Callable
+exports.getApplicationData = require('./callableFunctions/getApplicationData');
 exports.generateDiversityReport = require('./callableFunctions/generateDiversityReport');
 exports.generateOutreachReport = require('./callableFunctions/generateOutreachReport');
 exports.flagApplicationIssuesForExercise = require('./callableFunctions/flagApplicationIssuesForExercise');
@@ -65,13 +65,8 @@ exports.adminDisableNewUser = require('./callableFunctions/adminDisableNewUser')
 exports.adminSyncUserRolePermissions = require('./callableFunctions/adminSyncUserRolePermissions');
 exports.customReport = require('./callableFunctions/customReport');
 exports.refreshApplicationCounts = require('./callableFunctions/refreshApplicationCounts');
-
-// exports.onExerciseUpdate_PublishVacancy = require('./exercises/onExerciseUpdate_PublishVacancy');
-// exports.onWriteVacancyStats = require('./exercises/onWriteVacancyStats');
-
-// // exports.sendExerciseStartedEmail = require('./exercises/sendExerciseStartedEmail');
-// // exports.handleExerciseMailboxChange = require('./exercises/handleExerciseMailboxChange');
-// // exports.handleCandidateOnCreate = require('./candidates/handleCandidateOnCreate');
-// exports.handleApplicationOnCreate = require('./applications/handleApplicationOnCreate');
-// // exports.handleApplicationOnUpdate = require('./applications/handleApplicationOnUpdate');
-// // exports.handleExerciseTimelineDates = require('./exercises/handleExerciseTimelineDates');
+exports.createTestApplications = require('./callableFunctions/createTestApplications');
+exports.deleteApplications = require('./callableFunctions/deleteApplications');
+exports.createTestUsers = require('./callableFunctions/createTestUsers');
+exports.deleteTestUsers = require('./callableFunctions/deleteTestUsers');
+exports.initialiseTask = require('./callableFunctions/initialiseTask');

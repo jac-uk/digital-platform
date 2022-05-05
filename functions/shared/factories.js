@@ -284,10 +284,10 @@ module.exports = (CONSTANTS) => {
       notes: [],
     };
     if (application.personalDetails) {
-      applicationRecord.candidate.fullName = application.personalDetails.fullName;
-      applicationRecord.candidate.reasonableAdjustments = application.personalDetails.reasonableAdjustments;
-      applicationRecord.candidate.reasonableAdjustmentsDetails = application.personalDetails.reasonableAdjustmentsDetails;
-      applicationRecord.flags.reasonableAdjustments = application.personalDetails.reasonableAdjustments;
+      applicationRecord.candidate.fullName = application.personalDetails.fullName || null;
+      applicationRecord.candidate.reasonableAdjustments = application.personalDetails.reasonableAdjustments || null;
+      applicationRecord.candidate.reasonableAdjustmentsDetails = application.personalDetails.reasonableAdjustments && application.personalDetails.reasonableAdjustmentsDetails ? application.personalDetails.reasonableAdjustmentsDetails : null;
+      applicationRecord.flags.reasonableAdjustments = application.personalDetails.reasonableAdjustments || null;
     }
     return applicationRecord;
   }

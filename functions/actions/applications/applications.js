@@ -1,8 +1,11 @@
 const { SSL_OP_NETSCAPE_DEMO_CIPHER_CHANGE_BUG } = require('constants');
-const { getAllDocuments, applyUpdates } = require('../../shared/helpers');
+const { getAllDocuments, applyUpdates, getDocument, getDocuments } = require('../../shared/helpers');
 
+const testApplicationsFileName = 'test_applications.json';
 
-module.exports = (config, firebase, db) => {
+module.exports = (config, firebase, db, auth) => {
+  const { initialiseApplicationRecords } = require('../../actions/applicationRecords')(config, firebase, db, auth);
+  const { refreshApplicationCounts } = require('../../actions/exercises/refreshApplicationCounts')(firebase, db);
   const { newNotificationCharacterCheckRequest } = require('../../shared/factories')(config);
   const slack = require('../../shared/slack')(config);
   const { updateCandidate } = require('../candidates/search')(firebase, db);
@@ -12,6 +15,9 @@ module.exports = (config, firebase, db) => {
     sendCharacterCheckRequests,
     createApplication,
     createApplications,
+    loadTestApplications,
+    createTestApplications,
+    deleteApplications,
   };
 
   /**
@@ -131,5 +137,125 @@ module.exports = (config, firebase, db) => {
     return result ? applications.length : false;
   }
 
+  /**
+    * load test applications JSON file from cloud storage
+    */
+  async function loadTestApplications() {
+    const bucket = firebase.storage().bucket(config.STORAGE_URL);
+    const file = bucket.file(testApplicationsFileName);
+
+    try {
+      const data = await file.download();
+      return JSON.parse(data[0]);
+    } catch (error) {
+      return false;
+    }
+  }
+
+  /**
+   * Create test applications
+   *
+   * @param {string} exerciseId
+   * @param {number} noOfTestApplications
+   * @param {array} testApplications
+   *
+   * @return {object}
+   *
+   */
+  async function createTestApplications(data) {
+    const { exerciseId, noOfTestApplications, testApplications } = data;
+
+    // format test applications with exercise information
+    const exercise = await getDocument(db.collection('exercises').doc(exerciseId));
+    const applications = [];
+    const users = [];
+
+    for (let i = 0; i < noOfTestApplications; i++) {
+      let application = testApplications[i];
+      application.appliedAt = Date.now();
+      application.characterChecks = { status: 'not requested' },
+      application.createdAt = Date.now();
+      application.exerciseId = exercise.id;
+      application.exerciseName = exercise.name;
+      application.exerciseRef = exercise.referenceNumber;
+      application.referenceNumber = `${exercise.referenceNumber}-${application.referenceNumber.split('-')[1]}`;
+      applications.push(application);
+
+      users.push({
+        uid: application.userId,
+        email: application.personalDetails.email,
+      });
+    }
+
+    // create applications
+    let resCreateApplications = await createApplications(applications);
+
+    // initialise application records
+    initialiseApplicationRecords({ exerciseId: exercise.id });
+
+    return {
+      exerciseId,
+      noOfTestApplications: applications.length,
+      noOfCreatedTestApplications: resCreateApplications ? resCreateApplications : null,
+    };
+  }
+
+  /**
+   * Delete applications
+   *
+   * @param {string} exerciseId
+   *
+   * @return {object}
+   */
+   async function deleteApplications(exerciseId) {
+    let documentsRef;
+    let documents;
+    let document;
+    let commands = [];
+    let recordCount;
+
+    let noOfDeletedApplications = 0;
+    let noOfDeletedApplicationRecords = 0;
+
+    // fetch existing application records
+    documentsRef = db.collection('applicationRecords').where('exercise.id', '==', exerciseId);
+    documents = await getDocuments(documentsRef);
+    commands = documents.map((document) => {
+      return { command: 'delete', ref: document.ref };
+    });
+
+    // delete existing application records
+    recordCount = await applyUpdates(db, commands);
+    noOfDeletedApplicationRecords = recordCount ? recordCount : 0;
+
+    // update exercise (to 'not initialised')
+    document = await getDocument(db.collection('exercises').doc(exerciseId));
+    commands = [{
+      command: 'update',
+      ref: document.ref,
+      data: {
+        'applicationRecords.initialised': false,
+      },
+    }];
+    recordCount = await applyUpdates(db, commands);
+
+    // fetch existing applications
+    documentsRef = db.collection('applications').where('exerciseId', '==', exerciseId);
+    documents = await getDocuments(documentsRef);
+    commands = documents.map((document) => {
+      return { command: 'delete', ref: document.ref };
+    });
+
+    // delete application(s)
+    recordCount = await applyUpdates(db, commands);
+    noOfDeletedApplications = recordCount ? recordCount : 0;
+
+    await refreshApplicationCounts({ exerciseId });
+
+    return {
+      noOfDeletedApplications,
+      noOfDeletedApplicationRecords,
+    };
+  }
 
 };

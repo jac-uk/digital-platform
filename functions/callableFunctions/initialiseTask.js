@@ -1,10 +1,8 @@
 const functions = require('firebase-functions');
 const config = require('../shared/config');
-const { firebase, db, auth } = require('../shared/admin.js');
+const { firebase, db } = require('../shared/admin.js');
 const { checkArguments } = require('../shared/helpers.js');
-const { initialiseMissingApplicationRecords } = require('../actions/applicationRecords')(config, firebase, db, auth);
-const { generateDiversityReport } = require('../actions/exercises/generateDiversityReport')(firebase, db);
-// const { flagApplicationIssuesForExercise } = require('../actions/applications/flagApplicationIssues')(config, db);
+const initialiseTask = require('../actions/tasks/initialiseTask')(config, firebase, db);
 const { checkFunctionEnabled } = require('../shared/serviceSettings.js')(db);
 
 module.exports = functions.region('europe-west2').https.onCall(async (data, context) => {
@@ -14,14 +12,12 @@ module.exports = functions.region('europe-west2').https.onCall(async (data, cont
   }
   if (!checkArguments({
     exerciseId: { required: true },
+    type: { required: true },
+    stage: { required: true },
+    status: { required: false },
   }, data)) {
     throw new functions.https.HttpsError('invalid-argument', 'Please provide valid arguments');
   }
-  const result = await initialiseMissingApplicationRecords(data);
-
-  // once we have application records we can generate reports
-  await generateDiversityReport(data.exerciseId);  // @TODO use pub/sub instead?
-  // await flagApplicationIssuesForExercise(data.exerciseId);
-
+  const result = await initialiseTask(data);
   return result;
 });

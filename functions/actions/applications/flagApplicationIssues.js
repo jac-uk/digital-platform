@@ -36,7 +36,7 @@ module.exports = (config, db) => {
 
     // check for eligibility issues and update document
     const eligibilityIssues = getEligibilityIssues(exercise, application);
-    const characterIssues = getCharacterIssues(application);
+    const characterIssues = getCharacterIssues(exercise, application);
     const data = {};
     data['processing.flags.eligibilityIssues'] = eligibilityIssues && eligibilityIssues.length > 0;
     data['processing.eligibilityIssues'] = eligibilityIssues;
@@ -72,7 +72,7 @@ module.exports = (config, db) => {
     const commands = [];
     for (let i = 0, len = applications.length; i < len; ++i) {
       const eligibilityIssues = getEligibilityIssues(exercise, applications[i]);
-      const characterIssues = getCharacterIssues(applications[i]);
+      const characterIssues = getCharacterIssues(exercise, applications[i]);
 
       const data = {};
       if (eligibilityIssues && eligibilityIssues.length > 0) {
@@ -210,12 +210,12 @@ module.exports = (config, db) => {
     return issues;
   }
 
-  function getCharacterIssues(application) {
+  function getCharacterIssues(exercise, application) {
 
     let questions;
     let answers;
 
-    if (application.characterInformationV2) {
+    if (exercise._applicationVersion >= 2) {
       questions = config.APPLICATION.CHARACTER_ISSUES_V2;
       answers = application.characterInformationV2;
     } else if (application.characterInformation) {
@@ -225,7 +225,7 @@ module.exports = (config, db) => {
 
     const issues = [];
 
-    if (questions) {
+    if (questions && answers) {
       Object.keys(questions).forEach(key => {
         if (answers[key]) {
           const summary = questions[key].summary;

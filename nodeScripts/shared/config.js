@@ -211,6 +211,28 @@ module.exports = {
       COMPLETED: 'completed',
     },
   },
+  TASK_TYPE: {
+    SIFT: 'sift',
+    SELECTION: 'selection',
+    SCENARIO: 'scenario',
+  },
+  TASK_STATUS: {
+    INITIALISED: 'initialised',
+    ACTIVATED: 'activated',
+    MODERATION_INITIALISED: 'moderationInitialised',
+    MODERATION_ACTIVATED: 'moderationActivated',
+    FINALISED: 'finalised',
+    COMPLETED: 'completed',
+  },
+  PANEL_STATUS: {
+    // TODO include all statuses
+    DRAFT: 'draft',
+    APPROVED: 'approved',
+    PROCESSING: 'processing',
+    CREATED: 'created',
+    SUBMITTED: 'submitted',
+  },
+  GRADES: ['A', 'B', 'C', 'D'],
   NOTIFY_KEY: process.env.NOTIFY_LIMITED_KEY,
   SLACK_URL: process.env.SLACK_URL,
   STORAGE_URL: process.env.PROJECT_ID + '.appspot.com',
