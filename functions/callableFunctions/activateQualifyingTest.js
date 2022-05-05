@@ -2,7 +2,6 @@ const functions = require('firebase-functions');
 const config = require('../shared/config');
 const { firebase, db } = require('../shared/admin.js');
 const { checkArguments } = require('../shared/helpers.js');
-const { checkFunctionEnabled } = require('../shared/serviceSettings.js')(db);
 const activateQualifyingTest = require('../actions/qualifyingTests/activateQualifyingTest')(config, firebase, db);
 const { checkFunctionEnabled } = require('../shared/serviceSettings.js')(db);
 
