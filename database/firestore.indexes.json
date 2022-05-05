@@ -123,76 +123,6 @@
           "order": "ASCENDING"
         },
         {
-          "fieldPath": "selection.panelId",
-          "order": "ASCENDING"
-        },
-        {
-          "fieldPath": "stage",
-          "order": "ASCENDING"
-        },
-        {
-          "fieldPath": "candidate.fullName",
-          "order": "ASCENDING"
-        }
-      ]
-    },
-    {
-      "collectionGroup": "applicationRecords",
-      "queryScope": "COLLECTION",
-      "fields": [
-        {
-          "fieldPath": "active",
-          "order": "ASCENDING"
-        },
-        {
-          "fieldPath": "exercise.id",
-          "order": "ASCENDING"
-        },
-        {
-          "fieldPath": "sift.panelId",
-          "order": "ASCENDING"
-        }
-      ]
-    },
-    {
-      "collectionGroup": "applicationRecords",
-      "queryScope": "COLLECTION",
-      "fields": [
-        {
-          "fieldPath": "active",
-          "order": "ASCENDING"
-        },
-        {
-          "fieldPath": "exercise.id",
-          "order": "ASCENDING"
-        },
-        {
-          "fieldPath": "sift.panelId",
-          "order": "ASCENDING"
-        },
-        {
-          "fieldPath": "stage",
-          "order": "ASCENDING"
-        },
-        {
-          "fieldPath": "candidate.fullName",
-          "order": "ASCENDING"
-        }
-      ]
-    },
-    {
-      "collectionGroup": "applicationRecords",
-      "queryScope": "COLLECTION",
-      "fields": [
-        {
-          "fieldPath": "active",
-          "order": "ASCENDING"
-        },
-        {
-          "fieldPath": "exercise.id",
-          "order": "ASCENDING"
-        },
-        {
           "fieldPath": "stage",
           "order": "ASCENDING"
         }
@@ -383,28 +313,6 @@
       "queryScope": "COLLECTION",
       "fields": [
         {
-          "fieldPath": "candidate.id",
-          "order": "ASCENDING"
-        },
-        {
-          "fieldPath": "exercise.id",
-          "order": "ASCENDING"
-        },
-        {
-          "fieldPath": "flags.characterIssues",
-          "order": "ASCENDING"
-        },
-        {
-          "fieldPath": "status",
-          "order": "ASCENDING"
-        }
-      ]
-    },
-    {
-      "collectionGroup": "applicationRecords",
-      "queryScope": "COLLECTION",
-      "fields": [
-        {
           "fieldPath": "exercise.id",
           "order": "ASCENDING"
         },
@@ -506,28 +414,6 @@
         },
         {
           "fieldPath": "candidate.fullName",
-          "order": "DESCENDING"
-        }
-      ]
-    },
-    {
-      "collectionGroup": "applicationRecords",
-      "queryScope": "COLLECTION",
-      "fields": [
-        {
-          "fieldPath": "exercise.id",
-          "order": "ASCENDING"
-        },
-        {
-          "fieldPath": "flags.characterIssues",
-          "order": "ASCENDING"
-        },
-        {
-          "fieldPath": "stage",
-          "order": "ASCENDING"
-        },
-        {
-          "fieldPath": "status",
           "order": "DESCENDING"
         }
       ]
@@ -635,24 +521,6 @@
         {
           "fieldPath": "status",
           "order": "DESCENDING"
-        }
-      ]
-    },
-    {
-      "collectionGroup": "applicationRecords",
-      "queryScope": "COLLECTION",
-      "fields": [
-        {
-          "fieldPath": "exercise.id",
-          "order": "ASCENDING"
-        },
-        {
-          "fieldPath": "flags.characterIssues",
-          "order": "ASCENDING"
-        },
-        {
-          "fieldPath": "status",
-          "order": "DESCENDING"
         },
         {
           "fieldPath": "candidate.fullName",
@@ -710,6 +578,24 @@
         },
         {
           "fieldPath": "personalDetails.fullName",
+          "order": "ASCENDING"
+        }
+      ]
+    },
+    {
+      "collectionGroup": "applicationRecords",
+      "queryScope": "COLLECTION",
+      "fields": [
+        {
+          "fieldPath": "exercise.id",
+          "order": "ASCENDING"
+        },
+        {
+          "fieldPath": "panelId",
+          "order": "ASCENDING"
+        },
+        {
+          "fieldPath": "candidate.fullName",
           "order": "ASCENDING"
         }
       ]
@@ -745,7 +631,7 @@
           "order": "ASCENDING"
         },
         {
-          "fieldPath": "fullName",
+          "fieldPath": "candidate.fullName",
           "order": "ASCENDING"
         }
       ]
@@ -1513,24 +1399,6 @@
         {
           "fieldPath": "sentAt",
           "order": "DESCENDING"
-        }
-      ]
-    },
-    {
-      "collectionGroup": "panels",
-      "queryScope": "COLLECTION",
-      "fields": [
-        {
-          "fieldPath": "exercise.id",
-          "order": "ASCENDING"
-        },
-        {
-          "fieldPath": "type",
-          "order": "ASCENDING"
-        },
-        {
-          "fieldPath": "applicationIds",
-          "order": "ASCENDING"
         }
       ]
     },
