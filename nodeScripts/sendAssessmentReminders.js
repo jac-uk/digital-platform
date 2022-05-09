@@ -1,10 +1,13 @@
 'use strict';
 
+const config = require('./shared/config');
 const { firebase, app, db } = require('./shared/admin.js');
-const { exportApplicationCharacterIssues } = require('../functions/actions/exercises/exportApplicationCharacterIssues')(firebase, db);
+const { cancelAssessments } = require('../functions/actions/assessments')(config, firebase, db);
 
 const main = async () => {
-  return exportApplicationCharacterIssues('Yt04PxbBde5nfZxNgFWx', 'all', 'all');
+  return cancelAssessments({
+    exerciseId: 'wdpALbyICL7ZxxN5AQt8',
+  });
 };
 
 main()

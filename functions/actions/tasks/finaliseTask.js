@@ -79,5 +79,4 @@ module.exports = (config, firebase, db) => {
     }
     return score;
   }
-
 };

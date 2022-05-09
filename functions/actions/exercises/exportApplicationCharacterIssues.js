@@ -103,6 +103,7 @@ module.exports = (firebase, db) => {
 
   function getEqualityAndDiversityData (application) {
     const survey = application.equalityAndDiversitySurvey;
+    if (!survey) return {};
 
     let formattedFeePaidJudicialRole;
     if (survey.shareData) {
@@ -161,11 +162,10 @@ module.exports = (firebase, db) => {
     return application.jurisdictionPreferences;
   }
 
-  function getQualificationInformationString(application)
-  {
-    if (!application.qualifications || application.qualifications.length === 0) {
-      return '';
-    }
+  function getQualificationInformationString(application) {
+    if (!application.qualifications) return '';
+    if (!application.qualifications.length) return '';
+
     return application.qualifications.map(qualification => {
       if (typeof qualification.type === 'undefined' || typeof qualification.data === 'undefined') {
         return '';
