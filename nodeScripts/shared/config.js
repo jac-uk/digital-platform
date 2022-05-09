@@ -233,6 +233,12 @@ module.exports = {
     SUBMITTED: 'submitted',
   },
   GRADES: ['A', 'B', 'C', 'D'],
+  GRADE_VALUES: {
+    'A': 4,
+    'B': 3,
+    'C': 2,
+    'D': 1,
+  },
   NOTIFY_KEY: process.env.NOTIFY_LIMITED_KEY,
   SLACK_URL: process.env.SLACK_URL,
   STORAGE_URL: process.env.PROJECT_ID + '.appspot.com',

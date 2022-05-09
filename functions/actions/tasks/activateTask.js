@@ -69,6 +69,10 @@ module.exports = (config, firebase, db) => {
       };
       data[`statusLog.${config.PANEL_STATUS.CREATED}`] = firebase.firestore.FieldValue.serverTimestamp();
 
+      if (params.type === config.TASK_TYPE.SELECTION) {
+        data['selectionCategories'] = task.selectionCategories;
+      }
+
       const relevantApplicationRecords = applicationRecords.filter(applicationRecord => panel.applicationIds.indexOf(applicationRecord.id) >= 0);
       relevantApplicationRecords.forEach(applicationRecord => {
         data.applications[applicationRecord.id] = {

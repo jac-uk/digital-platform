@@ -236,6 +236,12 @@ module.exports = {
     SUBMITTED: 'submitted',
   },
   GRADES: ['A', 'B', 'C', 'D'],
+  GRADE_VALUES: {
+    'A': 4,
+    'B': 3,
+    'C': 2,
+    'D': 1,
+  },
   NOTIFY_KEY: functions.config().notify.key,
   SLACK_URL: functions.config().slack.url,
   STORAGE_URL: functions.config().project.id + '.appspot.com',
