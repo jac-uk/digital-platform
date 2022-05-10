@@ -47,29 +47,21 @@ const PERMISSIONS = {
         label: 'Can approve exercise',
         value: 'e5',
       },
-      canAddNotesToExercise: {
-        label: 'Can add notes to exercise',
-        value: 'e6',
-      },
       canResetExercise: {
         label: 'Can reset exercise',
-        value: 'e7',
+        value: 'e6',
       },
       canAmendAfterLaunch: {
         label: 'Can amend after launch',
-        value: 'e8',
+        value: 'e7',
       },
       canPublishExercise: {
         label: 'Can publish an exercise as live',
-        value: 'e9',
+        value: 'e8',
       },
       canDeleteCandidateCharacterInformation: {
         label: 'Can delete candidate character information',
-        value: 'e10',
-      },
-      canDeleteQualifyingTest: {
-        label: 'Can delete qualifying test',
-        value: 'e11',
+        value: 'e9',
       },
     },
   },
@@ -91,10 +83,6 @@ const PERMISSIONS = {
       canDeleteCandidates: {
         label: 'Can delete candidates',
         value: 'c4',
-      },
-      canAddNotesToCandidates: {
-        label: 'Can add notes to candidates',
-        value: 'c5',
       },
     },
   },
