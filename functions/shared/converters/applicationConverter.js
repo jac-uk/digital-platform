@@ -131,6 +131,9 @@ module.exports = () => {
   function getQualificationData(exercise, application) {
     const qualificationData = application.qualifications;
     const data = [];
+
+    if (!qualificationData) return data;
+
     qualificationData.forEach(q => {
       addField(data, 'Qualification', lookup(q.type));
       addField(data, 'Location', lookup(q.location));
