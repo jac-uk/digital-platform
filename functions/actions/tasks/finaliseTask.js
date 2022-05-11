@@ -35,7 +35,8 @@ module.exports = (config, firebase, db) => {
           id: applicationId,
           ref: panel.applications[applicationId].referenceNumber, // TODO extract only the last 7 chars
           panelId: panel.id,
-          scores: finalScoreSheet(panel.scoreSheet[applicationId]),
+          scoreSheet: finalScoreSheet(task, panel.scoreSheet[applicationId]),
+          score: finalScore(task, panel.scoreSheet[applicationId]),
         };
         finalScores.push(row);
       });
@@ -60,10 +61,27 @@ module.exports = (config, firebase, db) => {
 
   }
 
-  function finalScoreSheet(scoreSheet) {
-    // for now we are simply removing `flagForModeration` flag in order to reduce object size
-    delete scoreSheet.flagForModeration;
+  function finalScoreSheet(task, scoreSheet) {
+    delete scoreSheet.flagForModeration;  //  removing `flagForModeration` flag in order to reduce object size
+    if (task.type === config.TASK_TYPE.SELECTION) {
+      task.selectionCategories.forEach(category => {
+        scoreSheet[category].score = 0;
+        task.capabilities.forEach(capability => scoreSheet[category].score += config.GRADE_VALUES[scoreSheet[category][capability]]);
+      });
+    }
     return scoreSheet;
   }
 
+  function finalScore(task, scoreSheet) {
+    let score = 0;
+    switch (task.type) {
+      case config.TASK_TYPE.SIFT:
+        task.capabilities.forEach(capability => score += config.GRADE_VALUES[scoreSheet[capability]]);
+        break;
+      case config.TASK_TYPE.SELECTION:
+        task.selectionCategories.forEach(category => task.capabilities.forEach(capability => score += config.GRADE_VALUES[scoreSheet[category][capability]]));
+        break;
+    }
+    return score;
+  }
 };

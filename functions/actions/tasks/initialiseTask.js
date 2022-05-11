@@ -57,12 +57,14 @@ module.exports = (config, firebase, db) => {
       emptyScoreSheet: scoreSheet({ type: params.type, exercise: exercise }),
       startDate: taskStartDate({ type: params.type, exercise: exercise }),
       endDate: taskEndDate({ type: params.type, exercise: exercise }),
+      type: params.type,
     };
     if (params.type === config.TASK_TYPE.SELECTION) {
       taskData['selectionCategories'] = exercise.selectionCategories;
     }
     taskData['status'] = config.TASK_STATUS.INITIALISED;
-    taskData[`statusLog.${config.TASK_STATUS.INITIALISED}`] = firebase.firestore.FieldValue.serverTimestamp();
+    taskData.statusLog = {};
+    taskData.statusLog[config.TASK_STATUS.INITIALISED] = firebase.firestore.FieldValue.serverTimestamp();
     commands.push({
       command: 'set',
       ref: db.doc(`exercises/${params.exerciseId}/tasks/${params.type}`),

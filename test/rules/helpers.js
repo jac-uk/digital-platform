@@ -53,7 +53,7 @@ module.exports.setupAdmin = async (db, data) => {
 };
 
 module.exports.getTimeStamp = (date) => {
-  return date.getTime();
+  return admin.firestore.Timestamp.fromDate(date);
 };
 
 const getRandomInt = (min, max) => {
