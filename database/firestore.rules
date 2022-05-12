@@ -32,7 +32,7 @@ service cloud.firestore {
 
   function verifyFields(required, optional) {
     return true;
-    // TODO: below is commented, function needs improvement. 
+    // TODO: below is commented, function needs improvement.
     // TODO: add tests
     // let all = required.concat(optional);
     // return request.resource.data.keys().hasAll(required);
@@ -129,8 +129,8 @@ service cloud.firestore {
     function exerciseIsOpen(exerciseId) {
       let applicationOpenDate = get(/databases/$(database)/documents/exercises/$(exerciseId)).data.applicationOpenDate;
       let applicationCloseDate = get(/databases/$(database)/documents/exercises/$(exerciseId)).data.applicationCloseDate;
-      return applicationOpenDate <= int(request.time.toMillis())
-				&& request.resource.data.get("dateExtension", applicationCloseDate) > int(request.time.toMillis());
+      return applicationOpenDate <= request.time
+				&& request.resource.data.get("dateExtension", applicationCloseDate) > request.time;
     }
     function exerciseNeedsMoreInformation(exerciseId) {
       let exercise = get(/databases/$(database)/documents/exercises/$(exerciseId)).data;
@@ -218,7 +218,7 @@ service cloud.firestore {
         resource.data.assessor.email == request.resource.data.assessor.email &&
         resource.data.status == 'pending' &&
         request.resource.data.status == 'completed' &&
-        int(request.time.toMillis()) <= int(resource.data.dueDate);
+        request.time <= resource.data.dueDate;
         // TODO allow uploads after the due date but before the hard limit resource.data.dueDate >= request.time;
     }
 
