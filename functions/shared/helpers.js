@@ -62,7 +62,7 @@ async function getAllDocuments(db, references) {
   if (references.length) {
     const snapshot = await db.getAll(...references);
     snapshot.forEach((doc) => {
-      const document = doc.data();
+      const document = { ...doc.data() };
       document.id = doc.id;
       document.ref = doc.ref;
       documents.push(document);

@@ -63,18 +63,20 @@ module.exports = (config, firebase, db) => {
       const applications = await getDocuments(
         db.collection('applications')
           .where('exerciseId', '==', exercises[i].id)
+          .where('status', '!=', 'draft') // excludes any applications in Draft state
       );
       const joinedData = [];
       for (let j = 0, lenJ = applicationRecords.length; j < lenJ; j++) {
         const applicationRecord = applicationRecords[j];
-        // const application = await getDocument(db.collection('application').doc(applicationRecord.id));
         const application = applications.find(item => item.id === applicationRecord.id) || null;
-        joinedData.push({
-          id: applicationRecord.id,
-          application: application,
-          applicationRecord: applicationRecord,
-          exercise: exercise,
-        });
+        if (application) {
+          joinedData.push({
+            id: applicationRecord.id,
+            application: application,
+            applicationRecord: applicationRecord,
+            exercise: exercise,
+          });
+        }
       }
 
       const report = getReport(columns, joinedData);
