@@ -1,14 +1,12 @@
 'use strict';
 
 const config = require('./shared/config');
-const { firebase, app, db } = require('./shared/admin.js');
-const initialiseMissingApplicationRecords = require('../functions/callableFunctions/initialiseMissingApplicationRecords')(config, firebase, db);
-// /initialiseMissingApplicationRecords')(config, firebase, db);
-
+const { firebase, app, db, auth } = require('./shared/admin.js');
+const { initialiseMissingApplicationRecords } = require('../functions/actions/applicationRecords')(config, firebase, db, auth);
 
 const main = async () => {
   return initialiseMissingApplicationRecords({
-    exerciseId: '27XRfjOU65Nd1enzLsLt',
+    exerciseId: 'RWQnJPnzBoRvviG0JVzy',
   });
 };
 
