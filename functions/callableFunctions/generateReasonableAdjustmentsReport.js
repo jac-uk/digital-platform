@@ -4,6 +4,7 @@ const { generateReasonableAdjustmentsReport } = require('../actions/exercises/ge
 const { getDocument } = require('../shared/helpers');
 const { logEvent } = require('../actions/logs/logEvent')(firebase, db);
 const { checkFunctionEnabled } = require('../shared/serviceSettings.js')(db);
+const { PERMISSIONS, hasPermissions } = require('../shared/permissions');
 
 module.exports = functions.region('europe-west2').https.onCall(async (data, context) => {
   await checkFunctionEnabled();
@@ -12,6 +13,12 @@ module.exports = functions.region('europe-west2').https.onCall(async (data, cont
   if (!context.auth) {
     throw new functions.https.HttpsError('failed-precondition', 'The function must be called while authenticated.');
   }
+
+  hasPermissions(context.auth.token.rp, [
+    PERMISSIONS.applications.permissions.canReadApplications.value,
+    PERMISSIONS.exercises.permissions.canReadExercises.value,
+    PERMISSIONS.logs.permissions.canCreateLogs.value,
+  ]);
 
   // validate input parameters
   if (!(typeof data.exerciseId === 'string') || data.exerciseId.length === 0) {

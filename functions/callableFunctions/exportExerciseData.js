@@ -6,6 +6,7 @@ const { exportExerciseData } = require('../actions/exercises/exportExerciseData'
 const { getAllDocuments } = require('../shared/helpers');
 const { logEvent } = require('../actions/logs/logEvent')(firebase, db);
 const { checkFunctionEnabled } = require('../shared/serviceSettings.js')(db);
+const { PERMISSIONS, hasPermissions } = require('../shared/permissions');
 
 const runtimeOptions = {
   timeoutSeconds: 300,
@@ -19,6 +20,13 @@ module.exports = functions.runWith(runtimeOptions).region('europe-west2').https.
   if (!context.auth) {
     throw new functions.https.HttpsError('failed-precondition', 'The function must be called while authenticated.');
   }
+
+  hasPermissions(context.auth.token.rp, [
+    PERMISSIONS.exercises.permissions.canReadExercises.value,
+    PERMISSIONS.applicationRecords.permissions.canReadApplicationRecords.value,
+    PERMISSIONS.applications.permissions.canReadApplications.value,
+    PERMISSIONS.logs.permissions.canCreateLogs.value,
+  ]);
 
   // validate input parameters
   if (!checkArguments({

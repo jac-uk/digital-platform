@@ -1,7 +1,7 @@
 const { setup, teardown, setupAdmin } = require('./helpers');
 const { assertFails, assertSucceeds } = require('@firebase/rules-unit-testing');
 const COLLECTION_NAME = 'qualifyingTestResponses';
-const PERMISSIONS = require('../../functions/shared/permissions');
+const { PERMISSIONS } = require('../../functions/shared/permissions');
 
 describe(COLLECTION_NAME, () => {
   afterEach(async () => {

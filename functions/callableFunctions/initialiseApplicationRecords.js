@@ -6,12 +6,22 @@ const { initialiseApplicationRecords } = require('../actions/applicationRecords'
 const { generateDiversityReport } = require('../actions/exercises/generateDiversityReport')(firebase, db);
 // const { flagApplicationIssuesForExercise } = require('../actions/applications/flagApplicationIssues')(config, db);
 const { checkFunctionEnabled } = require('../shared/serviceSettings.js')(db);
+const { PERMISSIONS, hasPermissions } = require('../shared/permissions');
 
 module.exports = functions.region('europe-west2').https.onCall(async (data, context) => {
   await checkFunctionEnabled();
   if (!context.auth) {
     throw new functions.https.HttpsError('failed-precondition', 'The function must be called while authenticated.');
   }
+
+  hasPermissions(context.auth.token.rp, [
+    PERMISSIONS.exercises.permissions.canReadExercises.value,
+    PERMISSIONS.exercises.permissions.canUpdateExercises.value,
+    PERMISSIONS.applications.permissions.canReadApplications.value,
+    PERMISSIONS.applicationRecords.permissions.canReadApplicationRecords.value,
+    PERMISSIONS.applicationRecords.permissions.canCreateApplicationRecords.value,
+  ]);
+
   if (!checkArguments({
     exerciseId: { required: true },
   }, data)) {

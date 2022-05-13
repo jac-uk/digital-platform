@@ -1,3 +1,5 @@
+const functions = require('firebase-functions');
+
 const PERMISSIONS = {
   users: {
     label: 'Users',
@@ -361,4 +363,17 @@ const PERMISSIONS = {
   },
 };
 
-module.exports = PERMISSIONS;
+module.exports = {
+  PERMISSIONS,
+  hasPermissions,
+};
+
+function hasPermissions(rolePermissions, permissions) {
+  const valid = rolePermissions
+    && Array.isArray(rolePermissions)
+    && permissions.every(p => rolePermissions.includes(p));
+  
+  if (!valid) {
+    throw new functions.https.HttpsError('permission-denied', 'Permission denied');
+  }
+}

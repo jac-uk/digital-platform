@@ -1,6 +1,6 @@
 const { setup, teardown, setupAdmin, getTimeStamp } = require('./helpers');
 const { assertFails, assertSucceeds } = require('@firebase/rules-unit-testing');
-const PERMISSIONS = require('../../functions/shared/permissions');
+const { PERMISSIONS } = require('../../functions/shared/permissions');
 
 describe('Applications', () => {
   afterEach(async () => {
