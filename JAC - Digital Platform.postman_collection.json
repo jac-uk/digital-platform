@@ -10,6 +10,22 @@
 			"item": [
 				{
 					"name": "Login",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"// after a successful login, store the authentication token in the 'token' environment variable\r",
+									"if (responseCode.code === 200){\r",
+									"    var body = JSON.parse(responseBody);\r",
+									"    postman.setEnvironmentVariable(\"token\", body.idToken);\r",
+									"}\r",
+									""
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
 					"request": {
 						"auth": {
 							"type": "noauth"
@@ -201,7 +217,7 @@
 						],
 						"body": {
 							"mode": "raw",
-							"raw": "{\r\n    \"data\": {\r\n        \"exerciseId\": \"4Ufg5bAC2Gjx2YRve9WZ\"\r\n    }\r\n}"
+							"raw": "{\r\n    \"data\": {\r\n        \"exerciseId\": \"wdpALbyICL7ZxxN5AQt8\"\r\n    }\r\n}"
 						},
 						"url": {
 							"raw": "{{host}}/exportApplicationEligibilityIssues",
@@ -522,6 +538,85 @@
 			"name": "Functions",
 			"item": [
 				{
+					"name": "Virus Scanning",
+					"item": [
+						{
+							"name": "Scan File",
+							"request": {
+								"auth": {
+									"type": "bearer",
+									"bearer": [
+										{
+											"key": "token",
+											"value": "{{token}}",
+											"type": "string"
+										}
+									]
+								},
+								"method": "POST",
+								"header": [
+									{
+										"key": "Content-Type",
+										"value": "application/json",
+										"type": "text"
+									}
+								],
+								"body": {
+									"mode": "raw",
+									"raw": "{\r\n    \"data\": {\r\n        \"fileURL\": \"exercise/7Dw4spkbYr58Y0ITiiCS/application/QRIGGKZVRnEtPYrl7Jrg/assessor/j1q4dgAdTkWTJYQJHVFkPYcJgMm1/QRIGGKZVRnEtPYrl7Jrg-1.docx\"\r\n    }\r\n}\r\n"
+								},
+								"url": {
+									"raw": "{{host}}/scanFile",
+									"host": [
+										"{{host}}"
+									],
+									"path": [
+										"scanFile"
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "Scan All Files",
+							"request": {
+								"auth": {
+									"type": "bearer",
+									"bearer": [
+										{
+											"key": "token",
+											"value": "{{token}}",
+											"type": "string"
+										}
+									]
+								},
+								"method": "POST",
+								"header": [
+									{
+										"key": "Content-Type",
+										"value": "application/json",
+										"type": "text"
+									}
+								],
+								"body": {
+									"mode": "raw",
+									"raw": "{\r\n    \"data\": {\r\n        \"force\": true,\r\n        \"maxFiles\": 5\r\n    }\r\n}\r\n"
+								},
+								"url": {
+									"raw": "{{host}}/scanAllFiles",
+									"host": [
+										"{{host}}"
+									],
+									"path": [
+										"scanAllFiles"
+									]
+								}
+							},
+							"response": []
+						}
+					]
+				},
+				{
 					"name": "Log Event",
 					"request": {
 						"auth": {
@@ -729,7 +824,7 @@
 						],
 						"body": {
 							"mode": "raw",
-							"raw": "{\r\n    \"data\": {\r\n        \"qualifyingTestId\": \"arV1wmW6qBpSGeMmRiou\"\r\n    }\r\n}"
+							"raw": "{\r\n    \"data\": {\r\n        \"qualifyingTestId\": \"RiXj39U37FJrHunCwWUy\",\r\n        \"stage\": \"selected\",\r\n        \"status\": \"all\"\r\n    }\r\n}"
 						},
 						"url": {
 							"raw": "{{host}}/initialiseQualifyingTest",
@@ -744,7 +839,7 @@
 					"response": []
 				},
 				{
-					"name": "Scan File",
+					"name": "Initialise Missing Application Records",
 					"request": {
 						"auth": {
 							"type": "bearer",
@@ -766,15 +861,15 @@
 						],
 						"body": {
 							"mode": "raw",
-							"raw": "{\r\n    \"data\": {\r\n        \"fileURL\": \"exercise/7Dw4spkbYr58Y0ITiiCS/application/QRIGGKZVRnEtPYrl7Jrg/assessor/j1q4dgAdTkWTJYQJHVFkPYcJgMm1/QRIGGKZVRnEtPYrl7Jrg-1.docx\"\r\n    }\r\n}\r\n"
+							"raw": "{\r\n    \"data\": {\r\n        \"exerciseId\": \"11bv7ZTyyKhoqGYAPN7Y\"\r\n    }\r\n}"
 						},
 						"url": {
-							"raw": "{{host}}/scanFile",
+							"raw": "{{host}}/initialiseMissingApplicationRecords",
 							"host": [
 								"{{host}}"
 							],
 							"path": [
-								"scanFile"
+								"initialiseMissingApplicationRecords"
 							]
 						}
 					},
@@ -812,6 +907,85 @@
 							],
 							"path": [
 								"getApplicationData"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Test - Copy Exercise to QT Database",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{token}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"data\": {\r\n        \"exerciseId\": \"11bv7ZTyyKhoqGYAPN7Y\"\r\n    }\r\n}"
+						},
+						"url": {
+							"raw": "{{host}}/copyExerciseToQTTest",
+							"host": [
+								"{{host}}"
+							],
+							"path": [
+								"copyExerciseToQTTest"
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "Capacity Testing",
+			"item": [
+				{
+					"name": "Initialise QTs",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{token}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"data\": {\r\n        \"exerciseId\": \"8CIlAsDbtMfr2vnfjmYh\",\r\n        \"qualifyingTestId\": \"1zm5Q3LSRbSLBFakRbJ2\",\r\n        \"noOfCandidates\": 10000,\r\n        \"refPrefix\": \"prefix3\",\r\n        \"userId\": \"RW9nHLejKQRzTb7QACC6cte1UJu2\"\r\n    }\r\n}\r\n"
+						},
+						"url": {
+							"raw": "{{host}}/capacityTest_initialiseQTs",
+							"host": [
+								"{{host}}"
+							],
+							"path": [
+								"capacityTest_initialiseQTs"
 							]
 						}
 					},

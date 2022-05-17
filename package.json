@@ -19,7 +19,7 @@
     "nodeScript": "export GOOGLE_APPLICATION_CREDENTIALS='service-account.json' && run(){ node -r dotenv/config nodeScripts/$1; }; run",
     "staging:nodeScript": "export GOOGLE_APPLICATION_CREDENTIALS='service-account.staging.json' && run(){ node -r dotenv/config nodeScripts/$1; }; run",
     "production:nodeScript": "export GOOGLE_APPLICATION_CREDENTIALS='service-account.production.json' && run(){ node -r dotenv/config nodeScripts/$1; }; run",
-    "nodeScriptOnWindows": "set GOOGLE_APPLICATION_CREDENTIALS=service-account.json&& node nodeScripts/%SCRIPT%",
+    "nodeScriptOnWindows": "set GOOGLE_APPLICATION_CREDENTIALS=service-account.json&& node -r dotenv/config nodeScripts/%SCRIPT%",
     "indexes:export": "firebase firestore:indexes > database/firestore.indexes.json",
     "deploy:rules": "firebase deploy --project=digital-platform-develop --only firestore:rules",
     "deploy:indexes": "firebase deploy --project=digital-platform-develop --only firestore:indexes",
