@@ -8,7 +8,7 @@ module.exports = (firebase, db) => {
     exportApplicationCharacterIssues,
   };
 
-  async function exportApplicationCharacterIssues(exerciseId, stage, status) {
+  async function exportApplicationCharacterIssues(exerciseId, stage, status, format) {
 
     // get applicationRecords
     let firestoreRef = db.collection('applicationRecords')
@@ -32,7 +32,12 @@ module.exports = (firebase, db) => {
       );
     }
 
-    // return data for export
+    // generate the export (to Google Doc)
+    if (format === 'googledoc') {
+      return exportToGoogleDoc(applicationRecords);
+    }
+
+    // return data for export (to Excel)
     return {
       total: applicationRecords.length,
       createdAt: firebase.firestore.Timestamp.fromDate(new Date()),
@@ -40,6 +45,12 @@ module.exports = (firebase, db) => {
       rows: getRows(applicationRecords),
     };
 
+  }
+
+  async function exportToGoogleDoc(applicationRecords) {
+    return {
+      hello: 'world',
+    };
   }
 
   function getHeaders() {
