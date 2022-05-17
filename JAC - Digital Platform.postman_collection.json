@@ -217,7 +217,7 @@
 						],
 						"body": {
 							"mode": "raw",
-							"raw": "{\r\n    \"data\": {\r\n        \"exerciseId\": \"4Ufg5bAC2Gjx2YRve9WZ\"\r\n    }\r\n}"
+							"raw": "{\r\n    \"data\": {\r\n        \"exerciseId\": \"wdpALbyICL7ZxxN5AQt8\"\r\n    }\r\n}"
 						},
 						"url": {
 							"raw": "{{host}}/exportApplicationEligibilityIssues",
@@ -254,7 +254,7 @@
 						],
 						"body": {
 							"mode": "raw",
-							"raw": "{\r\n    \"data\": {\r\n        \"exerciseId\": \"wdpALbyICL7ZxxN5AQt8\",\r\n        \"stage\": \"selected\",\r\n        \"status\": \"invitedToSelectionDay\"\r\n    }\r\n}"
+							"raw": "{\r\n    \"data\": {\r\n        \"exerciseId\": \"wdpALbyICL7ZxxN5AQt8\",\r\n        \"stage\": \"selected\",\r\n        \"status\": \"invitedToSelectionDay\",\r\n        \"format\": \"excel\"\r\n    }\r\n}"
 						},
 						"url": {
 							"raw": "{{host}}/exportApplicationCharacterIssues",
@@ -538,6 +538,85 @@
 			"name": "Functions",
 			"item": [
 				{
+					"name": "Virus Scanning",
+					"item": [
+						{
+							"name": "Scan File",
+							"request": {
+								"auth": {
+									"type": "bearer",
+									"bearer": [
+										{
+											"key": "token",
+											"value": "{{token}}",
+											"type": "string"
+										}
+									]
+								},
+								"method": "POST",
+								"header": [
+									{
+										"key": "Content-Type",
+										"value": "application/json",
+										"type": "text"
+									}
+								],
+								"body": {
+									"mode": "raw",
+									"raw": "{\r\n    \"data\": {\r\n        \"fileURL\": \"exercise/7Dw4spkbYr58Y0ITiiCS/application/QRIGGKZVRnEtPYrl7Jrg/assessor/j1q4dgAdTkWTJYQJHVFkPYcJgMm1/QRIGGKZVRnEtPYrl7Jrg-1.docx\"\r\n    }\r\n}\r\n"
+								},
+								"url": {
+									"raw": "{{host}}/scanFile",
+									"host": [
+										"{{host}}"
+									],
+									"path": [
+										"scanFile"
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "Scan All Files",
+							"request": {
+								"auth": {
+									"type": "bearer",
+									"bearer": [
+										{
+											"key": "token",
+											"value": "{{token}}",
+											"type": "string"
+										}
+									]
+								},
+								"method": "POST",
+								"header": [
+									{
+										"key": "Content-Type",
+										"value": "application/json",
+										"type": "text"
+									}
+								],
+								"body": {
+									"mode": "raw",
+									"raw": "{\r\n    \"data\": {\r\n        \"force\": true,\r\n        \"maxFiles\": 5,\r\n        \"async\": false\r\n    }\r\n}\r\n"
+								},
+								"url": {
+									"raw": "{{host}}/scanAllFiles",
+									"host": [
+										"{{host}}"
+									],
+									"path": [
+										"scanAllFiles"
+									]
+								}
+							},
+							"response": []
+						}
+					]
+				},
+				{
 					"name": "Log Event",
 					"request": {
 						"auth": {
@@ -745,7 +824,7 @@
 						],
 						"body": {
 							"mode": "raw",
-							"raw": "{\r\n    \"data\": {\r\n        \"qualifyingTestId\": \"arV1wmW6qBpSGeMmRiou\"\r\n    }\r\n}"
+							"raw": "{\r\n    \"data\": {\r\n        \"qualifyingTestId\": \"RiXj39U37FJrHunCwWUy\",\r\n        \"stage\": \"selected\",\r\n        \"status\": \"all\"\r\n    }\r\n}"
 						},
 						"url": {
 							"raw": "{{host}}/initialiseQualifyingTest",
@@ -760,7 +839,7 @@
 					"response": []
 				},
 				{
-					"name": "Scan File",
+					"name": "Initialise Missing Application Records",
 					"request": {
 						"auth": {
 							"type": "bearer",
@@ -782,15 +861,15 @@
 						],
 						"body": {
 							"mode": "raw",
-							"raw": "{\r\n    \"data\": {\r\n        \"fileURL\": \"exercise/7Dw4spkbYr58Y0ITiiCS/application/QRIGGKZVRnEtPYrl7Jrg/assessor/j1q4dgAdTkWTJYQJHVFkPYcJgMm1/QRIGGKZVRnEtPYrl7Jrg-1.docx\"\r\n    }\r\n}\r\n"
+							"raw": "{\r\n    \"data\": {\r\n        \"exerciseId\": \"11bv7ZTyyKhoqGYAPN7Y\"\r\n    }\r\n}"
 						},
 						"url": {
-							"raw": "{{host}}/scanFile",
+							"raw": "{{host}}/initialiseMissingApplicationRecords",
 							"host": [
 								"{{host}}"
 							],
 							"path": [
-								"scanFile"
+								"initialiseMissingApplicationRecords"
 							]
 						}
 					},
@@ -832,14 +911,51 @@
 						}
 					},
 					"response": []
+				},
+				{
+					"name": "Test - Copy Exercise to QT Database",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{token}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"data\": {\r\n        \"exerciseId\": \"11bv7ZTyyKhoqGYAPN7Y\"\r\n    }\r\n}"
+						},
+						"url": {
+							"raw": "{{host}}/copyExerciseToQTTest",
+							"host": [
+								"{{host}}"
+							],
+							"path": [
+								"copyExerciseToQTTest"
+							]
+						}
+					},
+					"response": []
 				}
 			]
 		},
-    {
-			"name": "Test Applications",
+		{
+			"name": "Capacity Testing",
 			"item": [
 				{
-					"name": "Create Test Applications",
+					"name": "Initialise QTs",
 					"request": {
 						"auth": {
 							"type": "bearer",
@@ -861,126 +977,15 @@
 						],
 						"body": {
 							"mode": "raw",
-							"raw": "{\r\n    \"data\": {\r\n        \"exerciseId\": \"F650lJ93i1zN2yPfsZF6\",\r\n        \"noOfTestApplications\": 1\r\n    }\r\n}\r\n"
+							"raw": "{\r\n    \"data\": {\r\n        \"exerciseId\": \"8CIlAsDbtMfr2vnfjmYh\",\r\n        \"qualifyingTestId\": \"1zm5Q3LSRbSLBFakRbJ2\",\r\n        \"noOfCandidates\": 10000,\r\n        \"refPrefix\": \"prefix3\",\r\n        \"userId\": \"RW9nHLejKQRzTb7QACC6cte1UJu2\"\r\n    }\r\n}\r\n"
 						},
 						"url": {
-							"raw": "{{host}}/createTestApplications",
+							"raw": "{{host}}/capacityTest_initialiseQTs",
 							"host": [
 								"{{host}}"
 							],
 							"path": [
-								"createTestApplications"
-							]
-						}
-					},
-					"response": []
-				},
-				{
-					"name": "Delete Applications",
-					"request": {
-						"auth": {
-							"type": "bearer",
-							"bearer": [
-								{
-									"key": "token",
-									"value": "{{token}}",
-									"type": "string"
-								}
-							]
-						},
-						"method": "POST",
-						"header": [
-							{
-								"key": "Content-Type",
-								"value": "application/json",
-								"type": "text"
-							}
-						],
-						"body": {
-							"mode": "raw",
-							"raw": "{\r\n    \"data\": {\r\n        \"exerciseId\": \"F650lJ93i1zN2yPfsZF6\"\r\n    }\r\n}\r\n"
-						},
-						"url": {
-							"raw": "{{host}}/deleteApplications",
-							"host": [
-								"{{host}}"
-							],
-							"path": [
-								"deleteApplications"
-							]
-						}
-					},
-					"response": []
-				},
-				{
-					"name": "Create Test Users",
-					"request": {
-						"auth": {
-							"type": "bearer",
-							"bearer": [
-								{
-									"key": "token",
-									"value": "{{token}}",
-									"type": "string"
-								}
-							]
-						},
-						"method": "POST",
-						"header": [
-							{
-								"key": "Content-Type",
-								"value": "application/json",
-								"type": "text"
-							}
-						],
-						"body": {
-							"mode": "raw",
-							"raw": "{\r\n    \"data\": {\r\n        \"noOfTestUsers\": 1,\r\n        \"passwordBcryptHash\": \"$2a$12$cOSjUhBg.57ShQ3OxunJIOkmjV.N/LO0glzIoTTerJ5lBSlLrQYri\"\r\n    }\r\n}\r\n"
-						},
-						"url": {
-							"raw": "{{host}}/createTestUsers",
-							"host": [
-								"{{host}}"
-							],
-							"path": [
-								"createTestUsers"
-							]
-						}
-					},
-					"response": []
-				},
-				{
-					"name": "Delete Test Users",
-					"request": {
-						"auth": {
-							"type": "bearer",
-							"bearer": [
-								{
-									"key": "token",
-									"value": "{{token}}",
-									"type": "string"
-								}
-							]
-						},
-						"method": "POST",
-						"header": [
-							{
-								"key": "Content-Type",
-								"value": "application/json",
-								"type": "text"
-							}
-						],
-						"body": {
-							"mode": "raw",
-							"raw": "{\r\n    \"data\": {\r\n        \"noOfTestUsers\": 1\r\n    }\r\n}\r\n"
-						},
-						"url": {
-							"raw": "{{host}}/deleteTestUsers",
-							"host": [
-								"{{host}}"
-							],
-							"path": [
-								"deleteTestUsers"
+								"capacityTest_initialiseQTs"
 							]
 						}
 					},
