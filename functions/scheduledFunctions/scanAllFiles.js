@@ -1,7 +1,7 @@
 const functions = require('firebase-functions');
 const { scanAllFiles } = require('../actions/malware-scanning/scanAllFiles');
 
-const SCHEDULE = 'every day 02:00';
+const SCHEDULE = 'every day 13:00';
 
 module.exports = functions.region('europe-west2')
   .pubsub
