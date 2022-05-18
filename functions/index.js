@@ -3,6 +3,7 @@
 exports.backupFirestore = require('./scheduledFunctions/backupFirestore');
 exports.backupAuthentication = require('./scheduledFunctions/backupAuthentication');
 exports.processNotifications = require('./scheduledFunctions/processNotifications');
+exports.scheduleScanAllFiles = require('./scheduledFunctions/scheduleScanAllFiles');
 
 // Background
 exports.onDelete = require('./backgroundFunctions/onDelete');
