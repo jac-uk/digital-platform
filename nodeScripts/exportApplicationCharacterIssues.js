@@ -4,7 +4,7 @@ const { firebase, app, db } = require('./shared/admin.js');
 const { exportApplicationCharacterIssues } = require('../functions/actions/exercises/exportApplicationCharacterIssues')(firebase, db);
 
 const main = async () => {
-  return exportApplicationCharacterIssues('Yt04PxbBde5nfZxNgFWx', 'all', 'all');
+  return exportApplicationCharacterIssues('aRrY8ad5TwiznZZhBqee', 'review', 'all', 'googledoc');
 };
 
 main()

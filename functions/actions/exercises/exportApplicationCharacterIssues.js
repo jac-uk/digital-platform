@@ -2,6 +2,9 @@ const lookup = require('../../shared/converters/lookup');
 const helpers = require('../../shared/converters/helpers');
 const { getDocuments, getDocument, formatDate } = require('../../shared/helpers');
 const _ = require('lodash');
+const htmlWriter = require('../../shared/htmlWriter');
+const config = require('../../shared/config');
+const drive = require('../../shared/google-drive')();
 
 module.exports = (firebase, db) => {
   return {
@@ -9,6 +12,11 @@ module.exports = (firebase, db) => {
   };
 
   async function exportApplicationCharacterIssues(exerciseId, stage, status, format) {
+
+    // get the exercise
+    const exercise = await getDocument(
+      db.collection('exercises').doc(exerciseId)
+    );
 
     // get applicationRecords
     let firestoreRef = db.collection('applicationRecords')
@@ -34,7 +42,7 @@ module.exports = (firebase, db) => {
 
     // generate the export (to Google Doc)
     if (format === 'googledoc') {
-      return exportToGoogleDoc(applicationRecords);
+      return exportToGoogleDoc(exercise, applicationRecords);
     }
 
     // return data for export (to Excel)
@@ -47,10 +55,51 @@ module.exports = (firebase, db) => {
 
   }
 
-  async function exportToGoogleDoc(applicationRecords) {
+  /**
+   * Exports character issues to a Google Docs file
+   *
+   * @param {*} applicationRecords
+   * @returns
+   */
+  async function exportToGoogleDoc(exercise, applicationRecords) {
+
+    // get drive service
+    await drive.login();
+
+    // get settings and apply them
+    const settings = await getDocument(db.collection('settings').doc('services'));
+    drive.setDriveId(settings.google.driveId);
+
+    // generate a filename for the document we are going to create
+    const timestamp = (new Date()).toISOString();
+    const filename = exercise.referenceNumber + '_' + timestamp;
+
+    // make sure a destination folder exists to create the file in
+    const folderName = 'Character Export';
+    const folders = await drive.listFolders();
+    let folderId = 0;
+    folders.forEach((v, i) => {
+      if (v.name === folderName) {
+        folderId = v.id;
+      }
+    });
+    if (folderId === 0) { // folder doesn't exist so create it
+      folderId = await drive.createFolder(folderName);
+    }
+
+    // Create character issues document
+    await drive.createFile(filename, {
+      folderId: folderId,
+      sourceType: drive.MIME_TYPE.HTML,
+      sourceContent: getHtmlCharacterIssues(exercise, applicationRecords),
+      destinationType: drive.MIME_TYPE.DOCUMENT,
+    });
+
+    // return the path of the file to the caller
     return {
-      hello: 'world',
+      path: folderName + '/' + filename,
     };
+
   }
 
   function getHeaders() {
@@ -243,4 +292,63 @@ module.exports = (firebase, db) => {
       return `Acquired skills in other way\n${lookup(application.skillsAquisitionDetails)}`;
     }
   }
+
+  function getHtmlCharacterIssues(exercise, applicationRecords) {
+
+    let writer = new htmlWriter();
+    let firstStatusIsDone = false;
+
+    Object.keys(config.APPLICATION.CHARACTER_ISSUE_STATUS).forEach((k) => {
+
+      const currentStatus = config.APPLICATION.CHARACTER_ISSUE_STATUS[k];
+
+      const statusText = k.split('_').join(' '); // i.e. REJECT_NON_DECLARATION becomes REJECT NON DECLARATION
+
+      if (firstStatusIsDone) {
+        writer.addRaw('<br><br><hr><br>');
+      }
+
+      writer.addHeading('OFFICIAL - SENSITIVE', 'center', '1rem', 'margin-bottom:10px');
+      writer.addHeading(exercise.referenceNumber + ' - CHARACTER ISSUES REQUIRING A DECISION: ' + statusText, 'center', '1rem');
+
+      writer.addRaw(`
+<table style="font-size: 0.75rem;">
+  <tbody>
+    <tr><td width="50"><b>No.</b></td><td colspan="2" style="text-align:center;"><b>Detail</b></td></tr>
+      `);
+
+      let issueCount = 0;
+      applicationRecords.forEach((applicationRecord, i) => {
+        if (applicationRecord.issues && applicationRecord.issues.characterIssues && applicationRecord.issues.characterIssues.length > 0) {
+          applicationRecord.issues.characterIssues.forEach((characterIssue, i) => {
+            if (characterIssue.status && characterIssue.status === currentStatus) {
+              issueCount++;
+              writer.addRaw(`
+    <tr><td rowspan="6" width="50"><b>${issueCount}.</b></td><td width="175"><b>Name</b></td><td>${applicationRecord.candidate.fullName}</td></tr>
+    <tr><td><b>Nature and date of issue</b></td><td></td></tr>
+    <tr><td><b>Declaration</b></td><td></td></tr>
+    <tr><td><b>Recommendation</b></td><td>${statusText}</td></tr>
+    <tr><td><b>Guidance reference</b></td><td></td></tr>
+    <tr><td><b>Reason for recommendation</b></td><td></td></tr>
+              `);
+              // const html = converter.getHtmlCharacterIssue(applicationRecord, characterIssue);
+              // writer.addRaw(html);
+            }
+          });
+        }
+      });
+
+      writer.addRaw(`
+  </tbody>
+</table>
+      `);
+
+      firstStatusIsDone = true;
+
+    });
+
+    return writer.toString();
+
+  }
+
 };
