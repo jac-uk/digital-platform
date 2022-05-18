@@ -92,6 +92,9 @@ class htmlWriter {
   addParagraph(data) {
     this.html += `<p>${data}</p>`;
   }
+  addRaw(s) {
+    this.html += s;
+  }
 }
 
 module.exports = htmlWriter;
