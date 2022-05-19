@@ -1,5 +1,7 @@
 const functions = require('firebase-functions');
-const { scanAllFiles } = require('../actions/malware-scanning/scanAllFiles');
+const config = require('../shared/config');
+const { firebase } = require('../shared/admin');
+const { scanAllFiles } = require('../actions/malware-scanning/scanAllFiles')(config, firebase);
 
 const SCHEDULE = 'every day 02:00';
 
