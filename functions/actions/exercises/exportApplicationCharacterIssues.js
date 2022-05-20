@@ -1,6 +1,6 @@
 const lookup = require('../../shared/converters/lookup');
 const helpers = require('../../shared/converters/helpers');
-const { getDocuments, getDocument, formatDate } = require('../../shared/helpers');
+const { getDocuments, getDocument, formatDate, getDate } = require('../../shared/helpers');
 const _ = require('lodash');
 const htmlWriter = require('../../shared/htmlWriter');
 const config = require('../../shared/config');
@@ -296,20 +296,34 @@ module.exports = (firebase, db) => {
   function getHtmlCharacterIssues(exercise, applicationRecords) {
 
     let writer = new htmlWriter();
+
+    groups = [
+      'Single Motoring Offences',
+      'Multiple Motoring Offences',
+      'Single Financial Issues',
+      'Multiple Financial Issues',
+      'Single Professional Conduct',
+      'Multiple Professional Conduct',
+      'Single Criminal Offences',
+      'Multiple Criminal Offences',
+      'Mixed Issues',
+    ];
+
+    console.log('total applicationRecords.length', applicationRecords.length);
+
     let firstStatusIsDone = false;
 
     Object.keys(config.APPLICATION.CHARACTER_ISSUE_STATUS).forEach((k) => {
 
       const currentStatus = config.APPLICATION.CHARACTER_ISSUE_STATUS[k];
-
       const statusText = k.split('_').join(' '); // i.e. REJECT_NON_DECLARATION becomes REJECT NON DECLARATION
 
       if (firstStatusIsDone) {
-        writer.addRaw('<br><br><hr><br>');
+        writer.addRaw('<br><br><hr><br><br>');
       }
 
-      writer.addHeading('OFFICIAL - SENSITIVE', 'center', '1rem', 'margin-bottom:10px');
-      writer.addHeading(exercise.referenceNumber + ' - CHARACTER ISSUES REQUIRING A DECISION: ' + statusText, 'center', '1rem');
+      writer.addHeading('OFFICIAL - SENSITIVE', 'center', '1rem', 'margin:10px 0; padding:0;');
+      writer.addHeading(`${exercise.referenceNumber} - CHARACTER ISSUES REQUIRING A DECISION: ${statusText}`, 'center', '1rem', 'margin:10px 0; padding:0;');
 
       writer.addRaw(`
 <table style="font-size: 0.75rem;">
@@ -317,22 +331,41 @@ module.exports = (firebase, db) => {
     <tr><td width="50"><b>No.</b></td><td colspan="2" style="text-align:center;"><b>Detail</b></td></tr>
       `);
 
-      let issueCount = 0;
-      applicationRecords.forEach((applicationRecord, i) => {
-        if (applicationRecord.issues && applicationRecord.issues.characterIssues && applicationRecord.issues.characterIssues.length > 0) {
-          applicationRecord.issues.characterIssues.forEach((characterIssue, i) => {
-            if (characterIssue.status && characterIssue.status === currentStatus) {
-              issueCount++;
-              writer.addRaw(`
-    <tr><td rowspan="6" width="50"><b>${issueCount}.</b></td><td width="175"><b>Name</b></td><td>${applicationRecord.candidate.fullName}</td></tr>
-    <tr><td><b>Nature and date of issue</b></td><td></td></tr>
-    <tr><td><b>Declaration</b></td><td></td></tr>
-    <tr><td><b>Recommendation</b></td><td>${statusText}</td></tr>
-    <tr><td><b>Guidance reference</b></td><td></td></tr>
-    <tr><td><b>Reason for recommendation</b></td><td></td></tr>
-              `);
-              // const html = converter.getHtmlCharacterIssue(applicationRecord, characterIssue);
-              // writer.addRaw(html);
+      let eventCount = 0;
+
+      groups.forEach(group => {
+        console.log(group);
+        groupApplications = getApplicationsForCharacterIssueGroup(applicationRecords, currentStatus, group);
+        if (groupApplications.length > 0) {
+          writer.addRaw(`<tr><td colspan="3" style="text-align:center; background-color:#68b; padding:5px"><b>${group.toUpperCase()}</b></td></tr>`);
+          console.log('groupApplications.length', groupApplications.length);
+          groupApplications.forEach((applicationRecord, i) => {
+            if (applicationRecord.issues && applicationRecord.issues.characterIssues && applicationRecord.issues.characterIssues.length > 0) {
+              applicationRecord.issues.characterIssues.forEach((characterIssue, i) => {
+                if (characterIssue.status && characterIssue.status === currentStatus) {
+                  characterIssue.events.forEach(event => {
+                    eventCount++;
+                    if (eventCount > 1) {
+                      writer.addRaw('<tr><td colspan="3" style="background-color:#ddd; padding:0">&nbsp</td></tr>');
+                    }
+                    let prettyDate = getDate(event.date).toLocaleDateString();
+                    let prettyType = getCharacterIssuePrettyType(characterIssue);
+                    let declaration = `
+    <p><b>${prettyType}</b></p>
+    <p><b>Date:</b> ${prettyDate}</p>
+    <p><b>Details:</b> ${event.details || ''}<br>${event.title || ''}</p>
+                    `;
+                    writer.addRaw(`
+        <tr><td rowspan="6" width="50"><b>${eventCount}.</b></td><td width="175"><b>Name</b></td><td>${applicationRecord.candidate.fullName}</td></tr>
+        <tr><td><b>Nature and date of issue</b></td><td>${prettyType} - ${prettyDate}</td></tr>
+        <tr><td><b>Declaration</b></td><td>${declaration}</td></tr>
+        <tr><td><b>Recommendation</b></td><td>${statusText}</td></tr>
+        <tr><td><b>Guidance reference</b></td><td></td></tr>
+        <tr><td><b>Reason for recommendation</b></td><td></td></tr>
+                    `);
+                  });
+                }
+              });
             }
           });
         }
@@ -349,6 +382,125 @@ module.exports = (firebase, db) => {
 
     return writer.toString();
 
+  }
+
+
+  /**
+   * Returns applications that meet the criteria for the specified group
+   *
+   * @param {*} applicationRecords
+   * @param {*} status - status of the character issue
+   * @param {*} group - character issue group
+   */
+  function getApplicationsForCharacterIssueGroup(applicationRecords, status, group) {
+
+    switch(group) {
+
+      case 'Single Motoring Offences':
+        return applicationRecords.filter(e => { // there is only 1 issue of the specified status and it is a motoring issue
+          return e.issues.characterIssues && e.issues.characterIssues.length === 1 && e.issues.characterIssues[0].status === status
+            && getCharacterIssueGroup(e.issues.characterIssues[0]) === 'Motoring';
+        });
+
+      case 'Multiple Motoring Offences':
+        return applicationRecords.filter(e => {
+          return e.issues.characterIssues && e.issues.characterIssues.filter(e2 => e2.status === status).length > 1 && // there are multiple issues of the specified status and...
+            e.issues.characterIssues.filter(e2 => { // all issues are motoring issues
+              return getCharacterIssueGroup(e2) === 'Motoring';
+            }).length === e.issues.characterIssues.length;
+        });
+
+      case 'Single Financial Issues':
+        return applicationRecords.filter(e => { // there is only 1 issue of the specified status  and it is a financial issue
+          return e.issues.characterIssues && e.issues.characterIssues.length === 1 && e.issues.characterIssues[0].status === status
+          && getCharacterIssueGroup(e.issues.characterIssues[0]) === 'Financial';
+        });
+
+      case 'Multiple Financial Issues':
+        return applicationRecords.filter(e => {
+          return e.issues.characterIssues && e.issues.characterIssues.filter(e2 => e2.status === status).length > 1 && // there are multiple issues of the specified status and...
+            e.issues.characterIssues.filter(e2 => { // all issues are financial issues
+              return getCharacterIssueGroup(e2) === 'Financial';
+            }).length === e.issues.characterIssues.length;
+        });
+
+      case 'Single Professional Conduct':
+        return applicationRecords.filter(e => { // there is only 1 issue of the specified status and it is professional conduct issues
+          return e.issues.characterIssues && e.issues.characterIssues.length === 1 && e.issues.characterIssues[0].status === status
+            && getCharacterIssueGroup(e.issues.characterIssues[0]) === 'Professional';
+        });
+
+      case 'Multiple Professional Conduct':
+        return applicationRecords.filter(e => {
+          return e.issues.characterIssues && e.issues.characterIssues.filter(e2 => e2.status === status).length > 1 && // there are multiple issues of the specified status and...
+            e.issues.characterIssues.filter(e2 => { // all issues are professional conduct issues
+              return getCharacterIssueGroup(e2) === 'Professional';
+            }).length === e.issues.characterIssues.length;
+        });
+
+      case 'Single Criminal Offences':
+        return applicationRecords.filter(e => { // there is only 1 issue and it is criminal offence issues
+          return e.issues.characterIssues && e.issues.characterIssues.length === 1 && e.issues.characterIssues[0].status === status
+           && getCharacterIssueGroup(e.issues.characterIssues[0]) === 'Criminal';
+        });
+
+      case 'Multiple Criminal Offences':
+        return applicationRecords.filter(e => {
+          return e.issues.characterIssues && e.issues.characterIssues.filter(e2 => e2.status === status).length > 1 && // there are multiple issues and...
+            e.issues.characterIssues.filter(e2 => { // all issues are criminal offence issues
+              return getCharacterIssueGroup(e2) === 'Criminal';
+            }).length === e.issues.characterIssues.length;
+        });
+
+      case 'Mixed Issues':
+        return applicationRecords.filter(e => {
+          return e.issues.characterIssues && e.issues.characterIssues.length > 1 && // there are multiple issues and...
+            e.issues.characterIssues.filter(e2 => { // at least one issue is not in the same group as the first issue
+              return getCharacterIssueGroup(e2) !== getCharacterIssueGroup(e.issues.characterIssues[0]);
+            }).length > 0;
+        });
+
+      default:
+        return []; // shouldn't happen
+
+    }
+
+  }
+
+  /**
+   * Gets the group for the character issue
+   *
+   * @param {*} characterIssue
+   *
+   * @returns string
+   */
+   function getCharacterIssueGroup(characterIssue) {
+    if (characterIssue.type) {
+      if (Object.keys(config.APPLICATION.CHARACTER_ISSUES).includes(characterIssue.type)) {
+        return config.APPLICATION.CHARACTER_ISSUES[characterIssue.type].group;
+      } if (Object.keys(config.APPLICATION.CHARACTER_ISSUES_V2).includes(characterIssue.type)) {
+        return config.APPLICATION.CHARACTER_ISSUES_V2[characterIssue.type].group;
+      }
+    }
+    return '?';
+  }
+
+  /**
+   * Gets the human-readable 'type' field for the given character issue
+   *
+   * @param {*} characterIssue
+   *
+   * @returns string
+   */
+  function getCharacterIssuePrettyType(characterIssue) {
+    if (characterIssue.type) {
+      if (Object.keys(config.APPLICATION.CHARACTER_ISSUES).includes(characterIssue.type)) {
+        return config.APPLICATION.CHARACTER_ISSUES[characterIssue.type].title;
+      } if (Object.keys(config.APPLICATION.CHARACTER_ISSUES_V2).includes(characterIssue.type)) {
+        return config.APPLICATION.CHARACTER_ISSUES_V2[characterIssue.type].title;
+      }
+    }
+    return '?';
   }
 
 };

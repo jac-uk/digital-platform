@@ -63,10 +63,7 @@ class htmlWriter {
   }
   addHeading(data, textAlign = 'left', fontSize = 'inherit', extraStyle) {
     // data = data.match(/[A-Z][a-z]+|[0-9]+/g).join(' ');
-    let style = `style="text-align: ${textAlign}; font-size: ${fontSize}"`;
-    if (extraStyle) {
-      style += ` ${extraStyle}`;
-    }
+    let style = `style="text-align: ${textAlign}; font-size: ${fontSize}; ${extraStyle}"`;
     this.html += `<h4 id="${data.split(' ').join('_')}_heading" ${style}>${data}</h4>`;
   }
   addTable(data) {
