@@ -11,5 +11,5 @@ module.exports = functions.region('europe-west2')
   .schedule(SCHEDULE)
   .timeZone('Europe/London')
   .onRun(async () => {
-    scanAllFiles();
+    await scanAllFiles();
   });
