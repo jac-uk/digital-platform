@@ -293,7 +293,32 @@ module.exports = (firebase, db) => {
     }
   }
 
+  /**
+   * Dumps characters issues to the console, to assist with debugging
+   *
+   * @param {*} applicationRecords
+   */
+  function dumpCharacterIssues(applicationRecords) {
+
+    console.log('*** Dump - START ***');
+
+    // dump a summary of all applications that have one or more character issues
+    const filtered = applicationRecords.filter(ar => { // exclude applications with no character issues
+      return ar.issues && ar.issues.characterIssues && ar.issues.characterIssues.length > 0;
+    });
+    filtered.forEach((ar) => {
+      console.log(ar.candidate.fullName);
+      ar.issues.characterIssues.forEach((issue) => {
+        console.log(` - ${issue.status || 'unassigned'} - ${issue.type} x ${issue.events.length}`);
+      });
+    });
+
+    console.log('*** Dump - END ***');
+  }
+
   function getHtmlCharacterIssues(exercise, applicationRecords) {
+
+    dumpCharacterIssues(applicationRecords);
 
     let writer = new htmlWriter();
 
@@ -309,14 +334,22 @@ module.exports = (firebase, db) => {
       'Mixed Issues',
     ];
 
-    console.log('total applicationRecords.length', applicationRecords.length);
-
     let firstStatusIsDone = false;
 
     Object.keys(config.APPLICATION.CHARACTER_ISSUE_STATUS).forEach((k) => {
 
       const currentStatus = config.APPLICATION.CHARACTER_ISSUE_STATUS[k];
       const statusText = k.split('_').join(' '); // i.e. REJECT_NON_DECLARATION becomes REJECT NON DECLARATION
+
+      statusGroupARs = applicationRecords.filter(ar => { // get applications that have at least one issue with the status we are processing
+        return ar.issues && ar.issues.characterIssues && ar.issues.characterIssues.filter(ci => {
+          return ci.status === currentStatus;
+        }).length > 0;
+      });
+
+      if (statusGroupARs.length === 0) { // no applications found
+        return; // next iteration (skip this report group)
+      }
 
       if (firstStatusIsDone) {
         writer.addRaw('<br><br><hr><br><br>');
@@ -334,41 +367,44 @@ module.exports = (firebase, db) => {
       let eventCount = 0;
 
       groups.forEach(group => {
-        console.log(group);
-        groupApplications = getApplicationsForCharacterIssueGroup(applicationRecords, currentStatus, group);
-        if (groupApplications.length > 0) {
-          writer.addRaw(`<tr><td colspan="3" style="text-align:center; background-color:#68b; padding:5px"><b>${group.toUpperCase()}</b></td></tr>`);
-          console.log('groupApplications.length', groupApplications.length);
-          groupApplications.forEach((applicationRecord, i) => {
-            if (applicationRecord.issues && applicationRecord.issues.characterIssues && applicationRecord.issues.characterIssues.length > 0) {
-              applicationRecord.issues.characterIssues.forEach((characterIssue, i) => {
-                if (characterIssue.status && characterIssue.status === currentStatus) {
-                  characterIssue.events.forEach(event => {
-                    eventCount++;
-                    if (eventCount > 1) {
-                      writer.addRaw('<tr><td colspan="3" style="background-color:#ddd; padding:0">&nbsp</td></tr>');
-                    }
-                    let prettyDate = getDate(event.date).toLocaleDateString();
-                    let prettyType = getCharacterIssuePrettyType(characterIssue);
-                    let declaration = `
-    <p><b>${prettyType}</b></p>
-    <p><b>Date:</b> ${prettyDate}</p>
-    <p><b>Details:</b> ${event.details || ''}<br>${event.title || ''}</p>
-                    `;
-                    writer.addRaw(`
-        <tr><td rowspan="6" width="50"><b>${eventCount}.</b></td><td width="175"><b>Name</b></td><td>${applicationRecord.candidate.fullName}</td></tr>
-        <tr><td><b>Nature and date of issue</b></td><td>${prettyType} - ${prettyDate}</td></tr>
-        <tr><td><b>Declaration</b></td><td>${declaration}</td></tr>
-        <tr><td><b>Recommendation</b></td><td>${statusText}</td></tr>
-        <tr><td><b>Guidance reference</b></td><td></td></tr>
-        <tr><td><b>Reason for recommendation</b></td><td></td></tr>
-                    `);
-                  });
-                }
-              });
-            }
-          });
+
+        // get the applications that have issues for the group we are processing
+        issueGroupARs = getApplicationsForCharacterIssueGroup(statusGroupARs, currentStatus, group);
+
+        if (issueGroupARs.length === 0) { // no applications found
+          return; // next iteration (skip this report group)
         }
+
+        writer.addRaw(`<tr><td colspan="3" style="text-align:center; background-color:#68b; padding:5px"><b>${group.toUpperCase()}</b></td></tr>`);
+        issueGroupARs.forEach((applicationRecord, i) => {
+          if (applicationRecord.issues && applicationRecord.issues.characterIssues && applicationRecord.issues.characterIssues.length > 0) {
+            applicationRecord.issues.characterIssues.forEach((characterIssue, i) => {
+              if (characterIssue.status && characterIssue.status === currentStatus) {
+                characterIssue.events.forEach(event => {
+                  eventCount++;
+                  if (eventCount > 1) {
+                    writer.addRaw('<tr><td colspan="3" style="background-color:#ddd; padding:0">&nbsp</td></tr>');
+                  }
+                  let prettyDate = getDate(event.date).toJSON().slice(0, 10).split('-').reverse().join('/'); // dd/mm/yyyy
+                  let prettyType = getCharacterIssuePrettyType(characterIssue);
+                  let declaration = `
+  <p><b>${prettyType}</b></p>
+  <p><b>Date:</b> ${prettyDate}</p>
+  <p><b>Details:</b> ${event.details || ''}<br>${event.title || ''}</p>
+                  `;
+                  writer.addRaw(`
+      <tr><td rowspan="6" width="50"><b>${eventCount}.</b></td><td width="175"><b>Name</b></td><td>${applicationRecord.candidate.fullName}</td></tr>
+      <tr><td><b>Nature and date of issue</b></td><td>${prettyType} - ${prettyDate}</td></tr>
+      <tr><td><b>Declaration</b></td><td>${declaration}</td></tr>
+      <tr><td><b>Recommendation</b></td><td>${statusText}</td></tr>
+      <tr><td><b>Guidance reference</b></td><td></td></tr>
+      <tr><td><b>Reason for recommendation</b></td><td></td></tr>
+                  `);
+                });
+              }
+            });
+          }
+        });
       });
 
       writer.addRaw(`
@@ -397,9 +433,11 @@ module.exports = (firebase, db) => {
     switch(group) {
 
       case 'Single Motoring Offences':
-        return applicationRecords.filter(e => { // there is only 1 issue of the specified status and it is a motoring issue
+        // there is only 1 issue of the specified status and it is a motoring issue with only 1 event
+        return applicationRecords.filter(e => {
           return e.issues.characterIssues && e.issues.characterIssues.length === 1 && e.issues.characterIssues[0].status === status
-            && getCharacterIssueGroup(e.issues.characterIssues[0]) === 'Motoring';
+            && getCharacterIssueGroup(e.issues.characterIssues[0]) === 'Motoring'
+            && e.issues.characterIssues[0].events.length === 1;
         });
 
       case 'Multiple Motoring Offences':
@@ -411,9 +449,10 @@ module.exports = (firebase, db) => {
         });
 
       case 'Single Financial Issues':
-        return applicationRecords.filter(e => { // there is only 1 issue of the specified status  and it is a financial issue
+        return applicationRecords.filter(e => { // there is only 1 issue of the specified status and it is a financial issue with only 1 event
           return e.issues.characterIssues && e.issues.characterIssues.length === 1 && e.issues.characterIssues[0].status === status
-          && getCharacterIssueGroup(e.issues.characterIssues[0]) === 'Financial';
+          && getCharacterIssueGroup(e.issues.characterIssues[0]) === 'Financial'
+          && e.issues.characterIssues[0].events.length === 1;
         });
 
       case 'Multiple Financial Issues':
@@ -425,9 +464,10 @@ module.exports = (firebase, db) => {
         });
 
       case 'Single Professional Conduct':
-        return applicationRecords.filter(e => { // there is only 1 issue of the specified status and it is professional conduct issues
+        return applicationRecords.filter(e => { // there is only 1 issue of the specified status and it is professional conduct issues with only 1 event
           return e.issues.characterIssues && e.issues.characterIssues.length === 1 && e.issues.characterIssues[0].status === status
-            && getCharacterIssueGroup(e.issues.characterIssues[0]) === 'Professional';
+            && getCharacterIssueGroup(e.issues.characterIssues[0]) === 'Professional'
+            && e.issues.characterIssues[0].events.length === 1;
         });
 
       case 'Multiple Professional Conduct':
@@ -439,9 +479,10 @@ module.exports = (firebase, db) => {
         });
 
       case 'Single Criminal Offences':
-        return applicationRecords.filter(e => { // there is only 1 issue and it is criminal offence issues
+        return applicationRecords.filter(e => { // there is only 1 issue and it is criminal offence issues with only 1 event
           return e.issues.characterIssues && e.issues.characterIssues.length === 1 && e.issues.characterIssues[0].status === status
-           && getCharacterIssueGroup(e.issues.characterIssues[0]) === 'Criminal';
+           && getCharacterIssueGroup(e.issues.characterIssues[0]) === 'Criminal'
+           && e.issues.characterIssues[0].events.length === 1;
         });
 
       case 'Multiple Criminal Offences':
@@ -454,7 +495,7 @@ module.exports = (firebase, db) => {
 
       case 'Mixed Issues':
         return applicationRecords.filter(e => {
-          return e.issues.characterIssues && e.issues.characterIssues.length > 1 && // there are multiple issues and...
+          return e.issues.characterIssues && e.issues.characterIssues.filter(e2 => e2.status === status).length > 1 && // there are multiple issues and...
             e.issues.characterIssues.filter(e2 => { // at least one issue is not in the same group as the first issue
               return getCharacterIssueGroup(e2) !== getCharacterIssueGroup(e.issues.characterIssues[0]);
             }).length > 0;
