@@ -1,6 +1,8 @@
 module.exports = {
   PROJECT_ID: process.env.PROJECT_ID,
   APPLY_URL: process.env.APPLY_URL,
+  QT_URL: 'http://localhost:5001/jac-qualifying-tests-develop/europe-west2/api/v1',
+  QT_KEY: 'JAC12345',
   APPLICATION: {
     CHARACTER_ISSUES: { // this gives a map from issue to corresponding details field TODO improve naming or where we store this
       criminalOffences: {
