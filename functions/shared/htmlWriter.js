@@ -58,12 +58,13 @@ class htmlWriter {
   setStylesheet(data) {
     this.stylesheet = data;
   }
-  addTitle(data) {
-    this.html += `<h2 id="title">${data}</h2>`;
+  addTitle(data, textAlign = 'left') {
+    this.html += `<h2 id="title" style="text-align: ${textAlign}">${data}</h2>`;
   }
-  addHeading(data) {
+  addHeading(data, textAlign = 'left', fontSize = 'inherit', extraStyle) {
     // data = data.match(/[A-Z][a-z]+|[0-9]+/g).join(' ');
-    this.html += `<h4 id="${data.split(' ').join('_')}_heading" >${data}</h4>`;
+    let style = `style="text-align: ${textAlign}; font-size: ${fontSize}; ${extraStyle}"`;
+    this.html += `<h4 id="${data.split(' ').join('_')}_heading" ${style}>${data}</h4>`;
   }
   addTable(data) {
     const tableStart = '<table>';
@@ -89,8 +90,11 @@ class htmlWriter {
     rowHtml.push(tableEnd);
     this.html += rowHtml.join('');
   }
-  addParagraph(data) {
-    this.html += `<p>${data}</p>`;
+  addParagraph(data, textAlign = 'left') {
+    this.html += `<p style="text-align: ${textAlign}">${data}</p>`;
+  }
+  addRaw(s) {
+    this.html += s;
   }
 }
 

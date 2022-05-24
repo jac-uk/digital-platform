@@ -21,11 +21,12 @@ module.exports = () => {
   return {
     login,
     setDriveId,
+    listFolders,
     createFolder,
-    createFile,
-    copyFile,
     deleteFolder,
+    createFile,
     deleteFile,
+    copyFile,
     addPermission,
     getMimeType,
     MIME_TYPE,
@@ -45,6 +46,18 @@ module.exports = () => {
 
   function setDriveId(driveId) {
     currentDriveId = driveId;
+  }
+
+  async function listFolders(driveId, includeTrashed = false) {
+    const response = await drive.files.list({
+      corpora: 'drive',
+      driveId: driveId || currentDriveId,
+      includeItemsFromAllDrives: true,
+      supportsAllDrives: true,
+      q: "mimeType='application/vnd.google-apps.folder' and trashed=" + (includeTrashed ? 'true' : 'false'),
+      fields: 'files(id, name)',
+    });
+    return response.data.files;
   }
 
   function createFolder(folderName, params) {
