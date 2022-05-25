@@ -307,18 +307,31 @@ module.exports = (firebase, db) => {
       return ar.issues && ar.issues.characterIssues && ar.issues.characterIssues.length > 0;
     });
     filtered.forEach((ar) => {
-      console.log(ar.candidate.fullName);
+      console.log(`${ar.candidate.fullName} - ${ar.issues.characterIssuesStatus || 'unassigned'}`);
       ar.issues.characterIssues.forEach((issue) => {
-        console.log(` - ${issue.status || 'unassigned'} - ${issue.type} x ${issue.events.length}`);
+        console.log(` - ${issue.type} x ${issue.events.length}`);
       });
     });
 
     console.log('*** Dump - END ***');
   }
 
+  /**
+   * Dumps flattened applications/characters issue records to the console, to assist with debugging
+   *
+   * @param {*} flattened
+   */
+  function dumpFlatRecords(flattened) {
+    console.log(JSON.stringify(flattened, null, 2));
+  }
+
   function getHtmlCharacterIssues(exercise, applicationRecords) {
 
     dumpCharacterIssues(applicationRecords);
+
+    flattened = flattenApplicationRecords(applicationRecords);
+
+    dumpFlatRecords(flattened);
 
     let writer = new htmlWriter();
 
@@ -334,6 +347,8 @@ module.exports = (firebase, db) => {
       'Mixed Issues',
     ];
 
+    let candidateCount = 0;
+
     let firstStatusIsDone = false;
 
     Object.keys(config.APPLICATION.CHARACTER_ISSUE_STATUS).forEach((k) => {
@@ -341,10 +356,8 @@ module.exports = (firebase, db) => {
       const currentStatus = config.APPLICATION.CHARACTER_ISSUE_STATUS[k];
       const statusText = k.split('_').join(' '); // i.e. REJECT_NON_DECLARATION becomes REJECT NON DECLARATION
 
-      statusGroupARs = applicationRecords.filter(ar => { // get applications that have at least one issue with the status we are processing
-        return ar.issues && ar.issues.characterIssues && ar.issues.characterIssues.filter(ci => {
-          return ci.status === currentStatus;
-        }).length > 0;
+      statusGroupARs = flattened.filter(ar => { // get applications with the character issue status we are processing
+        return ar.status === currentStatus;
       });
 
       if (statusGroupARs.length === 0) { // no applications found
@@ -364,46 +377,45 @@ module.exports = (firebase, db) => {
     <tr><td width="50"><b>No.</b></td><td colspan="2" style="text-align:center;"><b>Detail</b></td></tr>
       `);
 
-      let eventCount = 0;
-
       groups.forEach(group => {
 
         // get the applications that have issues for the group we are processing
-        issueGroupARs = getApplicationsForCharacterIssueGroup(statusGroupARs, currentStatus, group);
+        issueGroupARs = getIssueGroupARs(statusGroupARs, group);
 
         if (issueGroupARs.length === 0) { // no applications found
           return; // next iteration (skip this report group)
         }
 
         writer.addRaw(`<tr><td colspan="3" style="text-align:center; background-color:#68b; padding:5px"><b>${group.toUpperCase()}</b></td></tr>`);
-        issueGroupARs.forEach((applicationRecord, i) => {
-          if (applicationRecord.issues && applicationRecord.issues.characterIssues && applicationRecord.issues.characterIssues.length > 0) {
-            applicationRecord.issues.characterIssues.forEach((characterIssue, i) => {
-              if (characterIssue.status && characterIssue.status === currentStatus) {
-                characterIssue.events.forEach(event => {
-                  eventCount++;
-                  if (eventCount > 1) {
-                    writer.addRaw('<tr><td colspan="3" style="background-color:#ddd; padding:0">&nbsp</td></tr>');
-                  }
-                  let prettyDate = getDate(event.date).toJSON().slice(0, 10).split('-').reverse().join('/'); // dd/mm/yyyy
-                  let prettyType = getCharacterIssuePrettyType(characterIssue);
-                  let declaration = `
+        issueGroupARs.forEach((ar, i) => {
+          candidateCount++;
+          if (i > 0) {
+            writer.addRaw('<tr><td colspan="3" style="background-color:#ddd; padding:0">&nbsp</td></tr>');
+          }
+          let natureAndDateOfIssue = '';
+          let declaration = '';
+          ar.issues.forEach((issue, i) => {
+            const prettyDate = getDate(issue.date).toJSON().slice(0, 10).split('-').reverse().join('/'); // dd/mm/yyyy
+            const prettyType = getCharacterIssuePrettyType(issue);
+            if (i > 0) {
+              natureAndDateOfIssue += '<br>'  ;
+              declaration += '<br>'  ;
+            }
+            natureAndDateOfIssue += `${prettyType} - ${prettyDate}`;
+            declaration += `
   <p><b>${prettyType}</b></p>
   <p><b>Date:</b> ${prettyDate}</p>
-  <p><b>Details:</b> ${event.details || ''}<br>${event.title || ''}</p>
-                  `;
-                  writer.addRaw(`
-      <tr><td rowspan="6" width="50"><b>${eventCount}.</b></td><td width="175"><b>Name</b></td><td>${applicationRecord.candidate.fullName}</td></tr>
-      <tr><td><b>Nature and date of issue</b></td><td>${prettyType} - ${prettyDate}</td></tr>
-      <tr><td><b>Declaration</b></td><td>${declaration}</td></tr>
-      <tr><td><b>Recommendation</b></td><td>${statusText}</td></tr>
-      <tr><td><b>Guidance reference</b></td><td></td></tr>
-      <tr><td><b>Reason for recommendation</b></td><td></td></tr>
-                  `);
-                });
-              }
-            });
-          }
+  <p><b>Details:</b> ${issue.details || ''}<br>${issue.title || ''}</p>
+            `;
+          });
+          writer.addRaw(`
+    <tr><td rowspan="6" width="50"><b>${candidateCount}.</b></td><td width="175"><b>Name</b></td><td>${ar.name}</td></tr>
+    <tr><td><b>Nature and date of issue</b></td><td>${natureAndDateOfIssue}</td></tr>
+    <tr><td><b>Declaration</b></td><td>${declaration}</td></tr>
+    <tr><td><b>Recommendation</b></td><td>${statusText}</td></tr>
+    <tr><td><b>Guidance reference</b></td><td></td></tr>
+    <tr><td><b>Reason for recommendation</b></td><td>${ar.statusReason || ''}</td></tr>
+            `);
         });
       });
 
@@ -420,84 +432,112 @@ module.exports = (firebase, db) => {
 
   }
 
+  /**
+   * Sometimes an application has multiple issues of the same type with a single event each
+   * Sometimes an application has a single issue with multiple events.
+   * This function flatten this into a simple list of issues
+   *
+   * @param {*} applicationRecords
+   * @returns array
+   */
+  function flattenApplicationRecords(applicationRecords) {
+
+    // sometimes an application has multiple issues of the same type with a single event each
+    // sometimes an application has a single issue with multiple events.
+    // flatten this into a simple list of issues
+
+    let applications = [];
+
+    applicationRecords.forEach(ar => {
+      if (ar.issues && ar.issues.characterIssues && ar.issues.characterIssues.length > 0) {
+        let application = {
+          name: ar.candidate.fullName,
+          status: ar.issues.characterIssuesStatus,
+          statusReason: ar.issues.characterIssuesStatusReason,
+          issues: [],
+        };
+        ar.issues.characterIssues.forEach(ci => {
+          ci.events.forEach(e => {
+            application.issues.push({
+              date: e.date || ci.date,
+              type: e.type || ci.type,
+              title: e.title || ci.title,
+              summary: e.summary || ci.summary,
+              details: e.details || ci.details,
+            });
+          });
+        });
+        applications.push(application);
+      }
+    });
+
+    return applications;
+
+  }
 
   /**
    * Returns applications that meet the criteria for the specified group
    *
-   * @param {*} applicationRecords
-   * @param {*} status - status of the character issue
+   * @param {*} flattened - flattened application records / character issues
    * @param {*} group - character issue group
    */
-  function getApplicationsForCharacterIssueGroup(applicationRecords, status, group) {
+  function getIssueGroupARs(flattened, group) {
 
     switch(group) {
 
       case 'Single Motoring Offences':
-        // there is only 1 issue of the specified status and it is a motoring issue with only 1 event
-        return applicationRecords.filter(e => {
-          return e.issues.characterIssues && e.issues.characterIssues.length === 1 && e.issues.characterIssues[0].status === status
-            && getCharacterIssueGroup(e.issues.characterIssues[0]) === 'Motoring'
-            && e.issues.characterIssues[0].events.length === 1;
+        return flattened.filter(e => { // there is only 1 issue of the specified status and it is a motoring issue
+          return e.issues.length === 1 && getCharacterIssueGroup(e.issues[0]) === 'Motoring';
         });
 
       case 'Multiple Motoring Offences':
-        return applicationRecords.filter(e => {
-          return e.issues.characterIssues && e.issues.characterIssues.filter(e2 => e2.status === status).length > 1 && // there are multiple issues of the specified status and...
-            e.issues.characterIssues.filter(e2 => { // all issues are motoring issues
-              return getCharacterIssueGroup(e2) === 'Motoring';
-            }).length === e.issues.characterIssues.length;
+        return flattened.filter(e => {
+          return e.issues.length > 1 && e.issues.filter(e2 => { // all issues are motoring issues
+            return getCharacterIssueGroup(e2) === 'Motoring';
+          }).length === e.issues.length;
         });
 
       case 'Single Financial Issues':
-        return applicationRecords.filter(e => { // there is only 1 issue of the specified status and it is a financial issue with only 1 event
-          return e.issues.characterIssues && e.issues.characterIssues.length === 1 && e.issues.characterIssues[0].status === status
-          && getCharacterIssueGroup(e.issues.characterIssues[0]) === 'Financial'
-          && e.issues.characterIssues[0].events.length === 1;
+        return flattened.filter(e => { // there is only 1 issue of the specified status and it is a financial issue
+          return e.issues.length === 1 && getCharacterIssueGroup(e.issues[0]) === 'Financial';
         });
 
       case 'Multiple Financial Issues':
-        return applicationRecords.filter(e => {
-          return e.issues.characterIssues && e.issues.characterIssues.filter(e2 => e2.status === status).length > 1 && // there are multiple issues of the specified status and...
-            e.issues.characterIssues.filter(e2 => { // all issues are financial issues
-              return getCharacterIssueGroup(e2) === 'Financial';
-            }).length === e.issues.characterIssues.length;
+        return flattened.filter(e => {
+          return e.issues.length > 1 && e.issues.filter(e2 => { // all issues are financial issues
+            return getCharacterIssueGroup(e2) === 'Financial';
+          }).length === e.issues.length;
         });
 
       case 'Single Professional Conduct':
-        return applicationRecords.filter(e => { // there is only 1 issue of the specified status and it is professional conduct issues with only 1 event
-          return e.issues.characterIssues && e.issues.characterIssues.length === 1 && e.issues.characterIssues[0].status === status
-            && getCharacterIssueGroup(e.issues.characterIssues[0]) === 'Professional'
-            && e.issues.characterIssues[0].events.length === 1;
+        return flattened.filter(e => { // there is only 1 issue of the specified status and it is a professional issue
+          return e.issues.length === 1 && getCharacterIssueGroup(e.issues[0]) === 'Professional';
         });
 
       case 'Multiple Professional Conduct':
-        return applicationRecords.filter(e => {
-          return e.issues.characterIssues && e.issues.characterIssues.filter(e2 => e2.status === status).length > 1 && // there are multiple issues of the specified status and...
-            e.issues.characterIssues.filter(e2 => { // all issues are professional conduct issues
-              return getCharacterIssueGroup(e2) === 'Professional';
-            }).length === e.issues.characterIssues.length;
+        return flattened.filter(e => {
+          return e.issues.length > 1 && e.issues.filter(e2 => { // all issues are professional issues
+            return getCharacterIssueGroup(e2) === 'Professional';
+          }).length === e.issues.length;
         });
 
       case 'Single Criminal Offences':
-        return applicationRecords.filter(e => { // there is only 1 issue and it is criminal offence issues with only 1 event
-          return e.issues.characterIssues && e.issues.characterIssues.length === 1 && e.issues.characterIssues[0].status === status
-           && getCharacterIssueGroup(e.issues.characterIssues[0]) === 'Criminal'
-           && e.issues.characterIssues[0].events.length === 1;
+        return flattened.filter(e => { // there is only 1 issue of the specified status and it is a criminal issue
+          return e.issues.length === 1 && getCharacterIssueGroup(e.issues[0]) === 'Criminal';
         });
 
       case 'Multiple Criminal Offences':
-        return applicationRecords.filter(e => {
-          return e.issues.characterIssues && e.issues.characterIssues.filter(e2 => e2.status === status).length > 1 && // there are multiple issues and...
-            e.issues.characterIssues.filter(e2 => { // all issues are criminal offence issues
-              return getCharacterIssueGroup(e2) === 'Criminal';
-            }).length === e.issues.characterIssues.length;
+        return flattened.filter(e => {
+          return e.issues.length > 1 && e.issues.filter(e2 => { // all issues are criminal issues
+            return getCharacterIssueGroup(e2) === 'Criminal';
+          }).length === e.issues.length;
         });
 
       case 'Mixed Issues':
-        return applicationRecords.filter(e => {
-          return e.issues.characterIssues && e.issues.characterIssues.filter(e2 => e2.status === status).length > 1 && // there are multiple issues and...
-            e.issues.characterIssues.filter(e2 => { // at least one issue is not in the same group as the first issue
-              return getCharacterIssueGroup(e2) !== getCharacterIssueGroup(e.issues.characterIssues[0]);
+        return flattened.filter(e => {
+          return e.issues.length > 1 && // there are multiple issues and...
+            e.issues.filter(e2 => { // at least one issue is not in the same group as the first issue
+              return getCharacterIssueGroup(e2) !== getCharacterIssueGroup(e.issues[0]);
             }).length > 0;
         });
 
