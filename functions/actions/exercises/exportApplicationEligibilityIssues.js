@@ -164,6 +164,7 @@ module.exports = (firebase, db) => {
     `);
 
     // outline
+    writer.addPageBreak();
     writer.addRaw(addNewHtmlPage());
     writer.addRaw(`
       <div style="font-family: 'Arial';">
@@ -179,37 +180,39 @@ module.exports = (firebase, db) => {
         <br>
         <p><a href="#eligibility">Eligibility</a></p>
         <br>
-        <p><a href="#additional">Additional Selection Criteria</a></p>
+        <p><a href="#additional-selection-criteria">Additional Selection Criteria</a></p>
         <br>
-        <p><a href="#service">Reasonable Length of Service</a></p>
+        <p><a href="#reasonable-length-of-service">Reasonable Length of Service</a></p>
         <br>
-        <p><a href="#service">ANNEX A</a> Judicial Appointments Eligibility Statement and ASC</p>
+        <p><a href="#annex-a">ANNEX A</a> Judicial Appointments Eligibility Statement and ASC</p>
         <br>
-        <p><a href="#service">ANNEX B</a> Candidates recommended to proceed and reasons why they are considered to meet the ASC</p>
+        <p><a href="#annex-b">ANNEX B</a> Candidates recommended to proceed and reasons why they are considered to meet the ASC</p>
         <br>
-        <p><a href="#service">ANNEX C</a> Candidates recommended not to proceed and reasons why they are considered not to meet the ASC</p>
+        <p><a href="#annex-c">ANNEX C</a> Candidates recommended not to proceed and reasons why they are considered not to meet the ASC</p>
       </div>
     `);
 
+    writer.addPageBreak();
     writer.addRaw(addNewHtmlPage());
     writer.addRaw(`
       <div style="font-family: 'Arial'; font-size: 11pt;">
-        <p id="summary"><b>Summary</b></p><br>
+        <p><a name="summary"><b>Summary</b></a></p>
+        <br>
         <ol>
           <li>
             <p>This paper provides information about <b>${candidateNum}</b> ${candidateNum > 1 ? 'candidates' : 'candidate'} for the post <b>${title}</b> and the extent to which they satisfy the Lord Chancellor's Additional Selection Criteria (ASC).</p>
           </li>
         </ol>
         <br>
-        <p id="recommendation"><b>Recommendation</b></p>
+        <p><a name="recommendation"><b>Recommendation</b></a></p>
         <br>
         <ol start="2">
           <li>
-            <p>The Committee is asked to consider and agree the recommendations set out in <a href="annex-b">Annex B</a> and <a href="annex-c">Annex C</a>.</p>
+            <p>The Committee is asked to consider and agree the recommendations set out in <a href="#annex-b"><b>Annex B</b></a> and <a href="#annex-c"><b>Annex C</b></a>.</p>
           </li>
         </ol>
         <br>
-        <p id="background"><b>Background</b></p>
+        <p><a name="background"><b>Background</b></a></p>
         <br>
         <ol start="3">
           <li>
@@ -235,7 +238,7 @@ module.exports = (firebase, db) => {
           </li>
         </ol>
         <br>
-        <p id="eligibility"><b>Eligibility</b></p>
+        <p><a name="eligibility"><b>Eligibility</b></a></p>
         <br>
         <ol start="6">
           <li>
@@ -243,8 +246,8 @@ module.exports = (firebase, db) => {
               ${applicationEligibilityNotProceed.length === 0
                 ? ' and all candidates meet the statutory eligibility requirements for this exercise.'
                 : applicationEligibilityNotProceed.length === 1
-                  ? ' and 1 candidate did not meet the statutory eligibility requirements for this exercise. Those that do not are listed at <a href="annex-b"><b>Annex B</b></a>.'
-                  : ' and ' + applicationEligibilityNotProceed.length + ' candidates did not meet the statutory eligibility requirements for this exercise. Those that do not are listed at <a href="annex-b"><b>Annex B</b></a>.'
+                  ? ' and 1 candidate did not meet the statutory eligibility requirements for this exercise. Those that do not are listed at <a href="#annex-b"><b>Annex B</b></a>.'
+                  : ' and ' + applicationEligibilityNotProceed.length + ' candidates did not meet the statutory eligibility requirements for this exercise. Those that do not are listed at <a href="#annex-b"><b>Annex B</b></a>.'
               }
             </p>
           </li>
@@ -257,7 +260,7 @@ module.exports = (firebase, db) => {
           </li>
         </ol>
         <br>
-        <p id="additional-selection-criteria" style="color: red;"><b>Additional Selection Criteria</b></p>
+        <p style="color: red;"><a name="additional-selection-criteria"><b>Additional Selection Criteria</b></a></p>
         <br>
         <ol start="8">
           <li>
@@ -293,7 +296,7 @@ module.exports = (firebase, db) => {
           </li>
         </ol>
         <br>
-        <p style="color: red;"><b>Reasonable Length of Service</b></p>
+        <p style="color: red;"><a name="reasonable-length-of-service"><b>Reasonable Length of Service</b></a></p>
         <br>
         <ol start="12">
           <li>
@@ -311,7 +314,7 @@ module.exports = (firebase, db) => {
           </li>
         </ol>
         <br>
-        <p style="color: red;"><b>Character</b></p>
+        <p style="color: red;"><a name="character"><b>Character</b></a></p>
         <br>
         <ol start="14">
           <li>
@@ -328,10 +331,11 @@ module.exports = (firebase, db) => {
     `);
 
     // ANNEX A
+    writer.addPageBreak();
     writer.addRaw(addNewHtmlPage());
     writer.addRaw(`
       <div style="font-family: 'Arial'; font-size: 11pt;">
-        <p style="text-align: right;"><b>ANNEX A</b></p>
+        <p style="text-align: right;"><a name="annex-a"><b>ANNEX A</b></a></p>
         <p style="text-align: center;"><b>JUDICIAL APPOINTMENTS ELIGIBILITY STATEMENT</b></p>
         <br>
         <p style="text-align: right; color: red;">Ref: 00077</p>
@@ -414,11 +418,12 @@ module.exports = (firebase, db) => {
         return; // next iteration (skip this report group)
       }
 
+      writer.addPageBreak();
       writer.addRaw(addNewHtmlPage());
 
       if (currentStatus === config.APPLICATION.ELIGIBILITY_ISSUE_STATUS.PROCEED) {
         writer.addRaw(`
-          <p style="text-align: right;"><b>ANNEX B</b></p>
+          <p style="text-align: right;"><a name="annex-b"><b>ANNEX B</b></a></p>
           <p style="font-family: 'Arial'; font-weight: 700; font-size: 11pt; text-align: center; margin: 10px 0">
             Candidates recommended to proceed and reasons why they are considered to meet the ASC
           </p>
@@ -428,7 +433,7 @@ module.exports = (firebase, db) => {
         currentStatus === config.APPLICATION.ELIGIBILITY_ISSUE_STATUS.REJECT_NON_DECLARATION
       ) {
         writer.addRaw(`
-          <p style="text-align: right;"><b>ANNEX C</b></p>
+          <p style="text-align: right;"><a name="annex-c"><b>ANNEX C</b></a></p>
           <p style="font-family: 'Arial'; font-weight: 700; font-size: 11pt; text-align: center; margin: 10px 0">
             Candidates <u>recommended not to proceed</u> and reasons why they are considered to meet the ASC
           </p>
@@ -495,7 +500,6 @@ module.exports = (firebase, db) => {
 
   function addNewHtmlPage() {
     return `
-      <hr class="pb">
       <p style="font-family: Arial; font-size: 10pt; text-align: center;"><b>OFFICIAL - SENSITIVE</b></p>
       <p style="font-family: Arial; font-size: 10pt; text-align: right; color: red;"><b>(JAC/SCC/xx/xxx)</b></p>
       <br>

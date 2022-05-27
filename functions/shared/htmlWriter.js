@@ -39,6 +39,9 @@ class htmlWriter {
     this.html = '';
     this.stylesheet = '';
   }
+  addPageBreak() {
+    this.html += '<hr class="pb">'; /* Google Docs interprets this is a page break (don't know why) */
+  }
   toString() {
     if (this.html !== '') {
       return this.pageHeader() + this.html + this.pageFooter();
