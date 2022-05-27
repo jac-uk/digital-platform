@@ -311,6 +311,8 @@ module.exports = (firebase, db) => {
     writer.addPageBreak();
     addHtmlCharacterIssues_Proposal(writer);
     writer.addPageBreak();
+    addHtmlCharacterIssues_CandidatesDeclarations(writer, applicationRecords);
+    writer.addPageBreak();
     addHtmlCharacterIssues_MainBody(writer, exercise, applicationRecords);
 
     return writer.toString();
@@ -628,6 +630,48 @@ Diversity statistics relating to the candidates post the selection day moderatio
   }
 
   /**
+   * Adds the Candidates' Declarations section of the Character Issues report
+   *
+   * @param {htmlWriter} writer
+   * @param {*} applicationRecords
+   */
+  function addHtmlCharacterIssues_CandidatesDeclarations(writer, applicationRecords) {
+    writer.addRaw(`
+<p style="text-align: center"><span class="red"><b>&lt;insert if too numerous for body of paper&gt;</b></span></p>
+    `);
+    writer.addHeading('Candidates\' Declarations', 'center');
+    writer.addRaw(`
+<table>
+<tr>
+  <td width="125px"><u>Candidate<br>Surname</u></td>
+  <td width="125px"><u>Candidate<br>Forename</u></td>
+  <td><u>Commissioner(s) known by candidate</u></td>
+  <td><u>Declaration</u></td>
+</tr>
+    `);
+    let firstIsDone = false;
+    applicationRecords.forEach(ar => {
+      if (ar.issues && ar.issues.characterIssues && ar.issues.characterIssues.length > 0) {
+        const nameParts = ar.candidate.fullName.split(' ');
+        const firstName = nameParts.shift();
+        const lastName = nameParts.join(' ');
+        writer.addRaw(`
+<tr>
+  <td>${firstName}</td>
+  <td>${lastName}</td>
+  <td></td>
+  <td>${firstIsDone ? '' : '<span class="gray">i.e. how the candidate knows the Commissioner</span>'}</td>
+</tr>
+        `);
+        firstIsDone = true;
+      }
+    });
+    writer.addRaw(`
+</table>
+     `);
+   }
+
+  /**
    * Adds the main body content of the Character Issues report
    *
    * @param {htmlWriter} writer
@@ -671,7 +715,7 @@ Diversity statistics relating to the candidates post the selection day moderatio
       }
 
       if (firstStatusIsDone) {
-        writer.addRaw('<br><br><hr><br><br>');
+        writer.addPageBreak();
       }
 
       writer.addHeading('OFFICIAL - SENSITIVE', 'center', '1rem', 'margin:10px 0; padding:0;');
