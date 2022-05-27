@@ -31,6 +31,15 @@ const DEFAULT_STYLESHEET = `
     h4 {
       padding-top: 30px;
     }
+    .red {
+      color:red;
+    }
+    .gray {
+      color:gray;
+    }
+    p, ul {
+      margin-bottom: 15px;
+    }
   </style>
 `;
 
@@ -38,6 +47,9 @@ class htmlWriter {
   constructor() {
     this.html = '';
     this.stylesheet = '';
+  }
+  defaultStylesheet() {
+    return DEFAULT_STYLESHEET;
   }
   toString() {
     if (this.html !== '') {
@@ -95,6 +107,9 @@ class htmlWriter {
   }
   addRaw(s) {
     this.html += s;
+  }
+  addPageBreak() {
+    this.html += '<hr class="pb">'; /* Google Docs interprets this is a page break (don't know why) */
   }
 }
 
