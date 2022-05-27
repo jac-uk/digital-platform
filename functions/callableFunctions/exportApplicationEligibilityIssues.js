@@ -39,6 +39,6 @@ module.exports = functions.region('europe-west2').https.onCall(async (data, cont
   await logEvent('info', 'Application eligibility issues exported (to ' + data.format + ')', details, user);
 
   // return the requested data
-  return await exportApplicationEligibilityIssues(data.exerciseId, data.stage || 'all', data.status || 'all', data.format);
+  return await exportApplicationEligibilityIssues(data.exerciseId, data.format);
 
 });

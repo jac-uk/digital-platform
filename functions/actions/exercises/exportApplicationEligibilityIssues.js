@@ -19,7 +19,7 @@ module.exports = (firebase, db) => {
    * Generates an export of all applications in the selected exercise with eligibility issues
    * @param {*} `exerciseId` (required) ID of exercise to include in the export
    */
-  async function exportApplicationEligibilityIssues(exerciseId, stage, status, format) {
+  async function exportApplicationEligibilityIssues(exerciseId, format) {
 
     // get the exercise
     const exercise = await getDocument(
