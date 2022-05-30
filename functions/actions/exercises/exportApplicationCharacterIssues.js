@@ -325,6 +325,9 @@ module.exports = (firebase, db) => {
     writer.addPageBreak();
     addHtmlCharacterIssues_StatConLetters(writer);
     writer.addPageBreak();
+    writer.addPageBreak(); // there is a blank page before the next section
+    addHtmlCharacterIssues_SelectionExercise(writer, exercise);
+    writer.addPageBreak();
     addHtmlCharacterIssues_AppointmentsVacancyRequest(writer);
     writer.addPageBreak();
     addHtmlCharacterIssues_DiversityStatistics(writer);
@@ -1198,6 +1201,102 @@ REPRODUCE THIS TABLE AS APPROPRIATE.<span class="red">&gt;</span></b>
    */
   function addHtmlCharacterIssues_StatConLetters(writer) {
     writer.addParagraph('PASTE THE SCANNED COPY OF STAT CON LETTERS HERE', 'center', '10pt', 'color:gray;');
+  }
+
+  /**
+   * Adds the Selection Exercise section of the Character Issues report
+   *
+   * @param {htmlWriter} writer
+   */
+  function addHtmlCharacterIssues_SelectionExercise(writer, exercise) {
+    writer.addHeading(`${exercise.name} Selection Exercise`, 'center');
+    writer.addRaw(`
+<table style="margin-top:50px">
+<tr>
+  <td style="text-align:center" width="250"><b>Selection Exercise Stage</b></td>
+  <td style="text-align:center"><b>Detail</b></td>
+</tr>
+<tr>
+  <td>Vacancy Request (VR)</td>
+  <td>
+    Received <span class="gray">insert date</span>. Copy attached at <b>Annex X</b> <span class="gray">insert hyperlink to Annex</span>.
+    <span class="gray">insert number</span> vacancies for immediate appointment.  <span class="gray">If a s94 insert details here</span>
+  </td>
+</tr>
+<tr>
+  <td>Advertisements</td>
+  <td><b><span class="red">&lt;</span>State whether a composite advert used or specifics where this differs<span class="red">&gt;</span></b></td>
+</tr>
+<tr>
+  <td>Number of applications received</td>
+  <td>Exercise launched <span class="gray">insert date</span> with <span class="gray">insert number</span> applications received.
+  </td>
+</tr>
+<tr>
+  <td>Eligibility <b>&lt;only include if the Commission decided candidate(s) were ineligible to proceed&gt;</b></td>
+  <td>
+    The Commission decided that <span class="gray">insert number</span> candidates<span class="red">/s as/were</span> ineligible and that their
+    application<span class="red">/s should not be allowed to proceed.
+  </td>
+</tr>
+<tr>
+  <td>Shortlisting <b>&lt;Qualifying test/sift/telephone assessment&gt;</b></td>
+  <td>
+    <p>Date of Dry Run: <span class="gray">insert date</span></p>
+    <p class="gray">insert number of candidates who sat the <span class="red">test/TA</span></p>
+    <p>Main date of <span class="red">test/sift/TA</span>: <span class="gray">insert date</span></p>
+    <p>The draft <span class="red">test/TA</span> was subject to equality proofing by independent consultants and internal quality assurance by the JAC Advisory Group.</p>
+  </td>
+</tr>
+<tr>
+  <td>Independent Assessment <b>&lt;obtained pre/post short listing&gt;</b></td>
+  <td>
+    <ul>
+      <li><span class="gray">insert number</span> professional independent assessor(s);
+         <br>and
+      <li><span class="gray">insert number</span> judicial independent assessor(s)</li>
+    </ul>
+  </td>
+</tr>
+<tr>
+  <td>
+    Selection day<br>
+    <b><span class="red">&lt;</span>insert tools used:</b><br>
+    Role-play<br>
+    Presentation<br>
+    Situational questioning<br>
+    Interview<b><span class="red">&gt;</b></span>
+  </td>
+  <td>
+    <p>
+      <b><span class="red">&lt;</span>insert if role play/situational questioning used<span class="red">&gt;</span></b>
+      The draft role play/situational questioning was subject to equality proofing by independent consultants and internal quality assurance by the JAC Advisory Group
+    </p>
+    <p><span class="gray">insert number</span> candidates were invited to attend the selection day.</p>
+    <p>Moderation took place to ensure consistency between the selection panel<span class="red">/s</span>.</p>
+    <p>A full summary of selection day activities is attached at <b>Annex X</b> <span class="gray">insert hyperlink to Annex</span>.</p>
+    <p>A copy of the materials provided to candidates at the selection day is attached at <b>Annex X</b> <span class="gray">insert hyperlink to Annex</span>.</p>
+  </td>
+</tr>
+<tr>
+    <td>Final good character checks</td>
+    <td>
+      <p><b><span class="red">&lt;</span>delete and/or add as appropriate<span class="red">&gt;</span></b></p>
+      <ul>
+        <li>HM Revenue and Customs</li>
+        <li>Police Checks</li>
+        <li>The Bar Standards Board</li>
+        <li>Institute of Legal Executives</li>
+        <li>Solicitors Regulation Authority</li>
+        <li>Judicial Conduct Investigations Office</li>
+        <li>Insolvency Service</li>
+        <li>Royal Institute Chartered Surveyors</li>
+        <li>Intellectual Property Regulation Board</li>
+      </ul>
+    </td>
+</tr>
+</table>
+    `);
   }
 
   /**
