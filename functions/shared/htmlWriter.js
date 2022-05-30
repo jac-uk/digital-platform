@@ -93,6 +93,10 @@ class htmlWriter {
     let style = `style="text-align: ${textAlign}; font-size: ${fontSize}; ${extraStyle}"`;
     this.html += `<h4 id="${data.split(' ').join('_')}_heading" ${style}>${data}</h4>`;
   }
+  addHeadingRaw(html, textAlign = 'left', fontSize = 'inherit', extraStyle = '') {
+    let style = `style="text-align: ${textAlign}; font-size: ${fontSize}; ${extraStyle}"`;
+    this.html += `<h4 ${style}>${html}</h4>`;
+  }
   addTable(data) {
     const tableStart = '<table>';
     const tableEnd = '</table>';

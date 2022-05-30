@@ -385,16 +385,16 @@ module.exports = (firebase, db) => {
     </i></span>
   </b></p>
   <br>
-  <p>Summary</p>
-  <p>Declaration of Interest</p>
-  <p>Conflict of Interest</p>
-  <p>Salaried Part Time Working <span class="red">(delete if not available)</span></p>
-  <p>Character</p>
-  <p>Statutory Consultation</p>
-  <p>Selection Recommendation</p>
-  <p>Equal Merit Provision</p>
-  <p>Selection Criteria</p>
-  <p>Diversity Monitoring</p>
+  <p><a href="#summary">Summary</a></p>
+  <p><a href="#declaration-of-interest">Declaration of Interest</a></p>
+  <p><a href="#conflict-of-interest">Conflict of Interest</a></p>
+  <p><a href="#salaried-part-time-working">Salaried Part Time Working</a> <span class="red">(delete if not available)</span></p>
+  <p><a href="#character">Character</a></p>
+  <p><a href="#statutory-consultation">Statutory Consultation</a></p>
+  <p><a href="#selection-recommendation">Selection Recommendation</a></p>
+  <p><a href="#equal-merit-provision">Equal Merit Provision</a></p>
+  <p><a href="#selection-criteria">Selection Criteria</a></p>
+  <p><a href="#diversity-monitoring">Diversity Monitoring</a></p>
   <p class="red">(Add Annexes)</p>
 </div>
   `);
@@ -408,7 +408,7 @@ module.exports = (firebase, db) => {
    */
   function addHtmlCharacterIssues_Proposal(writer) {
     writer.addHeading('Commission Proposal Paper');
-    writer.addHeading('Summary');
+    writer.addHeadingRaw('<a name="summary">Summary</a>');
     writer.addRaw(`
 <p>1.
 <b><span class="red">&lt;</span>insert if calling from s94 list<span class="red">&gt;</span></b> This paper provides detail of the selection exercise to select a total of
@@ -464,21 +464,21 @@ Currently we <span class="red">do/do not</span> expect further requests for reco
 the recommendations.&gt;</b></span>
 </p>
     `);
-    writer.addHeading('Declaration of Interest');
+    writer.addHeadingRaw('<a name="declaration-of-interest">Declaration of Interest</a>');
     writer.addRaw(`
 <p>9.
 <span class="red"><b>State any declarations of interest (if numerous state number and detail into Annex &lt;insert hyperlink to Annex&gt;). OR: </b></span>
 There are no declarations of interest made by the candidates discussed in this paper.
 </p>
   `);
-  writer.addHeading('Conflict of Interest');
+  writer.addHeadingRaw('<a name="conflict-of-interest">Conflict of Interest</a>');
   writer.addRaw(`
 <p>10.
 <span class="red"><b>Include any conflict of interest that was discussed in accordance with the Guidance on individuals undertaking multiple roles on a selection exercise OR:
 </b></span>There were no individuals (i.e. panel members or judges) undertaking more than one role in this selection exercise.
 </p>
   `);
-  writer.addRaw('<h4>Salaried Part-time Working <span class="red">&lt;</span>delete if not applicable<span class="red">&gt;</span></h4>');
+  writer.addRaw('<h4><a name="salaried-part-time-working">Salaried Part-time Working</a> <span class="red">&lt;</span>delete if not applicable<span class="red">&gt;</span></h4>');
   writer.addRaw(`
 <p>11.
 <span class="red"><b>State the number of posts which could be considered for a SPTW pattern and if any expressed this as a preference. Consider whether there might be a
@@ -487,7 +487,7 @@ shortfall in FTE terms OR:</b></span>
 None of the roles were considered suitable for part-time working. This is because <span class="gray">insert explanation</span>.
 </p>
   `);
-  writer.addHeading('Character');
+  writer.addHeadingRaw('<a name="character">Character</a>');
   writer.addRaw(`
 <p>12.
 We have carried out all the relevant character checks and <span class="red">no/the following</span> issues have been identified(.) <b>OR</b> (:)
@@ -504,7 +504,7 @@ All character declarations were considered by the Committee when the list was cr
 <b><span class="red">&lt;</span>insert if appropriate:</b> no further issues have been identified.<b><span class="red">&gt;</span> OR briefly state any issues</b>
 </p>
 `);
-  writer.addHeading('Statutory Consultation');
+  writer.addHeadingRaw('<a name="statutory-consultation">Statutory Consultation</a>');
   writer.addRaw(`
 <p>14.
 The <span class="gray">insert first consultee</span> and <span class="gray">insert second consultee</span> were consulted on <span class="gray">insert date</span>
@@ -520,7 +520,7 @@ In considering the statutory consultation responses, the following candidate<spa
   <li><span class="gray">insert name</span>: <span class="gray">insert comments / concerns</span></li>
 </ul>
 `);
-  writer.addHeading('Selection Recommendation');
+  writer.addHeadingRaw('<a name="selection-recommendation">Selection Recommendation</a>');
   writer.addRaw(`
 <p>16.
 <b>Annex X</b> <span class="gray">insert hyperlink to Annex</span> details all the candidates assessed at selection day and sets out the candidates we are proposing for
@@ -560,7 +560,7 @@ Independent assessments for all candidates will be available on the day.
 Panel reports and independent assessments for all candidates will also be available on request.
 </p>
   `);
-  writer.addHeading('Equal Merit Provision');
+  writer.addHeadingRaw('<a name="equal-merit-provision">Equal Merit Provision</a>');
   writer.addRaw(`
 <p>21.
 <b><span class="red">&lt;Please explain here how the zone of Equal Merit was created OR why there is no zone of equal merit&gt;</span></b>
@@ -581,7 +581,7 @@ Therefore, we propose that there is no zone to be considered for the application
 the Head of Equality and Diversity if necessary.</span></b>
 </p>
 
-<h4>Selection Criteria / Criterion <span class="red">&lt;delete as appropriate&gt;</span></h4>
+<h4><a name="selection-criteria">Selection Criteria</a> / Criterion <span class="red">&lt;delete as appropriate&gt;</span></h4>
 <p>25.
 The additional selection <span class="red">criteria/criterion</span> for this exercise were:
 </p>
@@ -634,7 +634,7 @@ The job description is at <b>Annex X</b> <span class="gray">insert hyperlink to 
 <b>Annex X</b> <span class="gray">insert hyperlink to Annex</span>.
 </p>
   `);
-  writer.addHeading('Diversity Monitoring');
+  writer.addHeadingRaw('<a name="diversity-monitoring">Diversity Monitoring</a>');
   writer.addRaw(`
 <p>31.
 Diversity statistics relating to the candidates post the selection day moderation stage of the selection exercise are provided at
