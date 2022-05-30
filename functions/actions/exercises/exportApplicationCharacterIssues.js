@@ -318,6 +318,16 @@ module.exports = (firebase, db) => {
     addHtmlCharacterIssues_MeritOrder(writer, applicationRecords);
     writer.addPageBreak();
     addHtmlCharacterIssues_PanelsComposition(writer);
+    writer.addPageBreak();
+    addHtmlCharacterIssues_RemainingOnS94List(writer, applicationRecords);
+    writer.addPageBreak();
+    addHtmlCharacterIssues_PanelReports(writer);
+    writer.addPageBreak();
+    addHtmlCharacterIssues_StatConLetters(writer);
+    writer.addPageBreak();
+    addHtmlCharacterIssues_AppointmentsVacancyRequest(writer);
+    writer.addPageBreak();
+    addHtmlCharacterIssues_DiversityStatistics(writer);
 
     return writer.toString();
 
@@ -350,9 +360,9 @@ module.exports = (firebase, db) => {
   </h3>
   <p style="margin-top: 13px;">${exercise.referenceNumber} - ${exercise.name}</p>
   <div style="margin-top: 220px; text-align: left;">
-    <p>Assigned Commissioner:</p>
-    <p style="margin-top: 13px;">Senior Selection Exercise Manager:</p>
-    <p style="margin-top: 13px;">Selection Exercise Manager:</p>
+    <p>Assigned Commissioner: <span class="gray">INSERT NAME</span></p>
+    <p style="margin-top: 13px;">Senior Selection Exercise Manager: <span class="gray">INSERT NAME</span></p>
+    <p style="margin-top: 13px;">Selection Exercise Manager: <span class="gray">INSERT NAME</span></p>
   </div>
 </div>
   `);
@@ -1101,6 +1111,117 @@ REPRODUCE THIS TABLE AS APPROPRIATE.<span class="red">&gt;</span></b>
 <tr><td>Panel 5</td><td></td><td></td><td></td></tr>
 <tr><td>Panel 6</td><td></td><td></td><td></td></tr>
 </table>
+    `);
+  }
+
+  /**
+   * Adds the Candidates Remaining on S94 List section of the Character Issues report
+   *
+   * @param {htmlWriter} writer
+   * @param {*} applicationRecords
+   */
+   function addHtmlCharacterIssues_RemainingOnS94List(writer, applicationRecords) {
+    writer.addHeading('CANDIDATES REMAINING ON S94 LIST', 'center');
+    writer.addHeading('IN MERIT ORDER', 'center');
+    writer.addHeading('CANDIDATES SHOULD BE LISTED IN MERIT ORDER', 'center', 'inherit', 'margin-top: 50px;');
+    // commented out because htmlWriter does not support vertical text
+//     writer.addRaw(`
+// <table style="margin-top:30px">
+// <tr>
+//   <td>Surname</td>
+//   <td>Forename</td>
+//   <td class="vertical-text">Exercising Judgement</td>
+//   <td class="vertical-text">Possessing and Building Knowledge</td>
+//   <td class="vertical-text">Assimilating and Clarifying Information</td>
+//   <td class="vertical-text">Working and Communicating with Others</td>
+//   <td class="vertical-text">Managing Work Efficiently</td>
+//   <td class="vertical-text">Leadership</td>
+//   <td class="vertical-text">Welsh language</td>
+//   <td class="vertical-text">Overall Band</td>
+// </tr>
+//     `);
+    writer.addRaw(`
+<table style="margin-top:30px">
+<tr style="background-color:#eee">
+  <td style="width:125px;">Surname</td>
+  <td style="width:125px;">Forename</td>
+  <td style="width:40px;" class="vertical-text"></td>
+  <td style="width:40px;" class="vertical-text"></td>
+  <td style="width:40px;" class="vertical-text"></td>
+  <td style="width:40px;" class="vertical-text"></td>
+  <td style="width:40px;" class="vertical-text"></td>
+  <td style="width:40px;" class="vertical-text"></td>
+  <td style="width:40px;" class="vertical-text"></td>
+  <td style="width:40px;" class="vertical-text"></td>
+</tr>
+    `);
+    for(let x = 1; x <= 10; x++) {
+      writer.addRaw(`
+<tr>
+  <td></td>
+  <td></td>
+  <td></td>
+  <td></td>
+  <td></td>
+  <td></td>
+  <td></td>
+  <td></td>
+  <td></td>
+  <td></td>
+</tr>
+      `);
+    }
+    writer.addRaw(`
+</table>
+    `);
+  }
+
+  /**
+   * Adds the Panel Reports section of the Character Issues report
+   *
+   * @param {htmlWriter} writer
+   */
+  function addHtmlCharacterIssues_PanelReports(writer) {
+    writer.addRaw(`
+<p style="text-align: center">
+  <b><span class="red">&lt;</span>INSERT PANEL REPORTS HERE <i>(choose ‘Statutory Consultation’ export)</i> – should include pen portrait, self-assessment,
+  independent assessments evaluation, final candidate evaluation and stat con comments where relevant<span class="red">&gt;</span></b>
+</p>
+    `);
+    writer.addParagraph('PASTE HERE', 'center', '10pt', 'color:gray; margin-top: 50px;');
+  }
+
+  /**
+   * Adds the Stat Con Letters section of the Character Issues report
+   *
+   * @param {htmlWriter} writer
+   */
+  function addHtmlCharacterIssues_StatConLetters(writer) {
+    writer.addParagraph('PASTE THE SCANNED COPY OF STAT CON LETTERS HERE', 'center', '10pt', 'color:gray;');
+  }
+
+  /**
+   * Adds the Appointments Vacancy Request section of the Character Issues report
+   *
+   * @param {htmlWriter} writer
+   */
+  function addHtmlCharacterIssues_AppointmentsVacancyRequest(writer) {
+    writer.addHeading('JUDICIAL APPOINTMENTS VACANCY REQUEST', 'center');
+    writer.addParagraph('PASTE HERE', 'center', '10pt', 'color:gray; margin-top: 50px;');
+  }
+
+  /**
+   * Adds the Diversity Statistics section of the Character Issues report
+   *
+   * @param {htmlWriter} writer
+   */
+   function addHtmlCharacterIssues_DiversityStatistics(writer) {
+    writer.addHeading('Diversity Statistics', 'center');
+    writer.addRaw(`
+<p style="font-size:10pt;">
+  <b><span class="red">&lt;Please insert the email received from the Diversity and Engagement Team in the final diversity checkpoint, i.e. post selection
+  day moderation figures. You should include both the table and analysis&gt;</span></b>
+</p>
     `);
   }
 
