@@ -314,6 +314,10 @@ module.exports = (firebase, db) => {
     addHtmlCharacterIssues_CandidatesDeclarations(writer, applicationRecords);
     writer.addPageBreak();
     addHtmlCharacterIssues_MainBody(writer, exercise, applicationRecords);
+    writer.addPageBreak();
+    addHtmlCharacterIssues_MeritOrder(writer, applicationRecords);
+    writer.addPageBreak();
+    addHtmlCharacterIssues_PanelsComposition(writer);
 
     return writer.toString();
 
@@ -668,8 +672,8 @@ Diversity statistics relating to the candidates post the selection day moderatio
     });
     writer.addRaw(`
 </table>
-     `);
-   }
+    `);
+  }
 
   /**
    * Adds the main body content of the Character Issues report
@@ -680,11 +684,11 @@ Diversity statistics relating to the candidates post the selection day moderatio
    */
   function addHtmlCharacterIssues_MainBody(writer, exercise, applicationRecords) {
 
-    dumpCharacterIssues(applicationRecords);
+    // dumpCharacterIssues(applicationRecords);
 
     flattened = flattenApplicationRecords(applicationRecords);
 
-    dumpFlatRecords(flattened);
+    // dumpFlatRecords(flattened);
 
     groups = [
       'Single Motoring Offences',
@@ -962,6 +966,142 @@ Diversity statistics relating to the candidates post the selection day moderatio
       }
     }
     return '?';
+  }
+
+  /**
+   * Adds the Candidates in Merit Order section of the Character Issues report
+   *
+   * @param {htmlWriter} writer
+   * @param {*} applicationRecords
+   */
+  function addHtmlCharacterIssues_MeritOrder(writer, applicationRecords) {
+    writer.addHeading('CANDIDATES IN MERIT ORDER', 'center');
+    writer.addHeading('(Recommended Candidates in Bold)', 'center');
+    writer.addRaw(`
+<p style="margin-top:50px">
+<b>Candidates recommended for: <span class="gray">insert name of post and circuit (if applicable)
+insert number</span> vacancies - <span class="gray">insert vacancy location details</span> suitable for <span class="red">&lt;insert as appropriate:</span> </b>
+Full time/SPTW at 50:50.<b><span class="red">&gt;</span></b>
+</p>
+
+<p>
+<b><span class="red">&lt;delete when complete:</span> ALL CANDIDATES SHOULD BE LISTED IN MERIT ORDER. IF SELECTIONS ARE FOR MORE THAN ONE CIRCUIT,
+REPRODUCE THIS TABLE AS APPROPRIATE.<span class="red">&gt;</span></b>
+</p>
+
+<p>
+<span class="red"><b>&lt;Please add a hyperlink in the Panel Assessment Page Reference Column to the Candidate's Panel Report&gt;</b></span>
+</p>
+     `);
+    // commented out because htmlWriter does not support vertical text
+//     writer.addRaw(`
+// <table style="margin-top:50px">
+// <tr>
+//   <td>Professional<br>Surname</td>
+//   <td>Forename</td>
+//   <td class="vertical-text">Exercising Judgement</td>
+//   <td class="vertical-text">Possessing and Building Knowledge</td>
+//   <td class="vertical-text">Assimilating and Clarifying Information</td>
+//   <td class="vertical-text">Working and Communicating with Others</td>
+//   <td class="vertical-text">Managing Work Efficiently</td>
+//   <td class="vertical-text">Leadership</td>
+//   <td class="vertical-text">Overall Band</td>
+//   <td class="vertical-text">Welsh Questions</td>
+//   <td class="vertical-text">Welsh language</td>
+//   <td class="vertical-text"><span class="gray">insert location</span></td>
+//   <td class="vertical-text"><span class="gray">insert location</span></td>
+//   <td class="vertical-text"><span class="gray">insert location</span></td>
+//   <td class="vertical-text"><span class="gray">insert location</span></td>
+//   <td class="vertical-text"><span class="gray">insert location</span></td>
+//   <td class="vertical-text"><span class="gray">insert location</span></td>
+//   <td class="vertical-text">Statutory Consultation</td>
+//   <td class="vertical-text">Panel Assessment</td>
+//   <td class="vertical-text">Page Reference</td>
+// </tr>
+//     `);
+    writer.addRaw(`
+<table style="margin-top:50px">
+<tr style="background-color:#eee">
+  <td style="width:125px;">Surname</td>
+  <td style="width:125px;">Forename</td>
+  <td style="width:20px;" class="vertical-text"></td>
+  <td style="width:20px;" class="vertical-text"></td>
+  <td style="width:20px;" class="vertical-text"></td>
+  <td style="width:20px;" class="vertical-text"></td>
+  <td style="width:20px;" class="vertical-text"></td>
+  <td style="width:20px;" class="vertical-text"></td>
+  <td style="width:20px;" class="vertical-text"></td>
+  <td style="width:20px;" class="vertical-text"></td>
+  <td style="width:20px;" class="vertical-text"></td>
+  <td style="width:20px;" class="vertical-text"></td>
+  <td style="width:20px;" class="vertical-text"></td>
+  <td style="width:20px;" class="vertical-text"></td>
+  <td style="width:20px;" class="vertical-text"></td>
+  <td style="width:20px;" class="vertical-text"></td>
+  <td style="width:20px;" class="vertical-text"></td>
+  <td style="width:20px;" class="vertical-text"></td>
+  <td style="width:20px;" class="vertical-text"></td>
+  <td style="width:20px;" class="vertical-text"></td>
+</tr>
+    `);
+    for(let x = 1; x <= 10; x++) {
+      writer.addRaw(`
+<tr>
+  <td></td>
+  <td></td>
+  <td></td>
+  <td></td>
+  <td></td>
+  <td></td>
+  <td></td>
+  <td></td>
+  <td></td>
+  <td></td>
+  <td></td>
+  <td></td>
+  <td></td>
+  <td></td>
+  <td></td>
+  <td></td>
+  <td></td>
+  <td></td>
+  <td></td>
+  <td></td>
+</tr>
+      `);
+    }
+
+    writer.addRaw(`
+</table>
+<table>
+<tr><td style="border:none; padding:2px 0;">Key to Statutory Consultation:</td><td style="border:none; padding:2px 0;">&#10004; = positive</td></tr>
+<tr><td style="border:none; padding:2px 0;"></td><td style="border:none; padding:2px 0;">X = negative</td></tr>
+<tr><td style="border:none; padding:2px 0;"></td><td style="border:none; padding:2px 0;">M = mixed</td></tr>
+</table>
+<p style="margin-top: 25px;">Panel reports and independent assessments for all candidates will be available on request.</p>
+    `);
+  }
+
+
+  /**
+   * Adds the Candidates in Merit Order section of the Character Issues report
+   *
+   * @param {htmlWriter} writer
+   * @param {*} applicationRecords
+   */
+  function addHtmlCharacterIssues_PanelsComposition(writer) {
+    writer.addHeading('Panels Composition', 'center');
+    writer.addRaw(`
+<table style="margin-top: 50px">
+<tr><td><b>Panel</b></td><td><b>Chair</b></td><td><b>Judicial Member</b></td><td><b>Independent Member</b></td></tr>
+<tr><td>Panel 1</td><td></td><td></td><td></td></tr>
+<tr><td>Panel 2</td><td></td><td></td><td></td></tr>
+<tr><td>Panel 3</td><td></td><td></td><td></td></tr>
+<tr><td>Panel 4</td><td></td><td></td><td></td></tr>
+<tr><td>Panel 5</td><td></td><td></td><td></td></tr>
+<tr><td>Panel 6</td><td></td><td></td><td></td></tr>
+</table>
+    `);
   }
 
 };
