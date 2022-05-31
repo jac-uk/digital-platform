@@ -415,236 +415,270 @@ module.exports = (firebase, db) => {
     writer.addHeading('Commission Proposal Paper');
     writer.addHeadingRaw('<a name="summary">Summary</a>');
     writer.addRaw(`
-<p>1.
-<b><span class="red">&lt;</span>insert if calling from s94 list<span class="red">&gt;</span></b> This paper provides detail of the selection exercise to select a total of
-<span class="gray">insert number</span> candidates for the office of
-<span class="gray">insert office</span> under s87 of the Constitutional Reform Act 2005 (CRA). These candidates will be drawn from the section 94 list created on
-<span class="gray">insert date</span>.
-<b><span class="red">&lt;</span>insert if necessary:</b>This total figure includes <span class="gray">insert number</span> vacancies to replace candidates who were originally
-selected in <span class="gray">insert month</span>, <span class="gray">insert year</span>, but who have declined the offer of appointment.<b><span class="red">&gt;&gt;</span></b>
-</p>
+<ol>
+  <li>
+    <b><span class="red">&lt;</span>insert if calling from s94 list<span class="red">&gt;</span></b> This paper provides detail of the selection exercise to select a total of
+    <span class="gray">insert number</span> candidates for the office of
+    <span class="gray">insert office</span> under s87 of the Constitutional Reform Act 2005 (CRA). These candidates will be drawn from the section 94 list created on
+    <span class="gray">insert date</span>.
+    <b><span class="red">&lt;</span>insert if necessary:</b>This total figure includes <span class="gray">insert number</span> vacancies to replace candidates who were originally
+    selected in <span class="gray">insert month</span>, <span class="gray">insert year</span>, but who have declined the offer of appointment.<b><span class="red">&gt;&gt;</span></b>
+  </li>
+</ol>
     `);
     writer.addHeading('OR');
     writer.addRaw(`
-<p>2.
-<b><span class="red">&lt;</span>insert if a s87 exercise only<span class="red">&gt;</span></b> The Judicial Appointments Commission (JAC) has been asked to select candidates
-to fill a total of <span class="gray">insert number</span> posts for the office of <span class="gray">insert post</span> under s87 of the Constitutional Reform Act 2005 (CRA).
-These candidates are for immediate appointment.
-</p>
-  
-<p>3.
-  The vacancies arise from the following <span class="gray">insert circuit/location</span> (<span class="gray">insert number of vacancies</span>):
-</p>
-<ul>
-  <li>Location 1 <span class="gray">insert number</span></li>
-  <li>Location 2 <span class="gray">insert number</span></li>
-  <li>Location 3 <span class="gray">insert number</span></li>
-</ul>
-
-<p>4.
-The exercise launched on <span class="gray">insert date</span> and closed for applications on <span class="gray">insert date</span>. A total of <span class="gray">insert number</span> applications were received with
-<span class="gray">insert number</span> candidates withdrawing during the course of this exercise.
-</p>
-
-<p>5.
-<span class="gray">insert number</span> candidates were invited to selection day<span class="red">/s</span>. Selection day<span class="red">/s</span> took place
-<span class="red">on/between</span> <span class="gray">insert date</span> at the JAC
-<b>OR <span class="red">&lt;</span>insert if appropriate:</b> across <span class="gray">insert number</span> regional venues.<b><span class="red">&gt;</span></b>
-</p>
-
-<p>6.
-<b><span class="red">&lt;</span>insert if appropriate:</b> If SCC selects <span class="gray">insert number</span> candidates, <span class="gray">insert number</span> will remain on the s94 list.
-Currently we <span class="red">do/do not</span> expect further requests for recommendations throughout the year.<b><span class="red">&gt;</span></b>
-</p>
+<ol start="2">
+  <li>
+    <b><span class="red">&lt;</span>insert if a s87 exercise only<span class="red">&gt;</span></b> The Judicial Appointments Commission (JAC) has been asked to select candidates
+    to fill a total of <span class="gray">insert number</span> posts for the office of <span class="gray">insert post</span> under s87 of the Constitutional Reform Act 2005 (CRA).
+    These candidates are for immediate appointment.
+  </li><br>
+  <li>
+    The vacancies arise from the following <span class="gray">insert circuit/location</span> (<span class="gray">insert number of vacancies</span>):
+    <p>
+      <ul>
+        <li>Location 1 <span class="gray">insert number</span></li>
+        <li>Location 2 <span class="gray">insert number</span></li>
+        <li>Location 3 <span class="gray">insert number</span></li>
+      </ul>
+    </p>
+  </li><br>
+  <li>
+    The exercise launched on <span class="gray">insert date</span> and closed for applications on <span class="gray">insert date</span>. A total of <span class="gray">insert number</span> applications were received with
+    <span class="gray">insert number</span> candidates withdrawing during the course of this exercise.  
+  </li><br>
+  <li>
+    <span class="gray">insert number</span> candidates were invited to selection day<span class="red">/s</span>. Selection day<span class="red">/s</span> took place
+    <span class="red">on/between</span> <span class="gray">insert date</span> at the JAC
+    <b>OR <span class="red">&lt;</span>insert if appropriate:</b> across <span class="gray">insert number</span> regional venues.<b><span class="red">&gt;</span></b>
+  </li><br>
+  <li>
+    <b><span class="red">&lt;</span>insert if appropriate:</b> If SCC selects <span class="gray">insert number</span> candidates, <span class="gray">insert number</span> will remain on the s94 list.
+    Currently we <span class="red">do/do not</span> expect further requests for recommendations throughout the year.<b><span class="red">&gt;</span></b>
+  </li>
+</ol>
     `);
+
     writer.addHeading('OR');
     writer.addRaw(`
-<p>7.
-<b><span class="red">&lt;</span>insert if appropriate:</b> The Commission will wish to note that we are only able to recommend candidates for <span class="gray">insert number</span> of the
-<span class="gray">insert number</span> posts.<b><span class="red">&gt;</span></b>
-</p>
-
-<p>8.
-<b><span class="red">&lt;</span>insert if appropriate: <span class="red">Include any other key information/issues that Commissioners need to be aware of when considering
-the recommendations.&gt;</b></span>
-</p>
+<ol start="7">
+  <li>
+    <b><span class="red">&lt;</span>insert if appropriate:</b> The Commission will wish to note that we are only able to recommend candidates for <span class="gray">insert number</span> of the
+    <span class="gray">insert number</span> posts.<b><span class="red">&gt;</span></b>
+  </li><br>
+  <li>
+    <b><span class="red">&lt;</span>insert if appropriate: <span class="red">Include any other key information/issues that Commissioners need to be aware of when considering
+    the recommendations.&gt;</b></span>
+  </li>
+</ol>
     `);
+
     writer.addHeadingRaw('<a name="declaration-of-interest">Declaration of Interest</a>');
     writer.addRaw(`
-<p>9.
-<span class="red"><b>State any declarations of interest (if numerous state number and detail into Annex &lt;insert hyperlink to Annex&gt;). OR: </b></span>
-There are no declarations of interest made by the candidates discussed in this paper.
-</p>
+<ol start="9">
+  <li>
+    <span class="red"><b>State any declarations of interest (if numerous state number and detail into Annex &lt;insert hyperlink to Annex&gt;). OR: </b></span>
+    There are no declarations of interest made by the candidates discussed in this paper.
+  </li>
+</ol>
   `);
-  writer.addHeadingRaw('<a name="conflict-of-interest">Conflict of Interest</a>');
-  writer.addRaw(`
-<p>10.
-<span class="red"><b>Include any conflict of interest that was discussed in accordance with the Guidance on individuals undertaking multiple roles on a selection exercise OR:
-</b></span>There were no individuals (i.e. panel members or judges) undertaking more than one role in this selection exercise.
-</p>
+
+    writer.addHeadingRaw('<a name="conflict-of-interest">Conflict of Interest</a>');
+    writer.addRaw(`
+<ol start="10">
+  <li>
+    <span class="red"><b>Include any conflict of interest that was discussed in accordance with the Guidance on individuals undertaking multiple roles on a selection exercise OR:
+    </b></span>There were no individuals (i.e. panel members or judges) undertaking more than one role in this selection exercise.
+  </li>
+</ol>
+    `);
+
+    writer.addRaw('<h4><a name="salaried-part-time-working">Salaried Part-time Working</a> <span class="red">&lt;</span>delete if not applicable<span class="red">&gt;</span></h4>');
+    writer.addRaw(`
+<ol start="11">
+  <li>
+    <span class="red"><b>State the number of posts which could be considered for a SPTW pattern and if any expressed this as a preference. Consider whether there might be a
+    shortfall in FTE terms and, if so, explain that we might be asked to consider selectable candidates beneath the line following deployment by the judiciary if there is a
+    shortfall in FTE terms OR:</b></span>
+    None of the roles were considered suitable for part-time working. This is because <span class="gray">insert explanation</span>.
+  </li>
+</ol>
   `);
-  writer.addRaw('<h4><a name="salaried-part-time-working">Salaried Part-time Working</a> <span class="red">&lt;</span>delete if not applicable<span class="red">&gt;</span></h4>');
-  writer.addRaw(`
-<p>11.
-<span class="red"><b>State the number of posts which could be considered for a SPTW pattern and if any expressed this as a preference. Consider whether there might be a
-shortfall in FTE terms and, if so, explain that we might be asked to consider selectable candidates beneath the line following deployment by the judiciary if there is a
-shortfall in FTE terms OR:</b></span>
-None of the roles were considered suitable for part-time working. This is because <span class="gray">insert explanation</span>.
-</p>
+  
+    writer.addHeadingRaw('<a name="character">Character</a>');
+    writer.addRaw(`
+<ol start="12">
+  <li>
+    We have carried out all the relevant character checks and <span class="red">no/the following</span> issues have been identified(.) <b>OR</b> (:)
+    <ul>
+      <li>Candidates whose character issues require a character decision (<b>Annex X</b> <span class="gray">insert hyperlink to Annex</span>)</li>
+      <li>Candidates recommended to proceed as character issues previously decided (<b>Annex X</b> <span class="gray">insert hyperlink to Annex</span>)</li>
+    </ul>
+  </li>
+</ol>
   `);
-  writer.addHeadingRaw('<a name="character">Character</a>');
-  writer.addRaw(`
-<p>12.
-We have carried out all the relevant character checks and <span class="red">no/the following</span> issues have been identified(.) <b>OR</b> (:)
-</p>
-<ul>
-  <li>Candidates whose character issues require a character decision (<b>Annex X</b> <span class="gray">insert hyperlink to Annex</span>)</li>
-  <li>Candidates recommended to proceed as character issues previously decided (<b>Annex X</b> <span class="gray">insert hyperlink to Annex</span>)</li>
-</ul>
+
+    writer.addHeading('OR – for call-offs from the s94 list');
+    writer.addRaw(`
+<ol start="13">
+  <li>
+    All character declarations were considered by the Committee when the list was created. We have refreshed the character checks and
+    <b><span class="red">&lt;</span>insert if appropriate:</b> no further issues have been identified.<b><span class="red">&gt;</span> OR briefly state any issues</b>
+  </li>
+</ol>
+`   );
+    
+    writer.addHeadingRaw('<a name="statutory-consultation">Statutory Consultation</a>');
+    writer.addRaw(`
+<ol start="14">
+  <li>
+    The <span class="gray">insert first consultee</span> and <span class="gray">insert second consultee</span> were consulted on <span class="gray">insert date</span>
+    about <span class="gray">insert number</span> candidates for selection. A copy of the responses is at <b>Annex X</b> <span class="gray">insert hyperlink to Annex</span>.
+  </li><br>
+  <li>
+    In considering the statutory consultation responses, the following candidate<span class="red">/s</span> <span class="red">is/are</span> of note:
+    <p>
+      <ul>
+        <li><span class="gray">insert name</span>: <span class="gray">insert comments / concerns</span></li>
+        <li><span class="gray">insert name</span>: <span class="gray">insert comments / concerns</span></li>
+        <li><span class="gray">insert name</span>: <span class="gray">insert comments / concerns</span></li>
+      </ul>
+    </p>  
+  </li>
+</ol>
+    `);
+
+    writer.addHeadingRaw('<a name="selection-recommendation">Selection Recommendation</a>');
+    writer.addRaw(`
+<ol start="16">
+  <li>
+    <b>Annex X</b> <span class="gray">insert hyperlink to Annex</span> details all the candidates assessed at selection day and sets out the candidates we are proposing for
+    recommendation, in merit order <b><span class="red">&lt;</span>insert if appropriate:</b> for each location<b><span class="red">&gt;</span></b>.
+  </li><br>
+  <li>
+    The order of merit was agreed at moderation and <b><span class="red">&lt;</span>insert as appropriate:</b>: no changes have been made since.<b><span class="red">&gt;</span></b>
+    <span class="red"><b>&lt;Please explain here how the merit list was prepared: you should include the following:</b></span>
+    <p>
+      <ul>
+        <span class="red"><b>
+          <li>how the merit list order was arrived at;</li>
+          <li>on what basis it is ordered (if any numerical or other system has been used);</li>
+          <li>which elements of it were agreed and discussed at moderation (including which candidates were discussed)</li>
+          <li>if any changes have been made since it was agreed at moderation – why?</li>
+        </b></span>
+      </ul>
+    </p>
+    <span class="red"><b>Please ensure the merit list is clearly annotated to indicate the points mentioned above&gt;</b></span>
+  </li>
+</ol>
+    `);
+    writer.addHeading('OR');
+    writer.addRaw(`
+<ol start="18">
+  <li>
+    <b><span class="red">&lt;</span>insert paragraph for call-off exercises:</span></b> The candidates who remain on the section 94 list can be found at
+    <b>Annex X</b> <span class="gray">insert hyperlink to Annex</span>. This annex details both the candidates being considered and those not being considered
+    on this occasion due to the current location<span class="red">/s</span> or particular working patterns.<b><span class="red">&gt;</span></b>
+  </li><br>
+  <li>
+    The panel reports for all candidates <span class="red">recommended/considered</span> are included at <b>Annex X</b> <span class="gray">insert hyperlink to Annex</span>.
+    Independent assessments for all candidates will be available on the day.
+  </li><br>
+  <li>
+    Panel reports and independent assessments for all candidates will also be available on request.
+  </li>
+</ol>
+    `);
+
+    writer.addHeadingRaw('<a name="equal-merit-provision">Equal Merit Provision</a>');
+    writer.addRaw(`
+<ol start="21">
+  <li>
+    <b><span class="red">&lt;Please explain here how the zone of Equal Merit was created OR why there is no zone of equal merit&gt;</span></b>
+  </li><br>
+  <li>
+    Taking into consideration the above points we recommend that <span class="gray">insert name</span> is demonstrably more meritorious than the other candidates.
+  </li>
+</ol>
+    `);
+    
+    writer.addHeading('OR');
+    writer.addRaw(`
+<ol start="23">
+  <li>
+    Therefore, we propose that there is no zone to be considered for the application of the equal merit provision.
+  </li><br>
+  <li>
+    <b><span class="red">DN – If more than one jurisdiction/merit list please explain why no EM zone was considered for each jurisdiction/merit list. Discuss Equal Merit wording with
+    the Head of Equality and Diversity if necessary.</span></b>
+  </li>
+</ol>
+    `);
+
+    writer.addHeadingRaw('<a name="selection-criteria">Selection Criteria</a> / Criterion <span class="red">&lt;delete as appropriate&gt;</span>');
+    writer.addRaw(`
+<ol start="25">
+  <li>
+    The additional selection <span class="red">criteria/criterion</span> for this exercise were:
+  </li><br>
+  <li>
+    <b><span class="red">&lt;insert if/as appropriate:</span></b> Candidates to have previous judicial experience, sitting as a judge in a salaried or fee-paid capacity
+    or a similar role such as the chair of an equivalent body for which a legal qualification is required.
+  </li><br>
+  <li>
+    An equivalent body is one of a quasi-judicial nature for which the powers and procedures should resemble those of a court of law and involve highly complex matters,
+    requiring its members objectively to determine the facts and draw conclusions to reach a reasoned decision.  Such decisions could result in the imposition of a penalty,
+    and they are likely to affect the legal rights, duties or privileges of specific parties.  Examples could include, but are not restricted to:  
+    <p>A. Coroner</p>
+    <p>B. Disciplinary tribunals and conduct hearings for professional standards bodies</p>
+    <p>C. Arbitration</p>
+    <p>D. Parole Board</p>
+    <p>E. Chair of a statutory inquiry</p>
+
+    <p>The length of judicial experience required is a minimum of 30 completed sitting days since appointment, not including training or sick days.</p>
+
+    <p>Only in exceptional cases and if the candidate in question has demonstrated the necessary skills in some other significant way should an exception be made.</p>
+  </li><br>
+  <li>
+    <span class="red"><b>&lt;Insert any other additional selection criteria if appropriate.&gt;</b></span>
+  </li><br>
+  <li>
+    All recommended candidates met the additional selection <span class="red">criteria/criterion</span>.
+  </li>
+</ol>
   `);
-  writer.addHeading('OR – for call-offs from the s94 list');
-  writer.addRaw(`
-<p>13.
-All character declarations were considered by the Committee when the list was created. We have refreshed the character checks and
-<b><span class="red">&lt;</span>insert if appropriate:</b> no further issues have been identified.<b><span class="red">&gt;</span> OR briefly state any issues</b>
-</p>
-`);
-  writer.addHeadingRaw('<a name="statutory-consultation">Statutory Consultation</a>');
-  writer.addRaw(`
-<p>14.
-The <span class="gray">insert first consultee</span> and <span class="gray">insert second consultee</span> were consulted on <span class="gray">insert date</span>
-about <span class="gray">insert number</span> candidates for selection. A copy of the responses is at <b>Annex X</b> <span class="gray">insert hyperlink to Annex</span>.
-</p>
 
-<p>15.
-In considering the statutory consultation responses, the following candidate<span class="red">/s</span> <span class="red">is/are</span> of note:
-</p>
-<ul>
-  <li><span class="gray">insert name</span>: <span class="gray">insert comments / concerns</span></li>
-  <li><span class="gray">insert name</span>: <span class="gray">insert comments / concerns</span></li>
-  <li><span class="gray">insert name</span>: <span class="gray">insert comments / concerns</span></li>
-</ul>
-`);
-  writer.addHeadingRaw('<a name="selection-recommendation">Selection Recommendation</a>');
-  writer.addRaw(`
-<p>16.
-<b>Annex X</b> <span class="gray">insert hyperlink to Annex</span> details all the candidates assessed at selection day and sets out the candidates we are proposing for
-recommendation, in merit order <b><span class="red">&lt;</span>insert if appropriate:</b> for each location<b><span class="red">&gt;</span></b>.
-</p>
-
-<p>17.
-The order of merit was agreed at moderation and <b><span class="red">&lt;</span>insert as appropriate:</b>: no changes have been made since.<b><span class="red">&gt;</span></b>
-<span class="red"><b>&lt;Please explain here how the merit list was prepared: you should include the following:</b></span>
-</p>
-<ul>
-<span class="red"><b>
-  <li>how the merit list order was arrived at;</li>
-  <li>on what basis it is ordered (if any numerical or other system has been used);</li>
-  <li>which elements of it were agreed and discussed at moderation (including which candidates were discussed)</li>
-  <li>if any changes have been made since it was agreed at moderation – why?</li>
-</b></span>
-</ul>
-<p>
-<span class="red"><b>Please ensure the merit list is clearly annotated to indicate the points mentioned above&gt;</b></span>
-</p>
-  `);
-  writer.addHeading('OR');
-  writer.addRaw(`
-<p>18.
-<b><span class="red">&lt;</span>insert paragraph for call-off exercises:</span></b> The candidates who remain on the section 94 list can be found at
-<b>Annex X</b> <span class="gray">insert hyperlink to Annex</span>. This annex details both the candidates being considered and those not being considered
-on this occasion due to the current location<span class="red">/s</span> or particular working patterns.<b><span class="red">&gt;</span></b>
-</p>
-
-<p>19.
-The panel reports for all candidates <span class="red">recommended/considered</span> are included at <b>Annex X</b> <span class="gray">insert hyperlink to Annex</span>.
-Independent assessments for all candidates will be available on the day.
-</p>
-
-<p>20.
-Panel reports and independent assessments for all candidates will also be available on request.
-</p>
-  `);
-  writer.addHeadingRaw('<a name="equal-merit-provision">Equal Merit Provision</a>');
-  writer.addRaw(`
-<p>21.
-<b><span class="red">&lt;Please explain here how the zone of Equal Merit was created OR why there is no zone of equal merit&gt;</span></b>
-</p>
-
-<p>22.
-Taking into consideration the above points we recommend that <span class="gray">insert name</span> is demonstrably more meritorious than the other candidates.
-</p>
-  `);
-  writer.addHeading('OR');
-  writer.addRaw(`
-<p>23.
-Therefore, we propose that there is no zone to be considered for the application of the equal merit provision.
-</p>
-
-<p>24.
-<b><span class="red">DN – If more than one jurisdiction/merit list please explain why no EM zone was considered for each jurisdiction/merit list. Discuss Equal Merit wording with
-the Head of Equality and Diversity if necessary.</span></b>
-</p>
-
-<h4><a name="selection-criteria">Selection Criteria</a> / Criterion <span class="red">&lt;delete as appropriate&gt;</span></h4>
-<p>25.
-The additional selection <span class="red">criteria/criterion</span> for this exercise were:
-</p>
-
-<p>26.
-<b><span class="red">&lt;insert if/as appropriate:</span></b> Candidates to have previous judicial experience, sitting as a judge in a salaried or fee-paid capacity
-or a similar role such as the chair of an equivalent body for which a legal qualification is required.
-</p>
-
-<p>An equivalent body is one of a quasi-judicial nature for which the powers and procedures should resemble those of a court of law and involve highly complex matters,
-requiring its members objectively to determine the facts and draw conclusions to reach a reasoned decision.  Such decisions could result in the imposition of a penalty,
-and they are likely to affect the legal rights, duties or privileges of specific parties.  Examples could include, but are not restricted to:
-</p>
-
-<p>A. Coroner</p>
-<p>B. Disciplinary tribunals and conduct hearings for professional standards bodies</p>
-<p>C. Arbitration</p>
-<p>D. Parole Board</p>
-<p>E. Chair of a statutory inquiry</p>
-
-<p>The length of judicial experience required is a minimum of 30 completed sitting days since appointment, not including training or sick days.</p>
-
-<p>Only in exceptional cases and if the candidate in question has demonstrated the necessary skills in some other significant way should an exception be made.</p>
-
-<p>27.
-<span class="red"><b>&lt;Insert any other additional selection criteria if appropriate.&gt;</b></span>
-</p>
-
-<p>28.
-All recommended candidates met the additional selection <span class="red">criteria/criterion</span>.
-</p>
-  `);
-  writer.addHeading('OR');
-  writer.addRaw(`
-<p>29.
-<span class="red"><b>&lt;insert where appropriate when judicial experience is an ASC:&gt;</b></span>
-At the SCC meeting on <span class="gray">insert date of SCC eligibility meeting</span> the Commission determined <span class="gray">insert number</span> candidates had
-demonstrated the skills in some other significant way and were allowed to progress to a selection day. The selection day panels explored this further and
-<span class="red"><b>&lt;Please explain here how the panel were satisfied the candidate has the necessary skills&gt;</b> OR This/These</span> candidate(s) were assessed
-at selection day as not being selectable; therefore, all of the candidates recommended in this paper have directly relevant previous judicial
-experience.<span class="red"><b>&gt;</b></span>
-</p>
-
-<p>30.
-The table at <b>Annex X</b> <span class="gray">insert hyperlink to Annex</span> contains the detail with regard to this selection exercise.
-A copy of the vacancy requests is attached at <b>Annex X</b> <span class="gray">insert hyperlink to Annex</span>.
-<b><span class="red">&lt;</span>insert if appropriate:</b> Copies of the qualifying test are attached at <b>Annex X</b> <span class="gray">insert hyperlink to Annex</span>.
-A full summary of, and the materials from, the selection day are at <b>Annex X </b>and <b>Y</b> <span class="gray">insert hyperlink to Annexes</span> respectively.
-The job description is at <b>Annex X</b> <span class="gray">insert hyperlink to Annex</span> and the competencies required for these posts are at
-<b>Annex X</b> <span class="gray">insert hyperlink to Annex</span>.
-</p>
-  `);
-  writer.addHeadingRaw('<a name="diversity-monitoring">Diversity Monitoring</a>');
-  writer.addRaw(`
-<p>31.
-Diversity statistics relating to the candidates post the selection day moderation stage of the selection exercise are provided at
-<b>Annex X</b> <span class="gray">insert hyperlink to Annex</span>.
-</p>
+    writer.addHeading('OR');
+    writer.addRaw(`
+<ol start="29">
+  <li>
+    <span class="red"><b>&lt;insert where appropriate when judicial experience is an ASC:&gt;</b></span>
+    At the SCC meeting on <span class="gray">insert date of SCC eligibility meeting</span> the Commission determined <span class="gray">insert number</span> candidates had
+    demonstrated the skills in some other significant way and were allowed to progress to a selection day. The selection day panels explored this further and
+    <span class="red"><b>&lt;Please explain here how the panel were satisfied the candidate has the necessary skills&gt;</b> OR This/These</span> candidate(s) were assessed
+    at selection day as not being selectable; therefore, all of the candidates recommended in this paper have directly relevant previous judicial
+    experience.<span class="red"><b>&gt;</b></span>
+  </li><br>
+  <li>
+    The table at <b>Annex X</b> <span class="gray">insert hyperlink to Annex</span> contains the detail with regard to this selection exercise.
+    A copy of the vacancy requests is attached at <b>Annex X</b> <span class="gray">insert hyperlink to Annex</span>.
+    <b><span class="red">&lt;</span>insert if appropriate:</b> Copies of the qualifying test are attached at <b>Annex X</b> <span class="gray">insert hyperlink to Annex</span>.
+    A full summary of, and the materials from, the selection day are at <b>Annex X </b>and <b>Y</b> <span class="gray">insert hyperlink to Annexes</span> respectively.
+    The job description is at <b>Annex X</b> <span class="gray">insert hyperlink to Annex</span> and the competencies required for these posts are at
+    <b>Annex X</b> <span class="gray">insert hyperlink to Annex</span>.
+  </li><br>
+</ol>
+    `);
+    
+    writer.addHeadingRaw('<a name="diversity-monitoring">Diversity Monitoring</a>');
+    writer.addRaw(`
+<ol start="31">
+  <li>
+    Diversity statistics relating to the candidates post the selection day moderation stage of the selection exercise are provided at
+    <b>Annex X</b> <span class="gray">insert hyperlink to Annex</span>.
+  </li>
+</ol>
     `);
   }
 
