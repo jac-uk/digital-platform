@@ -363,9 +363,9 @@ module.exports = (firebase, db) => {
   </h3>
   <p style="margin-top: 13px;">${exercise.referenceNumber} - ${exercise.name}</p>
   <div style="margin-top: 210px; text-align: left;">
-    <p>Assigned Commissioner: <span class="gray">INSERT NAME</span></p>
-    <p style="margin-top: 13px;">Senior Selection Exercise Manager: <span class="gray">INSERT NAME</span></p>
-    <p style="margin-top: 13px;">Selection Exercise Manager: <span class="gray">INSERT NAME</span></p>
+    <p>Assigned Commissioner: <span class="red">INSERT NAME</span></p>
+    <p style="margin-top: 13px;">Senior Selection Exercise Manager: <span class="red">INSERT NAME</span></p>
+    <p style="margin-top: 13px;">Selection Exercise Manager: <span class="red">INSERT NAME</span></p>
   </div>
 </div>
   `);
@@ -392,14 +392,14 @@ module.exports = (firebase, db) => {
   <p><a href="#summary">Summary</a></p>
   <p><a href="#declaration-of-interest">Declaration of Interest</a></p>
   <p><a href="#conflict-of-interest">Conflict of Interest</a></p>
-  <p><a href="#salaried-part-time-working">Salaried Part Time Working</a> <span class="red">(delete if not available)</span></p>
+  <p><a href="#salaried-part-time-working">Salaried Part Time Working</a> <b class="red">(delete if not available)</b></p>
   <p><a href="#character">Character</a></p>
   <p><a href="#statutory-consultation">Statutory Consultation</a></p>
   <p><a href="#selection-recommendation">Selection Recommendation</a></p>
   <p><a href="#equal-merit-provision">Equal Merit Provision</a></p>
   <p><a href="#selection-criteria">Selection Criteria</a></p>
   <p><a href="#diversity-monitoring">Diversity Monitoring</a></p>
-  <p class="red">(Add Annexes)</p>
+  <p class="red"><b>(Add Annexes)</b></p>
 </div>
   `);
   }
@@ -417,12 +417,12 @@ module.exports = (firebase, db) => {
     writer.addRaw(`
 <ol>
   <li>
-    <b><span class="red">&lt;</span>insert if calling from s94 list<span class="red">&gt;</span></b> This paper provides detail of the selection exercise to select a total of
-    <span class="gray">insert number</span> candidates for the office of
-    <span class="gray">insert office</span> under s87 of the Constitutional Reform Act 2005 (CRA). These candidates will be drawn from the section 94 list created on
-    <span class="gray">insert date</span>.
-    <b><span class="red">&lt;</span>insert if necessary:</b>This total figure includes <span class="gray">insert number</span> vacancies to replace candidates who were originally
-    selected in <span class="gray">insert month</span>, <span class="gray">insert year</span>, but who have declined the offer of appointment.<b><span class="red">&gt;&gt;</span></b>
+    <b><span class="red">&lt;insert if calling from s94 list&gt;</span></b> This paper provides detail of the selection exercise to select a total of
+    <b class="red">insert number</b> candidates for the office of
+    <b class="red">insert office</b> under s87 of the Constitutional Reform Act 2005 (CRA). These candidates will be drawn from the section 94 list created on
+    <b class="red">insert date</b>.
+    <span class="red"><b>&lt;insert if necessary: </b>This total figure includes <b>insert number</b> vacancies to replace candidates who were originally
+    selected in <b>insert month</b>, <b>insert year</b>, but who have declined the offer of appointment.<b class="red">&gt;</b></span>
   </li>
 </ol>
     `);
@@ -430,32 +430,32 @@ module.exports = (firebase, db) => {
     writer.addRaw(`
 <ol start="2">
   <li>
-    <b><span class="red">&lt;</span>insert if a s87 exercise only<span class="red">&gt;</span></b> The Judicial Appointments Commission (JAC) has been asked to select candidates
-    to fill a total of <span class="gray">insert number</span> posts for the office of <span class="gray">insert post</span> under s87 of the Constitutional Reform Act 2005 (CRA).
+    <b class="red">&lt;insert if a s87 exercise only&gt;</b> The Judicial Appointments Commission (JAC) has been asked to select candidates
+    to fill a total of <b class="red">insert number</b> posts for the office of <b class="red">insert post</b> under s87 of the Constitutional Reform Act 2005 (CRA).
     These candidates are for immediate appointment.
   </li><br>
   <li>
-    The vacancies arise from the following <span class="gray">insert circuit/location</span> (<span class="gray">insert number of vacancies</span>):
+    The vacancies arise from the following <b class="red">insert circuit/location</b> (<b class="red">insert number of vacancies</b>):
     <p>
       <ul>
-        <li>Location 1 <span class="gray">insert number</span></li>
-        <li>Location 2 <span class="gray">insert number</span></li>
-        <li>Location 3 <span class="gray">insert number</span></li>
+        <li>Location 1 (<b class="red">insert number</b>)</li>
+        <li>Location 2 (<b class="red">insert number</b>)</li>
+        <li>Location 3 (<b class="red">insert number</b>)</li>
       </ul>
     </p>
   </li><br>
   <li>
-    The exercise launched on <span class="gray">insert date</span> and closed for applications on <span class="gray">insert date</span>. A total of <span class="gray">insert number</span> applications were received with
-    <span class="gray">insert number</span> candidates withdrawing during the course of this exercise.  
+    The exercise launched on <b class="red">insert date</b> and closed for applications on <b class="red">insert date</b>. A total of <b class="red">insert number</b> applications were received with
+    <b class="red">insert number</b> candidates withdrawing during the course of this exercise.  
   </li><br>
   <li>
-    <span class="gray">insert number</span> candidates were invited to selection day<span class="red">/s</span>. Selection day<span class="red">/s</span> took place
-    <span class="red">on/between</span> <span class="gray">insert date</span> at the JAC
-    <b>OR <span class="red">&lt;</span>insert if appropriate:</b> across <span class="gray">insert number</span> regional venues.<b><span class="red">&gt;</span></b>
+    <b class="red">Insert number</b> candidates were invited to selection day<span class="red">/s</span>. Selection day<span class="red">/s</span> took place
+    <b class="red">on/between</b> <b class="red">insert date</b> at the JAC
+    <b>OR</b><span class="red"><b> &lt;insert if appropriate:</b> across <b>insert number</b> regional venues.<b>&gt;</b>
   </li><br>
   <li>
-    <b><span class="red">&lt;</span>insert if appropriate:</b> If SCC selects <span class="gray">insert number</span> candidates, <span class="gray">insert number</span> will remain on the s94 list.
-    Currently we <span class="red">do/do not</span> expect further requests for recommendations throughout the year.<b><span class="red">&gt;</span></b>
+    <b><span class="red">&lt;Insert if appropriate:</span></b> If SCC selects <b class="red">insert number</b> candidates, <b class="red">insert number</b> will remain on the s94 list.
+    Currently we <span class="red">[do/do not]</span> expect further requests for recommendations throughout the year.<b class="red">&gt;</b>
   </li>
 </ol>
     `);
@@ -464,12 +464,12 @@ module.exports = (firebase, db) => {
     writer.addRaw(`
 <ol start="7">
   <li>
-    <b><span class="red">&lt;</span>insert if appropriate:</b> The Commission will wish to note that we are only able to recommend candidates for <span class="gray">insert number</span> of the
-    <span class="gray">insert number</span> posts.<b><span class="red">&gt;</span></b>
+    <b><span class="red">&lt;Insert if appropriate:</span></b> The Commission will wish to note that we are only able to recommend candidates for <b class="red">insert number</b> of the
+    <b class="red">insert number</b> posts.<b><span class="red">&gt;</span></b>
   </li><br>
   <li>
-    <b><span class="red">&lt;</span>insert if appropriate: <span class="red">Include any other key information/issues that Commissioners need to be aware of when considering
-    the recommendations.&gt;</b></span>
+    <b class="red">&lt;Insert if appropriate: Include any other key information/issues that Commissioners need to be aware of when considering
+    the recommendations.&gt;</b>
   </li>
 </ol>
     `);
@@ -501,7 +501,7 @@ module.exports = (firebase, db) => {
     <span class="red"><b>State the number of posts which could be considered for a SPTW pattern and if any expressed this as a preference. Consider whether there might be a
     shortfall in FTE terms and, if so, explain that we might be asked to consider selectable candidates beneath the line following deployment by the judiciary if there is a
     shortfall in FTE terms OR:</b></span>
-    None of the roles were considered suitable for part-time working. This is because <span class="gray">insert explanation</span>.
+    None of the roles were considered suitable for part-time working. This is because <b class="red">insert explanation</b>.
   </li>
 </ol>
   `);
@@ -510,10 +510,10 @@ module.exports = (firebase, db) => {
     writer.addRaw(`
 <ol start="12">
   <li>
-    We have carried out all the relevant character checks and <span class="red">no/the following</span> issues have been identified(.) <b>OR</b> (:)
+    We have carried out all the relevant character checks and <b class="red">[no/the following]</b> issues have been identified(.) <b>OR</b> (:)
     <ul>
-      <li>Candidates whose character issues require a character decision (<b>Annex X</b> <span class="gray">insert hyperlink to Annex</span>)</li>
-      <li>Candidates recommended to proceed as character issues previously decided (<b>Annex X</b> <span class="gray">insert hyperlink to Annex</span>)</li>
+      <li>Candidates whose character issues require a character decision (<b>Annex X</b> <b class="red">&lt;insert hyperlink to Annex&gt;</b>)</li>
+      <li>Candidates recommended to proceed as character issues previously decided (<b>Annex X</b> <b class="red">&lt;insert hyperlink to Annex&gt;</b>)</li>
     </ul>
   </li>
 </ol>
@@ -524,7 +524,7 @@ module.exports = (firebase, db) => {
 <ol start="13">
   <li>
     All character declarations were considered by the Committee when the list was created. We have refreshed the character checks and
-    <b><span class="red">&lt;</span>insert if appropriate:</b> no further issues have been identified.<b><span class="red">&gt;</span> OR briefly state any issues</b>
+    <b><span class="red">&lt;insert if appropriate:</span></b> no further issues have been identified.<b><span class="red">&gt; OR briefly state any issues</span></b>
   </li>
 </ol>
 `   );
@@ -533,16 +533,16 @@ module.exports = (firebase, db) => {
     writer.addRaw(`
 <ol start="14">
   <li>
-    The <span class="gray">insert first consultee</span> and <span class="gray">insert second consultee</span> were consulted on <span class="gray">insert date</span>
-    about <span class="gray">insert number</span> candidates for selection. A copy of the responses is at <b>Annex X</b> <span class="gray">insert hyperlink to Annex</span>.
+    The <b class="red">insert first consultee</b> and <b class="red">insert second consultee</b> were consulted on <b class="red">insert date</b>
+    about <b class="red">insert number</b> candidates for selection. A copy of the responses is at <b>Annex X</b> <b class="red">&lt;insert hyperlink to Annex&gt;</b>.
   </li><br>
   <li>
     In considering the statutory consultation responses, the following candidate<span class="red">/s</span> <span class="red">is/are</span> of note:
     <p>
       <ul>
-        <li><span class="gray">insert name</span>: <span class="gray">insert comments / concerns</span></li>
-        <li><span class="gray">insert name</span>: <span class="gray">insert comments / concerns</span></li>
-        <li><span class="gray">insert name</span>: <span class="gray">insert comments / concerns</span></li>
+        <li><b class="red">insert name: insert comments / concerns</b>
+        <li><b class="red">insert name: insert comments / concerns</b>
+        <li><b class="red">insert name: insert comments / concerns</b>
       </ul>
     </p>  
   </li>
@@ -553,12 +553,12 @@ module.exports = (firebase, db) => {
     writer.addRaw(`
 <ol start="16">
   <li>
-    <b>Annex X</b> <span class="gray">insert hyperlink to Annex</span> details all the candidates assessed at selection day and sets out the candidates we are proposing for
-    recommendation, in merit order <b><span class="red">&lt;</span>insert if appropriate:</b> for each location<b><span class="red">&gt;</span></b>.
+    <b>Annex X</b> <b class="red">&lt;insert hyperlink to Annex&gt;</b> details all the candidates assessed at selection day and sets out the candidates we are proposing for
+    recommendation, in merit order <b class="red">&lt;insert if appropriate: for each location&gt;</b>.
   </li><br>
   <li>
-    The order of merit was agreed at moderation and <b><span class="red">&lt;</span>insert as appropriate:</b>: no changes have been made since.<b><span class="red">&gt;</span></b>
-    <span class="red"><b>&lt;Please explain here how the merit list was prepared: you should include the following:</b></span>
+    The order of merit was agreed at moderation and <b class="red">&lt;insert as appropriate: no changes have been made since&gt;</b>.
+    <b class="red">&lt;Please explain here how the merit list was prepared: you should include the following:</b>
     <p>
       <ul>
         <span class="red"><b>
@@ -577,12 +577,12 @@ module.exports = (firebase, db) => {
     writer.addRaw(`
 <ol start="18">
   <li>
-    <b><span class="red">&lt;</span>insert paragraph for call-off exercises:</span></b> The candidates who remain on the section 94 list can be found at
-    <b>Annex X</b> <span class="gray">insert hyperlink to Annex</span>. This annex details both the candidates being considered and those not being considered
-    on this occasion due to the current location<span class="red">/s</span> or particular working patterns.<b><span class="red">&gt;</span></b>
+    <span class="red"><b>&lt;insert paragraph for call-off exercises:</b> The candidates who remain on the section 94 list can be found at
+    <b>Annex X</b> <b>&lt;insert hyperlink to Annex&gt;</b>. This annex details both the candidates being considered and those not being considered
+    on this occasion due to the current location/s or particular working patterns.<b>&gt;</b></span>
   </li><br>
   <li>
-    The panel reports for all candidates <span class="red">recommended/considered</span> are included at <b>Annex X</b> <span class="gray">insert hyperlink to Annex</span>.
+    The panel reports for all candidates <b class="red">[recommended/considered]</b> are included at <b>Annex X</b> <b class="red">&lt;insert hyperlink to Annex&gt;</b>.
     Independent assessments for all candidates will be available on the day.
   </li><br>
   <li>
@@ -598,7 +598,7 @@ module.exports = (firebase, db) => {
     <b><span class="red">&lt;Please explain here how the zone of Equal Merit was created OR why there is no zone of equal merit&gt;</span></b>
   </li><br>
   <li>
-    Taking into consideration the above points we recommend that <span class="gray">insert name</span> is demonstrably more meritorious than the other candidates.
+    Taking into consideration the above points we recommend that <b class="red">insert name</b> is demonstrably more meritorious than the other candidates.
   </li>
 </ol>
     `);
@@ -620,7 +620,7 @@ module.exports = (firebase, db) => {
     writer.addRaw(`
 <ol start="25">
   <li>
-    The additional selection <span class="red">criteria/criterion</span> for this exercise were:
+    The additional selection <b class="red">[criteria/criterion]</b> for this exercise were:
   </li><br>
   <li>
     <b><span class="red">&lt;insert if/as appropriate:</span></b> Candidates to have previous judicial experience, sitting as a judge in a salaried or fee-paid capacity
@@ -644,7 +644,7 @@ module.exports = (firebase, db) => {
     <span class="red"><b>&lt;Insert any other additional selection criteria if appropriate.&gt;</b></span>
   </li><br>
   <li>
-    All recommended candidates met the additional selection <span class="red">criteria/criterion</span>.
+    All recommended candidates met the additional selection <b class="red">[criteria/criterion]</b>.
   </li>
 </ol>
   `);
@@ -653,20 +653,20 @@ module.exports = (firebase, db) => {
     writer.addRaw(`
 <ol start="29">
   <li>
-    <span class="red"><b>&lt;insert where appropriate when judicial experience is an ASC:&gt;</b></span>
-    At the SCC meeting on <span class="gray">insert date of SCC eligibility meeting</span> the Commission determined <span class="gray">insert number</span> candidates had
+    <span class="red"><b>&lt;Insert where appropriate when judicial experience is an ASC:&gt;</b></span>
+    At the SCC meeting on <b class="red">insert date of SCC eligibility meeting</b> the Commission determined <b class="red">insert number</b> candidates had
     demonstrated the skills in some other significant way and were allowed to progress to a selection day. The selection day panels explored this further and
-    <span class="red"><b>&lt;Please explain here how the panel were satisfied the candidate has the necessary skills&gt;</b> OR This/These</span> candidate(s) were assessed
+    <b class="red">&lt;Please explain here how the panel were satisfied the candidate has the necessary skills&gt; OR This/These</b> candidate(s) were assessed
     at selection day as not being selectable; therefore, all of the candidates recommended in this paper have directly relevant previous judicial
     experience.<span class="red"><b>&gt;</b></span>
   </li><br>
   <li>
-    The table at <b>Annex X</b> <span class="gray">insert hyperlink to Annex</span> contains the detail with regard to this selection exercise.
-    A copy of the vacancy requests is attached at <b>Annex X</b> <span class="gray">insert hyperlink to Annex</span>.
-    <b><span class="red">&lt;</span>insert if appropriate:</b> Copies of the qualifying test are attached at <b>Annex X</b> <span class="gray">insert hyperlink to Annex</span>.
-    A full summary of, and the materials from, the selection day are at <b>Annex X </b>and <b>Y</b> <span class="gray">insert hyperlink to Annexes</span> respectively.
-    The job description is at <b>Annex X</b> <span class="gray">insert hyperlink to Annex</span> and the competencies required for these posts are at
-    <b>Annex X</b> <span class="gray">insert hyperlink to Annex</span>.
+    The table at <b>Annex X</b> <b class="red">&lt;insert hyperlink to Annex&gt;</b> contains the detail with regard to this selection exercise.
+    A copy of the vacancy requests is attached at <b>Annex X</b> <b class="red">&lt;insert hyperlink to Annex&gt;</b>.
+    <b class="red">&lt;insert if appropriate: Copies of the qualifying test are attached at <b>Annex X</b> &lt;insert hyperlink to Annex&gt;.
+    A full summary of, and the materials from, the selection day are at <b>Annex X </b>and <b>Y</b> &lt;insert hyperlink to Annexes&gt; respectively.
+    The job description is at <b>Annex X</b> &lt;insert hyperlink to Annex&gt; and the competencies required for these posts are at
+    <b>Annex X</b> &lt;insert hyperlink to Annex&gt;.</b>
   </li><br>
 </ol>
     `);
@@ -676,7 +676,7 @@ module.exports = (firebase, db) => {
 <ol start="31">
   <li>
     Diversity statistics relating to the candidates post the selection day moderation stage of the selection exercise are provided at
-    <b>Annex X</b> <span class="gray">insert hyperlink to Annex</span>.
+    <b>Annex X</b> <b class="red">&lt;insert hyperlink to Annex&gt;</b>.
   </li>
 </ol>
     `);
@@ -1040,8 +1040,8 @@ module.exports = (firebase, db) => {
     writer.addHeading('(Recommended Candidates in Bold)', 'center');
     writer.addRaw(`
 <p style="margin-top:50px">
-<b>Candidates recommended for: <span class="gray">insert name of post and circuit (if applicable)
-insert number</span> vacancies - <span class="gray">insert vacancy location details</span> suitable for <span class="red">&lt;insert as appropriate:</span> </b>
+<b>Candidates recommended for: <span class="red">insert name of post and circuit (if applicable)
+insert number</span> vacancies - <span class="red">insert vacancy location details</span> suitable for <span class="red">&lt;insert as appropriate:</span> </b>
 Full time/SPTW at 50:50.<b><span class="red">&gt;</span></b>
 </p>
 
@@ -1267,8 +1267,8 @@ REPRODUCE THIS TABLE AS APPROPRIATE.<span class="red">&gt;</span></b>
 <tr>
   <td>Vacancy Request (VR)</td>
   <td>
-    Received <span class="gray">insert date</span>. Copy attached at <b>Annex X</b> <span class="gray">insert hyperlink to Annex</span>.
-    <span class="gray">insert number</span> vacancies for immediate appointment.  <span class="gray">If a s94 insert details here</span>
+    Received <b class="red">insert date</b>. Copy attached at <b>Annex X</b> <b class="red">&lt;insert hyperlink to Annex&gt;</b>.
+    <b class="red">insert number</b> vacancies for immediate appointment.  <b class="red">If a s94 insert details here</b>
   </td>
 </tr>
 <tr>
@@ -1277,32 +1277,32 @@ REPRODUCE THIS TABLE AS APPROPRIATE.<span class="red">&gt;</span></b>
 </tr>
 <tr>
   <td>Number of applications received</td>
-  <td>Exercise launched <span class="gray">insert date</span> with <span class="gray">insert number</span> applications received.
+  <td>Exercise launched <b class="red">insert date</b> with <b class="red">insert number</b> applications received.
   </td>
 </tr>
 <tr>
   <td>Eligibility <b>&lt;only include if the Commission decided candidate(s) were ineligible to proceed&gt;</b></td>
   <td>
-    The Commission decided that <span class="gray">insert number</span> candidates<span class="red">/s as/were</span> ineligible and that their
+    The Commission decided that <b class="red">insert number</b> candidates<span class="red">/s as/were</span> ineligible and that their
     application<span class="red">/s should not be allowed to proceed.
   </td>
 </tr>
 <tr>
   <td>Shortlisting <b>&lt;Qualifying test/sift/telephone assessment&gt;</b></td>
   <td>
-    <p>Date of Dry Run: <span class="gray">insert date</span></p>
-    <p class="gray">insert number of candidates who sat the <span class="red">test/TA</span></p>
-    <p>Main date of <span class="red">test/sift/TA</span>: <span class="gray">insert date</span></p>
-    <p>The draft <span class="red">test/TA</span> was subject to equality proofing by independent consultants and internal quality assurance by the JAC Advisory Group.</p>
+    <p>Date of Dry Run: <b class="red">insert date</b></p>
+    <p class="red"><b>insert number of candidates who sat the test/TA</b></p>
+    <p>Main date of <b class="red">test/sift/TA</b>: <b class="red">insert date</b></p>
+    <p>The draft <b class="red">test/TA</b> was subject to equality proofing by independent consultants and internal quality assurance by the JAC Advisory Group.</p>
   </td>
 </tr>
 <tr>
   <td>Independent Assessment <b>&lt;obtained pre/post short listing&gt;</b></td>
   <td>
     <ul>
-      <li><span class="gray">insert number</span> professional independent assessor(s);
+      <li><b class="red">insert number</b> professional independent assessor(s);
          <br>and
-      <li><span class="gray">insert number</span> judicial independent assessor(s)</li>
+      <li><b class="red">insert number</b> judicial independent assessor(s)</li>
     </ul>
   </td>
 </tr>
@@ -1320,10 +1320,10 @@ REPRODUCE THIS TABLE AS APPROPRIATE.<span class="red">&gt;</span></b>
       <b><span class="red">&lt;</span>insert if role play/situational questioning used<span class="red">&gt;</span></b>
       The draft role play/situational questioning was subject to equality proofing by independent consultants and internal quality assurance by the JAC Advisory Group
     </p>
-    <p><span class="gray">insert number</span> candidates were invited to attend the selection day.</p>
+    <p><b class="red">insert number</b> candidates were invited to attend the selection day.</p>
     <p>Moderation took place to ensure consistency between the selection panel<span class="red">/s</span>.</p>
-    <p>A full summary of selection day activities is attached at <b>Annex X</b> <span class="gray">insert hyperlink to Annex</span>.</p>
-    <p>A copy of the materials provided to candidates at the selection day is attached at <b>Annex X</b> <span class="gray">insert hyperlink to Annex</span>.</p>
+    <p>A full summary of selection day activities is attached at <b>Annex X</b> <b class="red">&lt;insert hyperlink to Annex&gt;</b>.</p>
+    <p>A copy of the materials provided to candidates at the selection day is attached at <b>Annex X</b> <b class="red">&lt;insert hyperlink to Annex&gt;</span>.</p>
   </td>
 </tr>
 <tr>
