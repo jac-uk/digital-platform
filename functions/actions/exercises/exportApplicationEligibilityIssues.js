@@ -148,14 +148,14 @@ module.exports = (firebase, db) => {
   <h3 style="font-size: 11pt; margin-top: 120px;">Selection and Character Committee</h3>
   <p style="margin-top: 13px;">${today.getDate()} ${months[today.getMonth()]} ${today.getFullYear()}</p>
   <h3 style="font-size: 11pt; margin-top: 28px;">
-    Eligibility/Additional Selection Criteria Paper<br>
+    Eligibility/Additional Selection <b class="red"><i>[Criteria / Criterion]</i></b> Paper<br>
     For
   </h3>
   <p style="margin-top: 13px;">${exercise.referenceNumber} - ${exercise.name}</p>
   <div style="margin-top: 220px; text-align: left;">
-    <p>Assigned Commissioner: <span class="gray">INSERT NAME</span></p>
-    <p style="margin-top: 13px;">Senior Selection Exercise Manager: <span class="gray">INSERT NAME</span></p>
-    <p style="margin-top: 13px;">Selection Exercise Manager: <span class="gray">INSERT NAME</span></p>
+    <p>Assigned Commissioner: <span class="red">INSERT NAME</span></p>
+    <p style="margin-top: 13px;">Senior Selection Exercise Manager: <span class="red">INSERT NAME</span></p>
+    <p style="margin-top: 13px;">Selection Exercise Manager: <span class="red">INSERT NAME</span></p>
   </div>
 </div>
   `);
@@ -170,17 +170,23 @@ module.exports = (firebase, db) => {
    */
   function addHtmlEligibilityIssues_ContentsPage(writer) {
     addOfficialSensitive(writer);
+    writer.addHeadingRaw('Eligibility/Additional Selection <b class="red"><i>[Criteria / Criterion]</i></b> Paper');
     writer.addRaw(`
 <div>
-  <p><b>Eligibility/Additional Selection Criteria Paper</b></p>
-  <p><u><b>Contents</b></u></p>
+  <p><b>
+    <u>Contents</u>
+    <span class="red"><i>
+      (Please ensure that if the contents of the agenda change, the relevant sections should be added to the Contents section along with hyperlinks.
+      If referencing a panel report, please also ensure that a link is added to the reference))
+    </i></span>
+  </b></p>
   <br>
   <p><a href="#summary">Summary</a></p>
   <p><a href="#recommendation">Recommendation</a></p>
   <p><a href="#background">Background</a></p>
   <p><a href="#eligibility">Eligibility</a></p>
   <p><a href="#additional-selection-criteria">Additional Selection Criteria</a></p>
-  <p><a href="#reasonable-length-of-service">Reasonable Length of Service</a></p>
+  <p><a href="#reasonable-length-of-service">Reasonable Length of Service</a> <b class="red">(delete if not appropriate)</b></p>
   <p><a href="#annex-a">ANNEX A</a> Judicial Appointments Eligibility Statement and ASC</p>
   <p><a href="#annex-b">ANNEX B</a> Candidates recommended to proceed and reasons why they are considered to meet the ASC</p>
   <p><a href="#annex-c">ANNEX C</a> Candidates recommended not to proceed and reasons why they are considered not to meet the ASC</p>
@@ -211,11 +217,10 @@ module.exports = (firebase, db) => {
     ));
 
     addOfficialSensitive(writer);
-    writer.addHeading('Eligibility/Additional Selection Criteria Paper');
     writer.addHeadingRaw('<a name="summary">Summary</a>');
     writer.addRaw(`
 <ol>
-  <li>This paper provides information about <b>${candidateNum}</b> ${candidateNum > 1 ? 'candidates' : 'candidate'} for the post <b>${title}</b> and the extent to which they satisfy the Lord Chancellor's Additional Selection Criteria (ASC).</li>
+  <li>This paper provides information about <b>${candidateNum}</b> ${candidateNum > 1 ? 'candidates' : 'candidate'} for the post <b>${title}</b> and the extent to which they satisfy the Lord Chancellor's Additional Selection <b class="red">[Criteria / Criterion]</b> (ASC).</li>
 </ol>
     `);
 
@@ -231,18 +236,17 @@ module.exports = (firebase, db) => {
 <ol start="3">
   <li>
     The Judicial Appointments Commission received a vacancy request on 
-    <span class="red">date</span> asking us to select 
+    <b class="red">insert date</b> asking us to select 
     ${exerciseImmediateStart} ${exerciseImmediateStart > 1 ? 'candidates' : 'candidate'} for appointment under section 87 of the Constitutional Reform Act 2005 (CRA)
-    ${!exerciseFutureStart ? '' : exerciseFutureStart + (exerciseFutureStart > 1 ? ' candidates' : ' candidate') + ' for appointment under section 94 of the Constitutional Reform Act 2005 (CRA)'}.
-  </li>
-  <br>
+    ${!exerciseFutureStart ? '' : exerciseFutureStart + (exerciseFutureStart > 1 ? ' candidates' : ' candidate') + ' for appointment under section 94 of the Constitutional Reform Act 2005 (CRA)'} 
+    <b class="red"> OR under section 83 Government of Wales Act 2006.</b>
+  </li><br>
   <li>
     The exercise launched on ${applicationOpenDate} and closed for applications on ${applicationCloseDate}. 
     A total of ${applicationTotalNum} ${applicationTotalNum > 1 ? 'applications were' : 'application was'} received with 
     ${applicationWithdrawnNum === 0 ? 'no candidates' : applicationWithdrawnNum + (applicationWithdrawnNum > 1 ? ' candidates' : ' candidate')}</span> withdrawing during the course of the exercise.
     ${exercise._applicationRecords.shortlisted === 0 ? '' : exercise._applicationRecords.shortlisted + (exercise._applicationRecords.shortlisted > 1 ? ' candidates have' : ' candidate has')}</span> been shortlisted at the sift.
-  </li>
-  <br>
+  </li><br>
   <li>The statutory eligibility requirements and ASC for this exercise are at <a href="#annex-a"><b>Annex A</b></a>.</li>
 </ol>
   `);
@@ -258,11 +262,10 @@ module.exports = (firebase, db) => {
         ? ' and 1 candidate did not meet the statutory eligibility requirements for this exercise. Those that do not are listed at <a href="#annex-b"><b>Annex B</b></a>.'
         : ' and ' + applicationEligibilityNotProceed.length + ' candidates did not meet the statutory eligibility requirements for this exercise. Those that do not are listed at <a href="#annex-b"><b>Annex B</b></a>.'
     }
-  </li>
-  <br>
+  </li><br>
   <li>
-    <span class="red">number</span> candidates' statutory eligibility was considered by the Lord Chancellor under the Tribunals, Courts and Enforcement Act 2007. 
-    <span class="red">number</span> were deemed ineligible by the Lord Chancellor and are now listed at <a href="#"><b class="red">Annex X</b></a> for information purposes.
+    <b class="red">Insert number</b> candidates' statutory eligibility was considered by the Lord Chancellor under the Tribunals, Courts and Enforcement Act 2007. 
+    <b class="red">Insert number</b> were deemed ineligible by the Lord Chancellor and are now listed at <b class="red"><u>Annex X</u></b> <b class="red">&lt;insert hyperlink to Annex&gt;</b> for information purposes.
   </li>
 </ol>
   `);
@@ -271,29 +274,18 @@ module.exports = (firebase, db) => {
   writer.addRaw(`
 <ol start="8">
   <li>
-    Candidates are expected to have previous judicial experience, sitting as a judge in a salaried or fee-paid capacity or a similar role such as the chair of an equivalent body for which a legal qualification is required.
-    <br>
-    An equivalent body is one of a quasi-judicial nature for which the powers and procedures should resemble those of a court of law and involve highly complex matters, requiring its members objectively to determine the facts and draw conclusions to reach a reasoned decision. Such decisions could result in the imposition of a penalty, and they are likely to affect the legal rights, duties or privileges of specific parties. Examples could include, but are not restricted to:
-    <br>
-    A. Coroner
-    <br>
-    B. Disciplinary tribunals and conduct hearings for professional standards bodies
-    <br>
-    C. Arbitration
-    <br>
-    D. Parole Board
-    <br>
-    E. Chair of a statutory inquiry
-    <br>
-    The length of judicial experience required is a minimum of 30 completed sitting days since appointment, not including training or sick days.
-    <br>
-    Only in exceptional cases and if the candidate in question has demonstrated the necessary skills in some other significant way should an exception be made.
-  </li>
-  <br>
-  <li>The Lord Chancellor has also provided ASC that <b class="red">details of ASC</b></li>
-  <br>
-  <li><a href="#annex-b"><b>Annex B</b></a> lists candidates who are considered not to meet the ASC but are recommended to proceed, and/or are considered to have demonstrated the necessary skills in some other significant way.</li>
-  <br>
+    <p>Candidates are expected to have previous judicial experience, sitting as a judge in a salaried or fee-paid capacity or a similar role such as the chair of an equivalent body for which a legal qualification is required.</p><br>
+    <p>An equivalent body is one of a quasi-judicial nature for which the powers and procedures should resemble those of a court of law and involve highly complex matters, requiring its members objectively to determine the facts and draw conclusions to reach a reasoned decision. Such decisions could result in the imposition of a penalty, and they are likely to affect the legal rights, duties or privileges of specific parties. Examples could include, but are not restricted to:</p><br>
+    <p>A. Coroner</p><br>
+    <p>B. Disciplinary tribunals and conduct hearings for professional standards bodies</p><br>
+    <p>C. Arbitration</p><br>
+    <p>D. Parole Board</p><br>
+    <p>E. Chair of a statutory inquiry</p><br>
+    <p>The length of judicial experience required is a minimum of 30 completed sitting days since appointment, not including training or sick days.</p><br>
+    <p>Only in exceptional cases and if the candidate in question has demonstrated the necessary skills in some other significant way should an exception be made.</p>
+  </li><br>
+  <li>The Lord Chancellor has also provided ASC that <b class="red">&lt;insert details of ASC here&gt;</b></li><br>
+  <li><a href="#annex-b"><b>Annex B</b></a> lists candidates who are considered not to meet the ASC but are recommended to proceed, and/or are considered to have demonstrated the necessary skills in some other significant way.</li><br>
   <li><a href="#annex-c"><b>Annex C</b></a> lists candidates who are considered not to meet the ASC and are not recommended to proceed.</li>
 </ol>
   `);
@@ -305,26 +297,28 @@ module.exports = (firebase, db) => {
     The Lord Chancellor expects candidates to be able to offer a reasonable length of service following recommendation for appointment and before retirement. 
     Following the Public Service Pensions and Judicial Office Act 2022 receiving Royal Assent on 10 March 2022, the mandatory retirement age is 75. 
     The age at which someone is appointed to this office must allow for a reasonable length of service before retirement, usually for this position ${exercise.reasonableLengthService} ${exercise.reasonableLengthService > 1 ? 'years' : 'year'}. 
-    ${applicationEligibilityNotProceed.length > 0 ? '' : 'All candidates meet the reasonable length of service criterion.'}
+    <b class="red">&lt;insert if all candidates meeting the RLoS&gt;</b> All candidates meet the reasonable length of service criterion.
   </li>
   <br>
-  <li><a href="#"><b>Annex X</b></a> lists the candidate <span class="red">(s) </span>whose age <span class="red">(s)</span> do <span class="red">(es)</span> not allow for this reasonable length of service before retirement.</li>
+  <li><a href="#"><b>Annex X</b></a> <b class="red">&lt;insert hyperlink to Annex&gt;</b> lists the candidate <span class="red">(s) </span>whose age <span class="red">(s)</span> do <span class="red">(es)</span> not allow for this reasonable length of service before retirement.</li>
 </ol>
   `);
 
-  writer.addHeadingRaw('<a name="character">Character</a>');
+  writer.addHeadingRaw('<b class="red">&lt;insert if any character issues are so serious you would like the Commission to decide now rather than wait until the recommendations SCC stage:</b> <a name="character"><b>Character</b></a>');
   writer.addRaw(`
 <ol start="14">
   <li>
     We have carried out preliminary character checks and the following issues have been identified:
-    <ul>
-      <li>Candidates whose character issues require a character decision (Annex X)</li>
-      <li>Candidates recommended to proceed as character issues within precedent (Annex X)</li>
-    </ul>
+    <p>
+      <ul>
+        <li>Candidates whose character issues require a character decision (Annex X) <b class="red">&lt;insert hyperlink to Annex&gt;</b></li>
+        <li>Candidates recommended to proceed as character issues within precedent (Annex X) <b class="red">&lt;insert hyperlink to Annex&gt;</b></li>
+      </ul>
+    </p> 
   </li>
 </ol>
 <br><br><br><br><br><br><br><br><br><br>
-<p><span class="gray">INSERT NAME</span></p>
+<p><span class="red"><b>INSERT NAME</b></span></p>
 <p><b>Selection Exercise Manager</b></p>
     `);
   }
@@ -339,67 +333,66 @@ module.exports = (firebase, db) => {
   function addHtmlEligibilityIssues_AnnexA(writer, exercise) {
     addOfficialSensitive(writer);
     writer.addRaw(`
-    <div style="font-family: 'Arial'; font-size: 11pt;">
-      <p style="text-align: right;"><a name="annex-a"><b>ANNEX A</b></a></p>
-      <p style="text-align: center;"><b>JUDICIAL APPOINTMENTS ELIGIBILITY STATEMENT</b></p>
-      <br>
-      <p style="text-align: right; color: red;">Ref: 00077</p>
-      <table style="font-family: 'Arial'; font-size: 0.75rem;">
-        <tbody>
-          <tr>
-            <td width="250"><b>Title:</b></td>
-            <td colspan="4">${exercise.name}</td>
-          </tr>
-          <tr>
-            <td width="250"><b>Statutory eligibility requirement:</b></td>
-            <td colspan="4"></td>
-          </tr>
-          <tr>
-            <td width="250"><b>Relevant qualification:</b></td>
-            <td width="75" style="text-align: center;"><b>Solicitor</b><br>${exercise.qualifications.includes('solicitor') ? 'Yes' : 'No'}</td>
-            <td width="80" style="text-align: center;"><b>Barrister</b><br>${exercise.qualifications.includes('barrister') ? 'Yes' : 'No'}</td>
-            <td style="text-align: center;"><b>Fellow CILEX</b><br>${exercise.qualifications.includes('cilex') ? 'Yes' : 'No'}</td>
-            <td style="text-align: center;"><b>Other (e.g. Patent Agent, Medical etc)</b><br>${exercise.qualifications.includes('other') ? 'Yes' : 'No'}</td>
-          </tr>
-          <tr>
-            <td width="250"><b>Non-statutory eligibility requirement<br>Approved by Lord Chancellor (N/A)</b></td>
-            <td colspan="4"></td>
-          </tr>
-          <tr>
-            <td width="250"><b>Additional Information:</b></td>
-            <td colspan="4"></td>
-          </tr>
-          <tr>
-            <td width="250">
-              <b>Reasonable length of service (and retirement age if not 70*):</b>
-              <br>
-              <b>*As set out in the government response to the Judicial Mandatory Retirement Age consultation published on 8 March, it is the intention to raise the mandatory retirement age (MRA) for judicial holders to 75.</b>
-            </td>
-            <td colspan="4">${exercise.reasonableLengthService} ${exercise.reasonableLengthService > 1 ? 'years' : 'year'}</td>
-          </tr>
-          <tr>
-            <td width="250">
-              <b>Salaried posts only:</b>
-              <br>
-              <b>Previous service in judicial office</b>
-            </td>
-            <td colspan="4"></td>
-          </tr>
-          <tr>
-            <td width="250"><b>House of Commons Disqualification Act 1975 applies:</b></td>
-            <td colspan="4"></td>
-          </tr>
-          <tr>
-            <td width="250">
-              <b>Salaried posts only:</b>
-              <br>
-              <b>Medical Examination:</b>
-            </td>
-            <td colspan="4"></td>
-          </tr>
-        </tbody>
-      </table>
-    </div>
+<p style="text-align: right;"><a name="annex-a"><b>ANNEX A</b></a></p>
+    `);
+    writer.addHeading('JUDICIAL APPOINTMENTS ELIGIBILITY STATEMENT AND ASC', 'center');
+    writer.addRaw(`
+<p class="red" style="text-align: right;">Ref: 00077</p>
+<table>
+  <tbody>
+    <tr>
+      <td width="250"><b>Title:</b></td>
+      <td colspan="4">${exercise.name}</td>
+    </tr>
+    <tr>
+      <td width="250"><b>Statutory eligibility requirement:</b></td>
+      <td colspan="4"></td>
+    </tr>
+    <tr>
+      <td width="250"><b>Relevant qualification:</b></td>
+      <td width="75" style="text-align: center;"><b>Solicitor</b><br>${exercise.qualifications.includes('solicitor') ? 'Yes' : 'No'}</td>
+      <td width="80" style="text-align: center;"><b>Barrister</b><br>${exercise.qualifications.includes('barrister') ? 'Yes' : 'No'}</td>
+      <td style="text-align: center;"><b>Fellow CILEX</b><br>${exercise.qualifications.includes('cilex') ? 'Yes' : 'No'}</td>
+      <td style="text-align: center;"><b>Other (e.g. Patent Agent, Medical etc)</b><br>${exercise.qualifications.includes('other') ? 'Yes' : 'No'}</td>
+    </tr>
+    <tr>
+      <td width="250"><b>Non-statutory eligibility requirement<br>Approved by Lord Chancellor (N/A)</b></td>
+      <td colspan="4"></td>
+    </tr>
+    <tr>
+      <td width="250"><b>Additional Information:</b></td>
+      <td colspan="4"></td>
+    </tr>
+    <tr>
+      <td width="250">
+        <b>Reasonable length of service (and retirement age if not 70*):</b>
+        <br>
+        <b>*As set out in the government response to the Judicial Mandatory Retirement Age consultation published on 8 March, it is the intention to raise the mandatory retirement age (MRA) for judicial holders to 75.</b>
+      </td>
+      <td colspan="4">${exercise.reasonableLengthService} ${exercise.reasonableLengthService > 1 ? 'years' : 'year'}</td>
+    </tr>
+    <tr>
+      <td width="250">
+        <b>Salaried posts only:</b>
+        <br>
+        <b>Previous service in judicial office</b>
+      </td>
+      <td colspan="4"></td>
+    </tr>
+    <tr>
+      <td width="250"><b>House of Commons Disqualification Act 1975 applies:</b></td>
+      <td colspan="4"></td>
+    </tr>
+    <tr>
+      <td width="250">
+        <b>Salaried posts only:</b>
+        <br>
+        <b>Medical Examination:</b>
+      </td>
+      <td colspan="4"></td>
+    </tr>
+  </tbody>
+</table>
     `);
   }
 
@@ -412,45 +405,44 @@ module.exports = (firebase, db) => {
    function addHtmlEligibilityIssues_AnnexX(writer) {
     addOfficialSensitive(writer);
     writer.addRaw(`
-      <div style="font-family: 'Arial'; font-size: 11pt;">
-        <p style="text-align: right;"><a name="annex-x"><b>ANNEX X</b></a></p>
-        <p style="text-align: center;"><b>Candidates who do not meet the Statutory Eligibility Criteria</b></p>
-        <br>
-        <table style="font-family: 'Arial'; font-size: 0.75rem;">
-          <tbody>
-            <tr style="text-align: center; background: #f3f3f3;">
-              <td width="110"><b>Professional Surname</b></td>
-              <td width="100"><b>Forename</b></td>
-              <td><b>Reasons Statutory Eligibility Criteria is not satisfied</b></td>
-            </tr>
-            <tr>
-              <td></td>
-              <td></td>
-              <td></td>
-            </tr>
-            <tr>
-              <td></td>
-              <td></td>
-              <td></td>
-            </tr>
-            <tr>
-              <td></td>
-              <td></td>
-              <td></td>
-            </tr>
-            <tr>
-              <td></td>
-              <td></td>
-              <td></td>
-            </tr>
-            <tr>
-              <td></td>
-              <td></td>
-              <td></td>
-            </tr>
-          </tbody>
-        </table>
-      </div>
+<p style="text-align: right;"><a name="annex-x"><b>ANNEX X</b></a></p>
+    `);
+    writer.addHeading('Candidates who do not meet the Statutory Eligibility Criteria', 'center');
+    writer.addRaw(`
+<table>
+  <tbody>
+    <tr style="text-align: center; background: #f3f3f3;">
+      <td width="110"><b>Professional Surname</b></td>
+      <td width="100"><b>Forename</b></td>
+      <td><b>Reasons Statutory Eligibility Criteria is not satisfied</b></td>
+    </tr>
+    <tr>
+      <td></td>
+      <td></td>
+      <td></td>
+    </tr>
+    <tr>
+      <td></td>
+      <td></td>
+      <td></td>
+    </tr>
+    <tr>
+      <td></td>
+      <td></td>
+      <td></td>
+    </tr>
+    <tr>
+      <td></td>
+      <td></td>
+      <td></td>
+    </tr>
+    <tr>
+      <td></td>
+      <td></td>
+      <td></td>
+    </tr>
+  </tbody>
+</table>
     `);
   }
 
@@ -464,20 +456,20 @@ module.exports = (firebase, db) => {
   function addHtmlEligibilityIssues_AnnexB(writer, applicationRecords) {
     addOfficialSensitive(writer);
     writer.addRaw(`
-      <p style="text-align: right;"><a name="annex-b"><b>ANNEX B</b></a></p>
-      <p style="font-family: 'Arial'; font-weight: 700; font-size: 11pt; text-align: center; margin: 10px 0">
-        Candidates recommended to proceed and reasons why they are considered to meet the ASC
-      </p>
-      <table style="font-family: 'Arial'; font-size: 0.75rem;">
-        <tbody>
-          <tr>
-            <td width="110" style="text-align:center;"><b>Professional Surname</b></td>
-            <td width="100" style="text-align:center;"><b>Forename</b></td>
-            <td style="text-align:center;">
-              <b>Reasons ASC is demonstrated in some other significant way – Judicial Office Holders with less than the required sitting days at point of application
-              </b>
-            </td>
-          </tr>
+<p style="text-align: right;"><a name="annex-b"><b>ANNEX B</b></a></p>
+    `);
+    writer.addHeading('Candidates <u>recommended to proceed</u> and reasons why they are considered to meet the ASC', 'center');
+    writer.addRaw(`
+<table>
+  <tbody>
+    <tr>
+      <td width="110" style="text-align:center;"><b>Professional Surname</b></td>
+      <td width="100" style="text-align:center;"><b>Forename</b></td>
+      <td style="text-align:center;">
+        <b>Reasons ASC is demonstrated in some other significant way – Judicial Office Holders with less than the required sitting days at point of application
+        </b>
+      </td>
+    </tr>
     `);
     
     applicationRecords.forEach((applicationRecord) => {
@@ -494,25 +486,25 @@ module.exports = (firebase, db) => {
       const comment = getJudicialExperienceDetail(applicationRecord.application);
       const reason = applicationRecord.issues.eligibilityIssuesReason || '';
       writer.addRaw(`
-        <tr>
-          <td><b>${lastName}</b></td>
-          <td>${firstName}</td>
-          <td>
-            <b>Candidate Comments:</b> ${comment}
-            <br>
-            <br>
-            <b>Panel Comments (where applicable):</b>
-            <br>
-            <br>
-            <b>JAC Comments (with reference to the ASC Log if appropriate):</b> ${reason}
-            </td>
-        </tr>
+    <tr>
+      <td>${lastName}</td>
+      <td>${firstName}</td>
+      <td>
+        <b>Candidate Comments:</b> ${comment}
+        <br>
+        <br>
+        <b>Panel Comments (where applicable):</b>
+        <br>
+        <br>
+        <b>JAC Comments (with reference to the ASC Log if appropriate):</b> ${reason}
+        </td>
+    </tr>
       `);
     });
 
     writer.addRaw(`
-        </tbody>
-      </table>
+  </tbody>
+</table>
     `);
   }
 
@@ -526,19 +518,19 @@ module.exports = (firebase, db) => {
   function addHtmlEligibilityIssues_AnnexC(writer, applicationRecords) {
     addOfficialSensitive(writer);
     writer.addRaw(`
-      <p style="text-align: right;"><a name="annex-c"><b>ANNEX C</b></a></p>
-      <p style="font-family: 'Arial'; font-weight: 700; font-size: 11pt; text-align: center; margin: 10px 0">
-        Candidates <u>recommended not to proceed</u> and reasons why they are considered to meet the ASC
-      </p>
-      <table style="font-family: 'Arial'; font-size: 0.75rem;">
-        <tbody>
-          <tr>
-            <td width="110" style="text-align:center;"><b>Professional Surname</b></td>
-            <td width="100" style="text-align:center;"><b>Forename</b></td>
-            <td style="text-align:center;">
-            <b>Reasons ASC is not demonstrated in some other significant way</b>
-          </td>
-        </tr>
+<p style="text-align: right;"><a name="annex-c"><b>ANNEX C</b></a></p>
+    `);
+    writer.addHeading('Candidates <u>recommended not to proceed</u> and reasons why they are considered to meet the ASC', 'center');
+    writer.addRaw(`
+<table>
+  <tbody>
+    <tr>
+      <td width="110" style="text-align:center;"><b>Professional Surname</b></td>
+      <td width="100" style="text-align:center;"><b>Forename</b></td>
+      <td style="text-align:center;">
+      <b>Reasons ASC is not demonstrated in some other significant way</b>
+    </td>
+  </tr>
     `);
 
     applicationRecords.forEach((applicationRecord) => {
@@ -556,25 +548,25 @@ module.exports = (firebase, db) => {
       const comment = getJudicialExperienceDetail(applicationRecord.application);
       const reason = applicationRecord.issues.eligibilityIssuesReason || '';
       writer.addRaw(`
-        <tr>
-          <td><b>${lastName}</b></td>
-          <td>${firstName}</td>
-          <td>
-            <b>Candidate Comments:</b> ${comment}
-            <br>
-            <br>
-            <b>Panel Comments (where applicable):</b>
-            <br>
-            <br>
-            <b>JAC Comments (with reference to the ASC Log if appropriate):</b> ${reason}
-            </td>
-        </tr>
+    <tr>
+      <td>${lastName}</td>
+      <td>${firstName}</td>
+      <td>
+        <b>Candidate Comments:</b> ${comment}
+        <br>
+        <br>
+        <b>Panel Comments (where applicable):</b>
+        <br>
+        <br>
+        <b>JAC Comments (with reference to the ASC Log if appropriate):</b> ${reason}
+        </td>
+    </tr>
       `);
     });
 
     writer.addRaw(`
-        </tbody>
-      </table>
+  </tbody>
+</table>
     `);
   }
 
@@ -585,8 +577,8 @@ module.exports = (firebase, db) => {
    * @returns void
    */
   function addOfficialSensitive(writer) {
-    writer.addHeading('OFFICIAL - SENSITIVE', 'center', '1rem', 'margin:10px 0; padding:0; color:gray;');
-    writer.addHeading('(JAC/SCC/xx/xxx)', 'right', '0.8rem', 'padding:0; color:gray;');
+    writer.addHeading('OFFICIAL - SENSITIVE', 'center', '10pt', 'margin:10px 0; padding:0; color:gray;');
+    writer.addHeading('(JAC/SCC/xx/xxx)', 'right', '10pt', 'padding:0; color:gray;');
   }
 
   /**
