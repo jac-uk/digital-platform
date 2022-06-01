@@ -1,8 +1,8 @@
 const functions = require('firebase-functions');
 
 module.exports = {
-  // PROJECT_ID: functions.config().project.id,
-  // APPLY_URL: functions.config().apply.url,
+  PROJECT_ID: functions.config().project.id,
+  APPLY_URL: functions.config().apply.url,
   APPLICATION: {
     CHARACTER_ISSUES: { // this gives a map from issue to corresponding details field TODO improve naming or where we store this
       criminalOffences: {
@@ -217,15 +217,9 @@ module.exports = {
       REJECT: 'reject',
       REJECT_NON_DECLARATION: 'reject-non-declaration',
       DISCUSS: 'discuss',
-  },
-    ELIGIBILITY_ISSUE_STATUS: {  /* same as above for now */
-      PROCEED: 'proceed',
-      REJECT: 'reject',
-      REJECT_NON_DECLARATION: 'reject-non-declaration',
-      DISCUSS: 'discuss',
     },
   },
-  // ASSESSMENTS_URL: functions.config().assessments.url,
+  ASSESSMENTS_URL: functions.config().assessments.url,
   ASSESSMENT_TYPE: {
     COMPETENCY: 'competency',
     SKILLS: 'skills',
@@ -288,7 +282,7 @@ module.exports = {
     'C': 2,
     'D': 1,
   },
-  // NOTIFY_KEY: functions.config().notify.key,
-  // SLACK_URL: functions.config().slack.url,
-  // STORAGE_URL: functions.config().project.id + '.appspot.com',
+  NOTIFY_KEY: functions.config().notify.key,
+  SLACK_URL: functions.config().slack.url,
+  STORAGE_URL: functions.config().project.id + '.appspot.com',
 };
