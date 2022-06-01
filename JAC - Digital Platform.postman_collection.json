@@ -600,7 +600,7 @@
 								],
 								"body": {
 									"mode": "raw",
-									"raw": "{\r\n    \"data\": {\r\n        \"force\": true,\r\n        \"maxFiles\": 5,\r\n        \"async\": false\r\n    }\r\n}\r\n"
+									"raw": "{\r\n    \"data\": {\r\n        \"force\": true,\r\n        \"maxFiles\": 5\r\n    }\r\n}\r\n"
 								},
 								"url": {
 									"raw": "{{host}}/scanAllFiles",
@@ -907,6 +907,164 @@
 							],
 							"path": [
 								"getApplicationData"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Test - Copy Exercise to QT Database",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{token}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"data\": {\r\n        \"exerciseId\": \"11bv7ZTyyKhoqGYAPN7Y\"\r\n    }\r\n}"
+						},
+						"url": {
+							"raw": "{{host}}/copyExerciseToQTTest",
+							"host": [
+								"{{host}}"
+							],
+							"path": [
+								"copyExerciseToQTTest"
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "Capacity Testing",
+			"item": [
+				{
+					"name": "Initialise QTs",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{token}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"data\": {\r\n        \"exerciseId\": \"8CIlAsDbtMfr2vnfjmYh\",\r\n        \"qualifyingTestId\": \"1zm5Q3LSRbSLBFakRbJ2\",\r\n        \"noOfCandidates\": 10000,\r\n        \"refPrefix\": \"prefix3\",\r\n        \"userId\": \"RW9nHLejKQRzTb7QACC6cte1UJu2\"\r\n    }\r\n}\r\n"
+						},
+						"url": {
+							"raw": "{{host}}/capacityTest_initialiseQTs",
+							"host": [
+								"{{host}}"
+							],
+							"path": [
+								"capacityTest_initialiseQTs"
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		},
+    {
+			"name": "Test Applications",
+			"item": [
+				{
+					"name": "Create Test Applications",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{token}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"data\": {\r\n        \"exerciseId\": \"F650lJ93i1zN2yPfsZF6\",\r\n        \"noOfTestApplications\": 1\r\n    }\r\n}\r\n"
+						},
+						"url": {
+							"raw": "{{host}}/createTestApplications",
+							"host": [
+								"{{host}}"
+							],
+							"path": [
+								"createTestApplications"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Delete Applications",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{token}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"data\": {\r\n        \"exerciseId\": \"F650lJ93i1zN2yPfsZF6\"\r\n    }\r\n}\r\n"
+						},
+						"url": {
+							"raw": "{{host}}/deleteApplications",
+							"host": [
+								"{{host}}"
+							],
+							"path": [
+								"deleteApplications"
 							]
 						}
 					},

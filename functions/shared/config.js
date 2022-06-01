@@ -67,16 +67,16 @@ module.exports = {
         details: 'bankruptcyDetails',
         summary: 'Candidate has filed for bankruptcy',
       },
-      complaintOrDiciplinaryAction: {
+      complaintOrDisciplinaryAction: {
         group: 'Professional',
-        title: 'Complaint Or Diciplinary Action',
-        details: 'complaintOrDiciplinaryActionDetails',
-        summary: 'Candidate has received a complaint or diciplinary action',
+        title: 'Complaint Or Disciplinary Action',
+        details: 'complaintOrDisciplinaryActionDetails',
+        summary: 'Candidate has received a complaint or disciplinary action',
       },
       criminalCautions: {
         group: 'Criminal',
         title: 'Criminal Cautions',
-        details: 'criminalCautionsDetails',
+        details: 'criminalCautionDetails',
         summary: 'Candidate has been cautioned for a criminal offence',
       },
       criminalConvictions: {
@@ -118,7 +118,7 @@ module.exports = {
       fixedPenalties: {
         group: 'Motoring',
         title: 'Fixed Penalties',
-        details: 'fixedPenaltiesDetails',
+        details: 'fixedPenaltyDetails',
         summary: 'Candidate has received a fixed-penalty',
       },
       furtherInformation: {

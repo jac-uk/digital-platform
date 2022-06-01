@@ -3,6 +3,7 @@
 exports.backupFirestore = require('./scheduledFunctions/backupFirestore');
 exports.backupAuthentication = require('./scheduledFunctions/backupAuthentication');
 exports.processNotifications = require('./scheduledFunctions/processNotifications');
+exports.scheduleScanAllFiles = require('./scheduledFunctions/scheduleScanAllFiles');
 
 // Background
 exports.onDelete = require('./backgroundFunctions/onDelete');
@@ -50,6 +51,7 @@ exports.exportQualifyingTestResponses = require('./callableFunctions/exportQuali
 exports.generateAgencyReport = require('./callableFunctions/generateAgencyReport');
 exports.logEvent = require('./callableFunctions/logEvent');
 exports.scanFile = require('./callableFunctions/scanFile');
+exports.scanAllFiles = require('./callableFunctions/scanAllFiles');
 exports.exportApplicationCharacterIssues = require('./callableFunctions/exportApplicationCharacterIssues');
 exports.getUserEmailByID = require('./callableFunctions/getUserEmailByID');
 exports.updateEmailAddress = require('./callableFunctions/updateEmailAddress');
