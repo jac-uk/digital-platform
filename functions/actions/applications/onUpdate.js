@@ -1,8 +1,10 @@
 const { getDocument, applyUpdates, isDateInPast } = require('../../shared/helpers');
+const APPLICATION_RECEIVED_EMAIL_TEMPLATE_ID = 'c5c67b52-42ad-4fb8-a7ec-b93576c28c63';
 
 module.exports = (config, firebase, db) => {
   const { newApplicationRecord } = require('../../shared/factories')(config);
   const { updateCandidate } = require('../candidates/search')(firebase, db);
+  const { sendEmail } = require('../functions/shared/notify')(config, firebase, db);
 
   return onUpdate;
 
@@ -66,6 +68,16 @@ module.exports = (config, firebase, db) => {
           return false;
         }
       }
+    }
+
+    if (!dataBefore.referenceNumber && Boolean(dataAfter.referenceNumber)) {
+      const personalisation = { 
+        fullName: dataAfter.fullName,
+        exerciseId: dataAfter.exerciseId,
+        exerciseName: dataAfter.exerciseName,
+        refNumber: dataAfter.referenceNumber,
+      };
+      return sendEmail(dataAfter.email, APPLICATION_RECEIVED_EMAIL_TEMPLATE_ID, personalisation);
     }
     return true;
   }
