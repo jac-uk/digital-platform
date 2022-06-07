@@ -76,7 +76,8 @@ module.exports = (firebase, db) => {
     drive.setDriveId(settings.google.driveId);
 
     // generate a filename for the document we are going to create
-    const timestamp = (new Date()).toISOString();
+    const now = new Date();
+    const timestamp = new Date(now.getTime() - (now.getTimezoneOffset() * 60000)).toISOString();
     const filename = exercise.referenceNumber + '_' + timestamp;
 
     // make sure a destination folder exists to create the file in
