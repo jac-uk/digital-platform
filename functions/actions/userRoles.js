@@ -29,15 +29,19 @@ module.exports = (db, auth) => {
       // get all users
       const users = await auth.listUsers();
 
-      for(const user of users.users) {
+      for (const user of users.users) {
         let isJacAdmin = false;
-        let isJACEmployee = false;
-        for (const provider of user.providerData) { // users can authenticate on both admin and apply with same email
-          if(provider.providerId === 'google.com' || provider.providerId === 'microsoft.com') {
-            isJacAdmin = true; // user has authenticated successfully with google or microsoft
-            isJACEmployee = user.email.indexOf('@judicialappointments.gov.uk') > 0; // user is part of
+        let isJACEmployee = user.email.indexOf('@judicialappointments.gov.uk') > 0;
+        if (isJACEmployee) {
+          isJacAdmin = true;
+        } else {
+          for (const provider of user.providerData) { // users can authenticate on both admin and apply with same email
+            if (provider.providerId === 'google.com' || provider.providerId === 'microsoft.com') {
+              isJacAdmin = true; // user has authenticated successfully with google or microsoft
+            }
           }
         }
+
         if(isJacAdmin) {
           const adminUser = {
             uid: user.uid,
