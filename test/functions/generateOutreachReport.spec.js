@@ -22,7 +22,6 @@ describe('generateOutreachReport', () => {
           PERMISSIONS.applications.permissions.canReadApplications.value,
           PERMISSIONS.applicationRecords.permissions.canReadApplicationRecords.value,
           PERMISSIONS.exercises.permissions.canReadExercises.value,
-          PERMISSIONS.logs.permissions.canCreateLogs.value,
         ],
       });
       try {

@@ -25,7 +25,6 @@ module.exports = functions.runWith(runtimeOptions).region('europe-west2').https.
     PERMISSIONS.exercises.permissions.canReadExercises.value,
     PERMISSIONS.applicationRecords.permissions.canReadApplicationRecords.value,
     PERMISSIONS.applications.permissions.canReadApplications.value,
-    PERMISSIONS.logs.permissions.canCreateLogs.value,
   ]);
 
   // validate input parameters

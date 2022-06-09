@@ -16,7 +16,6 @@ module.exports = functions.region('europe-west2').https.onCall(async (data, cont
 
   hasPermissions(context.auth.token.rp, [
     PERMISSIONS.qualifyingTests.permissions.canReadQualifyingTests.value,
-    PERMISSIONS.logs.permissions.canCreateLogs.value,
     PERMISSIONS.qualifyingTestResponses.permissions.canReadQualifyingTestResponses.value,
   ]);
 

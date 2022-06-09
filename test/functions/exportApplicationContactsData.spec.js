@@ -20,7 +20,6 @@ describe('exportApplicationContactsData', () => {
       const context = generateMockContext({
         permissions: [
           PERMISSIONS.exercises.permissions.canReadExercises.value,
-          PERMISSIONS.logs.permissions.canCreateLogs.value,
           PERMISSIONS.applications.permissions.canReadApplications.value,
         ],
       });

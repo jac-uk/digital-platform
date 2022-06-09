@@ -22,7 +22,6 @@ describe('exportApplicationCharacterIssues', () => {
           PERMISSIONS.applicationRecords.permissions.canReadApplicationRecords.value,
           PERMISSIONS.applications.permissions.canReadApplications.value,
           PERMISSIONS.exercises.permissions.canReadExercises.value,
-          PERMISSIONS.logs.permissions.canCreateLogs.value,
         ],
       });
       try {

@@ -22,7 +22,6 @@ describe('generateDiversityReport', () => {
           PERMISSIONS.exercises.permissions.canReadExercises.value,
           PERMISSIONS.applications.permissions.canReadApplications.value,
           PERMISSIONS.applicationRecords.permissions.canReadApplicationRecords.value,
-          PERMISSIONS.logs.permissions.canCreateLogs.value,
         ],
       });
       try {

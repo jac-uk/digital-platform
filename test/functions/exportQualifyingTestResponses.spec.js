@@ -20,7 +20,6 @@ describe('exportQualifyingTestResponses', () => {
       const context = generateMockContext({
         permissions: [
           PERMISSIONS.qualifyingTests.permissions.canReadQualifyingTests.value,
-          PERMISSIONS.logs.permissions.canCreateLogs.value,
           PERMISSIONS.qualifyingTestResponses.permissions.canReadQualifyingTestResponses.value,
         ],
       });

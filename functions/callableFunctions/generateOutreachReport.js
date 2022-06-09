@@ -19,7 +19,6 @@ module.exports = functions.region('europe-west2').https.onCall(async (data, cont
     PERMISSIONS.applications.permissions.canReadApplications.value,
     PERMISSIONS.applicationRecords.permissions.canReadApplicationRecords.value,
     PERMISSIONS.exercises.permissions.canReadExercises.value,
-    PERMISSIONS.logs.permissions.canCreateLogs.value,
   ]);
 
   // validate input parameters
