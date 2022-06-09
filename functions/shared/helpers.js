@@ -12,7 +12,10 @@ module.exports = {
   isDateInPast, // @TODO we want one set of date & exercise helpers (see actions/shared/converters)
   formatDate,
   getDate,
+  convertToDate,
   timeDifference,
+  getEarliestDate,
+  getLatestDate,
   convertStringToSearchParts,
   isProduction,
 };
@@ -59,7 +62,7 @@ async function getAllDocuments(db, references) {
   if (references.length) {
     const snapshot = await db.getAll(...references);
     snapshot.forEach((doc) => {
-      const document = doc.data();
+      const document = { ...doc.data() };
       document.id = doc.id;
       document.ref = doc.ref;
       documents.push(document);
@@ -206,13 +209,23 @@ function convertToDate(value) {
   return value;
 }
 
+function getEarliestDate(arrDates) {
+  const sortedDates = arrDates.sort((a, b) => timeDifference(a, b));
+  return sortedDates[0];
+}
+
+function getLatestDate(arrDates) {
+  const sortedDates = arrDates.sort((a, b) => timeDifference(a, b));
+  return sortedDates[sortedDates.length - 1];
+}
+
 function timeDifference(date1, date2) {
   date1 = convertToDate(date1);
   date2 = convertToDate(date2);
   if (date1 && date2) {
     const timestamp1 = date1.getTime();
     const timestamp2 = date2.getTime();
-    return timestamp2 - timestamp1;
+    return timestamp1 - timestamp2;
   } else {
     return 0;
   }

@@ -55,14 +55,14 @@ module.exports = {
         details: 'bankruptcyDetails',
         summary: 'Candidate has filed for bankruptcy',
       },
-      complaintOrDiciplinaryAction: {
-        title: 'Complaint Or Diciplinary Action',
-        details: 'complaintOrDiciplinaryActionDetails',
-        summary: 'Candidate has received a complaint or diciplinary action',
+      complaintOrDisciplinaryAction: {
+        title: 'Complaint Or Disciplinary Action',
+        details: 'complaintOrDisciplinaryActionDetails',
+        summary: 'Candidate has received a complaint or disciplinary action',
       },
       criminalCautions: {
         title: 'Criminal Cautions',
-        details: 'criminalCautionsDetails',
+        details: 'criminalCautionDetails',
         summary: 'Candidate has been cautioned for a criminal offence',
       },
       criminalConvictions: {
@@ -70,34 +70,14 @@ module.exports = {
         details: 'criminalConvictionDetails',
         summary: 'Candidate has been convicted of a criminal offence',
       },
-      declaredBankruptOrIVA: {
-        title: 'Declared Bankrupt Or IVA',
-        details: 'declaredBankruptOrIVADetails',
-        summary: 'Candidate has been declared bankrupt or entered into an Individual Voluntary Agreement (IVA)',
-      },
-      diciplinaryActionOrAskedToResign: {
-        title: 'Disciplinary Action Or Asked To Resign',
-        details: 'diciplinaryActionOrAskedToResignDetails',
-        summary: 'Candidate has received disciplinary action or been asked to resign from position',
-      },
       drivingDisqualifications: {
         title: 'Driving Disqualifications',
         details: 'drivingDisqualificationDetails',
         summary: 'Candidate has been disqualified from driving',
       },
-      drivingDisqualificationDrinkDrugs: {
-        title: 'Driving Disqualification Drink Drugs',
-        details: 'drivingDisqualificationDrinkDrugsDetails',
-        summary: 'Candidate has been disqualified from driving for drink/drugs',
-      },
-      endorsementsOrMotoringFixedPenalties: {
-        title: 'Endorsements Or Motoring Fixed Penalties',
-        details: 'endorsementsOrMotoringFixedPenaltiesDetails',
-        summary: 'Candidate has endorsements or motoring fixed-penalties',
-      },
       fixedPenalties: {
         title: 'Fixed Penalties',
-        details: 'fixedPenaltiesDetails',
+        details: 'fixedPenaltyDetails',
         summary: 'Candidate has received a fixed-penalty',
       },
       furtherInformation: {
@@ -109,11 +89,6 @@ module.exports = {
         title: 'HMRC Fines',
         details: 'hmrcFineDetails',
         summary: 'Candidate has received a fine from HMRC',
-      },
-      involvedInProfessionalMisconduct: {
-        title: 'Involved In Professional Misconduct',
-        details: 'involvedInProfessionalMisconductDetails',
-        summary: 'Candidate has been involved in professional misconduct',
       },
       ivas: {
         title: 'IVAs',
@@ -129,16 +104,6 @@ module.exports = {
         title: 'Late VAT Returns',
         details: 'lateVatReturnDetails',
         summary: 'Candidate has filed late VAT returns',
-      },
-      nonMotoringFixedPenaltyNotices: {
-        title: 'Non Motoring Fixed Penalty Notices',
-        details: 'nonMotoringFixedPenaltyNoticesDetails',
-        summary: 'Candidate has non-motoring fixed-penalty notices',
-      },
-      otherCharacterIssues: {
-        title: 'Other Character Issues',
-        details: 'otherCharacterIssuesDetails',
-        summary: 'Candidate has declared other character issues',
       },
       recentDrivingConvictions: {
         title: 'Recent Driving Convictions',
@@ -210,6 +175,34 @@ module.exports = {
       STARTED: 'started',
       COMPLETED: 'completed',
     },
+  },
+  TASK_TYPE: {
+    SIFT: 'sift',
+    SELECTION: 'selection',
+    SCENARIO: 'scenario',
+  },
+  TASK_STATUS: {
+    INITIALISED: 'initialised',
+    ACTIVATED: 'activated',
+    MODERATION_INITIALISED: 'moderationInitialised',
+    MODERATION_ACTIVATED: 'moderationActivated',
+    FINALISED: 'finalised',
+    COMPLETED: 'completed',
+  },
+  PANEL_STATUS: {
+    // TODO include all statuses
+    DRAFT: 'draft',
+    APPROVED: 'approved',
+    PROCESSING: 'processing',
+    CREATED: 'created',
+    SUBMITTED: 'submitted',
+  },
+  GRADES: ['A', 'B', 'C', 'D'],
+  GRADE_VALUES: {
+    'A': 4,
+    'B': 3,
+    'C': 2,
+    'D': 1,
   },
   NOTIFY_KEY: process.env.NOTIFY_LIMITED_KEY,
   SLACK_URL: process.env.SLACK_URL,

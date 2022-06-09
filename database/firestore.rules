@@ -35,8 +35,12 @@ service cloud.firestore {
   // }
 
   function verifyFields(required, optional) {
-    let all = required.concat(optional);
-    return request.resource.data.keys().hasAll(required) && request.resource.data.keys().hasOnly(all);
+    return true;
+    // TODO: below is commented, function needs improvement.
+    // TODO: add tests
+    // let all = required.concat(optional);
+    // return request.resource.data.keys().hasAll(required);
+    //  && request.resource.data.keys().hasOnly(all);
   }
 
   match /databases/{database}/documents {
@@ -55,6 +59,11 @@ service cloud.firestore {
       match /reports/{reportId} {
         allow read: if userIsAuthenticated() && userIsJAC() && hasPermission('e1');
       }
+      match /tasks/{taskId} {
+        allow create, update: if userIsAuthenticated() && userIsJAC();
+        allow read: if userIsAuthenticated() && userIsJAC();
+      }
+
     }
 
     match /notifications/{notificationId} {
@@ -74,6 +83,14 @@ service cloud.firestore {
       allow create: if userIsAuthenticated() && userIsJAC() && hasPermission('p2');
       allow update: if userIsAuthenticated() && userIsJAC() && hasPermission('p3');
       allow delete: if userIsAuthenticated() && userIsJAC() && hasPermission('p4');
+    }
+
+    match /panellists/{panellistId} {
+  		// Users can read & write to their own candidate document
+      allow get, create, update: if request.auth.uid == panellistId;
+
+      // Allow JAC to read and write
+      allow read, write: if userIsAuthenticated() && userIsJAC();
     }
 
     match /meta/stats {
@@ -127,8 +144,8 @@ service cloud.firestore {
     function exerciseIsOpen(exerciseId) {
       let applicationOpenDate = get(/databases/$(database)/documents/exercises/$(exerciseId)).data.applicationOpenDate;
       let applicationCloseDate = get(/databases/$(database)/documents/exercises/$(exerciseId)).data.applicationCloseDate;
-      return applicationOpenDate <= int(request.time.toMillis())
-				&& request.resource.data.get("dateExtension", applicationCloseDate) > int(request.time.toMillis());
+      return applicationOpenDate <= request.time
+				&& request.resource.data.get("dateExtension", applicationCloseDate) > request.time;
     }
     function exerciseNeedsMoreInformation(exerciseId) {
       let exercise = get(/databases/$(database)/documents/exercises/$(exerciseId)).data;
@@ -169,10 +186,10 @@ service cloud.firestore {
           )
           ||
           (  // consent form information is requested
-           resource.data.status in ["draft", "applied"] && request.resource.data.status in ["draft", "applied"] &&
-           resource.data.characterChecks.status == "requested" &&
-           request.resource.data.characterChecks.status in ["requested", "completed"]
-           )
+          resource.data.status in ["draft", "applied"] && request.resource.data.status in ["draft", "applied"] &&
+          resource.data.characterChecks.status == "requested" &&
+          request.resource.data.characterChecks.status in ["requested", "completed"]
+          )
         );
 
       // allow JAC admins to edit an application @TODO restrict what can be changed and by which role
@@ -218,7 +235,7 @@ service cloud.firestore {
         resource.data.assessor.email == request.resource.data.assessor.email &&
         resource.data.status == 'pending' &&
         request.resource.data.status == 'completed' &&
-        int(request.time.toMillis()) <= int(resource.data.dueDate);
+        request.time <= resource.data.dueDate;
         // TODO allow uploads after the due date but before the hard limit resource.data.dueDate >= request.time;
     }
 

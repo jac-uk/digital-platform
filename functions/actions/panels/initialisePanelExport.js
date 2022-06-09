@@ -28,11 +28,18 @@ module.exports = (config, firebase, db) => {
     const exercise = await getDocument(db.collection('exercises').doc(panel.exerciseId));
 
     // get application ids
-    const applicationRecords = await getDocuments(
+    let applicationRecords = await getDocuments(
       db.collection('applicationRecords')
-      .where(`panelIds.${panel.type}`, '==', panel.id)
+      .where(`${panel.type}.panelId`, '==', panel.id)
       .select()
     );
+    if (!applicationRecords.length) { // maintain backwards compatibility
+      applicationRecords = await getDocuments(
+        db.collection('applicationRecords')
+          .where(`panelIds.${panel.type}`, '==', panel.id)
+          .select()
+      );
+    }
     if (!applicationRecords.length) {
       return false;
     }

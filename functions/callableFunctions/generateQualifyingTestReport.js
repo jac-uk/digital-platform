@@ -1,10 +1,10 @@
 const functions = require('firebase-functions');
 const { checkArguments } = require('../shared/helpers.js');
 const config = require('../shared/config');
-const { firebase, db } = require('../shared/admin.js');
+const { firebase, db, auth } = require('../shared/admin.js');
 const { generateQualifyingTestReport } = require('../actions/qualifyingTests/generateQualifyingTestReport')(config, firebase, db);
 const { getDocument } = require('../shared/helpers');
-const { logEvent } = require('../actions/logs/logEvent')(firebase, db);
+const { logEvent } = require('../actions/logs/logEvent')(firebase, db, auth);
 const { checkFunctionEnabled } = require('../shared/serviceSettings.js')(db);
 const { PERMISSIONS, hasPermissions } = require('../shared/permissions');
 

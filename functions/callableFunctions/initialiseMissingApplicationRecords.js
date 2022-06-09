@@ -1,8 +1,8 @@
 const functions = require('firebase-functions');
 const config = require('../shared/config');
-const { firebase, db } = require('../shared/admin.js');
+const { firebase, db, auth } = require('../shared/admin.js');
 const { checkArguments } = require('../shared/helpers.js');
-const { initialiseMissingApplicationRecords } = require('../actions/applicationRecords')(config, firebase, db);
+const { initialiseMissingApplicationRecords } = require('../actions/applicationRecords')(config, firebase, db, auth);
 const { generateDiversityReport } = require('../actions/exercises/generateDiversityReport')(firebase, db);
 // const { flagApplicationIssuesForExercise } = require('../actions/applications/flagApplicationIssues')(config, db);
 const { checkFunctionEnabled } = require('../shared/serviceSettings.js')(db);

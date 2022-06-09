@@ -17,6 +17,6 @@ main()
     return process.exit();
   })
   .catch((error) => {
-    console.error(error);
+    console.log(error);
     process.exit();
   });

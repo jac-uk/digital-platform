@@ -11,7 +11,7 @@ module.exports = (firebase, db) => {
     // get submitted applications that have character check declarations
     const applications = await getDocuments(db.collection('applications')
       .where('exerciseId', '==', exerciseId)
-      .where('characterChecks.declaration', '==', true));
+      .where('characterChecks.consent', '==', true));
 
     // get report headers
     const headers = reportHeaders();
