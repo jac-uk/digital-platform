@@ -16,19 +16,19 @@ describe('Assessments', () => {
   context('Create', () => {
     it('prevent un-authenticated user from creating an assessment', async () => {
       const db = await setup();
-      await assertFails(db.collection('assessments').add({ assessor: { email: 'user1@user1.user1' }, status: 'pending', dueDate: getTimeStamp(tomorrow) }));
+      await assertFails(db.collection('assessments').add({ assessor: { email: 'user1@user1.user1' }, status: 'pending', dueDate: tomorrow.getTime() }));
     });
     it('prevent authenticated user from creating an assessment', async () => {
       const db = await setup({ uid: 'user1', email: 'user1@user1.user1', email_verified: true });
-      await assertFails(db.collection('assessments').add({ assessor: { email: 'user1@user1.user1' }, status: 'pending', dueDate: getTimeStamp(tomorrow) }));
+      await assertFails(db.collection('assessments').add({ assessor: { email: 'user1@user1.user1' }, status: 'pending', dueDate: tomorrow.getTime() }));
     });
     it('prevent JAC admin without permission from creating an assessment', async () => {
       const db = await setup({ uid: 'user1', email: 'user@judicialappointments.gov.uk', email_verified: true });
-      await assertFails(db.collection('assessments').add({ assessor: { email: 'user1@user1.user1' }, status: 'pending', dueDate: getTimeStamp(tomorrow) }));
+      await assertFails(db.collection('assessments').add({ assessor: { email: 'user1@user1.user1' }, status: 'pending', dueDate: tomorrow.getTime() }));
     });
     it('allow JAC admin with permission to create an assessment', async () => {
       const db = await setup({ uid: 'user1', email: 'user@judicialappointments.gov.uk', email_verified: true, rp: [PERMISSIONS.assessments.permissions.canCreateAssessments.value] });
-      await assertSucceeds(db.collection('assessments').add({ assessor: { email: 'user1@user1.user1' }, status: 'pending', dueDate: getTimeStamp(tomorrow) }));
+      await assertSucceeds(db.collection('assessments').add({ assessor: { email: 'user1@user1.user1' }, status: 'pending', dueDate: tomorrow.getTime() }));
     });
   });
 
