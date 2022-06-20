@@ -83,7 +83,7 @@ const reportData = (db, applications) => {
       sraNumber: sra ? sra.membershipNumber || null : null,
       bsbDate: bsb ? helpers.formatDate(bsb.date) : null,
       bsbNumber: bsb ? bsb.membershipNumber || null : null,
-      jcioOffice: helpers.toYesNo(application.feePaidOrSalariedJudge),
+      jcioOffice: helpers.toYesNo(application.feePaidOrSalariedJudge) || null,
       jcioPosts: application.experience ? application.experience.map(e => e.jobTitle).join(', ') : null,
       hmrcVATNumbers: application.personalDetails.hasVATNumbers ? application.personalDetails.VATNumbers.map(e => e.VATNumber).join(', ') : null,
       gmcDate: helpers.formatDate(application.generalMedicalCouncilDate),
