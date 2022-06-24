@@ -28,12 +28,12 @@ module.exports = (firebase, db) => {
       applied: diversityReport(applications, applicationRecords),
     };
 
-    
+
     if (applicationRecords.length) {
       const handoverApplicationRecords = applicationRecords.filter(doc => doc.stage === 'handover');
       const handoverIds = handoverApplicationRecords.map(doc => doc.id);
       const handoverApplications = applications.filter(doc => handoverIds.indexOf(doc.id) >= 0);
-      
+
       const recommendedApplicationRecords = applicationRecords.filter(doc => doc.stage === 'recommended');
       const recommendedIds = recommendedApplicationRecords.map(doc => doc.id);
       const recommendedApplications = handoverApplications.concat(applications.filter(doc => recommendedIds.indexOf(doc.id) >= 0));
@@ -41,7 +41,7 @@ module.exports = (firebase, db) => {
       const selectedApplicationRecords = applicationRecords.filter(doc => doc.stage === 'selected');
       const selectedIds = selectedApplicationRecords.map(doc => doc.id);
       const selectedApplications = recommendedApplications.concat(applications.filter(doc => selectedIds.indexOf(doc.id) >= 0));
-      
+
       const shortlistedApplicationRecords = applicationRecords.filter(doc => doc.stage === 'shortlisted');
       const shortlistedIds = shortlistedApplicationRecords.map(doc => doc.id);
       const shortlistedApplications = selectedApplications.concat(applications.filter(doc => shortlistedIds.indexOf(doc.id) >= 0));
