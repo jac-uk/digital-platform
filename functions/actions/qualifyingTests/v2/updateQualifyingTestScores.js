@@ -32,15 +32,15 @@ module.exports = (config, firebase, db) => {
     // get task
     const taskRef = db.doc(`exercises/${params.exerciseId}/tasks/${params.type}`);
     const task = await getDocument(taskRef);
-    if (!task) return { seccess: false, message: 'Task not found' };
-    if (task.status !== config.TASK_STATUS.ACTIVATED) return { seccess: false, message: 'Task not activated' };
+    if (!task) return { success: false, message: 'Task not found' };
+    if (task.status !== config.TASK_STATUS.ACTIVATED) return { success: false, message: 'Task not activated' };
 
     // get scores from QT Platform
     const response = await qts.get('scores', {
       testId: task.testId,
     });
-    if (!response.success) return { seccess: false, message: response.message };
-    if (!response.scores) return { seccess: false, message: 'No scores available' };
+    if (!response.success) return { success: false, message: response.message };
+    if (!response.scores) return { success: false, message: 'No scores available' };
 
     // update task
     const taskData = {};

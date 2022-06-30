@@ -17,21 +17,22 @@ module.exports = (config, firebase, db) => {
     // get task
     const taskRef = db.doc(`exercises/${params.exerciseId}/tasks/${params.type}`);
     const task = await getDocument(taskRef);
-    if (!task) return { seccess: false, message: 'Task not found' };
-    if (task.status !== config.TASK_STATUS.INITIALISED) return { seccess: false, message: 'Task not initialised' };
+    if (!task) return { success: false, message: 'Task not found' };
+    if (task.status !== config.TASK_STATUS.INITIALISED) return { success: false, message: 'Task not initialised' };
 
     // get applications
     const applications = await getDocuments(db.collection('applications')
       .where('exerciseId', '==', params.exerciseId)
       .where('status', '==', 'applied')
     );
-    if (!applications) return { seccess: false, message: 'No applications found' };
+    if (!applications) return { success: false, message: 'No applications found' };
 
     // construct participants
     const participants = [];
     applications.forEach(application => {
       if (application.personalDetails) {
         participants.push({
+          srcId: application.id,
           ref: application.referenceNumber,
           email: application.personalDetails.email || '',
           fullName: application.personalDetails.fullName || '',
