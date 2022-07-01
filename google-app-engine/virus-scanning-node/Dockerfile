@@ -17,8 +17,10 @@ WORKDIR /app
 COPY . /app
 RUN apt-get update && \
     apt-get install net-tools -y && \
+    apt-get install dos2unix -y && \
     apt-get install clamav-daemon -y && \
     freshclam && \
+    dos2unix bootstrap.sh && \
     echo "TCPSocket 3310" >> /etc/clamav/clamd.conf && \
     echo "TCPAddr 127.0.0.1" >> /etc/clamav/clamd.conf && \
     mkdir /unscanned_files && \
