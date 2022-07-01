@@ -98,11 +98,22 @@ const reportData = (db, exercise, applications) => {
     const sra = qualifications.find((qualification) => qualification.type === 'solicitor');
     const bsb = qualifications.find((qualification) => qualification.type === 'barrister');
 
+    let firstName = personalDetails.firstName;
+    let lastName = personalDetails.lastName;
+    let fullName = personalDetails.fullName;
+    if (!firstName && !lastName && fullName) {
+      const names = fullName.split(' ');
+      if (names.length > 1) {
+        firstName = names.shift();
+      }
+      lastName = names.join(' ');
+    }
+
     return {
       title: personalDetails.title || null,
-      fullName: application.personalDetails.fullName || null,
-      lastName: personalDetails.lastName || null,
-      firstName: personalDetails.firstName || null,
+      fullName: fullName || null,
+      lastName: lastName || null,
+      firstName: firstName || null,
       otherNames: personalDetails.otherNames || null,
       gender: lookup(application.equalityAndDiversitySurvey.gender),
       dateOfBirth: helpers.formatDate(personalDetails.dateOfBirth),
