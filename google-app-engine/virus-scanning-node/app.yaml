@@ -7,9 +7,8 @@ service: malware-scanner
 
 env_variables:
   PROJECT_ID: digital-platform-develop
-automatic_scaling:
-  min_num_instances: 1
-  max_num_instances: 1
+manual_scaling:
+  instances: 1
 resources:
   cpu: 1
   memory_gb: 4
