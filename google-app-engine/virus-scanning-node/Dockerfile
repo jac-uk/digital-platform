@@ -20,9 +20,12 @@ RUN apt-get update && \
     apt-get install dos2unix -y && \
     apt-get install clamav-daemon -y && \
     freshclam && \
-    dos2unix bootstrap.sh && \
     echo "TCPSocket 3310" >> /etc/clamav/clamd.conf && \
     echo "TCPAddr 127.0.0.1" >> /etc/clamav/clamd.conf && \
     mkdir /unscanned_files && \
-    npm install
+    npm install && \
+    dos2unix bootstrap.sh
 CMD ["sh", "bootstrap.sh"]
+
+# dos2unix converts Windows\DOS return characters (\r\n) to Unix return characters (\n)
+# and is necessary if the bootstrap.sh file was last edited on a Windows machine
