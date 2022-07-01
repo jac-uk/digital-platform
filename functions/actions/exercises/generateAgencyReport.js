@@ -100,6 +100,7 @@ const reportData = (db, exercise, applications) => {
 
     return {
       title: personalDetails.title || null,
+      fullName: application.personalDetails.fullName || null,
       lastName: personalDetails.lastName || null,
       firstName: personalDetails.firstName || null,
       otherNames: personalDetails.otherNames || null,
@@ -134,7 +135,21 @@ const reportData = (db, exercise, applications) => {
    * @return {string}
    */
   function formatAddress(address) {
-    return `${address.street} ${address.street2} ${address.town} ${address.county}`;
+    const result = [];
+    if (address.street) {
+      result.push(address.street);
+    }
+    if (address.street2) {
+      result.push(address.street2);
+    }
+    if (address.town) {
+      result.push(address.town);
+    }
+    if (address.county) {
+      result.push(address.county);
+    }
+
+    return result.join(' ');
   }
 
   /**
