@@ -133,7 +133,7 @@ module.exports = (config, firebase, db, auth) => {
           command: 'update',
           ref: application.ref,
           data: {
-            'characterChecks.submitSentAt': firebase.firestore.Timestamp.fromDate(new Date()),
+            'emailLog.characterCheckSubmitted': firebase.firestore.Timestamp.fromDate(new Date()),
           },
         });
       }

@@ -56,16 +56,19 @@ module.exports = (config, firebase, db, auth) => {
 
     if (characterChecksBefore && characterChecksAfter && characterChecksBefore.status && characterChecksAfter.status) {
       if ((characterChecksBefore.status !== characterChecksAfter.status) && characterChecksAfter.status === 'completed') {
+        
         // send confirmation email if it hasn't been sent before
-        const exercise = await getDocument(db.doc(`exercises/${dataBefore.exerciseId}`));
-        if (exercise) {
-          await sendCharacterCheckRequests({
-            items: [applicationId],
-            type: 'submit',
-            exerciseMailbox: exercise.exerciseMailbox,
-            exerciseManagerName: exercise.emailSignatureName,
-            dueDate: formatDate(exercise.characterChecksReturnDate),
-          });
+        if (!dataBefore.emailLog || (dataBefore.emailLog && !dataBefore.emailLog.characterCheckSubmitted)) {
+          const exercise = await getDocument(db.doc(`exercises/${dataBefore.exerciseId}`));
+          if (exercise) {
+            await sendCharacterCheckRequests({
+              items: [applicationId],
+              type: 'submit',
+              exerciseMailbox: exercise.exerciseMailbox,
+              exerciseManagerName: exercise.emailSignatureName,
+              dueDate: formatDate(exercise.characterChecksReturnDate),
+            });
+          }
         }
         
         try {
