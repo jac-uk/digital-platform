@@ -48,8 +48,7 @@ service cloud.firestore {
 
     match /exercises/{exerciseId} {
       allow create, update: if userIsAuthenticated() && userIsJAC() && verifyFields(['referenceNumber', 'progress', 'state', 'createdBy'], []);
-      allow read: if userIsAuthenticated();
-      allow delete: if userIsAuthenticated() && userIsJAC();
+      allow read, delete: if userIsAuthenticated() && userIsJAC();
 
       match /reports/{reportId} {
         allow read: if userIsAuthenticated() && userIsJAC();
