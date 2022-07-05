@@ -120,13 +120,20 @@ module.exports = (config, firebase, db, auth) => {
             'characterChecks.status': 'requested',
           },
         });
-      }
-      if (type !== 'request') {
+      } else if (type === 'reminder') {
         commands.push({
           command: 'update',
           ref: application.ref,
           data: {
             'characterChecks.reminderSentAt': firebase.firestore.Timestamp.fromDate(new Date()),
+          },
+        });
+      } else if (type === 'submit') {
+        commands.push({
+          command: 'update',
+          ref: application.ref,
+          data: {
+            'characterChecks.submitSentAt': firebase.firestore.Timestamp.fromDate(new Date()),
           },
         });
       }
