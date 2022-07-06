@@ -1,25 +1,15 @@
 const { getDocument, getDocuments, formatDate } = require('../../shared/helpers');
 
 const _ = require('lodash');
-const { get } = require('lodash');
-
-//work on singlechoice
+const { instance } = require('firebase-functions/v1/database');
 
 function formatPreference(choiceArray, questionType) {
-  console.log(choiceArray);
-  if(typeof choiceArray === Array) {
-    if(questionType === 'multiple-choice') {
-      console.log(choiceArray.map(x => `${x} - ` ).join('. ').slice(0,-1));
-      return choiceArray.map(x => `${x} - ` ).join('. ').slice(0,-1);
-    } else if (questionType === 'ranked-choice') {
-      console.log(choiceArray.map((x,index) => `${index+1}: ${x}`).join('. '));
-      return choiceArray.map((x,index) => `${index+1}: ${x}`).join('. ');
-    } else {
-      }
-  } else {    
-    // Single Choice or Single Answer
-      console.log(choiceArray);
-      return choiceArray;
+  if(questionType === 'multiple-choice') {
+    return choiceArray instanceof Array ? choiceArray.map(x => `${x} ` ).join('and ').slice(0,-1) : choiceArray;
+  } else if (questionType === 'ranked-choice') {
+    return choiceArray instanceof Array ? choiceArray.map((x,index) => `${index+1}: ${x}`).join('. ') : choiceArray;
+  } else if (questionType === 'single-choice') {
+    return choiceArray;
   }
 };
 
@@ -32,7 +22,7 @@ module.exports = (config, firebase, db, auth) => {
   /**
   * getApplicationData
    */
-  async function getApplicationData(params) {
+    async function getApplicationData(params) {
     
     let applicationDataRef = db.collection('applications')
     .where('exerciseId', '==', params.exerciseId);
@@ -44,18 +34,33 @@ module.exports = (config, firebase, db, auth) => {
     
     const data = [];
     
-    // console.log(exerciseData.additionalWorkingPreferences.questionType);
     for(const result of results) {
       let record = {};
       for(const column of params.columns) {
+
         record[column] = _.get(result, column, '- No answer provided -');
-        let formattedArray = '';      
-        // Handle array values, EXCLUDING location, juristiction, and additional
-        if(_.isArray(record[column]) && !([
-          'locationPreferences',
-          'jurisdictionPreferences',
-          'additionalWorkingPreferences'
-        ].includes(column))) {
+        // if key doesn't exist or it's blank, set it to - No answer provided -
+        if(record[column] === '' || record[column] === null) {
+          record[column] = '- No answer provided -';
+        }
+        if (column.includes('additionalWorkingPreferences')) {
+          record[column] = formatPreference(
+            (result.additionalWorkingPreferences  ? result.additionalWorkingPreferences[parseInt(column.replace('additionalWorkingPreferences ',''))].selection : '- No answer provided -'),
+            exerciseData.additionalWorkingPreferences[parseInt(column.replace('additionalWorkingPreferences ',''))].questionType
+          );
+        }
+        // Handle array values
+        else if (['locationPreferences', 'jurisdictionPreferences'].includes(column)) {
+          if (column == 'locationPreferences') {
+            // console.log(record[column], exerciseData.locationQuestionType);
+            record[column] = formatPreference(record[column], exerciseData.locationQuestionType);
+          } 
+          if (column == 'jurisdictionPreferences') {
+            record[column] = formatPreference(record[column], exerciseData.jurisdictionQuestionType);
+          } 
+        }
+        else if(_.isArray(record[column])) {
+          let formattedArray = '';
           for (const arrayItem of record[column]) {
             const arrayValuePaths = getArrayValuePath(column);
             if(arrayValuePaths) {
@@ -66,49 +71,32 @@ module.exports = (config, firebase, db, auth) => {
               }
               // remove the last ' - ' from string
               formattedArray = formattedArray.substring(0, formattedArray.length - 3);
-            } 
-            else {
+            } else {
               formattedArray += arrayItem ? arrayItem : '- No answer provided -';
             }
             formattedArray += ', ';
-            // remove the last ', ' from string
-            formattedArray = formattedArray.substring(0, formattedArray.length - 2);
+          }
+          
+          // remove the last ', ' from string
+          formattedArray = formattedArray.substring(0, formattedArray.length - 2);
+          
+          // if something went wrong with parsing the array, just return true
+          if (formattedArray === '') {
+            record[column] = 'True';
+          } else {
+            record[column] = formattedArray;
           }
         }
-        else if (column === 'locationPreferences') {
-          formattedArray = formatPreference(record[column], exerciseData.locationQuestionType);
-        } 
-        else if (column === 'jurisdictionPreferences') {
-          formattedArray = formatPreference(record[column], exerciseData.jurisdictionQuestionType);
-        }
-        else if (column.slice(0,-2) === 'additionalWorkingPreferences') {
-          // exerciseData.additionalWorkingPreferences.forEach((question, index) => {
-            // console.log(record);
-            console.log(record);
-            // formattedArray = formatPreference(record[column][column.slice(column.length - 1)].selection, exerciseData.additionalWorkingPreferences[parseInt(column.slice(column.length - 1))-1].questionType);
-          // })
-        }
-        // if key doesn't exist or it's blank, set it to - No answer provided -
-        else if(record[column] === '' || record[column] === null) {
-          record[column] = '- No answer provided -';
-        }  
         
-        // if something went wrong with parsing the array, just return true
-        if (formattedArray === '') {
-          record[column] = 'True';
-        } else {
-          record[column] = formattedArray;
-        }
-
         // Handle time values
         if(_.get(record[column], '_seconds', null)) {
           record[column] = formatDate(record[column]);
         }
-
+        
       }
 
-    data.push(record);
-  }
+      data.push(record);
+    }
 
     // where clause goes here
     if(params.whereClauses.length > 0 && params.columns.length > 0) {
@@ -137,7 +125,6 @@ module.exports = (config, firebase, db, auth) => {
       }
       return countData;
     }
-    // console.log(data);
     return data;
   }
 
