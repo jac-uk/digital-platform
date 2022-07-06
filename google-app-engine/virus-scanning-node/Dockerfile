@@ -16,11 +16,16 @@ FROM node:10.15-stretch
 WORKDIR /app
 COPY . /app
 RUN apt-get update && \
-    npm install && \
+    apt-get install net-tools -y && \
+    apt-get install dos2unix -y && \
     apt-get install clamav-daemon -y && \
     freshclam && \
     echo "TCPSocket 3310" >> /etc/clamav/clamd.conf && \
     echo "TCPAddr 127.0.0.1" >> /etc/clamav/clamd.conf && \
     mkdir /unscanned_files && \
-    apt-get install net-tools -y
+    npm install && \
+    dos2unix bootstrap.sh
 CMD ["sh", "bootstrap.sh"]
+
+# dos2unix converts Windows\DOS return characters (\r\n) to Unix return characters (\n)
+# and is necessary if the bootstrap.sh file was last edited on a Windows machine
