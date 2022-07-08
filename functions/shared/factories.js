@@ -15,6 +15,9 @@ module.exports = (CONSTANTS) => {
     if (type === 'request') {
       templateId = '5a4e7cbb-ab66-49a4-a8ad-7cbb399a8aa9';
       templateName = 'Character check consent form request';
+    } else if (type === 'submit') {
+      templateId = '39b1326a-ee82-4fad-a6a6-79fc156974f1';
+      templateName = 'Character check consent form submit';
     } else {
       templateId = '163487cb-f4c6-4b7a-95bf-37fd958a14de';
       templateName = 'Character check consent form reminder';
@@ -303,6 +306,7 @@ module.exports = (CONSTANTS) => {
       _applicationVersion: null,
       aboutTheRole: null,
       additionalWorkingPreferences: null,
+      advertType: null,
       applicationCloseDate: null,
       applicationOpenDate: null,
       appliedSchedule: null,
