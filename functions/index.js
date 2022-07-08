@@ -42,6 +42,7 @@ exports.cutOffScoreUpdateStatuses = require('./callableFunctions/cutOffScoreUpda
 exports.updateStatus = require('./callableFunctions/updateStatus');
 exports.generateQualifyingTestReport = require('./callableFunctions/generateQualifyingTestReport');
 exports.exportExerciseData = require('./callableFunctions/exportExerciseData');
+exports.targetedOutreachReport = require('./callableFunctions/targetedOutreachReport');
 exports.transferHandoverData = require('./callableFunctions/transferHandoverData');
 exports.exportApplicationContactsData = require('./callableFunctions/exportApplicationContactsData');
 exports.exportApplicationEligibilityIssues = require('./callableFunctions/exportApplicationEligibilityIssues');
