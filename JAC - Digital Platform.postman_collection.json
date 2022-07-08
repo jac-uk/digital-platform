@@ -254,7 +254,7 @@
 						],
 						"body": {
 							"mode": "raw",
-							"raw": "{\r\n    \"data\": {\r\n        \"exerciseId\": \"wdpALbyICL7ZxxN5AQt8\",\r\n        \"stage\": \"selected\",\r\n        \"status\": \"invitedToSelectionDay\"\r\n    }\r\n}"
+							"raw": "{\r\n    \"data\": {\r\n        \"exerciseId\": \"wdpALbyICL7ZxxN5AQt8\",\r\n        \"stage\": \"selected\",\r\n        \"status\": \"invitedToSelectionDay\",\r\n        \"format\": \"excel\"\r\n    }\r\n}"
 						},
 						"url": {
 							"raw": "{{host}}/exportApplicationCharacterIssues",
@@ -1071,7 +1071,7 @@
 					"response": []
 				},
 				{
-					"name": "Create Test Users",
+					"name": "Test - Copy Exercise to QT Database",
 					"request": {
 						"auth": {
 							"type": "bearer",
@@ -1093,22 +1093,27 @@
 						],
 						"body": {
 							"mode": "raw",
-							"raw": "{\r\n    \"data\": {\r\n        \"noOfTestUsers\": 1,\r\n        \"passwordBcryptHash\": \"$2a$12$cOSjUhBg.57ShQ3OxunJIOkmjV.N/LO0glzIoTTerJ5lBSlLrQYri\"\r\n    }\r\n}\r\n"
+							"raw": "{\r\n    \"data\": {\r\n        \"exerciseId\": \"11bv7ZTyyKhoqGYAPN7Y\"\r\n    }\r\n}"
 						},
 						"url": {
-							"raw": "{{host}}/createTestUsers",
+							"raw": "{{host}}/copyExerciseToQTTest",
 							"host": [
 								"{{host}}"
 							],
 							"path": [
-								"createTestUsers"
+								"copyExerciseToQTTest"
 							]
 						}
 					},
 					"response": []
-				},
+				}
+			]
+		},
+		{
+			"name": "Capacity Testing",
+			"item": [
 				{
-					"name": "Delete Test Users",
+					"name": "Initialise QTs",
 					"request": {
 						"auth": {
 							"type": "bearer",
@@ -1130,15 +1135,15 @@
 						],
 						"body": {
 							"mode": "raw",
-							"raw": "{\r\n    \"data\": {\r\n        \"noOfTestUsers\": 1\r\n    }\r\n}\r\n"
+							"raw": "{\r\n    \"data\": {\r\n        \"exerciseId\": \"8CIlAsDbtMfr2vnfjmYh\",\r\n        \"qualifyingTestId\": \"1zm5Q3LSRbSLBFakRbJ2\",\r\n        \"noOfCandidates\": 10000,\r\n        \"refPrefix\": \"prefix3\",\r\n        \"userId\": \"RW9nHLejKQRzTb7QACC6cte1UJu2\"\r\n    }\r\n}\r\n"
 						},
 						"url": {
-							"raw": "{{host}}/deleteTestUsers",
+							"raw": "{{host}}/capacityTest_initialiseQTs",
 							"host": [
 								"{{host}}"
 							],
 							"path": [
-								"deleteTestUsers"
+								"capacityTest_initialiseQTs"
 							]
 						}
 					},

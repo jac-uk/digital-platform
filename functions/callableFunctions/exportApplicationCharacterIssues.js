@@ -17,9 +17,12 @@ module.exports = functions.region('europe-west2').https.onCall(async (data, cont
   if (!(typeof data.exerciseId === 'string') || data.exerciseId.length === 0) {
     throw new functions.https.HttpsError('invalid-argument', 'Please specify an "exerciseId"');
   }
+  if (!(typeof data.format === 'string') || data.format.length === 0) {
+    throw new functions.https.HttpsError('invalid-argument', 'Please specify a data format (excel or googledoc)');
+  }
 
   // fetch the requested data
-  const result = await exportApplicationCharacterIssues(data.exerciseId, data.stage || 'all', data.status || 'all');
+  const result = await exportApplicationCharacterIssues(data.exerciseId, data.stage || 'all', data.status || 'all', data.format);
 
   // log character generation report generation request
   const exercise = await getDocument(db.collection('exercises').doc(data.exerciseId));
@@ -31,7 +34,7 @@ module.exports = functions.region('europe-west2').https.onCall(async (data, cont
     id: context.auth.token.user_id,
     name: context.auth.token.name,
   };
-  await logEvent('info', 'Application character issues exported', details, user);
+  await logEvent('info', 'Application character issues exported (to ' + data.format + ')', details, user);
 
   return result;
 });

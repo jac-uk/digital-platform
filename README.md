@@ -136,3 +136,7 @@ npm run nodeScript createApplications.js
 
 # on Windows
 SET SCRIPT=createApplications.js && npm run nodeScriptOnWindows
+
+SET SCRIPT=exportApplicationCharacterIssues.js && npm run nodeScriptOnWindows
+
+
