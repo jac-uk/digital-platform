@@ -143,6 +143,12 @@ module.exports = {
         summary: 'Candidate has been the subject of allegation or claim wrongful dismissal',
       },
     },
+    ELIGIBILITY_ISSUE_STATUS: {
+      PROCEED: 'proceed',
+      REJECT: 'reject',
+      REJECT_NON_DECLARATION: 'reject-non-declaration',
+      DISCUSS: 'discuss',
+    },
   },
   ASSESSMENTS_URL: functions.config().assessments.url,
   ASSESSMENT_TYPE: {
