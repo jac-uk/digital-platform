@@ -65,6 +65,7 @@ exports.adminSetUserRole = require('./callableFunctions/adminSetUserRole');
 exports.adminSetDefaultRole = require('./callableFunctions/adminSetDefaultRole');
 exports.adminDisableNewUser = require('./callableFunctions/adminDisableNewUser');
 exports.adminSyncUserRolePermissions = require('./callableFunctions/adminSyncUserRolePermissions');
+exports.deleteUsers = require('./callableFunctions/deleteUsers');
 exports.customReport = require('./callableFunctions/customReport');
 exports.refreshApplicationCounts = require('./callableFunctions/refreshApplicationCounts');
 exports.createTestApplications = require('./callableFunctions/createTestApplications');
