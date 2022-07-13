@@ -27,9 +27,9 @@ module.exports = (db, auth) => {
 
     try {
       // get all users
-      const users = await auth.listUsers();
-
-      for (const user of users.users) {
+      const users = [];
+      await listAllUsers(users);
+      for (const user of users) {
         let isJacAdmin = false;
         let isJACEmployee = user.email.indexOf('@judicialappointments.gov.uk') > 0;
         if (isJACEmployee) {
@@ -59,6 +59,20 @@ module.exports = (db, auth) => {
     catch(e) {
       console.log(e);
       return false;
+    }
+  }
+
+  async function listAllUsers(users, nextPageToken) {
+    // List batch of users, 1000 at a time.
+    try {
+      const listUsersResult = await auth.listUsers(1000, nextPageToken);
+      users.push(...listUsersResult.users);
+      if (listUsersResult.pageToken) {
+        // List next batch of users.
+        await listAllUsers(users, listUsersResult.pageToken);
+      }
+    } catch (error) {
+      console.log('Error listing users:', error);
     }
   }
 
