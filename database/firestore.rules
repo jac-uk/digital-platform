@@ -50,6 +50,9 @@ service cloud.firestore {
       allow create, update: if userIsAuthenticated() && userIsJAC() && verifyFields(['referenceNumber', 'progress', 'state', 'createdBy'], []);
       allow read, delete: if userIsAuthenticated() && userIsJAC();
 
+      match /data/{dataId} {
+        allow read: if userIsAuthenticated() && userIsJAC();
+      }
       match /reports/{reportId} {
         allow read: if userIsAuthenticated() && userIsJAC();
       }

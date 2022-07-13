@@ -28,6 +28,7 @@ module.exports = (config, firebase, db) => {
     const panels = await getDocumentsFromQueries(panelQueries);
 
     // construct final scores
+    // TODO change to `.applications` and `.scores`
     const finalScores = [];
     panels.forEach(panel => {
       panel.applicationIds.forEach(applicationId => {

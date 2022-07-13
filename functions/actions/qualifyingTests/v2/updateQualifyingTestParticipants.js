@@ -27,10 +27,18 @@ module.exports = (config, firebase, db) => {
     );
     if (!applications) return { success: false, message: 'No applications found' };
 
-    // construct participants
+    // construct `applications` and `participants`
+    const applicationsData = [];
     const participants = [];
     applications.forEach(application => {
       if (application.personalDetails) {
+        applicationsData.push({
+          id: application.id,
+          ref: application.referenceNumber,
+          email: application.personalDetails.email || '',
+          fullName: application.personalDetails.fullName || '',
+          adjustments: application.personalDetails.reasonableAdjustments || false,
+        });
         participants.push({
           srcId: application.id,
           ref: application.referenceNumber,
@@ -41,9 +49,9 @@ module.exports = (config, firebase, db) => {
       }
     });
 
-    // update task with participants
+    // update task with applications
     await taskRef.update({
-      participants: participants,
+      applications: applicationsData,
     });
 
     // send participants to QT Platform

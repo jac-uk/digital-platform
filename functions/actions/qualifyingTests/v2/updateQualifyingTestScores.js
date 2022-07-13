@@ -42,9 +42,19 @@ module.exports = (config, firebase, db) => {
     if (!response.success) return { success: false, message: response.message };
     if (!response.scores) return { success: false, message: 'No scores available' };
 
+    // construct finalScores
+    const finalScores = [];
+    task.applications.forEach(application => {
+      finalScores.push({
+        id: application.id,
+        ref: application.ref,
+        score: response.scores[application.id],
+      });
+    });
+
     // update task
     const taskData = {};
-    taskData.scores = response.scores;
+    taskData.finalScores = finalScores;
     taskData.status = config.TASK_STATUS.FINALISED;
     taskData[`statusLog.${config.TASK_STATUS.FINALISED}`] = firebase.firestore.FieldValue.serverTimestamp();
     await taskRef.update(taskData);
