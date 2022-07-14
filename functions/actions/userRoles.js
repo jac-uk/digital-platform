@@ -30,24 +30,12 @@ module.exports = (db, auth) => {
       const users = [];
       await listAllUsers(users);
       for (const user of users) {
-        let isJacAdmin = false;
-        let isJACEmployee = user.email.indexOf('@judicialappointments.gov.uk') > 0;
-        if (isJACEmployee) {
-          isJacAdmin = true;
-        } else {
-          for (const provider of user.providerData) { // users can authenticate on both admin and apply with same email
-            if (provider.providerId === 'google.com' || provider.providerId === 'microsoft.com') {
-              isJacAdmin = true; // user has authenticated successfully with google or microsoft
-            }
-          }
-        }
-
-        if(isJacAdmin) {
+        if (user.email.match(/(.*@judicialappointments|.*@justice)[.](digital|gov[.]uk)/)) {
           const adminUser = {
             uid: user.uid,
             email: user.email,
             displayName: user.displayName,
-            isJACEmployee: isJACEmployee,
+            isJACEmployee: true, // this field is currently redundant due to change on checking whether is JAC employee
             disabled: user.disabled,
             customClaims: user.customClaims,
           };
