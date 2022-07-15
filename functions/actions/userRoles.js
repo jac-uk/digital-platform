@@ -32,12 +32,16 @@ module.exports = (db, auth) => {
       for (const user of users) {
 
         let isJacAdmin = false;
-        for (const provider of user.providerData) { // users can authenticate on both admin and apply with same email
+        if (user.providerData.length === 1) {
+          const provider = user.providerData[0];
           if (user.email.match(/(.*@judicialappointments|.*@justice)[.](digital|gov[.]uk)/) && 
             (provider.providerId === 'google.com' || provider.providerId === 'microsoft.com')) {
             isJacAdmin = true; // user has authenticated successfully with google or microsoft
-            break;
           }
+        } else if (user.providerData.length > 1) {
+          isJacAdmin = true;
+        } else {
+          isJacAdmin = false;
         }
 
         if (isJacAdmin) {
