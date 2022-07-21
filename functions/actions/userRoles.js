@@ -27,27 +27,29 @@ module.exports = (db, auth) => {
 
     try {
       // get all users
-      const users = await auth.listUsers();
+      const users = [];
+      await listAllUsers(users);
+      for (const user of users) {
 
-      for (const user of users.users) {
         let isJacAdmin = false;
-        let isJACEmployee = user.email.indexOf('@judicialappointments.gov.uk') > 0;
-        if (isJACEmployee) {
+        if (user.providerData.length === 1) {
+          const provider = user.providerData[0];
+          if (user.email.match(/(.*@judicialappointments|.*@justice)[.](digital|gov[.]uk)/) && 
+            (provider.providerId === 'google.com' || provider.providerId === 'microsoft.com')) {
+            isJacAdmin = true; // user has authenticated successfully with google or microsoft
+          }
+        } else if (user.providerData.length > 1) {
           isJacAdmin = true;
         } else {
-          for (const provider of user.providerData) { // users can authenticate on both admin and apply with same email
-            if (provider.providerId === 'google.com' || provider.providerId === 'microsoft.com') {
-              isJacAdmin = true; // user has authenticated successfully with google or microsoft
-            }
-          }
+          isJacAdmin = false;
         }
 
-        if(isJacAdmin) {
+        if (isJacAdmin) {
           const adminUser = {
             uid: user.uid,
             email: user.email,
             displayName: user.displayName,
-            isJACEmployee: isJACEmployee,
+            isJACEmployee: true, // this field is currently redundant due to change on checking whether is JAC employee
             disabled: user.disabled,
             customClaims: user.customClaims,
           };
@@ -59,6 +61,20 @@ module.exports = (db, auth) => {
     catch(e) {
       console.log(e);
       return false;
+    }
+  }
+
+  async function listAllUsers(users, nextPageToken) {
+    // List batch of users, 1000 at a time.
+    try {
+      const listUsersResult = await auth.listUsers(1000, nextPageToken);
+      users.push(...listUsersResult.users);
+      if (listUsersResult.pageToken) {
+        // List next batch of users.
+        await listAllUsers(users, listUsersResult.pageToken);
+      }
+    } catch (error) {
+      console.log('Error listing users:', error);
     }
   }
 

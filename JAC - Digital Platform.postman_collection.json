@@ -1155,6 +1155,48 @@
 			"name": "Role Permision",
 			"item": [
 				{
+					"name": "adminGetUsers",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{token}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"data\": {}\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{host}}/adminGetUsers",
+							"host": [
+								"{{host}}"
+							],
+							"path": [
+								"adminGetUsers"
+							]
+						}
+					},
+					"response": []
+				},
+				{
 					"name": "deleteUsers",
 					"request": {
 						"auth": {
