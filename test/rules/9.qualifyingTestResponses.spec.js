@@ -1,12 +1,13 @@
 const { setup, teardown, setupAdmin } = require('./helpers');
 const { assertFails, assertSucceeds } = require('@firebase/rules-unit-testing');
 const COLLECTION_NAME = 'qualifyingTestResponses';
+const { PERMISSIONS } = require('../../functions/shared/permissions');
 
 describe(COLLECTION_NAME, () => {
   afterEach(async () => {
     await teardown();
   });
-
+  
   const today = new Date();
   const tomorrow = new Date(today.getTime() + (24 * 60 * 60 * 1000));
   // const yesterday = new Date(today.getTime() - (24 * 60 * 60 * 1000));
@@ -86,8 +87,14 @@ describe(COLLECTION_NAME, () => {
       await assertSucceeds(db.collection(COLLECTION_NAME).where('candidate.email', '==', 'user@email.com').get());
     });
 
-    it('allow JAC admin to list qualifying test responses', async () => {
+    it('prevent JAC admin without permission to list qualifying test responses', async () => {
       const db = await setup(mockVerifiedJACDigitalUser);
+      await setupAdmin(db, mockData);
+      await assertFails(db.collection(COLLECTION_NAME).get());
+    });
+
+    it('allow JAC admin with permission to list qualifying test responses', async () => {
+      const db = await setup({ ...mockVerifiedJACDigitalUser, rp: [PERMISSIONS.qualifyingTestResponses.permissions.canReadQualifyingTestResponses.value] });
       await setupAdmin(db, mockData);
       await assertSucceeds(db.collection(COLLECTION_NAME).get());
     });
@@ -110,14 +117,20 @@ describe(COLLECTION_NAME, () => {
       await assertSucceeds(db.collection(COLLECTION_NAME).doc('qtr1').get());
     });
 
-    it('allow JAC admin to read qualifying test response', async () => {
+    it('prevent JAC admin without permission from reading qualifying test response', async () => {
       const db = await setup(mockVerifiedJACDigitalUser);
+      await setupAdmin(db, mockData);
+      await assertFails(db.collection(COLLECTION_NAME).doc('qtr1').get());
+    });
+
+    it('allow JAC admin with permission to read qualifying test response', async () => {
+      const db = await setup({ ...mockVerifiedJACDigitalUser, rp: [PERMISSIONS.qualifyingTestResponses.permissions.canReadQualifyingTestResponses.value] });
       await setupAdmin(db, mockData);
       await assertSucceeds(db.collection(COLLECTION_NAME).doc('qtr1').get());
     });
   });
 
-  xcontext('Update', () => {
+  context('Update', () => {
     it('prevent un-authenticated user from updating a qualifying test', async () => {
       const db = await setup();
       await setupAdmin(db, mockData);
@@ -142,14 +155,26 @@ describe(COLLECTION_NAME, () => {
       await assertFails(db.collection(COLLECTION_NAME).doc('qtr1').update({ type: 'critical_analysis', startDate: tomorrow, endDate: dayAfterTomorrow }));
     });
 
-    it('allow authenticated user with verified @judicialappointments.digital email to update a qualifying test', async () => {
+    it('prevent authenticated user with verified @judicialappointments.digital email but without permission from updating a qualifying test', async () => {
       const db = await setup(mockVerifiedJACDigitalUser);
+      await setupAdmin(db, mockData);
+      await assertFails(db.collection(COLLECTION_NAME).doc('qtr1').update({ type: 'critical_analysis', startDate: tomorrow, endDate: dayAfterTomorrow }));
+    });
+
+    it('prevent authenticated user with verified @judicialappointments.gov.uk email but without permission from updating a qualifying test', async () => {
+      const db = await setup(mockVerifiedJACUser);
+      await setupAdmin(db, mockData);
+      await assertFails(db.collection(COLLECTION_NAME).doc('qtr1').update({ type: 'critical_analysis', startDate: tomorrow, endDate: dayAfterTomorrow }));
+    });
+
+    it('allow authenticated user with verified @judicialappointments.digital email and permission to update a qualifying test', async () => {
+      const db = await setup({ ...mockVerifiedJACDigitalUser, rp: [PERMISSIONS.qualifyingTestResponses.permissions.canUpdateQualifyingTestResponses.value] });
       await setupAdmin(db, mockData);
       await assertSucceeds(db.collection(COLLECTION_NAME).doc('qtr1').update({ type: 'critical_analysis', startDate: tomorrow, endDate: dayAfterTomorrow }));
     });
 
-    it('allow authenticated user with verified @judicialappointments.gov.uk email to update a qualifying test', async () => {
-      const db = await setup(mockVerifiedJACUser);
+    it('allow authenticated user with verified @judicialappointments.gov.uk email and permission to update a qualifying test', async () => {
+      const db = await setup({ ...mockVerifiedJACUser, rp: [PERMISSIONS.qualifyingTestResponses.permissions.canUpdateQualifyingTestResponses.value] });
       await setupAdmin(db, mockData);
       await assertSucceeds(db.collection(COLLECTION_NAME).doc('qtr1').update({ type: 'critical_analysis', startDate: tomorrow, endDate: dayAfterTomorrow }));
     });

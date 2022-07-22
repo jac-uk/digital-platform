@@ -1,5 +1,5 @@
 const { getDocument, getDocuments } = require('../shared/helpers');
-const PERMISSIONS = require('../shared/permissions');
+const { PERMISSIONS } = require('../shared/permissions');
 
 module.exports = (db, auth) => {
 
@@ -27,23 +27,29 @@ module.exports = (db, auth) => {
 
     try {
       // get all users
-      const users = await auth.listUsers();
+      const users = [];
+      await listAllUsers(users);
+      for (const user of users) {
 
-      for(const user of users.users) {
         let isJacAdmin = false;
-        let isJACEmployee = false;
-        for (const provider of user.providerData) { // users can authenticate on both admin and apply with same email
-          if(provider.providerId === 'google.com' || provider.providerId === 'microsoft.com') {
+        if (user.providerData.length === 1) {
+          const provider = user.providerData[0];
+          if (user.email.match(/(.*@judicialappointments|.*@justice)[.](digital|gov[.]uk)/) && 
+            (provider.providerId === 'google.com' || provider.providerId === 'microsoft.com')) {
             isJacAdmin = true; // user has authenticated successfully with google or microsoft
-            isJACEmployee = user.email.indexOf('@judicialappointments.gov.uk') > 0; // user is part of
           }
+        } else if (user.providerData.length > 1) {
+          isJacAdmin = true;
+        } else {
+          isJacAdmin = false;
         }
-        if(isJacAdmin) {
+
+        if (isJacAdmin) {
           const adminUser = {
             uid: user.uid,
             email: user.email,
             displayName: user.displayName,
-            isJACEmployee: isJACEmployee,
+            isJACEmployee: true, // this field is currently redundant due to change on checking whether is JAC employee
             disabled: user.disabled,
             customClaims: user.customClaims,
           };
@@ -55,6 +61,20 @@ module.exports = (db, auth) => {
     catch(e) {
       console.log(e);
       return false;
+    }
+  }
+
+  async function listAllUsers(users, nextPageToken) {
+    // List batch of users, 1000 at a time.
+    try {
+      const listUsersResult = await auth.listUsers(1000, nextPageToken);
+      users.push(...listUsersResult.users);
+      if (listUsersResult.pageToken) {
+        // List next batch of users.
+        await listAllUsers(users, listUsersResult.pageToken);
+      }
+    } catch (error) {
+      console.log('Error listing users:', error);
     }
   }
 
@@ -110,7 +130,7 @@ module.exports = (db, auth) => {
   }
 
   /**
-   * Return all roles
+   * Return role by roleId
    */
   async function adminGetUserRole(roleId) {
 
@@ -151,13 +171,10 @@ module.exports = (db, auth) => {
   async function adminSetUserRole(params) {
 
     try {
-      const user = await admin
-        .auth()
-        .getUser(params.userId);
-      user.customClaims.r = params.roleId;
-      await admin
-        .auth()
-        .setCustomUserClaims(params.userId, user.customClaims);
+      const user = await auth.getUser(params.userId);
+      let customClaims = user.customClaims || {};
+      customClaims.r = params.roleId;
+      await auth.setCustomUserClaims(params.userId, customClaims);
       await adminSyncUserRolePermissions(params.userId);
       await revokeUserToken(params.userId);
 
@@ -218,27 +235,33 @@ module.exports = (db, auth) => {
    */
   async function adminSyncUserRolePermissions(uid) {
     try {
-
-      const user = await admin
-        .auth()
-        .getUser(uid);
-      const role = await adminGetUserRole(user.customClaims.r);
-      const convertedPermissions = [];
-      if(role.enabledPermissions) {
-        for(const permission of role.enabledPermissions) {
-          convertedPermissions.push(PERMISSIONS[permission]);
+      const user = await auth.getUser(uid);
+      const roleId = user.customClaims.r;
+      if (roleId) {
+        const role = await adminGetUserRole(roleId);
+        const convertedPermissions = [];
+        if (role.enabledPermissions && role.enabledPermissions.length > 0) {
+          for (const permission of role.enabledPermissions) {
+            for (const group of Object.keys(PERMISSIONS)) {
+              for (const p of Object.keys(PERMISSIONS[group].permissions)) {
+                if (p === permission) {
+                  convertedPermissions.push(PERMISSIONS[group].permissions[p].value);
+                }
+              }
+            }
+          }
         }
+  
+        if (JSON.stringify(user.customClaims.rp) !== JSON.stringify(convertedPermissions)) {
+          console.log('Updating user permissions');
+          user.customClaims.rp = convertedPermissions;
+          await auth.setCustomUserClaims(uid, user.customClaims);
+          await revokeUserToken(uid);
+        }
+        return convertedPermissions;
+      } else {
+        return [];
       }
-
-      if(JSON.stringify(user.customClaims.rp) !== JSON.stringify(convertedPermissions)) {
-        console.log('Updating user permissions');
-        user.customClaims.rp = convertedPermissions;
-        await admin
-          .auth()
-          .setCustomUserClaims(uid,  user.customClaims );
-        await revokeUserToken(uid);
-      }
-      return true;
     }
     catch(e) {
       console.log(e);
@@ -252,9 +275,7 @@ module.exports = (db, auth) => {
   async function revokeUserToken(uid) {
 
     try {
-      await admin
-        .auth()
-        .revokeRefreshTokens(uid);
+      await auth.revokeRefreshTokens(uid);
       return true;
     }
     catch(e) {
@@ -262,5 +283,4 @@ module.exports = (db, auth) => {
       return false;
     }
   }
-
 };
