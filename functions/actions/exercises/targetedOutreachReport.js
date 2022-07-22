@@ -17,46 +17,52 @@ module.exports = (firebase, db) => {
     let data = []; // store the returned data in an Array
 
     // Normalize the National Insurance Numbers
-    if (nationalInsuranceNumbers) {
-      NINs = normalizeNINs(nationalInsuranceNumbers);
+    if (nationalInsuranceNumbers && nationalInsuranceNumbers.data) {
+      NINs = normalizeNINs(nationalInsuranceNumbers.data);
     } else {
       return data;
     }
 
     // Iterate through the NINs - National Insurance Numbers
-    let resultsFromNIN = NINs.map(async (value) => {
-      if (value) {
-        let returnObj = [];
-        let applications = await getDocuments(db.collection('applications')
-          .where('personalDetails.nationalInsuranceNumber', '==', value)
-        );
+    let resultsFromNIN = NINs.map(async (singleNationalInsuranceNumber) => {
+      if (singleNationalInsuranceNumber) {
         
-        if (applications.length > 0) {
+        const candidates = await getDocuments(db.collection('candidates')
+          .where('computed.search', 'array-contains', singleNationalInsuranceNumber)
+        );
 
-          let resultsFromRecords = applications.map(async (obj) => {
-            const applicationID = obj.id;
-            // get the diversity values from Application Records
-            const applicationRecord = await getDocument(db.collection('applicationRecords').doc(applicationID));
+        if (candidates.length > 0) {
+          let resultsFromRecords = candidates.map(async (obj) => {
+            const candidateID = obj.id;
+            const applicationRecords = await getDocuments(db.collection('applicationRecords')
+              .where('candidate.id', '==', candidateID));
 
-            const applicationRecordGender = applicationRecord.diversity && applicationRecord.diversity.gender ? applicationRecord.diversity.gender : null;
-            const applicationRecordEthnicity = applicationRecord.diversity && applicationRecord.diversity.ethnicity ? applicationRecord.diversity.ethnicity : null;
-            const applicationRecordDisability = applicationRecord.diversity && applicationRecord.diversity.disability ? applicationRecord.diversity.disability : null;
+            if (applicationRecords.length > 0) {
+              let applicationsFromRecords = applicationRecords.map(async (application) => {
+                let returnObj = [];
 
-            returnObj = {
-              NINumber: value,
-              name: obj.personalDetails.fullName,
-              gender: applicationRecordGender,
-              ethnicity: applicationRecordEthnicity,
-              disability: applicationRecordDisability,
-              solicitor: null,
-              exercise: `${obj.exerciseId} - ${obj.exerciseName}`,
-              stage: applicationRecord.stage,
-              status: obj.status,
-              id: obj.id,
-            };    
-            data.push(returnObj);
+                const applicationRecordFullName = application.candidate && application.candidate.fullName ? application.candidate.fullName : null;
+                const applicationRecordGender = application.diversity && application.diversity.gender ? application.diversity.gender : null;
+                const applicationRecordEthnicity = application.diversity && application.diversity.ethnicity ? application.diversity.ethnicity : null;
+                const applicationRecordDisability = application.diversity && application.diversity.disability ? application.diversity.disability : null;
+
+                returnObj = {
+                  NINumber: singleNationalInsuranceNumber,
+                  name: applicationRecordFullName,
+                  gender: applicationRecordGender,
+                  ethnicity: applicationRecordEthnicity,
+                  disability: applicationRecordDisability,
+                  solicitor: null,
+                  exercise: `${application.exercise.id} - ${application.exercise.name}`,
+                  stage: application.stage,
+                  status: application.status,
+                  id: candidateID,
+                };    
+                data.push(returnObj);
+              });
+              applicationsFromRecords = await Promise.all(applicationsFromRecords);
+            }
           });
-
           resultsFromRecords = await Promise.all(resultsFromRecords);
           return true;
         }
