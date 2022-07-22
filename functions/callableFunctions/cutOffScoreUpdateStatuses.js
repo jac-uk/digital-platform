@@ -4,12 +4,19 @@ const { firebase, db } = require('../shared/admin.js');
 const { checkArguments } = require('../shared/helpers.js');
 const cutOffScoreQualifyingTest = require('../actions/qualifyingTests/cutOffScoreQualifyingTest')(config, firebase, db);
 const { checkFunctionEnabled } = require('../shared/serviceSettings.js')(db);
+const { PERMISSIONS, hasPermissions } = require('../shared/permissions');
 
 module.exports = functions.region('europe-west2').https.onCall(async (data, context) => {
   await checkFunctionEnabled();
   if (!context.auth) {
     throw new functions.https.HttpsError('failed-precondition', 'The function must be called while authenticated.');
   }
+
+  hasPermissions(context.auth.token.rp, [
+    PERMISSIONS.applicationRecords.permissions.canReadApplicationRecords.value,
+    PERMISSIONS.applicationRecords.permissions.canUpdateApplicationRecords.value,
+  ]);
+
   if (!checkArguments({
     applicationIds: { required: true },
     cutOffScore: { required: true },

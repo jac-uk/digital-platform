@@ -5,6 +5,10 @@ service cloud.firestore {
     return request.auth.uid != null;
   }
 
+  function hasPermission(permission) {
+    return request.auth.token.rp != null && permission in request.auth.token.rp;
+  }
+
   function currentUser() {
     return request.auth.uid;
   }
@@ -47,11 +51,13 @@ service cloud.firestore {
     }
 
     match /exercises/{exerciseId} {
-      allow create, update: if userIsAuthenticated() && userIsJAC() && verifyFields(['referenceNumber', 'progress', 'state', 'createdBy'], []);
-      allow read, delete: if userIsAuthenticated() && userIsJAC();
+      allow read: if userIsAuthenticated() && userIsJAC() && hasPermission('e1');
+      allow create: if userIsAuthenticated() && userIsJAC() && hasPermission('e2') && verifyFields(['referenceNumber', 'progress', 'state', 'createdBy'], []);
+      allow update: if userIsAuthenticated() && userIsJAC() && hasPermission('e3') && verifyFields(['referenceNumber', 'progress', 'state', 'createdBy'], []);
+      allow delete: if userIsAuthenticated() && userIsJAC() && hasPermission('e4');
 
       match /reports/{reportId} {
-        allow read: if userIsAuthenticated() && userIsJAC();
+        allow read: if userIsAuthenticated() && userIsJAC() && hasPermission('e1');
       }
       match /tasks/{taskId} {
         allow create, update: if userIsAuthenticated() && userIsJAC();
@@ -61,19 +67,22 @@ service cloud.firestore {
     }
 
     match /notifications/{notificationId} {
-      allow read: if userIsAuthenticated() && userIsJAC();
+      allow read: if userIsAuthenticated() && userIsJAC() && hasPermission('n1');
       // allow write: if userIsAuthenticated() && userIsJAC();
     }
 
     match /notes/{noteId} {
-      allow read: if userIsAuthenticated() && userIsJAC();
-      allow create, update: if userIsAuthenticated() && userIsJAC() && verifyFields(['body', 'createdBy'], []);
-      allow delete: if userIsAuthenticated() && userIsJAC();
+      allow read: if userIsAuthenticated() && userIsJAC() && hasPermission('nt1');
+      allow create: if userIsAuthenticated() && userIsJAC() && hasPermission('nt2') && verifyFields(['body', 'createdBy'], []);
+      allow update: if userIsAuthenticated() && userIsJAC() && hasPermission('nt3') && verifyFields(['body', 'createdBy'], []);
+      allow delete: if userIsAuthenticated() && userIsJAC() && hasPermission('nt4');
     }
 
     match /panels/{panelId} {
-      allow read: if userIsAuthenticated() && userIsJAC();
-      allow write: if userIsAuthenticated() && userIsJAC();
+      allow read: if userIsAuthenticated() && userIsJAC() && hasPermission('p1');
+      allow create: if userIsAuthenticated() && userIsJAC() && hasPermission('p2');
+      allow update: if userIsAuthenticated() && userIsJAC() && hasPermission('p3');
+      allow delete: if userIsAuthenticated() && userIsJAC() && hasPermission('p4');
     }
 
     match /panellists/{panellistId} {
@@ -85,14 +94,14 @@ service cloud.firestore {
     }
 
     match /meta/stats {
-      allow read: if userIsAuthenticated() && userIsJAC();
+      allow read: if userIsAuthenticated() && userIsJAC() && hasPermission('m1');
       // Admin users can increment stats.exercisesCount by 1
-      allow update: if userIsAuthenticated() && userIsJAC() && request.resource.data.exercisesCount == resource.data.exercisesCount + 1;
+      allow update: if userIsAuthenticated() && userIsJAC() && hasPermission('m3') && request.resource.data.exercisesCount == resource.data.exercisesCount + 1;
     }
 
     match /settings/services {
-      allow read: if userIsAuthenticated() && userIsJAC();
-      allow update: if userIsAuthenticated() && userIsJAC();
+      allow read: if userIsAuthenticated() && userIsJAC() && hasPermission('s1');
+      allow update: if userIsAuthenticated() && userIsJAC() && hasPermission('s3');
     }
 
     match /vacancies/{vacancyId} {
@@ -112,13 +121,19 @@ service cloud.firestore {
   		// Users can read & write to their own candidate document
       allow get, create, update: if request.auth.uid == candidateId;
 
-      // Allow JAC to read and write
-      allow read, write: if userIsAuthenticated() && userIsJAC();
+      // Allow JAC to read
+      allow read: if userIsAuthenticated() && userIsJAC() && hasPermission('c1');
+      allow create: if userIsAuthenticated() && userIsJAC() && hasPermission('c2');
+      allow update: if userIsAuthenticated() && userIsJAC() && hasPermission('c3');
+      allow delete: if userIsAuthenticated() && userIsJAC() && hasPermission('c4');
 
       match /documents/{documentId} {
         allow get, create, update: if request.auth.uid == candidateId &&
           documentId in ['personalDetails', 'characterInformation', 'equalityAndDiversitySurvey'];
-        allow read, write: if userIsAuthenticated() && userIsJAC();
+        allow read: if userIsAuthenticated() && userIsJAC() && hasPermission('c1');
+        allow create: if userIsAuthenticated() && userIsJAC() && hasPermission('c2');
+        allow update: if userIsAuthenticated() && userIsJAC() && hasPermission('c3');
+        allow delete: if userIsAuthenticated() && userIsJAC() && hasPermission('c4');
       }
     }
 
@@ -142,7 +157,7 @@ service cloud.firestore {
 
     match /applications/{applicationId} {
       // allow admins full read access to all applications
-      allow read: if userIsAuthenticated() && userIsJAC();
+      allow read: if userIsAuthenticated() && userIsJAC() && hasPermission('a1');
 
       // Allow existing records which belong to the current user
       allow read: if resource.data.userId == currentUser();
@@ -178,23 +193,24 @@ service cloud.firestore {
         );
 
       // allow JAC admins to edit an application @TODO restrict what can be changed and by which role
-      allow update: if userIsAuthenticated() && userIsJAC();
+      allow update: if userIsAuthenticated() && userIsJAC() && hasPermission('a3');
     }
 
     match /applicationRecords/{applicationId} {
 
       // allow admins full read access to all applicationRecords
-      allow read: if userIsAuthenticated() && userIsJAC();
+      allow read: if userIsAuthenticated() && userIsJAC() && hasPermission('ar1');
 
-      // allow admins full write access to all applicationRecords
-      allow write: if userIsAuthenticated() && userIsJAC();
+      allow create: if userIsAuthenticated() && userIsJAC() && hasPermission('ar2');
+      allow update: if userIsAuthenticated() && userIsJAC() && hasPermission('ar3');
+      allow delete: if userIsAuthenticated() && userIsJAC() && hasPermission('ar4');
 
     }
 
     match /logs/login/{id}/{logId} {
       // allow candidates update their own logs
       allow read, write: if userIsAuthenticated() && currentUser() == id;
-      allow read: if userIsAuthenticated() && userIsJAC();
+      allow read: if userIsAuthenticated() && userIsJAC() && hasPermission('l1');
     }
 
     // allow any logged in user to create event log entries
@@ -202,13 +218,14 @@ service cloud.firestore {
 
     match /logs/{type}/events/{eventId} {
       allow create: if userIsAuthenticated();
-      allow read: if userIsAuthenticated() && userIsJAC();
+      allow read: if userIsAuthenticated() && userIsJAC() && hasPermission('l1');
     }
 
     match /assessments/{assessmentId} {
-      // allow admins full read and update permission
-      allow read: if userIsAuthenticated() && userIsJAC();
-      allow update, create: if userIsAuthenticated() && userIsJAC();
+      // allow admins read permission
+      allow read: if userIsAuthenticated() && userIsJAC() && hasPermission('as1');
+      allow create: if userIsAuthenticated() && userIsJAC() && hasPermission('as2');
+      allow update: if userIsAuthenticated() && userIsJAC() && hasPermission('as3');
 
       // allow assessor to read and update own documents
       allow read: if userIsAuthenticated() && userHasEmail(resource.data.assessor.email);
@@ -223,24 +240,25 @@ service cloud.firestore {
     }
 
     match /qualifyingTests/{qualifyingTestId} {
-      // allow admins read, create and update permission
-      allow read: if userIsAuthenticated() && userIsJAC();
-      allow create: if userIsAuthenticated() && userIsJAC();
-      allow update: if userIsAuthenticated() && userIsJAC();
-      allow delete: if false;  // TODO only super admins
+      // allow admins read permission
+      allow read: if userIsAuthenticated() && userIsJAC() && hasPermission('qt1');
+      allow create: if userIsAuthenticated() && userIsJAC() && hasPermission('qt2');
+      allow update: if userIsAuthenticated() && userIsJAC() && hasPermission('qt3');
+      allow delete: if userIsAuthenticated() && hasPermission('qt4');  // TODO only super admins
     }
 
     match /qualifyingTestReports/{qualifyingTestReportId} {
-      // allow admins read, create and update permission
-      allow read: if userIsAuthenticated() && userIsJAC();
-      allow create: if userIsAuthenticated() && userIsJAC();
-      allow update: if userIsAuthenticated() && userIsJAC();
-      allow delete: if userIsAuthenticated() && userIsJAC();  // TODO only super admins
+      // allow admins read permission
+      allow read: if userIsAuthenticated() && userIsJAC() && hasPermission('qtrp1');
+      allow create: if userIsAuthenticated() && userIsJAC() && hasPermission('qtrp2');
+      allow update: if userIsAuthenticated() && userIsJAC() && hasPermission('qtrp3');
+      allow delete: if userIsAuthenticated() && userIsJAC() && hasPermission('qtrp4');  // TODO only super admins
     }
 
     match /qualifyingTestResponses/{qualifyingTestResponseId} {
-      // allow admins read and create/update permission
-      allow read, update: if userIsAuthenticated() && userIsJAC();
+      // allow admins read permission
+      allow read: if userIsAuthenticated() && userIsJAC() && hasPermission('qtr1');
+      allow update: if userIsAuthenticated() && userIsJAC() && hasPermission('qtr3');
 
       // allow candidate to read their own document
       allow read: if userIsAuthenticated()
@@ -259,8 +277,11 @@ service cloud.firestore {
     }
 
     match /invitations/{invitationId} {
-      // allow admins to read and write invitations
-      allow read, write: if userIsAuthenticated() && userIsJAC();
+      // allow admins to read invitations
+      allow read: if userIsAuthenticated() && userIsJAC() && hasPermission('i1');
+      allow create: if userIsAuthenticated() && userIsJAC() && hasPermission('i2');
+      allow update: if userIsAuthenticated() && userIsJAC() && hasPermission('i3');
+      allow delete: if userIsAuthenticated() && userIsJAC() && hasPermission('i4');  
 
       // allow candidates to read and update their own invitations
       allow read, update: if userIsAuthenticated() && (

@@ -6,46 +6,55 @@ module.exports = {
   APPLICATION: {
     CHARACTER_ISSUES: { // this gives a map from issue to corresponding details field TODO improve naming or where we store this
       criminalOffences: {
+        group: 'Criminal',
         title: 'Criminal Offences',
         details: 'criminalOffenceDetails',
         summary: 'Candidate has been cautioned or convicted of a criminal offence',
       },
       declaredBankruptOrIVA: {
+        group: 'Financial',
         title: 'Declared Bankrupt Or IVA',
         details: 'declaredBankruptOrIVADetails',
         summary: 'Candidate has been declared bankrupt or entered into an Individual Voluntary Agreement (IVA)',
       },
       diciplinaryActionOrAskedToResign: {
+        group: 'Professional',
         title: 'Disciplinary Action Or Asked To Resign',
         details: 'diciplinaryActionOrAskedToResignDetails',
         summary: 'Candidate has been subject to complaints or disciplinary action, or been asked to resign from a position',
       },
       drivingDisqualificationDrinkDrugs: {
+        group: 'Motoring',
         title: 'Driving Disqualification Drink Drugs',
         details: 'drivingDisqualificationDrinkDrugsDetails',
         summary: 'Candidate has been disqualified from driving, or convicted for driving under the influence of drink or drugs',
       },
       endorsementsOrMotoringFixedPenalties: {
+        group: 'Motoring',
         title: 'Endorsements Or Motoring Fixed Penalties',
         details: 'endorsementsOrMotoringFixedPenaltiesDetails',
         summary: 'Candidate has endorsements on their licence, or received any motoring fixed-penalty notices in the last 4 years',
       },
       involvedInProfessionalMisconduct: {
+        group: 'Professional',
         title: 'Involved In Professional Misconduct',
         details: 'involvedInProfessionalMisconductDetails',
         summary: 'Candidate has been, or is currently, subject to professional misconduct, negligence, wrongful dismissal, discrimination or harassment proceedings',
       },
       lateTaxReturnOrFined: {
+        group: 'Financial',
         title: 'Late Tax Return Or Fined',
         details: 'lateTaxReturnOrFinedDetails',
         summary: 'Candidate has filed late tax returns or been fined by HMRC',
       },
       nonMotoringFixedPenaltyNotices: {
+        group: 'Motoring',
         title: 'Non Motoring Fixed Penalty Notices',
         details: 'nonMotoringFixedPenaltyNoticesDetails',
         summary: 'Candidate has received a non-motoring penalty notice in the last 4 years',
       },
       otherCharacterIssues: {
+        group: 'Other',
         title: 'Other Character Issues',
         details: 'otherCharacterIssuesDetails',
         summary: 'Candidate has declared other issues we should know about',
@@ -53,95 +62,125 @@ module.exports = {
     },
     CHARACTER_ISSUES_V2: { // this gives a map from issue to corresponding details field TODO improve naming or where we store this
       bankruptcies: {
+        group: 'Financial',
         title: 'Bankruptcies',
         details: 'bankruptcyDetails',
         summary: 'Candidate has filed for bankruptcy',
       },
       complaintOrDisciplinaryAction: {
+        group: 'Professional',
         title: 'Complaint Or Disciplinary Action',
         details: 'complaintOrDisciplinaryActionDetails',
         summary: 'Candidate has received a complaint or disciplinary action',
       },
       criminalCautions: {
+        group: 'Criminal',
         title: 'Criminal Cautions',
         details: 'criminalCautionDetails',
         summary: 'Candidate has been cautioned for a criminal offence',
       },
       criminalConvictions: {
+        group: 'Criminal',
         title: 'Criminal Convictions',
         details: 'criminalConvictionDetails',
         summary: 'Candidate has been convicted of a criminal offence',
       },
       drivingDisqualifications: {
+        group: 'Motoring',
         title: 'Driving Disqualifications',
         details: 'drivingDisqualificationDetails',
         summary: 'Candidate has been disqualified from driving',
       },
       fixedPenalties: {
+        group: 'Motoring',
         title: 'Fixed Penalties',
         details: 'fixedPenaltyDetails',
         summary: 'Candidate has received a fixed-penalty',
       },
       furtherInformation: {
+        group: 'Other',
         title: 'Further Information',
         details: 'furtherInformationDetails',
         summary: 'Candidate has declare further information',
       },
       hmrcFines: {
+        group: 'Financial',
         title: 'HMRC Fines',
         details: 'hmrcFineDetails',
         summary: 'Candidate has received a fine from HMRC',
       },
       ivas: {
+        group: 'Financial',
         title: 'IVAs',
         details: 'ivaDetails',
         summary: 'Candidate has been entered into an Individual Voluntary Agreement (IVA)',
       },
       lateTaxReturns: {
+        group: 'Financial',
         title: 'Late Tax Returns',
         details: 'lateTaxReturnDetails',
         summary: 'Candidate has filed late tax returns',
       },
       lateVatReturns: {
+        group: 'Financial',
         title: 'Late VAT Returns',
         details: 'lateVatReturnDetails',
         summary: 'Candidate has filed late VAT returns',
       },
       recentDrivingConvictions: {
+        group: 'Motoring',
         title: 'Recent Driving Convictions',
         details: 'recentDrivingConvictionDetails',
         summary: 'Candidate has recent driving convictions',
       },
       requestedToResign: {
+        group: 'Professional',
         title: 'Requested To Resign',
         details: 'requestedToResignDetails',
         summary: 'Candidate has been requested to resign',
       },
       subjectOfAllegationOrClaimOfDiscriminationProceeding: {
+        group: 'Professional',
         title: 'Subject Of Allegation Or Claim Of Discrimination Proceeding',
         details: 'subjectOfAllegationOrClaimOfDiscriminationProceedingDetails',
         summary: 'Candidate subject of allegation or claim of discrimination proceeding',
       },
       subjectOfAllegationOrClaimOfHarassmentProceeding: {
+        group: 'Professional',
         title: 'Subject Of Allegation Or Claim Of Harassment Proceeding',
         details: 'subjectOfAllegationOrClaimOfHarassmentProceedingDetails',
         summary: 'Candidate is subject of allegation or claim of harassment proceeding',
       },
       subjectOfAllegationOrClaimOfNegligence: {
+        group: 'Professional',
         title: 'Subject Of Allegation Or Claim Of Negligence',
         details: 'subjectOfAllegationOrClaimOfNegligenceDetails',
         summary: 'Candidate has been the subject of allegation or claim of negligence',
       },
       subjectOfAllegationOrClaimOfProfessionalMisconduct: {
+        group: 'Professional',
         title: 'Subject Of Allegation Or Claim Of Professional Misconduct',
         details: 'subjectOfAllegationOrClaimOfProfessionalMisconductDetails',
         summary: 'Candidate has been the subject of allegation or claim of misconduct',
       },
       subjectOfAllegationOrClaimOfWrongfulDismissal: {
+        group: 'Professional',
         title: 'Subject Of Allegation Or Claim Of Wrongful Dismissal',
         details: 'subjectOfAllegationOrClaimOfWrongfulDismissalDetails',
         summary: 'Candidate has been the subject of allegation or claim wrongful dismissal',
       },
+    },
+    CHARACTER_ISSUE_STATUS: {
+      PROCEED: 'proceed',
+      REJECT: 'reject',
+      REJECT_NON_DECLARATION: 'reject-non-declaration',
+      DISCUSS: 'discuss',
+    },
+    ELIGIBILITY_ISSUE_STATUS: {
+      PROCEED: 'proceed',
+      REJECT: 'reject',
+      REJECT_NON_DECLARATION: 'reject-non-declaration',
+      DISCUSS: 'discuss',
     },
   },
   ASSESSMENTS_URL: functions.config().assessments.url,
@@ -211,4 +250,3 @@ module.exports = {
   SLACK_URL: functions.config().slack.url,
   STORAGE_URL: functions.config().project.id + '.appspot.com',
 };
-
