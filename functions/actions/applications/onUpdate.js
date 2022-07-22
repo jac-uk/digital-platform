@@ -1,8 +1,9 @@
-const { getDocument, applyUpdates, isDateInPast } = require('../../shared/helpers');
+const { getDocument, applyUpdates, isDateInPast, formatDate } = require('../../shared/helpers');
 
-module.exports = (config, firebase, db) => {
+module.exports = (config, firebase, db, auth) => {
   const { newApplicationRecord } = require('../../shared/factories')(config);
   const { updateCandidate } = require('../candidates/search')(firebase, db);
+  const { sendCharacterCheckRequests } = require('./applications')(config, firebase, db, auth);
 
   return onUpdate;
 
@@ -55,6 +56,21 @@ module.exports = (config, firebase, db) => {
 
     if (characterChecksBefore && characterChecksAfter && characterChecksBefore.status && characterChecksAfter.status) {
       if ((characterChecksBefore.status !== characterChecksAfter.status) && characterChecksAfter.status === 'completed') {
+        
+        // send confirmation email if it hasn't been sent before
+        if (!dataBefore.emailLog || (dataBefore.emailLog && !dataBefore.emailLog.characterCheckSubmitted)) {
+          const exercise = await getDocument(db.doc(`exercises/${dataBefore.exerciseId}`));
+          if (exercise) {
+            await sendCharacterCheckRequests({
+              items: [applicationId],
+              type: 'submit',
+              exerciseMailbox: exercise.exerciseMailbox,
+              exerciseManagerName: exercise.emailSignatureName,
+              dueDate: formatDate(exercise.characterChecksReturnDate),
+            });
+          }
+        }
+        
         try {
           await db.collection('applicationRecords').doc(`${applicationId}`).update({
             'characterChecks.status': 'completed',
