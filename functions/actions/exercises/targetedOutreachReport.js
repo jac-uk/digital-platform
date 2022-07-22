@@ -37,13 +37,17 @@ module.exports = (firebase, db) => {
             const applicationID = obj.id;
             // get the diversity values from Application Records
             const applicationRecord = await getDocument(db.collection('applicationRecords').doc(applicationID));
-            
+
+            const applicationRecordGender = applicationRecord.diversity && applicationRecord.diversity.gender ? applicationRecord.diversity.gender : null;
+            const applicationRecordEthnicity = applicationRecord.diversity && applicationRecord.diversity.ethnicity ? applicationRecord.diversity.ethnicity : null;
+            const applicationRecordDisability = applicationRecord.diversity && applicationRecord.diversity.disability ? applicationRecord.diversity.disability : null;
+
             returnObj = {
               NINumber: value,
               name: obj.personalDetails.fullName,
-              gender: applicationRecord.diversity?.gender,
-              ethnicity: applicationRecord.diversity?.ethnicity,
-              disability: applicationRecord.diversity?.disability,
+              gender: applicationRecordGender,
+              ethnicity: applicationRecordEthnicity,
+              disability: applicationRecordDisability,
               solicitor: null,
               exercise: `${obj.exerciseId} - ${obj.exerciseName}`,
               stage: applicationRecord.stage,
