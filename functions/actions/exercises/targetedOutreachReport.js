@@ -17,8 +17,8 @@ module.exports = (firebase, db) => {
     let data = []; // store the returned data in an Array
 
     // Normalize the National Insurance Numbers
-    if (nationalInsuranceNumbers && nationalInsuranceNumbers.data) {
-      NINs = normalizeNINs(nationalInsuranceNumbers.data);
+    if (nationalInsuranceNumbers) {
+      NINs = normalizeNINs(nationalInsuranceNumbers);
     } else {
       return data;
     }
