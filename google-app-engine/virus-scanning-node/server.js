@@ -42,10 +42,6 @@ app.use(limiter);
 // Creates a client
 const storage = new Storage();
 
-// Get the bucket which is declared as an environment variable
-const STORAGE_URL = process.env.PROJECT_ID + '.appspot.com';
-const bucket = storage.bucket(STORAGE_URL);
-
 // start the app server
 const run = () => app.listen(PORT, () => {
   console.log(`Server started on port ${PORT}`);
@@ -59,7 +55,6 @@ const run = () => app.listen(PORT, () => {
  * @param {object} res The HTTP response object
  */
 app.post('/scan', async (req, res) => {
-  console.log(`STORAGE_URL = ${STORAGE_URL}`);
   console.log('Request body', JSON.stringify(req.body));
 
   let tempPath;
@@ -68,10 +63,16 @@ app.post('/scan', async (req, res) => {
     // get inputs
     console.log(' - Getting inputs...');
     const filename = req.body.filename;
+    const projectId = req.body.projectId || process.env.PROJECT_ID;
     console.log(` - - filename = ${filename}`);
+    console.log(` - - projectId = ${projectId}`);
 
     // validate inputs
     console.log(' - Validating inputs...');
+    // get the bucket based on projectId
+    const STORAGE_URL = projectId + '.appspot.com';
+    console.log(`STORAGE_URL = ${STORAGE_URL}`);
+    const bucket = storage.bucket(STORAGE_URL);
     const bucketExists = await bucket.exists();
     if (!bucketExists) {
       throw 'Storage bucket not found';
@@ -98,7 +99,7 @@ app.post('/scan', async (req, res) => {
 
     // add metadata with scan result
     console.log(' - Adding metadata to file...');
-    addMetadata(filename, status);
+    addMetadata(bucket, filename, status);
     console.log(' - - Done');
 
     // respond to HTTP client
@@ -129,10 +130,11 @@ app.post('/scan', async (req, res) => {
 /**
  * Add metadata to a file, to indicate the outcome of the virus scan
  *
+ * @param {bucket} bucket
  * @param {string} filename
  * @param {string} status
  */
-const addMetadata = (filename, status) => {
+const addMetadata = (bucket, filename, status) => {
   const metadata = {
     metadata: {
       'scanned': Date.now().toString(),
