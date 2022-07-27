@@ -1,6 +1,17 @@
-const { getDocuments, formatDate } = require('../../shared/helpers');
+const { getDocument, getDocuments, formatDate } = require('../../shared/helpers');
 
 const _ = require('lodash');
+const { instance } = require('firebase-functions/v1/database');
+
+function formatPreference(choiceArray, questionType) {
+  if(questionType === 'multiple-choice') {
+    return choiceArray instanceof Array ? choiceArray.map(x => `${x} ` ).join('and ').slice(0,-1) : choiceArray;
+  } else if (questionType === 'ranked-choice') {
+    return choiceArray instanceof Array ? choiceArray.map((x,index) => `${index+1}: ${x}`).join('. ') : choiceArray;
+  } else if (questionType === 'single-choice') {
+    return choiceArray;
+  }
+};
 
 module.exports = (config, firebase, db, auth) => {
 
@@ -10,48 +21,65 @@ module.exports = (config, firebase, db, auth) => {
 
   /**
   * getApplicationData
-  */
-  async function getApplicationData(params) {
-
-    let dataRef = db.collection('applications')
-      .where('exerciseId', '==', params.exerciseId);
-
-    const results = await getDocuments(dataRef);
-
+   */
+    async function getApplicationData(params) {
+    
+    let applicationDataRef = db.collection('applications')
+    .where('exerciseId', '==', params.exerciseId);
+    
+    const results = await getDocuments(applicationDataRef);
+    
+    let exerciseDataRef = db.collection('exercises').doc(params.exerciseId);
+    const exerciseData = await getDocument(exerciseDataRef);
+    
     const data = [];
-
+    
     for(const result of results) {
       let record = {};
       for(const column of params.columns) {
 
-        record[column] = _.get(result, column, '(blank)');
-        // if key doesn't exist or it's blank, set it to (blank)
+        record[column] = _.get(result, column, '- No answer provided -');
+        // if key doesn't exist or it's blank, set it to - No answer provided -
         if(record[column] === '' || record[column] === null) {
-          record[column] = '(blank)';
+          record[column] = '- No answer provided -';
         }
-
+        if (column.includes('additionalWorkingPreferences')) {
+          record[column] = formatPreference(
+            (result.additionalWorkingPreferences  ? result.additionalWorkingPreferences[parseInt(column.replace('additionalWorkingPreferences ',''))].selection : '- No answer provided -'),
+            exerciseData.additionalWorkingPreferences[parseInt(column.replace('additionalWorkingPreferences ',''))].questionType
+          );
+        }
         // Handle array values
-        if(_.isArray(record[column])) {
+        else if (['locationPreferences', 'jurisdictionPreferences'].includes(column)) {
+          if (column == 'locationPreferences') {
+            // console.log(record[column], exerciseData.locationQuestionType);
+            record[column] = formatPreference(record[column], exerciseData.locationQuestionType);
+          } 
+          if (column == 'jurisdictionPreferences') {
+            record[column] = formatPreference(record[column], exerciseData.jurisdictionQuestionType);
+          } 
+        }
+        else if(_.isArray(record[column])) {
           let formattedArray = '';
           for (const arrayItem of record[column]) {
             const arrayValuePaths = getArrayValuePath(column);
             if(arrayValuePaths) {
               for (const arrayValuePath of arrayValuePaths) {
-                const str = _.get(arrayItem, arrayValuePath, '(blank)');
+                const str = _.get(arrayItem, arrayValuePath, '- No answer provided -');
                 // Handle time values
                 formattedArray += (_.get(str, '_seconds', null) ? formatDate(str) : str) + ' - ';
               }
               // remove the last ' - ' from string
               formattedArray = formattedArray.substring(0, formattedArray.length - 3);
             } else {
-              formattedArray += arrayItem ? arrayItem : '(blank)';
+              formattedArray += arrayItem ? arrayItem : '- No answer provided -';
             }
             formattedArray += ', ';
           }
-
+          
           // remove the last ', ' from string
           formattedArray = formattedArray.substring(0, formattedArray.length - 2);
-
+          
           // if something went wrong with parsing the array, just return true
           if (formattedArray === '') {
             record[column] = 'True';
@@ -59,13 +87,14 @@ module.exports = (config, firebase, db, auth) => {
             record[column] = formattedArray;
           }
         }
-
+        
         // Handle time values
         if(_.get(record[column], '_seconds', null)) {
           record[column] = formatDate(record[column]);
         }
-
+        
       }
+
       data.push(record);
     }
 
