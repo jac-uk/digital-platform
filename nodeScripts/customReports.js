@@ -1,13 +1,13 @@
 
 const config = require('./shared/config');
-const { firebase, app, db } = require('./shared/admin.js');
-const { customReport } = require('../actions/exercises/customReport')(config, firebase, db, auth);
+const { firebase, app, db, auth } = require('./shared/admin.js');
+const { customReport } = require('../actions/exercises/customReport')(config, firebase, db);
 
-const main = async () => {
+const main = async (params) => {
   await customReport({
     name: params.name,
     columns: params.columns,
-    whereClauses: params.whereClauses
+    whereClauses: params.whereClauses,
   });
 };
 
