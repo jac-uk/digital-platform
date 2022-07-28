@@ -76,23 +76,22 @@ module.exports = (config, firebase, db) => {
   function finalScore(task, scoreSheet) {
     let score = 0;
     switch (task.type) {
-      case config.TASK_TYPE.SIFT:
-        task.capabilities.forEach(capability => score += config.GRADE_VALUES[scoreSheet[capability]]);
-        break;
-      case config.TASK_TYPE.SELECTION:
-        task.selectionCategories.forEach(category => task.capabilities.forEach(capability => score += config.GRADE_VALUES[scoreSheet[category][capability]]));
-        break;
-      case config.TASK_TYPE.SCENARIO:
-        Object.keys(scoreSheet).forEach(key => {
-          if (typeof scoreSheet[key] === 'object') {
-            Object.keys(scoreSheet[key]).forEach(childKey => score += scoreSheet[key][childKey]);
-          } else {
-            score += scoreSheet[key];
-          }
-        });
-        scoreSheet
-        break;
-      }
+    case config.TASK_TYPE.SIFT:
+      task.capabilities.forEach(capability => score += config.GRADE_VALUES[scoreSheet[capability]]);
+      break;
+    case config.TASK_TYPE.SELECTION:
+      task.selectionCategories.forEach(category => task.capabilities.forEach(capability => score += config.GRADE_VALUES[scoreSheet[category][capability]]));
+      break;
+    case config.TASK_TYPE.SCENARIO:
+      Object.keys(scoreSheet).forEach(key => {
+        if (typeof scoreSheet[key] === 'object') {
+          Object.keys(scoreSheet[key]).forEach(childKey => score += scoreSheet[key][childKey]);
+        } else {
+          score += scoreSheet[key];
+        }
+      });
+      break;
+    }
     return score;
   }
 };
