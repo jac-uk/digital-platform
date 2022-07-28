@@ -13,6 +13,10 @@ module.exports = (config, firebase, db) => {
   */
   async function completeTask(params) {
 
+    // get exercise
+    const exercise = await getDocument(db.doc(`exercises/${params.exerciseId}`));
+    if (!exercise) return 0;
+
     // get task
     const taskRef = db.doc(`exercises/${params.exerciseId}/tasks/${params.type}`);
     const task = await getDocument(taskRef);
@@ -56,6 +60,51 @@ module.exports = (config, firebase, db) => {
       ref: taskRef,
       data: taskData,
     });
+
+    // check for qualifying test follow on task
+    if (params.type === config.TASK_TYPE.CRITICAL_ANALYSIS || params.type === config.TASK_TYPE.SITUATIONAL_JUDGEMENT) {
+      if (
+        exercise.shortlistingMethods.indexOf('critical-analysis-qualifying-test') >= 0 && exercise.criticalAnalysisTestDate
+        && exercise.shortlistingMethods.indexOf('situational-judgement-qualifying-test') >= 0 && exercise.situationalJudgementTestDate
+      ) {
+        // get the other QT task
+        const otherTaskType = params.type === config.TASK_TYPE.CRITICAL_ANALYSIS ? config.TASK_TYPE.SITUATIONAL_JUDGEMENT : config.TASK_TYPE.CRITICAL_ANALYSIS;
+        const otherTask = await getDocument(db.doc(`exercises/${params.exerciseId}/tasks/${otherTaskType}`));
+        if (otherTask.status === config.TASK_STATUS.COMPLETED) {
+          // create qualifying test task
+          const finalScores = [];
+          task.finalScores.forEach(scoreData => {
+            if (scoreData.score >= task.passMark) {
+              const otherTaskScoreData = otherTask.finalScores.find(otherScoreData => otherScoreData.id === scoreData.id);
+              if (otherTaskScoreData && otherTaskScoreData.score >= otherTask.passMark) {
+                finalScores.push({
+                  id: scoreData.id,
+                  ref: scoreData.ref,
+                  score: 50 * ((scoreData.score / task.maxScore) + (otherTaskScoreData.score / otherTask.maxScore)),
+                  scoreSheet: {
+                    CA: params.type === config.TASK_TYPE.CRITICAL_ANALYSIS ? scoreData.score : otherTaskScoreData.score,
+                    SJ: params.type === config.TASK_TYPE.CRITICAL_ANALYSIS ? otherTaskScoreData.score : scoreData.score,
+                  },
+                });
+              }
+            }
+          });
+          const taskData = {
+            _stats: {},
+            finalScores: finalScores,
+            type: config.TASK_TYPE.QUALIFYING_TEST,
+          };
+          taskData['status'] = config.TASK_STATUS.FINALISED;
+          taskData.statusLog = {};
+          taskData.statusLog[config.TASK_STATUS.FINALISED] = firebase.firestore.FieldValue.serverTimestamp();
+          commands.push({
+            command: 'set',
+            ref: db.doc(`exercises/${params.exerciseId}/tasks/${config.TASK_TYPE.QUALIFYING_TEST}`),
+            data: taskData,
+          });
+        }
+      }
+    }
 
     // write to db
     const result = await applyUpdates(db, commands);

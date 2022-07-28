@@ -1,19 +1,4 @@
-
-// get scores
-/**
- * send testId and receive
- *
- * [{
- *  ref,
- *  email,
- *  adjustment,
- *  score,
- * }]
- *
- */
-
-
-const { getDocuments, getDocument } = require('../../../shared/helpers');
+const { getDocuments, getDocument, applyUpdates } = require('../../../shared/helpers');
 
 module.exports = (config, firebase, db) => {
   const qts = require('../../../shared/qts')(config);
@@ -22,46 +7,124 @@ module.exports = (config, firebase, db) => {
 
   /**
   * updateQualifyingTestScores
-  * Get qualifying test scores and update task
+  * Get qualifying test scores (if available) and update task
   * @param {*} `params` is an object containing
   *   `exerciseId` (required) ID of exercise
   *   `type`  (required) type/ID of task
   */
   async function updateQualifyingTestScores(params) {
 
+    // get exercise
+    const exercise = await getDocument(db.doc(`exercises/${params.exerciseId}`));
+    if (!exercise) return 0;
+
     // get task
     const taskRef = db.doc(`exercises/${params.exerciseId}/tasks/${params.type}`);
     const task = await getDocument(taskRef);
     if (!task) return { success: false, message: 'Task not found' };
-    if (task.status !== config.TASK_STATUS.ACTIVATED) return { success: false, message: 'Task not activated' };
+    if (task.status !== config.TASK_STATUS.TEST_ACTIVATED) return { success: false, message: 'Task not activated' };
 
-    // get scores from QT Platform
+    // get results from QT Platform
     const response = await qts.get('scores', {
-      testId: task.testId,
+      testId: task.test.id,
     });
     if (!response.success) return { success: false, message: response.message };
-    if (!response.scores) return { success: false, message: 'No scores available' };
-
-    // construct finalScores
-    const finalScores = [];
-    task.applications.forEach(application => {
-      finalScores.push({
-        id: application.id,
-        ref: application.ref,
-        score: response.scores[application.id],
-      });
-    });
 
     // update task
     const taskData = {};
-    taskData.finalScores = finalScores;
-    taskData.status = config.TASK_STATUS.FINALISED;
-    taskData[`statusLog.${config.TASK_STATUS.FINALISED}`] = firebase.firestore.FieldValue.serverTimestamp();
+    let nextStatus;
+    if ([config.TASK_TYPE.CRITICAL_ANALYSIS, config.TASK_TYPE.SITUATIONAL_JUDGEMENT].indexOf(task.type) >= 0) {
+      if (!response.scores) return { success: false, message: 'No scores available' };
+      if (!Object.keys(response.scores).length) return { success: false, message: 'No scores available' };
+        // construct finalScores
+      const finalScores = [];
+      task.applications.forEach(application => {
+        finalScores.push({
+          id: application.id,
+          ref: application.ref,
+          score: response.scores[application.id],
+        });
+      });
+
+      taskData.finalScores = finalScores;
+      nextStatus = config.TASK_STATUS.FINALISED;
+    }
+    if (task.type === config.TASK_TYPE.SCENARIO) {
+      if (!response.questionIds) return { success: false, message: 'No question ids available' };
+      nextStatus = config.TASK_STATUS.PANELS_INITIALISED;
+      taskData.emptyScoreSheet = getEmptyScoreSheet(response.questionIds);
+      taskData.markingScheme = scoreSheet2MarkingScheme(taskData.emptyScoreSheet);
+      taskData['test.questionIds'] = response.questionIds;
+      // TODO? get status of test so we know whether any candidates did not take the test
+
+      // update application records with placeholder for panelId
+      const commands = [];
+      task.applications.forEach(application => {
+        const data = {};
+        data[`${params.type}.panelId`] = null;
+        commands.push({
+          command: 'update',
+          ref: db.collection('applicationRecords').doc(application.id),
+          data: data,
+        });
+      });
+      await applyUpdates(db, commands);
+    }
+    if (!nextStatus) return { success: false, message: 'Task type not recognised' };
+
+    taskData.status = nextStatus;
+    taskData[`statusLog.${nextStatus}`] = firebase.firestore.FieldValue.serverTimestamp();
     await taskRef.update(taskData);
 
     // return result
-    return { success: response.success, message: response.message };
+    return { success: true, message: 'Task updated' };
 
+  }
+
+  function arrayToObject(arrData) {
+    const returnObject = {};
+    arrData.forEach(item => returnObject[item] = '');
+    return returnObject;
+  }
+
+  function getEmptyScoreSheet(arrData) {
+    const returnObject = {};
+    arrData.forEach(item => {
+      if (item.indexOf('.') >= 0) {
+        const parts = item.split('.');
+        if (!returnObject[parts[0]]) returnObject[parts[0]] = {};
+        returnObject[parts[0]][parts[1]] = '';
+      } else {
+        returnObject[item] = '';
+      }
+    });
+    return returnObject;
+  }
+
+  function scoreSheet2MarkingScheme(scoreSheet) {
+    const markingScheme = [];
+    Object.keys(scoreSheet).forEach(key => {
+      if (typeof scoreSheet[key] === 'object') {
+        const children = [];
+        Object.keys(scoreSheet[key]).forEach(childKey => {
+          children.push({
+            ref: childKey,
+            type: 'number',
+          });
+        });
+        markingScheme.push({
+          ref: key,
+          type: 'group',
+          children: children,
+        });
+      } else {
+        markingScheme.push({
+          ref: key,
+          type: 'number',
+        });
+      }
+    });
+    return markingScheme;
   }
 
 };

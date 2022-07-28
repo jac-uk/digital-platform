@@ -5,6 +5,8 @@ module.exports = (config, firebase, db) => {
 
   return createQualifyingTest;
 
+// TODO This is no longer needed!!
+
   /**
   * createQualifyingTest
   * Create qualifying test on QT platform, plus create corresponding `task`
@@ -27,7 +29,9 @@ module.exports = (config, firebase, db) => {
     // create task
     const taskData = {
       folderId: response.folderId,
-      testId: response.testId,
+      test: {
+        id: response.testId,
+      },
     };
     taskData['status'] = config.TASK_STATUS.INITIALISED;
     taskData.statusLog = {};

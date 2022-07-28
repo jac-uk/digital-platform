@@ -153,6 +153,15 @@ module.exports = {
     SKILLS: 'skills',
     GENERAL: 'general',
   },
+  SHORTLISTING: {
+    TELEPHONE_ASSESSMENT: 'telephone-assessment',
+    SITUATIONAL_JUDGEMENT_QUALIFYING_TEST: 'situational-judgement-qualifying-test',
+    CRITICAL_ANALYSIS_QUALIFYING_TEST: 'critical-analysis-qualifying-test',
+    SCENARIO_TEST_QUALIFYING_TEST: 'scenario-test-qualifying-test',
+    NAME_BLIND_PAPER_SIFT: 'name-blind-paper-sift',
+    PAPER_SIFT: 'paper-sift',
+    OTHER: 'other',
+  },
   QUALIFYING_TEST: {
     TYPE: {
       SCENARIO: 'scenario',
@@ -186,10 +195,15 @@ module.exports = {
     SIFT: 'sift',
     SELECTION: 'selection',
     SCENARIO: 'scenario',
+    CRITICAL_ANALYSIS: 'criticalAnalysis',
+    SITUATIONAL_JUDGEMENT: 'situationalJudgement',
+    QUALIFYING_TEST: 'qualifyingTest',
   },
   TASK_STATUS: {
-    INITIALISED: 'initialised',
-    ACTIVATED: 'activated',
+    TEST_INITIALISED: 'testInitialised',
+    TEST_ACTIVATED: 'testActivated',
+    PANELS_INITIALISED: 'panelsInitialised',
+    PANELS_ACTIVATED: 'panelsActivated',
     MODERATION_INITIALISED: 'moderationInitialised',
     MODERATION_ACTIVATED: 'moderationActivated',
     FINALISED: 'finalised',
