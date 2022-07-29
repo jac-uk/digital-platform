@@ -1,4 +1,4 @@
-const { checkArguments, applyUpdates, convertStringToSearchParts, getEarliestDate, getLatestDate } = require('../../functions/shared/helpers');
+const { checkArguments, applyUpdates, convertStringToSearchParts, getEarliestDate, getLatestDate, removeHtml } = require('../../functions/shared/helpers');
 
 describe('checkArguments()', () => {
 
@@ -427,5 +427,14 @@ describe('getLatestDate()', () => {
       expect(getLatestDate(arrayOfDates2)).toBe(laterDate);
       expect(getLatestDate(arrayOfDates3)).toBe(laterDate);
     });
+  });
+});
+
+describe('removeHtml', () => {
+  it('remove HTML tags from a given string', () => {
+    expect(removeHtml('<div>title</div>')).toBe('title');
+    expect(removeHtml('<br>1. answer')).toBe('1. answer');
+    expect(removeHtml('<br/>1. answer')).toBe('1. answer');
+    expect(removeHtml('<br />1. answer')).toBe('1. answer');
   });
 });

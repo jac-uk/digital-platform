@@ -18,6 +18,7 @@ module.exports = {
   getLatestDate,
   convertStringToSearchParts,
   isProduction,
+  removeHtml,
 };
 
 async function getDocument(query) {
@@ -258,4 +259,8 @@ function convertStringToSearchParts(value, delimiter) {
 function isProduction() {
   const projectId = firebase.instanceId().app.options.projectId;
   return projectId.includes('production');
+}
+
+function removeHtml(str) {
+  return str.replace(/<[^>]*>?/gm, '');
 }
