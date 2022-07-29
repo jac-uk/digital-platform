@@ -256,15 +256,18 @@ const formatDiversityData = (survey, exercise) => {
 };
 
 const formatLegalData = (application) => {
-  const qualifications = application.qualifications.map(qualification => {
-    return [
-      lookup(qualification.location),
-      lookup(qualification.type),
-      helpers.formatDate(qualification.date),
-      qualification.membershipNumber,
-    ].join(' ');
-  }).join('\n');
-
+  let qualifications = '';
+  if (application.qualifications && Array.isArray(application.qualifications)) {
+    qualifications = application.qualifications.map(qualification => {
+      return [
+        lookup(qualification.location),
+        lookup(qualification.type),
+        helpers.formatDate(qualification.date),
+        qualification.membershipNumber,
+      ].join(' ');
+    }).join('\n');
+  }
+  
   let judicialExperience;
   if (application.feePaidOrSalariedJudge) {
     judicialExperience = `Fee paid or salaried judge - ${lookup(application.feePaidOrSalariedSittingDaysDetails)} days`;
