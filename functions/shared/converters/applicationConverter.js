@@ -262,7 +262,7 @@ module.exports = () => {
   function getWelshData(application) {
     const data = [];
     addField(data, 'Applying for Welsh posts?', toYesNo(application.applyingForWelshPost));
-    if (application.applyingForWelshPost) {
+    if ('applyingForWelshPost' in application) {
       addField(data, 'Can speak Welsh?', toYesNo(application.canSpeakWelsh));
 
       if (application.canReadAndWriteWelsh === false) {

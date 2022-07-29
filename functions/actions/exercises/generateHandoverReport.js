@@ -150,12 +150,13 @@ const reportData = (db, exercise, applicationRecords, applications) => {
     }
 
     const locationPreferences = application.locationPreferences && application.locationPreferences.length
-      ? getLocationPreferences(application, exercise).map(x => `${removeHtml(x.label)} ${removeHtml(x.value)}`).join('\n\n') : '';
+      ? getLocationPreferences(application, exercise).map(x => `${removeHtml(x.label)}\n${removeHtml(x.value)}`).join('\n\n') : '';
     const jurisdictionPreferences = application.jurisdictionPreferences && application.jurisdictionPreferences.length
-      ? getJurisdictionPreferences(application, exercise).map(x => `${removeHtml(x.label)} ${removeHtml(x.value)}`).join('\n\n') : '';
+      ? getJurisdictionPreferences(application, exercise).map(x => `${removeHtml(x.label)}\n${removeHtml(x.value)}`).join('\n\n') : '';
     const additionalPreferences = application.additionalWorkingPreferences && application.additionalWorkingPreferences.length
-      ? getAdditionalWorkingPreferences(application, exercise).map(x => `${removeHtml(x.label)} ${removeHtml(x.value)}`).join('\n\n') : '';
-    const welshPosts = getWelshData(application).map(x => `${removeHtml(x.label)} ${removeHtml(x.value)}`).join('\n\n');
+      ? getAdditionalWorkingPreferences(application, exercise).map(x => `${removeHtml(x.label)}\n${removeHtml(x.value)}`).join('\n\n') : '';
+    const welshPosts = exercise.welshRequirement
+      ? getWelshData(application).map(x => `${removeHtml(x.label)}\n${removeHtml(x.value)}`).join('\n\n') : '';
 
     // return report data for this application
     return {

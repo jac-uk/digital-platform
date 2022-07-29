@@ -262,5 +262,5 @@ function isProduction() {
 }
 
 function removeHtml(str) {
-  return str.replace(/<[^>]*>?/gm, '');
+  return str.replace(/(<([^>]+)>)/gi, '');
 }
