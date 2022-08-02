@@ -45,7 +45,6 @@ module.exports = (config, firebase, db) => {
           score: response.scores[application.id],
         });
       });
-
       taskData.finalScores = finalScores;
       nextStatus = config.TASK_STATUS.FINALISED;
     }
