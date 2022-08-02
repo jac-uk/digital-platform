@@ -9,6 +9,10 @@ module.exports = () => {
   return {
     getHtmlPanelPack,
     getAdditionalSelectionCriteria,
+    getLocationPreferences,
+    getJurisdictionPreferences,
+    getAdditionalWorkingPreferences,
+    getWelshData,
     // TODO include other converters
   };
 
@@ -257,8 +261,8 @@ module.exports = () => {
 
   function getWelshData(application) {
     const data = [];
-    addField(data, 'Applying for Welsh posts', toYesNo(application.applyingForWelshPost));
-    if (application.applyingForWelshPost) {
+    addField(data, 'Applying for Welsh posts?', toYesNo(application.applyingForWelshPost));
+    if ('applyingForWelshPost' in application) {
       addField(data, 'Can speak Welsh?', toYesNo(application.canSpeakWelsh));
 
       if (application.canReadAndWriteWelsh === false) {

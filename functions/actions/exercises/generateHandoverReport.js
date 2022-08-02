@@ -1,6 +1,8 @@
 const helpers = require('../../shared/converters/helpers');
 const lookup = require('../../shared/converters/lookup');
-const { getDocument, getDocuments, getAllDocuments } = require('../../shared/helpers');
+const { getDocument, getDocuments, getAllDocuments, removeHtml } = require('../../shared/helpers');
+const applicationConverter = require('../../shared/converters/applicationConverter')();
+const { getLocationPreferences, getJurisdictionPreferences, getAdditionalWorkingPreferences, getWelshData } = applicationConverter;
 
 module.exports = (firebase, db) => {
   return {
@@ -115,6 +117,13 @@ const reportHeaders = (exercise) => {
     reportHeaders.push(...headers.diversity.common);
   }
 
+  reportHeaders.push(
+    { title: 'Location Preferences', ref: 'locationPreferences' },
+    { title: 'Jurisdiction Preferences', ref: 'jurisdictionPreferences' },
+    { title: 'Additional Preferences', ref: 'additionalPreferences' },
+    { title: 'Welsh posts', ref: 'welshPosts' }
+  );
+
   return reportHeaders;
 };
 
@@ -140,6 +149,15 @@ const reportData = (db, exercise, applicationRecords, applications) => {
       memberships = formatNonLegalData(application, exercise);
     }
 
+    const locationPreferences = application.locationPreferences && application.locationPreferences.length
+      ? getLocationPreferences(application, exercise).map(x => `${removeHtml(x.label)}\n${removeHtml(x.value)}`).join('\n\n') : '';
+    const jurisdictionPreferences = application.jurisdictionPreferences && application.jurisdictionPreferences.length
+      ? getJurisdictionPreferences(application, exercise).map(x => `${removeHtml(x.label)}\n${removeHtml(x.value)}`).join('\n\n') : '';
+    const additionalPreferences = application.additionalWorkingPreferences && application.additionalWorkingPreferences.length
+      ? getAdditionalWorkingPreferences(application, exercise).map(x => `${removeHtml(x.label)}\n${removeHtml(x.value)}`).join('\n\n') : '';
+    const welshPosts = exercise.welshRequirement
+      ? getWelshData(application).map(x => `${removeHtml(x.label)}\n${removeHtml(x.value)}`).join('\n\n') : '';
+
     // return report data for this application
     return {
       applicationId: application.id,
@@ -149,6 +167,10 @@ const reportData = (db, exercise, applicationRecords, applications) => {
       ...qualifications,
       ...memberships,
       ...formatDiversityData(application.equalityAndDiversitySurvey, exercise),
+      locationPreferences,
+      jurisdictionPreferences,
+      additionalPreferences,
+      welshPosts,
     };
 
   });
@@ -160,9 +182,15 @@ const getCandidateId = (applicationRecords, application) => {
 };
 
 const formatPersonalDetails = (personalDetails) => {
-  const formatAddress = (address =>
-    `${address.street} ${address.street2} ${address.town} ${address.county} ${address.postcode} `
-  );
+  const formatAddress = (address => {
+    const result = [];
+    if (address.street) result.push(address.street);
+    if (address.street2) result.push(address.street2);
+    if (address.town) result.push(address.town);
+    if (address.county) result.push(address.county);
+    if (address.postcode) result.push(address.postcode);
+    return `${result.join(' ')} `;
+  });
 
   let formattedPreviousAddresses;
   if (personalDetails.address && !personalDetails.address.currentMoreThan5Years) {
@@ -228,15 +256,18 @@ const formatDiversityData = (survey, exercise) => {
 };
 
 const formatLegalData = (application) => {
-  const qualifications = application.qualifications.map(qualification => {
-    return [
-      lookup(qualification.location),
-      lookup(qualification.type),
-      helpers.formatDate(qualification.date),
-      qualification.membershipNumber,
-    ].join(' ');
-  }).join('\n');
-
+  let qualifications = '';
+  if (application.qualifications && Array.isArray(application.qualifications)) {
+    qualifications = application.qualifications.map(qualification => {
+      return [
+        lookup(qualification.location),
+        lookup(qualification.type),
+        helpers.formatDate(qualification.date),
+        qualification.membershipNumber,
+      ].join(' ');
+    }).join('\n');
+  }
+  
   let judicialExperience;
   if (application.feePaidOrSalariedJudge) {
     judicialExperience = `Fee paid or salaried judge - ${lookup(application.feePaidOrSalariedSittingDaysDetails)} days`;
