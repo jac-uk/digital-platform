@@ -10,10 +10,10 @@ module.exports = functions.region('europe-west2').https.onCall(async (data, cont
     throw new functions.https.HttpsError('failed-precondition', 'The function must be called while authenticated.');
   }
   if (!checkArguments({
-    exerciseId: { required: true },
+    nationalInsuranceNumbers: { required: true },
   }, data)) {
     throw new functions.https.HttpsError('invalid-argument', 'Please provide valid arguments');
   }
-  const result = await targetedOutreachReport(data);
+  const result = await targetedOutreachReport(data.nationalInsuranceNumbers);
   return result;
 });
