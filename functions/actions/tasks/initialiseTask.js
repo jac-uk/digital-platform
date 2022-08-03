@@ -1,6 +1,7 @@
 const { getDocument, getDocuments, applyUpdates, convertToDate, getEarliestDate, getLatestDate } = require('../../shared/helpers');
 
 module.exports = (config, firebase, db) => {
+  const { scoreSheet, taskStartDate, taskEndDate } = require('./taskHelpers')(config);
 
   return initialiseTask;
 
@@ -15,6 +16,8 @@ module.exports = (config, firebase, db) => {
   */
   async function initialiseTask(params) {
 
+    const commands = [];
+
     // get exercise
     const exercise = await getDocument(db.doc(`exercises/${params.exerciseId}`));
     if (!exercise) return 0;
@@ -26,45 +29,77 @@ module.exports = (config, firebase, db) => {
       return 0;
     }
 
+    // get next status
+    let nextStatus;
+    if ([config.TASK_TYPE.SIFT, config.TASK_TYPE.SELECTION].indexOf(params.type) >= 0) {
+      nextStatus = config.TASK_STATUS.PANELS_INITIALISED;
+    }
+    if ([config.TASK_TYPE.CRITICAL_ANALYSIS, config.TASK_TYPE.SITUATIONAL_JUDGEMENT, config.TASK_TYPE.QUALIFYING_TEST, config.TASK_TYPE.SCENARIO].indexOf(params.type) >= 0) {
+      nextStatus = config.TASK_STATUS.TEST_INITIALISED;
+    }
+
     // get application records
     let queryRef = db.collection('applicationRecords')
-      .where('exercise.id', '==', params.exerciseId)
-      .where('stage', '==', params.stage);
-    if (params.status) {
+      .where('exercise.id', '==', params.exerciseId);
+    if (Object.keys(params).includes('stage')) {
+      queryRef = queryRef.where('stage', '==', params.stage);
+    }
+    if (Object.keys(params).includes('status')) {
       queryRef = queryRef.where('status', '==', params.status);
     }
     const applicationRecords = await getDocuments(queryRef.select());
+    if (applicationRecords.length === 0) {
+      console.log('no applications found');
+      return 0;
+    }
 
-    // update application records
-    const commands = [];
-    applicationRecords.forEach(applicationRecord => {
-      const data = {};
-      data[`${params.type}.panelId`] = null;
-      commands.push({
-        command: 'update',
-        ref: db.collection('applicationRecords').doc(applicationRecord.id),
-        data: data,
-      });
-    });
-
-    // create task
+    // construct task document, based on next status
     const taskData = {
       _stats: {
         totalApplications: applicationRecords.length,
       },
-      grades: config.GRADES,
-      capabilities: exercise.capabilities,
-      emptyScoreSheet: scoreSheet({ type: params.type, exercise: exercise }),
       startDate: taskStartDate({ type: params.type, exercise: exercise }),
       endDate: taskEndDate({ type: params.type, exercise: exercise }),
       type: params.type,
     };
-    if (params.type === config.TASK_TYPE.SELECTION) {
-      taskData['selectionCategories'] = exercise.selectionCategories;
-    }
-    taskData['status'] = config.TASK_STATUS.INITIALISED;
+    taskData.applicationStatus = params.status || '';
+    taskData.status = nextStatus;
     taskData.statusLog = {};
-    taskData.statusLog[config.TASK_STATUS.INITIALISED] = firebase.firestore.FieldValue.serverTimestamp();
+    taskData.statusLog[nextStatus] = firebase.firestore.FieldValue.serverTimestamp();
+    if (nextStatus === config.TASK_STATUS.PANELS_INITIALISED) {
+      taskData.grades = config.GRADES;
+      taskData.capabilities = exercise.capabilities;
+      taskData.emptyScoreSheet = scoreSheet({ type: params.type, exercise: exercise });
+      if (params.type === config.TASK_TYPE.SELECTION) {
+        taskData.selectionCategories = exercise.selectionCategories;
+      }
+      // update application records with placeholder for panelId
+      applicationRecords.forEach(applicationRecord => {
+        const data = {};
+        data[`${params.type}.panelId`] = null;
+        commands.push({
+          command: 'update',
+          ref: db.collection('applicationRecords').doc(applicationRecord.id),
+          data: data,
+        });
+      });
+    }
+    if (nextStatus === config.TASK_STATUS.TEST_INITIALISED) {
+      // initialise test on QT Platform
+      const qts = require('../../shared/qts')(config);
+      const response = await qts.post('qualifying-test', {
+        folder: exercise.referenceNumber,
+        test: {
+          type: params.type,
+          startDate: taskData.startDate,
+          endDate: taskData.endDate,
+        },
+      });
+      taskData.folderId = response.folderId;
+      taskData.test = {
+        id: response.testId,
+      };
+    }
     commands.push({
       command: 'set',
       ref: db.doc(`exercises/${params.exerciseId}/tasks/${params.type}`),
@@ -74,55 +109,6 @@ module.exports = (config, firebase, db) => {
     // write to db
     const result = await applyUpdates(db, commands);
     return result ? applicationRecords.length : 0;
-  }
-
-  function scoreSheet({ type, exercise }) {
-    let scoreSheet = {};
-    switch (type) {
-      case config.TASK_TYPE.SIFT:
-        scoreSheet = exercise.capabilities.reduce((acc, curr) => (acc[curr] = '', acc), {});
-        break;
-      case config.TASK_TYPE.SELECTION:
-        exercise.selectionCategories.forEach(category => {
-          scoreSheet[category] = exercise.capabilities.reduce((acc, curr) => (acc[curr] = '', acc), {});
-        });
-        break;
-      case config.TASK_TYPE.SCENARIO:
-        // TODO scenario
-        scoreSheet = exercise.capabilities.reduce((acc, curr) => (acc[curr] = '', acc), {});
-        break;
-    }
-    return scoreSheet;
-  }
-
-  function taskStartDate({ type, exercise }) {
-    switch (type) {
-      case config.TASK_TYPE.SIFT:
-        if (exercise.shortlistingMethods.indexOf('name-blind-paper-sift') >= 0 && exercise.nameBlindSiftStartDate) {
-          return exercise.nameBlindSiftStartDate;
-        } else {
-          return exercise.siftStartDate;
-        }
-      case config.TASK_TYPE.SELECTION:
-        return getEarliestDate(exercise.selectionDays.map(selectionDay => convertToDate(selectionDay.selectionDayStart)));
-        // TODO scenario
-    }
-    return null;
-  }
-
-  function taskEndDate({ type, exercise }) {
-    switch (type) {
-      case config.TASK_TYPE.SIFT:
-        if (exercise.shortlistingMethods.indexOf('name-blind-paper-sift') >= 0 && exercise.nameBlindSiftEndDate) {
-          return exercise.nameBlindSiftEndDate;
-        } else {
-          return exercise.siftEndDate;
-        }
-      case config.TASK_TYPE.SELECTION:
-        return getLatestDate(exercise.selectionDays.map(selectionDay => convertToDate(selectionDay.selectionDayEnd)));
-        // TODO scenario
-    }
-    return null;
   }
 
 };

@@ -17,7 +17,7 @@ module.exports = (config, firebase, db) => {
     const taskRef = db.doc(`exercises/${params.exerciseId}/tasks/${params.type}`);
     const task = await getDocument(taskRef);
     if (!task) return 0;
-    if ([config.TASK_STATUS.ACTIVATED, config.TASK_STATUS.MODERATION_ACTIVATED].indexOf(task.status) < 0) return 0;
+    if ([config.TASK_STATUS.PANELS_ACTIVATED, config.TASK_STATUS.MODERATION_ACTIVATED].indexOf(task.status) < 0) return 0;
 
     // get panels
     const panelQueries = task.panelIds.map(panelId => {
@@ -28,6 +28,7 @@ module.exports = (config, firebase, db) => {
     const panels = await getDocumentsFromQueries(panelQueries);
 
     // construct final scores
+    // TODO change to `.applications` and `.scores`
     const finalScores = [];
     panels.forEach(panel => {
       panel.applicationIds.forEach(applicationId => {
@@ -75,12 +76,21 @@ module.exports = (config, firebase, db) => {
   function finalScore(task, scoreSheet) {
     let score = 0;
     switch (task.type) {
-      case config.TASK_TYPE.SIFT:
-        task.capabilities.forEach(capability => score += config.GRADE_VALUES[scoreSheet[capability]]);
-        break;
-      case config.TASK_TYPE.SELECTION:
-        task.selectionCategories.forEach(category => task.capabilities.forEach(capability => score += config.GRADE_VALUES[scoreSheet[category][capability]]));
-        break;
+    case config.TASK_TYPE.SIFT:
+      task.capabilities.forEach(capability => score += config.GRADE_VALUES[scoreSheet[capability]]);
+      break;
+    case config.TASK_TYPE.SELECTION:
+      task.selectionCategories.forEach(category => task.capabilities.forEach(capability => score += config.GRADE_VALUES[scoreSheet[category][capability]]));
+      break;
+    case config.TASK_TYPE.SCENARIO:
+      Object.keys(scoreSheet).forEach(key => {
+        if (typeof scoreSheet[key] === 'object') {
+          Object.keys(scoreSheet[key]).forEach(childKey => score += scoreSheet[key][childKey]);
+        } else {
+          score += scoreSheet[key];
+        }
+      });
+      break;
     }
     return score;
   }

@@ -17,7 +17,7 @@ module.exports = (config, firebase, db) => {
     const taskRef = db.doc(`exercises/${params.exerciseId}/tasks/${params.type}`);
     const task = await getDocument(taskRef);
     if (!task) return 0;
-    if (task.status !== config.TASK_STATUS.INITIALISED) return 0;
+    if (task.status !== config.TASK_STATUS.PANELS_INITIALISED) return 0;
 
     // panels
     const panels = await getDocuments(
@@ -62,8 +62,7 @@ module.exports = (config, firebase, db) => {
       const data = {
         applications: {},
         panellists: {},
-        capabilities: task.capabilities,
-        grades: task.grades,
+        markingScheme: task.markingScheme,
         scoreSheet: {},
         status: config.PANEL_STATUS.CREATED,
       };
@@ -100,8 +99,8 @@ module.exports = (config, firebase, db) => {
     // update task
     const taskData = {};
     taskData.panelIds = panelIds;
-    taskData['status'] = config.TASK_STATUS.ACTIVATED;
-    taskData[`statusLog.${config.TASK_STATUS.ACTIVATED}`] = firebase.firestore.FieldValue.serverTimestamp();
+    taskData['status'] = config.TASK_STATUS.PANELS_ACTIVATED;
+    taskData[`statusLog.${config.TASK_STATUS.PANELS_ACTIVATED}`] = firebase.firestore.FieldValue.serverTimestamp();
     commands.push({
       command: 'update',
       ref: taskRef,

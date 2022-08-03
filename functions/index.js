@@ -77,3 +77,8 @@ exports.initialiseTask = require('./callableFunctions/tasks/initialiseTask');
 exports.activateTask = require('./callableFunctions/tasks/activateTask');
 exports.finaliseTask = require('./callableFunctions/tasks/finaliseTask');
 exports.completeTask = require('./callableFunctions/tasks/completeTask');
+
+// Callable - QTs v2
+exports.listQualifyingTests = require('./callableFunctions/qualifyingTests/v2/listQualifyingTests');
+exports.updateQualifyingTestParticipants = require('./callableFunctions/qualifyingTests/v2/updateQualifyingTestParticipants');
+exports.updateQualifyingTestScores = require('./callableFunctions/qualifyingTests/v2/updateQualifyingTestScores');

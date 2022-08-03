@@ -56,6 +56,9 @@ service cloud.firestore {
       allow update: if userIsAuthenticated() && userIsJAC() && hasPermission('e3') && verifyFields(['referenceNumber', 'progress', 'state', 'createdBy'], []);
       allow delete: if userIsAuthenticated() && userIsJAC() && hasPermission('e4');
 
+      match /data/{dataId} {
+        allow read: if userIsAuthenticated() && userIsJAC();
+      }
       match /reports/{reportId} {
         allow read: if userIsAuthenticated() && userIsJAC() && hasPermission('e1');
       }
