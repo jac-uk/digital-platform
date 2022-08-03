@@ -1,13 +1,2 @@
 
-// get response
-/**
- * send email or ref and receive
- *
- * {
- *    responses: [],
- *    score: number,
- * }
- *
- * save this in applicationRecord (or save json somewhere)
- *
- */
+// TODO placeholder for function to get QT response from qt platform (if needed)
