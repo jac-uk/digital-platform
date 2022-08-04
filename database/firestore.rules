@@ -66,7 +66,6 @@ service cloud.firestore {
         allow create, update: if userIsAuthenticated() && userIsJAC();
         allow read: if userIsAuthenticated() && userIsJAC();
       }
-
     }
 
     match /notifications/{notificationId} {
@@ -284,7 +283,7 @@ service cloud.firestore {
       allow read: if userIsAuthenticated() && userIsJAC() && hasPermission('i1');
       allow create: if userIsAuthenticated() && userIsJAC() && hasPermission('i2');
       allow update: if userIsAuthenticated() && userIsJAC() && hasPermission('i3');
-      allow delete: if userIsAuthenticated() && userIsJAC() && hasPermission('i4');  
+      allow delete: if userIsAuthenticated() && userIsJAC() && hasPermission('i4');
 
       // allow candidates to read and update their own invitations
       allow read, update: if userIsAuthenticated() && (
