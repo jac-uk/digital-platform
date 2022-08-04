@@ -1,12 +1,12 @@
 # Cloud Functions
 
-[Cloud Functions](https://firebase.google.com/docs/functions/) form the 'backend' of this project. They are 
+[Cloud Functions](https://firebase.google.com/docs/functions/) form the 'backend' of this project. They are
 [Node.js](https://nodejs.org/en/) functions which execute in a serverless environment based on defined triggers.
 
 These are useful for performing actions such as sending emails based on actions a user has performed.
 
-For example, a function could be 
-[triggered every time a new user registers](https://firebase.google.com/docs/functions/auth-events). It could send 
+For example, a function could be
+[triggered every time a new user registers](https://firebase.google.com/docs/functions/auth-events). It could send
 out a 'welcome' email with an email verification link.
 
 ## Sending notification to users
@@ -38,13 +38,14 @@ verification email template id. It can be found in the list
 `functions.config().production.url`--This should be the URL to the production
 site – e.g. `https://apply.judicialappointments.digital`
 
-`functions.config().references.team_drive_id`--This is the Google Team Drive ID in which reference files should be 
+`functions.config().references.team_drive_id`--This is the Google Team Drive ID in which reference files should be
 stored.
 
 Check firebase configuration variables like this:
 ```
 firebase functions:config:get
 ```
+
 Set firebase configuration variables like this:
 ```
 firebase functions:config:set slack.url="YOUR_SLACK_INCOMING_WEBHOOK_URL"
