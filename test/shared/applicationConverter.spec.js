@@ -274,6 +274,7 @@ describe('applicationConverter', () => {
                   },
                 ],
                 feePaidOrSalariedJudge: true,
+                feePaidOrSalariedSatForThirtyDays: true,
               };
               mockExercise = {
                 typeOfExercise: 'legal',
@@ -679,6 +680,52 @@ describe('applicationConverter', () => {
             'value': 'title3',
           },
         ]);
+    });
+
+  });
+
+  describe('getExperienceData', () => {
+    it('returns empty array when supplied no data', () => {
+      mockApplication = {};
+      expect(converter.getExperienceData(mockApplication)).toEqual([]);
+      mockApplication = { experience: {} };
+      expect(converter.getExperienceData(mockApplication)).toEqual([]);
+      mockApplication = { experience: [] };
+      expect(converter.getExperienceData(mockApplication)).toEqual([]);
+      mockApplication = { experience: null };
+      expect(converter.getExperienceData(mockApplication)).toEqual([]);
+      mockApplication = { experience: undefined };
+      expect(converter.getExperienceData(mockApplication)).toEqual([]);
+    });
+
+    it('returns formatted data when supplied objects', () => {
+      mockApplication = {
+        experience: [
+          { 
+            orgBusinessName: 'name',
+            jobTitle: 'title',
+            startDate: new Date(2022, 7, 1),
+            endDate: new Date(2022, 7, 2),
+          }, 
+        ],
+      };
+      expect(converter.getExperienceData(mockApplication)).toEqual([
+        {
+          label: 'Organisation or business',
+          lineBreak: false,
+          value: 'name',
+        },
+        {
+          label: 'Job title',
+          lineBreak: false,
+          value: 'title',
+        },
+        {
+          label: 'Date qualified',
+          lineBreak: false,
+          value: '01/08/2022 - 02/08/2022',
+        },
+      ]);
     });
 
   });
