@@ -7,6 +7,7 @@ const { scanAllFiles } = require('../actions/malware-scanning/scanAllFiles')(con
 const SCHEDULE = 'every 1 hours'; // this setting is temporary
 const runtimeOptions = {
   timeoutSeconds: 540, // maximum value is 540
+  memory: '1GB',
 };
 
 module.exports = functions.region('europe-west2')
