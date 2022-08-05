@@ -122,7 +122,7 @@ class htmlWriter {
     this.html += rowHtml.join('');
   }
   addParagraph(data, textAlign = 'left', fontSize = 'inherit', extraStyle = '') {
-    let style = `style="text-align: ${textAlign}; font-size: ${fontSize}; ${extraStyle}`;
+    let style = `style="text-align: ${textAlign}; font-size: ${fontSize}; ${extraStyle}"`;
     this.html += `<p ${style}">${data}</p>`;
   }
   addRaw(s) {

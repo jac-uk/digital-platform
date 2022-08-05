@@ -8,7 +8,6 @@ module.exports = () => {
 
   return {
     getHtmlPanelPack,
-    getExperienceData,
     getAdditionalSelectionCriteria,
     getLocationPreferences,
     getJurisdictionPreferences,
@@ -228,13 +227,11 @@ module.exports = () => {
   function getExperienceData(application) {
     const experienceData = application.experience;
     const data = [];
-    if (experienceData && Array.isArray(experienceData)) {
-      experienceData.forEach(eD => {
-        addField(data, 'Organisation or business', eD.orgBusinessName);
-        addField(data, 'Job title', eD.jobTitle);
-        addField(data, 'Date qualified', `${formatDate(eD.startDate)} - ${formatDate(eD.endDate) || 'current'}`);
-      });
-    }
+    experienceData.forEach(eD => {
+      addField(data, 'Organisation or business', eD.orgBusinessName);
+      addField(data, 'Job title', eD.jobTitle);
+      addField(data, 'Date qualified', `${formatDate(eD.startDate)} - ${formatDate(eD.endDate) || 'current'}`);
+    });
     return data;
   }
 
