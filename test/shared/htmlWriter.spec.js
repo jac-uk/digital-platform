@@ -3,41 +3,6 @@
  */
 
 const htmlWriter = require('../../functions/shared/htmlWriter');
-const DEFAULT_STYLESHEET = `
-  <style>
-    body {
-      font-family: Khula, HelveticaNeue, Arial, Helvetica, sans-serif;
-      font-size: 1.1875rem;
-    }
-    th {
-      color: #0B0C14;
-      width: 50%;
-      text-align: left;
-      border-bottom: solid 1px #0B0C14;
-      padding: 8px;
-      vertical-align: top;
-    }
-    td {
-      color: #0B0C14;
-      border-bottom: solid 1px #0B0C14;
-      padding: 8px;
-    }
-    table {
-      border-spacing: 0;
-      padding-bottom: 20px;
-      width: 800px;
-    }
-    .sectionStart th, .sectionStart td {
-      padding: 30px 8px 8px 8px;
-    }
-    h2 {
-      padding-top: 10px;
-    }
-    h4 {
-      padding-top: 30px;
-    }
-  </style>
-`;
 
 describe('htmlWriter', () => {
 
@@ -60,7 +25,7 @@ describe('htmlWriter', () => {
   });
   
   it('pageHeader() contains default stylesheet', () => {
-    expect(writer.pageHeader()).toContain(DEFAULT_STYLESHEET);
+    expect(writer.pageHeader()).toContain(writer.defaultStylesheet());
   });
 
   it('pageFooter() returns body and html closing tags', () => {
@@ -82,7 +47,7 @@ describe('htmlWriter', () => {
 
   it('addTitle() ...', () => {
     writer.addTitle('BIG TITLE');
-    expect(writer.html).toBe('<h2 id="title">BIG TITLE</h2>');
+    expect(writer.html).toBe('<h2 id="title" style="text-align: left">BIG TITLE</h2>');
   });
 
   it('addHeading() ...', async () => {
@@ -108,7 +73,7 @@ describe('htmlWriter', () => {
 
   it('addParagraph() ...', async () => {
     writer.addParagraph('example paragraph');
-    expect(writer.html).toContain('<p>example paragraph</p>');
+    expect(writer.html).toContain('<p style="text-align: left; font-size: inherit; ">example paragraph</p>');
   });
 
 });
