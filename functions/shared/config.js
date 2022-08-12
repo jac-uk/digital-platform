@@ -267,4 +267,6 @@ module.exports = {
   SLACK_URL: functions.config().slack.url,
   STORAGE_URL: functions.config().project.id + '.appspot.com',
   SCAN_SERVICE_URL: functions.config().scan_service.url,
+  GOOGLE_RECAPTCHA_VALIDATION_URL: functions.config().google_recaptcha.url,
+  GOOGLE_RECAPTCHA_SECRET: functions.config().google_recaptcha.secret,
 };
