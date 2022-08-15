@@ -44,7 +44,7 @@ const main = async () => {
   return result;
 };
 
-// only run on develop environment
+// only run in develop environment
 if (isDevelop()) {
   main()
     .then((result) => {
