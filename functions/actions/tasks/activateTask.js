@@ -13,6 +13,8 @@ module.exports = (config, firebase, db) => {
   */
   async function activateTask(params) {
 
+  // TODO amend this so it handles activation of all task types/modules, not just panel tasks
+
     // get task
     const taskRef = db.doc(`exercises/${params.exerciseId}/tasks/${params.type}`);
     const task = await getDocument(taskRef);
@@ -66,11 +68,11 @@ module.exports = (config, firebase, db) => {
         scoreSheet: {},
         status: config.PANEL_STATUS.CREATED,
       };
-      data[`statusLog.${config.PANEL_STATUS.CREATED}`] = firebase.firestore.FieldValue.serverTimestamp();
-
-      if (params.type === config.TASK_TYPE.SELECTION) {
-        data['selectionCategories'] = task.selectionCategories;
+      if (task.grades) {
+        data.grades = task.grades;
+        data.grade_values = config.GRADE_VALUES;
       }
+      data[`statusLog.${config.PANEL_STATUS.CREATED}`] = firebase.firestore.FieldValue.serverTimestamp();
 
       const relevantApplicationRecords = applicationRecords.filter(applicationRecord => panel.applicationIds.indexOf(applicationRecord.id) >= 0);
       relevantApplicationRecords.forEach(applicationRecord => {

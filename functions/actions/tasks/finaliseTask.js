@@ -36,8 +36,8 @@ module.exports = (config, firebase, db) => {
           id: applicationId,
           ref: panel.applications[applicationId].referenceNumber, // TODO extract only the last 7 chars
           panelId: panel.id,
-          scoreSheet: finalScoreSheet(task, panel.scoreSheet[applicationId]),
-          score: finalScore(task, panel.scoreSheet[applicationId]),
+          scoreSheet: finaliseScoreSheet(task.markingScheme, panel.scoreSheet[applicationId]),
+          score: getScoreSheetTotal(task.markingScheme, panel.scoreSheet[applicationId]),
         };
         finalScores.push(row);
       });
@@ -62,36 +62,52 @@ module.exports = (config, firebase, db) => {
 
   }
 
-  function finalScoreSheet(task, scoreSheet) {
+  function finaliseScoreSheet(markingScheme, scoreSheet) {
+    if (!markingScheme) return scoreSheet;
+    if (!scoreSheet) return scoreSheet;
     delete scoreSheet.flagForModeration;  //  removing `flagForModeration` flag in order to reduce object size
-    if (task.type === config.TASK_TYPE.SELECTION) {
-      task.selectionCategories.forEach(category => {
-        scoreSheet[category].score = 0;
-        task.capabilities.forEach(capability => scoreSheet[category].score += config.GRADE_VALUES[scoreSheet[category][capability]]);
-      });
-    }
+    markingScheme.forEach(item => {
+      if (item.type === config.MARKING_TYPE.GROUP) {
+        scoreSheet[item.ref].score = 0;
+        item.children.forEach(child => {
+          scoreSheet[item.ref].score += getScoreSheetItemTotal(child, scoreSheet[item.ref]);
+        });
+      }
+    });
     return scoreSheet;
   }
 
-  function finalScore(task, scoreSheet) {
+  function getScoreSheetTotal(markingScheme, scoreSheet) {
     let score = 0;
-    switch (task.type) {
-    case config.TASK_TYPE.SIFT:
-      task.capabilities.forEach(capability => score += config.GRADE_VALUES[scoreSheet[capability]]);
-      break;
-    case config.TASK_TYPE.SELECTION:
-      task.selectionCategories.forEach(category => task.capabilities.forEach(capability => score += config.GRADE_VALUES[scoreSheet[category][capability]]));
-      break;
-    case config.TASK_TYPE.SCENARIO:
-      Object.keys(scoreSheet).forEach(key => {
-        if (typeof scoreSheet[key] === 'object') {
-          Object.keys(scoreSheet[key]).forEach(childKey => score += scoreSheet[key][childKey]);
-        } else {
-          score += scoreSheet[key];
-        }
-      });
-      break;
-    }
+    if (!markingScheme) return score;
+    if (!scoreSheet) return score;
+    markingScheme.forEach(item => {
+      if (item.type === config.MARKING_TYPE.GROUP) {
+        item.children.forEach(child => {
+          score += getScoreSheetItemTotal(child, scoreSheet[item.ref]);
+        });
+      } else {
+        score += getScoreSheetItemTotal(item, scoreSheet);
+      }
+    });
     return score;
+  }
+
+  function getScoreSheetItemTotal(item, scoreSheet) {
+    if (!item.excludeFromScore) {
+      switch (item.type) {
+      case config.MARKING_TYPE.GRADE:
+        if (scoreSheet[item.ref] && config.GRADE_VALUES[scoreSheet[item.ref]]) {
+          return config.GRADE_VALUES[scoreSheet[item.ref]];
+        }
+        break;
+      case config.MARKING_TYPE.NUMBER:
+        if (scoreSheet[item.ref]) {
+          return scoreSheet[item.ref];
+        }
+        break;
+      }
+    }
+    return 0;
   }
 };

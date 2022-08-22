@@ -1,7 +1,8 @@
+const { object } = require('firebase-functions/lib/providers/storage');
 const { getDocument, getDocuments, applyUpdates, convertToDate, getEarliestDate, getLatestDate } = require('../../shared/helpers');
 
 module.exports = (config, firebase, db) => {
-  const { scoreSheet, taskStartDate, taskEndDate } = require('./taskHelpers')(config);
+  const { scoreSheet, getTimelineTasks, taskStartDate, taskEndDate, createMarkingScheme, taskNextStatus, taskApplicationsEntryStatus } = require('./taskHelpers')(config);
 
   return initialiseTask;
 
@@ -11,15 +12,13 @@ module.exports = (config, firebase, db) => {
   * @param {*} `params` is an object containing
   *   `exerciseId` (required) ID of exercise
   *   `type` (required) type of task
-  *   `stage` (required) exercise stage
-  *   `status` (optional) exercise status
   */
   async function initialiseTask(params) {
 
     const commands = [];
 
     // get exercise
-    const exercise = await getDocument(db.doc(`exercises/${params.exerciseId}`));
+    let exercise = await getDocument(db.doc(`exercises/${params.exerciseId}`), true);
     if (!exercise) return 0;
 
     // check if task already exists
@@ -30,22 +29,16 @@ module.exports = (config, firebase, db) => {
     }
 
     // get next status
-    let nextStatus;
-    if ([config.TASK_TYPE.SIFT, config.TASK_TYPE.SELECTION].indexOf(params.type) >= 0) {
-      nextStatus = config.TASK_STATUS.PANELS_INITIALISED;
-    }
-    if ([config.TASK_TYPE.CRITICAL_ANALYSIS, config.TASK_TYPE.SITUATIONAL_JUDGEMENT, config.TASK_TYPE.QUALIFYING_TEST, config.TASK_TYPE.SCENARIO].indexOf(params.type) >= 0) {
-      nextStatus = config.TASK_STATUS.TEST_INITIALISED;
-    }
+    let nextStatus = taskNextStatus(params.type);
+
+    // get status for eligibile applications
+    const applicationEntryStatus = taskApplicationsEntryStatus(exercise, params.type);
 
     // get application records
     let queryRef = db.collection('applicationRecords')
       .where('exercise.id', '==', params.exerciseId);
-    if (Object.keys(params).includes('stage')) {
-      queryRef = queryRef.where('stage', '==', params.stage);
-    }
-    if (Object.keys(params).includes('status')) {
-      queryRef = queryRef.where('status', '==', params.status);
+    if (applicationEntryStatus) {
+      queryRef = queryRef.where('status', '==', applicationEntryStatus);
     }
     const applicationRecords = await getDocuments(queryRef.select());
     if (applicationRecords.length === 0) {
@@ -53,52 +46,31 @@ module.exports = (config, firebase, db) => {
       return 0;
     }
 
+    // get timeline task
+    const timelineTask = getTimelineTasks(exercise, params.type)[0];
+
     // construct task document, based on next status
     const taskData = {
       _stats: {
         totalApplications: applicationRecords.length,
       },
-      startDate: taskStartDate({ type: params.type, exercise: exercise }),
-      endDate: taskEndDate({ type: params.type, exercise: exercise }),
+      startDate: timelineTask.date,
+      endDate: timelineTask.endDate ? timelineTask.endDate : timelineTask.date,
+      dateString: timelineTask.dateString,
       type: params.type,
     };
-    taskData.applicationStatus = params.status || '';
+    taskData.applicationEntryStatus = applicationEntryStatus;
     taskData.status = nextStatus;
     taskData.statusLog = {};
     taskData.statusLog[nextStatus] = firebase.firestore.FieldValue.serverTimestamp();
     if (nextStatus === config.TASK_STATUS.PANELS_INITIALISED) {
-      taskData.grades = config.GRADES;
-      taskData.capabilities = exercise.capabilities;
-      taskData.emptyScoreSheet = scoreSheet({ type: params.type, exercise: exercise });
-      if (params.type === config.TASK_TYPE.SELECTION) {
-        taskData.selectionCategories = exercise.selectionCategories;
-      }
-      // update application records with placeholder for panelId
-      applicationRecords.forEach(applicationRecord => {
-        const data = {};
-        data[`${params.type}.panelId`] = null;
-        commands.push({
-          command: 'update',
-          ref: db.collection('applicationRecords').doc(applicationRecord.id),
-          data: data,
-        });
-      });
+      Object.assign(taskData, await initialisePanelTask(exercise, params.type, applicationRecords));
     }
     if (nextStatus === config.TASK_STATUS.TEST_INITIALISED) {
-      // initialise test on QT Platform
-      const qts = require('../../shared/qts')(config);
-      const response = await qts.post('qualifying-test', {
-        folder: exercise.referenceNumber,
-        test: {
-          type: params.type,
-          startDate: taskData.startDate,
-          endDate: taskData.endDate,
-        },
-      });
-      taskData.folderId = response.folderId;
-      taskData.test = {
-        id: response.testId,
-      };
+      Object.assign(taskData, await initialiseTestTask(exercise.referenceNumber, params.type, taskData.startDate, taskData.endDate));
+    }
+    if (nextStatus === config.TASK_STATUS.DATA_INITIALISED) {
+      Object.assign(taskData, await initialiseDataTask(exercise, params.type));
     }
     commands.push({
       command: 'set',
@@ -109,6 +81,58 @@ module.exports = (config, firebase, db) => {
     // write to db
     const result = await applyUpdates(db, commands);
     return result ? applicationRecords.length : 0;
+  }
+
+  /**
+   * Initialises a panel task and returns data to be stored in the `task` document
+   * @param {*} exercise
+   * @param {*} taskType
+   * @param {*} applicationRecords
+   */
+  async function initialisePanelTask(exercise, taskType, applicationRecords) {
+    const taskData = {};
+    taskData.grades = config.GRADES;
+    taskData.markingScheme = createMarkingScheme(exercise, taskType);
+    taskData.emptyScoreSheet = scoreSheet({ type: taskType, exercise: exercise });
+    // update application records with placeholder for panelId
+    const commands = [];
+    applicationRecords.forEach(applicationRecord => {
+      const data = {};
+      data[`${taskType}.panelId`] = null;
+      commands.push({
+        command: 'update',
+        ref: db.collection('applicationRecords').doc(applicationRecord.id),
+        data: data,
+      });
+    });
+    await applyUpdates(db, commands);
+    return taskData;
+  }
+
+  /**
+   * Initialises a test and returns data to be stored in the `task` document
+   * @param {*} folderName
+   * @param {*} testType
+   * @param {*} startDate
+   * @param {*} endDate
+   */
+  async function initialiseTestTask(folderName, testType, startDate, endDate) {
+    const taskData = {};
+    // initialise test on QT Platform
+    const qts = require('../../shared/qts')(config);
+    const response = await qts.post('qualifying-test', {
+      folder: folderName,
+      test: {
+        type: testType,
+        startDate: startDate,
+        endDate: endDate,
+      },
+    });
+    taskData.folderId = response.folderId;
+    taskData.test = {
+      id: response.testId,
+    };
+    return taskData;
   }
 
 };

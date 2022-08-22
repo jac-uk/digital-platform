@@ -9,6 +9,7 @@ module.exports = {
   isEmpty,
   applyUpdates,
   checkArguments,
+  isDate,
   isDateInPast, // @TODO we want one set of date & exercise helpers (see actions/shared/converters)
   formatDate,
   getDate,
@@ -21,13 +22,35 @@ module.exports = {
   removeHtml,
 };
 
-async function getDocument(query) {
+function reviver(key, value) {
+  // TODO remove this first block of code checking for `.seconds` rather than `._seconds`, when we're sure Timestamps no longer come through like this
+  if (value && typeof value == 'object' && typeof value.seconds == 'number' && typeof value.nanoseconds == 'number') {
+    value = new Timestamp(value.seconds, value.nanoseconds).toDate();
+  }
+  if (value && typeof value == 'object' && typeof value._seconds == 'number' && typeof value._nanoseconds == 'number') {
+    value = new Timestamp(value._seconds, value._nanoseconds).toDate();
+  }
+  return value;
+};
+
+function convertFirestoreTimestampsToDates(data) {
+  // Return non-object values untouched
+  if (typeof data !== 'object' || data === null) return data;
+  const json = JSON.stringify(data);
+  return JSON.parse(json, reviver);
+};
+
+async function getDocument(query, convertTimestamps) {
   const doc = await query.get();
   if (doc.exists) {
     const document = doc.data();
     document.id = doc.id;
     document.ref = doc.ref;
-    return document;
+    if (convertTimestamps) {
+      return convertFirestoreTimestampsToDates(document);
+    } else {
+      return document;
+    }
   }
   return false;
 }
@@ -146,6 +169,10 @@ function checkArguments(definitions, data) {
   }
   // @TODO perhaps make this return richer information like `{ isOK: Boolean, message: String }`
   return true;
+}
+
+function isDate(date) {
+  return date instanceof Date;
 }
 
 function isDateInPast(date) {

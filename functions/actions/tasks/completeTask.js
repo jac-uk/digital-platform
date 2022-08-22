@@ -42,6 +42,7 @@ module.exports = (config, firebase, db) => {
       outcomeStats[newStatus] += 1;
       const saveData = {};
       saveData.status = newStatus;
+      // TODO update stage too?
       saveData[`statusLog.${newStatus}`] = firebase.firestore.FieldValue.serverTimestamp();
       commands.push({
         command: 'update',
@@ -77,13 +78,17 @@ module.exports = (config, firebase, db) => {
             if (scoreData.score >= task.passMark) {
               const otherTaskScoreData = otherTask.finalScores.find(otherScoreData => otherScoreData.id === scoreData.id);
               if (otherTaskScoreData && otherTaskScoreData.score >= otherTask.passMark) {
+                const overallScore = 50 * ((scoreData.score / task.maxScore) + (otherTaskScoreData.score / otherTask.maxScore));
                 finalScores.push({
                   id: scoreData.id,
                   ref: scoreData.ref,
-                  score: 50 * ((scoreData.score / task.maxScore) + (otherTaskScoreData.score / otherTask.maxScore)),
+                  score: overallScore,
                   scoreSheet: {
-                    CA: params.type === config.TASK_TYPE.CRITICAL_ANALYSIS ? scoreData.score : otherTaskScoreData.score,
-                    SJ: params.type === config.TASK_TYPE.CRITICAL_ANALYSIS ? otherTaskScoreData.score : scoreData.score,
+                    qualifyingTest: {
+                      CA: params.type === config.TASK_TYPE.CRITICAL_ANALYSIS ? scoreData.score : otherTaskScoreData.score,
+                      SJ: params.type === config.TASK_TYPE.CRITICAL_ANALYSIS ? otherTaskScoreData.score : scoreData.score,
+                      score: overallScore,
+                    },
                   },
                 });
               }
@@ -92,6 +97,22 @@ module.exports = (config, firebase, db) => {
           const taskData = {
             _stats: {},
             finalScores: finalScores,
+            markingScheme: [
+              {
+                ref: config.TASK_TYPE.QUALIFYING_TEST,
+                type: 'group',
+                children: [
+                  {
+                    ref: 'CA',
+                    type: 'number',
+                  },
+                  {
+                    ref: 'SJ',
+                    type: 'number',
+                  },
+                ],
+              },
+            ],
             type: config.TASK_TYPE.QUALIFYING_TEST,
           };
           taskData['status'] = config.TASK_STATUS.FINALISED;
