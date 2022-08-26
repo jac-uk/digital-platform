@@ -157,10 +157,12 @@ module.exports = (CONSTANTS) => {
     }
     switch (whichAssessor) {
       case 'first':
+        assessment.assessor.type = application.firstAssessorType ? application.firstAssessorType : '';
         assessment.assessor.fullName = application.firstAssessorFullName ? application.firstAssessorFullName : '';
         assessment.assessor.email = application.firstAssessorEmail ? application.firstAssessorEmail : '';
         break;
       case 'second':
+        assessment.assessor.type = application.secondAssessorType ? application.secondAssessorType : '';
         assessment.assessor.fullName = application.secondAssessorFullName ? application.secondAssessorFullName : '';
         assessment.assessor.email = application.secondAssessorEmail ? application.secondAssessorEmail : '';
         break;
