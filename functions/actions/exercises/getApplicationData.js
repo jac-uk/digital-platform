@@ -1,7 +1,6 @@
 const { getDocument, getDocuments, formatDate } = require('../../shared/helpers');
 
 const _ = require('lodash');
-const { instance } = require('firebase-functions/v1/database');
 
 function formatPreference(choiceArray, questionType) {
   if(questionType === 'multiple-choice') {
@@ -11,7 +10,7 @@ function formatPreference(choiceArray, questionType) {
   } else if (questionType === 'single-choice') {
     return choiceArray;
   }
-};
+}
 
 module.exports = (config, firebase, db, auth) => {
 
@@ -51,11 +50,11 @@ module.exports = (config, firebase, db, auth) => {
         }
         // Handle array values
         else if (['locationPreferences', 'jurisdictionPreferences'].includes(column)) {
-          if (column == 'locationPreferences') {
+          if (column === 'locationPreferences') {
             // console.log(record[column], exerciseData.locationQuestionType);
             record[column] = formatPreference(record[column], exerciseData.locationQuestionType);
           } 
-          if (column == 'jurisdictionPreferences') {
+          if (column === 'jurisdictionPreferences') {
             record[column] = formatPreference(record[column], exerciseData.jurisdictionQuestionType);
           } 
         }
