@@ -25,7 +25,7 @@ module.exports = (auth, db) => {
       };
       console.log('generateSignInWithEmailLink', ref);
       const emailLink = await auth.generateSignInWithEmailLink(email, actionCodeSettings);
-      console.log('generateSignInWithEmailLink DONE', ref, emailLink);
+      console.log('generateSignInWithEmailLink DONE', ref);
       return emailLink;
     }
   }
