@@ -269,4 +269,5 @@ module.exports = {
   SCAN_SERVICE_URL: functions.config().scan_service.url,
   GOOGLE_RECAPTCHA_VALIDATION_URL: functions.config().google_recaptcha.url,
   GOOGLE_RECAPTCHA_SECRET: functions.config().google_recaptcha.secret,
+  SENTRY_DSN: functions.config().sentry.dsn,
 };
