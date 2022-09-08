@@ -1,7 +1,7 @@
 const { getDocument, getDocuments, getAllDocuments, applyUpdates } = require('../shared/helpers');
 
 module.exports = (config, firebase, db) => {
-  const { newAssessment, newNotificationAssessmentRequest, newNotificationAssessmentReminder } = require('../shared/factories')(config);
+  const { newAssessment, newNotificationAssessmentRequest, newNotificationAssessmentReminder, newNotificationAssessmentSubmit } = require('../shared/factories')(config);
   const { testNotification } = require('./notifications')(config, db);
 
   return {
@@ -48,6 +48,13 @@ module.exports = (config, firebase, db) => {
         command: 'update',
         ref: db.collection('exercises').doc(assessment.exercise.id),
         data: { 'assessments.completed': increment },
+      });
+
+      // send notification
+      commands.push({
+        command: 'set',
+        ref: db.collection('notifications').doc(),
+        data: newNotificationAssessmentSubmit(firebase, assessment),
       });
     }
     // write to db
