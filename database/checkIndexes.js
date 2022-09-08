@@ -1,14 +1,26 @@
 // 
 // node database/checkIndexes.js
+const fs = require('fs');
+    
 const json = require('./firestore.indexes.json');
 
-const filtered = json.indexes.filter((value, index) => {
-  const _value = JSON.stringify(value);
-  return index !== json.indexes.findIndex(obj => {
-    return JSON.stringify(obj) === _value;
+function returnOnlyUnique(array) {
+  return array.filter((value, index) => {
+    const _value = JSON.stringify(value);
+    return index === array.findIndex(obj => {
+      return JSON.stringify(obj) === _value;
+    });
   });
+}
+
+// const filtered = returnOnlyUnique(json.fieldOverrides);
+// const filtered = returnOnlyUnique(json.indexes);
+
+fs.writeFile('./database/OUTPUT.json', JSON.stringify(filtered), (err) => {
+  if (err)
+    console.log(err);
+  else {
+    console.log('File written successfully\n');
+    console.log('The written has the following contents:');
+  }
 });
-
-
-console.log('duplicates: ', filtered.length);
-filtered.forEach(found => console.log(found));
