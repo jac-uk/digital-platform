@@ -4,6 +4,7 @@ const config = require('../shared/config');
 const { loadTestApplications } = require('../actions/applications/applications')(config, firebase, db, auth);
 const { importUsers } = require('../actions/users')(auth, db);
 const { isProduction } = require('../shared/helpers');
+const { wrapFunction } = require('../shared/sentry')(config);
 
 const runtimeOptions = {
   memory: '512MB',
@@ -11,7 +12,7 @@ const runtimeOptions = {
 // default hashed password
 const defaultPasswordBcryptHash = '$2a$12$y/eoSrLp1c147c4VjCT/l.f/hxxraGhQYIYKYycZVdqh61pvPXjOW';
 
-module.exports = functions.runWith(runtimeOptions).region('europe-west2').https.onCall(async (data, context) => {
+module.exports = functions.runWith(runtimeOptions).region('europe-west2').https.onCall(wrapFunction(async (data, context) => {
   // do not use this function on production
   if (isProduction()) {
     throw new functions.https.HttpsError('failed-precondition', 'The function must not be called on production.');
@@ -47,4 +48,4 @@ module.exports = functions.runWith(runtimeOptions).region('europe-west2').https.
   }
 
   return await importUsers(userImportRecords);
-});
+}));

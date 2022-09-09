@@ -4,13 +4,14 @@ const config = require('../shared/config');
 const { deleteApplications } = require('../actions/applications/applications')(config, firebase, db, auth);
 const { isProduction } = require('../shared/helpers');
 const { PERMISSIONS, hasPermissions } = require('../shared/permissions');
+const { wrapFunction } = require('../shared/sentry')(config);
 
 const runtimeOptions = {
   timeoutSeconds: 120,
   memory: '1GB',
 };
 
-module.exports = functions.runWith(runtimeOptions).region('europe-west2').https.onCall(async (data, context) => {
+module.exports = functions.runWith(runtimeOptions).region('europe-west2').https.onCall(wrapFunction(async (data, context) => {
   if (!context.auth) {
     throw new functions.https.HttpsError('failed-precondition', 'The function must be called while authenticated.');
   }
@@ -34,4 +35,4 @@ module.exports = functions.runWith(runtimeOptions).region('europe-west2').https.
   }
 
   return await deleteApplications(data.exerciseId);
-});
+}));

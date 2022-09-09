@@ -3,8 +3,9 @@ const config = require('../shared/config');
 const { firebase, db } = require('../shared/admin.js');
 const { scanFile } = require('../actions/malware-scanning/scanFile')(config, firebase);
 const { checkFunctionEnabled } = require('../shared/serviceSettings.js')(db);
+const { wrapFunction } = require('../shared/sentry')(config);
 
-module.exports = functions.region('europe-west2').https.onCall(async (data, context) => {
+module.exports = functions.region('europe-west2').https.onCall(wrapFunction(async (data, context) => {
   await checkFunctionEnabled();
 
   // authenticate the request
@@ -23,4 +24,4 @@ module.exports = functions.region('europe-west2').https.onCall(async (data, cont
   // return the outcome
   return result;
 
-});
+}));

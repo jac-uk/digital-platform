@@ -5,8 +5,9 @@ const { checkArguments } = require('../shared/helpers.js');
 const initialiseQualifyingTest = require('../actions/qualifyingTests/initialiseQualifyingTest')(config, firebase, db);
 const { checkFunctionEnabled } = require('../shared/serviceSettings.js')(db);
 const { PERMISSIONS, hasPermissions } = require('../shared/permissions');
+const { wrapFunction } = require('../shared/sentry')(config);
 
-module.exports = functions.region('europe-west2').https.onCall(async (data, context) => {
+module.exports = functions.region('europe-west2').https.onCall(wrapFunction(async (data, context) => {
   await checkFunctionEnabled();
   if (!context.auth) {
     throw new functions.https.HttpsError('failed-precondition', 'The function must be called while authenticated.');
@@ -27,4 +28,4 @@ module.exports = functions.region('europe-west2').https.onCall(async (data, cont
     throw new functions.https.HttpsError('invalid-argument', 'Please provide valid arguments');
   }
   return initialiseQualifyingTest(data);
-});
+}));

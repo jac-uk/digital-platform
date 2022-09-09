@@ -4,8 +4,9 @@ const { db } = require('../shared/admin.js');
 const flagApplicationIssues = require('../actions/applications/flagApplicationIssues')(config, db);
 const { checkFunctionEnabled } = require('../shared/serviceSettings.js')(db);
 const { PERMISSIONS, hasPermissions } = require('../shared/permissions');
+const { wrapFunction } = require('../shared/sentry')(config);
 
-module.exports = functions.region('europe-west2').https.onCall(async (data, context) => {
+module.exports = functions.region('europe-west2').https.onCall(wrapFunction(async (data, context) => {
   await checkFunctionEnabled();
   // @TODO check auth.token for correct role, when we have implemented roles
   if (!context.auth) {
@@ -25,4 +26,4 @@ module.exports = functions.region('europe-west2').https.onCall(async (data, cont
   return {
     result: result,
   };
-});
+}));

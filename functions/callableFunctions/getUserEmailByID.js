@@ -3,8 +3,10 @@ const { auth, db } = require('../shared/admin.js');
 const { checkArguments } = require('../shared/helpers.js');
 const  getUserEmailByID  = require('../actions/candidates/getUserEmailByID')(auth);
 const { checkFunctionEnabled } = require('../shared/serviceSettings.js')(db);
+const config = require('../shared/config');
+const { wrapFunction } = require('../shared/sentry')(config);
 
-module.exports = functions.region('europe-west2').https.onCall(async (data, context) => {
+module.exports = functions.region('europe-west2').https.onCall(wrapFunction(async (data, context) => {
   await checkFunctionEnabled();
   console.log('getUserByID called');
   if (!context.auth) {
@@ -17,4 +19,4 @@ module.exports = functions.region('europe-west2').https.onCall(async (data, cont
   }
   return await getUserEmailByID(data);
 
-});
+}));

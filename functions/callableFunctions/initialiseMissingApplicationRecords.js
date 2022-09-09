@@ -7,8 +7,9 @@ const { generateDiversityReport } = require('../actions/exercises/generateDivers
 // const { flagApplicationIssuesForExercise } = require('../actions/applications/flagApplicationIssues')(config, db);
 const { checkFunctionEnabled } = require('../shared/serviceSettings.js')(db);
 const { PERMISSIONS, hasPermissions } = require('../shared/permissions');
+const { wrapFunction } = require('../shared/sentry')(config);
 
-module.exports = functions.region('europe-west2').https.onCall(async (data, context) => {
+module.exports = functions.region('europe-west2').https.onCall(wrapFunction(async (data, context) => {
   await checkFunctionEnabled();
   if (!context.auth) {
     throw new functions.https.HttpsError('failed-precondition', 'The function must be called while authenticated.');
@@ -35,4 +36,4 @@ module.exports = functions.region('europe-west2').https.onCall(async (data, cont
   // await flagApplicationIssuesForExercise(data.exerciseId);
 
   return result;
-});
+}));

@@ -3,8 +3,10 @@ const { auth, db } = require('../shared/admin.js');
 const { checkArguments } = require('../shared/helpers.js');
 const users = require('../actions/users')(auth, db);
 const { checkFunctionEnabled } = require('../shared/serviceSettings.js')(db);
+const config = require('../shared/config');
+const { wrapFunction } = require('../shared/sentry')(config);
 
-module.exports = functions.region('europe-west2').https.onCall(async (data, context) => {
+module.exports = functions.region('europe-west2').https.onCall(wrapFunction(async (data, context) => {
   await checkFunctionEnabled();
   if (!checkArguments({
     ref: { required: true },
@@ -17,4 +19,4 @@ module.exports = functions.region('europe-west2').https.onCall(async (data, cont
   return {
     result: result,
   };
-});
+}));

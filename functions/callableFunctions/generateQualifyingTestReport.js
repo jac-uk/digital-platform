@@ -7,8 +7,9 @@ const { getDocument } = require('../shared/helpers');
 const { logEvent } = require('../actions/logs/logEvent')(firebase, db, auth);
 const { checkFunctionEnabled } = require('../shared/serviceSettings.js')(db);
 const { PERMISSIONS, hasPermissions } = require('../shared/permissions');
+const { wrapFunction } = require('../shared/sentry')(config);
 
-module.exports = functions.region('europe-west2').https.onCall(async (data, context) => {
+module.exports = functions.region('europe-west2').https.onCall(wrapFunction(async (data, context) => {
   await checkFunctionEnabled();
 
   // authenticate the request
@@ -46,4 +47,4 @@ module.exports = functions.region('europe-west2').https.onCall(async (data, cont
 
   // return the report to the caller
   return result;
-});
+}));

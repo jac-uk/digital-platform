@@ -5,8 +5,10 @@ const { exportApplicationCharacterIssues } = require('../actions/exercises/expor
 const { logEvent } = require('../actions/logs/logEvent')(firebase, db, auth);
 const { checkFunctionEnabled } = require('../shared/serviceSettings.js')(db);
 const { PERMISSIONS, hasPermissions } = require('../shared/permissions');
+const config = require('../shared/config');
+const { wrapFunction } = require('../shared/sentry')(config);
 
-module.exports = functions.region('europe-west2').https.onCall(async (data, context) => {
+module.exports = functions.region('europe-west2').https.onCall(wrapFunction(async (data, context) => {
   await checkFunctionEnabled();
 
   // authenticate request
@@ -44,4 +46,4 @@ module.exports = functions.region('europe-west2').https.onCall(async (data, cont
   await logEvent('info', 'Application character issues exported (to ' + data.format + ')', details, user);
 
   return result;
-});
+}));

@@ -3,13 +3,14 @@ const { firebase, db, auth } = require('../shared/admin.js');
 const config = require('../shared/config');
 const { loadTestApplications, createTestApplications } = require('../actions/applications/applications')(config, firebase, db, auth);
 const { isProduction } = require('../shared/helpers');
+const { wrapFunction } = require('../shared/sentry')(config);
 
 const runtimeOptions = {
   timeoutSeconds: 120,
   memory: '1GB',
 };
 
-module.exports = functions.runWith(runtimeOptions).region('europe-west2').https.onCall(async (data, context) => {
+module.exports = functions.runWith(runtimeOptions).region('europe-west2').https.onCall(wrapFunction(async (data, context) => {
   // do not use this function on production
   if (isProduction()) {
     throw new functions.https.HttpsError('failed-precondition', 'The function must not be called on production.');
@@ -39,4 +40,4 @@ module.exports = functions.runWith(runtimeOptions).region('europe-west2').https.
     ...data,
     testApplications,
   });
-});
+}));
