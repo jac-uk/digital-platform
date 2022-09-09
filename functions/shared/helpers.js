@@ -1,5 +1,6 @@
 const firebase = require('firebase-admin');
 const Timestamp = firebase.firestore.Timestamp;
+const packageJson = require('./../../package.json');
 
 module.exports = {
   getDocument,
@@ -19,6 +20,8 @@ module.exports = {
   convertStringToSearchParts,
   isProduction,
   removeHtml,
+  getAppEnvironment,
+  getPackageVersion,
 };
 
 async function getDocument(query) {
@@ -263,4 +266,22 @@ function isProduction() {
 
 function removeHtml(str) {
   return str.replace(/(<([^>]+)>)/gi, '');
+}
+
+function getAppEnvironment() {
+  const projectId = firebase.instanceId().app.options.projectId;
+  if (projectId.indexOf('-develop') >= 0) {
+    return 'DEVELOP';
+  }
+  if (projectId.indexOf('-staging') >= 0) {
+    return 'STAGING';
+  }
+  if (projectId.indexOf('-production') >= 0) {
+    return 'PRODUCTION';
+  }
+  return '';
+}
+
+function getPackageVersion() {
+  return packageJson.version || 0;
 }
