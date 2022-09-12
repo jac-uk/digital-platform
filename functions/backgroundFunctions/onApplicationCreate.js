@@ -3,10 +3,11 @@ const config = require('../shared/config');
 const { firebase, db, auth } = require('../shared/admin');
 const { onApplicationCreate } = require('../actions/applications/applications')(config, firebase, db, auth);
 const { logEvent } = require('../actions/logs/logEvent')(firebase, db, auth);
+const { sentry } = require('../shared/sentry')(config);
 
 module.exports = functions.region('europe-west2').firestore
   .document('applications/{applicationId}')
-  .onCreate((snap, context) => {
+  .onCreate(sentry.GCPFunction.wrapEventFunction((snap, context) => {
 
     const application = snap.data();
 
@@ -19,4 +20,4 @@ module.exports = functions.region('europe-west2').firestore
     logEvent('info', 'Application created', details);
 
     return onApplicationCreate(snap.ref, snap.data());
-  });
+  }));

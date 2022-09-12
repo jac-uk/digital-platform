@@ -3,10 +3,11 @@ const config = require('../shared/config');
 const { firebase, db, auth } = require('../shared/admin.js');
 const { onApplicationRecordUpdate } = require('../actions/applicationRecords')(config, firebase, db, auth);
 const { logEvent } = require('../actions/logs/logEvent')(firebase, db, auth);
+const { sentry } = require('../shared/sentry')(config);
 
 module.exports = functions.region('europe-west2').firestore
   .document('applicationRecords/{applicationRecordId}')
-  .onUpdate(async (change, context) => {
+  .onUpdate(sentry.GCPFunction.wrapEventFunction(async (change, context) => {
 
     const dataBefore = change.before.data();
     const dataAfter = change.after.data();
@@ -34,4 +35,4 @@ module.exports = functions.region('europe-west2').firestore
     }
 
     return onApplicationRecordUpdate(dataBefore, dataAfter);
-  });
+  }));

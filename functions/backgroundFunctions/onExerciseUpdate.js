@@ -2,10 +2,11 @@ const functions = require('firebase-functions');
 const config = require('../shared/config');
 const { db } = require('../shared/admin.js');
 const { deleteVacancy, updateVacancy } = require('../actions/vacancies')(config, db);
+const { sentry } = require('../shared/sentry')(config);
 
 module.exports = functions.region('europe-west2').firestore
   .document('exercises/{exerciseId}')
-  .onUpdate(async (change, context) => {
+  .onUpdate(sentry.GCPFunction.wrapEventFunction(async (change, context) => {
     const after = change.after.data();
     const before = change.before.data();
     if (after.published === true) {
@@ -16,4 +17,4 @@ module.exports = functions.region('europe-west2').firestore
       }
     }
     return true;
-  });
+  }));

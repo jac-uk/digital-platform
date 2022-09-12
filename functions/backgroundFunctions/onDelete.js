@@ -1,6 +1,8 @@
 const functions = require('firebase-functions');
 const { firebase, db, auth } = require('../shared/admin');
 const { logEvent } = require('../actions/logs/logEvent')(firebase, db, auth);
+const config = require('../shared/config');
+const { sentry } = require('../shared/sentry')(config);
 
 // This function is triggered when records are deleted in firestore.
 // The purpose is to archive, not delete data from the database.
@@ -8,7 +10,7 @@ const { logEvent } = require('../actions/logs/logEvent')(firebase, db, auth);
 
 module.exports = functions.region('europe-west2').firestore
   .document('{collection}/{documentId}')
-  .onDelete((snap, context) => {
+  .onDelete(sentry.GCPFunction.wrapEventFunction((snap, context) => {
 
     const collectionName = context.params.collection;
     const deletedRecord = snap.data();
@@ -32,5 +34,5 @@ module.exports = functions.region('europe-west2').firestore
 
     return db.collection(collectionDeletedName).doc(snap.id).set(deletedRecord);
 
-  });
+  }));
 
