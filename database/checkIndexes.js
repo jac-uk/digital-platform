@@ -5,6 +5,7 @@ const fs = require('fs');
 const json = require('./firestore.indexes.json');
 
 function returnOnlyUnique(array) {
+  console.log('All: ', array.length);
   return array.filter((value, index) => {
     const _value = JSON.stringify(value);
     return index === array.findIndex(obj => {
@@ -15,6 +16,7 @@ function returnOnlyUnique(array) {
 
 // const filtered = returnOnlyUnique(json.fieldOverrides);
 // const filtered = returnOnlyUnique(json.indexes);
+console.log('Filtered: ', filtered.length);
 
 fs.writeFile('./database/OUTPUT.json', JSON.stringify(filtered), (err) => {
   if (err)
