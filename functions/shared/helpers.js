@@ -270,6 +270,7 @@ function removeHtml(str) {
 
 function getAppEnvironment() {
   const projectId = firebase.instanceId().app.options.projectId;
+  if (!projectId) return '';
   if (projectId.indexOf('-develop') >= 0) {
     return 'DEVELOP';
   }

@@ -21,9 +21,7 @@ module.exports = (config) => {
       try {
         return await fn(...args);
       } catch (error) {
-        if (appEnvironment !== 'develop') {
-          Sentry.captureException(error);
-        }
+        Sentry.captureException(error);
         throw error;
       }
     },
