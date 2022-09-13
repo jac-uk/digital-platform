@@ -306,6 +306,8 @@ module.exports = (config, firebase, db) => {
         completed = (completed && completed - assessments.length >= 0) ? completed - assessments.length : completed;
       } else if (prevStatus === 'completed' && ['pending'].includes(params.status)) {
         completed = (completed && completed - assessments.length >= 0) ? completed - assessments.length : completed;
+      } else if (prevStatus === 'declined' && ['draft'].includes(params.status)) {
+        sent = (sent && sent - assessments.length >= 0) ? sent - assessments.length : sent;
       }
 
       commands.push({
