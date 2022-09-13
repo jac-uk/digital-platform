@@ -229,14 +229,21 @@ module.exports = (config, firebase, db) => {
     }
 
     // udpate exercise
-    if (prevStatus && prevStatus === 'completed') {
+    if (assessments.length && prevStatus) {
       const exercise = await getExercise(params.exerciseId);
-      const currentCompleted = exercise.assessments.completed ? exercise.assessments.completed : 0;
-      const completed = currentCompleted ? currentCompleted - assessments.length : currentCompleted;
+      let sent = exercise.assessments.sent ? exercise.assessments.sent : 0;
+      let completed = exercise.assessments.completed ? exercise.assessments.completed : 0;
+      
+      sent = (sent && sent - assessments.length >= 0) ? sent - assessments.length : sent;
+      if (prevStatus === 'completed') {
+        completed = (completed && completed - assessments.length >= 0) ? completed - assessments.length : completed;
+      }
+
       commands.push({
         command: 'update',
         ref: exercise.ref,
         data: {
+          'assessments.sent': sent,
           'assessments.completed': completed,
         },
       });
@@ -287,12 +294,20 @@ module.exports = (config, firebase, db) => {
     }
 
     // udpate exercise
-    if (prevStatus) {
+    if (assessments.length && prevStatus) {
       const exercise = await getExercise(params.exerciseId);
-      const currentSent = exercise.assessments.sent ? exercise.assessments.sent : 0;
-      const currentCompleted = exercise.assessments.completed ? exercise.assessments.completed : 0;
-      const sent = (prevStatus !== 'completed' && currentSent) ? currentSent - assessments.length : currentSent;
-      const completed = (prevStatus === 'completed' && currentCompleted) ? currentCompleted - assessments.length : currentCompleted;
+      let sent = exercise.assessments.sent ? exercise.assessments.sent : 0;
+      let completed = exercise.assessments.completed ? exercise.assessments.completed : 0;
+      
+      if (prevStatus === 'pending' && ['draft', 'cancelled', 'deleted'].includes(params.status)) {
+        sent = (sent && sent - assessments.length >= 0) ? sent - assessments.length : sent;
+      } else if (prevStatus === 'completed' && ['draft', 'cancelled', 'deleted'].includes(params.status)) {
+        sent = (sent && sent - assessments.length >= 0) ? sent - assessments.length : sent;
+        completed = (completed && completed - assessments.length >= 0) ? completed - assessments.length : completed;
+      } else if (prevStatus === 'completed' && ['pending'].includes(params.status)) {
+        completed = (completed && completed - assessments.length >= 0) ? completed - assessments.length : completed;
+      }
+
       commands.push({
         command: 'update',
         ref: exercise.ref,
