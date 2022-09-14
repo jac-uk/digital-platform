@@ -73,10 +73,8 @@ exports.createTestApplications = require('./callableFunctions/createTestApplicat
 exports.deleteApplications = require('./callableFunctions/deleteApplications');
 exports.createTestUsers = require('./callableFunctions/createTestUsers');
 exports.deleteTestUsers = require('./callableFunctions/deleteTestUsers');
-exports.initialiseTask = require('./callableFunctions/tasks/initialiseTask');
-exports.activateTask = require('./callableFunctions/tasks/activateTask');
-exports.finaliseTask = require('./callableFunctions/tasks/finaliseTask');
-exports.completeTask = require('./callableFunctions/tasks/completeTask');
+exports.createTask = require('./callableFunctions/tasks/createTask');
+exports.updateTask = require('./callableFunctions/tasks/updateTask');
 exports.verifyRecaptcha = require('./callableFunctions/verifyRecaptcha');
 
 // Callable - QTs v2

@@ -6,7 +6,9 @@ const initialiseQualifyingTest = require('../functions/actions/qualifyingTests/i
 
 const main = async () => {
   return initialiseQualifyingTest({
-    qualifyingTestId: 'sKqACHtcOYBFfHcVQry8',
+    qualifyingTestId: 'kaPbK2RCRSFA914eCw7Z',
+    stage: 'selected',
+    status: 'passedButNotRecommended',
   });
 };
 

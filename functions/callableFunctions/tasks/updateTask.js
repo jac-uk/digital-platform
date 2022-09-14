@@ -2,7 +2,7 @@ const functions = require('firebase-functions');
 const config = require('../../shared/config');
 const { firebase, db } = require('../../shared/admin.js');
 const { checkArguments } = require('../../shared/helpers.js');
-const initialiseTask = require('../../actions/tasks/initialiseTask')(config, firebase, db);
+const updateTask = require('../../actions/tasks/updateTask')(config, firebase, db);
 const { checkFunctionEnabled } = require('../../shared/serviceSettings.js')(db);
 
 module.exports = functions.region('europe-west2').https.onCall(async (data, context) => {
@@ -13,11 +13,9 @@ module.exports = functions.region('europe-west2').https.onCall(async (data, cont
   if (!checkArguments({
     exerciseId: { required: true },
     type: { required: true },
-    stage: { required: false },
-    status: { required: false },
   }, data)) {
     throw new functions.https.HttpsError('invalid-argument', 'Please provide valid arguments');
   }
-  const result = await initialiseTask(data);
+  const result = await updateTask(data);
   return result;
 });

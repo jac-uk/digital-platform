@@ -1,7 +1,7 @@
 
 // TODO: THIS IS COPIED FROM ADMIN `helpersTMP` folder. It should be moved to JAC Kit, plus streamlined
 
-const { isDate, formatDate } = require('./helpers');
+const { isDate, formatDate } = require('../helpers');
 
 module.exports = (config) => {
   const TASK_TYPE = config.TASK_TYPE;
@@ -15,7 +15,7 @@ module.exports = (config) => {
     if (!isDate(date) && !isDate(startTime)) {
       return null;
     }
-    const result = date;
+    const result = new Date(date);
     result.setHours(startTime.getHours(), startTime.getMinutes());
     return result;
   }
@@ -104,7 +104,7 @@ module.exports = (config) => {
             entry: 'Shortlisting outcome',
             date: data.shortlistingOutcomeDate,
             dateString: getDateString(data.shortlistingOutcomeDate, 'month'),
-            taskType: TASK_TYPE.SHORTLISTING_OUTCOME,
+            // taskType: TASK_TYPE.SHORTLISTING_OUTCOME,
           }
         );
       }
@@ -320,4 +320,4 @@ module.exports = (config) => {
     return timeline;
   }
 
-}
+};

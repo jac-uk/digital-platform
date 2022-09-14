@@ -1,30 +1,40 @@
 
-const createTimeline = require('@jac-uk/helpers/Timeline/createTimeline');
-const { convertToDate, getEarliestDate, getLatestDate } = require('../../shared/helpers');
+const createTimeline = require('../../shared/Timeline/createTimeline');
+const { convertToDate } = require('../../shared/helpers');
 
 module.exports = (config) => {
-  const exerciseTimeline = require('../../shared/exerciseTimeline.TMP')(config);
+  const exerciseTimeline = require('../../shared/Timeline/exerciseTimeline.TMP')(config);
   const TASK_TYPE = config.TASK_TYPE;
   return {
     scoreSheet,
-    taskStartDate,
-    taskEndDate,
     getTimelineDate,
     getTimelineTasks,
     createMarkingScheme,
+    taskStatuses,
     taskNextStatus,
     taskApplicationsEntryStatus,
+    finaliseScoreSheet,
+    getScoreSheetTotal,
+    getEmptyScoreSheet,
+    scoreSheet2MarkingScheme,
+    getApplicationPassStatuses,
+    getApplicationFailStatuses
   };
 
-  function taskNextStatus(taskType, currentStatus) {
+  function taskStatuses(taskType) {
     let availableStatuses = [];
-    let nextStatus = '';
     switch (taskType) {
       case config.TASK_TYPE.CRITICAL_ANALYSIS:
       case config.TASK_TYPE.SITUATIONAL_JUDGEMENT:
         availableStatuses = [
           config.TASK_STATUS.TEST_INITIALISED,
           config.TASK_STATUS.TEST_ACTIVATED,
+          config.TASK_STATUS.FINALISED,
+          config.TASK_STATUS.COMPLETED,
+        ];
+        break;
+      case config.TASK_TYPE.QUALIFYING_TEST:
+        availableStatuses = [
           config.TASK_STATUS.FINALISED,
           config.TASK_STATUS.COMPLETED,
         ];
@@ -41,11 +51,10 @@ module.exports = (config) => {
         break;
       case config.TASK_TYPE.TELEPHONE_ASSESSMENT:
       case config.TASK_TYPE.ELIGIBILITY_SCC:
+      case config.TASK_TYPE.STATUTORY_CONSULTATION:
       case config.TASK_TYPE.CHARACTER_AND_SELECTION_SCC:
-        availableStatuses = [
-          config.TASK_STATUS.DATA_INITIALISED,
-          config.TASK_STATUS.DATA_ACTIVATED,
-          config.TASK_STATUS.FINALISED,
+          availableStatuses = [
+          config.TASK_STATUS.STATUS_CHANGES,
           config.TASK_STATUS.COMPLETED,
         ];
         break;
@@ -67,6 +76,12 @@ module.exports = (config) => {
         ];
         break;
     }
+    return availableStatuses;
+  }
+
+  function taskNextStatus(taskType, currentStatus) {
+    let availableStatuses = taskStatuses(taskType);
+    let nextStatus = '';
     if (!availableStatuses.length) return nextStatus;
     if (!currentStatus) return availableStatuses[0];
     const currentIndex = availableStatuses.indexOf(currentStatus);
@@ -78,6 +93,30 @@ module.exports = (config) => {
       }
     }
     return nextStatus;
+  }
+
+  function getApplicationPassStatuses(taskType) {
+    const statuses = [];
+    switch (taskType) {
+    // customise task types here
+    default:
+      statuses.push(`${taskType}Passed`);
+    }
+    return statuses;
+  }
+
+  function getApplicationFailStatuses(taskType) {
+    const statuses = [];
+    switch (taskType) {
+    // customise task types here
+    case config.TASK_TYPE.ELIGIBILITY_SCC:
+      statuses.push(config.APPLICATION.STATUS.REJECTED_INELIGIBLE_STATUTORY);
+      statuses.push(config.APPLICATION.STATUS.REJECTED_INELIGIBLE_ADDITIONAL);
+      break;
+    default:
+      statuses.push(`${taskType}Failed`);
+    }
+    return statuses;
   }
 
   function scoreSheet({ type, exercise }) {
@@ -97,42 +136,6 @@ module.exports = (config) => {
         break;
     }
     return scoreSheet;
-  }
-
-  function taskStartDate({ type, exercise }) {
-    switch (type) {
-      case config.TASK_TYPE.SIFT:
-        if (exercise.shortlistingMethods.indexOf('name-blind-paper-sift') >= 0 && exercise.nameBlindSiftStartDate) {
-          return exercise.nameBlindSiftStartDate;
-        } else {
-          return exercise.siftStartDate;
-        }
-      case config.TASK_TYPE.SELECTION:
-        return getEarliestDate(exercise.selectionDays.map(selectionDay => convertToDate(selectionDay.selectionDayStart)));
-      case config.TASK_TYPE.CRITICAL_ANALYSIS:
-      case config.TASK_TYPE.SITUATIONAL_JUDGEMENT:
-      case config.TASK_TYPE.SCENARIO:
-        return getTimelineDate(exercise, type, 'Start');
-    }
-    return null;
-  }
-
-  function taskEndDate({ type, exercise }) {
-    switch (type) {
-      case config.TASK_TYPE.SIFT:
-        if (exercise.shortlistingMethods.indexOf('name-blind-paper-sift') >= 0 && exercise.nameBlindSiftEndDate) {
-          return exercise.nameBlindSiftEndDate;
-        } else {
-          return exercise.siftEndDate;
-        }
-      case config.TASK_TYPE.SELECTION:
-        return getLatestDate(exercise.selectionDays.map(selectionDay => convertToDate(selectionDay.selectionDayEnd)));
-      case config.TASK_TYPE.CRITICAL_ANALYSIS:
-      case config.TASK_TYPE.SITUATIONAL_JUDGEMENT:
-      case config.TASK_TYPE.SCENARIO:
-        return getTimelineDate(exercise, type, 'End');
-     }
-    return null;
   }
 
   function getTimelineDate(exercise, taskType, dateType) {
@@ -255,6 +258,95 @@ module.exports = (config) => {
       status = `${prevTaskType}Passed`;
     }
     return status;
+  }
+
+  function finaliseScoreSheet(markingScheme, scoreSheet) {
+    if (!markingScheme) return scoreSheet;
+    if (!scoreSheet) return scoreSheet;
+    delete scoreSheet.flagForModeration;  //  removing `flagForModeration` flag in order to reduce object size
+    markingScheme.forEach(item => {
+      if (item.type === config.MARKING_TYPE.GROUP) {
+        scoreSheet[item.ref].score = 0;
+        item.children.forEach(child => {
+          scoreSheet[item.ref].score += getScoreSheetItemTotal(child, scoreSheet[item.ref]);
+        });
+      }
+    });
+    return scoreSheet;
+  }
+
+  function getScoreSheetTotal(markingScheme, scoreSheet) {
+    let score = 0;
+    if (!markingScheme) return score;
+    if (!scoreSheet) return score;
+    markingScheme.forEach(item => {
+      if (item.type === config.MARKING_TYPE.GROUP) {
+        item.children.forEach(child => {
+          score += getScoreSheetItemTotal(child, scoreSheet[item.ref]);
+        });
+      } else {
+        score += getScoreSheetItemTotal(item, scoreSheet);
+      }
+    });
+    return score;
+  }
+
+  function getScoreSheetItemTotal(item, scoreSheet) {
+    if (!item.excludeFromScore) {
+      switch (item.type) {
+      case config.MARKING_TYPE.GRADE:
+        if (scoreSheet[item.ref] && config.GRADE_VALUES[scoreSheet[item.ref]]) {
+          return config.GRADE_VALUES[scoreSheet[item.ref]];
+        }
+        break;
+      case config.MARKING_TYPE.NUMBER:
+        if (scoreSheet[item.ref]) {
+          return scoreSheet[item.ref];
+        }
+        break;
+      }
+    }
+    return 0;
+  }
+
+  function getEmptyScoreSheet(arrData) {
+    const returnObject = {};
+    arrData.forEach(item => {
+      if (item.indexOf('.') >= 0) {
+        const parts = item.split('.');
+        if (!returnObject[parts[0]]) returnObject[parts[0]] = {};
+        returnObject[parts[0]][parts[1]] = '';
+      } else {
+        returnObject[item] = '';
+      }
+    });
+    return returnObject;
+  }
+
+  function scoreSheet2MarkingScheme(scoreSheet) {
+    const markingScheme = [];
+    Object.keys(scoreSheet).forEach(key => {
+      if (typeof scoreSheet[key] === 'object') {
+        const children = [];
+        Object.keys(scoreSheet[key]).forEach(childKey => {
+          children.push({
+            ref: childKey,
+            type: 'number',
+          });
+        });
+        markingScheme.push({
+          ref: key,
+          type: 'group',
+          children: children,
+        });
+      } else {
+        markingScheme.push({
+          ref: key,
+          type: 'number',
+        });
+      }
+    });
+    return markingScheme;
   }
 
 };
