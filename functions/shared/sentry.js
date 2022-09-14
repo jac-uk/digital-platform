@@ -1,9 +1,8 @@
 const Sentry = require('@sentry/serverless');
-const { getAppEnvironment, getPackageVersion } = require('./helpers');
+const { getAppEnvironment } = require('./helpers');
 
 module.exports = (config) => {
   const appEnvironment = getAppEnvironment().toLowerCase();
-  const version = getPackageVersion();
 
   Sentry.GCPFunction.init({
     dsn: config.SENTRY_DSN,
@@ -12,7 +11,6 @@ module.exports = (config) => {
     // We recommend adjusting this value in production
     tracesSampleRate: 1.0,
     environment: appEnvironment,
-    release: version,
   });
 
   return {

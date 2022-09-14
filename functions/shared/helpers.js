@@ -1,6 +1,5 @@
 const firebase = require('firebase-admin');
 const Timestamp = firebase.firestore.Timestamp;
-const packageJson = require('./../../package.json');
 
 module.exports = {
   getDocument,
@@ -21,7 +20,6 @@ module.exports = {
   isProduction,
   removeHtml,
   getAppEnvironment,
-  getPackageVersion,
 };
 
 async function getDocument(query) {
@@ -281,8 +279,4 @@ function getAppEnvironment() {
     return 'PRODUCTION';
   }
   return '';
-}
-
-function getPackageVersion() {
-  return packageJson.version || 0;
 }
