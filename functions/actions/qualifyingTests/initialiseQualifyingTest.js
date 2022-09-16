@@ -34,7 +34,7 @@ module.exports = (config, firebase, db) => {
         applicationRecordsRef = applicationRecordsRef.where('status', '==', params.status);
       }
       if (qualifyingTest.isTieBreaker) { // for EMP tie-breaker tests, only include EMP candidates
-        applicationRecordsRef = applicationRecordsRef.where('flags.empApplied', '==', true);
+        applicationRecordsRef = applicationRecordsRef.where('flags.empApplied', 'in', [ true, 'gender', 'ethnicity' ]);
       }
 
       participants = await getDocuments(applicationRecordsRef);
