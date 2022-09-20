@@ -17,15 +17,20 @@ module.exports = (config, firebase, db) => {
 
     console.log('createTask', params);
 
+    let result = {
+      success: false,
+      data: {},
+    };
+
     // get exercise
     const exercise = await getDocument(db.doc(`exercises/${params.exerciseId}`), true);
-    if (!exercise) return 0;
+    if (!exercise) return result;
 
     // check if task already exists
     const task = await getDocument(db.doc(`exercises/${params.exerciseId}/tasks/${params.type}`));
     if (task) {
       console.log('task already exists');
-      return 0;
+      return result;
     }
 
     // get next status
@@ -45,14 +50,13 @@ module.exports = (config, firebase, db) => {
     const applicationRecords = await getDocuments(queryRef.select('application', 'candidate'));
     if (applicationRecords.length === 0) {
       console.log('no applications found');
-      return 0;
+      return result;
     }
 
     // get task data from timeline
     const timelineTask = getTimelineTasks(exercise, params.type)[0];
 
     // construct task document, based on next status
-    let result;
     switch (nextStatus) {
     case config.TASK_STATUS.PANELS_INITIALISED:
       result = await initialisePanelTask(exercise, params.type, applicationRecords);
@@ -67,32 +71,31 @@ module.exports = (config, firebase, db) => {
       result = await initialiseDataTask(exercise, params.type);
       break;
     }
-    if (result) {
-      if (result.success) {
-        const taskData = {
-          _stats: {
-            totalApplications: applicationRecords.length,
-          },
-          startDate: timelineTask.date,
-          endDate: timelineTask.endDate ? timelineTask.endDate : timelineTask.date,
-          dateString: timelineTask.dateString,
-          type: params.type,
-        };
-        taskData.applicationEntryStatus = applicationEntryStatus;
-        taskData.status = nextStatus;
-        taskData.statusLog = {};
-        taskData.statusLog[nextStatus] = firebase.firestore.FieldValue.serverTimestamp();
-        Object.assign(taskData, result.data);
-        const commands = [];
-        commands.push({
-          command: 'set',
-          ref: db.doc(`exercises/${params.exerciseId}/tasks/${params.type}`),
-          data: taskData,
-        });
-        await applyUpdates(db, commands);
-        return applicationRecords.length;
-      }
+    if (result.success) {
+      const taskData = {
+        _stats: {
+          totalApplications: applicationRecords.length,
+        },
+        startDate: timelineTask.date,
+        endDate: timelineTask.endDate ? timelineTask.endDate : timelineTask.date,
+        dateString: timelineTask.dateString,
+        type: params.type,
+      };
+      taskData.applicationEntryStatus = applicationEntryStatus;
+      taskData.status = nextStatus;
+      taskData.statusLog = {};
+      taskData.statusLog[nextStatus] = firebase.firestore.FieldValue.serverTimestamp();
+      Object.assign(taskData, result.data);
+      const commands = [];
+      commands.push({
+        command: 'set',
+        ref: db.doc(`exercises/${params.exerciseId}/tasks/${params.type}`),
+        data: taskData,
+      });
+      await applyUpdates(db, commands);
+      return result;
     }
+    return result;
   }
 
 };

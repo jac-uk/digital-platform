@@ -12,14 +12,14 @@ module.exports = (config, firebase, db) => {
     scoreSheet2MarkingScheme,
     getApplicationPassStatuses,
     getApplicationFailStatuses,
-    taskApplicationsEntryStatus
+    taskApplicationsEntryStatus,
   } = require('./taskHelpers')(config);
 
   return {
     updateTask,
     initialisePanelTask,
     initialiseTestTask,
-    initialiseStatusChangesTask
+    initialiseStatusChangesTask,
   };
 
   /**
@@ -31,25 +31,29 @@ module.exports = (config, firebase, db) => {
   */
   async function updateTask(params) {
 
+    let result = {
+      success: false,
+      data: {},
+    };
+
     // get exercise
     const exercise = await getDocument(db.doc(`exercises/${params.exerciseId}`), true);
-    if (!exercise) return 0;
+    if (!exercise) return result;
 
     // get task
     const taskRef = db.doc(`exercises/${params.exerciseId}/tasks/${params.type}`);
     const task = await getDocument(taskRef);
-    if (!task) return 0;
+    if (!task) return result;
 
     // check current status
     const possibleStatuses = taskStatuses(params.type);
-    if (possibleStatuses.indexOf(task.status) < 0) return 0;
+    if (possibleStatuses.indexOf(task.status) < 0) return result;
 
     // get next status
     let nextStatus = taskNextStatus(params.type, task.status);
     console.log('nextStatus', nextStatus);
 
     // update task
-    let result;
     switch (nextStatus) {
     case config.TASK_STATUS.PANELS_INITIALISED:
       if (task.type === config.TASK_TYPE.SCENARIO) {
@@ -99,22 +103,24 @@ module.exports = (config, firebase, db) => {
       }
       break;
     }
-    if (result) {
-      if (result.success) {
-        const taskData = {};
-        taskData['status'] = nextStatus;
-        taskData[`statusLog.${nextStatus}`] = firebase.firestore.FieldValue.serverTimestamp();
-        Object.assign(taskData, result.data);
-        const commands = [];
-        commands.push({
-          command: 'update',
-          ref: taskRef,
-          data: taskData,
-        });
-        return await applyUpdates(db, commands);
-      }
+
+    // process result
+    if (result.success) {
+      const taskData = {};
+      taskData['status'] = nextStatus;
+      taskData[`statusLog.${nextStatus}`] = firebase.firestore.FieldValue.serverTimestamp();
+      Object.assign(taskData, result.data);
+      const commands = [];
+      commands.push({
+        command: 'update',
+        ref: taskRef,
+        data: taskData,
+      });
+      await applyUpdates(db, commands);
     }
-    return 0;
+
+    // return
+    return result;
   }
 
   /**

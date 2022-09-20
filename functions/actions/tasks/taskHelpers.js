@@ -18,7 +18,7 @@ module.exports = (config) => {
     getEmptyScoreSheet,
     scoreSheet2MarkingScheme,
     getApplicationPassStatuses,
-    getApplicationFailStatuses
+    getApplicationFailStatuses,
   };
 
   function taskStatuses(taskType) {
