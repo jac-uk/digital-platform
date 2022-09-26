@@ -35,7 +35,7 @@ module.exports = (db, auth) => {
         if (user.providerData.length === 1) {
           const provider = user.providerData[0];
           if (user.email.match(/(.*@judicialappointments|.*@justice)[.](digital|gov[.]uk)/) && 
-            (provider.providerId === 'google.com' || provider.providerId === 'microsoft.com')) {
+            (provider.providerId === 'google.com' || provider.providerId === 'microsoft.com' || provider.providerId === 'password')) {
             isJacAdmin = true; // user has authenticated successfully with google or microsoft
           }
         } else if (user.providerData.length > 1) {
