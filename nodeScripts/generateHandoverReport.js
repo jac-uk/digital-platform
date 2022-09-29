@@ -4,7 +4,7 @@ const { firebase, app, db } = require('./shared/admin.js');
 const { generateHandoverReport } = require('../functions/actions/exercises/generateHandoverReport')(firebase, db);
 
 const main = async () => {
-  return generateHandoverReport('Yt04PxbBde5nfZxNgFWx');
+  return generateHandoverReport('DqKdMSMOmxArSWYsDyhZ');
 };
 
 main()
