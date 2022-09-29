@@ -117,6 +117,10 @@ const reportHeaders = (exercise) => {
     reportHeaders.push(...headers.diversity.common);
   }
 
+  if (exercise.typeOfExercise === 'leadership-non-legal') {
+    reportHeaders.push(...headers.diversity.common);
+  }
+
   reportHeaders.push(
     { title: 'Location Preferences', ref: 'locationPreferences' },
     { title: 'Jurisdiction Preferences', ref: 'jurisdictionPreferences' },
@@ -267,7 +271,7 @@ const formatLegalData = (application) => {
       ].join(' ');
     }).join('\n');
   }
-  
+
   let judicialExperience;
   if (application.feePaidOrSalariedJudge) {
     judicialExperience = `Fee paid or salaried judge - ${lookup(application.feePaidOrSalariedSittingDaysDetails)} days`;
