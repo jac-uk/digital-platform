@@ -26,6 +26,7 @@ exports.generateOutreachReport = require('./callableFunctions/generateOutreachRe
 exports.flagApplicationIssuesForExercise = require('./callableFunctions/flagApplicationIssuesForExercise');
 exports.initialiseAssessments = require('./callableFunctions/initialiseAssessments');
 exports.cancelAssessments = require('./callableFunctions/cancelAssessments');
+exports.resetAssessments = require('./callableFunctions/resetAssessments');
 exports.testAssessmentNotification = require('./callableFunctions/testAssessmentNotification');
 exports.sendAssessmentRequests = require('./callableFunctions/sendAssessmentRequests');
 exports.sendAssessmentReminders = require('./callableFunctions/sendAssessmentReminders');

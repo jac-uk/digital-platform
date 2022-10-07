@@ -4,6 +4,7 @@ module.exports = (CONSTANTS) => {
     newNotificationCharacterCheckRequest,
     newNotificationAssessmentRequest,
     newNotificationAssessmentReminder,
+    newNotificationAssessmentSubmit,
     newAssessment,
     newApplicationRecord,
     newVacancy,
@@ -128,6 +129,47 @@ module.exports = (CONSTANTS) => {
     };
   }
 
+  function newNotificationAssessmentSubmit(firebase, assessment) {
+    const link = `${CONSTANTS.ASSESSMENTS_URL}/sign-in?email=${assessment.assessor.email}&ref=assessments/${assessment.id}`;
+    let xCompetencyAreasOrXSkillsAndAbilities;
+    switch (assessment.type) {
+      case CONSTANTS.ASSESSMENT_TYPE.COMPETENCY:
+        xCompetencyAreasOrXSkillsAndAbilities = 'competency areas';
+        break;
+      case CONSTANTS.ASSESSMENT_TYPE.SKILLS:
+        xCompetencyAreasOrXSkillsAndAbilities = 'skills and abilities';
+        break;
+      default:
+        xCompetencyAreasOrXSkillsAndAbilities = 'requirements';
+    }
+    return {
+      email: assessment.assessor.email,
+      replyTo: assessment.exercise.exerciseMailbox,
+      template: {
+        name: 'Assessment Submit',
+        id: '5b933b71-3359-488a-aa86-13ceb581209c',
+      },
+      personalisation: {
+        assessorName: assessment.assessor.fullName,
+        applicantName: assessment.candidate.fullName,
+        exerciseName: assessment.exercise.name,
+        xCompetencyAreasOrXSkillsAndAbilities: xCompetencyAreasOrXSkillsAndAbilities,
+        submitAssessmentDueDate: assessment.dueDate.toDate().toLocaleDateString('en-GB', { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' }),
+        uploadUrl: link,
+        downloadUrl: link,
+        exerciseMailbox: assessment.exercise.exerciseMailbox,
+        exercisePhoneNumber: assessment.exercise.exercisePhoneNumber,
+        selectionExerciseManager: assessment.exercise.emailSignatureName,
+      },
+      reference: {
+        collection: 'assessments',
+        id: assessment.id,
+      },
+      createdAt: firebase.firestore.Timestamp.fromDate(new Date()),
+      status: 'ready',
+    };
+  }  
+
   function newAssessment(exercise, application, whichAssessor) {
     let assessment = {
       assessor: {},
@@ -157,10 +199,12 @@ module.exports = (CONSTANTS) => {
     }
     switch (whichAssessor) {
       case 'first':
+        assessment.assessor.type = application.firstAssessorType ? application.firstAssessorType : '';
         assessment.assessor.fullName = application.firstAssessorFullName ? application.firstAssessorFullName : '';
         assessment.assessor.email = application.firstAssessorEmail ? application.firstAssessorEmail : '';
         break;
       case 'second':
+        assessment.assessor.type = application.secondAssessorType ? application.secondAssessorType : '';
         assessment.assessor.fullName = application.secondAssessorFullName ? application.secondAssessorFullName : '';
         assessment.assessor.email = application.secondAssessorEmail ? application.secondAssessorEmail : '';
         break;
