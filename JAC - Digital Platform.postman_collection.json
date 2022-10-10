@@ -1197,6 +1197,48 @@
 					"response": []
 				},
 				{
+					"name": "createUser",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{token}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"data\": {\r\n        \"email\": \"\",\r\n        \"password\": \"123456\"\r\n    }\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{host}}/createUser",
+							"host": [
+								"{{host}}"
+							],
+							"path": [
+								"createUser"
+							]
+						}
+					},
+					"response": []
+				},
+				{
 					"name": "deleteUsers",
 					"request": {
 						"auth": {
