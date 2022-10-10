@@ -369,6 +369,8 @@ module.exports = (CONSTANTS) => {
       selectionDays: null,
       selectionExerciseManagerFullName: null,
       shortlistingMethods: null,
+      siftStartDate: null,
+      siftEndDate: null,
       nameBlindSiftStartDate: null,
       nameBlindSiftEndDate: null,
       shortlistingOutcomeDate: null,
