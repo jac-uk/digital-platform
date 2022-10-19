@@ -12,7 +12,7 @@ module.exports = (db) => {
     const exercises = await getDocuments(db.collection('exercises')
       .where('published', '==', true)
     );
-    if (!exercises) { return false; }
+    if (!exercises) return false;
 
     const commands = [];
     const expiredExercises = exercises.filter(exercise => {
@@ -31,7 +31,7 @@ module.exports = (db) => {
       });
     });
 
-    let result = true;
+    let result = false;
     if (commands.length) {
       result = await applyUpdates(db, commands);
     }
