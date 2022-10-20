@@ -12,8 +12,8 @@ module.exports = (CONSTANTS) => {
   };
 
   function newNotificationApplicationSubmit(firebase, application, exercise) {
-    let templateName = 'Application Submitted';
-    let templateId = 'd9c3cf7d-3755-4f96-a508-20909a91b825';
+    const templateName = 'Application Submitted';
+    const templateId = 'd9c3cf7d-3755-4f96-a508-20909a91b825';
 
     return {
       email: application.personalDetails.email,
