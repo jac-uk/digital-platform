@@ -89,44 +89,39 @@ module.exports = (config, firebase, db, auth) => {
   * sendApplicationConfirmation
   * Sends a 'application submitted' notification for each application
   * @param {*} `params` is an object containing
-  *   `items`    (required) IDs of applications
-  *   `exerciseId` (required) id of exercise
+  *   `applicationId`  (required) ID of application
+  *   `application`    (required) application
   */
    async function sendApplicationConfirmation(params) {
-    const applicationIds = params.items;
-    const exerciseId = params.exerciseId;
+    const applicationId = params.applicationId;
+    const application = params.application;
+    const applicationRef = db.collection('applications').doc(applicationId);
 
     // get exercise
+    const exerciseId = application.exerciseId;
     const exercise = await getDocument(db.doc(`exercises/${exerciseId}`));
     if (!exercise) return false;
 
-    // get applications
-    const applicationRefs = applicationIds.map(id => db.collection('applications').doc(id));
-    const applications = await getAllDocuments(db, applicationRefs);
-
     // create database commands
     const commands = [];
-    for (let i = 0, len = applications.length; i < len; ++i) {
-      const application = applications[i];
-      // create notification
-      commands.push({
-        command: 'set',
-        ref: db.collection('notifications').doc(),
-        data: newNotificationApplicationSubmit(firebase, application, exercise),
-      });
-      // update application
-      commands.push({
-        command: 'update',
-        ref: application.ref,
-        data: {
-          'emailLog.applicationSubmitted': firebase.firestore.Timestamp.fromDate(new Date()),
-        },
-      });
-    }
+    // create notification
+    commands.push({
+      command: 'set',
+      ref: db.collection('notifications').doc(),
+      data: newNotificationApplicationSubmit(firebase, applicationId, application, exercise),
+    });
+    // update application
+    commands.push({
+      command: 'update',
+      ref: applicationRef,
+      data: {
+        'emailLog.applicationSubmitted': firebase.firestore.Timestamp.fromDate(new Date()),
+      },
+    });
 
     // write to db
     const result = await applyUpdates(db, commands);
-    return result ? applications.length : false;
+    return result ? true : false;
   }
 
   /**

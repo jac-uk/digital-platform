@@ -11,7 +11,7 @@ module.exports = (CONSTANTS) => {
     newVacancy,
   };
 
-  function newNotificationApplicationSubmit(firebase, application, exercise) {
+  function newNotificationApplicationSubmit(firebase, applicationId, application, exercise) {
     const templateName = 'Application Submitted';
     const templateId = 'd9c3cf7d-3755-4f96-a508-20909a91b825';
 
@@ -32,7 +32,7 @@ module.exports = (CONSTANTS) => {
       },
       reference: {
         collection: 'applications',
-        id: application.id,
+        id: applicationId,
       },
       createdAt: firebase.firestore.Timestamp.fromDate(new Date()),
       status: 'ready',

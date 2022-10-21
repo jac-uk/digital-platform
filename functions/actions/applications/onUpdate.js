@@ -35,12 +35,15 @@ module.exports = (config, firebase, db, auth) => {
       await updateCandidate(dataAfter.userId);
       // update application record
 
-      // applied
-      if (dataAfter.status === 'applied') {
-        await sendApplicationConfirmation({
-          items: [applicationId],
-          exerciseId,
-        });
+      // applied 
+      if (dataBefore.status === 'draft' && dataAfter.status === 'applied') {
+        // send confirmation email if it has not been sent before
+        if (!dataBefore.emailLog || (dataBefore.emailLog && !dataBefore.emailLog.applicationSubmitted)) {
+          await sendApplicationConfirmation({
+            applicationId,
+            application: dataAfter,
+          });
+        }
       }
 
       // applied

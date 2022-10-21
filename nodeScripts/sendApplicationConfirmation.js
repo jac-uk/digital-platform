@@ -6,8 +6,17 @@ const { sendApplicationConfirmation } = require('../functions/actions/applicatio
 
 const main = async () => {
   return sendApplicationConfirmation({
-    items: ['00s0ozpcBangd7Yh3DHf'],
-    exerciseId: '5r40soW2fFmv50UEmkxP',
+    applicationId: '00s0ozpcBangd7Yh3DHf',
+    application: {
+      id: '00s0ozpcBangd7Yh3DHf',
+      exerciseId: '5r40soW2fFmv50UEmkxP',
+      exerciseName: 'Test Exercise',
+      referenceNumber: 'JAC00001-xxx0000',
+      personalDetails: {
+        email: 'application@jac-dummy-email.jac',
+        fullName: 'Test',
+      },
+    },
   });
 };
 
