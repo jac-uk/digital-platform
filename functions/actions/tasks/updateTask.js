@@ -560,12 +560,11 @@ module.exports = (config, firebase, db) => {
    * @returns Result object of the form `{ success: Boolean, data: Object }`. If successful then `data` is to be stored in the `task` document
    */
   async function completeTask(exercise, task) {
-    console.log('complete task');
     const result = {
       success: false,
       data: {},
     };
-    if (!task.passMark) return result;
+    if (!(task.passMark >= 0)) return result;
 
     // TODO get statuses from func
     const outcomeStats = {};

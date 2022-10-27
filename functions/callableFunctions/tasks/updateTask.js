@@ -5,7 +5,10 @@ const { checkArguments } = require('../../shared/helpers.js');
 const { updateTask } = require('../../actions/tasks/updateTask')(config, firebase, db);
 const { checkFunctionEnabled } = require('../../shared/serviceSettings.js')(db);
 
-module.exports = functions.region('europe-west2').https.onCall(async (data, context) => {
+module.exports = functions.runWith({
+  timeoutSeconds: 180,
+  memory: '512MB',
+}).region('europe-west2').https.onCall(async (data, context) => {
   await checkFunctionEnabled();
   if (!context.auth) {
     throw new functions.https.HttpsError('failed-precondition', 'The function must be called while authenticated.');
