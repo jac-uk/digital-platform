@@ -1,5 +1,6 @@
 const functions = require('firebase-functions');
 const { auth, db } = require('../shared/admin.js');
+const { checkArguments } = require('../shared/helpers.js');
 const  getUserByEmail  = require('../actions/candidates/getUserByEmail')(auth);
 const { checkFunctionEnabled } = require('../shared/serviceSettings.js')(db);
 
