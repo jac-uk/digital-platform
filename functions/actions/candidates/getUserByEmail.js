@@ -7,7 +7,7 @@ module.exports = (auth) => {
    * param: EMAIL ADDRESS
    */
   async function getUserByEmail(data) {
-    const candidateEmail = data;
+    const candidateEmail = data.email;
 
     try {
       const user = await auth.getUserByEmail(candidateEmail);

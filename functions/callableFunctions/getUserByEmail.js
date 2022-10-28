@@ -9,9 +9,10 @@ module.exports = functions.region('europe-west2').https.onCall(async (data, cont
   if (!context.auth) {
     throw new functions.https.HttpsError('failed-precondition', 'The function must be called while authenticated.');
   }
-  if (!data) {
+  if (!checkArguments({
+    email: { required: true },
+  }, data)) {
     throw new functions.https.HttpsError('invalid-argument', 'Please provide valid arguments');
   }
   return await getUserByEmail(data);
-
 });

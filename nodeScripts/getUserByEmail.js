@@ -3,9 +3,7 @@
 const { app, auth } = require('./shared/admin.js');
 const getUserByEmail = require('../functions/actions/candidates/getUserByEmail')(auth);
 
-// const candidateEmail = 'lisias.loback@judicialappointments.digital';
-// const candidateEmail = 'warren@precise-minds.co.uk';
-const candidateEmail = 'lisias@loback.net';
+const candidateEmail = { email: '<put the email to search here>'};
 
 const main = async () => {
   return getUserByEmail(candidateEmail);
