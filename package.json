@@ -29,7 +29,7 @@
     "deploy:realtime-rules": "firebase deploy --project=digital-platform-develop --only database",
     "staging:deploy:rules": "firebase deploy --project=digital-platform-staging --only firestore:rules",
     "staging:deploy:indexes": "firebase deploy --project=digital-platform-staging --only firestore:indexes",
-    "staging:deploy:functions": "firebase deploy --project=digital-platform-staging --only functions",
+    "staging:deploy:functions": "firebase deploy --project=digital-platform-staging --only functions --force",
     "staging:deploy:function": "run(){ firebase deploy --project=digital-platform-staging --only functions:$1; }; run",
     "staging:deploy:storage-rules": "firebase deploy --project=digital-platform-staging --only storage:rules",
     "staging:deploy:realtime-rules": "firebase deploy --project=digital-platform-staging --only database",
