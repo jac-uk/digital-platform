@@ -30,13 +30,14 @@ module.exports = (config, firebase, db) => {
       let applicationRecordsRef = db.collection('applicationRecords')
         .where('exercise.id', '==', qualifyingTest.vacancy.id)
         .where('stage', '==', params.stage);
-      if (params.status !== 'all') {
+      if (params.status === 'all') {
+        applicationRecordsRef = applicationRecordsRef.where('status', '!=', 'withdrewApplication');
+      } else {
         applicationRecordsRef = applicationRecordsRef.where('status', '==', params.status);
       }
       if (qualifyingTest.isTieBreaker) { // for EMP tie-breaker tests, only include EMP candidates
         applicationRecordsRef = applicationRecordsRef.where('flags.empApplied', 'in', [ true, 'gender', 'ethnicity' ]);
       }
-
       participants = await getDocuments(applicationRecordsRef);
     }
 
