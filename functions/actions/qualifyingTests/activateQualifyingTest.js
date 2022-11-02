@@ -41,6 +41,8 @@ module.exports = (config, firebase, db) => {
           'testQuestions': questions,
           'qualifyingTest.additionalInstructions': qualifyingTest.additionalInstructions,
           'qualifyingTest.feedbackSurvey': qualifyingTest.feedbackSurvey,
+          'qualifyingTest.startDate': qualifyingTest.startDate,
+          'qualifyingTest.endDate': qualifyingTest.endDate,
           status: config.QUALIFYING_TEST_RESPONSES.STATUS.ACTIVATED,
           'statusLog.activated': firebase.firestore.FieldValue.serverTimestamp(),
           lastUpdated: firebase.firestore.FieldValue.serverTimestamp(),
