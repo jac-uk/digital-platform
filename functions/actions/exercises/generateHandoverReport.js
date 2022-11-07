@@ -208,10 +208,13 @@ const formatPersonalDetails = (personalDetails) => {
     }).join('\n\n');
   }
 
-    let candidate = {
+  let candidate = {
     title: personalDetails.title || null,
-    otherNames: personalDetails.otherNames || null,
+    middleNames: personalDetails.middleNames || null,
     suffix: personalDetails.suffix || null,
+    previousNames: personalDetails.previousNames || null,
+    professionalName: personalDetails.professionalName || null,
+    otherNames: personalDetails.otherNames || null,
     email: personalDetails.email || null,
     dateOfBirth: helpers.formatDate(personalDetails.dateOfBirth),
     nationalInsuranceNumber: helpers.formatNIN(personalDetails.nationalInsuranceNumber),
