@@ -299,6 +299,9 @@ module.exports = (CONSTANTS) => {
 
   function newApplicationRecord(exercise, application) {
     let applicationRecord = {
+      _metaDates: {
+        createdOn: firebase.firestore.Timestamp.fromDate(new Date()),
+      },
       exercise: {
         id: exercise.id,
         name: exercise.name,
