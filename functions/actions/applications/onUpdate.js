@@ -3,7 +3,7 @@ const { getDocument, applyUpdates, isDateInPast, formatDate } = require('../../s
 module.exports = (config, firebase, db, auth) => {
   const { newApplicationRecord } = require('../../shared/factories')(config);
   const { updateCandidate } = require('../candidates/search')(firebase, db);
-  const { sendCharacterCheckRequests } = require('./applications')(config, firebase, db, auth);
+  const { sendApplicationConfirmation, sendCharacterCheckRequests } = require('./applications')(config, firebase, db, auth);
 
   return onUpdate;
 
@@ -35,7 +35,18 @@ module.exports = (config, firebase, db, auth) => {
       await updateCandidate(dataAfter.userId);
       // update application record
 
-      // // applied
+      // applied 
+      if (dataBefore.status === 'draft' && dataAfter.status === 'applied') {
+        // send confirmation email if it has not been sent before
+        if (!dataBefore.emailLog || (dataBefore.emailLog && !dataBefore.emailLog.applicationSubmitted)) {
+          await sendApplicationConfirmation({
+            applicationId,
+            application: dataAfter,
+          });
+        }
+      }
+
+      // applied
       // if (dataAfter.status === 'applied') {
       //   const exercise = getDocument(db.doc(`exercises/${exerciseId}`));
       //   if (exercise.state === 'approved') {

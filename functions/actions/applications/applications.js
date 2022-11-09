@@ -6,12 +6,13 @@ const testApplicationsFileName = 'test_applications.json';
 module.exports = (config, firebase, db, auth) => {
   const { initialiseApplicationRecords } = require('../../actions/applicationRecords')(config, firebase, db, auth);
   const { refreshApplicationCounts } = require('../../actions/exercises/refreshApplicationCounts')(firebase, db);
-  const { newNotificationCharacterCheckRequest } = require('../../shared/factories')(config);
+  const { newNotificationApplicationSubmit, newNotificationCharacterCheckRequest } = require('../../shared/factories')(config);
   const slack = require('../../shared/slack')(config);
   const { updateCandidate } = require('../candidates/search')(firebase, db);
   return {
     updateApplication,
     onApplicationCreate,
+    sendApplicationConfirmation,
     sendCharacterCheckRequests,
     createApplication,
     createApplications,
@@ -82,6 +83,45 @@ module.exports = (config, firebase, db, auth) => {
     saveData['_applications._lastUpdated'] = firebase.firestore.FieldValue.serverTimestamp();
     await db.doc(`exercises/${data.exerciseId}`).update(saveData);
     console.log('success');
+  }
+
+  /**
+  * sendApplicationConfirmation
+  * Sends a 'application submitted' notification for each application
+  * @param {*} `params` is an object containing
+  *   `applicationId`  (required) ID of application
+  *   `application`    (required) application
+  */
+   async function sendApplicationConfirmation(params) {
+    const applicationId = params.applicationId;
+    const application = params.application;
+    const applicationRef = db.collection('applications').doc(applicationId);
+
+    // get exercise
+    const exerciseId = application.exerciseId;
+    const exercise = await getDocument(db.doc(`exercises/${exerciseId}`));
+    if (!exercise) return false;
+
+    // create database commands
+    const commands = [];
+    // create notification
+    commands.push({
+      command: 'set',
+      ref: db.collection('notifications').doc(),
+      data: newNotificationApplicationSubmit(firebase, applicationId, application, exercise),
+    });
+    // update application
+    commands.push({
+      command: 'update',
+      ref: applicationRef,
+      data: {
+        'emailLog.applicationSubmitted': firebase.firestore.Timestamp.fromDate(new Date()),
+      },
+    });
+
+    // write to db
+    const result = await applyUpdates(db, commands);
+    return result ? true : false;
   }
 
   /**

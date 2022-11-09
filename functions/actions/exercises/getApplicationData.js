@@ -10,6 +10,7 @@ function formatPreference(choiceArray, questionType) {
   } else if (questionType === 'single-choice') {
     return choiceArray;
   }
+  return choiceArray;
 }
 
 module.exports = (config, firebase, db, auth) => {
@@ -22,17 +23,17 @@ module.exports = (config, firebase, db, auth) => {
   * getApplicationData
    */
     async function getApplicationData(params) {
-    
+
     let applicationDataRef = db.collection('applications')
     .where('exerciseId', '==', params.exerciseId);
-    
+
     const results = await getDocuments(applicationDataRef);
-    
+
     let exerciseDataRef = db.collection('exercises').doc(params.exerciseId);
     const exerciseData = await getDocument(exerciseDataRef);
-    
+
     const data = [];
-    
+
     for(const result of results) {
       let record = {};
       for(const column of params.columns) {
@@ -53,10 +54,10 @@ module.exports = (config, firebase, db, auth) => {
           if (column === 'locationPreferences') {
             // console.log(record[column], exerciseData.locationQuestionType);
             record[column] = formatPreference(record[column], exerciseData.locationQuestionType);
-          } 
+          }
           if (column === 'jurisdictionPreferences') {
             record[column] = formatPreference(record[column], exerciseData.jurisdictionQuestionType);
-          } 
+          }
         }
         else if(_.isArray(record[column])) {
           let formattedArray = '';
@@ -75,10 +76,10 @@ module.exports = (config, firebase, db, auth) => {
             }
             formattedArray += ', ';
           }
-          
+
           // remove the last ', ' from string
           formattedArray = formattedArray.substring(0, formattedArray.length - 2);
-          
+
           // if something went wrong with parsing the array, just return true
           if (formattedArray === '') {
             record[column] = 'True';
@@ -86,12 +87,12 @@ module.exports = (config, firebase, db, auth) => {
             record[column] = formattedArray;
           }
         }
-        
+
         // Handle time values
         if(_.get(record[column], '_seconds', null)) {
           record[column] = formatDate(record[column]);
         }
-        
+
       }
 
       data.push(record);

@@ -2,10 +2,13 @@ const functions = require('firebase-functions');
 const config = require('../../shared/config');
 const { firebase, db } = require('../../shared/admin.js');
 const { checkArguments } = require('../../shared/helpers.js');
-const finaliseTask = require('../../actions/tasks/finaliseTask')(config, firebase, db);
+const { updateTask } = require('../../actions/tasks/updateTask')(config, firebase, db);
 const { checkFunctionEnabled } = require('../../shared/serviceSettings.js')(db);
 
-module.exports = functions.region('europe-west2').https.onCall(async (data, context) => {
+module.exports = functions.runWith({
+  timeoutSeconds: 180,
+  memory: '512MB',
+}).region('europe-west2').https.onCall(async (data, context) => {
   await checkFunctionEnabled();
   if (!context.auth) {
     throw new functions.https.HttpsError('failed-precondition', 'The function must be called while authenticated.');
@@ -16,6 +19,6 @@ module.exports = functions.region('europe-west2').https.onCall(async (data, cont
   }, data)) {
     throw new functions.https.HttpsError('invalid-argument', 'Please provide valid arguments');
   }
-  const result = await finaliseTask(data);
+  const result = await updateTask(data);
   return result;
 });

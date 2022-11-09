@@ -17,13 +17,13 @@ module.exports = functions.region('europe-west2').https.onCall(async (data, cont
   ]);
 
   if (!checkArguments({
-    assessmentId: { required: true },
+    assessmentIds: { required: true },
     notificationType: { required: true },
   }, data)) {
     throw new functions.https.HttpsError('invalid-argument', 'Please provide valid arguments');
   }
   const result = await testAssessmentNotification({
-    assessmentId: data.assessmentId,
+    assessmentIds: data.assessmentIds,
     notificationType: data.notificationType,
     email: context.auth.token.email,
   });

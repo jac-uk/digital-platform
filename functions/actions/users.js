@@ -3,6 +3,7 @@ const { getDocument } = require('../shared/helpers');
 module.exports = (auth, db) => {
   return {
     generateSignInWithEmailLink,
+    createUser,
     deleteUsers,
     importUsers,
   };
@@ -37,6 +38,22 @@ module.exports = (auth, db) => {
       return true;
     }
     return false;
+  }
+
+  /**
+   * Create a user
+   * 
+   * @param {object} user
+   *
+   */
+   async function createUser(user) {
+    try {
+      const res = await auth.createUser(user);
+      return res;
+    } catch(error) {
+      console.log(error);
+      return error;
+    }
   }
 
   /**

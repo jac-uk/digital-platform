@@ -1,6 +1,6 @@
 {
   "name": "jac-digital-platform",
-  "version": "1.29.2",
+  "version": "1.30.0",
   "description": "Firebase/GCP configuration and components for the JAC digital platform",
   "repository": "https://github.com/jac-uk/digital-platform",
   "license": "MIT",
@@ -29,7 +29,7 @@
     "deploy:realtime-rules": "firebase deploy --project=digital-platform-develop --only database",
     "staging:deploy:rules": "firebase deploy --project=digital-platform-staging --only firestore:rules",
     "staging:deploy:indexes": "firebase deploy --project=digital-platform-staging --only firestore:indexes",
-    "staging:deploy:functions": "firebase deploy --project=digital-platform-staging --only functions",
+    "staging:deploy:functions": "firebase deploy --project=digital-platform-staging --only functions --force",
     "staging:deploy:function": "run(){ firebase deploy --project=digital-platform-staging --only functions:$1; }; run",
     "staging:deploy:storage-rules": "firebase deploy --project=digital-platform-staging --only storage:rules",
     "staging:deploy:realtime-rules": "firebase deploy --project=digital-platform-staging --only database",
@@ -74,7 +74,7 @@
     "firebase-admin": "^9.7.0",
     "firebase-functions": "^3.14.1",
     "firebase-functions-test": "^0.2.3",
-    "firebase-tools": "^9.11.0",
+    "firebase-tools": "^9.23.3",
     "googleapis": "^67.0.0",
     "lodash": "^4.17.21",
     "notifications-node-client": "^4.9.0"
@@ -88,6 +88,7 @@
     "eslint": "^7.18.0",
     "eslint-plugin-promise": "^4.2.1",
     "firebase-mock": "^2.2.10",
+    "firestore-size": "^2.0.7",
     "jest": "^25.2.1",
     "mocha": "^6.2.3"
   },

@@ -1,13 +1,14 @@
 const { getDocument, getDocuments, getAllDocuments, applyUpdates } = require('../shared/helpers');
 
 module.exports = (config, firebase, db) => {
-  const { newAssessment, newNotificationAssessmentRequest, newNotificationAssessmentReminder } = require('../shared/factories')(config);
+  const { newAssessment, newNotificationAssessmentRequest, newNotificationAssessmentReminder, newNotificationAssessmentSubmit } = require('../shared/factories')(config);
   const { testNotification } = require('./notifications')(config, db);
 
   return {
     initialiseAssessments,
     initialiseMissingAssessments,
     cancelAssessments,
+    resetAssessments,
     sendAssessmentRequests,
     sendAssessmentReminders,
     onAssessmentCompleted,
@@ -26,21 +27,31 @@ module.exports = (config, firebase, db) => {
       assessment = await getDocument(db.collection('assessments').doc(assessmentId));
     }
     const commands = [];
-    if (assessment.assessor && assessment.assessor.id) {
-      // update application
-      if (assessmentId.indexOf('-1')) {
-        commands.push({
-          command: 'update',
-          ref: db.collection('applications').doc(assessment.application.id),
-          data: { firstAssessorID: assessment.assessor.id },
-        });
-      } else {
-        commands.push({
-          command: 'update',
-          ref: db.collection('applications').doc(assessment.application.id),
-          data: { secondAssessorID: assessment.assessor.id },
-        });
+
+    if (assessment.assessor) {
+      // make sure the data type of assessor id is not undefined
+      // the assessor id will be undefined when manually upload assessment on admin
+      if (!assessment.assessor.id) {
+        assessment.assessor.id = '';
       }
+
+      // update application if assessor id exists
+      if (assessment.assessor.id) {
+        if (assessmentId.indexOf('-1')) {
+          commands.push({
+            command: 'update',
+            ref: db.collection('applications').doc(assessment.application.id),
+            data: { firstAssessorID: assessment.assessor.id },
+          });
+        } else {
+          commands.push({
+            command: 'update',
+            ref: db.collection('applications').doc(assessment.application.id),
+            data: { secondAssessorID: assessment.assessor.id },
+          });
+        }
+      }
+      
       // update exercise
       const increment = firebase.firestore.FieldValue.increment(1);
       commands.push({
@@ -48,7 +59,15 @@ module.exports = (config, firebase, db) => {
         ref: db.collection('exercises').doc(assessment.exercise.id),
         data: { 'assessments.completed': increment },
       });
+
+      // send notification
+      commands.push({
+        command: 'set',
+        ref: db.collection('notifications').doc(),
+        data: newNotificationAssessmentSubmit(firebase, assessment),
+      });
     }
+
     // write to db
     const result = await applyUpdates(db, commands);
     return result;
@@ -189,25 +208,132 @@ module.exports = (config, firebase, db) => {
 
   /**
   * cancelAssessments
-  * Cancels assessment requests. Currently deletes all assessments.
-  * @TODO only delete draft assessments, mark others as cancelled
+  * Cancels assessment requests
   * @param {*} `params` is an object containing
   *   `exerciseId` (required) ID of exercise
+  *   `assessmentIds` (optional) IDs of assessment
+  *   `cancelReason` (required) reason to cancel assessment
   */
   async function cancelAssessments(params) {
-    // delete assessments
-    let snap = await db.collection('assessments')
-      .where('exercise.id', '==', params.exerciseId)
-      .select()
-      .get();
-    for (let i = 0, len = snap.docs.length; i < len; ++i) {
-      await snap.docs[i].ref.delete();
+    let assessmentsRef = db.collection('assessments')
+      .where('exercise.id', '==', params.exerciseId);
+      
+    if (params.assessmentIds && params.assessmentIds.length) {
+      assessmentsRef = assessmentsRef.where(firebase.firestore.FieldPath.documentId(), 'in', params.assessmentIds);
+    }
+    const assessments = await getDocuments(assessmentsRef);
+
+    // create database commands
+    const commands = [];
+    let prevStatus = null;
+    for (let i = 0, len = assessments.length; i < len; ++i) {
+      const assessment = assessments[i];
+      prevStatus = assessment.status;
+      commands.push({
+        command: 'update',
+        ref: assessment.ref,
+        data: {
+          status: 'cancelled',
+          cancelReason: params.cancelReason,
+        },
+      });
     }
 
-    // update exercise
-    await db.collection('exercises').doc(params.exerciseId).update({
-      assessments: {},
-    });
+    // udpate exercise
+    if (assessments.length && prevStatus) {
+      const exercise = await getExercise(params.exerciseId);
+      let sent = exercise.assessments.sent ? exercise.assessments.sent : 0;
+      let completed = exercise.assessments.completed ? exercise.assessments.completed : 0;
+      
+      sent = (sent && sent - assessments.length >= 0) ? sent - assessments.length : 0;
+      if (prevStatus === 'completed') {
+        completed = (completed && completed - assessments.length >= 0) ? completed - assessments.length : 0;
+      }
+
+      commands.push({
+        command: 'update',
+        ref: exercise.ref,
+        data: {
+          'assessments.sent': sent,
+          'assessments.completed': completed,
+        },
+      });
+    }
+
+    // write to db
+    result = await applyUpdates(db, commands);
+    return result ? assessments.length : false;
+  }
+
+  /**
+  * resetAssessments
+  * Resets assessment status to draft.
+  * @param {*} `params` is an object containing
+  *   `exerciseId` (required) ID of exercise
+  *   `assessmentIds` (optional) IDs of assessment
+  *   `status` (optional) status of assessment
+  */
+  async function resetAssessments(params) {
+    let assessmentsRef = db.collection('assessments')
+      .where('exercise.id', '==', params.exerciseId);
+
+    if (params.assessmentIds && params.assessmentIds.length) {
+      assessmentsRef = assessmentsRef.where(firebase.firestore.FieldPath.documentId(), 'in', params.assessmentIds);
+    }
+    const assessments = await getDocuments(assessmentsRef);
+
+    // create database commands
+    const commands = [];
+    let prevStatus = null;
+    for (let i = 0, len = assessments.length; i < len; ++i) {
+      const assessment = assessments[i];
+      prevStatus = assessment.status;
+      commands.push({
+        command: 'update',
+        ref: assessment.ref,
+        data: {
+          status: params.status,
+          cancelReason: null,
+          declineReason: null,
+          filePath: null,
+          fileRef: null,
+          approved: false,
+          submittedDate: null,
+          updatedDate: null,
+        },
+      });
+    }
+
+    // udpate exercise
+    if (assessments.length && prevStatus) {
+      const exercise = await getExercise(params.exerciseId);
+      let sent = exercise.assessments.sent ? exercise.assessments.sent : 0;
+      let completed = exercise.assessments.completed ? exercise.assessments.completed : 0;
+      
+      if (prevStatus === 'pending' && ['draft', 'cancelled', 'deleted'].includes(params.status)) {
+        sent = (sent && sent - assessments.length >= 0) ? sent - assessments.length : 0;
+      } else if (prevStatus === 'completed' && ['draft', 'cancelled', 'deleted'].includes(params.status)) {
+        sent = (sent && sent - assessments.length >= 0) ? sent - assessments.length : 0;
+        completed = (completed && completed - assessments.length >= 0) ? completed - assessments.length : 0;
+      } else if (prevStatus === 'completed' && ['pending'].includes(params.status)) {
+        completed = (completed && completed - assessments.length >= 0) ? completed - assessments.length : 0;
+      } else if (prevStatus === 'declined' && ['draft'].includes(params.status)) {
+        sent = (sent && sent - assessments.length >= 0) ? sent - assessments.length : 0;
+      }
+
+      commands.push({
+        command: 'update',
+        ref: exercise.ref,
+        data: {
+          'assessments.sent': sent,
+          'assessments.completed': completed,
+        },
+      });
+    }
+
+    // write to db
+    result = await applyUpdates(db, commands);
+    return result ? assessments.length : false;
   }
 
 
@@ -215,27 +341,37 @@ module.exports = (config, firebase, db) => {
   * testAssessmentNotification
   * Sends notification to the provided email address. For testing/checking purposes
   * @param {*} `params` is an object containing
-  *   `assessmentId` (required) ID of assessment
+  *   `assessmentIds` (required) IDs of assessment
   *   `notificationType` (required) type of notification to send ('request'|'reminder'|'success')
   *   `email` (required) email address to send the notification to
   * @TODO sort out the 'success' template
   */
   async function testAssessmentNotification(params) {
-    const assessment = await getDocument(db.doc(`assessments/${params.assessmentId}`));
-    if (assessment) {
-      // @TODO update to handle other assessment templates
-      switch (params.notificationType) {
-        case 'request':
-          return testNotification(newNotificationAssessmentRequest(firebase, assessment), params.email);
-        case 'reminder':
-          return testNotification(newNotificationAssessmentReminder(firebase, assessment), params.email);
-        case 'success':
-          return testNotification(newNotificationAssessmentRequest(firebase, assessment), params.email);
-        default:
-          break;
+    const results = [];
+    for (let i = 0; i < params.assessmentIds.length; i++) {
+      const assessmentId = params.assessmentIds[i];
+      const assessment = await getDocument(db.doc(`assessments/${assessmentId}`));
+      let result = false;
+
+      if (assessment) {
+        // @TODO update to handle other assessment templates
+        switch (params.notificationType) {
+          case 'request':
+            result = await testNotification(newNotificationAssessmentRequest(firebase, assessment), params.email);
+            break;
+          case 'reminder':
+            result = await testNotification(newNotificationAssessmentReminder(firebase, assessment), params.email);
+            break;
+          case 'success':
+            result = await testNotification(newNotificationAssessmentRequest(firebase, assessment), params.email);
+            break;
+          default:
+            break;
+        }
       }
+      results.push({ assessmentId, result });
     }
-    return false;
+    return results;
   }
 
 
