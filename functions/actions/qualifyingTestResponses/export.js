@@ -35,6 +35,7 @@ const getHeaders = (qualifyingTest) => {
     'ID',
     'Reference number',
     'Full Name',
+    'Email',
     'Total Duration',
     'Adjust applied',
     'Time Taken',
@@ -76,7 +77,8 @@ const getData = (qualifyingTest, qualifyingTestResponses) => {
     const row = [
       element.id,
       element.application ? element.application.referenceNumber : '',
-      element.candidate.fullName || element.candidate.email,
+      element.candidate.fullName || '',
+      element.candidate.email,
       element.duration.testDurationAdjusted,
       element.duration.reasonableAdjustment,
       timeTaken(element),
