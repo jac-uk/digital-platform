@@ -13,6 +13,7 @@ module.exports = functions.region('europe-west2').https.onCall(async (data, cont
   }
 
   hasPermissions(context.auth.token.rp, [
+    PERMISSIONS.exercises.permissions.canReadExercises.value,
     PERMISSIONS.applications.permissions.canReadApplications.value,
     PERMISSIONS.applications.permissions.canUpdateApplications.value,
     PERMISSIONS.notifications.permissions.canCreateNotifications.value,
