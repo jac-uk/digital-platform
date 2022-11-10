@@ -127,11 +127,13 @@ module.exports = (config, firebase, db, auth) => {
 
   /**
   * sendApplicationReminders
-  * Sends 'application submission reminder' notification for each draft application
+  * Sends 'application submission reminder' notification for each draft application (only send once)
   * @param {*} `params` is an object containing
   *   `exerciseId`  (required) ID of exercise
   */
    async function sendApplicationReminders(params) {
+    if (!params.exerciseId) return false;
+
     // get exercise
     const exerciseId = params.exerciseId;
     const exercise = await getDocument(db.doc(`exercises/${exerciseId}`));
@@ -171,8 +173,11 @@ module.exports = (config, firebase, db, auth) => {
     }
 
     // write to db
-    const result = await applyUpdates(db, commands);
-    return result ? applications.length : false;
+    if (commands.length) {
+        const result = await applyUpdates(db, commands);
+        return result ? applications.length : false;
+    }
+    return 0;
   }
 
   /**
