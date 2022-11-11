@@ -21,6 +21,7 @@ const main = async () => {
       application.qualifications.forEach(qualification => {
         // only migrate if `qualificationNotComplete` property is present in qualification
         if ('qualificationNotComplete' in qualification) {
+          // create new field `qualificationComplete`
           qualification.qualificationComplete = !qualification.qualificationNotComplete;
           isUpdate = true;
         }
@@ -39,7 +40,7 @@ const main = async () => {
 
 
   const result = {
-    success: true,
+    success: null,
     total: applicationIds.length,
     applicationIds,
   };
