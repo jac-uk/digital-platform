@@ -8,7 +8,7 @@
   },
   "emulators": {
     "firestore": {
-      "host": "http://localhost",
+      "host": "localhost",
       "port": 8282
     },
     "functions": {
