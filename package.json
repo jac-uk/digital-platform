@@ -35,7 +35,7 @@
     "staging:deploy:realtime-rules": "firebase deploy --project=digital-platform-staging --only database",
     "production:deploy:rules": "firebase deploy --project=platform-production-9207d --only firestore:rules",
     "production:deploy:indexes": "firebase deploy --project=platform-production-9207d --only firestore:indexes --force",
-    "production:deploy:functions": "firebase deploy --project=platform-production-9207d --only functions",
+    "production:deploy:functions": "firebase deploy --project=platform-production-9207d --only functions --force",
     "production:deploy:function": "run(){ firebase deploy --project=platform-production-9207d --only functions:$1; }; run",
     "production:deploy:storage-rules": "firebase deploy --project=platform-production-9207d --only storage:rules",
     "production:deploy:realtime-rules": "firebase deploy --project=platform-production-9207d --only database",
