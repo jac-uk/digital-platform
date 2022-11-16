@@ -33,6 +33,10 @@ module.exports = (firebase, db) => {
     const headers = [
       'Ref',
       'Name',
+      'Middle name(s)',
+      'Suffix',
+      'Previous known name(s)',
+      'Professional name',
       'Email',
       'Citizenship',
       'Date of Birth',
@@ -659,6 +663,10 @@ const eligibilityIssuesExport = (applicationRecords) => {
     return {
       referenceNumber: _.get(applicationRecord, 'application.referenceNumber', null),
       fullName: _.get(applicationRecord,'candidate.fullName', null),
+      middleNames: _.get(applicationRecord,'application.personalDetails.middleNames', null),
+      suffix: _.get(applicationRecord,'application.personalDetails.suffix', null),
+      previousNames: _.get(applicationRecord,'application.personalDetails.previousNames', null),
+      professionalName: _.get(applicationRecord,'application.personalDetails.professionalName', null),
       email: _.get(applicationRecord, 'application.personalDetails.email', null),
       citizenship: _.get(applicationRecord, 'application.personalDetails.citizenship', null),
       dateOfBirth: formatDate(_.get(applicationRecord, 'application.personalDetails.dateOfBirth', null)),

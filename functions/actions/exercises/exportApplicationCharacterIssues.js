@@ -106,6 +106,10 @@ module.exports = (firebase, db) => {
     return [
       { title: 'Ref', name: 'ref' },
       { title: 'Name', name: 'name' },
+      { title: 'Middle name(s)', name: 'middleNames' },
+      { title: 'Suffix', name: 'suffix' },
+      { title: 'Previous known name(s)', name: 'previousNames' },
+      { title: 'Professional name', name: 'professionalName' },
       { title: 'Email', name: 'email' },
       { title: 'Phone', name: 'phone' },
       { title: 'Date of Birth', name: 'dob' },
@@ -144,6 +148,10 @@ module.exports = (firebase, db) => {
       return {
         ref: _.get(applicationRecord, 'application.referenceNumber', ''),
         name: _.get(applicationRecord,'candidate.fullName', ''),
+        middleNames: _.get(applicationRecord, 'application.personalDetails.middleNames', ''),
+        suffix: _.get(applicationRecord, 'application.personalDetails.suffix', ''),
+        previousNames: _.get(applicationRecord, 'application.personalDetails.previousNames', ''),
+        professionalName: _.get(applicationRecord, 'application.personalDetails.professionalName', ''),
         email: _.get(applicationRecord, 'application.personalDetails.email', ''),
         phone: _.get(applicationRecord, 'application.personalDetails.phone', ''),
         dob: formatDate(_.get(applicationRecord, 'application.personalDetails.dateOfBirth', '')),
