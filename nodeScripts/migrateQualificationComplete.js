@@ -7,7 +7,7 @@ const { applyUpdates, getDocuments, getDocument } = require('../functions/shared
 // whether to make changes in `applications` collection in firestore
 // true:  make changes in `applications` collection
 // false: create a temporary collection `applications_temp` and verify the changes is as expected
-const isAction = true;
+const isAction = false;
 
 const main = async () => {
   // get all applications with `qualificationNotComplete` field
@@ -54,7 +54,7 @@ const main = async () => {
 
     if (!isAction) {
       // verify if changes is as expected
-      let verifyNum = 0
+      let verifyNum = 0;
       for (let i = 0; i < commands.length; i++) {
         const command = commands[i];
         const applicationId = command.data.id;
