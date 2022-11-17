@@ -80,6 +80,13 @@ service cloud.firestore {
       allow delete: if userIsAuthenticated() && userIsJAC() && hasPermission('nt4');
     }
 
+    match /messages/{messageId} {
+      allow read: if userIsAuthenticated() && userIsJAC() && hasPermission('nt1');
+      allow create: if userIsAuthenticated() && userIsJAC() && hasPermission('nt2') && verifyFields(['body', 'createdBy'], []);
+      allow update: if userIsAuthenticated() && userIsJAC() && hasPermission('nt3') && verifyFields(['body', 'createdBy'], []);
+      allow delete: if userIsAuthenticated() && userIsJAC() && hasPermission('nt4');
+    }
+
     match /panels/{panelId} {
       allow read: if userIsAuthenticated() && userIsJAC() && hasPermission('p1');
       allow create: if userIsAuthenticated() && userIsJAC() && hasPermission('p2');
