@@ -11,7 +11,8 @@
   "scripts": {
     "lint": "eslint .",
     "lint:fix": "eslint . --fix",
-    "serve": "firebase serve --only functions",
+    "dev": "firebase emulators:start --import=./data/ --export-on-exit=./data",
+    "serve": "firebase emulators:start --import=./data/",
     "shell": "firebase functions:shell",
     "emulators:firestore": "firebase emulators:start --only firestore",
     "start": "npm run shell",
