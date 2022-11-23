@@ -1,4 +1,4 @@
-const { getDocument, getDocuments, getAllDocuments, applyUpdates } = require('../shared/helpers');
+const { getDocument, getDocuments, getAllDocuments, getDocumentsFromQueries, applyUpdates } = require('../shared/helpers');
 
 module.exports = (config, firebase, db) => {
   const { newAssessment, newNotificationAssessmentRequest, newNotificationAssessmentReminder, newNotificationAssessmentSubmit } = require('../shared/factories')(config);
@@ -215,13 +215,18 @@ module.exports = (config, firebase, db) => {
   *   `cancelReason` (required) reason to cancel assessment
   */
   async function cancelAssessments(params) {
-    let assessmentsRef = db.collection('assessments')
-      .where('exercise.id', '==', params.exerciseId);
-      
+    // get assessments
+    let assessments = null;
     if (params.assessmentIds && params.assessmentIds.length) {
-      assessmentsRef = assessmentsRef.where(firebase.firestore.FieldPath.documentId(), 'in', params.assessmentIds);
+      const assessmentQueries = params.assessmentIds.map(assessmentId => {
+        return db.collection('assessments')
+          .where('exercise.id', '==', params.exerciseId)
+          .where(firebase.firestore.FieldPath.documentId(), '==', assessmentId);
+      });
+      assessments = await getDocumentsFromQueries(assessmentQueries);
     }
-    const assessments = await getDocuments(assessmentsRef);
+
+    if (!assessments) return false;
 
     // create database commands
     const commands = [];
@@ -274,13 +279,18 @@ module.exports = (config, firebase, db) => {
   *   `status` (optional) status of assessment
   */
   async function resetAssessments(params) {
-    let assessmentsRef = db.collection('assessments')
-      .where('exercise.id', '==', params.exerciseId);
-
+    // get assessments
+    let assessments = null;
     if (params.assessmentIds && params.assessmentIds.length) {
-      assessmentsRef = assessmentsRef.where(firebase.firestore.FieldPath.documentId(), 'in', params.assessmentIds);
+      const assessmentQueries = params.assessmentIds.map(assessmentId => {
+        return db.collection('assessments')
+          .where('exercise.id', '==', params.exerciseId)
+          .where(firebase.firestore.FieldPath.documentId(), '==', assessmentId);
+      });
+      assessments = await getDocumentsFromQueries(assessmentQueries);
     }
-    const assessments = await getDocuments(assessmentsRef);
+
+    if (!assessments) return false;
 
     // create database commands
     const commands = [];
@@ -418,23 +428,33 @@ module.exports = (config, firebase, db) => {
     const exercise = await getExercise(params.exerciseId);
 
     // if param is applicationId then we expect exercise to have started sending IAs. So check this.
-      // if this is not the case then we need to initialise/create the IA, send the request and update exercise stats
+    // if this is not the case then we need to initialise/create the IA, send the request and update exercise stats
 
     // get assessments
-    let assessmentsRef = db.collection('assessments')
-      .where('exercise.id', '==', params.exerciseId);
-    if (params.resend) {
-      assessmentsRef = assessmentsRef.where('status', 'in', ['draft','pending']);
-    } else {
-      assessmentsRef = assessmentsRef.where('status', '==', 'draft');
-    }
-    if (params.assessmentIds && params.assessmentIds.length) {
-      assessmentsRef = assessmentsRef.where(firebase.firestore.FieldPath.documentId(), 'in', params.assessmentIds);
-    }
+    const status = params.resend ? ['draft','pending'] : ['draft'];
+    let assessments = null;
     if (params.assessmentId) {
-      assessmentsRef = assessmentsRef.where(firebase.firestore.FieldPath.documentId(), '==', params.assessmentId);
+      const assessmentsRef = db.collection('assessments')
+        .where('exercise.id', '==', params.exerciseId)
+        .where('status', 'in', status)
+        .where(firebase.firestore.FieldPath.documentId(), '==', params.assessmentId);
+      assessments = await getDocuments(assessmentsRef);
+    } else if (params.assessmentIds && params.assessmentIds.length) {
+      const assessmentQueries = params.assessmentIds.map(assessmentId => {
+        return db.collection('assessments')
+          .where('exercise.id', '==', params.exerciseId)
+          .where('status', 'in', status)
+          .where(firebase.firestore.FieldPath.documentId(), '==', assessmentId);
+      });
+      assessments = await getDocumentsFromQueries(assessmentQueries);
+    } else {
+      const assessmentsRef = db.collection('assessments')
+        .where('exercise.id', '==', params.exerciseId)
+        .where('status', 'in', status);
+      assessments = await getDocuments(assessmentsRef);
     }
-    const assessments = await getDocuments(assessmentsRef);
+
+    if (!assessments) return false;
 
     let result = validateAssessorEmailAddresses(assessments);
 
@@ -490,18 +510,25 @@ module.exports = (config, firebase, db) => {
   *       all assessments
   */
   async function sendAssessmentReminders(params) {
-
     // get assessments
-    let assessmentsRef = db.collection('assessments')
-      .where('exercise.id', '==', params.exerciseId)
-      .where('status', '==', 'pending');
-    if (params.assessmentIds && params.assessmentIds.length) {
-      assessmentsRef = assessmentsRef.where(firebase.firestore.FieldPath.documentId(), 'in', params.assessmentIds);
-    }
+    let assessments = null;
     if (params.assessmentId) {
-      assessmentsRef = assessmentsRef.where(firebase.firestore.FieldPath.documentId(), '==', params.assessmentId);
+      const assessmentsRef = db.collection('assessments')
+        .where('exercise.id', '==', params.exerciseId)
+        .where('status', '==', 'pending')
+        .where(firebase.firestore.FieldPath.documentId(), '==', params.assessmentId);
+      assessments = await getDocuments(assessmentsRef);
+    } else if (params.assessmentIds && params.assessmentIds.length) {
+      const assessmentQueries = params.assessmentIds.map(assessmentId => {
+        return db.collection('assessments')
+          .where('exercise.id', '==', params.exerciseId)
+          .where('status', '==', 'pending')
+          .where(firebase.firestore.FieldPath.documentId(), '==', assessmentId);
+      });
+      assessments = await getDocumentsFromQueries(assessmentQueries);
     }
-    const assessments = await getDocuments(assessmentsRef);
+
+    if (!assessments) return false;
 
     let result = validateAssessorEmailAddresses(assessments);
     if (result !== true) {
