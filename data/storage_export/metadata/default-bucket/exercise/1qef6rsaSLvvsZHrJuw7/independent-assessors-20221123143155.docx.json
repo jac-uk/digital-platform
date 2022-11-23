@@ -1,0 +1,19 @@
+{
+  "name": "exercise/1qef6rsaSLvvsZHrJuw7/independent-assessors-20221123143155.docx",
+  "bucket": "default-bucket",
+  "contentType": "application/vnd.openxmlformats-officedocument.wordprocessingml.document",
+  "metageneration": 1,
+  "generation": 1669213919386,
+  "storageClass": "STANDARD",
+  "etag": "someETag",
+  "contentDisposition": "inline",
+  "contentEncoding": "identity",
+  "downloadTokens": [
+    "65b1d8b7-9142-48a2-bd77-f4c8d08eb1d5"
+  ],
+  "timeCreated": "2022-11-23T14:31:59.385Z",
+  "updated": "2022-11-23T14:31:59.385Z",
+  "size": 23,
+  "md5Hash": "2VArUt2dmxjwpV1z6kziWw==",
+  "crc32c": "1246631485"
+}

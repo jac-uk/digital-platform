@@ -1,0 +1,19 @@
+{
+  "name": "exercise/1qef6rsaSLvvsZHrJuw7/pensions-information-20221123143124.txt",
+  "bucket": "default-bucket",
+  "contentType": "text/plain",
+  "metageneration": 1,
+  "generation": 1669213886586,
+  "storageClass": "STANDARD",
+  "etag": "someETag",
+  "contentDisposition": "inline",
+  "contentEncoding": "identity",
+  "downloadTokens": [
+    "3fc7f916-67e7-47e6-b1c3-1dee27848252"
+  ],
+  "timeCreated": "2022-11-23T14:31:26.585Z",
+  "updated": "2022-11-23T14:31:26.585Z",
+  "size": 285,
+  "md5Hash": "0BK2tX/JWW3m3VEWtcgZ/g==",
+  "crc32c": "3159983222"
+}

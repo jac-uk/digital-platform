@@ -1,0 +1,19 @@
+{
+  "name": "exercise/1qef6rsaSLvvsZHrJuw7/terms-and-conditions-20221123143148.docx",
+  "bucket": "default-bucket",
+  "contentType": "application/vnd.openxmlformats-officedocument.wordprocessingml.document",
+  "metageneration": 1,
+  "generation": 1669213912816,
+  "storageClass": "STANDARD",
+  "etag": "someETag",
+  "contentDisposition": "inline",
+  "contentEncoding": "identity",
+  "downloadTokens": [
+    "5247edbd-a571-47b8-97f7-77374fee751a"
+  ],
+  "timeCreated": "2022-11-23T14:31:52.815Z",
+  "updated": "2022-11-23T14:31:52.815Z",
+  "size": 23,
+  "md5Hash": "2VArUt2dmxjwpV1z6kziWw==",
+  "crc32c": "1246631485"
+}
