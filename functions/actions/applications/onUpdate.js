@@ -3,7 +3,7 @@ const { getDocument, applyUpdates, isDateInPast, formatDate } = require('../../s
 module.exports = (config, firebase, db, auth) => {
   const { newApplicationRecord } = require('../../shared/factories')(config);
   const { updateCandidate } = require('../candidates/search')(firebase, db);
-  const { sendApplicationConfirmation, sendCharacterCheckRequests } = require('./applications')(config, firebase, db, auth);
+  const { sendApplicationConfirmation, sendCharacterCheckRequests, sendSensitiveFlagConfirmation } = require('./applications')(config, firebase, db, auth);
 
   return onUpdate;
 
@@ -37,6 +37,16 @@ module.exports = (config, firebase, db, auth) => {
 
       // applied 
       if (dataBefore.status === 'draft' && dataAfter.status === 'applied') {
+        const candidate = await getDocument(db.doc(`candidates/${dataAfter.userId}`));
+
+        // send confirmation email if it has not been sent before
+        if (candidate && candidate.isHandledSensitively && dataBefore.emailLog && !dataBefore.emailLog.sensitivityFlagged) {
+          await sendSensitiveFlagConfirmation({
+            applicationId,
+            application: dataAfter,
+          });
+        }
+
         // send confirmation email if it has not been sent before
         if (!dataBefore.emailLog || (dataBefore.emailLog && !dataBefore.emailLog.applicationSubmitted)) {
           await sendApplicationConfirmation({

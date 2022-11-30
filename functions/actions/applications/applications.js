@@ -6,7 +6,7 @@ const testApplicationsFileName = 'test_applications.json';
 module.exports = (config, firebase, db, auth) => {
   const { initialiseApplicationRecords } = require('../../actions/applicationRecords')(config, firebase, db, auth);
   const { refreshApplicationCounts } = require('../../actions/exercises/refreshApplicationCounts')(firebase, db);
-  const { newNotificationApplicationSubmit, newNotificationCharacterCheckRequest } = require('../../shared/factories')(config);
+  const { newNotificationApplicationSubmit, newNotificationCharacterCheckRequest, newNotificationSensitiveFlagConfirmation } = require('../../shared/factories')(config);
   const slack = require('../../shared/slack')(config);
   const { updateCandidate } = require('../candidates/search')(firebase, db);
   return {
@@ -19,6 +19,7 @@ module.exports = (config, firebase, db, auth) => {
     loadTestApplications,
     createTestApplications,
     deleteApplications,
+    sendSensitiveFlagConfirmation,
   };
 
   /**
@@ -305,4 +306,42 @@ module.exports = (config, firebase, db, auth) => {
     };
   }
 
+  /**
+  * sendSensitiveFlagConfirmation
+  * Sends a 'sensitive flagged confirmation' notification for each application
+  * @param {*} `params` is an object containing
+  *   `applicationId`  (required) ID of application
+  *   `application`    (required) application
+  */
+   async function sendSensitiveFlagConfirmation(params) {
+    const applicationId = params.applicationId;
+    const application = params.application;
+    const applicationRef = db.collection('applications').doc(applicationId);
+
+    // get exercise
+    const exerciseId = application.exerciseId;
+    const exercise = await getDocument(db.doc(`exercises/${exerciseId}`));
+    if (!exercise) return false;
+
+    // create database commands
+    const commands = [];
+    // create notification
+    commands.push({
+      command: 'set',
+      ref: db.collection('notifications').doc(),
+      data: newNotificationSensitiveFlagConfirmation(firebase, applicationId, application, exercise),
+    });
+    // update application
+    commands.push({
+      command: 'update',
+      ref: applicationRef,
+      data: {
+        'emailLog.sensitivityFlagged': firebase.firestore.Timestamp.fromDate(new Date()),
+      },
+    });
+
+    // write to db
+    const result = await applyUpdates(db, commands);
+    return result ? true : false;
+  }
 };

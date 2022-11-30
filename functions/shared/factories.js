@@ -2,6 +2,7 @@
 module.exports = (CONSTANTS) => {
   return {
     newNotificationApplicationSubmit,
+    newNotificationSensitiveFlagConfirmation,
     newNotificationCharacterCheckRequest,
     newNotificationAssessmentRequest,
     newNotificationAssessmentReminder,
@@ -39,6 +40,34 @@ module.exports = (CONSTANTS) => {
     };
   }
 
+  function newNotificationSensitiveFlagConfirmation(firebase, applicationId, application, exercise) {
+    const templateName = 'Sensitivity Flag Confirmation';
+    const templateId = 'd9c3cf7d-3755-4f96-a508-20909a91b825';
+
+    return {
+      email: 'omar.jebari@precise-minds.co.uk',
+      replyTo: exercise.exerciseMailbox,
+      template: {
+        name: templateName,
+        id: templateId,
+      },
+      personalisation: {
+        exerciseId: exercise.id,
+        exerciseName: application.exerciseName,
+        applicantName: application.personalDetails.fullName,
+        refNumber: application.referenceNumber,
+        selectionExerciseManager: exercise.emailSignatureName,
+        exerciseMailbox: exercise.exerciseMailbox,
+      },
+      reference: {
+        collection: 'applications',
+        id: applicationId,
+      },
+      createdAt: firebase.firestore.Timestamp.fromDate(new Date()),
+      status: 'ready',
+    };
+  }
+  
   function newNotificationCharacterCheckRequest(firebase, application, type, exerciseMailbox, exerciseManagerName, dueDate) {
     let templateId = '';
     let templateName = '';
