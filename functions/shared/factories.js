@@ -55,7 +55,7 @@ module.exports = (CONSTANTS) => {
         exerciseId: exercise.id,
         exerciseName: application.exerciseName,
         applicantName: application.personalDetails.fullName,
-        exerciseCloseDate: exercise.applicationCloseDate.toDate().toLocaleDateString('en-GB', { hour: '2-digit', minute:'2-digit', weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' }), // e.g. Wednesday, 30 November 2022 at 13:00
+        exerciseCloseDate: `${exercise.applicationCloseDate.toDate().toLocaleDateString('en-GB', { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' })} at ${exercise.applicationCloseDate.toDate().toLocaleTimeString('en-GB', { hour: '2-digit', minute:'2-digit', hour12: false })}`, // e.g. Wednesday, 30 November, 2022 at 13:00
         refNumber: application.referenceNumber || null,
         selectionExerciseManager: exercise.emailSignatureName,
         exerciseMailbox: exercise.exerciseMailbox,
