@@ -167,7 +167,7 @@ module.exports = (config, firebase, db, auth) => {
         command: 'update',
         ref: application.ref,
         data: {
-          'emailLog.applicationReminder': firebase.firestore.Timestamp.fromDate(new Date()),
+          'emailLog.applicationReminder': firebase.firestore.FieldValue.serverTimestamp(),
         },
       });
     }

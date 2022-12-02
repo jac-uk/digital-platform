@@ -64,7 +64,7 @@ module.exports = (CONSTANTS) => {
         collection: 'applications',
         id: applicationId,
       },
-      createdAt: firebase.firestore.Timestamp.fromDate(new Date()),
+      createdAt: firebase.firestore.FieldValue.serverTimestamp(),
       status: 'ready',
     };
   }
