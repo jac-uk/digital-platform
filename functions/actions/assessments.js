@@ -23,6 +23,7 @@ module.exports = (config, firebase, db) => {
     let assessment;
     if (data) {
       assessment = data;
+      assessment.id = assessmentId;
     } else {
       assessment = await getDocument(db.collection('assessments').doc(assessmentId));
     }
