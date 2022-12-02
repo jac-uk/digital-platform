@@ -19,10 +19,7 @@ describe('sendApplicationReminders', () => {
       const wrapped = wrap(sendApplicationReminders);
       const context = generateMockContext({
         permissions: [
-          PERMISSIONS.exercises.permissions.canReadExercises.value,
-          PERMISSIONS.applications.permissions.canReadApplications.value,
-          PERMISSIONS.applications.permissions.canUpdateApplications.value,
-          PERMISSIONS.notifications.permissions.canCreateNotifications.value,
+          PERMISSIONS.exercises.permissions.canSendApplicationReminders.value,
         ],
       });
       try {
