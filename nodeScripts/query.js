@@ -29,7 +29,7 @@ function flattenQualifications(data) {
     return '';
   }
   return data.map((item) => {
-    if (item.type === 'barrister' && !item.qualificationComplete) {
+    if (item.type === 'barrister' && !item.completedPupillage) {
       return `${upperCase(item.type)}\n${item.details}`;
     } else {
       return `${upperCase(item.type)}\n${formatDate(item.date)}`;

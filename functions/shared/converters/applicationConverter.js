@@ -150,7 +150,7 @@ module.exports = () => {
           addField(data, 'Date qualified', formatDate(q.date));
         }
       }
-      if (!q.qualificationComplete && q.details) {
+      if (!q.completedPupillage && q.details) {
         addField(data, 'Completed pupillage', 'No');
         addField(data, 'Did not complete pupillage notes', q.details);
       }

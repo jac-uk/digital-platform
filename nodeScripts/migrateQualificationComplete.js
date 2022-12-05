@@ -12,7 +12,7 @@ const isAction = false;
 const main = async () => {
   // get all applications with `qualificationNotComplete` field
   // TODO: optimize query
-  const applications = await getDocuments(db.collection('applications').where('exerciseId', '==', 'kqgMVYmxlp5EkNpEiB3K'));
+  const applications = await getDocuments(db.collection('applications').orderBy('qualifications'));
 
   const commands = [];
   const applicationIds = [];
@@ -23,24 +23,41 @@ const main = async () => {
     if (application.qualifications && application.qualifications.length) {
       application.qualifications.forEach(qualification => {
         // only migrate if `qualificationNotComplete` property is present in qualification
-        if (typeof qualification === 'object' && qualification !== null && 'qualificationNotComplete' in qualification) {
-          // create new field `qualificationComplete`
-          qualification.qualificationComplete = !qualification.qualificationNotComplete;
-          isUpdate = true;
+        if (typeof qualification === 'object' && qualification !== null && qualification.type === 'barrister') {
+          if ('qualificationNotComplete' in qualification) {
+            // create new field `completedPupillage`
+            qualification.completedPupillage = !qualification.qualificationNotComplete;
+            isUpdate = true;
+          } else {
+            if (qualification.date) {
+              qualification.completedPupillage = true;
+              isUpdate = true;
+            }
+          }
         }
       });
     }
 
     if (isUpdate) {
-      const data = _.cloneDeep(application);
-      // delete these properties added by getDocuments
-      delete data.id;
-      delete data.ref;
-      commands.push({
-        command: 'set',
-        ref: isAction ? application.ref : db.collection('applications_temp').doc(`${application.id}`),
-        data: data,
-      });
+      if (isAction) {
+        commands.push({
+          command: 'update',
+          ref: application.ref,
+          data: {
+            qualifications: application.qualifications,
+          },
+        });
+      } else {
+        const data = _.cloneDeep(application);
+        // delete these properties added by getDocuments
+        delete data.id;
+        delete data.ref;
+        commands.push({
+          command: 'set',
+          ref: db.collection('applications_temp').doc(`${application.id}`),
+          data: data,
+        });
+      }
       applicationIds.push(application.id);
     }
   }
@@ -53,6 +70,7 @@ const main = async () => {
 
   if (commands.length) {
     // write to db
+    console.log(commands.length);
     const res = await applyUpdates(db, commands);
     result.success = (res === commands.length);
 
