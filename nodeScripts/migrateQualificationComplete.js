@@ -23,7 +23,7 @@ const main = async () => {
     if (application.qualifications && application.qualifications.length) {
       application.qualifications.forEach(qualification => {
         // only migrate if `qualificationNotComplete` property is present in qualification
-        if ('qualificationNotComplete' in qualification) {
+        if (typeof qualification === 'object' && qualification !== null && 'qualificationNotComplete' in qualification) {
           // create new field `qualificationComplete`
           qualification.qualificationComplete = !qualification.qualificationNotComplete;
           isUpdate = true;
@@ -32,10 +32,14 @@ const main = async () => {
     }
 
     if (isUpdate) {
+      const data = _.cloneDeep(application);
+      // delete these properties added by getDocuments
+      delete data.id;
+      delete data.ref;
       commands.push({
         command: 'set',
         ref: isAction ? application.ref : db.collection('applications_temp').doc(`${application.id}`),
-        data: application,
+        data: data,
       });
       applicationIds.push(application.id);
     }
@@ -57,8 +61,11 @@ const main = async () => {
       let verifyNum = 0;
       for (let i = 0; i < commands.length; i++) {
         const command = commands[i];
-        const applicationId = command.data.id;
+        const applicationId = applicationIds[i];
         const applicationTemp = await getDocument(db.collection('applications_temp').doc(applicationId));
+        // delete these properties added by getDocument
+        delete applicationTemp.id;
+        delete applicationTemp.ref;
         if (_.isEqual(applicationTemp) === _.isEqual(command.data)) {
           console.log(`${i + 1}. ${applicationId} is matching`);
           verifyNum++;
