@@ -2119,6 +2119,24 @@
       "queryScope": "COLLECTION",
       "fields": [
         {
+          "fieldPath": "candidate.id",
+          "order": "ASCENDING"
+        },
+        {
+          "fieldPath": "qualifyingTest.id",
+          "order": "ASCENDING"
+        },
+        {
+          "fieldPath": "statusLog.started",
+          "order": "ASCENDING"
+        }
+      ]
+    },
+    {
+      "collectionGroup": "qualifyingTestResponses",
+      "queryScope": "COLLECTION",
+      "fields": [
+        {
           "fieldPath": "candidate.reasonableAdjustments",
           "order": "ASCENDING"
         },
@@ -2554,4 +2572,3 @@
     }
   ]
 }
-
