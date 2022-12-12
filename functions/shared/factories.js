@@ -1,6 +1,7 @@
 
 module.exports = (CONSTANTS) => {
   return {
+    newNotificationExerciseApprovalSubmit,
     newNotificationApplicationSubmit,
     newNotificationCharacterCheckRequest,
     newNotificationAssessmentRequest,
@@ -10,6 +11,33 @@ module.exports = (CONSTANTS) => {
     newApplicationRecord,
     newVacancy,
   };
+
+  function newNotificationExerciseApprovalSubmit(firebase, exerciseId, exercise) {
+    const templateName = 'Exercise Approval Submitted';
+    const templateId = 'd9c3cf7d-3755-4f96-a508-20909a91b825';
+
+    return {
+      email: exercise.seniorSelectionExerciseManager,
+      replyTo: exercise.exerciseMailbox,
+      template: {
+        name: templateName,
+        id: templateId,
+      },
+      personalisation: {
+        exerciseId: exerciseId,
+        exerciseName: exercise.name,
+        refNumber: exercise.referenceNumber,
+        selectionExerciseManager: exercise.emailSignatureName,
+        exerciseMailbox: exercise.exerciseMailbox,
+      },
+      reference: {
+        collection: 'exercises',
+        id: exerciseId,
+      },
+      createdAt: firebase.firestore.Timestamp.fromDate(new Date()),
+      status: 'ready',
+    };
+  }
 
   function newNotificationApplicationSubmit(firebase, applicationId, application, exercise) {
     const templateName = 'Application Submitted';
