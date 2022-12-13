@@ -45,7 +45,7 @@ module.exports = (CONSTANTS) => {
     const templateId = 'd9c3cf7d-3755-4f96-a508-20909a91b825';
 
     return {
-      email: 'omar.jebari@precise-minds.co.uk',
+      email: exercise.seniorSelectionExerciseManager,
       replyTo: exercise.exerciseMailbox,
       template: {
         name: templateName,
