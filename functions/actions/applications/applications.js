@@ -6,13 +6,14 @@ const testApplicationsFileName = 'test_applications.json';
 module.exports = (config, firebase, db, auth) => {
   const { initialiseApplicationRecords } = require('../../actions/applicationRecords')(config, firebase, db, auth);
   const { refreshApplicationCounts } = require('../../actions/exercises/refreshApplicationCounts')(firebase, db);
-  const { newNotificationApplicationSubmit, newNotificationCharacterCheckRequest } = require('../../shared/factories')(config);
+  const { newNotificationApplicationSubmit, newNotificationApplicationReminder, newNotificationCharacterCheckRequest } = require('../../shared/factories')(config);
   const slack = require('../../shared/slack')(config);
   const { updateCandidate } = require('../candidates/search')(firebase, db);
   return {
     updateApplication,
     onApplicationCreate,
     sendApplicationConfirmation,
+    sendApplicationReminders,
     sendCharacterCheckRequests,
     createApplication,
     createApplications,
@@ -122,6 +123,61 @@ module.exports = (config, firebase, db, auth) => {
     // write to db
     const result = await applyUpdates(db, commands);
     return result ? true : false;
+  }
+
+  /**
+  * sendApplicationReminders
+  * Sends 'application submission reminder' notification for each draft application (only send once)
+  * @param {*} `params` is an object containing
+  *   `exerciseId`  (required) ID of exercise
+  */
+   async function sendApplicationReminders(params) {
+    if (!params.exerciseId) return false;
+
+    // get exercise
+    const exerciseId = params.exerciseId;
+    const exercise = await getDocument(db.doc(`exercises/${exerciseId}`));
+    if (!exercise) return false;
+    
+    // get draft applications
+    const applicationsRef = db.collection('applications')
+      .where('exerciseId', '==', exerciseId)
+      .where('status', '==', 'draft');
+    let applications = await getDocuments(applicationsRef);
+    // send reminder email if it has not been sent before
+    applications = applications.filter(application => {
+      if (application.emailLog && application.emailLog.applicationReminder) return false;
+      
+      return application.personalDetails && application.personalDetails.fullName && application.personalDetails.email;
+    });
+
+    // create database commands
+    const commands = [];
+    for (let i = 0, len = applications.length; i < len; ++i) {
+      const application = applications[i];
+      // create notification
+      commands.push({
+        command: 'set',
+        ref: db.collection('notifications').doc(),
+        data: newNotificationApplicationReminder(firebase, application.id, application, exercise),
+      });
+
+      // update application
+      commands.push({
+        command: 'update',
+        ref: application.ref,
+        data: {
+          'emailLog.applicationReminder': firebase.firestore.FieldValue.serverTimestamp(),
+        },
+      });
+    }
+
+    // write to db
+    if (commands.length) {
+        const result = await applyUpdates(db, commands);
+        return result ? applications.length : false;
+    }
+    return 0;
   }
 
   /**

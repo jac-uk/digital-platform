@@ -1,7 +1,9 @@
+const { formatDate } = require('./helpers');
 
 module.exports = (CONSTANTS) => {
   return {
     newNotificationApplicationSubmit,
+    newNotificationApplicationReminder,
     newNotificationCharacterCheckRequest,
     newNotificationAssessmentRequest,
     newNotificationAssessmentReminder,
@@ -35,6 +37,35 @@ module.exports = (CONSTANTS) => {
         id: applicationId,
       },
       createdAt: firebase.firestore.Timestamp.fromDate(new Date()),
+      status: 'ready',
+    };
+  }
+
+  function newNotificationApplicationReminder(firebase, applicationId, application, exercise) {
+    const templateName = 'Application Submission Reminder';
+    const templateId = '32adeb86-20e2-4578-83df-6f37dcf19978';
+
+    return {
+      email: application.personalDetails.email,
+      replyTo: exercise.exerciseMailbox,
+      template: {
+        name: templateName,
+        id: templateId,
+      },
+      personalisation: {
+        exerciseId: exercise.id,
+        exerciseName: application.exerciseName,
+        applicantName: application.personalDetails.fullName,
+        exerciseCloseDate: formatDate(exercise.applicationCloseDate.toDate(), 'date-hour-minute'),
+        refNumber: application.referenceNumber || null,
+        selectionExerciseManager: exercise.emailSignatureName,
+        exerciseMailbox: exercise.exerciseMailbox,
+      },
+      reference: {
+        collection: 'applications',
+        id: applicationId,
+      },
+      createdAt: firebase.firestore.FieldValue.serverTimestamp(),
       status: 'ready',
     };
   }

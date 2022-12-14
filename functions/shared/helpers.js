@@ -215,6 +215,10 @@ function formatDate(value, type) {
       case 'time':
         value = toTimeString(value);
         break;
+      case 'date-hour-minute':
+        // e.g. Wednesday, 30 November, 2022 at 13:00
+        value = `${value.toLocaleDateString('en-GB', { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' })} at ${value.toLocaleTimeString('en-GB', { hour: '2-digit', minute:'2-digit', hour12: false })}`;
+        break;
       default:
         value = toDateString(value);
     }
