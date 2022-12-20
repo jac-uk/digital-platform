@@ -7,12 +7,32 @@
     "rules": "database/realtime.rules.json"
   },
   "emulators": {
-    "firestore": {
+    "auth": {
       "host": "localhost",
-      "port": 8282
+      "port": 9099
     },
     "functions": {
+      "host": "localhost",
       "port": 5001
+    },
+    "firestore": {
+      "host": "localhost",
+      "port": 8080
+    },
+    "database": {
+      "host": "localhost",
+      "port": 9000
+    },
+    "pubsub": {
+      "host": "localhost",
+      "port": 8085
+    },
+    "storage": {
+      "host": "localhost",
+      "port": 9199
+    },
+    "ui": {
+      "enabled": true
     }
   },
   "functions": {

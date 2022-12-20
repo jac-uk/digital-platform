@@ -105,6 +105,6 @@ out/
 /nodeScripts/local
 
 #Firestore data for emulation
-/data/firestore.json
-/data/firestore_export/
-/data/firebase-export-metadata.json
+# /data/firestore.json
+# /data/firestore_export/
+# /data/firebase-export-metadata.json
