@@ -6,7 +6,7 @@ const testApplicationsFileName = 'test_applications.json';
 module.exports = (config, firebase, db, auth) => {
   const { initialiseApplicationRecords } = require('../../actions/applicationRecords')(config, firebase, db, auth);
   const { refreshApplicationCounts } = require('../../actions/exercises/refreshApplicationCounts')(firebase, db);
-  const { newNotificationApplicationSubmit, newNotificationApplicationReminder, newNotificationCharacterCheckRequest } = require('../../shared/factories')(config);
+  const { newNotificationApplicationSubmit, newNotificationApplicationReminder, newNotificationCharacterCheckRequest, newNotificationSensitiveFlagConfirmation } = require('../../shared/factories')(config);
   const slack = require('../../shared/slack')(config);
   const { updateCandidate } = require('../candidates/search')(firebase, db);
   return {
@@ -139,7 +139,7 @@ module.exports = (config, firebase, db, auth) => {
     const exerciseId = params.exerciseId;
     const exercise = await getDocument(db.doc(`exercises/${exerciseId}`));
     if (!exercise) return false;
-    
+
     // get draft applications
     const applicationsRef = db.collection('applications')
       .where('exerciseId', '==', exerciseId)
@@ -148,7 +148,7 @@ module.exports = (config, firebase, db, auth) => {
     // send reminder email if it has not been sent before
     applications = applications.filter(application => {
       if (application.emailLog && application.emailLog.applicationReminder) return false;
-      
+
       return application.personalDetails && application.personalDetails.fullName && application.personalDetails.email;
     });
 
