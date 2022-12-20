@@ -889,6 +889,24 @@
           "order": "ASCENDING"
         },
         {
+          "fieldPath": "panelId",
+          "order": "ASCENDING"
+        },
+        {
+          "fieldPath": "candidate.fullName",
+          "order": "ASCENDING"
+        }
+      ]
+    },
+    {
+      "collectionGroup": "applicationRecords",
+      "queryScope": "COLLECTION",
+      "fields": [
+        {
+          "fieldPath": "exercise.id",
+          "order": "ASCENDING"
+        },
+        {
           "fieldPath": "panelIds.scenario",
           "order": "ASCENDING"
         },
@@ -911,7 +929,43 @@
           "order": "ASCENDING"
         },
         {
+          "fieldPath": "candidate.fullName",
+          "order": "ASCENDING"
+        }
+      ]
+    },
+    {
+      "collectionGroup": "applicationRecords",
+      "queryScope": "COLLECTION",
+      "fields": [
+        {
+          "fieldPath": "exercise.id",
+          "order": "ASCENDING"
+        },
+        {
+          "fieldPath": "panelIds.selection",
+          "order": "ASCENDING"
+        },
+        {
           "fieldPath": "fullName",
+          "order": "ASCENDING"
+        }
+      ]
+    },
+    {
+      "collectionGroup": "applicationRecords",
+      "queryScope": "COLLECTION",
+      "fields": [
+        {
+          "fieldPath": "exercise.id",
+          "order": "ASCENDING"
+        },
+        {
+          "fieldPath": "stage",
+          "order": "ASCENDING"
+        },
+        {
+          "fieldPath": "status",
           "order": "ASCENDING"
         }
       ]
@@ -2084,6 +2138,24 @@
         },
         {
           "fieldPath": "title",
+          "order": "ASCENDING"
+        }
+      ]
+    },
+    {
+      "collectionGroup": "qualifyingTestResponses",
+      "queryScope": "COLLECTION",
+      "fields": [
+        {
+          "fieldPath": "candidate.id",
+          "order": "ASCENDING"
+        },
+        {
+          "fieldPath": "qualifyingTest.id",
+          "order": "ASCENDING"
+        },
+        {
+          "fieldPath": "statusLog.started",
           "order": "ASCENDING"
         }
       ]
