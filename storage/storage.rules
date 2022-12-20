@@ -16,15 +16,20 @@ service firebase.storage {
   }
 
   function isOkForDownload() {
-    // 'request.resource' is available when writing, but when reading you must use 'resource' directly.
-    // ref: https://stackoverflow.com/questions/48401943/firebase-storage-rules-custommetadata-not-working
-    return resource.metadata == null || resource.metadata.status == null || resource.metadata.status != 'infected';
+    return
+      resource.metadata == null ||
+      !('status' in resource.metadata) ||
+      ('status' in resource.metadata && resource.metadata.status != 'infected');
   }
 
   function isOkForUpload() {
-    return request.resource.size > 0
-      && request.resource.size <= 2 * 1024 * 1024
-      && request.resource.name.matches('.*\\.(pdf|docx|doc|odt|txt|fodt|xlsx)');
+    return
+      (request.resource == null) ||
+      (
+        request.resource.size > 0
+        && request.resource.size <= 2 * 1024 * 1024
+        && request.resource.name.matches('.*\\.(pdf|docx|doc|odt|txt|fodt|xlsx)')
+      );
   }
 
   match /b/{bucket}/o {
@@ -55,7 +60,7 @@ service firebase.storage {
       allow read: if userIsAuthenticated() && userIsJAC() && isOkForDownload();
       allow write: if userIsAuthenticated() && userIsJAC() && isOkForUpload();
     }
-    
+
     match /exercise/{exerciseId}/qualifying-tests/{qualifyingTestId}/{fileName} {
       allow write: if userIsAuthenticated() && userIsJAC() && isOkForUpload();
     }

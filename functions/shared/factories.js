@@ -1,7 +1,9 @@
+const { formatDate } = require('./helpers');
 
 module.exports = (CONSTANTS) => {
   return {
     newNotificationApplicationSubmit,
+    newNotificationApplicationReminder,
     newNotificationCharacterCheckRequest,
     newNotificationAssessmentRequest,
     newNotificationAssessmentReminder,
@@ -39,6 +41,35 @@ module.exports = (CONSTANTS) => {
     };
   }
 
+  function newNotificationApplicationReminder(firebase, applicationId, application, exercise) {
+    const templateName = 'Application Submission Reminder';
+    const templateId = '32adeb86-20e2-4578-83df-6f37dcf19978';
+
+    return {
+      email: application.personalDetails.email,
+      replyTo: exercise.exerciseMailbox,
+      template: {
+        name: templateName,
+        id: templateId,
+      },
+      personalisation: {
+        exerciseId: exercise.id,
+        exerciseName: application.exerciseName,
+        applicantName: application.personalDetails.fullName,
+        exerciseCloseDate: formatDate(exercise.applicationCloseDate.toDate(), 'date-hour-minute'),
+        refNumber: application.referenceNumber || null,
+        selectionExerciseManager: exercise.emailSignatureName,
+        exerciseMailbox: exercise.exerciseMailbox,
+      },
+      reference: {
+        collection: 'applications',
+        id: applicationId,
+      },
+      createdAt: firebase.firestore.FieldValue.serverTimestamp(),
+      status: 'ready',
+    };
+  }
+
   function newNotificationCharacterCheckRequest(firebase, application, type, exerciseMailbox, exerciseManagerName, dueDate) {
     let templateId = '';
     let templateName = '';
@@ -46,7 +77,7 @@ module.exports = (CONSTANTS) => {
       templateId = '5a4e7cbb-ab66-49a4-a8ad-7cbb399a8aa9';
       templateName = 'Character check consent form request';
     } else if (type === 'submit') {
-      templateId = '39b1326a-ee82-4fad-a6a6-79fc156974f1';
+      templateId = 'a434c479-2002-492f-94b5-d9c1f1a7c85c';
       templateName = 'Character check consent form submit';
     } else {
       templateId = '163487cb-f4c6-4b7a-95bf-37fd958a14de';

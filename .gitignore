@@ -104,5 +104,5 @@ out/
 # Local nodeScripts
 /nodeScripts/local
 
-#Firestore data for emulation
+# Firestore data for emulation
 data/
