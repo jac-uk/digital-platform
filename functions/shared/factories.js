@@ -72,8 +72,8 @@ module.exports = (CONSTANTS) => {
   }
 
   function newNotificationSensitiveFlagConfirmation(firebase, applicationId, application, exercise) {
-    const templateName = 'Sensitivity Flag Confirmation';
-    const templateId = 'd9c3cf7d-3755-4f96-a508-20909a91b825';
+    const templateName = 'Application from flagged candidate';
+    const templateId = '618f780e-7a6e-4fd5-b530-548d587cae0b';
 
     return {
       email: exercise.seniorSelectionExerciseManager,
