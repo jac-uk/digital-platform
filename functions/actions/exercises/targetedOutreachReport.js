@@ -53,7 +53,7 @@ module.exports = (firebase, db) => {
                   ethnicity: applicationRecordEthnicity,
                   disability: applicationRecordDisability,
                   solicitor: null,
-                  exercise: `${application.exercise.id} - ${application.exercise.name}`,
+                  exercise: `${exercise.referenceNumber} - ${application.exercise.name}`,
                   stage: application.stage,
                   status: application.status,
                   id: candidateID,
