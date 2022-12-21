@@ -1,7 +1,7 @@
 //const { getDocument, applyUpdates, isDateInPast, formatDate } = require('../../shared/helpers');
 
 module.exports = (config, firebase, db, auth) => {
-  const { sendExerciseReadyForApproval } = require('./exercises')(config, firebase, db, auth);
+  const { sendExerciseReadyForApproval } = require('./sendExerciseReadyForApproval')(config, firebase, db, auth);
   const { updateVacancy, deleteVacancy } = require('../vacancies')(config, db);
 
   return onUpdate;
@@ -22,7 +22,7 @@ module.exports = (config, firebase, db, auth) => {
 
     // submitted for approval
     if (dataBefore.state === 'draft' && dataAfter.state === 'ready') {
-      
+
       // send confirmation email (this can be sent multiple times if the submission was previously rejected for some reason)
       await sendExerciseReadyForApproval({
         exerciseId,
