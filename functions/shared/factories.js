@@ -15,9 +15,8 @@ module.exports = (CONSTANTS) => {
   };
 
   function newNotificationExerciseApprovalSubmit(firebase, exerciseId, exercise) {
-    const templateName = 'Exercise Approval Submitted';
-    const templateId = 'd9c3cf7d-3755-4f96-a508-20909a91b825';
-
+    const templateName = 'Exercise ready for approval';
+    const templateId = '7ef31d79-d247-4a5e-af0d-d94941fb1151';
     return {
       email: exercise.seniorSelectionExerciseManager,
       replyTo: exercise.exerciseMailbox,
@@ -256,7 +255,7 @@ module.exports = (CONSTANTS) => {
       createdAt: firebase.firestore.Timestamp.fromDate(new Date()),
       status: 'ready',
     };
-  }  
+  }
 
   function newAssessment(exercise, application, whichAssessor) {
     let assessment = {
