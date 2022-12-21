@@ -76,7 +76,7 @@ module.exports = (CONSTANTS) => {
     const templateId = '618f780e-7a6e-4fd5-b530-548d587cae0b';
 
     return {
-      email: exercise.seniorSelectionExerciseManager,
+      email: exercise.seniorSelectionExerciseManager && exercise.seniorSelectionExerciseManager.length ? exercise.seniorSelectionExerciseManager[0].name : '',
       replyTo: exercise.exerciseMailbox,
       template: {
         name: templateName,
