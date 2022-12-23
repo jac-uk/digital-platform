@@ -94,6 +94,10 @@ const PERMISSIONS = {
         label: 'Can delete candidates',
         value: 'c4',
       },
+      canFlagToHandleSensitively: {
+        label: 'Can flag candidate to handle sensitively',
+        value: 'c5',
+      },
     },
   },
   notifications: {
