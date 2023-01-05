@@ -21,9 +21,9 @@ const main = async () => {
   //  'PP024177C',          // 1
   //  'PP 060953 C',        // 2 normalized
 
-  return targetedOutreachReport({ nationalInsuranceNumbers: [
+  return targetedOutreachReport([
     'TR768534V',
-  ]});
+  ]);
 };
 
 main()
