@@ -220,6 +220,14 @@ const PERMISSIONS = {
         label: 'Can delete applications',
         value: 'a4',
       },
+      canRequestLateApplications: {
+        label: 'Can request late applications',
+        value: 'a5',
+      },
+      canApproveLateApplications: {
+        label: 'Can approve late applications',
+        value: 'a6',
+      },
     },
   },
   applicationRecords: {
@@ -366,6 +374,27 @@ const PERMISSIONS = {
       canDeleteInvitations: {
         label: 'Can delete invitations',
         value: 'i4',
+      },
+    },
+  },
+  messages: {
+    label: 'Messages',
+    permissions: {
+      canReadMessages: {
+        label: 'Can read messages',
+        value: 'msg1',
+      },
+      canCreateMessages: {
+        label: 'Can create messages',
+        value: 'msg2',
+      },
+      canUpdateMessages: {
+        label: 'Can update messages',
+        value: 'msg3',
+      },
+      canDeleteMessages: {
+        label: 'Can delete messages',
+        value: 'msg4',
       },
     },
   },
