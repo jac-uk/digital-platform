@@ -7,7 +7,7 @@ const { applyUpdates, getDocuments, getDocument } = require('../functions/shared
 // whether to make changes in `applications` collection in firestore
 // true:  make changes in `applications` collection
 // false: create a temporary collection `applications_temp` and verify the changes is as expected
-const isAction = true;
+const isAction = false;
 
 const main = async () => {
   // get all applications
