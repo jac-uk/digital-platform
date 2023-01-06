@@ -42,7 +42,7 @@ const main = async () => {
         commands.push({
           command: 'set',
           ref: db.collection('applications_temp').doc(`${application.id}`),
-          data: data,
+          data,
         });
       }
       applicationIds.push(application.id);
