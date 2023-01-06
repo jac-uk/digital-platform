@@ -19,7 +19,10 @@ const main = async () => {
   for (let i = 0; i < applications.length; i++) {
     const application = applications[i];
 
-    if (!application._sort || !application._sort.fullNameUC) {
+    // only migrate if `personalDetails.fullName` exists
+    if (application.personalDetails && application.personalDetails.fullName &&
+      (!application._sort || application._sort.fullNameUC !== application.personalDetails.fullName.toUpperCase())
+    ) {
       const fullNameUC = application.personalDetails.fullName.toUpperCase();
       _.set(application, '_sort.fullNameUC', fullNameUC);
 
