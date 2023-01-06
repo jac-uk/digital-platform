@@ -76,13 +76,20 @@ module.exports = (config, firebase, db, auth) => {
     console.log('application created');
     // slack.post(`${data.exerciseRef}. New application started`);
     if (data.userId) { await updateCandidate(data.userId); }
+
+    // update application
+    if (data.personalDetails.fullName) {
+      await ref.update({
+        '_sort.fullNameUC': data.personalDetails.fullName.toUpperCase(),
+      });
+    }
+
     // update counts
     console.log(`Update application counts: _applications.${data.status}`);
     const saveData = {};
     saveData[`_applications.${data.status}`] = firebase.firestore.FieldValue.increment(1);
     saveData['_applications._total'] = firebase.firestore.FieldValue.increment(1);
     saveData['_applications._lastUpdated'] = firebase.firestore.FieldValue.serverTimestamp();
-    if (data.personalDetails.fullName) saveData['_sort.fullNameUC'] = data.personalDetails.fullName.toUpperCase();
     await db.doc(`exercises/${data.exerciseId}`).update(saveData);
     console.log('success');
   }

@@ -95,12 +95,8 @@ module.exports = (config, firebase, db, auth) => {
       }
     }
 
-    if (
-      !dataBefore._sort ||
-      (
-        dataAfter.personalDetails && dataAfter.personalDetails.fullName &&
-        dataBefore._sort.fullNameUC !== dataAfter.personalDetails.fullName.toUpperCase()
-      )
+    if (dataAfter.personalDetails && dataAfter.personalDetails.fullName &&
+      (!dataBefore._sort || dataBefore._sort.fullNameUC !== dataAfter.personalDetails.fullName.toUpperCase())
     ) {
       // update _sort.fullNameUC if fullName has changed
       const data = {};
