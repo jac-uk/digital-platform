@@ -99,14 +99,9 @@ module.exports = (config, firebase, db, auth) => {
       (!dataBefore._sort || dataBefore._sort.fullNameUC !== dataAfter.personalDetails.fullName.toUpperCase())
     ) {
       // update _sort.fullNameUC if fullName has changed
-      const data = {};
-      data['_sort.fullNameUC'] = dataAfter.personalDetails.fullName.toUpperCase();
-      commands.push({
-        command: 'update',
-        ref: db.doc(`applications/${applicationId}`),
-        data: data,
+      await db.doc(`applications/${applicationId}`).update({
+        '_sort.fullNameUC': dataAfter.personalDetails.fullName.toUpperCase(),
       });
-      await applyUpdates(db, commands);
     }
 
     return true;
