@@ -19,11 +19,11 @@ const main = async () => {
   for (let i = 0; i < applications.length; i++) {
     const application = applications[i];
 
-    // only migrate if `personalDetails.fullName` does not exist
-    if (!application.personalDetails || (application.personalDetails && !application.personalDetails.fullName)) {
-      const userId = application.userId;
-      const candidate = await getDocument(db.collection('candidates').doc(userId));
-
+    // only migrate if `userId` exists and `personalDetails.fullName` does not exist
+    if (application.userId && 
+      (!application.personalDetails || (application.personalDetails && !application.personalDetails.fullName))
+    ) {
+      const candidate = await getDocument(db.collection('candidates').doc(application.userId));
       if (candidate && candidate.fullName) {
         _.set(application, 'personalDetails.fullName', candidate.fullName);
 
