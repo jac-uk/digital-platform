@@ -71,12 +71,12 @@ module.exports = (CONSTANTS) => {
     };
   }
 
-  function newNotificationSensitiveFlagConfirmation(firebase, applicationId, application, exercise) {
+  function newNotificationSensitiveFlagConfirmation(firebase, applicationId, application, exercise, toEmail) {  
     const templateName = 'Application from flagged candidate';
     const templateId = '618f780e-7a6e-4fd5-b530-548d587cae0b';
 
     return {
-      email: exercise.seniorSelectionExerciseManager && exercise.seniorSelectionExerciseManager.length ? exercise.seniorSelectionExerciseManager[0].name : '',
+      email: toEmail,
       replyTo: exercise.exerciseMailbox,
       template: {
         name: templateName,

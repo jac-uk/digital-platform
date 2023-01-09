@@ -379,20 +379,33 @@ module.exports = (config, firebase, db, auth) => {
     const exercise = await getDocument(db.doc(`exercises/${exerciseId}`));
     if (!exercise) return false;
 
+    // Get email recipients from firestore config
+    const settingsServices = await getDocument(db.collection('settings').doc('services'));
+    const emails = settingsServices.emails.CandidateFlagging;
+    
+    if (emails === undefined) {
+      console.error('Error retrieving emails for candidate flagging alerts');
+      return false;
+    }
+
     // create database commands
     const commands = [];
-    // create notification
-    commands.push({
-      command: 'set',
-      ref: db.collection('notifications').doc(),
-      data: newNotificationSensitiveFlagConfirmation(firebase, applicationId, application, exercise),
-    });
+
+    for (const email of emails) {
+      // create notification
+      commands.push({
+        command: 'set',
+        ref: db.collection('notifications').doc(),
+        data: newNotificationSensitiveFlagConfirmation(firebase, applicationId, application, exercise, email),
+      });
+    }
+
     // update application
     commands.push({
       command: 'update',
       ref: applicationRef,
       data: {
-        'emailLog.sensitivityFlagged': firebase.firestore.Timestamp.fromDate(new Date()),
+        'emailLog.flaggedCandidate': firebase.firestore.Timestamp.fromDate(new Date()),
       },
     });
 
