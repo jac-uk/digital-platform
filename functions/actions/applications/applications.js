@@ -78,7 +78,7 @@ module.exports = (config, firebase, db, auth) => {
     if (data.userId) { await updateCandidate(data.userId); }
 
     // update application
-    if (data.personalDetails.fullName) {
+    if (data.personalDetails && data.personalDetails.fullName) {
       await ref.update({
         '_sort.fullNameUC': data.personalDetails.fullName.toUpperCase(),
       });
