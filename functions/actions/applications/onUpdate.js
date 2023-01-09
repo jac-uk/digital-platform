@@ -104,6 +104,16 @@ module.exports = (config, firebase, db, auth) => {
         }
       }
     }
+
+    if (dataAfter.personalDetails && dataAfter.personalDetails.fullName &&
+      (!dataBefore._sort || dataBefore._sort.fullNameUC !== dataAfter.personalDetails.fullName.toUpperCase())
+    ) {
+      // update _sort.fullNameUC if fullName has changed
+      await db.doc(`applications/${applicationId}`).update({
+        '_sort.fullNameUC': dataAfter.personalDetails.fullName.toUpperCase(),
+      });
+    }
+
     return true;
   }
 };

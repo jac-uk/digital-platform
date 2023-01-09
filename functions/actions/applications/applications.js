@@ -77,6 +77,14 @@ module.exports = (config, firebase, db, auth) => {
     console.log('application created');
     // slack.post(`${data.exerciseRef}. New application started`);
     if (data.userId) { await updateCandidate(data.userId); }
+
+    // update application
+    if (data.personalDetails && data.personalDetails.fullName) {
+      await ref.update({
+        '_sort.fullNameUC': data.personalDetails.fullName.toUpperCase(),
+      });
+    }
+
     // update counts
     console.log(`Update application counts: _applications.${data.status}`);
     const saveData = {};
