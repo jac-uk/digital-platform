@@ -14,12 +14,12 @@ const main = async () => {
   log('Get applications...');
   // get all applications
   // TODO: optimize query
-  const applications = await getDocuments(db.collection('applications'));
+  const applications = await getDocuments(db.collection('applications').where('exerciseRef', '==', 'JAC00545'));
+  log(`Total applications: ${applications.length}`);
 
+  log('Filter applications...');
   const commands = [];
   const applicationIds = [];
-  log(`Total applications: ${applications.length}`);
-  log('Filter applications...');
 
   for (let i = 0; i < applications.length; i++) {
     const application = applications[i];
@@ -94,7 +94,7 @@ const main = async () => {
 
 main()
   .then((result) => {
-    log('Done')
+    log('Done');
     console.log(result);
     app.delete();
     return process.exit();
