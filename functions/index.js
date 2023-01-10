@@ -52,6 +52,7 @@ exports.generateHandoverReport = require('./callableFunctions/generateHandoverRe
 exports.generateReasonableAdjustmentsReport = require('./callableFunctions/generateReasonableAdjustmentsReport');
 exports.exportQualifyingTestResponses = require('./callableFunctions/exportQualifyingTestResponses');
 exports.generateAgencyReport = require('./callableFunctions/generateAgencyReport');
+exports.generateStatutoryConsultationReport = require('./callableFunctions/generateStatutoryConsultationReport');
 exports.logEvent = require('./callableFunctions/logEvent');
 exports.scanFile = require('./callableFunctions/scanFile');
 exports.scanAllFiles = require('./callableFunctions/scanAllFiles');
