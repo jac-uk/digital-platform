@@ -2,6 +2,7 @@
 
 const _ = require('lodash');
 const { app, db } = require('./shared/admin.js');
+const { log } = require('./shared/helpers.js');
 const { applyUpdates, getDocuments, getDocument } = require('../functions/shared/helpers');
 
 // whether to make changes in `applications` collection in firestore
@@ -10,12 +11,16 @@ const { applyUpdates, getDocuments, getDocument } = require('../functions/shared
 const isAction = false;
 
 const main = async () => {
+  log('Get applications...');
   // get all applications
   // TODO: optimize query
   const applications = await getDocuments(db.collection('applications').where('referenceNumber', '==', 'JAC00485-aht0020'));
+  log(`Total applications: ${applications.length}`);
 
+  log('Filter applications...');
   const commands = [];
   const applicationIds = [];
+
   for (let i = 0; i < applications.length; i++) {
     const application = applications[i];
 
@@ -49,6 +54,8 @@ const main = async () => {
     }
   }
 
+  log(`Filtered applications: ${applicationIds.length}`);
+
   const result = {
     success: null,
     total: applicationIds.length,
@@ -57,7 +64,7 @@ const main = async () => {
 
   if (commands.length) {
     // write to db
-    console.log(commands.length);
+    log('Apply updates...');
     const res = await applyUpdates(db, commands);
     result.success = (res === commands.length);
 
@@ -85,6 +92,7 @@ const main = async () => {
 
 main()
   .then((result) => {
+    log('Done');
     console.log(result);
     app.delete();
     return process.exit();
