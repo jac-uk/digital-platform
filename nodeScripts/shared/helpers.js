@@ -6,6 +6,7 @@ module.exports = {
   updateUser,
   deleteUser,
   isDevelop,
+  log,
 };
 
 // get all google users
@@ -47,4 +48,9 @@ async function deleteUser(uid) {
 
 function isDevelop() {
   return PROJECT_ID.includes('develop');
+}
+
+function log(message) {
+  const now = new Date();
+  console.log(`${now.toLocaleDateString('en-GB')} ${now.toLocaleTimeString('en-GB')} - ${message}`);
 }
