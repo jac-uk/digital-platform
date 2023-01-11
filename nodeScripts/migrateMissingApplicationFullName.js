@@ -28,18 +28,9 @@ const main = async () => {
     if (application.userId && 
       (!application.personalDetails || (application.personalDetails && !application.personalDetails.fullName))
     ) {
-      let fullName = null;
-      const candidate = await getDocument(db.collection('candidates').doc(application.userId));
-      if (candidate && candidate.fullName) {
-        fullName = candidate.fullName;
-      } else {
-        const personalDetails = await getDocument(db.doc(`candidates/${application.userId}/documents/personalDetails`));
-        if (personalDetails && personalDetails.fullName) {
-          fullName = personalDetails.fullName;
-        }
-      }
-
-      if (fullName) {
+      const personalDetails = await getDocument(db.doc(`candidates/${application.userId}/documents/personalDetails`));
+      if (personalDetails && personalDetails.fullName) {
+        const fullName = personalDetails.fullName;
         _.set(application, 'personalDetails.fullName', fullName);
 
         if (isAction) {
