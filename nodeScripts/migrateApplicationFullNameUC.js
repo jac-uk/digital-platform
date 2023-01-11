@@ -66,6 +66,8 @@ const main = async () => {
     // write to db
     log('Apply updates...');
     const res = await applyUpdates(db, commands);
+    log('Apply updates done');
+
     result.success = (res === commands.length);
 
     if (!isAction) {
