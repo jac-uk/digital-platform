@@ -69,6 +69,7 @@ const main = async () => {
     log('Apply updates...');
     const res = await applyUpdates(db, commands);
     result.success = (res === commands.length);
+    log('Apply updates done');
 
     if (!isAction) {
       // verify if changes is as expected
