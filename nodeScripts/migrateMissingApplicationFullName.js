@@ -14,7 +14,7 @@ const main = async () => {
   log('Get applications...');
   // get all applications
   // TODO: optimize query
-  const applications = await getDocuments(db.collection('applications').where('exerciseRef', '==', 'JAC00545'));
+  const applications = await getDocuments(db.collection('applications'));
   log(`Total applications: ${applications.length}`);
 
   log('Filter applications...');
@@ -28,16 +28,26 @@ const main = async () => {
     if (application.userId && 
       (!application.personalDetails || (application.personalDetails && !application.personalDetails.fullName))
     ) {
+      let fullName = null;
       const candidate = await getDocument(db.collection('candidates').doc(application.userId));
       if (candidate && candidate.fullName) {
-        _.set(application, 'personalDetails.fullName', candidate.fullName);
+        fullName = candidate.fullName;
+      } else {
+        const personalDetails = await getDocument(db.doc(`candidates/${application.userId}/documents/personalDetails`));
+        if (personalDetails && personalDetails.fullName) {
+          fullName = personalDetails.fullName;
+        }
+      }
+
+      if (fullName) {
+        _.set(application, 'personalDetails.fullName', fullName);
 
         if (isAction) {
           commands.push({
             command: 'update',
             ref: application.ref,
             data: {
-              'personalDetails.fullName': candidate.fullName,
+              'personalDetails.fullName': fullName,
             },
           });
         } else {
