@@ -140,8 +140,9 @@ function getQualificationData(qualifications) {
     data[`qualificationLocation${index}`] = lookup(qualification.location) || '';
     data[`qualificationDate${index}`] = formatDate(qualification.date) || '';
     data[`completedPupillage${index}`] = helpers.toYesNo(qualification.completedPupillage) || '';
-    data[`notCompletePupillageReason${index}`] =
-      qualification.notCompletePupillageReason !== NOT_COMPLETE_PUPILLAGE_REASONS.OTHER ? lookup(qualification.notCompletePupillageReason) : qualification.details;
+    data[`notCompletePupillageReason${index}`] = qualification.completedPupillage ? '' : (
+      qualification.notCompletePupillageReason !== NOT_COMPLETE_PUPILLAGE_REASONS.OTHER ? lookup(qualification.notCompletePupillageReason) : qualification.details
+    );
   }
   return data;
 }
@@ -151,9 +152,13 @@ function getExperienceData(experiences) {
   for (let i = 0; i < experiences.length; i++) {
     const experience = experiences[i];
     const index = i + 1;
+    const dates = [];
+    if (experience.startDate) dates.push(formatDate(experience.startDate));
+    if (experience.endDate) dates.push(formatDate(experience.endDate));
+
     data[`orgBusinessName${index}`] = experience.orgBusinessName || '';
     data[`jobTitle${index}`] = experience.jobTitle || '';
-    data[`experienceDates${index}`] = `${formatDate(experience.startDate)} - ${formatDate(experience.endDate)}` || '';
+    data[`experienceDates${index}`] = dates.join(' - ');
     data[`experienceLocation${index}`] = experience.taskDetails && experience.taskDetails.location ? experience.taskDetails.location : '';
     data[`jurisdiction${index}`] = experience.taskDetails && experience.taskDetails.jurisdiction ? experience.taskDetails.jurisdiction : '';
   }
