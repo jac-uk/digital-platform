@@ -70,3 +70,10 @@ module.exports.getValidExerciseData = () => {
     createdBy: 'user1',
   };
 };
+
+module.exports.getValidMessageData = () => {
+  return {
+    referenceNumber: '000' + getRandomInt(100, 1000),
+    status: 'created',
+  };
+};
