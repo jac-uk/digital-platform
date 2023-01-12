@@ -4,6 +4,7 @@ module.exports = (CONSTANTS) => {
   return {
     newNotificationApplicationSubmit,
     newNotificationApplicationReminder,
+    newNotificationCandidateFlagConfirmation,
     newNotificationCharacterCheckRequest,
     newNotificationAssessmentRequest,
     newNotificationAssessmentReminder,
@@ -66,6 +67,34 @@ module.exports = (CONSTANTS) => {
         id: applicationId,
       },
       createdAt: firebase.firestore.FieldValue.serverTimestamp(),
+      status: 'ready',
+    };
+  }
+
+  function newNotificationCandidateFlagConfirmation(firebase, applicationId, application, exercise, toEmail) {  
+    const templateName = 'Application from flagged candidate';
+    const templateId = '618f780e-7a6e-4fd5-b530-548d587cae0b';
+
+    return {
+      email: toEmail,
+      replyTo: exercise.exerciseMailbox,
+      template: {
+        name: templateName,
+        id: templateId,
+      },
+      personalisation: {
+        exerciseId: exercise.id,
+        exerciseName: application.exerciseName,
+        applicantName: application.personalDetails.fullName,
+        refNumber: application.referenceNumber,
+        selectionExerciseManager: exercise.emailSignatureName,
+        exerciseMailbox: exercise.exerciseMailbox,
+      },
+      reference: {
+        collection: 'applications',
+        id: applicationId,
+      },
+      createdAt: firebase.firestore.Timestamp.fromDate(new Date()),
       status: 'ready',
     };
   }
@@ -228,7 +257,7 @@ module.exports = (CONSTANTS) => {
       createdAt: firebase.firestore.Timestamp.fromDate(new Date()),
       status: 'ready',
     };
-  }  
+  }
 
   function newAssessment(exercise, application, whichAssessor) {
     let assessment = {
