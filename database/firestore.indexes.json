@@ -1541,7 +1541,7 @@
       "queryScope": "COLLECTION",
       "fields": [
         {
-          "fieldPath": "isHandledSensitively",
+          "fieldPath": "isFlaggedCandidate",
           "order": "ASCENDING"
         },
         {

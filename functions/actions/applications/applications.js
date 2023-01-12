@@ -6,7 +6,7 @@ const testApplicationsFileName = 'test_applications.json';
 module.exports = (config, firebase, db, auth) => {
   const { initialiseApplicationRecords } = require('../../actions/applicationRecords')(config, firebase, db, auth);
   const { refreshApplicationCounts } = require('../../actions/exercises/refreshApplicationCounts')(firebase, db);
-  const { newNotificationApplicationSubmit, newNotificationApplicationReminder, newNotificationCharacterCheckRequest, newNotificationSensitiveFlagConfirmation } = require('../../shared/factories')(config);
+  const { newNotificationApplicationSubmit, newNotificationApplicationReminder, newNotificationCharacterCheckRequest, newNotificationCandidateFlagConfirmation } = require('../../shared/factories')(config);
   const slack = require('../../shared/slack')(config);
   const { updateCandidate } = require('../candidates/search')(firebase, db);
   return {
@@ -20,7 +20,7 @@ module.exports = (config, firebase, db, auth) => {
     loadTestApplications,
     createTestApplications,
     deleteApplications,
-    sendSensitiveFlagConfirmation,
+    sendCandidateFlagConfirmation,
   };
 
   /**
@@ -371,13 +371,13 @@ module.exports = (config, firebase, db, auth) => {
   }
 
   /**
-  * sendSensitiveFlagConfirmation
-  * Sends a 'sensitive flagged confirmation' notification for each application
+  * sendCandidateFlagConfirmation
+  * Sends a 'candidate flagged confirmation' notification for each application
   * @param {*} `params` is an object containing
   *   `applicationId`  (required) ID of application
   *   `application`    (required) application
   */
-   async function sendSensitiveFlagConfirmation(params) {
+   async function sendCandidateFlagConfirmation(params) {
     const applicationId = params.applicationId;
     const application = params.application;
     const applicationRef = db.collection('applications').doc(applicationId);
@@ -404,7 +404,7 @@ module.exports = (config, firebase, db, auth) => {
       commands.push({
         command: 'set',
         ref: db.collection('notifications').doc(),
-        data: newNotificationSensitiveFlagConfirmation(firebase, applicationId, application, exercise, email),
+        data: newNotificationCandidateFlagConfirmation(firebase, applicationId, application, exercise, email),
       });
     }
 

@@ -4,7 +4,7 @@ module.exports = (CONSTANTS) => {
   return {
     newNotificationApplicationSubmit,
     newNotificationApplicationReminder,
-    newNotificationSensitiveFlagConfirmation,
+    newNotificationCandidateFlagConfirmation,
     newNotificationCharacterCheckRequest,
     newNotificationAssessmentRequest,
     newNotificationAssessmentReminder,
@@ -71,7 +71,7 @@ module.exports = (CONSTANTS) => {
     };
   }
 
-  function newNotificationSensitiveFlagConfirmation(firebase, applicationId, application, exercise, toEmail) {  
+  function newNotificationCandidateFlagConfirmation(firebase, applicationId, application, exercise, toEmail) {  
     const templateName = 'Application from flagged candidate';
     const templateId = '618f780e-7a6e-4fd5-b530-548d587cae0b';
 
