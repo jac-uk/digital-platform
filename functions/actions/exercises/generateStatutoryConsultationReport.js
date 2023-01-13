@@ -139,7 +139,7 @@ function getQualificationData(qualifications) {
     const index = i + 1;
     data[`qualificationType${index}`] = lookup(qualification.type) || '';
     data[`qualificationLocation${index}`] = lookup(qualification.location) || '';
-    data[`qualificationDate${index}`] = formatDate(qualification.date) || '';
+    data[`qualificationDate${index}`] = formatDate(qualification.date, 'DD/MM/YYYY') || '';
     data[`completedPupillage${index}`] = helpers.toYesNo(qualification.completedPupillage) || '';
     data[`notCompletePupillageReason${index}`] = qualification.completedPupillage ? '' : (
       qualification.notCompletePupillageReason !== NOT_COMPLETE_PUPILLAGE_REASONS.OTHER ? lookup(qualification.notCompletePupillageReason) : qualification.details
@@ -154,8 +154,8 @@ function getExperienceData(experiences) {
     const experience = experiences[i];
     const index = i + 1;
     const dates = [];
-    if (experience.startDate) dates.push(formatDate(experience.startDate));
-    if (experience.endDate) dates.push(formatDate(experience.endDate));
+    if (experience.startDate) dates.push(formatDate(experience.startDate, 'DD/MM/YYYY'));
+    if (experience.endDate) dates.push(formatDate(experience.endDate, 'DD/MM/YYYY'));
 
     data[`orgBusinessName${index}`] = experience.orgBusinessName || '';
     data[`jobTitle${index}`] = experience.jobTitle || '';
