@@ -2,8 +2,10 @@ const { formatDate } = require('./helpers');
 
 module.exports = (CONSTANTS) => {
   return {
+    newNotificationExerciseApprovalSubmit,
     newNotificationApplicationSubmit,
     newNotificationApplicationReminder,
+    newNotificationCandidateFlagConfirmation,
     newNotificationCharacterCheckRequest,
     newNotificationAssessmentRequest,
     newNotificationAssessmentReminder,
@@ -12,6 +14,32 @@ module.exports = (CONSTANTS) => {
     newApplicationRecord,
     newVacancy,
   };
+
+  function newNotificationExerciseApprovalSubmit(firebase, exerciseId, exercise) {
+    const templateName = 'Exercise ready for approval';
+    const templateId = '7ef31d79-d247-4a5e-af0d-d94941fb1151';
+    return {
+      email: exercise.seniorSelectionExerciseManager,
+      replyTo: exercise.exerciseMailbox,
+      template: {
+        name: templateName,
+        id: templateId,
+      },
+      personalisation: {
+        exerciseId: exerciseId,
+        exerciseName: exercise.name,
+        refNumber: exercise.referenceNumber,
+        selectionExerciseManager: exercise.emailSignatureName,
+        exerciseMailbox: exercise.exerciseMailbox,
+      },
+      reference: {
+        collection: 'exercises',
+        id: exerciseId,
+      },
+      createdAt: firebase.firestore.Timestamp.fromDate(new Date()),
+      status: 'ready',
+    };
+  }
 
   function newNotificationApplicationSubmit(firebase, applicationId, application, exercise) {
     const templateName = 'Application Submitted';
@@ -66,6 +94,34 @@ module.exports = (CONSTANTS) => {
         id: applicationId,
       },
       createdAt: firebase.firestore.FieldValue.serverTimestamp(),
+      status: 'ready',
+    };
+  }
+
+  function newNotificationCandidateFlagConfirmation(firebase, applicationId, application, exercise, toEmail) {  
+    const templateName = 'Application from flagged candidate';
+    const templateId = '618f780e-7a6e-4fd5-b530-548d587cae0b';
+
+    return {
+      email: toEmail,
+      replyTo: exercise.exerciseMailbox,
+      template: {
+        name: templateName,
+        id: templateId,
+      },
+      personalisation: {
+        exerciseId: exercise.id,
+        exerciseName: application.exerciseName,
+        applicantName: application.personalDetails.fullName,
+        refNumber: application.referenceNumber,
+        selectionExerciseManager: exercise.emailSignatureName,
+        exerciseMailbox: exercise.exerciseMailbox,
+      },
+      reference: {
+        collection: 'applications',
+        id: applicationId,
+      },
+      createdAt: firebase.firestore.Timestamp.fromDate(new Date()),
       status: 'ready',
     };
   }
@@ -228,7 +284,7 @@ module.exports = (CONSTANTS) => {
       createdAt: firebase.firestore.Timestamp.fromDate(new Date()),
       status: 'ready',
     };
-  }  
+  }
 
   function newAssessment(exercise, application, whichAssessor) {
     let assessment = {

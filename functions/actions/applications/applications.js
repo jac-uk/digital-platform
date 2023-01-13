@@ -6,7 +6,7 @@ const testApplicationsFileName = 'test_applications.json';
 module.exports = (config, firebase, db, auth) => {
   const { initialiseApplicationRecords } = require('../../actions/applicationRecords')(config, firebase, db, auth);
   const { refreshApplicationCounts } = require('../../actions/exercises/refreshApplicationCounts')(firebase, db);
-  const { newNotificationApplicationSubmit, newNotificationApplicationReminder, newNotificationCharacterCheckRequest } = require('../../shared/factories')(config);
+  const { newNotificationApplicationSubmit, newNotificationApplicationReminder, newNotificationCharacterCheckRequest, newNotificationCandidateFlagConfirmation } = require('../../shared/factories')(config);
   const slack = require('../../shared/slack')(config);
   const { updateCandidate } = require('../candidates/search')(firebase, db);
   return {
@@ -20,6 +20,7 @@ module.exports = (config, firebase, db, auth) => {
     loadTestApplications,
     createTestApplications,
     deleteApplications,
+    sendCandidateFlagConfirmation,
   };
 
   /**
@@ -146,7 +147,7 @@ module.exports = (config, firebase, db, auth) => {
     const exerciseId = params.exerciseId;
     const exercise = await getDocument(db.doc(`exercises/${exerciseId}`));
     if (!exercise) return false;
-    
+
     // get draft applications
     const applicationsRef = db.collection('applications')
       .where('exerciseId', '==', exerciseId)
@@ -155,7 +156,7 @@ module.exports = (config, firebase, db, auth) => {
     // send reminder email if it has not been sent before
     applications = applications.filter(application => {
       if (application.emailLog && application.emailLog.applicationReminder) return false;
-      
+
       return application.personalDetails && application.personalDetails.fullName && application.personalDetails.email;
     });
 
@@ -369,4 +370,55 @@ module.exports = (config, firebase, db, auth) => {
     };
   }
 
+  /**
+  * sendCandidateFlagConfirmation
+  * Sends a 'candidate flagged confirmation' notification for each application
+  * @param {*} `params` is an object containing
+  *   `applicationId`  (required) ID of application
+  *   `application`    (required) application
+  */
+   async function sendCandidateFlagConfirmation(params) {
+    const applicationId = params.applicationId;
+    const application = params.application;
+    const applicationRef = db.collection('applications').doc(applicationId);
+
+    // get exercise
+    const exerciseId = application.exerciseId;
+    const exercise = await getDocument(db.doc(`exercises/${exerciseId}`));
+    if (!exercise) return false;
+
+    // Get email recipients from firestore config
+    const settingsServices = await getDocument(db.collection('settings').doc('services'));
+    const emails = settingsServices.emails.CandidateFlagging;
+    
+    if (emails === undefined) {
+      console.error('Error retrieving emails for candidate flagging alerts');
+      return false;
+    }
+
+    // create database commands
+    const commands = [];
+
+    for (const email of emails) {
+      // create notification
+      commands.push({
+        command: 'set',
+        ref: db.collection('notifications').doc(),
+        data: newNotificationCandidateFlagConfirmation(firebase, applicationId, application, exercise, email),
+      });
+    }
+
+    // update application
+    commands.push({
+      command: 'update',
+      ref: applicationRef,
+      data: {
+        'emailLog.flaggedCandidate': firebase.firestore.Timestamp.fromDate(new Date()),
+      },
+    });
+
+    // write to db
+    const result = await applyUpdates(db, commands);
+    return result ? true : false;
+  }
 };

@@ -1537,6 +1537,20 @@
       ]
     },
     {
+      "collectionGroup": "candidates",
+      "queryScope": "COLLECTION",
+      "fields": [
+        {
+          "fieldPath": "isFlaggedCandidate",
+          "order": "ASCENDING"
+        },
+        {
+          "fieldPath": "created",
+          "order": "DESCENDING"
+        }
+      ]
+    },
+    {
       "collectionGroup": "exercises",
       "queryScope": "COLLECTION",
       "fields": [
@@ -1765,6 +1779,20 @@
         {
           "fieldPath": "referenceNumber",
           "order": "DESCENDING"
+        }
+      ]
+    },
+    {
+      "collectionGroup": "exercises",
+      "queryScope": "COLLECTION",
+      "fields": [
+        {
+          "fieldPath": "name",
+          "order": "ASCENDING"
+        },
+        {
+          "fieldPath": "state",
+          "order": "ASCENDING"
         }
       ]
     },
@@ -2544,6 +2572,11 @@
     }
   ],
   "fieldOverrides": [
+    {
+      "collectionGroup": "data",
+      "fieldPath": "applicationsMap",
+      "indexes": []
+    },
     {
       "collectionGroup": "documents",
       "fieldPath": "fullName",
