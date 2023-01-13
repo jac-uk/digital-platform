@@ -1,4 +1,4 @@
-const { getDocument, getDocuments, formatDate } = require('../../shared/helpers');
+const { getAllDocuments, getDocuments, formatDate } = require('../../shared/helpers');
 const lookup = require('../../shared/converters/lookup');
 const { NOT_COMPLETE_PUPILLAGE_REASONS } = require('../../shared/config');
 const helpers = require('../../shared/converters/helpers');
@@ -9,28 +9,26 @@ module.exports = (firebase, db) => {
   };
 
   async function generateStatutoryConsultationReport(exerciseId) {
-    const exercise = await getDocument(db.collection('exercises').doc(exerciseId));
-
-    // get submitted applications
-    const applications = await getDocuments(db.collection('applications')
-      .where('exerciseId', '==', exerciseId)
-      .where('status', 'in', ['applied'])
+    // get submitted application with invited to selection day
+    const applicationRecords = await getDocuments(db.collection('applicationRecords')
+      .where('exercise.id', '==', exerciseId)
+      .where('stage', '==', 'selected')
     );
+    const applicationIds = applicationRecords.map(item => item.id);
+    const applicationRefs = applicationIds.map(id => db.collection('applications').doc(id));
+    const applications = await getAllDocuments(db, applicationRefs);
 
     // get report rows
-    const { maxQualificationNum, maxExperienceNum, data: rows } = reportData(db, exercise, applications);
+    const { maxQualificationNum, maxExperienceNum, data: rows } = reportData(db, applications);
 
     // get report headers
-    const headers = reportHeaders(exercise);
-    const qualificationHeaders = getQualificationHeaders(maxQualificationNum);
-    const experienceHeaders = getExperienceHeaders(maxExperienceNum);
-    const judicialExperienceHeaders = getJudicialExperienceHeaders();
+    const headers = reportHeaders(maxQualificationNum, maxExperienceNum);
 
     // construct the report document
     const report = {
       totalApplications: applications.length,
       createdAt: firebase.firestore.Timestamp.fromDate(new Date()),
-      headers: [...headers, ...qualificationHeaders, ...experienceHeaders, ...judicialExperienceHeaders],
+      headers,
       rows,
     };
 
@@ -45,14 +43,18 @@ module.exports = (firebase, db) => {
 /**
  * Get the report headers
  * 
- * @param {document} exercise
+ * @param {number} maxQualificationNum
+ * @param {number} maxExperienceNum
  * @return {array}
  */
-const reportHeaders = (exercise) => {
+const reportHeaders = (maxQualificationNum, maxExperienceNum) => {
   const headers = [
     { title: 'First name', ref: 'firstName' },
     { title: 'Last name', ref: 'lastName' },
     { title: 'Suffix', ref: 'suffix' },
+    ...getQualificationHeaders(maxQualificationNum),
+    ...getExperienceHeaders(maxExperienceNum),
+    ...getJudicialExperienceHeaders(),
   ];
 
   return headers;
@@ -62,11 +64,10 @@ const reportHeaders = (exercise) => {
  * Get the report data
  *
  * @param {db} db
- * @param {document} exercise
  * @param {array} applications
  * @returns {array}
  */
-const reportData = (db, exercise, applications) => {
+const reportData = (db, applications) => {
   let maxQualificationNum = 0;
   let maxExperienceNum = 0;
 
@@ -113,7 +114,7 @@ function getExperienceHeaders(n) {
   const headers = [];
   for (let i = 1; i <= n; i++) {
     headers.push(
-      { title: 'Organisation or business', ref: `orgBusinessName${i}` },
+      { title: `${ordinal(i)} Organisation or business`, ref: `orgBusinessName${i}` },
       { title: 'Job title', ref: `jobTitle${i}` },
       { title: 'Dates', ref: `experienceDates${i}` },
       { title: 'Location', ref: `experienceLocation${i}` },
