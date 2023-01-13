@@ -12,7 +12,7 @@ module.exports = (firebase, db) => {
     // get submitted application with invited to selection day
     const applicationRecords = await getDocuments(db.collection('applicationRecords')
       .where('exercise.id', '==', exerciseId)
-      .where('stage', '==', 'selected')
+      .where('stage', 'in', ['review', 'shortlisted', 'selected', 'recommended', 'handover'])
     );
     const applicationIds = applicationRecords.map(item => item.id);
     const applicationRefs = applicationIds.map(id => db.collection('applications').doc(id));
