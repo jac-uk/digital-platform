@@ -141,11 +141,22 @@ function getQualificationData(qualifications) {
     data[`qualificationLocation${index}`] = lookup(qualification.location) || '';
     data[`qualificationDate${index}`] = formatDate(qualification.date, 'DD/MM/YYYY') || '';
     data[`completedPupillage${index}`] = helpers.toYesNo(qualification.completedPupillage) || '';
-    data[`notCompletePupillageReason${index}`] = qualification.completedPupillage ? '' : (
-      qualification.notCompletePupillageReason !== NOT_COMPLETE_PUPILLAGE_REASONS.OTHER ? lookup(qualification.notCompletePupillageReason) : qualification.details
-    );
+    data[`notCompletePupillageReason${index}`] = getNotCompletePupillageReason(qualification);
   }
   return data;
+}
+
+function getNotCompletePupillageReason(qualification) {
+  if (qualification.completedPupillage)
+    return '';
+  else if (qualification.notCompletePupillageReason === NOT_COMPLETE_PUPILLAGE_REASONS.TRANSFERRED)
+    return lookup(NOT_COMPLETE_PUPILLAGE_REASONS.TRANSFERRED);
+  else if (qualification.notCompletePupillageReason === NOT_COMPLETE_PUPILLAGE_REASONS.CALLED_PRE_2002)
+    return lookup(NOT_COMPLETE_PUPILLAGE_REASONS.CALLED_PRE_2002);
+  else if (qualification.details)
+    return qualification.details;
+  else
+    return '';
 }
 
 function getExperienceData(experiences) {
