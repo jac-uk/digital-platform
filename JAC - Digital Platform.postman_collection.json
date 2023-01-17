@@ -531,6 +531,43 @@
 						}
 					},
 					"response": []
+				},
+				{
+					"name": "Generate Statutory Consultation Report",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{token}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"data\": {\r\n        \"exerciseId\": \"kJKbG9TOQToEzB4AlEV1\"\r\n    }\r\n}"
+						},
+						"url": {
+							"raw": "{{host}}/generateStatutoryConsultationReport",
+							"host": [
+								"{{host}}"
+							],
+							"path": [
+								"generateStatutoryConsultationReport"
+							]
+						}
+					},
+					"response": []
 				}
 			]
 		},

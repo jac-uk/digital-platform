@@ -308,4 +308,9 @@ module.exports = {
   SCAN_SERVICE_URL: functions.config().scan_service.url,
   GOOGLE_RECAPTCHA_VALIDATION_URL: functions.config().google_recaptcha.url,
   GOOGLE_RECAPTCHA_SECRET: functions.config().google_recaptcha.secret,
+  NOT_COMPLETE_PUPILLAGE_REASONS: {
+    TRANSFERRED: 'transferred ',
+    CALLED_PRE_2002: 'called-pre-2002',
+    OTHER: 'other',
+  },
 };
