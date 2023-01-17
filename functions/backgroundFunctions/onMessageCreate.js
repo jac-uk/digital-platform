@@ -6,10 +6,18 @@ const { onMessageCreate } = require('../actions/messages')(config, firebase, db,
 module.exports = functions.region('europe-west2').firestore
   .document('messages/{messageId}')
   .onCreate((snap, context) => {
-    const messageId = context.params.messageId;
+    //const messageId = context.params.messageId;
     const message = snap.data();
-    const candidateId = message.lateApplicationRequest.candidateId;
-    const exerciseId = message.lateApplicationRequest.exerciseId;
-    const msgType = message.type;
+
+    let candidateId = null;
+    let msgType = null;
+    let exerciseId = null;
+
+    if (message.type) {
+      msgType = message.type;
+      candidateId = message[msgType].candidateId;
+      exerciseId = message[msgType].exerciseId;
+    }
+    
     return onMessageCreate(msgType, exerciseId, candidateId);
   });
