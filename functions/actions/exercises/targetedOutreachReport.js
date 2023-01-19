@@ -1,4 +1,5 @@
 const { getDocument, getDocuments } = require('../../shared/helpers');
+const lookup = require('../../shared/converters/lookup');
 
 module.exports = (firebase, db) => {
 
@@ -58,7 +59,7 @@ module.exports = (firebase, db) => {
                   stage: application.stage,
                   status: application.status,
                   id: candidateID,
-                };    
+                };
                 data.push(returnObj);
               });
               applicationsFromRecords = await Promise.all(applicationsFromRecords);

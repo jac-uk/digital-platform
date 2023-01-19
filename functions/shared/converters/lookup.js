@@ -203,6 +203,7 @@ const lookup = (value) => {
       sccToReconsider: 'SCC to reconsider',
       invitedToSelectionDay: 'Invited To Selection Day',
       /* ApplicationRecords statuses: end */
+      NiNumber: 'National Insurance Number',
       // 'xxx': 'xxx',`
     };
 
