@@ -7,6 +7,7 @@ module.exports = (CONSTANTS) => {
     newNotificationApplicationReminder,
     newNotificationCandidateFlagConfirmation,
     newNotificationCharacterCheckRequest,
+    newNotificationHandoverCheckRequest,
     newNotificationAssessmentRequest,
     newNotificationAssessmentReminder,
     newNotificationAssessmentSubmit,
@@ -138,6 +139,44 @@ module.exports = (CONSTANTS) => {
     } else {
       templateId = '163487cb-f4c6-4b7a-95bf-37fd958a14de';
       templateName = 'Character check consent form reminder';
+    }
+    return {
+      email: application.personalDetails.email,
+      replyTo: exerciseMailbox,
+      template: {
+        name: templateName,
+        id: templateId,
+      },
+      personalisation: {
+        exerciseName: application.exerciseName,
+        dueDate: dueDate,
+        urlRequired: `${CONSTANTS.APPLY_URL}/sign-in`,
+        applicantName: application.personalDetails.fullName,
+        selectionExerciseManager: exerciseManagerName,
+        exerciseMailbox: exerciseMailbox,
+      },
+      reference: {
+        collection: 'applications',
+        id: application.id,
+      },
+      createdAt: firebase.firestore.Timestamp.fromDate(new Date()),
+      status: 'ready',
+    };
+  }
+
+  function newNotificationHandoverCheckRequest(firebase, application, type, exerciseMailbox, exerciseManagerName, dueDate) {
+    // TODO: update email templates
+    let templateId = '';
+    let templateName = '';
+    if (type === 'request') {
+      templateId = '';
+      templateName = 'Handover check consent form request';
+    } else if (type === 'submit') {
+      templateId = '';
+      templateName = 'Handover check consent form submit';
+    } else {
+      templateId = '';
+      templateName = 'Handover check consent form reminder';
     }
     return {
       email: application.personalDetails.email,
