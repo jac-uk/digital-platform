@@ -1,6 +1,5 @@
 const functions = require('firebase-functions');
 const { firebase, db, auth } = require('../shared/admin.js');
-const { generateDiversityReport } = require('../actions/exercises/generateDiversityReport')(firebase, db);
 const { generateDiversityData } = require('../actions/exercises/generateDiversityData')(firebase, db);
 const { getDocument } = require('../shared/helpers');
 const { logEvent } = require('../actions/logs/logEvent')(firebase, db, auth);
@@ -27,23 +26,7 @@ module.exports = functions.region('europe-west2').https.onCall(async (data, cont
   }
 
   // generate the report
-  const result = await generateDiversityReport(data.exerciseId);
-
-  // generate diversity data
-  // TODO this is here temporarily. Sort it out!
-  await generateDiversityData(data.exerciseId);
-
-  // log an event
-  const exercise = await getDocument(db.collection('exercises').doc(data.exerciseId));
-  let details = {
-    exerciseId: exercise.id,
-    exerciseRef: exercise.referenceNumber,
-  };
-  let user = {
-    id: context.auth.token.user_id,
-    name: context.auth.token.name,
-  };
-  await logEvent('info', 'Diversity report generated', details, user);
+  const result = await generateDiversityData(data.exerciseId);
 
   // return the report to the caller
   return {

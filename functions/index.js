@@ -23,6 +23,7 @@ exports.onMessageCreate = require('./backgroundFunctions/onMessageCreate');
 // Callable
 exports.getApplicationData = require('./callableFunctions/getApplicationData');
 exports.generateDiversityReport = require('./callableFunctions/generateDiversityReport');
+exports.generateDiversityData = require('./callableFunctions/generateDiversityData');
 exports.generateOutreachReport = require('./callableFunctions/generateOutreachReport');
 exports.flagApplicationIssuesForExercise = require('./callableFunctions/flagApplicationIssuesForExercise');
 exports.initialiseAssessments = require('./callableFunctions/initialiseAssessments');
