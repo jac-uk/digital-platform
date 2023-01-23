@@ -13,6 +13,8 @@ module.exports = (CONSTANTS) => {
     newAssessment,
     newApplicationRecord,
     newVacancy,
+    newNotificationLateApplicationRequest,
+    newNotificationLateApplicationResponse,
   };
 
   function newNotificationExerciseApprovalSubmit(firebase, exerciseId, exercise) {
@@ -556,5 +558,73 @@ module.exports = (CONSTANTS) => {
       }
     }
     return vacancy;
+  }
+
+  function newNotificationLateApplicationRequest(firebase, messageId, message, toEmail) {  
+    const templateName = 'Late application request';
+    const templateId = 'da36cb2a-5774-4e97-82e6-82664c43d87c';
+    const msgType = message.type;
+    const replyTo = message.from.email;
+    return {
+      email: toEmail,
+      replyTo: replyTo,
+      template: {
+        name: templateName,
+        id: templateId,
+      },
+      personalisation: {
+        exerciseId: message[msgType].exerciseId,
+        exerciseName: message[msgType].exerciseName,
+        exerciseRef: message[msgType].exerciseRef,
+        reason: message[msgType].reason,
+        candidateId: message[msgType].candidateId,
+        candidateName: message[msgType].candidateName,
+        candidateEmail: message[msgType].candidateEmail,
+        url: message[msgType].url,
+      },
+      reference: {
+        collection: 'messages',
+        id: messageId,
+      },
+      createdAt: firebase.firestore.Timestamp.fromDate(new Date()),
+      status: 'ready',
+    };
+  }
+
+  function newNotificationLateApplicationResponse(firebase, messageId, message, toEmail) {  
+    const templateName = 'Late application response';
+    const templateId = 'e9087c43-de88-4dcd-a868-2299efcbc7a2';
+    const msgType = message.type;
+    const replyTo = message.from.email;
+    const rejectionReason = message[msgType].hasOwnProperty('rejectionReason') ? message[msgType].rejectionReason : '';
+    const applicationId = message[msgType].hasOwnProperty('applicationId') ? message[msgType].applicationId : '';
+    return {
+      email: toEmail,
+      replyTo: replyTo,
+      template: {
+        name: templateName,
+        id: templateId,
+      },
+      personalisation: {
+        applicationId: applicationId,
+        exerciseId: message[msgType].exerciseId,
+        exerciseName: message[msgType].exerciseName,
+        exerciseRef: message[msgType].exerciseRef,
+        reason: message[msgType].reason,
+        candidateId: message[msgType].candidateId,
+        candidateName: message[msgType].candidateName,
+        candidateEmail: message[msgType].candidateEmail,
+        decision: message[msgType].decision,
+        decisionAt: message[msgType].decisionAt,
+        rejectionReason: rejectionReason,
+        url: message[msgType].url,
+      },
+      reference: {
+        collection: 'messages',
+        id: messageId,
+      },
+      createdAt: firebase.firestore.Timestamp.fromDate(new Date()),
+      status: 'ready',
+    };
   }
 };
