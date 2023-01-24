@@ -1,6 +1,6 @@
 
 const config = require('./shared/config');
-const { firebase, app, db, auth } = require('./shared/admin.js');
+const { firebase, app, db } = require('./shared/admin.js');
 const { customReport } = require('../actions/exercises/customReport')(config, firebase, db);
 
 const main = async (params) => {

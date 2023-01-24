@@ -8,7 +8,7 @@ const onQualifyingTestResponsesUpdate = require('../../../functions/actions/qual
 
 describe('onQualifyingTestResponsesUpdate()', () => {
 
-  xit('increments qualifyingTest started count when test is started', async () => {
+  it.skip('increments qualifyingTest started count when test is started', async () => {
     const dataBefore = {
       status: 'activated',
     };

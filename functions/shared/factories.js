@@ -596,8 +596,8 @@ module.exports = (CONSTANTS) => {
     const templateId = 'e9087c43-de88-4dcd-a868-2299efcbc7a2';
     const msgType = message.type;
     const replyTo = message.from.email;
-    const rejectionReason = message[msgType].hasOwnProperty('rejectionReason') ? message[msgType].rejectionReason : '';
-    const applicationId = message[msgType].hasOwnProperty('applicationId') ? message[msgType].applicationId : '';
+    const rejectionReason = Object.prototype.hasOwnProperty.call(message[msgType], 'rejectionReason') ? message[msgType].rejectionReason : '';
+    const applicationId = Object.prototype.hasOwnProperty.call(message[msgType], 'applicationId') ? message[msgType].applicationId : '';
     return {
       email: toEmail,
       replyTo: replyTo,

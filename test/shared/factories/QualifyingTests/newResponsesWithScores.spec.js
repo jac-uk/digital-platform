@@ -233,7 +233,7 @@ describe('newResponsesWithScores()', () => {
     });
   });
 
-  xdescribe('scenario test', () => {
+  describe.skip('scenario test', () => {
     it('does not make any changes (scenario tests are manually scored)', async () => {
       const qualifyingTest = {
         type: config.QUALIFYING_TEST.TYPE.SCENARIO,

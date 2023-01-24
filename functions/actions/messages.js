@@ -14,15 +14,16 @@ module.exports = (config, firebase, db, auth) => {
    * - For type = lateApplicationResponse ensure the candidate id is removed from the _lateApplicationRequests field in the exercise
    */
   async function onMessageCreate(messageId, message) {
-    const msgType = message.hasOwnProperty('type') ? message.type : null;
-    const candidateId = msgType ? message[msgType].candidateId : null;
-    const exerciseId = msgType ? message[msgType].exerciseId : null;
+    const msgHasTypeProperty = Object.prototype.hasOwnProperty.call(message, 'type');
+    const msgType = msgHasTypeProperty ? message.type : null;
+    const candidateId = msgHasTypeProperty ? message[msgType].candidateId : null;
+    const exerciseId = msgHasTypeProperty ? message[msgType].exerciseId : null;
     const toEmails = message.to;
 
     // create database commands
     const commands = [];
 
-    if (message.hasOwnProperty('type')) {
+    if (msgHasTypeProperty) {
       if (msgType === 'lateApplicationRequest') {
         await addLateApplicationRequest(exerciseId, candidateId);
         for (const toEmail of toEmails) {
