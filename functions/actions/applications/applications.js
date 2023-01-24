@@ -271,11 +271,12 @@ module.exports = (config, firebase, db, auth) => {
     for (let i = 0, len = applications.length; i < len; ++i) {
       const application = applications[i];
       // create notification
-      commands.push({
-        command: 'set',
-        ref: db.collection('notifications').doc(),
-        data: newNotificationHandoverCheckRequest(firebase, application, type, exerciseMailbox, exerciseManagerName, dueDate),
-      });
+      // TODO: wait for the email templates
+      // commands.push({
+      //   command: 'set',
+      //   ref: db.collection('notifications').doc(),
+      //   data: newNotificationHandoverCheckRequest(firebase, application, type, exerciseMailbox, exerciseManagerName, dueDate),
+      // });
       // update application
       if (type === 'request') {
         commands.push({
