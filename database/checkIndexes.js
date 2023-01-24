@@ -15,7 +15,7 @@ function returnOnlyUnique(array) {
 }
 
 // const filtered = returnOnlyUnique(json.fieldOverrides);
-// const filtered = returnOnlyUnique(json.indexes);
+const filtered = returnOnlyUnique(json.indexes);
 console.log('Filtered: ', filtered.length);
 
 fs.writeFile('./database/OUTPUT.json', JSON.stringify(filtered), (err) => {

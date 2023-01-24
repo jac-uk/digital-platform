@@ -1,6 +1,6 @@
 'use strict';
 
-const config = require('./shared/config.js');
+// const config = require('./shared/config.js');
 const { app, db } = require('./shared/admin.js');
 const { getDocuments } = require('../functions/shared/helpers');
 
