@@ -10,6 +10,8 @@ module.exports = (config, firebase, db) => {
     scoreSheet,
     getEmptyScoreSheet,
     scoreSheet2MarkingScheme,
+    getApplicationPassStatus,
+    getApplicationFailStatus,
     getApplicationPassStatuses,
     getApplicationFailStatuses,
     taskApplicationsEntryStatus,
@@ -566,10 +568,9 @@ module.exports = (config, firebase, db) => {
     };
     if (!(task.passMark >= 0)) return result;
 
-    // TODO get statuses from func
     const outcomeStats = {};
-    const passStatus = `${task.type}Passed`;
-    const failStatus = `${task.type}Failed`;
+    const passStatus = getApplicationPassStatus(exercise, task);
+    const failStatus = getApplicationFailStatus(exercise, task);
     outcomeStats[passStatus] = 0;
     outcomeStats[failStatus] = 0;
 
@@ -577,15 +578,26 @@ module.exports = (config, firebase, db) => {
     const commands = [];
     task.finalScores.forEach(scoreData => {
       let newStatus;
-      if (scoreData.score >= task.passMark) {
+      if (scoreData.score > task.passMark) {
         newStatus = passStatus;
+      } else if (scoreData.score === task.passMark) {
+        if (task.overrides && task.overrides.fail && task.overrides.fail.length && task.overrides.fail.indexOf(scoreData.id) >= 0) {
+          newStatus = failStatus;
+        } else {
+          newStatus = passStatus;
+        }
+      } else if (scoreData.score === task.passMark - 1) {
+        if (task.overrides && task.overrides.pass && task.overrides.pass.length && task.overrides.pass.indexOf(scoreData.id) >= 0) {
+          newStatus = passStatus;
+        } else {
+          newStatus = failStatus;
+        }
       } else {
         newStatus = failStatus;
       }
       outcomeStats[newStatus] += 1;
       const saveData = {};
       saveData.status = newStatus;
-      // TODO update stage too?
       saveData[`statusLog.${newStatus}`] = firebase.firestore.FieldValue.serverTimestamp();
       commands.push({
         command: 'update',

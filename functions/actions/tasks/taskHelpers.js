@@ -17,6 +17,8 @@ module.exports = (config) => {
     getScoreSheetTotal,
     getEmptyScoreSheet,
     scoreSheet2MarkingScheme,
+    getApplicationPassStatus,
+    getApplicationFailStatus,
     getApplicationPassStatuses,
     getApplicationFailStatuses,
   };
@@ -93,6 +95,14 @@ module.exports = (config) => {
       }
     }
     return nextStatus;
+  }
+
+  function getApplicationPassStatus(exercise, task) {
+    return `${task.type}Passed`;
+  }
+
+  function getApplicationFailStatus(exercise, task) {
+    return `${task.type}Failed`;
   }
 
   function getApplicationPassStatuses(taskType) {
