@@ -15,12 +15,25 @@ module.exports = (auth) => {
       if (emailRegEx.test(currentEmailAddress) === true && (emailRegEx.test(newEmailAddress) === true)) {
         const user = await auth.getUserByEmail(currentEmailAddress);
         const updatedUser = await auth.updateUser(user.uid, {email: newEmailAddress});
-        return updatedUser.email;
+        return {
+          status: 'success',
+          data: updatedUser,
+        };
       } else {
-        return false;
+        return {
+          status: 'error',
+          data: {
+            code: 'auth/invalid-email',
+            message: 'The email address is badly formatted.',
+          },
+        };
       }
     } catch(e) {
-      return false;
+      console.log(e);
+      return {
+        status: 'error',
+        data: e.errorInfo,
+      };
     }
   }
 
