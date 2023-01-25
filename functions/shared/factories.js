@@ -169,14 +169,14 @@ module.exports = (CONSTANTS) => {
     let templateId = '';
     let templateName = '';
     if (type === 'request') {
-      templateId = '';
-      templateName = 'Handover check consent form request';
-    } else if (type === 'submit') {
-      templateId = '';
-      templateName = 'Handover check consent form submit';
+      templateId = '8631725d-29cf-47a6-84c3-7fa953744b2c';
+      templateName = 'Handover checks request';
+    } else if (type === 'reminder') {
+      templateId = 'c02ddd4b-2169-4f1d-8630-65597ba40347';
+      templateName = 'Handover checks reminder';
     } else {
-      templateId = '';
-      templateName = 'Handover check consent form reminder';
+      templateId = '9071342f-0987-4f07-8842-a736f63e1697';
+      templateName = 'Handover checks submit';
     }
     return {
       email: application.personalDetails.email,
