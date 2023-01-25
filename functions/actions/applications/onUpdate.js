@@ -3,7 +3,7 @@ const { getDocument, applyUpdates, isDateInPast, formatDate } = require('../../s
 module.exports = (config, firebase, db, auth) => {
   const { newApplicationRecord } = require('../../shared/factories')(config);
   const { updateCandidate } = require('../candidates/search')(firebase, db);
-  const { sendApplicationConfirmation, sendCharacterCheckRequests, sendCandidateFlagConfirmation } = require('./applications')(config, firebase, db, auth);
+  const { sendApplicationConfirmation, sendCharacterCheckRequests, sendHandoverCheckRequests, sendCandidateFlagConfirmation } = require('./applications')(config, firebase, db, auth);
 
   return onUpdate;
 
@@ -96,6 +96,38 @@ module.exports = (config, firebase, db, auth) => {
           await db.collection('applicationRecords').doc(`${applicationId}`).update({
             'characterChecks.status': 'completed',
             'characterChecks.completedAt': firebase.firestore.Timestamp.fromDate(new Date()),
+          });
+          return true;
+        } catch (e) {
+          console.error(`Error updating application record ${applicationId}`, e);
+          return false;
+        }
+      }
+    }
+
+    const handoverChecksBefore = dataBefore.handoverChecks;
+    const handoverChecksAfter = dataAfter.handoverChecks;
+
+    if (handoverChecksBefore && handoverChecksAfter && handoverChecksBefore.status && handoverChecksAfter.status) {
+      if ((handoverChecksBefore.status !== handoverChecksAfter.status) && handoverChecksAfter.status === 'completed') {
+        // send confirmation email if it hasn't been sent before
+        if (!dataBefore.emailLog || (dataBefore.emailLog && !dataBefore.emailLog.handoverCheckSubmitted)) {
+          const exercise = await getDocument(db.doc(`exercises/${dataBefore.exerciseId}`));
+          if (exercise) {
+            await sendHandoverCheckRequests({
+              items: [applicationId],
+              type: 'submit',
+              exerciseMailbox: exercise.exerciseMailbox,
+              exerciseManagerName: exercise.emailSignatureName,
+              dueDate: formatDate(exercise.handoverChecksReturnDate),
+            });
+          }
+        }
+        
+        try {
+          await db.collection('applicationRecords').doc(`${applicationId}`).update({
+            'handoverChecks.status': 'completed',
+            'handoverChecks.completedAt': firebase.firestore.Timestamp.fromDate(new Date()),
           });
           return true;
         } catch (e) {
