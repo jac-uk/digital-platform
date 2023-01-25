@@ -596,6 +596,7 @@ module.exports = (config, firebase, db) => {
         newStatus = failStatus;
       }
       outcomeStats[newStatus] += 1;
+      scoreData.pass = newStatus === passStatus ? true : false;
       const saveData = {};
       saveData.status = newStatus;
       saveData[`statusLog.${newStatus}`] = firebase.firestore.FieldValue.serverTimestamp();
@@ -619,9 +620,9 @@ module.exports = (config, firebase, db) => {
           // create qualifying test task
           const finalScores = [];
           task.finalScores.forEach(scoreData => {
-            if (scoreData.score >= task.passMark) {
+            if (scoreData.pass) {
               const otherTaskScoreData = otherTask.finalScores.find(otherScoreData => otherScoreData.id === scoreData.id);
-              if (otherTaskScoreData && otherTaskScoreData.score >= otherTask.passMark) {
+              if (otherTaskScoreData && otherTaskScoreData.pass) {
                 const overallScore = 50 * ((scoreData.score / task.maxScore) + (otherTaskScoreData.score / otherTask.maxScore));
                 finalScores.push({
                   id: scoreData.id,
@@ -677,6 +678,7 @@ module.exports = (config, firebase, db) => {
     await applyUpdates(db, commands);
     result.success = true;
     result.data['_stats.totalForEachOutcome'] = outcomeStats;
+    result.data.finalScores = task.finalScores;
 
     return result;
   }
