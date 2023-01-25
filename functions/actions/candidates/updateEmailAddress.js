@@ -29,7 +29,6 @@ module.exports = (auth) => {
         };
       }
     } catch(e) {
-      console.log(e);
       return {
         status: 'error',
         data: e.errorInfo,
