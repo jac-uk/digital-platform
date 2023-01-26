@@ -470,6 +470,6 @@ describe('normaliseNIN', () => {
 
 describe('normaliseNINs', () => {
   it('remove HTML tags from a given string', () => {
-    expect(normaliseNINs(['AA 123456       V', 'QQ 12 34 56 C'])).toBe(['aa123456v','qq123456c']);
+    expect(normaliseNINs(['AA 123456       V', 'QQ 12 34 56 C'])).toStrictEqual(['aa123456v','qq123456c']);
   });
 });
