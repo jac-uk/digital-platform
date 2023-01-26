@@ -45,8 +45,9 @@ module.exports = (config) => {
         availableStatuses = [
           config.TASK_STATUS.TEST_INITIALISED,
           config.TASK_STATUS.TEST_ACTIVATED,
-          config.TASK_STATUS.PANELS_INITIALISED,
-          config.TASK_STATUS.PANELS_ACTIVATED,
+          // config.TASK_STATUS.PANELS_INITIALISED,
+          // config.TASK_STATUS.PANELS_ACTIVATED,
+          config.TASK_STATUS.DATA_ACTIVATED,
           config.TASK_STATUS.FINALISED,
           config.TASK_STATUS.COMPLETED,
         ];

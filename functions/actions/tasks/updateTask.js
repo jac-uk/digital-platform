@@ -70,6 +70,9 @@ module.exports = (config, firebase, db) => {
     case config.TASK_STATUS.TEST_ACTIVATED:
       result = await activateTestTask(exercise, task);
       break;
+    case config.TASK_STATUS.DATA_INITIALISED:
+      result = await initialiseDataTask(exercise, task);
+      break;
     case config.TASK_STATUS.DATA_ACTIVATED:
       result = await activateDataTask(exercise, task);
       break;
@@ -420,6 +423,23 @@ module.exports = (config, firebase, db) => {
     result.data.applications = applicationsData;
     return result;
 
+  }
+
+  /**
+   * initialiseDataTask
+   * Initialises a data task. Currently does nothing!
+   * @param {*} exercise
+   * @param {*} task
+   * @returns Result object of the form `{ success: Boolean, data: Object }`. If successful then `data` is to be stored in the `task` document
+   */
+  async function initialiseDataTask(exercise, task) {
+    const result = {
+      success: false,
+      data: {},
+    };
+    // TODO check if we need to return anything here
+    result.success = true;
+    return result;
   }
 
   /**
