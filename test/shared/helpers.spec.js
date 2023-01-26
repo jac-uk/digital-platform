@@ -1,4 +1,4 @@
-const { checkArguments, applyUpdates, convertStringToSearchParts, getEarliestDate, getLatestDate, removeHtml } = require('../../functions/shared/helpers');
+const { checkArguments, applyUpdates, convertStringToSearchParts, getEarliestDate, getLatestDate, removeHtml, normaliseNIN, normaliseNINs } = require('../../functions/shared/helpers');
 
 describe('checkArguments()', () => {
 
@@ -436,5 +436,40 @@ describe('removeHtml', () => {
     expect(removeHtml('<br>1. answer')).toBe('1. answer');
     expect(removeHtml('<br/>1. answer')).toBe('1. answer');
     expect(removeHtml('<br />1. answer')).toBe('1. answer');
+  });
+});
+
+  //  '	 ',
+  //  ' ',                  // 30
+  //  'AA 123456       V',  // 0
+  //  'TR768534A',          // 12
+  //  'BN678987G',          // 47 
+  //  'A B  1 2 3 4 5 6 C', // 32
+  //  'GG010 203D',         // 0
+  //  'QQ 12 34 56 C',      // 44 => 9 normalized
+  //  'PP005897 C',         // 1 normalized
+  //  'PP 060953 C',        // 2 normalized
+  //  'PP024177C',          //1 normalized
+  //  'PP024174C',          // 0
+  //  'PP-012189C',         // 1 normalized
+  //  'PP024177C',          // 1
+  //  'PP 060953 C',        // 2 normalized
+  
+describe('normaliseNIN', () => {
+  it('remove HTML tags from a given string', () => {
+    expect(normaliseNIN('	 ')).toBe('');
+    expect(normaliseNIN(' ')).toBe('');
+    expect(normaliseNIN('AA 123456       V')).toBe('aa123456v');
+    expect(normaliseNIN('TR768534A')).toBe('tr768534a');
+    expect(normaliseNIN('A B  1 2 3 4 5 6 C')).toBe('ab123456c');
+    expect(normaliseNIN('GG010 203D')).toBe('gg010203d');
+    expect(normaliseNIN('PP005897 C')).toBe('pp005897c');
+    expect(normaliseNIN('QQ 12 34 56 C')).toBe('qq123456c');
+  });
+});
+
+describe('normaliseNINs', () => {
+  it('remove HTML tags from a given string', () => {
+    expect(normaliseNINs(['AA 123456       V', 'QQ 12 34 56 C'])).toBe(['aa123456v','qq123456c']);
   });
 });

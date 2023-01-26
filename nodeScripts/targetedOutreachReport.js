@@ -22,13 +22,13 @@ const main = async () => {
   //  'PP 060953 C',        // 2 normalized
 
   return targetedOutreachReport([
-    'TR768534V',
+    'NP276498D',
   ]);
 };
 
 main()
   .then((result) => {
-    // console.log(result);
+    console.log(result.length);
     result;
     app.delete();
     return process.exit();
