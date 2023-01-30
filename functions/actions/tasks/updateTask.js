@@ -90,6 +90,9 @@ module.exports = (config, firebase, db) => {
       case config.TASK_STATUS.TEST_ACTIVATED:
         result = await finaliseTestTask(exercise, task);
         break;
+      case config.TASK_STATUS.DATA_ACTIVATED:
+        result = await finaliseDataTask(exercise, task);
+        break;
       }
       break;
     case config.TASK_STATUS.CHECKS: // TODO think about naming
@@ -454,7 +457,11 @@ module.exports = (config, firebase, db) => {
       success: false,
       data: {},
     };
-    // TODO check if we need to return anything here
+    // populate scoreSheet
+    result.data.scoreSheet = {};
+    task.applications.forEach(application => {
+      result.data.scoreSheet[application.id] = task.emptyScoreSheet;
+    });
     result.success = true;
     return result;
   }
@@ -541,7 +548,7 @@ module.exports = (config, firebase, db) => {
    * @param {*} task
    * @returns Result object of the form `{ success: Boolean, data: Object }`. If successful then `data` is to be stored in the `task` document
    */
-   async function finaliseTestTask(exercise, task) {
+  async function finaliseTestTask(exercise, task) {
     console.log('finaliseTestTask');
     const result = {
       success: false,
@@ -571,6 +578,37 @@ module.exports = (config, firebase, db) => {
     result.success = true;
     result.data.finalScores = finalScores;
     result.data.maxScore = response.maxScore;
+    return result;
+  }
+
+  /**
+   * finaliseDataTask
+   * Finalise data entry task. Constructs `finalScores` to be added to `task` document
+   * @param {*} exercise
+   * @param {*} task
+   * @returns Result object of the form `{ success: Boolean, data: Object }`. If successful then `data` is to be stored in the `task` document
+   */
+  async function finaliseDataTask(exercise, task) {
+    const result = {
+      success: false,
+      data: {},
+    };
+
+    // construct final scores
+    const finalScores = [];
+    task.applications.forEach(application => {
+      const row = {
+        id: application.id,
+        ref: application.ref,
+        scoreSheet: finaliseScoreSheet(task.markingScheme, task.scoreSheet[application.id]),
+        score: getScoreSheetTotal(task.markingScheme, task.scoreSheet[application.id]),
+      };
+      finalScores.push(row);
+    });
+
+    result.success = true;
+    result.data.finalScores = finalScores;
+    // TODO remove un-necessary fields
     return result;
   }
 

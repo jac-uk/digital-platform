@@ -312,7 +312,7 @@ module.exports = (config) => {
         break;
       case config.MARKING_TYPE.NUMBER:
         if (scoreSheet[item.ref]) {
-          return scoreSheet[item.ref];
+          return parseFloat(scoreSheet[item.ref]);
         }
         break;
       }
