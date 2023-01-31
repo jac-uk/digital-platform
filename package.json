@@ -62,12 +62,7 @@
     "production:service-offline:realtime-rules": "cp -f ./service-offline/realtime.rules.json ./database/realtime.rules.json; npm run production:deploy:realtime-rules",
     "production:service-offline:storage-rules": "cp -f ./service-offline/storage.rules ./storage/storage.rules; npm run production:deploy:storage-rules",
     "production:service-offline": "npm run production:service-offline:rules; npm run production:service-offline:realtime-rules; npm run production:service-offline:storage-rules",
-    "production:service-online": "npm run production:deploy:rules; npm run production:deploy:realtime-rules; npm run production:deploy:storage-rules",
-    "db:export": "firestore-export -a ./service-account.json -b ./data/firestore.json",
-    "db:import": "firestore-import -a ./service-account.json -b ./data/firestore.json",
-    "db:emulator:export": "set \"FIRESTORE_EMULATOR_HOST=localhost:8282\" && npm run db:export",
-    "db:emulator:import": "set \"FIRESTORE_EMULATOR_HOST=localhost:8282\" && npm run db:import",
-    "firestore": "firebase emulators:start --only firestore --import=./data/ --export-on-exit=./data"
+    "production:service-online": "npm run production:deploy:rules; npm run production:deploy:realtime-rules; npm run production:deploy:storage-rules"
   },
   "dependencies": {
     "@google-cloud/storage": "^5.7.2",
