@@ -1,6 +1,7 @@
 /**
  * @jest-environment jsdom
  */
+/* eslint-env browser */
 
 const converter = require('../../functions/shared/converters/applicationConverter')();
 

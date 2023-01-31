@@ -97,31 +97,16 @@ const getData = (qualifyingTest, qualifyingTestResponses) => {
             response = element.testQuestions.questions[index].response;
           }
         }
-        if (response) {
+        if (response && response.selection) {
           const responseSelection = response.selection;
-          if (responseSelection) {
-            if ((responseSelection.mostAppropriate !== undefined && responseSelection.mostAppropriate !== null)
-              && (responseSelection.leastAppropriate !== undefined && responseSelection.leastAppropriate !== null))
-            {
-              row.push(
-                question.options[responseSelection.mostAppropriate].answer,
-                question.options[responseSelection.leastAppropriate].answer,
-                response.score
-              );
-            } else {
-              row.push(
-                '---',
-                '---',
-                '---'
-              );
-            }
-          } else {
-            row.push(
-              '---',
-              '---',
-              '---'
-            );
-          }
+          const mostAppropriate = responseSelection.mostAppropriate !== undefined && responseSelection.mostAppropriate !== null ? question.options[responseSelection.mostAppropriate].answer : '---';
+          const leastAppropriate = responseSelection.leastAppropriate !== undefined && responseSelection.leastAppropriate !== null ? question.options[responseSelection.leastAppropriate].answer : '---';
+          const score = response.score ? response.score : 0;
+          row.push(
+            mostAppropriate,
+            leastAppropriate,
+            score
+          );
         } else {
           row.push(
             '---',

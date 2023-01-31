@@ -1,6 +1,6 @@
 'use strict';
 
-const { app, db, firebase } = require('./shared/admin.js');
+const { app, db } = require('./shared/admin.js');
 const { getDocuments } = require('../functions/shared/helpers');
 
 async function getExerciseStats(exerciseId) {
