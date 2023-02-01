@@ -3,7 +3,7 @@ const { getDocument, applyUpdates, isDateInPast, formatDate } = require('../../s
 module.exports = (config, firebase, db, auth) => {
   const { newApplicationRecord } = require('../../shared/factories')(config);
   const { updateCandidate } = require('../candidates/search')(firebase, db);
-  const { sendApplicationConfirmation, sendCharacterCheckRequests, sendCandidateFlagConfirmation } = require('./applications')(config, firebase, db, auth);
+  const { sendApplicationConfirmation, sendApplicationInWelsh, sendCharacterCheckRequests, sendCandidateFlagConfirmation } = require('./applications')(config, firebase, db, auth);
 
   return onUpdate;
 
@@ -53,6 +53,16 @@ module.exports = (config, firebase, db, auth) => {
             applicationId,
             application: dataAfter,
           });
+        }
+
+        // application in welsh
+        if (dataAfter._language === 'cym') {
+          if (!dataBefore.emailLog || (dataBefore.emailLog && !dataBefore.emailLog.applicationInWelsh)) {
+            await sendApplicationInWelsh({
+              applicationId,
+              application: dataAfter,
+            });
+          }
         }
       }
 

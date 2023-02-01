@@ -5,6 +5,7 @@ module.exports = (CONSTANTS) => {
     newNotificationExerciseApprovalSubmit,
     newNotificationApplicationSubmit,
     newNotificationApplicationReminder,
+    newNotificationApplicationInWelsh,
     newNotificationCandidateFlagConfirmation,
     newNotificationCharacterCheckRequest,
     newNotificationAssessmentRequest,
@@ -96,6 +97,35 @@ module.exports = (CONSTANTS) => {
         id: applicationId,
       },
       createdAt: firebase.firestore.FieldValue.serverTimestamp(),
+      status: 'ready',
+    };
+  }
+
+  function newNotificationApplicationInWelsh(firebase, applicationId, application, exercise) {  
+    const templateName = 'Application Submitted in Welsh';
+    const templateId = '0acf9400-8694-4553-ab4a-23830c7626de';
+
+    return {
+      email: exercise.exerciseMailbox,
+      replyTo: exercise.exerciseMailbox,
+      template: {
+        name: templateName,
+        id: templateId,
+      },
+      personalisation: {
+        exerciseId: exercise.id,
+        exerciseName: application.exerciseName,
+        applicationId: applicationId,
+        applicantName: application.personalDetails.fullName,
+        refNumber: application.referenceNumber,
+        selectionExerciseManager: exercise.emailSignatureName,
+        exerciseMailbox: exercise.exerciseMailbox,
+      },
+      reference: {
+        collection: 'applications',
+        id: applicationId,
+      },
+      createdAt: firebase.firestore.Timestamp.fromDate(new Date()),
       status: 'ready',
     };
   }
