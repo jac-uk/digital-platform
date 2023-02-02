@@ -107,3 +107,5 @@ out/
 
 # Firestore data for emulation
 data/
+data.*
+backup.*
