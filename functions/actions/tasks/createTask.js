@@ -2,7 +2,7 @@ const { getDocument, getDocuments, applyUpdates } = require('../../shared/helper
 
 module.exports = (config, firebase, db) => {
   const { getTimelineTasks, taskNextStatus, taskApplicationsEntryStatus } = require('./taskHelpers')(config);
-  const { initialisePanelTask, initialiseTestTask, initialiseStatusChangesTask } = require('./updateTask')(config, firebase, db);
+  const { initialisePanelTask, initialiseTestTask, initialiseStatusChangesTask, initialiseDataTask } = require('./updateTask')(config, firebase, db);
 
   return createTask;
 

@@ -22,6 +22,7 @@ module.exports = (config, firebase, db) => {
     initialisePanelTask,
     initialiseTestTask,
     initialiseStatusChangesTask,
+    initialiseDataTask,
   };
 
   /**
@@ -71,7 +72,7 @@ module.exports = (config, firebase, db) => {
       result = await activateTestTask(exercise, task);
       break;
     case config.TASK_STATUS.DATA_INITIALISED:
-      result = await initialiseDataTask(exercise, task);
+      result = await initialiseDataTask(exercise, task.type);
       break;
     case config.TASK_STATUS.DATA_ACTIVATED:
       result = await activateDataTask(exercise, task);
@@ -381,37 +382,15 @@ module.exports = (config, firebase, db) => {
     };
 
     // get applications
-    let applicationsRef = db.collection('applications')
-      .where('exerciseId', '==', exercise.id)
-      .where('status', '==', 'applied');
-    if (task.applicationEntryStatus) {
-      applicationsRef = applicationsRef.where('_processing.status', '==', task.applicationEntryStatus);
-    }
-    const applications = await getDocuments(applicationsRef);
-    if (!applications) return result;
-
-    console.log('applications', applications.length);
-
-    // construct `applications` and `participants`
-    const applicationsData = [];
-    const participants = [];
-    applications.forEach(application => {
-      if (application.personalDetails) {
-        applicationsData.push({
-          id: application.id,
-          ref: application.referenceNumber,
-          email: application.personalDetails.email || '',
-          fullName: application.personalDetails.fullName || '',
-          adjustments: application.personalDetails.reasonableAdjustments || false,
-        });
-        participants.push({
-          srcId: application.id,
-          ref: application.referenceNumber,
-          email: application.personalDetails.email || '',
-          fullName: application.personalDetails.fullName || '',
-          adjustments: application.personalDetails.reasonableAdjustments || false,
-        });
-      }
+    const applications = await getApplications(exercise, task);
+    const participants = applications.map(application => {
+      return {
+        srcId: application.id,
+        ref: application.ref,
+        email: application.email,
+        fullName: application.fullName,
+        adjustments: application.adjustments,
+      };
     });
 
     // send participants to QT Platform
@@ -432,17 +411,44 @@ module.exports = (config, firebase, db) => {
    * initialiseDataTask
    * Initialises a data task. Currently does nothing!
    * @param {*} exercise
-   * @param {*} task
+   * @param {*} taskType
    * @returns Result object of the form `{ success: Boolean, data: Object }`. If successful then `data` is to be stored in the `task` document
    */
-  async function initialiseDataTask(exercise, task) {
+  async function initialiseDataTask(exercise, taskType) {
+    console.log('initialiseDataTask', taskType);
     const result = {
       success: false,
       data: {},
     };
-    // TODO check if we need to return anything here
     result.success = true;
+    result.data.grades = config.GRADES;
+    result.data.markingScheme = createMarkingScheme(exercise, taskType);
+    result.data.emptyScoreSheet = scoreSheet({ type: taskType, exercise: exercise });
     return result;
+  }
+
+  async function getApplications(exercise, task) {
+    const applicationsData = [];
+    let applicationsRef = db.collection('applications')
+      .where('exerciseId', '==', exercise.id)
+      .where('status', '==', 'applied');
+    if (task.applicationEntryStatus) {
+      applicationsRef = applicationsRef.where('_processing.status', '==', task.applicationEntryStatus);
+    }
+    const applications = await getDocuments(applicationsRef);
+    if (!applications) return applicationsData;
+    applications.forEach(application => {
+      if (application.personalDetails) {
+        applicationsData.push({
+          id: application.id,
+          ref: application.referenceNumber,
+          email: application.personalDetails.email || '',
+          fullName: application.personalDetails.fullName || '',
+          adjustments: application.personalDetails.reasonableAdjustments || false,
+        });
+      }
+    });
+    return applicationsData;
   }
 
   /**
@@ -457,9 +463,14 @@ module.exports = (config, firebase, db) => {
       success: false,
       data: {},
     };
+    // get applications
+    result.data.applications = await getApplications(exercise, task);
+
+    // TODO
+
     // populate scoreSheet
     result.data.scoreSheet = {};
-    task.applications.forEach(application => {
+    result.data.applications.forEach(application => {
       result.data.scoreSheet[application.id] = task.emptyScoreSheet;
     });
     result.success = true;

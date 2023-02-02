@@ -64,8 +64,10 @@ module.exports = (config) => {
       case config.TASK_TYPE.SIFT:
       case config.TASK_TYPE.SELECTION:
         availableStatuses = [
-          config.TASK_STATUS.PANELS_INITIALISED,
-          config.TASK_STATUS.PANELS_ACTIVATED,
+          config.TASK_STATUS.DATA_INITIALISED,
+          config.TASK_STATUS.DATA_ACTIVATED,
+          // config.TASK_STATUS.PANELS_INITIALISED,
+          // config.TASK_STATUS.PANELS_ACTIVATED,
           config.TASK_STATUS.FINALISED,
           config.TASK_STATUS.COMPLETED,
         ];
@@ -192,9 +194,11 @@ module.exports = (config) => {
   }
 
   function createMarkingScheme(exercise, taskType) {
+    console.log('createMarkingScheme', exercise, taskType);
     const markingScheme = [];
     switch (taskType) {
     case config.TASK_TYPE.SIFT:
+      console.log('sift', getExerciseCapabilities(exercise));
       markingScheme.push(createMarkingSchemeGroup(taskType, getExerciseCapabilities(exercise)));
       break;
     case config.TASK_TYPE.SELECTION:

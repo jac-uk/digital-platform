@@ -1,4 +1,3 @@
-const { getBaseTransformPreset } = require('@vue/compiler-core');
 const { getDocument, getDocuments } = require('../../shared/helpers');
 const sizeof = require('firestore-size');
 
