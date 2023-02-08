@@ -17,6 +17,7 @@ service-account.*.json
 
 # Firebase cache
 .firebase/
+firebase-export*/
 
 # Firebase config
 
@@ -106,3 +107,5 @@ out/
 
 # Firestore data for emulation
 data/
+data.*
+backup.*

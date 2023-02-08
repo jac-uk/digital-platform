@@ -10,6 +10,8 @@ module.exports = (config, firebase, db) => {
     scoreSheet,
     getEmptyScoreSheet,
     scoreSheet2MarkingScheme,
+    getApplicationPassStatus,
+    getApplicationFailStatus,
     getApplicationPassStatuses,
     getApplicationFailStatuses,
     taskApplicationsEntryStatus,
@@ -20,6 +22,7 @@ module.exports = (config, firebase, db) => {
     initialisePanelTask,
     initialiseTestTask,
     initialiseStatusChangesTask,
+    initialiseDataTask,
   };
 
   /**
@@ -68,6 +71,9 @@ module.exports = (config, firebase, db) => {
     case config.TASK_STATUS.TEST_ACTIVATED:
       result = await activateTestTask(exercise, task);
       break;
+    case config.TASK_STATUS.DATA_INITIALISED:
+      result = await initialiseDataTask(exercise, task.type);
+      break;
     case config.TASK_STATUS.DATA_ACTIVATED:
       result = await activateDataTask(exercise, task);
       break;
@@ -84,6 +90,9 @@ module.exports = (config, firebase, db) => {
         break;
       case config.TASK_STATUS.TEST_ACTIVATED:
         result = await finaliseTestTask(exercise, task);
+        break;
+      case config.TASK_STATUS.DATA_ACTIVATED:
+        result = await finaliseDataTask(exercise, task);
         break;
       }
       break;
@@ -373,37 +382,15 @@ module.exports = (config, firebase, db) => {
     };
 
     // get applications
-    let applicationsRef = db.collection('applications')
-      .where('exerciseId', '==', exercise.id)
-      .where('status', '==', 'applied');
-    if (task.applicationEntryStatus) {
-      applicationsRef = applicationsRef.where('_processing.status', '==', task.applicationEntryStatus);
-    }
-    const applications = await getDocuments(applicationsRef);
-    if (!applications) return result;
-
-    console.log('applications', applications.length);
-
-    // construct `applications` and `participants`
-    const applicationsData = [];
-    const participants = [];
-    applications.forEach(application => {
-      if (application.personalDetails) {
-        applicationsData.push({
-          id: application.id,
-          ref: application.referenceNumber,
-          email: application.personalDetails.email || '',
-          fullName: application.personalDetails.fullName || '',
-          adjustments: application.personalDetails.reasonableAdjustments || false,
-        });
-        participants.push({
-          srcId: application.id,
-          ref: application.referenceNumber,
-          email: application.personalDetails.email || '',
-          fullName: application.personalDetails.fullName || '',
-          adjustments: application.personalDetails.reasonableAdjustments || false,
-        });
-      }
+    const applications = await getApplications(exercise, task);
+    const participants = applications.map(application => {
+      return {
+        srcId: application.id,
+        ref: application.ref,
+        email: application.email,
+        fullName: application.fullName,
+        adjustments: application.adjustments,
+      };
     });
 
     // send participants to QT Platform
@@ -421,6 +408,50 @@ module.exports = (config, firebase, db) => {
   }
 
   /**
+   * initialiseDataTask
+   * Initialises a data task. Currently does nothing!
+   * @param {*} exercise
+   * @param {*} taskType
+   * @returns Result object of the form `{ success: Boolean, data: Object }`. If successful then `data` is to be stored in the `task` document
+   */
+  async function initialiseDataTask(exercise, taskType) {
+    console.log('initialiseDataTask', taskType);
+    const result = {
+      success: false,
+      data: {},
+    };
+    result.success = true;
+    result.data.grades = config.GRADES;
+    result.data.markingScheme = createMarkingScheme(exercise, taskType);
+    result.data.emptyScoreSheet = scoreSheet({ type: taskType, exercise: exercise });
+    return result;
+  }
+
+  async function getApplications(exercise, task) {
+    const applicationsData = [];
+    let applicationsRef = db.collection('applications')
+      .where('exerciseId', '==', exercise.id)
+      .where('status', '==', 'applied');
+    if (task.applicationEntryStatus) {
+      applicationsRef = applicationsRef.where('_processing.status', '==', task.applicationEntryStatus);
+    }
+    const applications = await getDocuments(applicationsRef);
+    if (!applications) return applicationsData;
+    applications.forEach(application => {
+      if (application.personalDetails) {
+        applicationsData.push({
+          id: application.id,
+          ref: application.referenceNumber,
+          email: application.personalDetails.email || '',
+          fullName: application.personalDetails.fullName || '',
+          adjustments: application.personalDetails.reasonableAdjustments || false,
+        });
+      }
+    });
+    return applicationsData;
+  }
+
+  /**
    * activateDataTask
    * Activates a data task. Currently does nothing!
    * @param {*} exercise
@@ -432,7 +463,16 @@ module.exports = (config, firebase, db) => {
       success: false,
       data: {},
     };
-    // TODO check if we need to return anything here
+    // get applications
+    result.data.applications = await getApplications(exercise, task);
+
+    // TODO
+
+    // populate scoreSheet
+    result.data.scoreSheet = {};
+    result.data.applications.forEach(application => {
+      result.data.scoreSheet[application.id] = task.emptyScoreSheet;
+    });
     result.success = true;
     return result;
   }
@@ -519,7 +559,7 @@ module.exports = (config, firebase, db) => {
    * @param {*} task
    * @returns Result object of the form `{ success: Boolean, data: Object }`. If successful then `data` is to be stored in the `task` document
    */
-   async function finaliseTestTask(exercise, task) {
+  async function finaliseTestTask(exercise, task) {
     console.log('finaliseTestTask');
     const result = {
       success: false,
@@ -553,6 +593,37 @@ module.exports = (config, firebase, db) => {
   }
 
   /**
+   * finaliseDataTask
+   * Finalise data entry task. Constructs `finalScores` to be added to `task` document
+   * @param {*} exercise
+   * @param {*} task
+   * @returns Result object of the form `{ success: Boolean, data: Object }`. If successful then `data` is to be stored in the `task` document
+   */
+  async function finaliseDataTask(exercise, task) {
+    const result = {
+      success: false,
+      data: {},
+    };
+
+    // construct final scores
+    const finalScores = [];
+    task.applications.forEach(application => {
+      const row = {
+        id: application.id,
+        ref: application.ref,
+        scoreSheet: finaliseScoreSheet(task.markingScheme, task.scoreSheet[application.id]),
+        score: getScoreSheetTotal(task.markingScheme, task.scoreSheet[application.id]),
+      };
+      finalScores.push(row);
+    });
+
+    result.success = true;
+    result.data.finalScores = finalScores;
+    // TODO remove un-necessary fields
+    return result;
+  }
+
+  /**
    * completeTask
    * Completes a task.
    * @param {*} exercise
@@ -566,10 +637,9 @@ module.exports = (config, firebase, db) => {
     };
     if (!(task.passMark >= 0)) return result;
 
-    // TODO get statuses from func
     const outcomeStats = {};
-    const passStatus = `${task.type}Passed`;
-    const failStatus = `${task.type}Failed`;
+    const passStatus = getApplicationPassStatus(exercise, task);
+    const failStatus = getApplicationFailStatus(exercise, task);
     outcomeStats[passStatus] = 0;
     outcomeStats[failStatus] = 0;
 
@@ -577,15 +647,27 @@ module.exports = (config, firebase, db) => {
     const commands = [];
     task.finalScores.forEach(scoreData => {
       let newStatus;
-      if (scoreData.score >= task.passMark) {
+      if (scoreData.score > task.passMark) {
         newStatus = passStatus;
+      } else if (scoreData.score === task.passMark) {
+        if (task.overrides && task.overrides.fail && task.overrides.fail.length && task.overrides.fail.indexOf(scoreData.id) >= 0) {
+          newStatus = failStatus;
+        } else {
+          newStatus = passStatus;
+        }
+      } else if (scoreData.score === task.passMark - 1) {
+        if (task.overrides && task.overrides.pass && task.overrides.pass.length && task.overrides.pass.indexOf(scoreData.id) >= 0) {
+          newStatus = passStatus;
+        } else {
+          newStatus = failStatus;
+        }
       } else {
         newStatus = failStatus;
       }
       outcomeStats[newStatus] += 1;
+      scoreData.pass = newStatus === passStatus ? true : false;
       const saveData = {};
       saveData.status = newStatus;
-      // TODO update stage too?
       saveData[`statusLog.${newStatus}`] = firebase.firestore.FieldValue.serverTimestamp();
       commands.push({
         command: 'update',
@@ -607,9 +689,9 @@ module.exports = (config, firebase, db) => {
           // create qualifying test task
           const finalScores = [];
           task.finalScores.forEach(scoreData => {
-            if (scoreData.score >= task.passMark) {
+            if (scoreData.pass) {
               const otherTaskScoreData = otherTask.finalScores.find(otherScoreData => otherScoreData.id === scoreData.id);
-              if (otherTaskScoreData && otherTaskScoreData.score >= otherTask.passMark) {
+              if (otherTaskScoreData && otherTaskScoreData.pass) {
                 const overallScore = 50 * ((scoreData.score / task.maxScore) + (otherTaskScoreData.score / otherTask.maxScore));
                 finalScores.push({
                   id: scoreData.id,
@@ -665,6 +747,7 @@ module.exports = (config, firebase, db) => {
     await applyUpdates(db, commands);
     result.success = true;
     result.data['_stats.totalForEachOutcome'] = outcomeStats;
+    result.data.finalScores = task.finalScores;
 
     return result;
   }
