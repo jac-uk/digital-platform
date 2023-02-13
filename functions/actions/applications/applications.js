@@ -6,7 +6,7 @@ const testApplicationsFileName = 'test_applications.json';
 module.exports = (config, firebase, db, auth) => {
   const { initialiseApplicationRecords } = require('../../actions/applicationRecords')(config, firebase, db, auth);
   const { refreshApplicationCounts } = require('../../actions/exercises/refreshApplicationCounts')(firebase, db);
-  const { newNotificationApplicationSubmit, newNotificationApplicationReminder, newNotificationCharacterCheckRequest, newNotificationCandidateFlagConfirmation } = require('../../shared/factories')(config);
+  const { newNotificationApplicationSubmit, newNotificationApplicationReminder, newNotificationCharacterCheckRequest, newNotificationCandidateFlagConfirmation, newNotificationHandoverCheckRequest } = require('../../shared/factories')(config);
   const slack = require('../../shared/slack')(config);
   const { updateCandidate } = require('../candidates/search')(firebase, db);
   return {
@@ -15,6 +15,7 @@ module.exports = (config, firebase, db, auth) => {
     sendApplicationConfirmation,
     sendApplicationReminders,
     sendCharacterCheckRequests,
+    sendHandoverCheckRequests,
     createApplication,
     createApplications,
     loadTestApplications,
@@ -239,6 +240,67 @@ module.exports = (config, firebase, db, auth) => {
           ref: application.ref,
           data: {
             'emailLog.characterCheckSubmitted': firebase.firestore.Timestamp.fromDate(new Date()),
+          },
+        });
+      }
+    }
+
+    // write to db
+    const result = await applyUpdates(db, commands);
+    return result ? applications.length : false;
+  }
+
+  /**
+  * sendHandoverCheckRequests
+  * Sends a 'request for handover check' notification for each application
+  * @param {*} `params` is an object containing
+  *   `items` (required) IDs of applications
+  */
+  async function sendHandoverCheckRequests(params) {
+    const applicationIds = params.items;
+    const type = params.type;
+    const exerciseMailbox = params.exerciseMailbox;
+    const exerciseManagerName = params.exerciseManagerName;
+    const dueDate = params.dueDate;
+    // get applications
+    const applicationRefs = applicationIds.map(id => db.collection('applications').doc(id));
+    const applications = await getAllDocuments(db, applicationRefs);
+
+    // create database commands
+    const commands = [];
+    for (let i = 0, len = applications.length; i < len; ++i) {
+      const application = applications[i];
+      // create notification
+      // TODO: wait for the email templates
+      // commands.push({
+      //   command: 'set',
+      //   ref: db.collection('notifications').doc(),
+      //   data: newNotificationHandoverCheckRequest(firebase, application, type, exerciseMailbox, exerciseManagerName, dueDate),
+      // });
+      // update application
+      if (type === 'request') {
+        commands.push({
+          command: 'update',
+          ref: application.ref,
+          data: {
+            'handoverChecks.requestedAt': firebase.firestore.Timestamp.fromDate(new Date()),
+            'handoverChecks.status': 'requested',
+          },
+        });
+      } else if (type === 'reminder') {
+        commands.push({
+          command: 'update',
+          ref: application.ref,
+          data: {
+            'handoverChecks.reminderSentAt': firebase.firestore.Timestamp.fromDate(new Date()),
+          },
+        });
+      } else if (type === 'submit') {
+        commands.push({
+          command: 'update',
+          ref: application.ref,
+          data: {
+            'emailLog.handoverCheckSubmitted': firebase.firestore.Timestamp.fromDate(new Date()),
           },
         });
       }
