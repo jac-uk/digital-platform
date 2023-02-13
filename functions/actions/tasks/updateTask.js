@@ -385,7 +385,7 @@ module.exports = (config, firebase, db) => {
     const applications = await getApplications(exercise, task);
     const participants = applications.map(application => {
       return {
-          srcId: application.id,
+        srcId: application.id,
         ref: application.ref,
         email: application.email,
         fullName: application.fullName,
