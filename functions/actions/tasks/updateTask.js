@@ -688,6 +688,7 @@ module.exports = (config, firebase, db) => {
         if (otherTask.status === config.TASK_STATUS.COMPLETED) {
           // create qualifying test task
           const finalScores = [];
+          const applications = [];
           task.finalScores.forEach(scoreData => {
             if (scoreData.pass) {
               const otherTaskScoreData = otherTask.finalScores.find(otherScoreData => otherScoreData.id === scoreData.id);
@@ -705,6 +706,10 @@ module.exports = (config, firebase, db) => {
                     },
                   },
                 });
+                const application = task.applications.find(application => application.id === scoreData.id);
+                if (application) {
+                  applications.push(application);
+                }
               }
             }
           });
@@ -713,6 +718,7 @@ module.exports = (config, firebase, db) => {
             _stats: {
               totalApplications: finalScores.length,
             },
+            applications: applications,
             finalScores: finalScores,
             markingScheme: [
               {
