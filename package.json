@@ -87,7 +87,7 @@
     "eslint-plugin-promise": "^4.2.1",
     "firebase-mock": "^2.2.10",
     "jest": "^25.2.1",
-    "mocha": "^6.2.3"
+    "mocha": "^10.2.0"
   },
   "private": true
 }
