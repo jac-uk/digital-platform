@@ -402,7 +402,7 @@ module.exports = (config, firebase, db) => {
 
     // save applications in task document
     result.success = true;
-    result.data.applications = applicationsData;
+    result.data.applications = applications;
     return result;
 
   }
