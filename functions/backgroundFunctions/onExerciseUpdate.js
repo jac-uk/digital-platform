@@ -1,19 +1,14 @@
 const functions = require('firebase-functions');
 const config = require('../shared/config');
-const { db } = require('../shared/admin.js');
-const { deleteVacancy, updateVacancy } = require('../actions/vacancies')(config, db);
+const { firebase, db, auth } = require('../shared/admin');
+const onUpdate = require('../actions/exercises/onUpdate')(config, firebase, db, auth);
 
 module.exports = functions.region('europe-west2').firestore
   .document('exercises/{exerciseId}')
   .onUpdate(async (change, context) => {
     const after = change.after.data();
     const before = change.before.data();
-    if (after.published === true) {
-      return updateVacancy(context.params.exerciseId, after);
-    } else if (after.published === false) {
-      if (before.published === true) {
-        return deleteVacancy(context.params.exerciseId);
-      }
-    }
+    const exerciseId = context.params.exerciseId;
+    onUpdate(exerciseId, before, after);
     return true;
   });

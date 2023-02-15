@@ -24,8 +24,10 @@ jobs:
           token: ${{ secrets.DEPLOY_TOKEN }}
       - uses: actions/setup-node@master
         with:
-          node-version: '10'
+          node-version: '16.15.1'
       - run: npm ci
+      - name: Run lint
+        run: npm run lint
       - name: Test functions
         run: echo "Under construction"
         # run: npm run test:functions

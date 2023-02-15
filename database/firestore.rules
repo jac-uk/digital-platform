@@ -54,7 +54,7 @@ service cloud.firestore {
       allow read: if userIsAuthenticated() && userIsJAC() && hasPermission('e1');
       allow create: if userIsAuthenticated() && userIsJAC() && hasPermission('e2') && verifyFields(['referenceNumber', 'progress', 'state', 'createdBy'], []);
       allow update: if userIsAuthenticated() && userIsJAC() && hasPermission('e3') && verifyFields(['referenceNumber', 'progress', 'state', 'createdBy'], []);
-      allow delete: if userIsAuthenticated() && userIsJAC() && hasPermission('e4');
+      allow delete: if userIsAuthenticated() && userIsJAC() && hasPermission('e4') && resource.data.state == "draft";
 
       match /data/{dataId} {
         allow read: if userIsAuthenticated() && userIsJAC();
@@ -78,6 +78,13 @@ service cloud.firestore {
       allow create: if userIsAuthenticated() && userIsJAC() && hasPermission('nt2') && verifyFields(['body', 'createdBy'], []);
       allow update: if userIsAuthenticated() && userIsJAC() && hasPermission('nt3') && verifyFields(['body', 'createdBy'], []);
       allow delete: if userIsAuthenticated() && userIsJAC() && hasPermission('nt4');
+    }
+
+    match /messages/{messageId} {
+      allow read: if userIsAuthenticated() && userIsJAC() && hasPermission('msg1');
+      allow create: if userIsAuthenticated() && userIsJAC() && hasPermission('msg2');
+      allow update: if userIsAuthenticated() && userIsJAC() && hasPermission('msg3');
+      allow delete: if userIsAuthenticated() && userIsJAC() && hasPermission('msg4');
     }
 
     match /panels/{panelId} {
@@ -169,6 +176,10 @@ service cloud.firestore {
         request.resource.data.status == "draft" &&
         exerciseIsOpen(request.resource.data.exerciseId) &&
         verifyFields(['userId', 'exerciseId', 'status'], []);
+
+      // Allow admins to create late applications
+      allow create: if userIsAuthenticated() && userIsJAC() &&
+        request.resource.data.status == "draft";
 
       // Allow updates on records which belong, and will continue to belong, to the current user
       // But only if the application is in 'draft' state and exercise is open, and there are valid fields

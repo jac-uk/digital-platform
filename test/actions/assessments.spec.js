@@ -3,13 +3,13 @@
 const mockDb = jest.fn();
 const mockSlack = jest.fn();
 
-const createTimestamp = (year, month, day) => {
-  return {
-    toDate: () => {
-      return new Date(year, month, day);
-    },
-  };
-};
+// const createTimestamp = (year, month, day) => {
+//   return {
+//     toDate: () => {
+//       return new Date(year, month, day);
+//     },
+//   };
+// };
 
 // const mockExercise = (id) => {
 //   return {
@@ -50,7 +50,7 @@ const assessments = require('../../functions/actions/assessments.js')(mockDb, mo
 
 describe('initialiseAssessments()', () => {
 
-  xit('returns true when no issues', async () => {
+  it.skip('returns true when no issues', async () => {
     const result = assessments.initialiseAssessments('assessment1');
     expect(result).toBe(true);
   });

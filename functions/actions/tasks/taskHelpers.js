@@ -17,6 +17,8 @@ module.exports = (config) => {
     getScoreSheetTotal,
     getEmptyScoreSheet,
     scoreSheet2MarkingScheme,
+    getApplicationPassStatus,
+    getApplicationFailStatus,
     getApplicationPassStatuses,
     getApplicationFailStatuses,
   };
@@ -43,8 +45,9 @@ module.exports = (config) => {
         availableStatuses = [
           config.TASK_STATUS.TEST_INITIALISED,
           config.TASK_STATUS.TEST_ACTIVATED,
-          config.TASK_STATUS.PANELS_INITIALISED,
-          config.TASK_STATUS.PANELS_ACTIVATED,
+          // config.TASK_STATUS.PANELS_INITIALISED,
+          // config.TASK_STATUS.PANELS_ACTIVATED,
+          config.TASK_STATUS.DATA_ACTIVATED,
           config.TASK_STATUS.FINALISED,
           config.TASK_STATUS.COMPLETED,
         ];
@@ -61,8 +64,10 @@ module.exports = (config) => {
       case config.TASK_TYPE.SIFT:
       case config.TASK_TYPE.SELECTION:
         availableStatuses = [
-          config.TASK_STATUS.PANELS_INITIALISED,
-          config.TASK_STATUS.PANELS_ACTIVATED,
+          config.TASK_STATUS.DATA_INITIALISED,
+          config.TASK_STATUS.DATA_ACTIVATED,
+          // config.TASK_STATUS.PANELS_INITIALISED,
+          // config.TASK_STATUS.PANELS_ACTIVATED,
           config.TASK_STATUS.FINALISED,
           config.TASK_STATUS.COMPLETED,
         ];
@@ -93,6 +98,14 @@ module.exports = (config) => {
       }
     }
     return nextStatus;
+  }
+
+  function getApplicationPassStatus(exercise, task) {
+    return `${task.type}Passed`;
+  }
+
+  function getApplicationFailStatus(exercise, task) {
+    return `${task.type}Failed`;
   }
 
   function getApplicationPassStatuses(taskType) {
@@ -181,9 +194,11 @@ module.exports = (config) => {
   }
 
   function createMarkingScheme(exercise, taskType) {
+    console.log('createMarkingScheme', exercise, taskType);
     const markingScheme = [];
     switch (taskType) {
     case config.TASK_TYPE.SIFT:
+      console.log('sift', getExerciseCapabilities(exercise));
       markingScheme.push(createMarkingSchemeGroup(taskType, getExerciseCapabilities(exercise)));
       break;
     case config.TASK_TYPE.SELECTION:
@@ -301,7 +316,7 @@ module.exports = (config) => {
         break;
       case config.MARKING_TYPE.NUMBER:
         if (scoreSheet[item.ref]) {
-          return scoreSheet[item.ref];
+          return parseFloat(scoreSheet[item.ref]);
         }
         break;
       }

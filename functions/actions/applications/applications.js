@@ -6,19 +6,22 @@ const testApplicationsFileName = 'test_applications.json';
 module.exports = (config, firebase, db, auth) => {
   const { initialiseApplicationRecords } = require('../../actions/applicationRecords')(config, firebase, db, auth);
   const { refreshApplicationCounts } = require('../../actions/exercises/refreshApplicationCounts')(firebase, db);
-  const { newNotificationApplicationSubmit, newNotificationCharacterCheckRequest } = require('../../shared/factories')(config);
+  const { newNotificationApplicationSubmit, newNotificationApplicationReminder, newNotificationApplicationInWelsh, newNotificationCharacterCheckRequest, newNotificationCandidateFlagConfirmation } = require('../../shared/factories')(config);
   const slack = require('../../shared/slack')(config);
   const { updateCandidate } = require('../candidates/search')(firebase, db);
   return {
     updateApplication,
     onApplicationCreate,
     sendApplicationConfirmation,
+    sendApplicationReminders,
+    sendApplicationInWelsh,
     sendCharacterCheckRequests,
     createApplication,
     createApplications,
     loadTestApplications,
     createTestApplications,
     deleteApplications,
+    sendCandidateFlagConfirmation,
   };
 
   /**
@@ -75,6 +78,14 @@ module.exports = (config, firebase, db, auth) => {
     console.log('application created');
     // slack.post(`${data.exerciseRef}. New application started`);
     if (data.userId) { await updateCandidate(data.userId); }
+
+    // update application
+    if (data.personalDetails && data.personalDetails.fullName) {
+      await ref.update({
+        '_sort.fullNameUC': data.personalDetails.fullName.toUpperCase(),
+      });
+    }
+
     // update counts
     console.log(`Update application counts: _applications.${data.status}`);
     const saveData = {};
@@ -116,6 +127,100 @@ module.exports = (config, firebase, db, auth) => {
       ref: applicationRef,
       data: {
         'emailLog.applicationSubmitted': firebase.firestore.Timestamp.fromDate(new Date()),
+      },
+    });
+
+    // write to db
+    const result = await applyUpdates(db, commands);
+    return result ? true : false;
+  }
+
+  /**
+  * sendApplicationReminders
+  * Sends 'application submission reminder' notification for each draft application (only send once)
+  * @param {*} `params` is an object containing
+  *   `exerciseId`  (required) ID of exercise
+  */
+   async function sendApplicationReminders(params) {
+    if (!params.exerciseId) return false;
+
+    // get exercise
+    const exerciseId = params.exerciseId;
+    const exercise = await getDocument(db.doc(`exercises/${exerciseId}`));
+    if (!exercise) return false;
+
+    // get draft applications
+    const applicationsRef = db.collection('applications')
+      .where('exerciseId', '==', exerciseId)
+      .where('status', '==', 'draft');
+    let applications = await getDocuments(applicationsRef);
+    // send reminder email if it has not been sent before
+    applications = applications.filter(application => {
+      if (application.emailLog && application.emailLog.applicationReminder) return false;
+
+      return application.personalDetails && application.personalDetails.fullName && application.personalDetails.email;
+    });
+
+    // create database commands
+    const commands = [];
+    for (let i = 0, len = applications.length; i < len; ++i) {
+      const application = applications[i];
+      // create notification
+      commands.push({
+        command: 'set',
+        ref: db.collection('notifications').doc(),
+        data: newNotificationApplicationReminder(firebase, application.id, application, exercise),
+      });
+
+      // update application
+      commands.push({
+        command: 'update',
+        ref: application.ref,
+        data: {
+          'emailLog.applicationReminder': firebase.firestore.FieldValue.serverTimestamp(),
+        },
+      });
+    }
+
+    // write to db
+    if (commands.length) {
+        const result = await applyUpdates(db, commands);
+        return result ? applications.length : false;
+    }
+    return 0;
+  }
+
+  /**
+  * sendApplicationInWelsh
+  * Sends an alert to the exercise mailbox if the application is in Welsh
+  * @param {*} `params` is an object containing
+  *   `applicationId`  (required) ID of application
+  *   `application`    (required) application
+  */
+  async function sendApplicationInWelsh(params) {
+    const applicationId = params.applicationId;
+    const application = params.application;
+    const applicationRef = db.collection('applications').doc(applicationId);
+
+    // get exercise
+    const exerciseId = application.exerciseId;
+    const exercise = await getDocument(db.doc(`exercises/${exerciseId}`));
+    if (!exercise) return false;
+
+    // create database commands
+    const commands = [];
+    // create notification
+    commands.push({
+      command: 'set',
+      ref: db.collection('notifications').doc(),
+      data: newNotificationApplicationInWelsh(firebase, applicationId, application, exercise),
+    });
+    // update application
+    commands.push({
+      command: 'update',
+      ref: applicationRef,
+      data: {
+        'emailLog.applicationInWelsh': firebase.firestore.Timestamp.fromDate(new Date()),
       },
     });
 
@@ -305,4 +410,55 @@ module.exports = (config, firebase, db, auth) => {
     };
   }
 
+  /**
+  * sendCandidateFlagConfirmation
+  * Sends a 'candidate flagged confirmation' notification for each application
+  * @param {*} `params` is an object containing
+  *   `applicationId`  (required) ID of application
+  *   `application`    (required) application
+  */
+   async function sendCandidateFlagConfirmation(params) {
+    const applicationId = params.applicationId;
+    const application = params.application;
+    const applicationRef = db.collection('applications').doc(applicationId);
+
+    // get exercise
+    const exerciseId = application.exerciseId;
+    const exercise = await getDocument(db.doc(`exercises/${exerciseId}`));
+    if (!exercise) return false;
+
+    // Get email recipients from firestore config
+    const settingsServices = await getDocument(db.collection('settings').doc('services'));
+    const emails = settingsServices.emails.CandidateFlagging;
+    
+    if (emails === undefined) {
+      console.error('Error retrieving emails for candidate flagging alerts');
+      return false;
+    }
+
+    // create database commands
+    const commands = [];
+
+    for (const email of emails) {
+      // create notification
+      commands.push({
+        command: 'set',
+        ref: db.collection('notifications').doc(),
+        data: newNotificationCandidateFlagConfirmation(firebase, applicationId, application, exercise, email),
+      });
+    }
+
+    // update application
+    commands.push({
+      command: 'update',
+      ref: applicationRef,
+      data: {
+        'emailLog.flaggedCandidate': firebase.firestore.Timestamp.fromDate(new Date()),
+      },
+    });
+
+    // write to db
+    const result = await applyUpdates(db, commands);
+    return result ? true : false;
+  }
 };

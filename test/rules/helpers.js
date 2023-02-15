@@ -4,6 +4,7 @@ const admin = require('firebase-admin');
 
 const projectId = `rules-spec-${Date.now()}`;
 
+// Returns database instance used in your tests
 module.exports.setup = async (auth, data) => {
 
   const rules = fs.readFileSync('database/firestore.rules', 'utf8');
@@ -38,6 +39,7 @@ module.exports.teardown = async () => {
   await Promise.all(firebase.apps().map(app => app.delete()));
 };
 
+// Add data bypassing security rules
 module.exports.setupAdmin = async (db, data) => {
   const app = await firebase.initializeAdminApp({
     projectId: db.app.options.projectId,
@@ -68,5 +70,12 @@ module.exports.getValidExerciseData = () => {
     progress: {started: true},
     state: 'draft',
     createdBy: 'user1',
+  };
+};
+
+module.exports.getValidMessageData = () => {
+  return {
+    referenceNumber: '000' + getRandomInt(100, 1000),
+    status: 'created',
   };
 };

@@ -3,7 +3,7 @@ const { getDocument, applyUpdates, isDateInPast, formatDate } = require('../../s
 module.exports = (config, firebase, db, auth) => {
   const { newApplicationRecord } = require('../../shared/factories')(config);
   const { updateCandidate } = require('../candidates/search')(firebase, db);
-  const { sendApplicationConfirmation, sendCharacterCheckRequests } = require('./applications')(config, firebase, db, auth);
+  const { sendApplicationConfirmation, sendApplicationInWelsh, sendCharacterCheckRequests, sendCandidateFlagConfirmation } = require('./applications')(config, firebase, db, auth);
 
   return onUpdate;
 
@@ -37,12 +37,32 @@ module.exports = (config, firebase, db, auth) => {
 
       // applied 
       if (dataBefore.status === 'draft' && dataAfter.status === 'applied') {
+        const candidate = await getDocument(db.doc(`candidates/${dataAfter.userId}`));
+
+        // send confirmation email if it has not been sent before
+        if (candidate && candidate.isFlaggedCandidate && dataBefore.emailLog && !dataBefore.emailLog.flaggedCandidate) {
+          await sendCandidateFlagConfirmation({
+            applicationId,
+            application: dataAfter,
+          });
+        }
+
         // send confirmation email if it has not been sent before
         if (!dataBefore.emailLog || (dataBefore.emailLog && !dataBefore.emailLog.applicationSubmitted)) {
           await sendApplicationConfirmation({
             applicationId,
             application: dataAfter,
           });
+        }
+
+        // application in welsh
+        if (dataAfter._language === 'cym') {
+          if (!dataBefore.emailLog || (dataBefore.emailLog && !dataBefore.emailLog.applicationInWelsh)) {
+            await sendApplicationInWelsh({
+              applicationId,
+              application: dataAfter,
+            });
+          }
         }
       }
 
@@ -94,6 +114,16 @@ module.exports = (config, firebase, db, auth) => {
         }
       }
     }
+
+    if (dataAfter.personalDetails && dataAfter.personalDetails.fullName &&
+      (!dataBefore._sort || dataBefore._sort.fullNameUC !== dataAfter.personalDetails.fullName.toUpperCase())
+    ) {
+      // update _sort.fullNameUC if fullName has changed
+      await db.doc(`applications/${applicationId}`).update({
+        '_sort.fullNameUC': dataAfter.personalDetails.fullName.toUpperCase(),
+      });
+    }
+
     return true;
   }
 };

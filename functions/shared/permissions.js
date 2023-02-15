@@ -69,6 +69,10 @@ const PERMISSIONS = {
         label: 'Can delete candidate character information',
         value: 'e9',
       },
+      canSendApplicationReminders: {
+        label: 'Can send application reminders',
+        value: 'e10',
+      },
     },
   },
   candidates: {
@@ -89,6 +93,10 @@ const PERMISSIONS = {
       canDeleteCandidates: {
         label: 'Can delete candidates',
         value: 'c4',
+      },
+      canFlagCandidates: {
+        label: 'Can flag candidates',
+        value: 'c5',
       },
     },
   },
@@ -215,6 +223,14 @@ const PERMISSIONS = {
       canDeleteApplications: {
         label: 'Can delete applications',
         value: 'a4',
+      },
+      canRequestLateApplications: {
+        label: 'Can request late applications',
+        value: 'a5',
+      },
+      canApproveLateApplications: {
+        label: 'Can approve late applications',
+        value: 'a6',
       },
     },
   },
@@ -362,6 +378,27 @@ const PERMISSIONS = {
       canDeleteInvitations: {
         label: 'Can delete invitations',
         value: 'i4',
+      },
+    },
+  },
+  messages: {
+    label: 'Messages',
+    permissions: {
+      canReadMessages: {
+        label: 'Can read messages',
+        value: 'msg1',
+      },
+      canCreateMessages: {
+        label: 'Can create messages',
+        value: 'msg2',
+      },
+      canUpdateMessages: {
+        label: 'Can update messages',
+        value: 'msg3',
+      },
+      canDeleteMessages: {
+        label: 'Can delete messages',
+        value: 'msg4',
       },
     },
   },

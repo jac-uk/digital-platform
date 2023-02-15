@@ -1,6 +1,5 @@
-const { getBaseTransformPreset } = require('@vue/compiler-core');
 const { getDocument, getDocuments } = require('../../shared/helpers');
-const sizeof = require('firestore-size');
+// const sizeof = require('firestore-size');
 
 module.exports = (firebase, db) => {
   return {
@@ -30,11 +29,11 @@ module.exports = (firebase, db) => {
       };
     });
 
-    const bytes = sizeof(data);
-    console.log('doc bytes', bytes);
+    // const bytes = sizeof(data);
+    // console.log('doc bytes', bytes);
 
     await db.collection('exercises').doc(exerciseId).collection('data').doc('diversity').set(data);
-    return bytes;
+    return data;
   }
 };
 

@@ -68,7 +68,7 @@ describe('htmlWriter', () => {
         lineBreak: false,
       },
     ]);
-    expect(writer.html).toBe('<table><tr class=\"sectionStart\"><th>table label</th><td>table value</td></tr><tr><th>table label 2</th><td>table value 2</td></tr></table>');
+    expect(writer.html).toBe('<table><tr class="sectionStart"><th>table label</th><td>table value</td></tr><tr><th>table label 2</th><td>table value 2</td></tr></table>');
   });
 
   it('addParagraph() ...', async () => {

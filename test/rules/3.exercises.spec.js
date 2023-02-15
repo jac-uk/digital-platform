@@ -203,9 +203,21 @@ describe('Exercises', () => {
       const db = await setup({ uid: 'user1', email: 'user@judicialappointments.digital', email_verified: true, rp: [PERMISSIONS.exercises.permissions.canDeleteExercises.value] });
       await assertSucceeds(db.collection('exercises').doc('ex1').delete());
     });
+    
+    it('prevent ready exercise from being deleted', async () => {
+      const db = await setup(
+        { uid: 'user1', email: 'user@judicialappointments.gov.uk', email_verified: true, rp: [PERMISSIONS.exercises.permissions.canDeleteExercises.value] },
+        { 'exercises/ex1': { state: 'ready' } }
+      );
+      await assertFails(db.collection('exercises').doc('ex1').delete());
+    });
 
-    it('prevent authenticated user with verified @judicialappointments.gov.uk email and permission to delete an exercise', async () => {
-      const db = await setup({ uid: 'user1', email: 'user@judicialappointments.gov.uk', email_verified: true, rp: [PERMISSIONS.exercises.permissions.canDeleteExercises.value] });
+    // @TODO: Add the data below to the failing tests above!
+    it('allow draft exercise to be deleted', async () => {
+      const db = await setup(
+        { uid: 'user1', email: 'user@judicialappointments.gov.uk', email_verified: true, rp: [PERMISSIONS.exercises.permissions.canDeleteExercises.value] },
+        { 'exercises/ex1': { state: 'draft' } }
+      );
       await assertSucceeds(db.collection('exercises').doc('ex1').delete());
     });
   });

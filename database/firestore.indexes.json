@@ -889,24 +889,6 @@
           "order": "ASCENDING"
         },
         {
-          "fieldPath": "panelId",
-          "order": "ASCENDING"
-        },
-        {
-          "fieldPath": "candidate.fullName",
-          "order": "ASCENDING"
-        }
-      ]
-    },
-    {
-      "collectionGroup": "applicationRecords",
-      "queryScope": "COLLECTION",
-      "fields": [
-        {
-          "fieldPath": "exercise.id",
-          "order": "ASCENDING"
-        },
-        {
           "fieldPath": "panelIds.scenario",
           "order": "ASCENDING"
         },
@@ -929,43 +911,7 @@
           "order": "ASCENDING"
         },
         {
-          "fieldPath": "candidate.fullName",
-          "order": "ASCENDING"
-        }
-      ]
-    },
-    {
-      "collectionGroup": "applicationRecords",
-      "queryScope": "COLLECTION",
-      "fields": [
-        {
-          "fieldPath": "exercise.id",
-          "order": "ASCENDING"
-        },
-        {
-          "fieldPath": "panelIds.selection",
-          "order": "ASCENDING"
-        },
-        {
           "fieldPath": "fullName",
-          "order": "ASCENDING"
-        }
-      ]
-    },
-    {
-      "collectionGroup": "applicationRecords",
-      "queryScope": "COLLECTION",
-      "fields": [
-        {
-          "fieldPath": "exercise.id",
-          "order": "ASCENDING"
-        },
-        {
-          "fieldPath": "stage",
-          "order": "ASCENDING"
-        },
-        {
-          "fieldPath": "status",
           "order": "ASCENDING"
         }
       ]
@@ -1183,6 +1129,42 @@
           "order": "ASCENDING"
         },
         {
+          "fieldPath": "_sort.fullNameUC",
+          "order": "ASCENDING"
+        }
+      ]
+    },
+    {
+      "collectionGroup": "applications",
+      "queryScope": "COLLECTION",
+      "fields": [
+        {
+          "fieldPath": "exerciseId",
+          "order": "ASCENDING"
+        },
+        {
+          "fieldPath": "status",
+          "order": "ASCENDING"
+        },
+        {
+          "fieldPath": "_sort.fullNameUC",
+          "order": "DESCENDING"
+        }
+      ]
+    },
+    {
+      "collectionGroup": "applications",
+      "queryScope": "COLLECTION",
+      "fields": [
+        {
+          "fieldPath": "exerciseId",
+          "order": "ASCENDING"
+        },
+        {
+          "fieldPath": "status",
+          "order": "ASCENDING"
+        },
+        {
           "fieldPath": "candidate.fullName",
           "order": "ASCENDING"
         }
@@ -1257,6 +1239,50 @@
         {
           "fieldPath": "referenceNumber",
           "order": "DESCENDING"
+        }
+      ]
+    },
+    {
+      "collectionGroup": "applications",
+      "queryScope": "COLLECTION",
+      "fields": [
+        {
+          "fieldPath": "exerciseId",
+          "order": "ASCENDING"
+        },
+        {
+          "fieldPath": "status",
+          "order": "ASCENDING"
+        },
+        {
+          "fieldPath": "userId",
+          "order": "ASCENDING"
+        },
+        {
+          "fieldPath": "_sort.fullNameUC",
+          "order": "ASCENDING"
+        }
+      ]
+    },
+    {
+      "collectionGroup": "applications",
+      "queryScope": "COLLECTION",
+      "fields": [
+        {
+          "fieldPath": "exerciseId",
+          "order": "ASCENDING"
+        },
+        {
+          "fieldPath": "status",
+          "order": "ASCENDING"
+        },
+        {
+          "fieldPath": "userId",
+          "order": "ASCENDING"
+        },
+        {
+          "fieldPath": "personalDetails.fullName",
+          "order": "ASCENDING"
         }
       ]
     },
@@ -1537,6 +1563,76 @@
       ]
     },
     {
+      "collectionGroup": "candidates",
+      "queryScope": "COLLECTION",
+      "fields": [
+        {
+          "fieldPath": "isFlaggedCandidate",
+          "order": "ASCENDING"
+        },
+        {
+          "fieldPath": "created",
+          "order": "DESCENDING"
+        }
+      ]
+    },
+    {
+      "collectionGroup": "candidates",
+      "queryScope": "COLLECTION",
+      "fields": [
+        {
+          "fieldPath": "isHandledSensitively",
+          "order": "ASCENDING"
+        },
+        {
+          "fieldPath": "computed.totalApplications",
+          "order": "DESCENDING"
+        }
+      ]
+    },
+    {
+      "collectionGroup": "candidates",
+      "queryScope": "COLLECTION",
+      "fields": [
+        {
+          "fieldPath": "isHandledSensitively",
+          "order": "ASCENDING"
+        },
+        {
+          "fieldPath": "created",
+          "order": "ASCENDING"
+        }
+      ]
+    },
+    {
+      "collectionGroup": "candidates",
+      "queryScope": "COLLECTION",
+      "fields": [
+        {
+          "fieldPath": "isHandledSensitively",
+          "order": "ASCENDING"
+        },
+        {
+          "fieldPath": "created",
+          "order": "DESCENDING"
+        }
+      ]
+    },
+    {
+      "collectionGroup": "candidates",
+      "queryScope": "COLLECTION",
+      "fields": [
+        {
+          "fieldPath": "isHandledSensitively",
+          "order": "ASCENDING"
+        },
+        {
+          "fieldPath": "fullName",
+          "order": "ASCENDING"
+        }
+      ]
+    },
+    {
       "collectionGroup": "exercises",
       "queryScope": "COLLECTION",
       "fields": [
@@ -1773,6 +1869,20 @@
       "queryScope": "COLLECTION",
       "fields": [
         {
+          "fieldPath": "name",
+          "order": "ASCENDING"
+        },
+        {
+          "fieldPath": "state",
+          "order": "ASCENDING"
+        }
+      ]
+    },
+    {
+      "collectionGroup": "exercises",
+      "queryScope": "COLLECTION",
+      "fields": [
+        {
           "fieldPath": "state",
           "order": "ASCENDING"
         },
@@ -1918,6 +2028,24 @@
         },
         {
           "fieldPath": "referenceNumber",
+          "order": "ASCENDING"
+        }
+      ]
+    },
+    {
+      "collectionGroup": "messages",
+      "queryScope": "COLLECTION",
+      "fields": [
+        {
+          "fieldPath": "to",
+          "arrayConfig": "CONTAINS"
+        },
+        {
+          "fieldPath": "status",
+          "order": "ASCENDING"
+        },
+        {
+          "fieldPath": "createdAt",
           "order": "ASCENDING"
         }
       ]
@@ -2527,8 +2655,15 @@
   ],
   "fieldOverrides": [
     {
+      "collectionGroup": "data",
+      "fieldPath": "applicationsMap",
+      "ttl": false,
+      "indexes": []
+    },
+    {
       "collectionGroup": "documents",
       "fieldPath": "fullName",
+      "ttl": false,
       "indexes": [
         {
           "order": "ASCENDING",
@@ -2554,4 +2689,3 @@
     }
   ]
 }
-

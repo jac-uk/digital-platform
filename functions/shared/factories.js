@@ -1,7 +1,12 @@
+const { formatDate } = require('./helpers');
 
 module.exports = (CONSTANTS) => {
   return {
+    newNotificationExerciseApprovalSubmit,
     newNotificationApplicationSubmit,
+    newNotificationApplicationReminder,
+    newNotificationApplicationInWelsh,
+    newNotificationCandidateFlagConfirmation,
     newNotificationCharacterCheckRequest,
     newNotificationAssessmentRequest,
     newNotificationAssessmentReminder,
@@ -9,7 +14,35 @@ module.exports = (CONSTANTS) => {
     newAssessment,
     newApplicationRecord,
     newVacancy,
+    newNotificationLateApplicationRequest,
+    newNotificationLateApplicationResponse,
   };
+
+  function newNotificationExerciseApprovalSubmit(firebase, exerciseId, exercise) {
+    const templateName = 'Exercise ready for approval';
+    const templateId = '7ef31d79-d247-4a5e-af0d-d94941fb1151';
+    return {
+      email: exercise.seniorSelectionExerciseManager,
+      replyTo: exercise.exerciseMailbox,
+      template: {
+        name: templateName,
+        id: templateId,
+      },
+      personalisation: {
+        exerciseId: exerciseId,
+        exerciseName: exercise.name,
+        refNumber: exercise.referenceNumber,
+        selectionExerciseManager: exercise.emailSignatureName,
+        exerciseMailbox: exercise.exerciseMailbox,
+      },
+      reference: {
+        collection: 'exercises',
+        id: exerciseId,
+      },
+      createdAt: firebase.firestore.Timestamp.fromDate(new Date()),
+      status: 'ready',
+    };
+  }
 
   function newNotificationApplicationSubmit(firebase, applicationId, application, exercise) {
     const templateName = 'Application Submitted';
@@ -39,6 +72,92 @@ module.exports = (CONSTANTS) => {
     };
   }
 
+  function newNotificationApplicationReminder(firebase, applicationId, application, exercise) {
+    const templateName = 'Application Submission Reminder';
+    const templateId = '32adeb86-20e2-4578-83df-6f37dcf19978';
+
+    return {
+      email: application.personalDetails.email,
+      replyTo: exercise.exerciseMailbox,
+      template: {
+        name: templateName,
+        id: templateId,
+      },
+      personalisation: {
+        exerciseId: exercise.id,
+        exerciseName: application.exerciseName,
+        applicantName: application.personalDetails.fullName,
+        exerciseCloseDate: formatDate(exercise.applicationCloseDate.toDate(), 'date-hour-minute'),
+        refNumber: application.referenceNumber || null,
+        selectionExerciseManager: exercise.emailSignatureName,
+        exerciseMailbox: exercise.exerciseMailbox,
+      },
+      reference: {
+        collection: 'applications',
+        id: applicationId,
+      },
+      createdAt: firebase.firestore.FieldValue.serverTimestamp(),
+      status: 'ready',
+    };
+  }
+
+  function newNotificationApplicationInWelsh(firebase, applicationId, application, exercise) {  
+    const templateName = 'Application Submitted in Welsh';
+    const templateId = '0acf9400-8694-4553-ab4a-23830c7626de';
+
+    return {
+      email: exercise.exerciseMailbox,
+      replyTo: exercise.exerciseMailbox,
+      template: {
+        name: templateName,
+        id: templateId,
+      },
+      personalisation: {
+        exerciseId: exercise.id,
+        exerciseName: application.exerciseName,
+        applicationId: applicationId,
+        applicantName: application.personalDetails.fullName,
+        refNumber: application.referenceNumber,
+        selectionExerciseManager: exercise.emailSignatureName,
+        exerciseMailbox: exercise.exerciseMailbox,
+      },
+      reference: {
+        collection: 'applications',
+        id: applicationId,
+      },
+      createdAt: firebase.firestore.Timestamp.fromDate(new Date()),
+      status: 'ready',
+    };
+  }
+
+  function newNotificationCandidateFlagConfirmation(firebase, applicationId, application, exercise, toEmail) {  
+    const templateName = 'Application from flagged candidate';
+    const templateId = '618f780e-7a6e-4fd5-b530-548d587cae0b';
+
+    return {
+      email: toEmail,
+      replyTo: exercise.exerciseMailbox,
+      template: {
+        name: templateName,
+        id: templateId,
+      },
+      personalisation: {
+        exerciseId: exercise.id,
+        exerciseName: application.exerciseName,
+        applicantName: application.personalDetails.fullName,
+        refNumber: application.referenceNumber,
+        selectionExerciseManager: exercise.emailSignatureName,
+        exerciseMailbox: exercise.exerciseMailbox,
+      },
+      reference: {
+        collection: 'applications',
+        id: applicationId,
+      },
+      createdAt: firebase.firestore.Timestamp.fromDate(new Date()),
+      status: 'ready',
+    };
+  }
+
   function newNotificationCharacterCheckRequest(firebase, application, type, exerciseMailbox, exerciseManagerName, dueDate) {
     let templateId = '';
     let templateName = '';
@@ -46,7 +165,7 @@ module.exports = (CONSTANTS) => {
       templateId = '5a4e7cbb-ab66-49a4-a8ad-7cbb399a8aa9';
       templateName = 'Character check consent form request';
     } else if (type === 'submit') {
-      templateId = '39b1326a-ee82-4fad-a6a6-79fc156974f1';
+      templateId = 'a434c479-2002-492f-94b5-d9c1f1a7c85c';
       templateName = 'Character check consent form submit';
     } else {
       templateId = '163487cb-f4c6-4b7a-95bf-37fd958a14de';
@@ -197,7 +316,7 @@ module.exports = (CONSTANTS) => {
       createdAt: firebase.firestore.Timestamp.fromDate(new Date()),
       status: 'ready',
     };
-  }  
+  }
 
   function newAssessment(exercise, application, whichAssessor) {
     let assessment = {
@@ -469,5 +588,73 @@ module.exports = (CONSTANTS) => {
       }
     }
     return vacancy;
+  }
+
+  function newNotificationLateApplicationRequest(firebase, messageId, message, toEmail) {  
+    const templateName = 'Late application request';
+    const templateId = 'da36cb2a-5774-4e97-82e6-82664c43d87c';
+    const msgType = message.type;
+    const replyTo = message.from.email;
+    return {
+      email: toEmail,
+      replyTo: replyTo,
+      template: {
+        name: templateName,
+        id: templateId,
+      },
+      personalisation: {
+        exerciseId: message[msgType].exerciseId,
+        exerciseName: message[msgType].exerciseName,
+        exerciseRef: message[msgType].exerciseRef,
+        reason: message[msgType].reason,
+        candidateId: message[msgType].candidateId,
+        candidateName: message[msgType].candidateName,
+        candidateEmail: message[msgType].candidateEmail,
+        url: message[msgType].url,
+      },
+      reference: {
+        collection: 'messages',
+        id: messageId,
+      },
+      createdAt: firebase.firestore.Timestamp.fromDate(new Date()),
+      status: 'ready',
+    };
+  }
+
+  function newNotificationLateApplicationResponse(firebase, messageId, message, toEmail) {  
+    const templateName = 'Late application response';
+    const templateId = 'e9087c43-de88-4dcd-a868-2299efcbc7a2';
+    const msgType = message.type;
+    const replyTo = message.from.email;
+    const rejectionReason = Object.prototype.hasOwnProperty.call(message[msgType], 'rejectionReason') ? message[msgType].rejectionReason : '';
+    const applicationId = Object.prototype.hasOwnProperty.call(message[msgType], 'applicationId') ? message[msgType].applicationId : '';
+    return {
+      email: toEmail,
+      replyTo: replyTo,
+      template: {
+        name: templateName,
+        id: templateId,
+      },
+      personalisation: {
+        applicationId: applicationId,
+        exerciseId: message[msgType].exerciseId,
+        exerciseName: message[msgType].exerciseName,
+        exerciseRef: message[msgType].exerciseRef,
+        reason: message[msgType].reason,
+        candidateId: message[msgType].candidateId,
+        candidateName: message[msgType].candidateName,
+        candidateEmail: message[msgType].candidateEmail,
+        decision: message[msgType].decision,
+        decisionAt: message[msgType].decisionAt,
+        rejectionReason: rejectionReason,
+        url: message[msgType].url,
+      },
+      reference: {
+        collection: 'messages',
+        id: messageId,
+      },
+      createdAt: firebase.firestore.Timestamp.fromDate(new Date()),
+      status: 'ready',
+    };
   }
 };
