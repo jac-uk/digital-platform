@@ -465,13 +465,25 @@ module.exports = (config, firebase, db) => {
     };
     // get applications
     result.data.applications = await getApplications(exercise, task);
+    let emptyScoreSheet = task.emptyScoreSheet;
+    if (task.type === config.TASK_TYPE.SCENARIO) {
+      // get test
+      const qts = require('../../shared/qts')(config);
+      const response = await qts.get('scores', {
+        testId: task.test.id,
+      });
+      if (!response.success) return { success: false, message: response.message };
+      if (!response.questionIds) return { success: false, message: 'No question ids available' };
 
-    // TODO
-
+      result.data.emptyScoreSheet = getEmptyScoreSheet(response.questionIds);
+      result.data.markingScheme = scoreSheet2MarkingScheme(result.data.emptyScoreSheet);
+      result.data['test.questionIds'] = response.questionIds;
+      emptyScoreSheet = result.data.emptyScoreSheet;
+    }
     // populate scoreSheet
     result.data.scoreSheet = {};
     result.data.applications.forEach(application => {
-      result.data.scoreSheet[application.id] = task.emptyScoreSheet;
+      result.data.scoreSheet[application.id] = emptyScoreSheet;
     });
     result.success = true;
     return result;
