@@ -42,6 +42,10 @@ module.exports = (firebase, db) => {
       'Second Assessor Name',
       'Second Assessor Email',
       'Second Assessor Phone',
+      'IP address',
+      'User agent',
+      'Platform',
+      'Timezone',
     ];
 
     const report = {
@@ -80,6 +84,10 @@ const contactsExport = (applications) => {
       secondAssessorFullName: application.secondAssessorFullName,
       secondAssessorEmail: application.secondAssessorEmail,
       secondAssessorPhone: application.secondAssessorPhone,
+      ip: application.client ? application.client.ip : '',
+      userAgent: application.client ? application.client.userAgent : '',
+      platform: application.client ? application.client.platform : '',
+      timezone: application.client ? application.client.timezone : '',
     };
   });
 };
