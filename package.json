@@ -18,6 +18,7 @@
     "emulators:firestore": "firebase emulators:start --only firestore",
     "start": "npm run shell",
     "logs": "firebase functions:log",
+    "local:nodeScript": "export GOOGLE_APPLICATION_CREDENTIALS='service-account.json' && export FIRESTORE_EMULATOR_HOST='localhost:8080' && run(){ node -r dotenv/config nodeScripts/$1; }; run",
     "nodeScript": "export GOOGLE_APPLICATION_CREDENTIALS='service-account.json' && run(){ node -r dotenv/config nodeScripts/$1; }; run",
     "staging:nodeScript": "export GOOGLE_APPLICATION_CREDENTIALS='service-account.staging.json' && run(){ node -r dotenv/config nodeScripts/$1; }; run",
     "production:nodeScript": "export GOOGLE_APPLICATION_CREDENTIALS='service-account.production.json' && run(){ node -r dotenv/config nodeScripts/$1; }; run",
