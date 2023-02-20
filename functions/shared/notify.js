@@ -28,7 +28,7 @@ module.exports = (config) => {
         return true;
       })
       .catch(err => {
-        console.error('Error Sending Email:', err);
+        console.error('Error Sending Email:', JSON.stringify(err));
         return false;
       });
   }
