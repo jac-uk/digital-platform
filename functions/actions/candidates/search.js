@@ -3,7 +3,7 @@
  * A set of methods to help keep candidate search & relationships data up to date
  */
 
-const { getDocument, getDocuments, applyUpdates, convertStringToSearchParts } = require('../../shared/helpers');
+const { getDocument, getDocuments, applyUpdates, convertStringToSearchParts, normaliseNIN } = require('../../shared/helpers');
 
 module.exports = (firebase, db) => {
   return {
@@ -58,7 +58,7 @@ module.exports = (firebase, db) => {
           candidateData[candidateId].fullName = personalDetails.fullName || '';
         }
         candidateData[candidateId].email = personalDetails.email || '';
-        candidateData[candidateId].nationalInsuranceNumber = personalDetails.nationalInsuranceNumber || '';
+        candidateData[candidateId].nationalInsuranceNumber = normaliseNIN(personalDetails.nationalInsuranceNumber) || '';
       }
     });
 

@@ -28,7 +28,8 @@ const main = async () => {
 
 main()
   .then((result) => {
-    console.log(result);
+    console.log(result.length);
+    result;
     app.delete();
     return process.exit();
   })

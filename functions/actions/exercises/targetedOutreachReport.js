@@ -1,4 +1,5 @@
-const { getDocument, getDocuments } = require('../../shared/helpers');
+const { getDocument, getDocuments, normaliseNINs } = require('../../shared/helpers');
+const lookup = require('../../shared/converters/lookup');
 
 module.exports = (firebase, db) => {
 
@@ -18,7 +19,7 @@ module.exports = (firebase, db) => {
 
     // Normalize the National Insurance Numbers
     if (nationalInsuranceNumbers) {
-      NINs = normalizeNINs(nationalInsuranceNumbers);
+      NINs = normaliseNINs(nationalInsuranceNumbers);
     } else {
       return data;
     }
@@ -58,7 +59,7 @@ module.exports = (firebase, db) => {
                   stage: application.stage,
                   status: application.status,
                   id: candidateID,
-                };    
+                };
                 data.push(returnObj);
               });
               applicationsFromRecords = await Promise.all(applicationsFromRecords);
@@ -75,12 +76,5 @@ module.exports = (firebase, db) => {
     return data;    
   }
 
-  function normalizeNINs(nins) {
-    return nins.map(nin => normalizeNIN(nin));
-  }
-
-  function normalizeNIN(nin) {
-    return nin.replace(/-|\s/g,'').trim(); //replace hyphens and spaces inside and on the outer side
-  }
 };
 

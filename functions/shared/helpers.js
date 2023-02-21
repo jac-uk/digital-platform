@@ -20,7 +20,17 @@ module.exports = {
   convertStringToSearchParts,
   isProduction,
   removeHtml,
+  normaliseNINs,
+  normaliseNIN,
 };
+
+function normaliseNINs(nins) {
+  return nins.map(nin => normaliseNIN(nin));
+}
+
+function normaliseNIN(nin) {
+  return nin ? nin.trim().replace(/-|\s/g,'').toLowerCase() : ''; //replace hyphens and spaces inside and on the outer side and makes lower case
+}
 
 function reviver(key, value) {
   // TODO remove this first block of code checking for `.seconds` rather than `._seconds`, when we're sure Timestamps no longer come through like this
