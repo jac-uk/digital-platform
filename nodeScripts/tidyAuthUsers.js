@@ -1,8 +1,7 @@
 'use strict';
 
-const { app, db } = require('./shared/admin');
-const { listAllUsers, deleteUser, log } = require('./shared/helpers');
-const { getDocument } = require('../functions/shared/helpers');
+const { app } = require('./shared/admin');
+const { listAllUsers, updateUser, log } = require('./shared/helpers');
 
 // whether to make changes in authentication database
 const isAction = false;
@@ -12,11 +11,12 @@ const main = async () => {
   let users = await listAllUsers();
   log(`Total users: ${users.length}`);
 
-  log('Filter users with email *@justice.gov.uk...');
+  log('Filter disabled users with email *@justice.gov.uk...');
   const filteredUsers = users.filter(item =>
     item.email.indexOf('@justice.gov.uk') > 0 &&
-    item.providerData.length === 1 &&
-    item.providerData[0].providerId === 'password'
+    item.disabled &&
+    item.providerData.length &&
+    item.providerData.some(provider => provider.providerId === 'password')
   );
   log(`Total filtered users: ${filteredUsers.length}`);
 
@@ -25,14 +25,12 @@ const main = async () => {
   let count = 0;
   for (let i = 0; i < filteredUsers.length; i++) {
     const user = filteredUsers[i];
-    const isCandidate = await getDocument(db.collection('candidates').doc(user.uid));
-    if (isCandidate) {
-      if (isAction) {
-        await deleteUser(user.uid);
-      }
-      count++;
-      result.push(`${count}. ${user.uid}, ${user.email}`);
+    if (isAction) {
+      // enable account
+      await updateUser(user.uid, { disabled: false });
     }
+    count++;
+    result.push(`${count}. ${user.uid}, ${user.email}`);
   }
   log('Tidy up users...done');
 
