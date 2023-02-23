@@ -35,6 +35,7 @@ module.exports = (config, firebase, db) => {
 
     // get next status
     let nextStatus = taskNextStatus(params.type);
+    // if (params.dataOnly) { nextStatus = config.TASK_STATUS.DATA_INITIALISED; }
     console.log('nextStatus', nextStatus);
 
     // get status for eligibile applications
@@ -81,6 +82,7 @@ module.exports = (config, firebase, db) => {
         dateString: timelineTask.dateString,
         type: params.type,
       };
+      // if (params.dataOnly) taskData.dataOnly = true;
       taskData.applicationEntryStatus = applicationEntryStatus;
       taskData.status = nextStatus;
       taskData.statusLog = {};
