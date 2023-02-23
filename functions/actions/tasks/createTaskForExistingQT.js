@@ -34,13 +34,27 @@ module.exports = (config, firebase, db) => {
 
     // get QT
     const qualifyingTest = await getDocument(db.doc(`qualifyingTests/${params.qualifyingTestId}`));
-    if (!qualifyingTest) return result;
+    if (!qualifyingTest) return { success: false, message: 'Test not found' };
+
+    // get all QT ids (check for mopups)
+    const testIds = [];
+    testIds.push(qualifyingTest.id);
+    const mopupTests = await getDocuments(
+      db.collection('qualifyingTests')
+      .where('mode', '==', 'mop-up')
+      .where('relationship.copiedFrom', '==', qualifyingTest.id)
+    );
+    if (mopupTests) {
+      const incompleteTests = mopupTests.filter(test => test.status !== 'completed');
+      if (incompleteTests.length > 0) return { success: false, message: 'Mop up tests have not been completed' };
+      mopupTests.forEach(test => testIds.push(test.id));
+    }
 
     // get QT responses
     const qualifyingTestResponses = await getDocuments(
       db.collection('qualifyingTestResponses')
       .where('vacancy.id', '==', exercise.id)
-      .where('qualifyingTest.id', '==', qualifyingTest.id)
+      .where('qualifyingTest.id', 'in', testIds)
       .select('application', 'candidate', 'score')
     );
     if (!qualifyingTestResponses || qualifyingTestResponses.length <= 0) return result;
