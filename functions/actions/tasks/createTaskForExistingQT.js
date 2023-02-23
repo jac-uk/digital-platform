@@ -51,17 +51,17 @@ module.exports = (config, firebase, db) => {
     // construct applications data and final scores
     const applications = [];
     const finalScores = [];
-    qualifyingTestResponses.forEach(qualifyingTest => {
+    qualifyingTestResponses.forEach(qualifyingTestResponse => {
       applications.push({
-        id: qualifyingTest.application.id,
-        ref: qualifyingTest.application.referenceNumber,
-        fullName: qualifyingTest.candidate.fullName,
-        adjustments: qualifyingTest.candidate.reasonableAdjustments,
+        id: qualifyingTestResponse.application.id,
+        ref: qualifyingTestResponse.application.referenceNumber,
+        fullName: qualifyingTestResponse.candidate.fullName,
+        adjustments: qualifyingTestResponse.candidate.reasonableAdjustments,
       });
       finalScores.push({
-        id: qualifyingTest.application.id,
-        ref: qualifyingTest.application.referenceNumber,
-        score: qualifyingTest.score,
+        id: qualifyingTestResponse.application.id,
+        ref: qualifyingTestResponse.application.referenceNumber,
+        score: qualifyingTestResponse.score >= 0 ? qualifyingTestResponse.score : null,
       });
     });
 
@@ -80,7 +80,9 @@ module.exports = (config, firebase, db) => {
         id: qualifyingTest.id,
         questionIds: getQuestionIds(qualifyingTest),
       },
+      maxScore: qualifyingTest.maxScore,
     };
+
     let nextStatus = config.TASK_STATUS.FINALISED;
     if (params.type === config.TASK_TYPE.SCENARIO) {
       nextStatus = config.TASK_STATUS.DATA_ACTIVATED;
