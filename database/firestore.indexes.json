@@ -571,6 +571,24 @@
       "queryScope": "COLLECTION",
       "fields": [
         {
+          "fieldPath": "candidate.reasonableAdjustments",
+          "order": "ASCENDING"
+        },
+        {
+          "fieldPath": "exercise.id",
+          "order": "ASCENDING"
+        },
+        {
+          "fieldPath": "candidate.fullName",
+          "order": "ASCENDING"
+        }
+      ]
+    },
+    {
+      "collectionGroup": "applicationRecords",
+      "queryScope": "COLLECTION",
+      "fields": [
+        {
           "fieldPath": "exercise.id",
           "order": "ASCENDING"
         },
@@ -2657,13 +2675,11 @@
     {
       "collectionGroup": "data",
       "fieldPath": "applicationsMap",
-      "ttl": false,
       "indexes": []
     },
     {
       "collectionGroup": "documents",
       "fieldPath": "fullName",
-      "ttl": false,
       "indexes": [
         {
           "order": "ASCENDING",
