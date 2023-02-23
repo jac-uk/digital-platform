@@ -535,6 +535,24 @@
           "order": "ASCENDING"
         },
         {
+          "fieldPath": "candidate.reasonableAdjustments",
+          "order": "ASCENDING"
+        },
+        {
+          "fieldPath": "exercise.referenceNumber",
+          "order": "DESCENDING"
+        }
+      ]
+    },
+    {
+      "collectionGroup": "applicationRecords",
+      "queryScope": "COLLECTION",
+      "fields": [
+        {
+          "fieldPath": "candidate.id",
+          "order": "ASCENDING"
+        },
+        {
           "fieldPath": "exercise.id",
           "order": "ASCENDING"
         },
