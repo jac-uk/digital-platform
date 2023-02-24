@@ -16,6 +16,10 @@ module.exports = (config, firebase, db, auth) => {
     return getDocument(db.collection('exercises').doc(exerciseId));
   }
 
+  function isTestApplication(application) {
+    return application.personalDetails && application.personalDetails.email.indexOf('@judicialappointments.digital') > 0;
+  }
+
   async function onApplicationRecordUpdate(dataBefore, dataAfter) {
     // update application with stage/status changes (part of admin#1341 Staged Applications)
     if (dataBefore.stage !== dataAfter.stage || dataBefore.status !== dataAfter.status) {
@@ -63,11 +67,20 @@ module.exports = (config, firebase, db, auth) => {
     const commands = [];
     for (let i = 0, len = appliedApplications.length; i < len; ++i) {
       const application = appliedApplications[i];
-      commands.push({
-        command: 'set',
-        ref: db.collection('applicationRecords').doc(`${application.id}`),
-        data: newApplicationRecord(exercise, application),
-      });
+
+      if (isTestApplication(application)) {
+        commands.push({
+          command: 'update',
+          ref: db.collection('applications').doc(`${application.id}`),
+          data: { status: 'draft' },
+        });
+      } else {
+        commands.push({
+          command: 'set',
+          ref: db.collection('applicationRecords').doc(`${application.id}`),
+          data: newApplicationRecord(exercise, application),
+        });
+      }
     }
 
     // write to db
@@ -114,11 +127,20 @@ module.exports = (config, firebase, db, auth) => {
     const commands = [];
     for (let i = 0, len = missingApplications.length; i < len; ++i) {
       const application = missingApplications[i];
-      commands.push({
-        command: 'set',
-        ref: db.collection('applicationRecords').doc(`${application.id}`),
-        data: newApplicationRecord(exercise, application),
-      });
+
+      if (isTestApplication(application)) {
+        commands.push({
+          command: 'update',
+          ref: db.collection('applications').doc(`${application.id}`),
+          data: { status: 'draft' },
+        });
+      } else {
+        commands.push({
+          command: 'set',
+          ref: db.collection('applicationRecords').doc(`${application.id}`),
+          data: newApplicationRecord(exercise, application),
+        });
+      }
     }
     // update counts
     await refreshApplicationCounts({
