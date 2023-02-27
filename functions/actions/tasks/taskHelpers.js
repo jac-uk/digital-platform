@@ -108,7 +108,7 @@ module.exports = (config) => {
         TASK_TYPE.CRITICAL_ANALYSIS,
         TASK_TYPE.SITUATIONAL_JUDGEMENT,
         TASK_TYPE.QUALIFYING_TEST,
-        TASK_TYPE.SCENARIO
+        TASK_TYPE.SCENARIO,
       ].indexOf(task.type) >= 0
     ) {
       if ([TASK_TYPE.CRITICAL_ANALYSIS, TASK_TYPE.SITUATIONAL_JUDGEMENT].indexOf(task.type) >= 0) {
@@ -132,10 +132,9 @@ module.exports = (config) => {
         TASK_TYPE.CRITICAL_ANALYSIS,
         TASK_TYPE.SITUATIONAL_JUDGEMENT,
         TASK_TYPE.QUALIFYING_TEST,
-        TASK_TYPE.SCENARIO
+        TASK_TYPE.SCENARIO,
       ].indexOf(task.type) >= 0
     ) {
-      console.log('hasQualifyingTest(exercise, task)', hasQualifyingTest(exercise, task));
       if ([TASK_TYPE.CRITICAL_ANALYSIS, TASK_TYPE.SITUATIONAL_JUDGEMENT].indexOf(task.type) >= 0) {
         if (!hasQualifyingTest(exercise, task)) return 'failedFirstTest';
       }
