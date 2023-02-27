@@ -96,7 +96,9 @@ module.exports = (config, firebase, db) => {
       },
       maxScore: qualifyingTest.maxScore,
     };
-
+    if (params.allowStatusUpdates === false || params.allowStatusUpdates === true) {
+      taskData.allowStatusUpdates = params.allowStatusUpdates;
+    }
     let nextStatus = config.TASK_STATUS.FINALISED;
     if (params.type === config.TASK_TYPE.SCENARIO) {
       nextStatus = config.TASK_STATUS.DATA_ACTIVATED;

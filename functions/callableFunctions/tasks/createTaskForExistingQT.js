@@ -17,6 +17,7 @@ module.exports = functions.runWith({
     exerciseId: { required: true },
     type: { required: true },
     qualifyingTestId: { required: true },  // existing completed qualifying test (on digital platform)
+    allowStatusUpdates: { required: false },
   }, data)) {
     throw new functions.https.HttpsError('invalid-argument', 'Please provide valid arguments');
   }
