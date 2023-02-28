@@ -42,15 +42,14 @@ module.exports = (config, firebase, db) => {
     console.log('applicationEntryStatus', applicationEntryStatus);
 
     // get application records
-    let queryRef = db.collection('applicationRecords')
-      .where('exercise.id', '==', params.exerciseId);
-    if (applicationEntryStatus) {
-      queryRef = queryRef.where('status', '==', applicationEntryStatus);
-    }
-    const applicationRecords = await getDocuments(queryRef.select('application', 'candidate'));
-    if (applicationRecords.length === 0) {
-      console.log('no applications found');
-      return result;
+    let applicationRecords = [];
+    if (applicationEntryStatus || [config.TASK_STATUS.PANELS_INITIALISED, config.TASK_STATUS.STATUS_CHANGES].indexOf(nextStatus)) {
+      let queryRef = db.collection('applicationRecords')
+        .where('exercise.id', '==', params.exerciseId);
+      if (applicationEntryStatus) {
+        queryRef = queryRef.where('status', '==', applicationEntryStatus);
+      }
+      applicationRecords = await getDocuments(queryRef.select('application', 'candidate'));
     }
 
     // get task data from timeline
@@ -73,14 +72,13 @@ module.exports = (config, firebase, db) => {
     }
     if (result.success) {
       const taskData = {
-        _stats: {
-          totalApplications: applicationRecords.length,
-        },
+        _stats: {},
         startDate: timelineTask.date,
         endDate: timelineTask.endDate ? timelineTask.endDate : timelineTask.date,
         dateString: timelineTask.dateString,
         type: params.type,
       };
+      if (applicationRecords.length) taskData._stats.totalApplications = applicationRecords.length;
       taskData.applicationEntryStatus = applicationEntryStatus;
       taskData.status = nextStatus;
       taskData.statusLog = {};
