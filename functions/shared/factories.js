@@ -18,11 +18,11 @@ module.exports = (CONSTANTS) => {
     newNotificationLateApplicationResponse,
   };
 
-  function newNotificationExerciseApprovalSubmit(firebase, exerciseId, exercise) {
+  function newNotificationExerciseApprovalSubmit(firebase, exerciseId, exercise, email) {
     const templateName = 'Exercise ready for approval';
     const templateId = '7ef31d79-d247-4a5e-af0d-d94941fb1151';
     return {
-      email: exercise.seniorSelectionExerciseManager,
+      email: email,
       replyTo: exercise.exerciseMailbox,
       template: {
         name: templateName,
