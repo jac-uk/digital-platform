@@ -17,6 +17,7 @@ module.exports = (config) => {
     getScoreSheetTotal,
     getEmptyScoreSheet,
     scoreSheet2MarkingScheme,
+    hasQualifyingTest,
     getApplicationPassStatus,
     getApplicationFailStatus,
     getApplicationPassStatuses,
@@ -101,11 +102,57 @@ module.exports = (config) => {
   }
 
   function getApplicationPassStatus(exercise, task) {
+    // TODO the following overrides can be removed when we move to new stages & statuses
+    if (
+      [
+        TASK_TYPE.CRITICAL_ANALYSIS,
+        TASK_TYPE.SITUATIONAL_JUDGEMENT,
+        TASK_TYPE.QUALIFYING_TEST,
+        TASK_TYPE.SCENARIO,
+      ].indexOf(task.type) >= 0
+    ) {
+      if ([TASK_TYPE.CRITICAL_ANALYSIS, TASK_TYPE.SITUATIONAL_JUDGEMENT].indexOf(task.type) >= 0) {
+        if (!hasQualifyingTest(exercise, task)) return 'passedFirstTest';
+      }
+      if (task.type === TASK_TYPE.QUALIFYING_TEST) {
+        return 'passedFirstTest';
+      }
+      if (task.type === TASK_TYPE.SCENARIO) {
+        return 'passedScenarioTest';
+      }
+    }
+    // end
     return `${task.type}Passed`;
   }
 
   function getApplicationFailStatus(exercise, task) {
+    // TODO the following overrides can be removed when we move to new stages & statuses
+    if (
+      [
+        TASK_TYPE.CRITICAL_ANALYSIS,
+        TASK_TYPE.SITUATIONAL_JUDGEMENT,
+        TASK_TYPE.QUALIFYING_TEST,
+        TASK_TYPE.SCENARIO,
+      ].indexOf(task.type) >= 0
+    ) {
+      if ([TASK_TYPE.CRITICAL_ANALYSIS, TASK_TYPE.SITUATIONAL_JUDGEMENT].indexOf(task.type) >= 0) {
+        if (!hasQualifyingTest(exercise, task)) return 'failedFirstTest';
+      }
+      if (task.type === TASK_TYPE.QUALIFYING_TEST) {
+        return 'failedFirstTest';
+      }
+      if (task.type === TASK_TYPE.SCENARIO) {
+        return 'failedScenarioTest';
+      }
+    }
+    // end
     return `${task.type}Failed`;
+  }
+
+  function hasQualifyingTest(exercise) {
+    const hasCA = Boolean(exercise.shortlistingMethods.indexOf(config.SHORTLISTING.CRITICAL_ANALYSIS_QUALIFYING_TEST) >= 0 && exercise.criticalAnalysisTestDate);
+    const hasSJ = Boolean(exercise.shortlistingMethods.indexOf(config.SHORTLISTING.SITUATIONAL_JUDGEMENT_QUALIFYING_TEST) >= 0 && exercise.situationalJudgementTestDate);
+    return hasCA && hasSJ;
   }
 
   function getApplicationPassStatuses(taskType) {
@@ -206,6 +253,8 @@ module.exports = (config) => {
         markingScheme.push(createMarkingSchemeGroup(cat, getExerciseCapabilities(exercise)));
       });
       break;
+    default:
+      markingScheme.push(createMarkingSchemeGroup(taskType, []));
     }
     return markingScheme;
   }

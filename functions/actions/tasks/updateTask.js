@@ -679,8 +679,8 @@ module.exports = (config, firebase, db) => {
       outcomeStats[newStatus] += 1;
       scoreData.pass = newStatus === passStatus ? true : false;
       const saveData = {};
-      saveData.status = newStatus;
-      saveData[`statusLog.${newStatus}`] = firebase.firestore.FieldValue.serverTimestamp();
+      if (!(task.allowStatusUpdates === false)) { saveData.status = newStatus; }  // here we update status unless this has been explicitly denied
+      saveData[`statusLog.${newStatus}`] = firebase.firestore.FieldValue.serverTimestamp(); // we still always log the status change
       commands.push({
         command: 'update',
         ref: db.collection('applicationRecords').doc(scoreData.id),
