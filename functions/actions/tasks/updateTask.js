@@ -1,4 +1,4 @@
-const { getDocument, getDocuments, getDocumentsFromQueries, applyUpdates } = require('../../shared/helpers');
+const { getDocument, getDocuments, getDocumentsFromQueries, applyUpdates, calculateMean, calculateStandardDeviation } = require('../../shared/helpers');
 
 module.exports = (config, firebase, db) => {
   const {
@@ -595,13 +595,30 @@ module.exports = (config, firebase, db) => {
         id: application.id,
         ref: application.ref,
         score: response.scores[application.id],
+        percent: 100 * (response.scores[application.id] / response.maxScore),
       });
     });
-
     result.success = true;
-    result.data.finalScores = finalScores;
+    result.data.finalScores = includeZScores(finalScores);
     result.data.maxScore = response.maxScore;
     return result;
+  }
+
+  /**
+   * includeZScores
+   * Calculates z score for each item provided in the 'finalScores' param
+   * * @param {*} `finalScores` array of objects where each object contains `.score` and `.percent` properties
+   * @returns Provided `finalScores` array decorated with new property `zScore`
+   * Note: zScore = ((% Score – Mean(All % Scores))/SD(All % Scores))
+   **/
+  function includeZScores(finalScores) {
+    const percents = finalScores.map(item => item.percent);
+    const meanPercent = calculateMean(percents);
+    const standardDeviation = calculateStandardDeviation(percents);
+    finalScores.forEach(finalScore => {
+      finalScore.zScore = (finalScore.percent - meanPercent) / standardDeviation;
+    });
+    return finalScores;
   }
 
   /**
@@ -647,8 +664,9 @@ module.exports = (config, firebase, db) => {
       success: false,
       data: {},
     };
-    if (!(task.passMark >= 0)) return result;
+    if (!task.hasOwnProperty('passMark')) return result;
 
+    const scoreType = task.scoreType ? task.scoreType : 'score';
     const outcomeStats = {};
     const passStatus = getApplicationPassStatus(exercise, task);
     const failStatus = getApplicationFailStatus(exercise, task);
@@ -659,22 +677,20 @@ module.exports = (config, firebase, db) => {
     const commands = [];
     task.finalScores.forEach(scoreData => {
       let newStatus;
-      if (scoreData.score > task.passMark) {
+      if (scoreData[scoreType] > task.passMark) {
         newStatus = passStatus;
-      } else if (scoreData.score === task.passMark) {
+      } else if (scoreData[scoreType] === task.passMark) {
         if (task.overrides && task.overrides.fail && task.overrides.fail.length && task.overrides.fail.indexOf(scoreData.id) >= 0) {
           newStatus = failStatus;
         } else {
           newStatus = passStatus;
         }
-      } else if (scoreData.score === task.passMark - 1) {
+      } else if (scoreData[scoreType] < task.passMark) {
         if (task.overrides && task.overrides.pass && task.overrides.pass.length && task.overrides.pass.indexOf(scoreData.id) >= 0) {
           newStatus = passStatus;
         } else {
           newStatus = failStatus;
         }
-      } else {
-        newStatus = failStatus;
       }
       outcomeStats[newStatus] += 1;
       scoreData.pass = newStatus === passStatus ? true : false;
@@ -705,16 +721,19 @@ module.exports = (config, firebase, db) => {
             if (scoreData.pass) {
               const otherTaskScoreData = otherTask.finalScores.find(otherScoreData => otherScoreData.id === scoreData.id);
               if (otherTaskScoreData && otherTaskScoreData.pass) {
-                const overallScore = 50 * ((scoreData.score / task.maxScore) + (otherTaskScoreData.score / otherTask.maxScore));
                 finalScores.push({
                   id: scoreData.id,
                   ref: scoreData.ref,
-                  score: overallScore,
+                  score: scoreData.score + otherTaskScoreData.score,
+                  percent: (scoreData.percent + otherTaskScoreData.percent) / 2,
+                  zScore: (scoreData.zScore + otherTaskScoreData.zScore) / 2,
                   scoreSheet: {
                     qualifyingTest: {
                       CA: task.type === config.TASK_TYPE.CRITICAL_ANALYSIS ? scoreData.score : otherTaskScoreData.score,
                       SJ: task.type === config.TASK_TYPE.CRITICAL_ANALYSIS ? otherTaskScoreData.score : scoreData.score,
-                      score: overallScore,
+                      score: scoreData.score + otherTaskScoreData.score,
+                      percent: (scoreData.percent + otherTaskScoreData.percent) / 2,
+                      zScore: (scoreData.zScore + otherTaskScoreData.zScore) / 2,
                     },
                   },
                 });
@@ -731,7 +750,8 @@ module.exports = (config, firebase, db) => {
               totalApplications: finalScores.length,
             },
             applications: applications,
-            finalScores: finalScores,
+            scoreType: 'zScore',
+            finalScores: includeZScores(finalScores),
             markingScheme: [
               {
                 ref: config.TASK_TYPE.QUALIFYING_TEST,
