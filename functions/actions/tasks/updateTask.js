@@ -664,7 +664,7 @@ module.exports = (config, firebase, db) => {
       success: false,
       data: {},
     };
-    if (!task.hasOwnProperty('passMark')) return result;
+    if (!Object.prototype.hasOwnProperty.call(task, 'passMark')) return result;
 
     const scoreType = task.scoreType ? task.scoreType : 'score';
     const outcomeStats = {};
