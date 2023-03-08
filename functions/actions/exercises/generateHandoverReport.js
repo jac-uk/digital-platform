@@ -124,6 +124,13 @@ const reportHeaders = (exercise) => {
     reportHeaders.push(...headers.diversity.common);
   }
 
+  if (exercise.isSPTWOffered) {
+    reportHeaders.push(
+      { title: 'Part Time Working Preferences', ref: 'interestedInPartTime' },
+      { title: 'Part Time Working Preferences details', ref: 'partTimeWorkingPreferencesDetails' }
+    );
+  }
+
   reportHeaders.push(
     { title: 'Location Preferences', ref: 'locationPreferences' },
     { title: 'Jurisdiction Preferences', ref: 'jurisdictionPreferences' },
@@ -164,6 +171,10 @@ const reportData = (db, exercise, applicationRecords, applications) => {
       ? getAdditionalWorkingPreferences(application, exercise).map(x => `${removeHtml(x.label)}\n${removeHtml(x.value)}`).join('\n\n') : '';
     const welshPosts = exercise.welshRequirement
       ? getWelshData(application).map(x => `${removeHtml(x.label)}\n${removeHtml(x.value)}`).join('\n\n') : '';
+    const partTimeWorkingPreferences = {
+      interestedInPartTime: helpers.toYesNo(application.interestedInPartTime) || '',
+      partTimeWorkingPreferencesDetails: application.partTimeWorkingPreferencesDetails || '',
+    };
 
     // return report data for this application
     return {
@@ -178,6 +189,7 @@ const reportData = (db, exercise, applicationRecords, applications) => {
       jurisdictionPreferences,
       additionalPreferences,
       welshPosts,
+      ...partTimeWorkingPreferences,
     };
 
   });
