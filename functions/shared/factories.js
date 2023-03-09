@@ -101,7 +101,7 @@ module.exports = (CONSTANTS) => {
     };
   }
 
-  function newNotificationApplicationInWelsh(firebase, applicationId, application, exercise) {  
+  function newNotificationApplicationInWelsh(firebase, applicationId, application, exercise) {
     const templateName = 'Application Submitted in Welsh';
     const templateId = '0acf9400-8694-4553-ab4a-23830c7626de';
 
@@ -130,7 +130,7 @@ module.exports = (CONSTANTS) => {
     };
   }
 
-  function newNotificationCandidateFlagConfirmation(firebase, applicationId, application, exercise, toEmail) {  
+  function newNotificationCandidateFlagConfirmation(firebase, applicationId, application, exercise, toEmail) {
     const templateName = 'Application from flagged candidate';
     const templateId = '618f780e-7a6e-4fd5-b530-548d587cae0b';
 
@@ -463,7 +463,7 @@ module.exports = (CONSTANTS) => {
         status: 'not requested',
       },
       active: true,
-      stage: 'review',
+      stage: 'review',  // TODO change to 'applied'
       status: '',
       flags: {
         characterIssues: false,
@@ -478,6 +478,8 @@ module.exports = (CONSTANTS) => {
       history: [],
       notes: [],
     };
+    applicationRecord.stageLog = {};
+    applicationRecord.stageLog[applicationRecord.stage] = firebase.firestore.FieldValue.serverTimestamp();
     if (application.personalDetails) {
       applicationRecord.candidate.fullName = application.personalDetails.fullName || null;
       applicationRecord.candidate.reasonableAdjustments = application.personalDetails.reasonableAdjustments || null;
@@ -590,7 +592,7 @@ module.exports = (CONSTANTS) => {
     return vacancy;
   }
 
-  function newNotificationLateApplicationRequest(firebase, messageId, message, toEmail) {  
+  function newNotificationLateApplicationRequest(firebase, messageId, message, toEmail) {
     const templateName = 'Late application request';
     const templateId = 'da36cb2a-5774-4e97-82e6-82664c43d87c';
     const msgType = message.type;
@@ -621,7 +623,7 @@ module.exports = (CONSTANTS) => {
     };
   }
 
-  function newNotificationLateApplicationResponse(firebase, messageId, message, toEmail) {  
+  function newNotificationLateApplicationResponse(firebase, messageId, message, toEmail) {
     const templateName = 'Late application response';
     const templateId = 'e9087c43-de88-4dcd-a868-2299efcbc7a2';
     const msgType = message.type;

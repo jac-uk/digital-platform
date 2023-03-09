@@ -104,7 +104,7 @@ module.exports = (config) => {
             entry: 'Shortlisting outcome',
             date: data.shortlistingOutcomeDate,
             dateString: getDateString(data.shortlistingOutcomeDate, 'month'),
-            // taskType: TASK_TYPE.SHORTLISTING_OUTCOME,
+            taskType: TASK_TYPE.SHORTLISTING_OUTCOME,
           }
         );
       }

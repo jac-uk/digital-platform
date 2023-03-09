@@ -277,7 +277,7 @@ module.exports = {
     MODERATION_ACTIVATED: 'moderationActivated',
     STATUS_CHANGES: 'statusChanges',
     FINALISED: 'finalised',
-    CHECKS: 'checks',
+    STAGE_OUTCOME: 'stageOutcome',
     COMPLETED: 'completed',
   },
   PANEL_STATUS: {

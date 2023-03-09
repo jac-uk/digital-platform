@@ -76,8 +76,7 @@ module.exports = (config) => {
       case config.TASK_TYPE.SHORTLISTING_OUTCOME:
       case config.TASK_TYPE.SELECTION_OUTCOME:
         availableStatuses = [
-          config.TASK_STATUS.CHECKS_INITIALISED,
-          config.TASK_STATUS.CHECKS_ACTIVATED,
+          config.TASK_STATUS.STAGE_OUTCOME,
           config.TASK_STATUS.COMPLETED,
         ];
         break;
