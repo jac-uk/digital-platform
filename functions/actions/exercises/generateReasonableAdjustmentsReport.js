@@ -10,6 +10,7 @@ module.exports = (firebase, db) => {
     // get submitted applications that have reasonable adjustments
     const applications = await getDocuments(db.collection('applications')
       .where('exerciseId', '==', exerciseId)
+      .where('status', '==', 'applied')
       .where('personalDetails.reasonableAdjustments', '==', true)
     );
 
