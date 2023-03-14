@@ -22,7 +22,20 @@ module.exports = {
   removeHtml,
   normaliseNINs,
   normaliseNIN,
+  calculateMean,
+  calculateStandardDeviation,
 };
+
+function calculateMean(numArray) {
+  const mean = numArray.reduce((s, n) => s + n) / numArray.length;
+  return mean;
+}
+
+function calculateStandardDeviation(numArray) {
+  const mean = calculateMean(numArray);
+  const variance = numArray.reduce((s, n) => s + (n - mean) ** 2, 0) / (numArray.length - 1);
+  return Math.sqrt(variance);
+}
 
 function normaliseNINs(nins) {
   return nins.map(nin => normaliseNIN(nin));
