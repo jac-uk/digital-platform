@@ -383,6 +383,9 @@ module.exports = (config, firebase, db) => {
 
     // get applications
     const applications = await getApplications(exercise, task);
+    if (!applications.length) { result.message = 'No applications'; return result; }
+
+    // participants
     const participants = applications.map(application => {
       return {
         srcId: application.id,
@@ -452,6 +455,7 @@ module.exports = (config, firebase, db) => {
       .where('status', '==', 'applied');
     if (task.applicationEntryStatus) {
       applicationsRef = applicationsRef.where('_processing.status', '==', task.applicationEntryStatus);
+      console.log('get applications with status', task.applicationEntryStatus);
     }
     const applications = await getDocuments(applicationsRef);
     if (!applications) return applicationsData;
@@ -481,8 +485,12 @@ module.exports = (config, firebase, db) => {
       success: false,
       data: {},
     };
+
     // get applications
     result.data.applications = await getApplications(exercise, task);
+    if (!result.data.applications.length) { result.message = 'No applications'; return result; }
+
+    // get scoresheet
     let emptyScoreSheet = task.emptyScoreSheet;
     if (task.type === config.TASK_TYPE.SCENARIO) {
       // get test
@@ -498,6 +506,7 @@ module.exports = (config, firebase, db) => {
       result.data['test.questionIds'] = response.questionIds;
       emptyScoreSheet = result.data.emptyScoreSheet;
     }
+
     // populate scoreSheet
     result.data.scoreSheet = {};
     result.data.applications.forEach(application => {
@@ -874,12 +883,17 @@ module.exports = (config, firebase, db) => {
       .select()
     );
 
+    // get next status
+    const nextApplicationStatus = getApplicationPassStatus(exercise, task);
+
     // update successfull appplication records
     const commands = [];
     applicationRecords.forEach(applicationRecord => {
       const saveData = {};
       saveData.stage = nextStage;
       saveData[`stageLog.${nextStage}`] = firebase.firestore.FieldValue.serverTimestamp();
+      saveData.status = nextApplicationStatus;
+      saveData[`stageLog.${nextApplicationStatus}`] = firebase.firestore.FieldValue.serverTimestamp();
       commands.push({
         command: 'update',
         ref: db.collection('applicationRecords').doc(applicationRecord.id),

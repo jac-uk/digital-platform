@@ -240,7 +240,7 @@ module.exports = (config) => {
   }
 
   function createMarkingScheme(exercise, taskType) {
-    console.log('createMarkingScheme', exercise, taskType);
+    // console.log('createMarkingScheme', exercise, taskType);
     const markingScheme = [];
     switch (taskType) {
     case config.TASK_TYPE.SIFT:
@@ -318,7 +318,17 @@ module.exports = (config) => {
     if (!exercise) return status;
     const prevTaskType = previousTaskType(exercise, type);
     if (prevTaskType) {
-      status = `${prevTaskType}Passed`;
+      console.log('previousTaskType', prevTaskType);
+      switch (prevTaskType) {
+      case TASK_TYPE.QUALIFYING_TEST:
+        status = 'passedFirstTest';
+        break;
+      case TASK_TYPE.SCENARIO:
+        status = 'passedScenarioTest';
+        break;
+      default:
+        status = `${prevTaskType}Passed`;
+      }
     }
     return status;
   }
