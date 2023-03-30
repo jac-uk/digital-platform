@@ -464,7 +464,7 @@ module.exports = (config) => {
         item.zScore = (item.scoreSheet.qualifyingTest.CA.zScore + item.scoreSheet.qualifyingTest.SJ.zScore) / 2;
         item.scoreSheet.qualifyingTest.zScore = item.zScore;
       });
-    } catch {
+    } catch (e) {
       return finalScores;
     }
     return finalScores;

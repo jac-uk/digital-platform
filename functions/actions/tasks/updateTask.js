@@ -601,6 +601,7 @@ module.exports = (config, firebase, db) => {
     });
     result.success = true;
     result.data.maxScore = response.maxScore;
+    result.data.finalScores = finalScores;
     return result;
   }
 

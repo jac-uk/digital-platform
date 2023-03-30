@@ -17,7 +17,7 @@ describe('includeZScores(finalScores)', () => {
     const scores = [
       { something: 1 },
       { something: 2 },
-      { something: 3 }
+      { something: 3 },
     ];
     expect(includeZScores(scores)).toBe(scores);
   });
