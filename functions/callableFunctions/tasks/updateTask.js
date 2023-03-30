@@ -16,6 +16,7 @@ module.exports = functions.runWith({
   if (!checkArguments({
     exerciseId: { required: true },
     type: { required: true },
+    nextStage: { required: false },
   }, data)) {
     throw new functions.https.HttpsError('invalid-argument', 'Please provide valid arguments');
   }

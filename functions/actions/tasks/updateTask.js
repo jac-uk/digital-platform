@@ -24,6 +24,7 @@ module.exports = (config, firebase, db) => {
     initialiseTestTask,
     initialiseStatusChangesTask,
     initialiseDataTask,
+    initialiseStageOutcomeTask,
   };
 
   /**
@@ -97,16 +98,16 @@ module.exports = (config, firebase, db) => {
         break;
       }
       break;
-    case config.TASK_STATUS.CHECKS: // TODO think about naming
-      result = await checksTask(exercise, task);
+    case config.TASK_STATUS.STAGE_OUTCOME:
+      result = await initialiseStageOutcomeTask(exercise, task.type);
       break;
     case config.TASK_STATUS.COMPLETED:
       switch (task.status) {
       case config.TASK_STATUS.STATUS_CHANGES:
         result = await completeStatusChangesTask(exercise, task);
         break;
-      case config.TASK_STATUS.CHECKS:
-        result = await completeChecksTask(exercise, task);
+      case config.TASK_STATUS.STAGE_OUTCOME:
+        result = await completeStageOutcomeTask(exercise, task, params.nextStage);
         break;
       default:
         result = await completeTask(exercise, task);
@@ -384,6 +385,9 @@ module.exports = (config, firebase, db) => {
 
     // get applications
     const applications = await getApplications(exercise, task);
+    if (!applications.length) { result.message = 'No applications'; return result; }
+
+    // participants
     const participants = applications.map(application => {
       return {
         srcId: application.id,
@@ -406,6 +410,24 @@ module.exports = (config, firebase, db) => {
     result.data.applications = applications;
     return result;
 
+  }
+
+  /**
+   * initialiseStageOutcomeTask
+   * Initialises a data task. Currently does nothing!
+   * @param {*} exercise
+   * @param {*} taskType
+   * @returns Result object of the form `{ success: Boolean, data: Object }`. If successful then `data` is to be stored in the `task` document
+   */
+  async function initialiseStageOutcomeTask(exercise, taskType) {
+    console.log('initialiseStageOutcomeTask', taskType);
+    const result = {
+      success: false,
+      data: {},
+    };
+    result.success = true;
+    // TODO do we need to include anything here? e.g. applications
+    return result;
   }
 
   /**
@@ -435,6 +457,7 @@ module.exports = (config, firebase, db) => {
       .where('status', '==', 'applied');
     if (task.applicationEntryStatus) {
       applicationsRef = applicationsRef.where('_processing.status', '==', task.applicationEntryStatus);
+      console.log('get applications with status', task.applicationEntryStatus);
     }
     const applications = await getDocuments(applicationsRef);
     if (!applications) return applicationsData;
@@ -464,8 +487,12 @@ module.exports = (config, firebase, db) => {
       success: false,
       data: {},
     };
+
     // get applications
     result.data.applications = await getApplications(exercise, task);
+    if (!result.data.applications.length) { result.message = 'No applications'; return result; }
+
+    // get scoresheet
     let emptyScoreSheet = task.emptyScoreSheet;
     if (task.type === config.TASK_TYPE.SCENARIO) {
       // get test
@@ -481,6 +508,7 @@ module.exports = (config, firebase, db) => {
       result.data['test.questionIds'] = response.questionIds;
       emptyScoreSheet = result.data.emptyScoreSheet;
     }
+
     // populate scoreSheet
     result.data.scoreSheet = {};
     result.data.applications.forEach(application => {
@@ -780,51 +808,6 @@ module.exports = (config, firebase, db) => {
     return result;
   }
 
-
-  /**
-   * completeChecksTask
-   * Completes a checks task.
-   * @param {*} exercise
-   * @param {*} task
-   * @returns Result object of the form `{ success: Boolean, data: Object }`. If successful then `data` is to be stored in the `task` document
-   */
-   async function completeChecksTask(exercise, task) {
-    console.log('complete checks task');
-    const result = {
-      success: false,
-      data: {},
-    };
-
-    // get applications
-    const applications = await getDocuments(db.collection('applicationRecords').where('exercise.id', '==', exercise.id).select('status'));
-
-    // construct stats and update successful application records
-    const outcomeStats = {};
-    const commands = [];
-    const successStatus = taskApplicationsEntryStatus(exercise, task.type);
-    const newStatus = getApplicationPassStatuses(task.type)[0];
-    applications.forEach(application => {
-      if (!outcomeStats[application.status]) outcomeStats[application.status] = 0;
-      outcomeStats[application.status] += 1;
-      if (application.status === successStatus) {
-        const saveData = {};
-        saveData.status = newStatus;
-        saveData[`statusLog.${newStatus}`] = firebase.firestore.FieldValue.serverTimestamp();
-        commands.push({
-          command: 'update',
-          ref: db.collection('applicationRecords').doc(application.id),
-          data: saveData,
-        });
-      }
-    });
-    await applyUpdates(db, commands);
-
-    // return data to be saved in `task` document
-    result.success = true;
-    result.data['_stats.totalForEachOutcome'] = outcomeStats;
-    return result;
-  }
-
   /**
    * completeStatusChangesTask
    * Completes a status changes task.
@@ -870,18 +853,47 @@ module.exports = (config, firebase, db) => {
   }
 
   /**
-   * checksTask
-   * Checks task. Currently does nothing!
+   * completeStageOutcomeTask
+   * Completes a stage outcome task by updating the Stage of all successfull applications (other apps remain unchanged)
    * @param {*} exercise
    * @param {*} task
    * @returns Result object of the form `{ success: Boolean, data: Object }`. If successful then `data` is to be stored in the `task` document
    */
-   async function checksTask(exercise, task) {
+  async function completeStageOutcomeTask(exercise, task, nextStage) {
+    console.log('complete stage outcome task');
     const result = {
       success: false,
       data: {},
     };
-    // TODO check if we need to return anything here
+
+    // get successfull application records
+    const applicationRecords = await getDocuments(
+      db.collection('applicationRecords')
+      .where('exercise.id', '==', exercise.id)
+      .where('status', '==', task.applicationEntryStatus)
+      .select()
+    );
+
+    // get next status
+    const nextApplicationStatus = getApplicationPassStatus(exercise, task);
+
+    // update successfull appplication records
+    const commands = [];
+    applicationRecords.forEach(applicationRecord => {
+      const saveData = {};
+      saveData.stage = nextStage;
+      saveData[`stageLog.${nextStage}`] = firebase.firestore.FieldValue.serverTimestamp();
+      saveData.status = nextApplicationStatus;
+      saveData[`stageLog.${nextApplicationStatus}`] = firebase.firestore.FieldValue.serverTimestamp();
+      commands.push({
+        command: 'update',
+        ref: db.collection('applicationRecords').doc(applicationRecord.id),
+        data: saveData,
+      });
+    });
+    await applyUpdates(db, commands);
+
+    // return data to be saved in `task` document
     result.success = true;
     return result;
   }
