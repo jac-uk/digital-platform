@@ -1,4 +1,4 @@
-const { getDocument, getDocuments, getDocumentsFromQueries, applyUpdates, calculateMean, calculateStandardDeviation } = require('../../shared/helpers');
+const { getDocument, getDocuments, getDocumentsFromQueries, applyUpdates } = require('../../shared/helpers');
 
 module.exports = (config, firebase, db) => {
   const {
@@ -14,6 +14,8 @@ module.exports = (config, firebase, db) => {
     getApplicationFailStatus,
     getApplicationPassStatuses,
     getApplicationFailStatuses,
+    taskApplicationsEntryStatus,
+    includeZScores,
   } = require('./taskHelpers')(config);
 
   return {
@@ -626,26 +628,9 @@ module.exports = (config, firebase, db) => {
       });
     });
     result.success = true;
-    result.data.finalScores = includeZScores(finalScores);
     result.data.maxScore = response.maxScore;
+    result.data.finalScores = finalScores;
     return result;
-  }
-
-  /**
-   * includeZScores
-   * Calculates z score for each item provided in the 'finalScores' param
-   * * @param {*} `finalScores` array of objects where each object contains `.score` and `.percent` properties
-   * @returns Provided `finalScores` array decorated with new property `zScore`
-   * Note: zScore = ((% Score – Mean(All % Scores))/SD(All % Scores))
-   **/
-  function includeZScores(finalScores) {
-    const percents = finalScores.map(item => item.percent);
-    const meanPercent = calculateMean(percents);
-    const standardDeviation = calculateStandardDeviation(percents);
-    finalScores.forEach(finalScore => {
-      finalScore.zScore = (finalScore.percent - meanPercent) / standardDeviation;
-    });
-    return finalScores;
   }
 
   /**
@@ -748,19 +733,25 @@ module.exports = (config, firebase, db) => {
             if (scoreData.pass) {
               const otherTaskScoreData = otherTask.finalScores.find(otherScoreData => otherScoreData.id === scoreData.id);
               if (otherTaskScoreData && otherTaskScoreData.pass) {
+                const CAData = task.type === config.TASK_TYPE.CRITICAL_ANALYSIS ? scoreData : otherTaskScoreData;
+                const SJData = task.type === config.TASK_TYPE.CRITICAL_ANALYSIS ? otherTaskScoreData : scoreData;
                 finalScores.push({
                   id: scoreData.id,
                   ref: scoreData.ref,
-                  score: scoreData.score + otherTaskScoreData.score,
-                  percent: (scoreData.percent + otherTaskScoreData.percent) / 2,
-                  zScore: (scoreData.zScore + otherTaskScoreData.zScore) / 2,
+                  score: CAData.score + SJData.score,
+                  percent: (CAData.percent + SJData.percent) / 2,
                   scoreSheet: {
                     qualifyingTest: {
-                      CA: task.type === config.TASK_TYPE.CRITICAL_ANALYSIS ? scoreData.score : otherTaskScoreData.score,
-                      SJ: task.type === config.TASK_TYPE.CRITICAL_ANALYSIS ? otherTaskScoreData.score : scoreData.score,
-                      score: scoreData.score + otherTaskScoreData.score,
-                      percent: (scoreData.percent + otherTaskScoreData.percent) / 2,
-                      zScore: (scoreData.zScore + otherTaskScoreData.zScore) / 2,
+                      CA: {
+                        score: CAData.score,
+                        percent: CAData.percent,
+                      },
+                      SJ: {
+                        score: SJData.score,
+                        percent: SJData.percent,
+                      },
+                      score: CAData.score + SJData.score,
+                      percent: (CAData.percent + SJData.percent) / 2,
                     },
                   },
                 });
@@ -786,11 +777,11 @@ module.exports = (config, firebase, db) => {
                 children: [
                   {
                     ref: 'CA',
-                    type: 'number',
+                    type: 'score',
                   },
                   {
                     ref: 'SJ',
-                    type: 'number',
+                    type: 'score',
                   },
                 ],
               },
