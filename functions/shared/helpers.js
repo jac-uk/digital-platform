@@ -27,13 +27,17 @@ module.exports = {
 };
 
 function calculateMean(numArray) {
-  const mean = numArray.reduce((s, n) => s + n) / numArray.length;
+  let total = 0;
+  numArray.forEach(num => total += num);
+  const mean = total / numArray.length;
   return mean;
 }
 
 function calculateStandardDeviation(numArray) {
   const mean = calculateMean(numArray);
-  const variance = numArray.reduce((s, n) => s + (n - mean) ** 2, 0) / (numArray.length - 1);
+  let total = 0;
+  numArray.forEach(num => total += Math.pow((num - mean), 2) );
+  const variance = total / numArray.length;
   return Math.sqrt(variance);
 }
 
