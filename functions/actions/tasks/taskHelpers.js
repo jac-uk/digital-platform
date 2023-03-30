@@ -1,6 +1,6 @@
 
 const createTimeline = require('../../shared/Timeline/createTimeline');
-const { convertToDate } = require('../../shared/helpers');
+const { convertToDate, calculateMean, calculateStandardDeviation } = require('../../shared/helpers');
 
 module.exports = (config) => {
   const exerciseTimeline = require('../../shared/Timeline/exerciseTimeline.TMP')(config);
@@ -22,6 +22,7 @@ module.exports = (config) => {
     getApplicationFailStatus,
     getApplicationPassStatuses,
     getApplicationFailStatuses,
+    includeZScores,
   };
 
   function taskStatuses(taskType) {
@@ -411,6 +412,62 @@ module.exports = (config) => {
       }
     });
     return markingScheme;
+  }
+
+
+  /**
+   * includeZScores
+   * Calculates z score for each item provided in the 'finalScores' param
+   * * @param {*} `finalScores` array of objects where each object has the following shape:
+   ```
+   {
+    score: Number,
+    percent: Number,
+    scoreSheet: {
+      qualifyingTest: {
+        CA: {
+          score: Number,
+          percent: Number,
+        },
+        SJ: {
+          score: Number,
+          percent: Number,
+        },
+        score: Number,
+        percent: Number,
+      },
+    },
+  }
+  ```
+   * @returns Provided `finalScores` array decorated with new `zScore` properties
+   * Note: zScore = ((% Score – Mean(All % Scores))/SD(All % Scores))
+   **/
+  function includeZScores(finalScores) {
+    if (!finalScores) return [];
+    if (!finalScores.length) return [];
+    let CApercents = [];
+    let SJpercents = [];
+    try {
+      finalScores.forEach(item => {
+        CApercents.push(item.scoreSheet.qualifyingTest.CA.percent);
+        SJpercents.push(item.scoreSheet.qualifyingTest.SJ.percent);
+      });
+      const CAmean = calculateMean(CApercents);
+      const SJmean = calculateMean(SJpercents);
+      const CAstdev = calculateStandardDeviation(CApercents);
+      const SJstdev = calculateStandardDeviation(SJpercents);
+      finalScores.forEach(item => {
+        item.scoreSheet.qualifyingTest.CA.zScore = (item.scoreSheet.qualifyingTest.CA.percent - CAmean) / CAstdev;
+        item.scoreSheet.qualifyingTest.SJ.zScore = (item.scoreSheet.qualifyingTest.SJ.percent - SJmean) / SJstdev;
+      });
+      finalScores.forEach(item => {
+        item.zScore = (item.scoreSheet.qualifyingTest.CA.zScore + item.scoreSheet.qualifyingTest.SJ.zScore) / 2;
+        item.scoreSheet.qualifyingTest.zScore = item.zScore;
+      });
+    } catch (e) {
+      return finalScores;
+    }
+    return finalScores;
   }
 
 };
