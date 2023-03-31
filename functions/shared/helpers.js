@@ -238,6 +238,13 @@ function toTimeString(date) {
 function formatDate(value, type) {
   value = convertToDate(value);
   if (value) {
+    const time = value.toLocaleTimeString('en-GB', {
+      hour: '2-digit',
+      minute:'2-digit',
+      hour12: false,
+      timeZone: 'Europe/London',
+    });
+
     switch (type) {
       case 'time':
         value = toTimeString(value);
@@ -248,7 +255,7 @@ function formatDate(value, type) {
         break;
       case 'date-hour-minute':
         // e.g. Wednesday, 30 November, 2022 at 13:00
-        value = `${value.toLocaleDateString('en-GB', { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' })} at ${value.toLocaleTimeString('en-GB', { hour: '2-digit', minute:'2-digit', hour12: false })}`;
+        value = `${value.toLocaleDateString('en-GB', { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' })} at ${time}`;
         break;
       default:
         value = toDateString(value);
