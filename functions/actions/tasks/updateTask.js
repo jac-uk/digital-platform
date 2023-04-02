@@ -620,12 +620,14 @@ module.exports = (config, firebase, db) => {
     // construct finalScores
     const finalScores = [];
     task.applications.forEach(application => {
-      finalScores.push({
-        id: application.id,
-        ref: application.ref,
-        score: response.scores[application.id],
-        percent: 100 * (response.scores[application.id] / response.maxScore),
-      });
+      if (response.scores[application.id]) {
+        finalScores.push({
+          id: application.id,
+          ref: application.ref,
+          score: response.scores[application.id],
+          percent: 100 * (response.scores[application.id] / response.maxScore),
+        });
+      }
     });
     result.success = true;
     result.data.maxScore = response.maxScore;
