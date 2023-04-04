@@ -57,6 +57,7 @@ module.exports = (CONSTANTS) => {
       },
       personalisation: {
         exerciseId: exercise.id,
+        exerciseRef: exercise.referenceNumber,
         exerciseName: application.exerciseName,
         applicantName: application.personalDetails.fullName,
         refNumber: application.referenceNumber,
@@ -85,6 +86,7 @@ module.exports = (CONSTANTS) => {
       },
       personalisation: {
         exerciseId: exercise.id,
+        exerciseRef: exercise.referenceNumber,
         exerciseName: application.exerciseName,
         applicantName: application.personalDetails.fullName,
         exerciseCloseDate: formatDate(exercise.applicationCloseDate.toDate(), 'date-hour-minute'),
@@ -114,6 +116,7 @@ module.exports = (CONSTANTS) => {
       },
       personalisation: {
         exerciseId: exercise.id,
+        exerciseRef: exercise.referenceNumber,
         exerciseName: application.exerciseName,
         applicationId: applicationId,
         applicantName: application.personalDetails.fullName,
