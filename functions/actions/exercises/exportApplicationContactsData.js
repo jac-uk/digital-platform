@@ -23,6 +23,7 @@ module.exports = (firebase, db) => {
     const headers = [
       'Reference number',
       'Status',
+      'Welsh Application',
       'Name',
       'Email',
       'Phone number',
@@ -65,6 +66,7 @@ const contactsExport = (applications) => {
     return {
       referenceNumber: application.referenceNumber,
       status: lookup(application.status),
+      isWelsh: helpers.toYesNo(application._language === 'cym'),
       fullName: application.personalDetails.fullName,
       email: application.personalDetails.email,
       phone: application.personalDetails.phone,
