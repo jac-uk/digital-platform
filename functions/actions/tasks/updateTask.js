@@ -620,12 +620,14 @@ module.exports = (config, firebase, db) => {
     // construct finalScores
     const finalScores = [];
     task.applications.forEach(application => {
-      finalScores.push({
-        id: application.id,
-        ref: application.ref,
-        score: response.scores[application.id],
-        percent: 100 * (response.scores[application.id] / response.maxScore),
-      });
+      if (response.scores[application.id]) {
+        finalScores.push({
+          id: application.id,
+          ref: application.ref,
+          score: response.scores[application.id],
+          percent: 100 * (response.scores[application.id] / response.maxScore),
+        });
+      }
     });
     result.success = true;
     result.data.maxScore = response.maxScore;
@@ -685,9 +687,14 @@ module.exports = (config, firebase, db) => {
     outcomeStats[passStatus] = 0;
     outcomeStats[failStatus] = 0;
 
-    // update application records
+    // get applications still relevant to this task
+    const applications = await getApplications(exercise, task);
+    const applicationIdMap = {};
+    applications.forEach(application => applicationIdMap[application.id] = true);
+
+    // update application records (only those still relevant)
     const commands = [];
-    task.finalScores.forEach(scoreData => {
+    task.finalScores.filter(scoreData => applicationIdMap[scoreData.id]).forEach(scoreData => {
       let newStatus;
       if (scoreData[scoreType] > task.passMark) {
         newStatus = passStatus;
