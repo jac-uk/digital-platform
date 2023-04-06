@@ -6,7 +6,7 @@ const { initialiseApplicationRecords } = require('../functions/actions/applicati
 
 const main = async () => {
   return initialiseApplicationRecords({
-    exerciseId: 'e9F2sYm4WBE6vaZko7dG',
+    exerciseId: 'rxqeJzA9WjZ21dEXf03p',
   });
 };
 
