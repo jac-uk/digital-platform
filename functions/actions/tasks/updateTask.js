@@ -736,7 +736,7 @@ module.exports = (config, firebase, db) => {
           // create qualifying test task
           const finalScores = [];
           const applications = [];
-          task.finalScores.forEach(scoreData => {
+          task.finalScores.filter(scoreData => applicationIdMap[scoreData.id]).forEach(scoreData => {
             if (scoreData.pass) {
               const otherTaskScoreData = otherTask.finalScores.find(otherScoreData => otherScoreData.id === scoreData.id);
               if (otherTaskScoreData && otherTaskScoreData.pass) {
