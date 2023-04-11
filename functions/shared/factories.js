@@ -448,7 +448,7 @@ module.exports = (CONSTANTS) => {
     return data;
   }
 
-  function newApplicationRecord(exercise, application) {
+  function newApplicationRecord(firebase, exercise, application) {
     let applicationRecord = {
       exercise: {
         id: exercise.id,

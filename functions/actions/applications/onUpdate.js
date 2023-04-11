@@ -35,7 +35,7 @@ module.exports = (config, firebase, db, auth) => {
       await updateCandidate(dataAfter.userId);
       // update application record
 
-      // applied 
+      // applied
       if (dataBefore.status === 'draft' && dataAfter.status === 'applied') {
         const candidate = await getDocument(db.doc(`candidates/${dataAfter.userId}`));
 
@@ -75,7 +75,7 @@ module.exports = (config, firebase, db, auth) => {
       //       commands.push({
       //         command: 'set',
       //         ref: db.collection('applicationRecords').doc(`${dataAfter.id}`),
-      //         data: newApplicationRecord(exercise, dataAfter),
+      //         data: newApplicationRecord(firebase, exercise, dataAfter),
       //       });
       //     }
       //   }
@@ -87,7 +87,7 @@ module.exports = (config, firebase, db, auth) => {
 
     if (characterChecksBefore && characterChecksAfter && characterChecksBefore.status && characterChecksAfter.status) {
       if ((characterChecksBefore.status !== characterChecksAfter.status) && characterChecksAfter.status === 'completed') {
-        
+
         // send confirmation email if it hasn't been sent before
         if (!dataBefore.emailLog || (dataBefore.emailLog && !dataBefore.emailLog.characterCheckSubmitted)) {
           const exercise = await getDocument(db.doc(`exercises/${dataBefore.exerciseId}`));
@@ -101,7 +101,7 @@ module.exports = (config, firebase, db, auth) => {
             });
           }
         }
-        
+
         try {
           await db.collection('applicationRecords').doc(`${applicationId}`).update({
             'characterChecks.status': 'completed',

@@ -78,7 +78,7 @@ module.exports = (config, firebase, db, auth) => {
         commands.push({
           command: 'set',
           ref: db.collection('applicationRecords').doc(`${application.id}`),
-          data: newApplicationRecord(exercise, application),
+          data: newApplicationRecord(firebase, exercise, application),
         });
       }
     }
@@ -138,7 +138,7 @@ module.exports = (config, firebase, db, auth) => {
         commands.push({
           command: 'set',
           ref: db.collection('applicationRecords').doc(`${application.id}`),
-          data: newApplicationRecord(exercise, application),
+          data: newApplicationRecord(firebase, exercise, application),
         });
       }
     }
@@ -173,7 +173,7 @@ module.exports = (config, firebase, db, auth) => {
               commands.push({
                 command: 'set',
                 ref: db.collection('qualifyingTestResponses').doc(),
-                data: newQualifyingTestResponse(qualifyingTest, newApplicationRecord(exercise, application)),
+                data: newQualifyingTestResponse(qualifyingTest, newApplicationRecord(firebase, exercise, application)),
               });
             }
           }
