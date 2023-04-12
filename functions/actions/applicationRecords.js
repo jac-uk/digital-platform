@@ -78,7 +78,7 @@ module.exports = (config, firebase, db, auth) => {
         commands.push({
           command: 'set',
           ref: db.collection('applicationRecords').doc(`${application.id}`),
-          data: newApplicationRecord(firebase, exercise, application),
+          data: newApplicationRecord(firebase, exercise, application),  // needs firebase in order to insert timestamp @TODO there's a better way to do this
         });
       }
     }
