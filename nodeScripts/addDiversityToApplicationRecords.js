@@ -3,7 +3,7 @@
 // const config = require('./shared/config.js');
 const { app, db } = require('./shared/admin.js');
 const { applyUpdates, getDocuments, getDocument } = require('../functions/shared/helpers');
-
+const { applicationOpenDatePost01042023 } = require('./shared/helpers');
 
 const main = async () => {
 
@@ -29,7 +29,7 @@ const main = async () => {
       command: 'set',
       ref: db.collection('applicationRecords').doc(`${application.id}`),
       data: {
-        diversity: newDiversityFlags(application),
+        diversity: newDiversityFlags(application, exercise),
       },
     });
   }
@@ -39,7 +39,7 @@ const main = async () => {
   return result;
 };
 
-function newDiversityFlags(application) {
+function newDiversityFlags(application, exercise) {
   const applicationData = application.equalityAndDiversitySurvey ? application.equalityAndDiversitySurvey : application;
   const data = {
     gender: applicationData.gender,
@@ -54,9 +54,15 @@ function newDiversityFlags(application) {
     },
     socialMobility: {
       attendedUKStateSchool: null,
-      firstGenerationUniversity: null,
     },
   };
+  // Add checks for different fields after 01-04-2023
+  if (applicationOpenDatePost01042023(exercise)) {
+    data.socialMobility.parentsAttendedUniversity = null;
+  }
+  else {
+    data.socialMobility.firstGenerationUniversity = null;
+  }
   if (applicationData.ethnicGroup) {
     switch (applicationData.ethnicGroup) {
       case 'uk-ethnic':
@@ -92,17 +98,29 @@ function newDiversityFlags(application) {
       data.professionalBackground.preferNotToSay = true;
     }
   }
-
-  if (
-    application.stateOrFeeSchool === 'uk-state-selective'
-    || application.stateOrFeeSchool === 'uk-state-non-selective'
-  ) {
-    data.socialMobility.attendedUKStateSchool = true;
+  // Add checks for different fields after 01-04-2023
+  if (applicationOpenDatePost01042023(exercise)) {
+    if (
+      application.stateOrFeeSchool16 === 'uk-state-selective'
+      || application.stateOrFeeSchool === 'uk-state-non-selective'
+    ) {
+      data.socialMobility.attendedUKStateSchool = true;
+    }
+    if (application.parentsAttendedUniversity === true) {
+      data.socialMobility.parentsAttendedUniversity = true;
+    }
   }
-  if (application.firstGenerationStudent === true) {
-    data.socialMobility.firstGenerationUniversity = true;
+  else {
+    if (
+      application.stateOrFeeSchool === 'uk-state-selective'
+      || application.stateOrFeeSchool === 'uk-state-non-selective'
+    ) {
+      data.socialMobility.attendedUKStateSchool = true;
+    }
+    if (application.firstGenerationStudent === true) {
+      data.socialMobility.firstGenerationUniversity = true;
+    }
   }
-
   return data;
 }
 

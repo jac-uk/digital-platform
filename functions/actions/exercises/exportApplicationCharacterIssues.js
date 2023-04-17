@@ -103,7 +103,7 @@ module.exports = (firebase, db) => {
   }
 
   function getHeaders() {
-    return [
+    let headers = [
       { title: 'Ref', name: 'ref' },
       { title: 'Name', name: 'name' },
       { title: 'Middle name(s)', name: 'middleNames' },
@@ -121,9 +121,10 @@ module.exports = (firebase, db) => {
       { title: 'Professional background', name: 'professionalBackground' },
       { title: 'Current legal role', name: 'currentLegalRole' },
       { title: 'Held fee-paid judicial role', name: 'feePaidJudicialRole' },
-      { title: 'Attended state or fee-paying school', name: 'stateOrFeeSchool' },
       { title: 'Attended Oxbridge universities', name: 'oxbridgeUni' },
       { title: 'First generation to go to university', name: 'firstGenerationStudent' },
+      { title: 'Occupation of main household earner', name: 'occupationOfChildhoodEarner' },
+      { title: 'Either parent attended university to gain a degree', name: 'parentsAttendedUniversity' },
       { title: 'Ethnic group', name: 'ethnicGroup' },
       { title: 'Gender', name: 'gender' },
       { title: 'Gender is the same as sex assigned at birth', name: 'changedGender' },
@@ -139,6 +140,18 @@ module.exports = (firebase, db) => {
       { title: 'Post-qualification Experience', name: 'postQualificationExperience' },
       { title: 'Judicial Experience', name: 'judicialExperience' },
     ];
+
+    // Add a column based on whether it's pre/post 01-04-2023
+    let addColumn;
+    if (applicationHelpers.applicationOpenDatePost01042023(exercise)) {
+      addColumn = { title: 'Attended state or fee-paying school', name: 'stateOrFeeSchool16' };
+    }
+    else {
+      addColumn = { title: 'Attended state or fee-paying school', name: 'stateOrFeeSchool' };
+    }
+    // Add column to array at index 10
+    headers.splice(17, 0, addColumn);
+    return headers;
   }
 
   function getRows(applicationRecords) {
@@ -189,6 +202,8 @@ module.exports = (firebase, db) => {
       stateOrFeeSchool: lookup(survey.stateOrFeeSchool),
       oxbridgeUni: helpers.toYesNo(survey.oxbridgeUni),
       firstGenerationStudent: helpers.toYesNo(lookup(survey.firstGenerationStudent)),
+      occupationOfChildhoodEarner: lookup(survey.occupationOfChildhoodEarner),
+      parentsAttendedUniversity: lookup(survey.parentsAttendedUniversity),
       ethnicGroup: lookup(survey.ethnicGroup),
       gender: lookup(survey.gender),
       changedGender: helpers.toYesNo(survey.changedGender),

@@ -106,11 +106,24 @@ const flattenProfessionalBackground = (equalityAndDiversitySurvey) => {
   return roles.join('\n');
 };
 
-const attendedUKStateSchool = (equalityAndDiversitySurvey) => {
-  if (!(equalityAndDiversitySurvey && equalityAndDiversitySurvey.stateOrFeeSchool)) {
-    return '';
+const attendedUKStateSchool = (equalityAndDiversitySurvey, exercise) => {
+  // Add checks for different fields after 01-04-2023
+  if (applicationOpenDatePost01042023(exercise)) {
+    if (!(equalityAndDiversitySurvey && equalityAndDiversitySurvey.stateOrFeeSchool16)) {
+      return '';
+    }
+    return toYesNo(['uk-state-selective', 'uk-state-non-selective'].indexOf(equalityAndDiversitySurvey.stateOrFeeSchool16) >= 0);
   }
-  return toYesNo(['uk-state-selective', 'uk-state-non-selective'].indexOf(equalityAndDiversitySurvey.stateOrFeeSchool) >= 0);
+  else {
+    if (!(equalityAndDiversitySurvey && equalityAndDiversitySurvey.stateOrFeeSchool)) {
+      return '';
+    }
+    return toYesNo(['uk-state-selective', 'uk-state-non-selective'].indexOf(equalityAndDiversitySurvey.stateOrFeeSchool) >= 0);
+  }
+};
+
+const applicationOpenDatePost01042023 = (exercise) => {
+  return exercise.hasOwnProperty('applicationOpenDate') && exercise.applicationOpenDate.toDate() > new Date('2023-04-01');
 };
 
 module.exports = {
@@ -123,4 +136,5 @@ module.exports = {
   flattenCurrentLegalRole,
   flattenProfessionalBackground,
   attendedUKStateSchool,
+  applicationOpenDatePost01042023,
 };
