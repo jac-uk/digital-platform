@@ -102,5 +102,6 @@ const contactsExport = (applications, exercise) => {
     else {
       returnObj.firstGenerationStudent = helpers.toYesNo(lookup(application.equalityAndDiversitySurvey.firstGenerationStudent));
     }
+    return returnObj;
   });
 };

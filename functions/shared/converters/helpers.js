@@ -123,7 +123,7 @@ const attendedUKStateSchool = (equalityAndDiversitySurvey, exercise) => {
 };
 
 const applicationOpenDatePost01042023 = (exercise) => {
-  return exercise.hasOwnProperty('applicationOpenDate') && exercise.applicationOpenDate.toDate() > new Date('2023-04-01');
+  return Object.prototype.hasOwnProperty.call(exercise, 'applicationOpenDate') && exercise.applicationOpenDate.toDate() > new Date('2023-04-01');
 };
 
 module.exports = {
