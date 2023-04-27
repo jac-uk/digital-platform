@@ -34,8 +34,7 @@ module.exports = (config, firebase, db, auth) => {
 
     for(const result of results) {
       let record = {};
-      params.columns.forEach((column) => {
-        
+      for(const column of params.columns) {        
         record[column] = _.get(result, column, '- No answer provided -');
         // if key is blank or doesn't exist, set it to - No answer provided -
         if(record[column] === '' || record[column] === null) {
