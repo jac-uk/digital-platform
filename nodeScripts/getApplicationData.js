@@ -1,12 +1,25 @@
 'use strict';
 
-const { app, auth } = require('./shared/admin.js');
-const getUserEmailByID = require('../functions/actions/exercises/getApplicationData')(auth);
+const config = require('./shared/config');
+const { firebase, app, auth, db } = require('./shared/admin.js');
+const getApplicationData = require('../functions/actions/exercises/getApplicationData')(config, firebase, db, auth);
+
+const params = {
+  // columns: ['personalDetails.title'],
+  columns: ['additionalWorkingPreferences 5'],
+  exerciseId: 'zIpZ7DWHfk0b6uLUes4O',
+  type: 'showdata',
+  whereClauses: [],
+};  
+
+// const params = {
+//   exerciseId: 'zIpZ7DWHfk0b6uLUes4O',
+//   type: 'showdata',
+//   whereClauses: [],
+// };  
 
 const main = async () => {
-  return getUserEmailByID({
-    candidateId: 'enter candidate id here',
-  });
+  return getApplicationData(params);
 };
 
 main()
