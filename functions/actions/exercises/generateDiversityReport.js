@@ -1,4 +1,5 @@
 const { getDocument, getDocuments } = require('../../shared/helpers');
+const { applicationOpenDatePost01042023 } = require('../../shared/converters/helpers');
 
 module.exports = (firebase, db) => {
   return {
@@ -25,7 +26,7 @@ module.exports = (firebase, db) => {
     const report = {
       totalApplications: applications.length,
       createdAt: firebase.firestore.Timestamp.fromDate(new Date()),
-      applied: diversityReport(applications, applicationRecords),
+      applied: diversityReport(applications, applicationRecords, exercise),
     };
 
 
@@ -46,24 +47,24 @@ module.exports = (firebase, db) => {
       const shortlistedIds = shortlistedApplicationRecords.map(doc => doc.id);
       const shortlistedApplications = selectedApplications.concat(applications.filter(doc => shortlistedIds.indexOf(doc.id) >= 0));
 
-      report.handover = diversityReport(handoverApplications, handoverApplicationRecords);
-      report.recommended = diversityReport(recommendedApplications, recommendedApplicationRecords);
-      report.selected = diversityReport(selectedApplications, selectedApplicationRecords);
-      report.shortlisted = diversityReport(shortlistedApplications, shortlistedApplicationRecords);
+      report.handover = diversityReport(handoverApplications, handoverApplicationRecords, exercise);
+      report.recommended = diversityReport(recommendedApplications, recommendedApplicationRecords, exercise);
+      report.selected = diversityReport(selectedApplications, selectedApplicationRecords, exercise);
+      report.shortlisted = diversityReport(shortlistedApplications, shortlistedApplicationRecords, exercise);
     }
     await db.collection('exercises').doc(exerciseId).collection('reports').doc('diversity').set(report);
     return report;
   }
 };
 
-const diversityReport = (applications, applicationRecords) => {
+const diversityReport = (applications, applicationRecords, exercise) => {
   let report = {
     totalApplications: applications.length,
     gender: genderStats(applications),
     ethnicity: ethnicityStats(applications),
     disability: disabilityStats(applications),
     professionalBackground: professionalBackgroundStats(applications),
-    socialMobility: socialMobilityStats(applications),
+    socialMobility: socialMobilityStats(applications, exercise),
   };
   if (applicationRecords) {
     report.emp = empStats(applicationRecords);
@@ -299,27 +300,51 @@ const professionalBackgroundStats = (applications) => {
   return stats;
 };
 
-const socialMobilityStats = (applications) => {
+const socialMobilityStats = (applications, exercise) => {
+  const openDatePost01042023 = applicationOpenDatePost01042023(exercise);
   const stats = {
     total: 0,
     attendedUKStateSchool: {
       total: 0,
     },
-    firstGenerationUniversity: {
-      total: 0,
-    },
   };
+  // Add checks for different fields after 01-04-2023
+  if (openDatePost01042023) {
+    stats.parentsAttendedUniversity = {
+      total: 0,
+    };
+  }
+  else {
+    stats.firstGenerationUniversity = {
+      total: 0,
+    };
+  }
   for (let i = 0, len = applications.length; i < len; ++i) {
     const application = applications[i].equalityAndDiversitySurvey ? applications[i].equalityAndDiversitySurvey : applications[i];
-    if (
-      application.stateOrFeeSchool === 'uk-state-selective'
-      || application.stateOrFeeSchool === 'uk-state-non-selective'
-    ) {
-      stats.attendedUKStateSchool.total += 1;
+    // Add checks for different fields after 01-04-2023
+    if (openDatePost01042023) {
+      if (
+        application.stateOrFeeSchool16 === 'uk-state-selective'
+        || application.stateOrFeeSchool16 === 'uk-state-non-selective'
+      ) {
+        stats.attendedUKStateSchool.total += 1;
+      }
+      if (application.parentsAttendedUniversity === true) {
+        stats.parentsAttendedUniversity.total += 1;
+      }
     }
-    if (application.firstGenerationStudent === true) {
-      stats.firstGenerationUniversity.total += 1;
+    else {
+      if (
+        application.stateOrFeeSchool === 'uk-state-selective'
+        || application.stateOrFeeSchool === 'uk-state-non-selective'
+      ) {
+        stats.attendedUKStateSchool.total += 1;
+      }
+      if (application.firstGenerationStudent === true) {
+        stats.firstGenerationUniversity.total += 1;
+      }
     }
+
     stats.total += 1;
   }
   calculatePercents(stats);

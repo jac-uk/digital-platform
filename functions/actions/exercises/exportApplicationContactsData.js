@@ -1,6 +1,7 @@
 const helpers = require('../../shared/converters/helpers');
 const lookup = require('../../shared/converters/lookup');
 const { getDocuments } = require('../../shared/helpers');
+const { applicationOpenDatePost01042023 } = require('../../shared/converters/helpers');
 
 module.exports = (firebase, db) => {
   return {
@@ -9,8 +10,10 @@ module.exports = (firebase, db) => {
 
   /**
    * Generates an export of all application contacts for the specified exercise
-   * @param {uuid} exerciseId
-   * @param {string} status - Application status
+   * @param {*} exerciseId 
+   * @param {*} status - Application status
+   * @param {*} exercise 
+   * @returns 
    */
   async function exportApplicationContactsData(exerciseId, status) {
 
@@ -58,12 +61,13 @@ module.exports = (firebase, db) => {
   }
 };
 
-const contactsExport = (applications) => {
+const contactsExport = (applications, exercise) => {
   return applications.map((application) => {
     // the following ensure application has sufficient fields for the export
     if (!Object.keys(application).includes('personalDetails')) { application.personalDetails = {}; }
     if (!Object.keys(application).includes('equalityAndDiversitySurvey')) { application.equalityAndDiversitySurvey = {}; }
-    return {
+
+    const returnObj = {
       referenceNumber: application.referenceNumber,
       status: lookup(application.status),
       isWelsh: helpers.toYesNo(application._language === 'cym'),
@@ -78,8 +82,7 @@ const contactsExport = (applications) => {
       currentLegalRole: helpers.flattenCurrentLegalRole(application.equalityAndDiversitySurvey),
       professionalBackground: helpers.flattenProfessionalBackground(application.equalityAndDiversitySurvey),
       heldFeePaidJudicialRole: helpers.heldFeePaidJudicialRole(application.equalityAndDiversitySurvey.feePaidJudicialRole),
-      attendedUKStateSchool: helpers.toYesNo(helpers.attendedUKStateSchool(application.equalityAndDiversitySurvey)),
-      firstGenerationStudent: helpers.toYesNo(lookup(application.equalityAndDiversitySurvey.firstGenerationStudent)),
+      attendedUKStateSchool: helpers.toYesNo(helpers.attendedUKStateSchool(application.equalityAndDiversitySurvey, exercise)),
       firstAssessorFullName: application.firstAssessorFullName,
       firstAssessorEmail: application.firstAssessorEmail,
       firstAssessorPhone: application.firstAssessorPhone,
@@ -91,5 +94,14 @@ const contactsExport = (applications) => {
       platform: application.client ? application.client.platform : '',
       timezone: application.client ? application.client.timezone : '',
     };
+
+    // Add checks for different fields after 01-04-2023
+    if (applicationOpenDatePost01042023(exercise)) {
+      returnObj.parentsAttendedUniversity = helpers.toYesNo(lookup(application.equalityAndDiversitySurvey.parentsAttendedUniversity));
+    }
+    else {
+      returnObj.firstGenerationStudent = helpers.toYesNo(lookup(application.equalityAndDiversitySurvey.firstGenerationStudent));
+    }
+    return returnObj;
   });
 };

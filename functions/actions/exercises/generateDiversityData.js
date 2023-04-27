@@ -1,4 +1,5 @@
 const { getDocument, getDocuments } = require('../../shared/helpers');
+const { applicationOpenDatePost01042023 } = require('../../shared/converters/helpers');
 // const sizeof = require('firestore-size');
 
 module.exports = (firebase, db) => {
@@ -25,7 +26,7 @@ module.exports = (firebase, db) => {
     applications.forEach(application => {
       const ref = application.referenceNumber.split('-')[1];
       data.applicationsMap[ref] = {
-        d: getDiversityFlags(application),
+        d: getDiversityFlags(application, exercise),
       };
     });
 
@@ -49,16 +50,18 @@ const DIVERSITY_CHARACTERISTICS = {
   GENDER_NEUTRAL: 'gn',
   GENDER_OTHER: 'go',
   GENDER_NOT_SAY: 'gx',
+  PARENTS_ATTENDED_UNIVERSITY: 'pau',
   PROFESSION_BARRISTER: 'pb',
   PROFESSION_CILEX: 'pc',
   PROFESSION_SOLICITOR: 'ps',
   PROFESSION_OTHER: 'po',
   PROFESSION_NOT_SAY: 'px',
   UK_STATE_SCHOOL: 'ss',
+  UK_STATE_SCHOOL_16: 'ss16',
   FIRST_GENERATION_UNIVERSITY: 'u1',
 };
 
-const getDiversityFlags = (application) => {
+const getDiversityFlags = (application, exercise) => {
   const flags = [];
   const survey = application.equalityAndDiversitySurvey ? application.equalityAndDiversitySurvey : application;
   if (survey.disability === true) {
@@ -123,14 +126,30 @@ const getDiversityFlags = (application) => {
       flags.push(DIVERSITY_CHARACTERISTICS.PROFESSION_NOT_SAY);
     }
   }
-  if (
-    survey.stateOrFeeSchool === 'uk-state-selective'
-    || survey.stateOrFeeSchool === 'uk-state-non-selective'
-  ) {
-    flags.push(DIVERSITY_CHARACTERISTICS.UK_STATE_SCHOOL);
+
+  // Add checks for different fields after 01-04-2023
+  if (applicationOpenDatePost01042023(exercise)) {
+    if (
+      survey.stateOrFeeSchool16 === 'uk-state-selective'
+      || survey.stateOrFeeSchool16 === 'uk-state-non-selective'
+    ) {
+      flags.push(DIVERSITY_CHARACTERISTICS.UK_STATE_SCHOOL_16);
+    }
+    if (survey.parentsAttendedUniversity === true) {
+      flags.push(DIVERSITY_CHARACTERISTICS.PARENTS_ATTENDED_UNIVERSITY);
+    }
   }
-  if (survey.firstGenerationStudent === true) {
-    flags.push(DIVERSITY_CHARACTERISTICS.FIRST_GENERATION_UNIVERSITY);
+  else {
+    if (
+      survey.stateOrFeeSchool === 'uk-state-selective'
+      || survey.stateOrFeeSchool === 'uk-state-non-selective'
+    ) {
+      flags.push(DIVERSITY_CHARACTERISTICS.UK_STATE_SCHOOL);
+    }
+    if (survey.firstGenerationStudent === true) {
+      flags.push(DIVERSITY_CHARACTERISTICS.FIRST_GENERATION_UNIVERSITY);
+    }
   }
+
   return flags;
 };

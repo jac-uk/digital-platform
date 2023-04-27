@@ -1,4 +1,5 @@
 const { formatDate } = require('./helpers');
+const { applicationOpenDatePost01042023 } = require('./converters/helpers');
 
 module.exports = (CONSTANTS) => {
   return {
@@ -381,7 +382,7 @@ module.exports = (CONSTANTS) => {
     return assessment;
   }
 
-  function newDiversityFlags(application) {
+  function newDiversityFlags(application, exercise) {
     const applicationData = application.equalityAndDiversitySurvey ? application.equalityAndDiversitySurvey : application;
     const data = {
       gender: applicationData.gender || null,
@@ -396,9 +397,15 @@ module.exports = (CONSTANTS) => {
       },
       socialMobility: {
         attendedUKStateSchool: null,
-        firstGenerationUniversity: null,
       },
     };
+    // Add checks for different fields after 01-04-2023
+    if (applicationOpenDatePost01042023(exercise)) {
+      data.socialMobility.parentsAttendedUniversity = null;
+    }
+    else {
+      data.socialMobility.firstGenerationUniversity = null;
+    }
     if (applicationData.ethnicGroup) {
       switch (applicationData.ethnicGroup) {
         case 'uk-ethnic':
@@ -435,14 +442,28 @@ module.exports = (CONSTANTS) => {
       }
     }
 
-    if (
-      application.stateOrFeeSchool === 'uk-state-selective'
-      || application.stateOrFeeSchool === 'uk-state-non-selective'
-    ) {
-      data.socialMobility.attendedUKStateSchool = true;
+    // Add checks for different fields after 01-04-2023
+    if (applicationOpenDatePost01042023(exercise)) {
+      if (
+        application.stateOrFeeSchool16 === 'uk-state-selective'
+        || application.stateOrFeeSchool16 === 'uk-state-non-selective'
+      ) {
+        data.socialMobility.attendedUKStateSchool = true;
+      }
+      if (application.parentsAttendedUniversity === true) {
+        data.socialMobility.parentsAttendedUniversity = true;
+      }
     }
-    if (application.firstGenerationStudent === true) {
-      data.socialMobility.firstGenerationUniversity = true;
+    else {
+      if (
+        application.stateOrFeeSchool === 'uk-state-selective'
+        || application.stateOrFeeSchool === 'uk-state-non-selective'
+      ) {
+        data.socialMobility.attendedUKStateSchool = true;
+      }
+      if (application.firstGenerationStudent === true) {
+        data.socialMobility.firstGenerationUniversity = true;
+      }
     }
 
     return data;
@@ -477,7 +498,7 @@ module.exports = (CONSTANTS) => {
         characterIssues: [],
         eligibilityIssues: [],
       },
-      diversity: newDiversityFlags(application),
+      diversity: newDiversityFlags(application, exercise),
       history: [],
       notes: [],
     };

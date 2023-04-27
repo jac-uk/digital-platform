@@ -7,6 +7,7 @@ module.exports = {
   deleteUser,
   isDevelop,
   log,
+  applicationOpenDatePost01042023,
 };
 
 // get all google users
@@ -54,3 +55,7 @@ function log(message) {
   const now = new Date();
   console.log(`${now.toLocaleDateString('en-GB')} ${now.toLocaleTimeString('en-GB')} - ${message}`);
 }
+
+const applicationOpenDatePost01042023 = (exercise) => {
+  return Object.prototype.hasOwnProperty.call(exercise, 'applicationOpenDate') && exercise.applicationOpenDate.toDate() > new Date('2023-04-01');
+};
