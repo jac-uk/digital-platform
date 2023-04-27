@@ -1,4 +1,3 @@
-const { log } = require('firebase-functions/logger');
 const { getDocument, getDocuments, formatDate } = require('../../shared/helpers');
 
 const _ = require('lodash');
@@ -33,7 +32,6 @@ module.exports = (config, firebase, db, auth) => {
 
     const data = [];
 
-    // console.log(2, );
     for(const result of results) {
       let record = {};
       params.columns.forEach((column) => {
@@ -56,7 +54,6 @@ module.exports = (config, firebase, db, auth) => {
         // Handle array values
         else if (['locationPreferences', 'jurisdictionPreferences'].includes(column)) {
           if (column === 'locationPreferences') {
-            // console.log(record[column], exerciseData.locationQuestionType);
             record[column] = formatPreference(record[column], exerciseData.locationQuestionType);
           }
           if (column === 'jurisdictionPreferences') {
