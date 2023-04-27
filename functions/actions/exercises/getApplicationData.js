@@ -42,7 +42,7 @@ module.exports = (config, firebase, db, auth) => {
           record[column] = '- No answer provided -';
         }
         else if (column.includes('additionalWorkingPreferences') && Object.prototype.hasOwnProperty.call(result, 'additionalWorkingPreferences')) {
-          if (!Object.prototype.hasOwnProperty.call(result, (parseInt(column.replace('additionalWorkingPreferences ',''))))) {
+          if (!Object.prototype.hasOwnProperty.call(result.additionalWorkingPreferences, (parseInt(column.replace('additionalWorkingPreferences ',''))))) {
             record[column] = '- No answer provided -';
           } else {
             record[column] = formatPreference(
