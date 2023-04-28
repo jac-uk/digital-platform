@@ -15,9 +15,7 @@ function formatPreference(choiceArray, questionType) {
 
 module.exports = (config, firebase, db, auth) => {
 
-  return {
-    getApplicationData,
-  };
+  return getApplicationData;
 
   /**
   * getApplicationData
@@ -36,23 +34,25 @@ module.exports = (config, firebase, db, auth) => {
 
     for(const result of results) {
       let record = {};
-      for(const column of params.columns) {
-
+      for (const column of params.columns) {        
         record[column] = _.get(result, column, '- No answer provided -');
-        // if key doesn't exist or it's blank, set it to - No answer provided -
+        // if key is blank or doesn't exist, set it to - No answer provided -
         if(record[column] === '' || record[column] === null) {
           record[column] = '- No answer provided -';
         }
-        if (column.includes('additionalWorkingPreferences')) {
-          record[column] = formatPreference(
-            (result.additionalWorkingPreferences  ? result.additionalWorkingPreferences[parseInt(column.replace('additionalWorkingPreferences ',''))].selection : '- No answer provided -'),
-            exerciseData.additionalWorkingPreferences[parseInt(column.replace('additionalWorkingPreferences ',''))].questionType
-          );
+        else if (column.includes('additionalWorkingPreferences') && Object.prototype.hasOwnProperty.call(result, 'additionalWorkingPreferences')) {
+          if (!Object.prototype.hasOwnProperty.call(result.additionalWorkingPreferences, (parseInt(column.replace('additionalWorkingPreferences ',''))))) {
+            record[column] = '- No answer provided -';
+          } else {
+            record[column] = formatPreference(
+              (result.additionalWorkingPreferences  ? result.additionalWorkingPreferences[parseInt(column.replace('additionalWorkingPreferences ',''))].selection : '- No answer provided -'),
+              exerciseData.additionalWorkingPreferences[parseInt(column.replace('additionalWorkingPreferences ',''))].questionType
+            );
+          }
         }
         // Handle array values
         else if (['locationPreferences', 'jurisdictionPreferences'].includes(column)) {
           if (column === 'locationPreferences') {
-            // console.log(record[column], exerciseData.locationQuestionType);
             record[column] = formatPreference(record[column], exerciseData.locationQuestionType);
           }
           if (column === 'jurisdictionPreferences') {
