@@ -11,7 +11,7 @@
 
 // const config = require('./shared/config');
 const { getDocument } = require('../functions/shared/helpers');
-const { firebase, app, db } = require('./shared/admin.js');
+const { app, db } = require('./shared/admin.js');
 const { getHtmlPanelPack } = require('../functions/shared/converters/applicationConverter')();
 
 const main = async () => {
