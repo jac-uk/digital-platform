@@ -15,7 +15,7 @@ module.exports = (firebase, db) => {
    * @param {*} exercise 
    * @returns 
    */
-  async function exportApplicationContactsData(exerciseId, status) {
+  async function exportApplicationContactsData(exerciseId, status, exercise) {
 
     // get submitted applications
     const applications = await getDocuments(db.collection('applications')
@@ -54,7 +54,7 @@ module.exports = (firebase, db) => {
 
     const report = {
       headers: headers,
-      rows: contactsExport(applications),
+      rows: contactsExport(applications, exercise),
     };
 
     return report;
