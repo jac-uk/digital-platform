@@ -29,7 +29,7 @@ module.exports = (firebase, db) => {
       if (singleNationalInsuranceNumber) {
         
         const candidates = await getDocuments(db.collection('candidates')
-          .where('computed.search', 'array-contains', singleNationalInsuranceNumber)
+          .where('computed.nino', '==', singleNationalInsuranceNumber)
         );
 
         if (candidates.length > 0) {
