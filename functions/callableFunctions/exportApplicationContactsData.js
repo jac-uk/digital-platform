@@ -41,6 +41,6 @@ module.exports = functions.region('europe-west2').https.onCall(async (data, cont
   await logEvent('info', 'Application contacts exported', details, user);
 
   // return the requested data
-  return await exportApplicationContactsData(data.exerciseId, data.status);
+  return await exportApplicationContactsData(data.exerciseId, data.status, exercise);
 
 });
