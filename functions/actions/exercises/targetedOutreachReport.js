@@ -35,10 +35,24 @@ module.exports = (firebase, db) => {
         if (candidates.length > 0) {
           let resultsFromRecords = candidates.map(async (obj) => {
             const candidateID = obj.id;
+            
             const applicationRecords = await getDocuments(db.collection('applicationRecords')
               .where('candidate.id', '==', candidateID));
 
-            if (applicationRecords.length > 0) {
+            const applications = await getDocuments(db.collection('applications')
+              .where('status', '!=', 'withdrawn')
+              .where('userId', '==', candidateID));
+            
+              let applicationNationalInsuranceNumber;
+
+              if (applications.length > 0) {
+                let NiFromApplications = applications.map(async (application) => {
+                  let returnObj = [];
+                  applicationNationalInsuranceNumber = application.personalDetails && application.personalDetails.nationalInsuranceNumber ? application.personalDetails.nationalInsuranceNumber : singleNationalInsuranceNumber;
+                });
+              }
+
+              if (applicationRecords.length > 0) {
               let applicationsFromRecords = applicationRecords.map(async (application) => {
                 let returnObj = [];
 
@@ -48,7 +62,7 @@ module.exports = (firebase, db) => {
                 const applicationRecordDisability = application.diversity && application.diversity.disability ? application.diversity.disability : null;
 
                 returnObj = {
-                  NINumber: singleNationalInsuranceNumber,
+                  NINumber: applicationNationalInsuranceNumber,
                   name: applicationRecordFullName,
                   gender: applicationRecordGender,
                   ethnicity: applicationRecordEthnicity,
