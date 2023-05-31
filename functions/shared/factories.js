@@ -523,6 +523,7 @@ module.exports = (CONSTANTS) => {
       _applicationContent: null,
       _applicationVersion: null,
       aboutTheRole: null,
+      aboutTheRoleWelsh: null,
       additionalWorkingPreferences: null,
       advertType: null,
       applicationCloseDate: null,
