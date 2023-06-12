@@ -13,7 +13,7 @@ const main = async () => {
   // PLAN:
   // [x] get all applications
   // [x] for each application get `selectionCriteriaAnswers` array and return first element `.answerDetails`
-  // [ ] return as a CSV with the following columns: App ID, Ref number, Candidate Name, Status, ASC value
+  // [] return as a CSV with the following columns: App ID, Ref number, Candidate Name, Status, ASC value
 
   // get all applications
   const applications = await getDocuments(
@@ -47,7 +47,7 @@ const main = async () => {
   });
   await output.writeRecords(filteredData);
 
-  return true;
+  return filteredData.length;
 };
 
 main()
