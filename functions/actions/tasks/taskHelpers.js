@@ -20,6 +20,7 @@ module.exports = (config) => {
     hasQualifyingTest,
     getApplicationPassStatus,
     getApplicationFailStatus,
+    getApplicationDidNotParticipateStatus,
     getApplicationPassStatuses,
     getApplicationFailStatuses,
     includeZScores,
@@ -123,6 +124,17 @@ module.exports = (config) => {
     }
     // end
     return `${task.type}Passed`;
+  }
+
+  function getApplicationDidNotParticipateStatus(exercise, task) {
+    switch (task.type) {
+    case TASK_TYPE.CRITICAL_ANALYSIS:
+    case TASK_TYPE.SITUATIONAL_JUDGEMENT:
+    case TASK_TYPE.QUALIFYING_TEST:
+      return 'noTestSubmitted';
+    default:
+      return null;
+    }
   }
 
   function getApplicationFailStatus(exercise, task) {

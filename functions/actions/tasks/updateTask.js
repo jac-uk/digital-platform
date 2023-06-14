@@ -12,6 +12,7 @@ module.exports = (config, firebase, db) => {
     scoreSheet2MarkingScheme,
     getApplicationPassStatus,
     getApplicationFailStatus,
+    getApplicationDidNotParticipateStatus,
     getApplicationPassStatuses,
     getApplicationFailStatuses,
     taskApplicationsEntryStatus,
@@ -684,8 +685,10 @@ module.exports = (config, firebase, db) => {
     const outcomeStats = {};
     const passStatus = getApplicationPassStatus(exercise, task);
     const failStatus = getApplicationFailStatus(exercise, task);
+    const didNotParticipateStatus = getApplicationDidNotParticipateStatus(exercise, task);
     outcomeStats[passStatus] = 0;
     outcomeStats[failStatus] = 0;
+    if (didNotParticipateStatus) outcomeStats[didNotParticipateStatus] = 0;
 
     // get applications still relevant to this task
     const applications = await getApplications(exercise, task);
@@ -722,6 +725,23 @@ module.exports = (config, firebase, db) => {
         data: saveData,
       });
     });
+
+    // update application records where we don't have final scores (if we have a status to set these to)
+    if (didNotParticipateStatus) {
+      const scoredApplicationIdMap = {};
+      task.finalScores.forEach(scoreData => scoredApplicationIdMap[scoreData.id] = true);
+      task.applications.filter(application => applicationIdMap[application.id]).filter(application => !scoredApplicationIdMap[application.id]).forEach(application => {
+        outcomeStats[didNotParticipateStatus] += 1;
+        const saveData = {};
+        if (!(task.allowStatusUpdates === false)) { saveData.status = didNotParticipateStatus; }  // here we update status unless this has been explicitly denied
+        saveData[`statusLog.${didNotParticipateStatus}`] = firebase.firestore.FieldValue.serverTimestamp(); // we still always log the status change
+        commands.push({
+          command: 'update',
+          ref: db.collection('applicationRecords').doc(application.id),
+          data: saveData,
+        }); 
+      });
+    }
 
     // check for qualifying test follow on task
     if (task.type === config.TASK_TYPE.CRITICAL_ANALYSIS || task.type === config.TASK_TYPE.SITUATIONAL_JUDGEMENT) {
