@@ -1,6 +1,6 @@
 const helpers = require('../../shared/converters/helpers');
 const lookup = require('../../shared/converters/lookup');
-const { getDocuments } = require('../../shared/helpers');
+const { getDocuments, getDocument } = require('../../shared/helpers');
 const { applicationOpenDatePost01042023 } = require('../../shared/converters/helpers');
 
 module.exports = (firebase, db) => {
@@ -15,42 +15,51 @@ module.exports = (firebase, db) => {
    * @param {*} exercise 
    * @returns 
    */
-  async function exportApplicationContactsData(exerciseId, status, exercise) {
-
+  async function exportApplicationContactsData(exerciseId, status) {
     // get submitted applications
     const applications = await getDocuments(db.collection('applications')
       .where('exerciseId', '==', exerciseId)
       .where('status', '==', status)
     );
+    
+    const exercise = await getDocument(db.collection('exercises').doc(exerciseId));
 
-    const headers = [
-      'Reference number',
-      'Status',
-      'Welsh Application',
-      'Name',
-      'Email',
-      'Phone number',
-      'Date of Birth',
-      'National Insurance Number',
-      'Gender',
-      'Disability',
-      'Ethnic Group',
-      'Current Legal Role',
-      'Professional Background',
-      'Held Fee-paid Judicial Role',
-      'Attended UK State School',
-      'First Generation Student',
-      'First Assessor Name',
-      'First Assessor Email',
-      'First Assessor Phone',
-      'Second Assessor Name',
-      'Second Assessor Email',
-      'Second Assessor Phone',
-      'IP address',
-      'User agent',
-      'Platform',
-      'Timezone',
-    ];
+    const headers = {
+      referenceNumber: 'Reference number',
+      status: 'Status',
+      isWelsh: 'Welsh Application',
+      fullName: 'Name',
+      email: 'Email',
+      phone: 'Phone number',
+      dob: 'Date of Birth',
+      nationalInsuranceNumber: 'National Insurance Number',
+      gender: 'Gender',
+      disability: 'Disability',
+      ethnicGroup: 'Ethnic Group',
+      currentLegalRole: 'Current Legal Role',
+      professionalBackground: 'Professional Background',
+      heldFeePaidJudicialRole: 'Held Fee-paid Judicial Role',
+      attendedUKStateSchool: 'Attended UK State School',
+      firstGenerationStudent: 'First Generation Student',
+      parentsAttendedUniversity: 'Parents Attended University',
+      firstAssessorFullName: 'First Assessor Name',
+      firstAssessorEmail: 'First Assessor Email',
+      firstAssessorPhone: 'First Assessor Phone',
+      secondAssessorFullName: 'Second Assessor Name',
+      secondAssessorEmail: 'Second Assessor Email',
+      secondAssessorPhone: 'Second Assessor Phone',
+      ip: 'IP address',
+      userAgent: 'User agent',
+      platform: 'Platform',
+      timezone: 'Timezone',
+    };
+
+    // Add checks for different fields after 01-04-2023, remove headers accordingly
+    if (applicationOpenDatePost01042023(exercise)) {
+      delete headers['First Generation Student'];
+    } else {
+      delete headers['Parents Attended University'];
+    }    
 
     const report = {
       headers: headers,
@@ -83,25 +92,27 @@ const contactsExport = (applications, exercise) => {
       professionalBackground: helpers.flattenProfessionalBackground(application.equalityAndDiversitySurvey),
       heldFeePaidJudicialRole: helpers.heldFeePaidJudicialRole(application.equalityAndDiversitySurvey.feePaidJudicialRole),
       attendedUKStateSchool: helpers.toYesNo(helpers.attendedUKStateSchool(application.equalityAndDiversitySurvey, exercise)),
+      parentsAttendedUniversity: helpers.toYesNo(lookup(application.equalityAndDiversitySurvey.parentsAttendedUniversity)),
+      firstGenerationStudent: helpers.toYesNo(lookup(application.equalityAndDiversitySurvey.firstGenerationStudent)),
       firstAssessorFullName: application.firstAssessorFullName,
       firstAssessorEmail: application.firstAssessorEmail,
       firstAssessorPhone: application.firstAssessorPhone,
       secondAssessorFullName: application.secondAssessorFullName,
       secondAssessorEmail: application.secondAssessorEmail,
       secondAssessorPhone: application.secondAssessorPhone,
-      ip: application.client ? application.client.ip : '',
-      userAgent: application.client ? application.client.userAgent : '',
-      platform: application.client ? application.client.platform : '',
-      timezone: application.client ? application.client.timezone : '',
+      ip: application.client ? application.client.ip : 'No Data',
+      userAgent: application.client ? application.client.userAgent : 'No Data',
+      platform: application.client ? application.client.platform : 'No Data',
+      timezone: application.client ? application.client.timezone : 'No Data',
     };
 
-    // Add checks for different fields after 01-04-2023
+    // Add checks for different fields after 01-04-2023 remove rows accordingly
     if (applicationOpenDatePost01042023(exercise)) {
-      returnObj.parentsAttendedUniversity = helpers.toYesNo(lookup(application.equalityAndDiversitySurvey.parentsAttendedUniversity));
-    }
-    else {
-      returnObj.firstGenerationStudent = helpers.toYesNo(lookup(application.equalityAndDiversitySurvey.firstGenerationStudent));
-    }
+      delete returnObj['firstGenerationStudent'];
+    } else {
+      delete returnObj['parentsAttendedUniversity'];
+    }    
+
     return returnObj;
   });
 };
