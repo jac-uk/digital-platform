@@ -28,9 +28,6 @@ jobs:
       - run: npm run production:deploy:rules
         env:
           FIREBASE_TOKEN: ${{ secrets.FIREBASE_CLI_TOKEN }}
-      - run: npm run production:deploy:storage-rules
-        env:
-          FIREBASE_TOKEN: ${{ secrets.FIREBASE_CLI_TOKEN }}
       - run: npm run production:deploy:realtime-rules
         env:
           FIREBASE_TOKEN: ${{ secrets.FIREBASE_CLI_TOKEN }}
@@ -38,5 +35,8 @@ jobs:
         env:
           FIREBASE_TOKEN: ${{ secrets.FIREBASE_CLI_TOKEN }}
       - run: npm run production:deploy:functions
+        env:
+          FIREBASE_TOKEN: ${{ secrets.FIREBASE_CLI_TOKEN }}
+      - run: npm run production:deploy:storage-rules
         env:
           FIREBASE_TOKEN: ${{ secrets.FIREBASE_CLI_TOKEN }}
