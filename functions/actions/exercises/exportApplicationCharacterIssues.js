@@ -1,6 +1,7 @@
 const lookup = require('../../shared/converters/lookup');
 const helpers = require('../../shared/converters/helpers');
 const { getDocuments, getDocument, formatDate, getDate } = require('../../shared/helpers');
+const { applicationOpenDatePost01042023 } = require('../../shared/converters/helpers');
 const _ = require('lodash');
 const htmlWriter = require('../../shared/htmlWriter');
 const config = require('../../shared/config');
@@ -143,7 +144,7 @@ module.exports = (firebase, db) => {
 
     // Add a column based on whether it's pre/post 01-04-2023
     let addColumn;
-    if (applicationHelpers.applicationOpenDatePost01042023(exercise)) {
+    if (applicationOpenDatePost01042023(exercise)) {
       addColumn = { title: 'Attended state or fee-paying school', name: 'stateOrFeeSchool16' };
     }
     else {
