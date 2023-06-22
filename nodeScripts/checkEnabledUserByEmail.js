@@ -3,7 +3,7 @@
 const { app, auth } = require('./shared/admin.js');
 const checkEnabledUserByEmail = require('../functions/actions/candidates/checkEnabledUserByEmail.js')(auth);
 
-const candidateEmail = { email: ''};
+const candidateEmail = { email: 'wrongemail@bademailprovider.com'};
 
 const main = async () => {
   return checkEnabledUserByEmail(candidateEmail);
