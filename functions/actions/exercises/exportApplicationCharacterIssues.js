@@ -3,7 +3,6 @@ const helpers = require('../../shared/converters/helpers');
 const { getDocuments, getDocument, formatDate, getDate } = require('../../shared/helpers');
 const { applicationOpenDatePost01042023 } = require('../../shared/converters/helpers');
 const _ = require('lodash');
-const { applicationOpenDatePost01042023 } = require('../../shared/converters/helpers');
 const htmlWriter = require('../../shared/htmlWriter');
 const config = require('../../shared/config');
 const drive = require('../../shared/google-drive')();
