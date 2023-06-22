@@ -17,8 +17,6 @@ jobs:
         with:
           node-version: '16.15.1'
       - name: Installing project dependencies
-        run: echo "//npm.pkg.github.com/:_authToken=${{ secrets.GITHUB_TOKEN }}" > ~/.npmrc && npm ci
-      - name: Build
-        run: npm run build         
+        run: echo "//npm.pkg.github.com/:_authToken=${{ secrets.GITHUB_TOKEN }}" > ~/.npmrc && npm ci       
       - name: Lint
         run: npm run lint
