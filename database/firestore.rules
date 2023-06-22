@@ -169,10 +169,11 @@ service cloud.firestore {
       allow read: if userIsAuthenticated() && userIsJAC() && hasPermission('a1');
 
       // Allow existing records which belong to the current user
-      allow read: if resource.data.userId == currentUser();
+      allow read: if userIsAuthenticated() && resource.data.userId == currentUser();
 
       // Allow new records if they will belong to the current user, are draft and the exercise is open, and we have valid fields
       allow create: if request.resource.data.userId == currentUser() &&
+        userIsAuthenticated() &&
         request.resource.data.status == "draft" &&
         exerciseIsOpen(request.resource.data.exerciseId) &&
         verifyFields(['userId', 'exerciseId', 'status'], []);
