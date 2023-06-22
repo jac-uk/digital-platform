@@ -2,6 +2,7 @@ const lookup = require('../../shared/converters/lookup');
 const helpers = require('../../shared/converters/helpers');
 const { getDocuments, getDocument, formatDate, getDate } = require('../../shared/helpers');
 const _ = require('lodash');
+const { applicationOpenDatePost01042023 } = require('../../shared/converters/helpers');
 const htmlWriter = require('../../shared/htmlWriter');
 const config = require('../../shared/config');
 const drive = require('../../shared/google-drive')();
@@ -49,7 +50,7 @@ module.exports = (firebase, db) => {
     return {
       total: applicationRecords.length,
       createdAt: firebase.firestore.Timestamp.fromDate(new Date()),
-      headers: getHeaders(),
+      headers: getHeaders(exercise),
       rows: getRows(applicationRecords),
     };
 
@@ -102,7 +103,7 @@ module.exports = (firebase, db) => {
 
   }
 
-  function getHeaders() {
+  function getHeaders(exercise) {
     let headers = [
       { title: 'Ref', name: 'ref' },
       { title: 'Name', name: 'name' },
@@ -143,7 +144,7 @@ module.exports = (firebase, db) => {
 
     // Add a column based on whether it's pre/post 01-04-2023
     let addColumn;
-    if (applicationHelpers.applicationOpenDatePost01042023(exercise)) {
+    if (applicationOpenDatePost01042023(exercise)) {
       addColumn = { title: 'Attended state or fee-paying school', name: 'stateOrFeeSchool16' };
     }
     else {
