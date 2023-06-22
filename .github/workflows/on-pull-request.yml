@@ -1,12 +1,8 @@
 name: On merge
 
 on:
-  push:
-    branches:
-      - feature/#872-functions-code
-    paths-ignore:
-      - 'package.json'
-      - 'package-lock.json'
+  pull_request:
+    types: [opened, reopened, synchronize, edited]
 
 jobs:
   lint:
