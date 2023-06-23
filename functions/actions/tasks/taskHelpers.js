@@ -462,6 +462,7 @@ module.exports = (config) => {
   ```
    * @returns Provided `finalScores` array decorated with new `zScore` properties
    * Note: zScore = ((% Score – Mean(All % Scores))/SD(All % Scores))
+   * Note: combined zScore has a weighting of 40% of CAT zScore plus 60% of SJT zScore
    **/
   function includeZScores(finalScores) {
     if (!finalScores) return [];
@@ -482,7 +483,7 @@ module.exports = (config) => {
         item.scoreSheet.qualifyingTest.SJ.zScore = (item.scoreSheet.qualifyingTest.SJ.percent - SJmean) / SJstdev;
       });
       finalScores.forEach(item => {
-        item.zScore = (item.scoreSheet.qualifyingTest.CA.zScore + item.scoreSheet.qualifyingTest.SJ.zScore) / 2;
+        item.zScore = (0.4 * item.scoreSheet.qualifyingTest.CA.zScore) + (0.6 * item.scoreSheet.qualifyingTest.SJ.zScore);
         item.scoreSheet.qualifyingTest.zScore = item.zScore;
       });
     } catch (e) {
