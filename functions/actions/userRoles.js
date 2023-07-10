@@ -52,6 +52,7 @@ module.exports = (db, auth) => {
             isJACEmployee: true, // this field is currently redundant due to change on checking whether is JAC employee
             disabled: user.disabled,
             customClaims: user.customClaims,
+            providerData: user.providerData,
           };
           adminUsers.push(adminUser);
         }
