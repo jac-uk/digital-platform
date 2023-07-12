@@ -304,6 +304,8 @@ module.exports = {
   SELECTION_CATEGORIES: ['leadership', 'roleplay', 'situational', 'interview', 'overall'],
   NOTIFY_KEY: functions.config().notify.key,
   SLACK_URL: functions.config().slack.url,
+  SLACK_SIGNING_SECRET: functions.config().slack.signing_secret,
+  SLACK_BOT_TOKEN: functions.config().slack.bot_token,
   STORAGE_URL: functions.config().project.id + '.appspot.com',
   SCAN_SERVICE_URL: functions.config().scan_service.url,
   GOOGLE_RECAPTCHA_VALIDATION_URL: functions.config().google_recaptcha.url,
