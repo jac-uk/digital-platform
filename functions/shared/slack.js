@@ -39,7 +39,7 @@ module.exports = (config) => {
     expressReceiver,
     post,
   };
-  
+
   async function post(msgString) {
     if (config.SLACK_URL) {
       const result = await axios.post(
