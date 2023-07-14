@@ -272,5 +272,15 @@ service cloud.firestore {
       // Allow JAC to read and write
       allow read, write: if userIsAuthenticated() && userIsJAC();
     }
+
+    match /users/{userId} {
+      allow read: if userIsAuthenticated() && userIsJAC();
+      allow write: if userIsAuthenticated() && userIsJAC();
+    }
+
+    match /roles/{roleId} {
+      allow read: if userIsAuthenticated() && userIsJAC();
+      allow write: if userIsAuthenticated() && userIsJAC();
+    }
   }
 }

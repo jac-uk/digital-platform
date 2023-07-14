@@ -18,6 +18,8 @@ exports.onDocumentUploaded = require('./backgroundFunctions/onDocumentUploaded')
 exports.onCandidatePersonalDetailsCreate = require('./backgroundFunctions/onCandidatePersonalDetailsCreate');
 exports.onCandidatePersonalDetailsUpdate = require('./backgroundFunctions/onCandidatePersonalDetailsUpdate');
 exports.onMessageCreate = require('./backgroundFunctions/onMessageCreate');
+// exports.onUserUpdate = require('./backgroundFunctions/onUserUpdate');
+// exports.onRoleUpdate = require('./backgroundFunctions/onRoleUpdate');
 
 // Callable
 exports.getApplicationData = require('./callableFunctions/getApplicationData');
