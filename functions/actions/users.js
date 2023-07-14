@@ -1,6 +1,8 @@
 const { getDocument } = require('../shared/helpers');
 
 module.exports = (auth, db) => {
+  const  { adminSetUserRole } = require('./userRoles')(db, auth);
+
   return {
     generateSignInWithEmailLink,
     createUser,
@@ -47,12 +49,39 @@ module.exports = (auth, db) => {
    *
    */
    async function createUser(user) {
+    const { name, email, password, roleId } = user;
     try {
-      const res = await auth.createUser(user);
-      return res;
+      // create user in authentication database
+      const newUser = await auth.createUser({ email, password, displayName: name });
+
+      // set user role in custom claims
+      await adminSetUserRole({
+        userId: newUser.uid,
+        roleId,
+      });
+
+      // create user in firestore
+      const data = {
+        name,
+        email,
+        providerData: JSON.parse(JSON.stringify(newUser.providerData)),
+        disabled: newUser.disabled,
+        role: {
+          id: roleId,
+          isChanged: false,
+        },
+      };
+      await db.collection('users').doc(newUser.uid).set(data);
+
+      return {
+        status: 'success',
+        data: { id: newUser.uid, ...data },
+      };
     } catch(error) {
-      console.log(error);
-      return error;
+      return {
+        status: 'error',
+        data: error,
+      };
     }
   }
 
