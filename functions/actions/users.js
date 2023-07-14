@@ -6,6 +6,7 @@ module.exports = (auth, db) => {
   return {
     generateSignInWithEmailLink,
     createUser,
+    updateUser,
     deleteUsers,
     importUsers,
   };
@@ -40,6 +41,30 @@ module.exports = (auth, db) => {
       return true;
     }
     return false;
+  }
+
+  /**
+   * Update a user
+   * 
+   * @param {string} userId
+   * @param {object} dataBefore
+   * @param {object} dataAfter
+   */
+  async function updateUser(userId, dataBefore, dataAfter) {
+    const data = {};
+    if (dataBefore.name !== dataAfter.name) data.displayName = dataAfter.name;
+    if (dataBefore.email !== dataAfter.email) data.email = dataAfter.email;
+    if (dataBefore.disabled !== dataAfter.disabled) data.disabled = dataAfter.disabled;
+    
+    try {
+      if (Object.keys(data).length) {
+        await auth.updateUser(userId, data);
+      }
+      return true;
+    } catch(error) {
+      console.log(error);
+      return false;
+    }
   }
 
   /**
