@@ -17,6 +17,7 @@ module.exports = (config) => {
   // Global error handler
   app.error(console.log);
 
+  // if message contains the keyword "exercise"
   app.message('exercise', async ({ message, say }) => {
     // message object: https://api.slack.com/events/message
     try {
