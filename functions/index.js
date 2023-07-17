@@ -20,7 +20,7 @@ exports.onCandidatePersonalDetailsUpdate = require('./backgroundFunctions/onCand
 exports.onMessageCreate = require('./backgroundFunctions/onMessageCreate');
 exports.onUserUpdate = require('./backgroundFunctions/onUserUpdate');
 exports.onUserDelete = require('./backgroundFunctions/onUserDelete');
-// exports.onRoleUpdate = require('./backgroundFunctions/onRoleUpdate');
+exports.onRoleUpdate = require('./backgroundFunctions/onRoleUpdate');
 
 // Callable
 exports.getApplicationData = require('./callableFunctions/getApplicationData');
