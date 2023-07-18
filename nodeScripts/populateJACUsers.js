@@ -1,36 +1,32 @@
+/*
+  This script will populate the JAC users from the authentication database into the users collection
+*/
+
 'use strict';
 
 const { app, db } = require('./shared/admin');
+const config = require('./shared/config');
 const { applyUpdates } = require('../functions/shared/helpers');
+const { newUser } = require('../functions/shared/factories')(config);
 const { listAllUsers } = require('./shared/helpers');
 
 const main = async () => {
   const commands = [];
-  let users = await listAllUsers();
-  users = users.filter(item => item.email.indexOf('@judicialappointments.') > 0);
-  console.log(users);
-  users.forEach((user) => {
-    const data = {
-      name: user.displayName,
-      email: user.email,
-      providerData: JSON.parse(JSON.stringify(user.providerData)),
-      disabled: user.disabled,
-      role: {
-        id: user.customClaims.r,
-        isChanged: false,
-      },
-    };
+  const users = await listAllUsers();
+  const filteredUsers = users.filter(item => item.email.indexOf('@judicialappointments.') > 0);
+  filteredUsers.forEach((user) => {
     commands.push({
       command: 'set',
       ref: db.collection('users').doc(user.uid),
-      data,
+      data: newUser(user),
     });
   });
 
   if (commands.length) {
     const res = await applyUpdates(db, commands);
-    console.log(res);
+    return res;
   }
+  return 'No JAC users to update';
 };
 
 main()

@@ -19,6 +19,7 @@ module.exports = (CONSTANTS) => {
     newVacancy,
     newNotificationLateApplicationRequest,
     newNotificationLateApplicationResponse,
+    newUser,
   };
 
   function newNotificationExerciseApprovalSubmit(firebase, exerciseId, exercise, email) {
@@ -712,6 +713,19 @@ module.exports = (CONSTANTS) => {
       },
       createdAt: firebase.firestore.Timestamp.fromDate(new Date()),
       status: 'ready',
+    };
+  }
+
+  function newUser(user) {
+    return {
+      name: user.displayName,
+      email: user.email,
+      providerData: JSON.parse(JSON.stringify(user.providerData)),
+      disabled: user.disabled,
+      role: {
+        id: user.customClaims.r,
+        isChanged: false,
+      },
     };
   }
 };
