@@ -718,8 +718,9 @@ module.exports = (CONSTANTS) => {
 
   function newUser(user) {
     return {
-      name: user.displayName,
+      displayName: user.displayName,
       email: user.email,
+      emailVerified: user.emailVerified,
       providerData: JSON.parse(JSON.stringify(user.providerData)),
       disabled: user.disabled,
       role: {
