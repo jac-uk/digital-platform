@@ -12,8 +12,15 @@ module.exports = (config, firebase, db, auth) => {
    */
   async function onUpdate(exerciseId, dataBefore, dataAfter) {
 
+    const isDraftOrReady = dataAfter.state === 'draft' || dataAfter.state === 'ready';
+    const isPreviouslyApproved = '_approval' in dataAfter && 'approved' in dataAfter._approval && dataAfter._approval.approved;
+    const isUnlocked = isDraftOrReady && isPreviouslyApproved;
+
     if (dataAfter.published === true) {
-      await updateVacancy(exerciseId, dataAfter);
+      if (!isUnlocked) {
+        // Update the vacancy if the exercise is published but not in the unlocked state (as the changes will need approval first)
+        await updateVacancy(exerciseId, dataAfter);
+      }
     } else if (dataAfter.published === false) {
       if (dataBefore.published === true) {
         await deleteVacancy(exerciseId);
