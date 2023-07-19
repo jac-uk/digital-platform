@@ -14,7 +14,7 @@ module.exports = (config, firebase, db, auth) => {
   async function onUpdate(exerciseId, dataBefore, dataAfter) {
 
     const isDraftOrReady = dataAfter.state === 'draft' || dataAfter.state === 'ready';
-    const isPreviouslyApproved = _has(dataAfter, '_approval.approved.date');
+    const isPreviouslyApproved = _.has(dataAfter, '_approval.approved.date');
     const isUnlocked = isDraftOrReady && isPreviouslyApproved;
 
     if (dataAfter.published === true) {
