@@ -27,7 +27,15 @@ module.exports = (config) => {
       // - there is no link in the message
       if (!message.thread_ts && !message.text.includes('http')) {
         await say({
-          text: `<@${message.user}> Please provide a link.`,
+          text: `<@${message.user}> 
+Thank you for contacting the JAC Digital Team.
+We are here to help you with any issues you may be having with our website, platform or applications. To ensure that we can provide you with the best possible assistance, please provide us with the following information:
+
+
+- Links to the pages where the issue is present
+- A description of the expected behavior
+- Screenshots of the issue
+`,
           thread_ts: message.ts,
         });
       }
