@@ -11,15 +11,17 @@ module.exports = functions.region('europe-west2').https.onCall(async (data, cont
     throw new functions.https.HttpsError('failed-precondition', 'The function must be called while authenticated.');
   }
 
-  hasPermissions(context.auth.token.rp, [PERMISSIONS.users.permissions.canChangeUserRole.value]);
+  if (context.auth.uid !== data.userId) {
+    throw new functions.https.HttpsError('permission-denied', 'Permission denied');
+  }
 
   if (!checkArguments({
     userId: { required: true },
     roleId: { required: true },
+    permissions: { required: true },
   }, data)) {
     throw new functions.https.HttpsError('invalid-argument', 'Please provide valid arguments');
   }
 
   return await adminSetUserRole(data);
 });
-

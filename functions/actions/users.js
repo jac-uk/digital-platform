@@ -1,8 +1,6 @@
 const { getDocument } = require('../shared/helpers');
 
 module.exports = (auth, db) => {
-  const  { adminSetUserRole } = require('./userRoles')(db, auth);
-
   return {
     generateSignInWithEmailLink,
     createUser,
@@ -70,20 +68,20 @@ module.exports = (auth, db) => {
   /**
    * Create a user
    * 
-   * @param {object} user
+   * @param {object} params
    *
    */
-   async function createUser(user) {
-    const { displayName, email, password, roleId } = user;
+   async function createUser(params) {
+    const { displayName, email, password, roleId, permissions } = params;
     try {
       // create user in authentication database
       const newUser = await auth.createUser({ email, password, displayName });
 
       // set user role in custom claims
-      await adminSetUserRole({
-        userId: newUser.uid,
-        roleId,
-      });
+      const customClaims = newUser.customClaims || {};
+      customClaims.r = roleId;
+      customClaims.rp = permissions;
+      await auth.setCustomUserClaims(newUser.uid, customClaims);
 
       // create user in firestore
       const data = {
