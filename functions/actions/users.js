@@ -52,7 +52,7 @@ module.exports = (auth, db) => {
    */
   async function updateUser(userId, dataBefore, dataAfter) {
     const data = {};
-    if (dataBefore.name !== dataAfter.name) data.displayName = dataAfter.name;
+    if (dataBefore.displayName !== dataAfter.displayName) data.displayName = dataAfter.displayName;
     if (dataBefore.email !== dataAfter.email) data.email = dataAfter.email;
     if (dataBefore.disabled !== dataAfter.disabled) data.disabled = dataAfter.disabled;
     
@@ -74,10 +74,10 @@ module.exports = (auth, db) => {
    *
    */
    async function createUser(user) {
-    const { name, email, password, roleId } = user;
+    const { displayName, email, password, roleId } = user;
     try {
       // create user in authentication database
-      const newUser = await auth.createUser({ email, password, displayName: name });
+      const newUser = await auth.createUser({ email, password, displayName });
 
       // set user role in custom claims
       await adminSetUserRole({
@@ -87,8 +87,9 @@ module.exports = (auth, db) => {
 
       // create user in firestore
       const data = {
-        name,
+        displayName,
         email,
+        emailVerified: newUser.emailVerified,
         providerData: JSON.parse(JSON.stringify(newUser.providerData)),
         disabled: newUser.disabled,
         role: {
