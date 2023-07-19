@@ -66,13 +66,16 @@ module.exports = (auth, db) => {
   }
 
   /**
-   * Create a user
+   * Create a user in authentication and firestore
    * 
-   * @param {object} params
-   *
+   * @param {string} displayName
+   * @param {string} email
+   * @param {string} password
+   * @param {string} roleId
+   * @param {array} permissions
+   * @returns {object}
    */
-   async function createUser(params) {
-    const { displayName, email, password, roleId, permissions } = params;
+   async function createUser({ displayName, email, password, roleId, permissions }) {
     try {
       // create user in authentication database
       const newUser = await auth.createUser({ email, password, displayName });
