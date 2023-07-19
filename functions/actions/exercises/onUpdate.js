@@ -1,4 +1,5 @@
 //const { getDocument, applyUpdates, isDateInPast, formatDate } = require('../../shared/helpers');
+const _ = require('lodash');
 
 module.exports = (config, firebase, db, auth) => {
   const { sendExerciseReadyForApproval } = require('./sendExerciseReadyForApproval')(config, firebase, db, auth);
@@ -13,7 +14,7 @@ module.exports = (config, firebase, db, auth) => {
   async function onUpdate(exerciseId, dataBefore, dataAfter) {
 
     const isDraftOrReady = dataAfter.state === 'draft' || dataAfter.state === 'ready';
-    const isPreviouslyApproved = '_approval' in dataAfter && 'approved' in dataAfter._approval && dataAfter._approval.approved;
+    const isPreviouslyApproved = _has(dataAfter, '_approval.approved.date');
     const isUnlocked = isDraftOrReady && isPreviouslyApproved;
 
     if (dataAfter.published === true) {
