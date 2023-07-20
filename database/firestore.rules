@@ -274,13 +274,19 @@ service cloud.firestore {
     }
 
     match /users/{userId} {
+      // allow users to read & write to their own documents
+      allow read, write: if userIsAuthenticated() && request.auth.uid == userId;
+
+      // allow admins
       allow read: if userIsAuthenticated() && userIsJAC();
-      allow write: if userIsAuthenticated() && userIsJAC();
+      allow create: if userIsAuthenticated() && userIsJAC() && hasPermission('u6');
+      allow update: if userIsAuthenticated() && userIsJAC();
+      allow delete: if userIsAuthenticated() && userIsJAC() && hasPermission('u4');
     }
 
     match /roles/{roleId} {
-      allow read: if userIsAuthenticated() && userIsJAC();
-      allow write: if userIsAuthenticated() && userIsJAC();
+      allow read: if userIsAuthenticated() && userIsJAC() && hasPermission('u5');
+      allow write: if userIsAuthenticated() && userIsJAC() && hasPermission('u3');
     }
   }
 }

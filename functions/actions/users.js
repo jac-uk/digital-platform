@@ -1,12 +1,13 @@
 const { getDocument } = require('../shared/helpers');
+const { newUser } = require('../shared/factories')();
 
 module.exports = (auth, db) => {
   return {
     generateSignInWithEmailLink,
     createUser,
-    updateUser,
     deleteUsers,
     importUsers,
+    onUserUpdate,
   };
 
   async function generateSignInWithEmailLink(ref, email, returnUrl) {
@@ -42,30 +43,6 @@ module.exports = (auth, db) => {
   }
 
   /**
-   * Update a user
-   * 
-   * @param {string} userId
-   * @param {object} dataBefore
-   * @param {object} dataAfter
-   */
-  async function updateUser(userId, dataBefore, dataAfter) {
-    const data = {};
-    if (dataBefore.displayName !== dataAfter.displayName) data.displayName = dataAfter.displayName;
-    if (dataBefore.email !== dataAfter.email) data.email = dataAfter.email;
-    if (dataBefore.disabled !== dataAfter.disabled) data.disabled = dataAfter.disabled;
-    
-    try {
-      if (Object.keys(data).length) {
-        await auth.updateUser(userId, data);
-      }
-      return true;
-    } catch(error) {
-      console.log(error);
-      return false;
-    }
-  }
-
-  /**
    * Create a user in authentication and firestore
    * 
    * @param {string} displayName
@@ -78,33 +55,29 @@ module.exports = (auth, db) => {
    async function createUser({ displayName, email, password, roleId, permissions }) {
     try {
       // create user in authentication database
-      const newUser = await auth.createUser({ email, password, displayName });
+      const user = await auth.createUser({ email, password, displayName });
 
       // set user role in custom claims
-      const customClaims = newUser.customClaims || {};
+      const customClaims = user.customClaims || {};
       customClaims.r = roleId;
       customClaims.rp = permissions;
-      await auth.setCustomUserClaims(newUser.uid, customClaims);
+      await auth.setCustomUserClaims(user.uid, customClaims);
 
       // create user in firestore
-      const data = {
-        displayName,
-        email,
-        emailVerified: newUser.emailVerified,
-        providerData: JSON.parse(JSON.stringify(newUser.providerData)),
-        disabled: newUser.disabled,
-        role: {
-          id: roleId,
-          isChanged: false,
+      const data = newUser({
+        ...user,
+        customClaims: {
+          r: roleId,
         },
-      };
-      await db.collection('users').doc(newUser.uid).set(data);
+      });
+      await db.collection('users').doc(user.uid).set(data);
 
       return {
         status: 'success',
-        data: { id: newUser.uid, ...data },
+        data: { id: user.uid, ...data },
       };
     } catch(error) {
+      console.log(error);
       return {
         status: 'error',
         data: error,
@@ -174,4 +147,28 @@ module.exports = (auth, db) => {
     return result;
   }
 
+  /**
+   * User updated event handler
+   * 
+   * @param {string} userId
+   * @param {object} dataBefore
+   * @param {object} dataAfter
+   */
+  async function onUserUpdate(userId, dataBefore, dataAfter) {
+    const fields = ['displayName', 'email', 'disabled'];
+    const data = {};
+    fields.forEach(field => {
+      if (dataBefore[field] !== dataAfter[field]) data[field] = dataAfter[field];
+    });
+    
+    try {
+      if (Object.keys(data).length) {
+        await auth.updateUser(userId, data);
+      }
+      return true;
+    } catch(error) {
+      console.log(error);
+      return false;
+    }
+  }
 };
