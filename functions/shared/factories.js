@@ -718,13 +718,13 @@ module.exports = (CONSTANTS) => {
 
   function newUser(user) {
     return {
-      displayName: user.displayName,
-      email: user.email,
-      emailVerified: user.emailVerified,
-      providerData: JSON.parse(JSON.stringify(user.providerData)),
-      disabled: user.disabled,
+      displayName: user.displayName || null,
+      email: user.email || null,
+      emailVerified: user.emailVerified || false,
+      providerData: JSON.parse(JSON.stringify(user.providerData)) || null,
+      disabled: user.disabled || false,
       role: {
-        id: user.customClaims.r,
+        id: user.customClaims && user.customClaims.r ? user.customClaims.r : null,
         isChanged: false,
       },
     };

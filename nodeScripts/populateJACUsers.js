@@ -9,11 +9,21 @@ const config = require('./shared/config');
 const { applyUpdates } = require('../functions/shared/helpers');
 const { newUser } = require('../functions/shared/factories')(config);
 const { listAllUsers } = require('./shared/helpers');
+const { log } = require('./shared/helpers.js');
+
+// whether to make changes in `users` collection in firestore
+const isAction = false;
 
 const main = async () => {
+  log('Get users from authentication database...');
   const commands = [];
   const users = await listAllUsers();
+  log(`- Total users: ${users.length}`);
+
+  log('Filter by JAC users...');
   const filteredUsers = users.filter(item => item.email.indexOf('@judicialappointments.') > 0);
+  log(`- Total JAC users: ${filteredUsers.length}`);
+
   filteredUsers.forEach((user) => {
     commands.push({
       command: 'set',
@@ -22,16 +32,18 @@ const main = async () => {
     });
   });
 
-  if (commands.length) {
+
+  if (isAction) {
+    log('Create user documents in firestore...');
     const res = await applyUpdates(db, commands);
-    return res;
+    log(`- Total created documents: ${res}`);
   }
-  return 'No JAC users to update';
+
+  log('Done');
 };
 
 main()
-  .then((result) => {
-    console.log(result);
+  .then(() => {
     app.delete();
     return process.exit();
   })
