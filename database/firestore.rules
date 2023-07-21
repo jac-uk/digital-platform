@@ -285,7 +285,7 @@ service cloud.firestore {
     }
 
     match /roles/{roleId} {
-      allow read: if userIsAuthenticated() && userIsJAC() && hasPermission('u5');
+      allow read: if userIsAuthenticated() && userIsJAC();
       allow write: if userIsAuthenticated() && userIsJAC() && hasPermission('u3');
     }
   }
