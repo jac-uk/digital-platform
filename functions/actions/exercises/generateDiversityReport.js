@@ -1,6 +1,25 @@
 const { getDocument, getDocuments } = require('../../shared/helpers');
 const { applicationOpenDatePost01042023 } = require('../../shared/converters/helpers');
 
+/**
+ * For the diversity reports:
+ *  - candidates listing their ethnicity as Other should be included in the BAME category
+ *  - display a declaration rate (see example below)
+ *  - candidates who have 'Not Answered' or have selected 'Other' or 'Prefer Not To Say' should NOT be included in the percentage 
+ *    calculations,
+ * eg out of 10 cats:
+ *   • 6 said they prefer Whiskers
+ *   • 2 said they prefer Applause
+ *   • 2 preferred not to say
+ * The percent would be:
+ *   • 75% said they prefer Whiskers (6 out of 8)
+ *   • 25% said they prefer Applause (2 out of 8)
+ *   • Declaration rate was 80% (8 out of 10)
+ *
+ * @param {*} firebase 
+ * @param {*} db 
+ * @returns 
+ */
 module.exports = (firebase, db) => {
   return {
     generateDiversityReport,
@@ -239,9 +258,11 @@ const ethnicityStats = (applications) => {
         case 'other-ethnic-group':
           //stats.other.total += 1;
           stats.bame.total += 1;  // Count it as 'bame'
+          stats.total += 1;
           break;
         default: // @todo check catch all is appropriate for bame
           stats.bame.total += 1;
+          stats.total += 1;
       }
     } else {
       stats.noAnswer.total += 1;
