@@ -766,7 +766,6 @@ module.exports = (config, firebase, db) => {
                   id: scoreData.id,
                   ref: scoreData.ref,
                   score: CAData.score + SJData.score,
-                  percent: (0.4 * CAData.percent) + (0.6 * SJData.percent),
                   scoreSheet: {
                     qualifyingTest: {
                       CA: {
@@ -778,7 +777,6 @@ module.exports = (config, firebase, db) => {
                         percent: SJData.percent,
                       },
                       score: CAData.score + SJData.score,
-                      percent: (0.4 * CAData.percent) + (0.6 * SJData.percent),
                     },
                   },
                 });
