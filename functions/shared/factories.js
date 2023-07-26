@@ -609,8 +609,9 @@ module.exports = (CONSTANTS) => {
       yesSalaryDetails: null,
     };
     const vacancy = { ...vacancyModel };
+    const dataKeys = Object.keys(data);
     for (var key in vacancyModel) {
-      if (data[key]) {
+      if (dataKeys.includes(key)) {
         vacancy[key] = data[key];
       }
     }
