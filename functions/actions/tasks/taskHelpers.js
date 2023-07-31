@@ -132,6 +132,8 @@ module.exports = (config) => {
     case TASK_TYPE.SITUATIONAL_JUDGEMENT:
     case TASK_TYPE.QUALIFYING_TEST:
       return 'noTestSubmitted';
+    case TASK_TYPE.SCENARIO:
+      return 'noScenarioTestSubmitted';
     default:
       return null;
     }
