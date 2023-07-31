@@ -21,6 +21,7 @@ module.exports = (config, firebase, db) => {
 
   return {
     updateTask,
+    addLateApplicationsToTasks,
     initialisePanelTask,
     initialiseTestTask,
     initialiseStatusChangesTask,
@@ -134,6 +135,63 @@ module.exports = (config, firebase, db) => {
     // return
     return result;
   }
+
+  /**
+  * addLateApplicationsToTasks
+  * Adds late applications to all relevant tasks in an exercise
+  * @param {*} `params` is an object containing
+  *   `exerciseId` (required) ID of exercise
+  *   `applications` (required) array of applications
+  */
+  async function addLateApplicationsToTasks(params) {
+
+    // get all relevant tasks (first step)
+    const qtTasks = await getDocuments(
+      db.collection('exercises').doc(params.exerciseId).collection('tasks')
+      .where('applicationEntryStatus', '==', '')
+    );
+
+    qtTasks.forEach(task => {
+      // get late applications that don't already exist in task
+      const lateApplications = [];
+      if (task.applications && task.applications.length) {
+        params.applications.forEach(application => {
+          if (!(task.applications.find(item => item.id === application.id) >= 0)) {
+            lateApplications.push(application);
+          }
+        })
+      }
+
+      const data = {};
+
+      if (task.status === config.TASK_STATUS.TEST_ACTIVATED) {
+
+      } else {
+        lateApplications.forEach(application => {
+          // arrayUnion
+        });
+      }
+
+        } else {
+
+        }
+        // if QT is initialised
+          // update task.applications (or do nothing... CHECK)
+        // if QT is active
+          // update task.applications
+          // transfer participants to QT platform (QT platform will then decide what to do)
+        // otherwise
+          // add to task.lateApplications
+        break;
+      default:
+        // TODO: add to 'lateApplications' array (queue to be processed by task)?
+      }
+
+
+    });
+  }
+
+
 
   /**
    * Initialises a status changes task
@@ -739,7 +797,7 @@ module.exports = (config, firebase, db) => {
           command: 'update',
           ref: db.collection('applicationRecords').doc(application.id),
           data: saveData,
-        }); 
+        });
       });
     }
 
@@ -909,7 +967,7 @@ module.exports = (config, firebase, db) => {
       saveData.stage = nextStage;
       saveData[`stageLog.${nextStage}`] = firebase.firestore.FieldValue.serverTimestamp();
       saveData.status = nextApplicationStatus;
-      saveData[`stageLog.${nextApplicationStatus}`] = firebase.firestore.FieldValue.serverTimestamp();
+      saveData[`statusLog.${nextApplicationStatus}`] = firebase.firestore.FieldValue.serverTimestamp();
       commands.push({
         command: 'update',
         ref: db.collection('applicationRecords').doc(applicationRecord.id),

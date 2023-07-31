@@ -181,6 +181,14 @@ module.exports = (config, firebase, db, auth) => {
       });
     }
 
+    // check for any QT tasks that have been activated (or beyond)
+    if (missingApplications.length) {
+      await addLateApplicationsToExerciseTasks({
+        exerciseId: params.exerciseId,
+        applications: missingApplications,
+      });  
+    }
+
     // write to db
     const result = await applyUpdates(db, commands);
     return result ? commands.length : false;
