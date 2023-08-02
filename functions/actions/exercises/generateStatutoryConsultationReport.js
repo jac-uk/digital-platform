@@ -1,4 +1,4 @@
-const { getAllDocuments, getDocuments, formatDate } = require('../../shared/helpers');
+const { getAllDocuments, getDocuments, formatDate, getDate } = require('../../shared/helpers');
 const lookup = require('../../shared/converters/lookup');
 const { NOT_COMPLETE_PUPILLAGE_REASONS } = require('../../shared/config');
 const helpers = require('../../shared/converters/helpers');
@@ -20,9 +20,16 @@ module.exports = (firebase, db) => {
 
     // get report rows
     const { maxQualificationNum, maxExperienceNum, data: rows } = reportData(db, applications);
-
     // get report headers
     const headers = reportHeaders(maxQualificationNum, maxExperienceNum);
+
+    // get report with judicial experience
+    const judicialData = reportData(db, applications, true);
+    const judicialHeaders = reportHeaders(judicialData.maxQualificationNum, judicialData.maxExperienceNum);
+
+    // get report with non-judicial experience
+    const nonJudicialData = reportData(db, applications, false);
+    const nonJudicialHeaders = reportHeaders(nonJudicialData.maxQualificationNum, nonJudicialData.maxExperienceNum);
 
     // construct the report document
     const report = {
@@ -30,6 +37,10 @@ module.exports = (firebase, db) => {
       createdAt: firebase.firestore.Timestamp.fromDate(new Date()),
       headers,
       rows,
+      judicialHeaders,
+      judicialRows: judicialData.data,
+      nonJudicialHeaders,
+      nonJudicialRows: nonJudicialData.data,
     };
 
     // store the report document in the database
@@ -62,12 +73,12 @@ const reportHeaders = (maxQualificationNum, maxExperienceNum) => {
 
 /**
  * Get the report data
- *
  * @param {db} db
  * @param {array} applications
+ * @param {boolean} isJudicial
  * @returns {array}
  */
-const reportData = (db, applications) => {
+const reportData = (db, applications, isJudicial = null) => {
   let maxQualificationNum = 0;
   let maxExperienceNum = 0;
 
@@ -75,16 +86,29 @@ const reportData = (db, applications) => {
     const personalDetails = application.personalDetails || {}; 
     const qualifications = application.qualifications || [];
     const experiences = application.experience || [];
+    // filter experiences by judicial/non-judicial
+    const filteredExperiences = experiences.filter(experience => {
+      if (isJudicial === null) return true;
+      
+      if (isJudicial) {
+        return Array.isArray(experience.tasks) ? experience.tasks.includes('judicial-functions') : false;
+      } else {
+        return Array.isArray(experience.tasks) ? !experience.tasks.includes('judicial-functions') : true;
+      }
+    });
+    // sort experiences by start date descending
+    filteredExperiences.sort((a, b) => getDate(b.startDate) > getDate(a.startDate));
+
 
     maxQualificationNum = qualifications.length > maxQualificationNum ? qualifications.length : maxQualificationNum;
-    maxExperienceNum = experiences.length > maxExperienceNum ? experiences.length : maxExperienceNum;
+    maxExperienceNum = filteredExperiences.length > maxExperienceNum ? filteredExperiences.length : maxExperienceNum;
 
     return {
       firstName: personalDetails.firstName || null,
       lastName: personalDetails.lastName || null,
       suffix: personalDetails.suffix || null,
       ...getQualificationData(qualifications),
-      ...getExperienceData(experiences),
+      ...getExperienceData(filteredExperiences),
       ...getJudicialExperienceData(application),
     };
   });
