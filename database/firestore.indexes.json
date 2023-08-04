@@ -3129,52 +3129,6 @@
           "order": "DESCENDING"
         }
       ]
-    },
-    {
-      "collectionGroup": "qualifyingTests",
-      "queryScope": "COLLECTION",
-      "fields": [
-        {
-          "fieldPath": "vacancy.id",
-          "order": "ASCENDING"
-        },
-        {
-          "fieldPath": "title",
-          "order": "ASCENDING"
-        }
-      ]
-    },
-    {
-      "collectionGroup": "qualifyingTests",
-      "queryScope": "COLLECTION",
-      "fields": [
-        {
-          "fieldPath": "vacancy.id",
-          "order": "ASCENDING"
-        },
-        {
-          "fieldPath": "title",
-          "order": "ASCENDING"
-        },
-        {
-          "fieldPath": "startDate",
-          "order": "ASCENDING"
-        }
-      ]
-    },
-    {
-      "collectionGroup": "qualifyingTests",
-      "queryScope": "COLLECTION",
-      "fields": [
-        {
-          "fieldPath": "vacancy.id",
-          "order": "ASCENDING"
-        },
-        {
-          "fieldPath": "title",
-          "order": "DESCENDING"
-        }
-      ]
     }
   ],
   "fieldOverrides": [
