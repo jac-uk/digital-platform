@@ -324,7 +324,15 @@ module.exports = (CONSTANTS) => {
   }
 
   function newAssessment(exercise, application, whichAssessor) {
+    // add search map
+    const search = getSearchMap([
+      application.personalDetails.fullName, // candidate name
+      application.referenceNumber,
+      // assessor details not available at this point!
+    ]);
+
     let assessment = {
+      _search: search,
       assessor: {},
       candidate: {
         id: application.userId,

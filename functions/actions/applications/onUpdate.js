@@ -136,15 +136,14 @@ module.exports = (config, firebase, db, auth) => {
         '_search': updateData,
       });
 
-
-
-      // @TODO: ONLY UPDATE applicationRecord IF IT EXISTS ALREADY!!
-
-
-      // Update application record
-      await db.collection('applicationRecords').doc(`${applicationId}`).update({
-        _search: updateApplicationData,
-      });
+      // Only update the applicationRecord if it exists already (has same id as the application!)
+      const applicationRecord = await getDocument(db.doc(`applicationRecords/${applicationId}`));
+      if (applicationRecord) {
+        // Update application record
+        await db.collection('applicationRecords').doc(`${applicationId}`).update({
+          _search: updateApplicationData,
+        });
+      }
     }
 
     if (dataAfter.personalDetails && dataAfter.personalDetails.fullName &&

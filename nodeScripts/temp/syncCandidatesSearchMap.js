@@ -37,8 +37,7 @@ async function updateAllCandidates() {
       data: {
         _search: getSearchMap(searchable),
         lastUpdated: firebase.firestore.FieldValue.serverTimestamp(),
-        //testField1: firebase.firestore.FieldValue.delete(), // Remove field
-        //'testField1.search': firebase.firestore.FieldValue.delete(), // Remove field
+        'computed.search': firebase.firestore.FieldValue.delete(), // Remove nested field
       },
     });
   }

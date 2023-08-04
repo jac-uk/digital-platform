@@ -101,7 +101,6 @@ module.exports = (firebase, db) => {
           fullName: candidateData[candidates[i].id].fullName,
           email: candidateData[candidates[i].id].email.toLowerCase(),
           computed: {
-            //search: search,
             nino: candidateData[candidates[i].id].nationalInsuranceNumber,
             exercisesMap: candidateData[candidates[i].id].exercisesMap,
             applicationsMap: candidateData[candidates[i].id].applicationsMap,
