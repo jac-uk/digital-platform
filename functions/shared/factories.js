@@ -1,5 +1,6 @@
 const { formatDate } = require('./helpers');
 const { applicationOpenDatePost01042023 } = require('./converters/helpers');
+const { getSearchMap } = require('./search');
 
 module.exports = (CONSTANTS) => {
   return {
@@ -470,7 +471,16 @@ module.exports = (CONSTANTS) => {
   }
 
   function newApplicationRecord(firebase, exercise, application) {
+    // add search map
+    const search = getSearchMap([
+      application.personalDetails.fullName,
+      application.personalDetails.email,
+      application.personalDetails.nationalInsuranceNumber,
+      application.referenceNumber,
+    ]);
+    
     let applicationRecord = {
+      _search: search,
       exercise: {
         id: exercise.id,
         name: exercise.name,

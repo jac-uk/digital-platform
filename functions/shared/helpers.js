@@ -24,6 +24,7 @@ module.exports = {
   normaliseNIN,
   calculateMean,
   calculateStandardDeviation,
+  objectHasNestedProperty,
 };
 
 function calculateMean(numArray) {
@@ -332,4 +333,19 @@ function isProduction() {
 
 function removeHtml(str) {
   return str.replace(/(<([^>]+)>)/gi, '');
+}
+
+function objectHasNestedProperty(obj, dotPath) {
+  if (typeof dotPath !== 'string' || dotPath.trim() === '') {
+    return false;
+  }
+  const keys = dotPath.split('.');
+  let currentObj = obj;
+  for (const key of keys) {
+    if (!currentObj || typeof currentObj !== 'object' || !Object.prototype.hasOwnProperty.call(currentObj, key)) {
+      return false;
+    }
+    currentObj = currentObj[key];
+  }
+  return true;
 }

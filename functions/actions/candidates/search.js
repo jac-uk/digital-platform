@@ -4,6 +4,7 @@
  */
 
 const { getDocument, getDocuments, applyUpdates, convertStringToSearchParts, normaliseNIN } = require('../../shared/helpers');
+const { getSearchMap } = require('../../shared/search');
 
 module.exports = (firebase, db) => {
   return {
@@ -82,37 +83,25 @@ module.exports = (firebase, db) => {
       candidateData[candidates[i].id].referenceNumbers = referenceNumbers;
     }
 
-
-
     // construct update commands
     const commands = [];
-    for (let i = 0, len = candidates.length; i < len; ++i) {
-      let search = [];
-      search.push(candidateData[candidates[i].id].nationalInsuranceNumber);
-      search = search.concat(convertStringToSearchParts(candidateData[candidates[i].id].fullName));
 
-      // add reference numbers to search
-      for (let j = 0, lenJ = candidateData[candidates[i].id].referenceNumbers.length; j < lenJ; ++j) {
-        let referenceNumber = candidateData[candidates[i].id].referenceNumbers[j];
-        if (referenceNumber) {
-          referenceNumber = referenceNumber.split('-')[1];
-          for (let k = 0, lenK = referenceNumber.length; k < lenK; ++k) {
-            search.push(referenceNumber.substr(0, k + 1));
-            if (k > 0) { search.push(referenceNumber.substr(k, lenK)); }
-          }
-        }
-      }
-      // add email to search
-      search = search.concat(convertStringToSearchParts(candidateData[candidates[i].id].email, '@'));
+    for (let i = 0, len = candidates.length; i < len; ++i) {
+      const searchable = [
+        candidateData[candidates[i].id].nationalInsuranceNumber,
+        candidateData[candidates[i].id].fullName,
+        candidateData[candidates[i].id].email,
+      ];
 
       commands.push({
         command: 'update',
         ref: db.collection('candidates').doc(candidates[i].id),
         data: {
+          _search: getSearchMap(searchable),
           fullName: candidateData[candidates[i].id].fullName,
           email: candidateData[candidates[i].id].email.toLowerCase(),
           computed: {
-            search: search,
+            //search: search,
             nino: candidateData[candidates[i].id].nationalInsuranceNumber,
             exercisesMap: candidateData[candidates[i].id].exercisesMap,
             applicationsMap: candidateData[candidates[i].id].applicationsMap,

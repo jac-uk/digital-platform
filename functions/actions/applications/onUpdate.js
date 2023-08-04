@@ -1,7 +1,7 @@
 const { getDocument, applyUpdates, isDateInPast, formatDate } = require('../../shared/helpers');
+const { getSearchMap } = require('../../shared/search');
 
 module.exports = (config, firebase, db, auth) => {
-  const { newApplicationRecord } = require('../../shared/factories')(config);
   const { updateCandidate } = require('../candidates/search')(firebase, db);
   const { sendApplicationConfirmation, sendApplicationInWelsh, sendCharacterCheckRequests, sendCandidateFlagConfirmation } = require('./applications')(config, firebase, db, auth);
 
@@ -11,6 +11,7 @@ module.exports = (config, firebase, db, auth) => {
    * Application event handler for Update
    * - if status has changed update the application counts on the exercise
    * - if application characterChecks.status changed, update application record
+   * - if searchable fields have changed it adds the search map
    */
   async function onUpdate(applicationId, dataBefore, dataAfter) {
     const commands = [];
@@ -101,7 +102,7 @@ module.exports = (config, firebase, db, auth) => {
             });
           }
         }
-
+        
         try {
           await db.collection('applicationRecords').doc(`${applicationId}`).update({
             'characterChecks.status': 'completed',
@@ -113,6 +114,37 @@ module.exports = (config, firebase, db, auth) => {
           return false;
         }
       }
+    }
+
+    // Update search map if searchable keys have changed (ie name/ref no/email/NI No)
+    const hasUpdatedName = dataBefore.personalDetails.fullName !== dataAfter.personalDetails.fullName;
+    const hasUpdatedReferenceNumber = dataBefore.referenceNumber !== dataAfter.referenceNumber;
+    const hasUpdatedEmail = dataBefore.personalDetails.email !== dataAfter.personalDetails.email;
+    const hasUpdatedNINumber = dataBefore.personalDetails.nationalInsuranceNumber !== dataAfter.personalDetails.nationalInsuranceNumber;
+
+    if (hasUpdatedName || hasUpdatedReferenceNumber || hasUpdatedEmail || hasUpdatedNINumber) {
+      // Build search map
+      const updateApplicationData = getSearchMap([
+        dataAfter.personalDetails.fullName,
+        dataAfter.personalDetails.email,
+        dataAfter.personalDetails.nationalInsuranceNumber,
+        dataAfter.referenceNumber,
+      ]);
+
+      // Update application
+      await db.doc(`applications/${applicationId}`).update({
+        '_search': updateData,
+      });
+
+
+
+      // @TODO: ONLY UPDATE applicationRecord IF IT EXISTS ALREADY!!
+
+
+      // Update application record
+      await db.collection('applicationRecords').doc(`${applicationId}`).update({
+        _search: updateApplicationData,
+      });
     }
 
     if (dataAfter.personalDetails && dataAfter.personalDetails.fullName &&
