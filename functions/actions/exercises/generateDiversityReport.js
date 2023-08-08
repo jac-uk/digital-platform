@@ -277,9 +277,9 @@ const ethnicityStats = (applications) => {
           stats.bame.total += 1;  // Count it as 'bame'
           stats.total += 1;
           break;
-        // default: // @todo check catch all is appropriate for bame
-        //   stats.bame.total += 1;
-        //   stats.total += 1;
+        default:
+          stats.bame.total += 1;
+          stats.total += 1;
       }
     } else {
       stats.noAnswer.total += 1;
