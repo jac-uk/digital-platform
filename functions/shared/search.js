@@ -2,7 +2,7 @@ module.exports = {
   getSearchMap,
 };
 
-function getSearchMap(searchables) {
+function getSearchMap(searchables = []) {
   const searchMap = {};
   const n = 3;
   searchables.forEach(searchable => {
