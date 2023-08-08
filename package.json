@@ -47,7 +47,6 @@
     "test:functions": "mocha './test/functions/**/*.spec.js' --timeout=10000",
     "test:actions": "jest test/actions",
     "test:shared": "jest test/shared",
-    "test:specified": "jest test/shared/search",
     "watch:test:rules": "export FIRESTORE_EMULATOR_HOST='localhost:8080' && mocha './test/rules/**/*.spec.js' --timeout=10000 --reporter=min --watch --watch-extensions=rules",
     "ci:test:rules": "firebase emulators:exec --only firestore 'npm run test:rules'",
     "service-offline:rules": "cp -f ./service-offline/firestore.rules ./database/firestore.rules; npm run deploy:rules",
