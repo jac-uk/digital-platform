@@ -7,7 +7,7 @@ exports.scheduleScanAllFiles = require('./scheduledFunctions/scheduleScanAllFile
 
 // Background
 exports.onDelete = require('./backgroundFunctions/onDelete');
-// exports.onExerciseCreate = require('./backgroundFunctions/onExerciseCreate');
+exports.onExerciseCreate = require('./backgroundFunctions/onExerciseCreate');
 exports.onExerciseUpdate = require('./backgroundFunctions/onExerciseUpdate');
 exports.onApplicationCreate = require('./backgroundFunctions/onApplicationCreate');
 exports.onApplicationUpdate = require('./backgroundFunctions/onApplicationUpdate');

@@ -1,4 +1,4 @@
-const { checkArguments, applyUpdates, convertStringToSearchParts, getEarliestDate, getLatestDate, removeHtml, normaliseNIN, normaliseNINs } = require('../../functions/shared/helpers');
+const { checkArguments, applyUpdates, convertStringToSearchParts, getEarliestDate, getLatestDate, removeHtml, normaliseNIN, normaliseNINs, objectHasNestedProperty } = require('../../functions/shared/helpers');
 
 describe('checkArguments()', () => {
 
@@ -471,5 +471,45 @@ describe('normaliseNIN', () => {
 describe('normaliseNINs', () => {
   it('remove HTML tags from a given string', () => {
     expect(normaliseNINs(['AA 123456       V', 'QQ 12 34 56 C'])).toStrictEqual(['aa123456v','qq123456c']);
+  });
+});
+
+describe('objectHasNestedProperty()', () => {
+  describe('empty dotPath arg', () => {
+    const obj = {
+      test1: {
+        test2: 'test3',
+      },
+      test4: {
+        test5: {
+          test6: null,
+          test7: undefined,
+        },
+      },
+    };
+    // FALSY
+    it('returns false if no dotPath arg', () => {
+      expect(objectHasNestedProperty(obj)).toBe(false);
+    });
+    it('returns false if empty string dotPath arg', () => {
+      expect(objectHasNestedProperty(obj, '')).toBe(false);
+    });
+    it('returns false if wrong type for dotPath arg', () => {
+      expect(objectHasNestedProperty(obj, [])).toBe(false);
+    });
+    //TRUTHY
+    it('returns true if match for depth 1 dotPath arg', () => {
+      expect(objectHasNestedProperty(obj, 'test1')).toBe(true);
+    });
+    it('returns true if match for depth 2 dotPath arg', () => {
+      expect(objectHasNestedProperty(obj, 'test1.test2')).toBe(true);
+    });
+
+    it('returns true if match for null value at valid path', () => {
+      expect(objectHasNestedProperty(obj, 'test4.test5.test6')).toBe(true);
+    });
+    it('returns true if match for undefined value at valid path', () => {
+      expect(objectHasNestedProperty(obj, 'test4.test5.test7')).toBe(true);
+    });
   });
 });
