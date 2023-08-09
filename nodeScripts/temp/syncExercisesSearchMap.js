@@ -14,7 +14,10 @@ const { getSearchMap } = require('../../functions/shared/search');
 
 async function updateAllExercises() {
   const commands = [];
-  const exercises = await getDocuments(db.collection('exercises').select('name', 'referenceNumber'));
+  const exercises = await getDocuments(
+    db.collection('exercises')
+    .select('name', 'referenceNumber')
+  );
   for (let i = 0, len = exercises.length; i < len; ++i) {
     const exercise = exercises[i];
     commands.push({
@@ -24,12 +27,12 @@ async function updateAllExercises() {
         _search: getSearchMap([exercise.name, exercise.referenceNumber]),
         lastUpdated: firebase.firestore.FieldValue.serverTimestamp(),
       },
-    });
+    });  
   }
 
   // write to db
   const result = await applyUpdates(db, commands);
-  return result ? exercises.length : false;
+  return result ? commands.length : false;
 }
 
 const main = async () => {
