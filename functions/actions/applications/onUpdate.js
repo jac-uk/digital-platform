@@ -116,6 +116,16 @@ module.exports = (config, firebase, db, auth) => {
       }
     }
 
+    // Build an object with changes to the application record
+    let updateApplicationData = {};
+
+    if (dataAfter.personalDetails && dataAfter.personalDetails.fullName &&
+      (!dataBefore._sort || dataBefore._sort.fullNameUC !== dataAfter.personalDetails.fullName.toUpperCase())
+    ) {
+      updateApplicationData._sort = {};
+      updateApplicationData._sort.fullNameUC = dataAfter.personalDetails.fullName.toUpperCase();
+    }
+
     // Update search map if searchable keys have changed (ie name/ref no/email/NI No)
     const hasUpdatedName = dataBefore.personalDetails.fullName !== dataAfter.personalDetails.fullName;
     const hasUpdatedReferenceNumber = dataBefore.referenceNumber !== dataAfter.referenceNumber;
@@ -124,35 +134,30 @@ module.exports = (config, firebase, db, auth) => {
 
     if (hasUpdatedName || hasUpdatedReferenceNumber || hasUpdatedEmail || hasUpdatedNINumber) {
       // Build search map
-      const updateApplicationData = getSearchMap([
+      const searchData = getSearchMap([
         dataAfter.personalDetails.fullName,
         dataAfter.personalDetails.email,
         dataAfter.personalDetails.nationalInsuranceNumber,
         dataAfter.referenceNumber,
       ]);
 
-      // Update application
-      await db.doc(`applications/${applicationId}`).update({
-        '_search': updateData,
-      });
-
       // Only update the applicationRecord if it exists already (has same id as the application!)
       const applicationRecord = await getDocument(db.doc(`applicationRecords/${applicationId}`));
       if (applicationRecord) {
         // Update application record
         await db.collection('applicationRecords').doc(`${applicationId}`).update({
-          _search: updateApplicationData,
+          _search: searchData,
         });
       }
+
+      // Merge search data into updateApplicationData
+      updateApplicationData._search = searchData;
     }
 
-    if (dataAfter.personalDetails && dataAfter.personalDetails.fullName &&
-      (!dataBefore._sort || dataBefore._sort.fullNameUC !== dataAfter.personalDetails.fullName.toUpperCase())
-    ) {
-      // update _sort.fullNameUC if fullName has changed
-      await db.doc(`applications/${applicationId}`).update({
-        '_sort.fullNameUC': dataAfter.personalDetails.fullName.toUpperCase(),
-      });
+    if (JSON.stringify(updateApplicationData) !== '{}') {
+
+      // Update application
+      return db.doc(`applications/${applicationId}`).update(updateApplicationData);
     }
 
     return true;

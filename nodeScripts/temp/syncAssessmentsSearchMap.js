@@ -42,7 +42,7 @@ async function updateAllAssessments() {
 
     commands.push({
       command: 'update',
-      ref: db.collection('assessments').doc(assessment.id),
+      ref: assessment.ref,
       data: {
         _search: getSearchMap(searchable),
         lastUpdated: firebase.firestore.FieldValue.serverTimestamp(),

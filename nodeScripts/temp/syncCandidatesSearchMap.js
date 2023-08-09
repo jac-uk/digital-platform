@@ -24,16 +24,19 @@ async function updateAllCandidates() {
       candidate.email,
     ];
 
-    // Check if national insurance number exists
     const hasNationalInsuranceNumber = objectHasNestedProperty(candidate, 'computed.nino');
+    const hasReferenceNumbers = objectHasNestedProperty(candidate, 'computed.referenceNumbers');
 
     if (hasNationalInsuranceNumber) {
       searchable.push(candidate.computed.nino);
     }
+    if (hasReferenceNumbers && candidate.computed.referenceNumbers.length > 0) {
+      searchable.push(...candidate.computed.referenceNumbers);
+    }
 
     commands.push({
       command: 'update',
-      ref: db.collection('candidates').doc(candidate.id),
+      ref: candidate.ref,
       data: {
         _search: getSearchMap(searchable),
         lastUpdated: firebase.firestore.FieldValue.serverTimestamp(),

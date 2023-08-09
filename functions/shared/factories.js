@@ -1,6 +1,7 @@
 const { formatDate } = require('./helpers');
 const { applicationOpenDatePost01042023 } = require('./converters/helpers');
 const { getSearchMap } = require('./search');
+const { objectHasNestedProperty } = require('./helpers');
 
 module.exports = (CONSTANTS) => {
   return {
@@ -324,15 +325,7 @@ module.exports = (CONSTANTS) => {
   }
 
   function newAssessment(exercise, application, whichAssessor) {
-    // add search map
-    const search = getSearchMap([
-      application.personalDetails.fullName, // candidate name
-      application.referenceNumber,
-      // assessor details not available at this point!
-    ]);
-
     let assessment = {
-      _search: search,
       assessor: {},
       candidate: {
         id: application.userId,
@@ -388,6 +381,24 @@ module.exports = (CONSTANTS) => {
         assessment.type = CONSTANTS.ASSESSMENT_TYPE.GENERAL;
         break;
     }
+
+    // build searchables for search map
+    const searchables = [
+      application.personalDetails.fullName, // candidate name
+      application.referenceNumber,
+    ];
+    // Add assessor details (if they exist)
+    if (objectHasNestedProperty(assessment, 'assessor.fullName')) {
+      searchables.push(assessment.assessor.fullName);
+    }
+    if (objectHasNestedProperty(assessment, 'assessor.email')) {
+      searchables.push(assessment.assessor.email);
+    }
+    // build search map
+    const searchMap = getSearchMap(searchables);
+    // add search map to assessment
+    assessment._search = searchMap;
+
     return assessment;
   }
 

@@ -43,7 +43,7 @@ async function updateAllApplications() {
       // Update application
       commands.push({
         command: 'update',
-        ref: db.collection('applications').doc(application.id),
+        ref: application.ref,
         data: {
           _search: getSearchMap(searchables),
           lastUpdated: firebase.firestore.FieldValue.serverTimestamp(),
@@ -56,7 +56,7 @@ async function updateAllApplications() {
       if (applicationRecord) {
         commands.push({
           command: 'update',
-          ref: db.collection('applicationRecords').doc(`${application.id}`),
+          ref: applicationRecord.ref,
           data: {
             _search: getSearchMap(searchables),
             lastUpdated: firebase.firestore.FieldValue.serverTimestamp(),

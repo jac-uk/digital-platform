@@ -19,7 +19,7 @@ async function updateAllExercises() {
     const exercise = exercises[i];
     commands.push({
       command: 'update',
-      ref: db.collection('exercises').doc(exercise.id),
+      ref: exercise.ref,
       data: {
         _search: getSearchMap([exercise.name, exercise.referenceNumber]),
         lastUpdated: firebase.firestore.FieldValue.serverTimestamp(),

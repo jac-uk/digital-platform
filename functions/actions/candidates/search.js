@@ -3,7 +3,7 @@
  * A set of methods to help keep candidate search & relationships data up to date
  */
 
-const { getDocument, getDocuments, applyUpdates, convertStringToSearchParts, normaliseNIN } = require('../../shared/helpers');
+const { getDocument, getDocuments, applyUpdates, convertStringToSearchParts, normaliseNIN, objectHasNestedProperty } = require('../../shared/helpers');
 const { getSearchMap } = require('../../shared/search');
 
 module.exports = (firebase, db) => {
@@ -63,6 +63,9 @@ module.exports = (firebase, db) => {
       }
     });
 
+    // construct update commands
+    const commands = [];
+
     // get applications
     for (let i = 0, len = candidates.length; i < len; ++i) {
       const applications = await getDocuments(
@@ -81,17 +84,17 @@ module.exports = (firebase, db) => {
       candidateData[candidates[i].id].exercisesMap = exercisesMap;
       candidateData[candidates[i].id].applicationsMap = applicationsMap;
       candidateData[candidates[i].id].referenceNumbers = referenceNumbers;
-    }
 
-    // construct update commands
-    const commands = [];
-
-    for (let i = 0, len = candidates.length; i < len; ++i) {
-      const searchable = [
+      let searchable = [
         candidateData[candidates[i].id].nationalInsuranceNumber,
         candidateData[candidates[i].id].fullName,
         candidateData[candidates[i].id].email,
       ];
+
+      // Check if reference numbers exist
+      if (referenceNumbers.length > 0) {
+        searchable.push(...referenceNumbers);
+      }
 
       commands.push({
         command: 'update',
