@@ -1,5 +1,7 @@
 const { formatDate } = require('./helpers');
 const { applicationOpenDatePost01042023 } = require('./converters/helpers');
+const { getSearchMap } = require('./search');
+const { objectHasNestedProperty } = require('./helpers');
 
 module.exports = (CONSTANTS) => {
   return {
@@ -379,6 +381,24 @@ module.exports = (CONSTANTS) => {
         assessment.type = CONSTANTS.ASSESSMENT_TYPE.GENERAL;
         break;
     }
+
+    // build searchables for search map
+    const searchables = [
+      application.personalDetails.fullName, // candidate name
+      application.referenceNumber,
+    ];
+    // Add assessor details (if they exist)
+    if (objectHasNestedProperty(assessment, 'assessor.fullName')) {
+      searchables.push(assessment.assessor.fullName);
+    }
+    if (objectHasNestedProperty(assessment, 'assessor.email')) {
+      searchables.push(assessment.assessor.email);
+    }
+    // build search map
+    const searchMap = getSearchMap(searchables);
+    // add search map to assessment
+    assessment._search = searchMap;
+
     return assessment;
   }
 
@@ -470,7 +490,16 @@ module.exports = (CONSTANTS) => {
   }
 
   function newApplicationRecord(firebase, exercise, application) {
+    // add search map
+    const search = getSearchMap([
+      application.personalDetails.fullName,
+      application.personalDetails.email,
+      application.personalDetails.nationalInsuranceNumber,
+      application.referenceNumber,
+    ]);
+    
     let applicationRecord = {
+      _search: search,
       exercise: {
         id: exercise.id,
         name: exercise.name,
