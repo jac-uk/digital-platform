@@ -1,4 +1,4 @@
-const { checkArguments, applyUpdates, convertStringToSearchParts, getEarliestDate, getLatestDate, removeHtml, normaliseNIN, normaliseNINs, objectHasNestedProperty } = require('../../functions/shared/helpers');
+const { checkArguments, applyUpdates, convertStringToSearchParts, getEarliestDate, getLatestDate, removeHtml, normaliseNIN, normaliseNINs, objectHasNestedProperty, replaceCharacters } = require('../../functions/shared/helpers');
 
 describe('checkArguments()', () => {
 
@@ -513,3 +513,23 @@ describe('objectHasNestedProperty()', () => {
     });
   });
 });
+
+describe('replaceCharacters()', () => {
+  describe('replaces characters according to map', () => {
+    const inputStr = 'test-\'&/\\|[].@';
+    const characterMap = {
+      '[': 'a',
+      ']': 'b',
+      '.': 'c',
+      '@': 'd',
+      '*': 'e',
+      '/': 'f',
+      '\\': 'g',
+    };
+    it('returns string with replacements', () => {
+      expect(replaceCharacters(inputStr, characterMap)).toStrictEqual('test-\'&fg|abcd');
+    });
+  });
+});
+
+
