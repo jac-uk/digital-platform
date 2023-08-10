@@ -7,5 +7,6 @@ admin.initializeApp();
 
 exports.firebase = admin;
 exports.db = admin.firestore();
+// exports.storage = admin.storage();
 exports.app = admin.app();
 exports.auth = admin.auth();
