@@ -9,49 +9,10 @@
  */
 
 const { firebase, app, db } = require('../shared/admin.js');
-const { getDocuments, applyUpdates } = require('../../functions/shared/helpers.js');
-const { getSearchMap } = require('../../functions/shared/search.js');
-const { objectHasNestedProperty } = require('../../functions/shared/helpers.js');
-
-async function updateAllCandidates() {
-  const commands = [];
-  const candidates = await getDocuments(db.collection('candidates').select('nationalInsuranceNumber', 'fullName', 'email'));
-  for (let i = 0, len = candidates.length; i < len; ++i) {
-    const candidate = candidates[i];
-
-    const searchable = [
-      candidate.fullName,
-      candidate.email,
-    ];
-
-    const hasNationalInsuranceNumber = objectHasNestedProperty(candidate, 'computed.nino');
-    const hasReferenceNumbers = objectHasNestedProperty(candidate, 'computed.referenceNumbers');
-
-    if (hasNationalInsuranceNumber) {
-      searchable.push(candidate.computed.nino);
-    }
-    if (hasReferenceNumbers && candidate.computed.referenceNumbers.length > 0) {
-      searchable.push(...candidate.computed.referenceNumbers);
-    }
-
-    commands.push({
-      command: 'update',
-      ref: candidate.ref,
-      data: {
-        _search: getSearchMap(searchable),
-        lastUpdated: firebase.firestore.FieldValue.serverTimestamp(),
-        'computed.search': firebase.firestore.FieldValue.delete(), // Remove nested field
-      },
-    });
-  }
-
-  // write to db
-  const result = await applyUpdates(db, commands);
-  return result ? candidates.length : false;
-}
+const search = require('../../functions/actions/candidates/search')(firebase, db);
 
 const main = async () => {
-  return updateAllCandidates();
+  return search.updateAllCandidates();
 };
 
 main()
@@ -61,6 +22,6 @@ main()
     return process.exit();
   })
   .catch((error) => {
-    console.error('error', error);
+    console.error(error);
     process.exit();
   });
