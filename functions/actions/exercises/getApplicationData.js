@@ -20,10 +20,20 @@ module.exports = (config, firebase, db, auth) => {
   /**
   * getApplicationData
    */
-    async function getApplicationData(params) {
+  async function getApplicationData(params) {
 
     let applicationDataRef = db.collection('applications')
     .where('exerciseId', '==', params.exerciseId);
+
+    if (Array.isArray(params.statuses) && params.statuses.length) {
+      applicationDataRef = applicationDataRef.where('status', 'in', params.statuses);
+    }
+    if (params.stage) {
+      applicationDataRef = applicationDataRef.where('_processing.stage', '==', params.stage);
+    }
+    if (params.stageStatus) {
+      applicationDataRef = applicationDataRef.where('_processing.status', '==', params.stageStatus);
+    }
 
     const results = await getDocuments(applicationDataRef);
 
