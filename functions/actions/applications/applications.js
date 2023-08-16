@@ -1,5 +1,6 @@
 const { SSL_OP_NETSCAPE_DEMO_CIPHER_CHANGE_BUG } = require('constants');
 const { getAllDocuments, applyUpdates, getDocument, getDocuments } = require('../../shared/helpers');
+const { getSearchMap } = require('../../shared/search');
 
 const testApplicationsFileName = 'test_applications.json';
 
@@ -73,6 +74,7 @@ module.exports = (config, firebase, db, auth) => {
    * Application created event handler
    * - Posts message to slack
    * - Increment exercise applications count
+   * - Adds search map
    */
   async function onApplicationCreate(ref, data) {
     console.log('application created');
@@ -80,11 +82,21 @@ module.exports = (config, firebase, db, auth) => {
     if (data.userId) { await updateCandidate(data.userId); }
 
     // update application
+    const applicationData = {};
+
     if (data.personalDetails && data.personalDetails.fullName) {
-      await ref.update({
-        '_sort.fullNameUC': data.personalDetails.fullName.toUpperCase(),
-      });
+      applicationData._sort = {};
+      applicationData._sort.fullNameUC = data.personalDetails.fullName.toUpperCase();
     }
+
+    // add search map
+    applicationData._search = getSearchMap([
+      data.personalDetails.fullName,
+      data.personalDetails.email,
+      data.personalDetails.nationalInsuranceNumber,
+      data.referenceNumber,
+    ]);
+    await ref.update(applicationData);
 
     // update counts
     console.log(`Update application counts: _applications.${data.status}`);

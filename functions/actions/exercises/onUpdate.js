@@ -3,6 +3,9 @@
 module.exports = (config, firebase, db, auth) => {
   const { sendExerciseReadyForApproval } = require('./sendExerciseReadyForApproval')(config, firebase, db, auth);
   const { updateVacancy, deleteVacancy } = require('../vacancies')(config, db);
+  const { updateExercise } = require('./exercises')(db);
+  const { getSearchMap } = require('../../shared/search');
+
   function isExercisePreviouslyApproved(exercise) {
     if (exercise && exercise._approval && exercise._approval.approved && exercise._approval.approved.date) {
       return true;
@@ -41,6 +44,16 @@ module.exports = (config, firebase, db, auth) => {
         exerciseId,
         exercise: dataAfter,
       });
+    }
+
+    // Update search map if searchable keys have changed (ie name/ref no)
+    const hasUpdatedName = dataBefore.name !== dataAfter.name;
+    const hasUpdatedReferenceNumber = dataBefore.referenceNumber !== dataAfter.referenceNumber;
+    if (hasUpdatedName || hasUpdatedReferenceNumber) {
+      // Update search map
+      const data = {};
+      data._search = getSearchMap([dataAfter.name, dataAfter.referenceNumber]);
+      updateExercise(exerciseId, data);
     }
 
     return true;
