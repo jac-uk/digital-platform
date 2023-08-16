@@ -1,7 +1,8 @@
 'use strict';
 
 const _ = require('lodash');
-const { app, db } = require('./shared/admin.js');
+const { app, db } = require('./shared/admin');
+const { ASSESSMENT_METHOD } = require('./shared/config');
 const { applyUpdates, getDocuments, getDocument } = require('../functions/shared/helpers');
 
 // whether to make changes in `exercises` collection in firestore
@@ -16,7 +17,14 @@ const main = async () => {
   const exerciseIds = [];
   for (let i = 0; i < exercises.length; i++) {
     const exercise = exercises[i];
-    const assessmentMethods = {};
+    const assessmentMethods = {
+      [ASSESSMENT_METHOD.SELF_ASSESSMENT_WITH_COMPETENCIES]: false,
+      [ASSESSMENT_METHOD.COVERING_LETTER]: false,
+      [ASSESSMENT_METHOD.CV]: false,
+      [ASSESSMENT_METHOD.STATEMENT_OF_SUITABILITY_WITH_COMPETENCIES]: false,
+      [ASSESSMENT_METHOD.STATEMENT_OF_SUITABILITY_WITH_SKILLS_AND_ABILITIES]: false,
+      [ASSESSMENT_METHOD.STATEMENT_OF_ELIGIBILITY]: false,
+    };
 
     switch (exercise.assessmentOptions) {
       case 'self-assessment-with-competencies':
