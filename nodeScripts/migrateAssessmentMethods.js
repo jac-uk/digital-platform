@@ -26,6 +26,8 @@ const main = async () => {
       [ASSESSMENT_METHOD.STATEMENT_OF_ELIGIBILITY]: false,
     };
 
+    if (!exercise.assessmentOptions) continue;
+
     switch (exercise.assessmentOptions) {
       case 'self-assessment-with-competencies':
         assessmentMethods.selfAssessmentWithCompetencies = true;
