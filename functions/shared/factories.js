@@ -365,21 +365,20 @@ module.exports = (CONSTANTS) => {
       default:
         assessment.assessor = {};
     }
+
     // assessment type
-    switch (exercise.assessmentOptions) {
-      case 'self-assessment-with-competencies':
-      case 'self-assessment-with-competencies-and-cv':
-      case 'statement-of-suitability-with-competencies':
+    if (exercise.assessmentMethods) {
+      if (
+        exercise.assessmentMethods[CONSTANTS.ASSESSMENT_METHOD.SELF_ASSESSMENT_WITH_COMPETENCIES] ||
+        exercise.assessmentMethods[CONSTANTS.ASSESSMENT_METHOD.STATEMENT_OF_SUITABILITY_WITH_COMPETENCIES]
+      ) {
         assessment.type = CONSTANTS.ASSESSMENT_TYPE.COMPETENCY;
-        break;
-      case 'statement-of-suitability-with-skills-and-abilities':
-      case 'statement-of-suitability-with-skills-and-abilities-and-cv':
+      } else if (exercise.assessmentMethods[CONSTANTS.ASSESSMENT_METHOD.STATEMENT_OF_SUITABILITY_WITH_SKILLS_AND_ABILITIES]) {
         assessment.type = CONSTANTS.ASSESSMENT_TYPE.SKILLS;
-        break;
-      case 'statement-of-eligibility':
-      default:
-        assessment.type = CONSTANTS.ASSESSMENT_TYPE.GENERAL;
-        break;
+      }
+    }
+    if (!assessment.type) {
+      assessment.type = CONSTANTS.ASSESSMENT_TYPE.GENERAL;
     }
 
     // build searchables for search map
