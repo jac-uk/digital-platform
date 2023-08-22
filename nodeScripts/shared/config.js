@@ -167,6 +167,16 @@ module.exports = {
     },
   },
   ASSESSMENTS_URL: process.env.ASSESSMENTS_URL,
+  ASSESSMENT_METHOD: {
+    SELF_ASSESSMENT_WITH_COMPETENCIES: 'selfAssessmentWithCompetencies',
+    COVERING_LETTER: 'coveringLetter',
+    CV: 'cv',
+    STATEMENT_OF_SUITABILITY_WITH_COMPETENCIES: 'statementOfSuitabilityWithCompetencies',
+    STATEMENT_OF_SUITABILITY_WITH_SKILLS_AND_ABILITIES: 'statementOfSuitabilityWithSkillsAndAbilities',
+    STATEMENT_OF_ELIGIBILITY: 'statementOfEligibility',
+    INDEPENDENT_ASSESSMENTS: 'independentAssessments',
+    LEADERSHIP_JUDGE_ASSESSMENT: 'leadershipJudgeAssessment',
+  },
   ASSESSMENT_TYPE: {
     COMPETENCY: 'competency',
     SKILLS: 'skills',
