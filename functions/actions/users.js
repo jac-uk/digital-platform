@@ -1,5 +1,6 @@
 const { getDocument } = require('../shared/helpers');
 const { newUser } = require('../shared/factories')();
+const { convertPermissions } = require('../shared/permissions');
 
 module.exports = (auth, db) => {
   return {
@@ -165,6 +166,25 @@ module.exports = (auth, db) => {
       if (Object.keys(data).length) {
         await auth.updateUser(userId, data);
       }
+
+      // update role permissions in custom claims
+      if (dataBefore.role && dataAfter.role && !dataBefore.role.isChanged && dataAfter.role.isChanged && dataAfter.role.id) {
+        const user = await auth.getUser(userId);
+        const role = await getDocument(db.collection('roles').doc(dataAfter.role.id));
+        if (role) {
+          const convertedPermissions = convertPermissions(role);
+          const customClaims = user.customClaims || {};
+          customClaims.r = dataAfter.role.id;
+          customClaims.rp = convertedPermissions;
+          await auth.setCustomUserClaims(userId, user.customClaims);
+  
+          // mark role.isChanged as false
+          await db.collection('users').doc(userId).update({
+            'role.isChanged': false,
+          });
+        }
+      }
+
       return true;
     } catch(error) {
       console.log(error);

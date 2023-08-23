@@ -344,6 +344,7 @@ const PERMISSIONS = {
 module.exports = {
   PERMISSIONS,
   hasPermissions,
+  convertPermissions,
 };
 
 function hasPermissions(rolePermissions, permissions) {
@@ -354,4 +355,25 @@ function hasPermissions(rolePermissions, permissions) {
   if (!valid) {
     throw new functions.https.HttpsError('permission-denied', 'Permission denied');
   }
+}
+
+/*
+ * Convert permissions using values from PERMISSIONS object
+ * @param {Object} role - The role object from the firestore
+ * @returns {Array} - An array of permissions
+ */
+function convertPermissions(role) {
+  const convertedPermissions = [];
+  if (role && role.enabledPermissions && role.enabledPermissions.length > 0) {
+    for (const permission of role.enabledPermissions) {
+      for (const group of Object.keys(PERMISSIONS)) {
+        for (const p of Object.keys(PERMISSIONS[group].permissions)) {
+          if (p === permission) {
+            convertedPermissions.push(PERMISSIONS[group].permissions[p].value);
+          }
+        }
+      }
+    }
+  }
+  return convertedPermissions;
 }
