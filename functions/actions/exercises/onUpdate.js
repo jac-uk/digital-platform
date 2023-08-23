@@ -1,17 +1,10 @@
-//const { getDocument, applyUpdates, isDateInPast, formatDate } = require('../../shared/helpers');
+const { objectHasNestedProperty } = require('../../shared/helpers');
 
 module.exports = (config, firebase, db, auth) => {
   const { sendExerciseReadyForApproval } = require('./sendExerciseReadyForApproval')(config, firebase, db, auth);
   const { updateVacancy, deleteVacancy } = require('../vacancies')(config, db);
   const { updateExercise } = require('./exercises')(db);
   const { getSearchMap } = require('../../shared/search');
-
-  function isExercisePreviouslyApproved(exercise) {
-    if (exercise && exercise._approval && exercise._approval.approved && exercise._approval.approved.date) {
-      return true;
-    }
-    return false;
-  }
 
   return onUpdate;
 
@@ -22,7 +15,7 @@ module.exports = (config, firebase, db, auth) => {
   async function onUpdate(exerciseId, dataBefore, dataAfter) {
 
     const isDraftOrReady = dataAfter.state === 'draft' || dataAfter.state === 'ready';
-    const isPreviouslyApproved = isExercisePreviouslyApproved(dataAfter);
+    const isPreviouslyApproved = objectHasNestedProperty(dataAfter, '_approval.initialApprovalDate');
     const isUnlocked = isDraftOrReady && isPreviouslyApproved;
 
     if (dataAfter.published === true) {
