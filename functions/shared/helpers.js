@@ -238,6 +238,9 @@ function toTimeString(date) {
 function formatDate(value, type) {
   value = convertToDate(value);
   if (value) {
+    const day = value.getDate();
+    const month = value.getMonth() + 1;
+    const year = value.getFullYear();
     const time = value.toLocaleTimeString('en-GB', {
       hour: '2-digit',
       minute:'2-digit',
@@ -251,7 +254,7 @@ function formatDate(value, type) {
         break;
       case 'DD/MM/YYYY':
         // e.g. 30/11/2022 (ref: https://momentjs.com/docs/#/displaying/format/)
-        value = value.toLocaleDateString();
+        value = `${day}/${month}/${year}`; // toLocaleDateString('en-GB') returns 30/11/2022 for some reason
         break;
       case 'date-hour-minute':
         // e.g. Wednesday, 30 November, 2022 at 13:00

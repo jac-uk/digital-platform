@@ -25,11 +25,11 @@ module.exports = (firebase, db) => {
 
     // get report with judicial experience
     const judicialData = reportData(db, applications, true);
-    const judicialHeaders = reportHeaders(judicialData.maxQualificationNum, judicialData.maxExperienceNum);
+    const judicialHeaders = reportHeaders(judicialData.maxQualificationNum, judicialData.maxExperienceNum, true);
 
     // get report with non-judicial experience
     const nonJudicialData = reportData(db, applications, false);
-    const nonJudicialHeaders = reportHeaders(nonJudicialData.maxQualificationNum, nonJudicialData.maxExperienceNum);
+    const nonJudicialHeaders = reportHeaders(nonJudicialData.maxQualificationNum, nonJudicialData.maxExperienceNum, false);
 
     // construct the report document
     const report = {
@@ -56,15 +56,16 @@ module.exports = (firebase, db) => {
  * 
  * @param {number} maxQualificationNum
  * @param {number} maxExperienceNum
+ * @param {boolean} isJudicial
  * @return {array}
  */
-const reportHeaders = (maxQualificationNum, maxExperienceNum) => {
+const reportHeaders = (maxQualificationNum, maxExperienceNum, isJudicial = null) => {
   const headers = [
     { title: 'First name', ref: 'firstName' },
     { title: 'Last name', ref: 'lastName' },
     { title: 'Suffix', ref: 'suffix' },
     ...getQualificationHeaders(maxQualificationNum),
-    ...getExperienceHeaders(maxExperienceNum),
+    ...getExperienceHeaders(maxExperienceNum, isJudicial),
     ...getJudicialExperienceHeaders(),
   ];
 
@@ -98,7 +99,6 @@ const reportData = (db, applications, isJudicial = null) => {
     });
     // sort experiences by start date descending
     filteredExperiences.sort((a, b) => getDate(b.startDate) > getDate(a.startDate));
-
 
     maxQualificationNum = qualifications.length > maxQualificationNum ? qualifications.length : maxQualificationNum;
     maxExperienceNum = filteredExperiences.length > maxExperienceNum ? filteredExperiences.length : maxExperienceNum;
@@ -134,11 +134,12 @@ function getQualificationHeaders(n) {
   return headers;
 }
 
-function getExperienceHeaders(n) {
+function getExperienceHeaders(n, isJudicial = null) {
   const headers = [];
   for (let i = 1; i <= n; i++) {
+    const roleTitle = isJudicial ? `${ordinal(i)} Judicial Role` : `${ordinal(i)} Organisational Business`;
     headers.push(
-      { title: `${ordinal(i)} Organisation or business`, ref: `orgBusinessName${i}` },
+      { title: roleTitle, ref: `orgBusinessName${i}` },
       { title: 'Job title', ref: `jobTitle${i}` },
       { title: 'Dates', ref: `experienceDates${i}` },
       { title: 'Location', ref: `experienceLocation${i}` },
