@@ -201,16 +201,19 @@ module.exports = (db, auth) => {
   /**
    * Change a user's role
    */
-  async function adminSetUserRole({ userId, roleId, permissions }) {
+  async function adminSetUserRole(params) {
 
     try {
-      const user = await auth.getUser(userId);
-      const customClaims = user.customClaims || {};
-      customClaims.r = roleId;
-      customClaims.rp = permissions;
-      await auth.setCustomUserClaims(userId, customClaims);
+      const user = await auth.getUser(params.userId);
+      let customClaims = user.customClaims || {};
+      customClaims.r = params.roleId;
+      await auth.setCustomUserClaims(params.userId, customClaims);
+      await adminSyncUserRolePermissions(params.userId);
+      await revokeUserToken(params.userId);
+
       return true;
-    } catch(e) {
+    }
+    catch(e) {
       console.log(e);
       return false;
     }
