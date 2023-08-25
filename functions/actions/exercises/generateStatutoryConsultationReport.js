@@ -19,17 +19,9 @@ module.exports = (firebase, db) => {
     const applications = await getAllDocuments(db, applicationRefs);
 
     // get report rows
-    const { maxQualificationNum, maxExperienceNum, data: rows } = reportData(db, applications);
+    const { maxQualificationNum, maxJudicialExperienceNum, maxNonJudicialExperienceNum, data: rows } = reportData(db, applications);
     // get report headers
-    const headers = reportHeaders(maxQualificationNum, maxExperienceNum);
-
-    // get report with judicial experience
-    const judicialData = reportData(db, applications, true);
-    const judicialHeaders = reportHeaders(judicialData.maxQualificationNum, judicialData.maxExperienceNum, true);
-
-    // get report with non-judicial experience
-    const nonJudicialData = reportData(db, applications, false);
-    const nonJudicialHeaders = reportHeaders(nonJudicialData.maxQualificationNum, nonJudicialData.maxExperienceNum, false);
+    const headers = reportHeaders(maxQualificationNum, maxJudicialExperienceNum, maxNonJudicialExperienceNum);
 
     // construct the report document
     const report = {
@@ -37,10 +29,6 @@ module.exports = (firebase, db) => {
       createdAt: firebase.firestore.Timestamp.fromDate(new Date()),
       headers,
       rows,
-      judicialHeaders,
-      judicialRows: judicialData.data,
-      nonJudicialHeaders,
-      nonJudicialRows: nonJudicialData.data,
     };
 
     // store the report document in the database
@@ -55,17 +43,18 @@ module.exports = (firebase, db) => {
  * Get the report headers
  * 
  * @param {number} maxQualificationNum
- * @param {number} maxExperienceNum
- * @param {boolean} isJudicial
+ * @param {number} maxJudicialExperienceNum
+ * @param {number} maxNonJudicialExperienceNum
  * @return {array}
  */
-const reportHeaders = (maxQualificationNum, maxExperienceNum, isJudicial = null) => {
+const reportHeaders = (maxQualificationNum, maxJudicialExperienceNum, maxNonJudicialExperienceNum) => {
   const headers = [
     { title: 'First name', ref: 'firstName' },
     { title: 'Last name', ref: 'lastName' },
     { title: 'Suffix', ref: 'suffix' },
     ...getQualificationHeaders(maxQualificationNum),
-    ...getExperienceHeaders(maxExperienceNum, isJudicial),
+    ...getExperienceHeaders(maxJudicialExperienceNum, true),
+    ...getExperienceHeaders(maxNonJudicialExperienceNum, false),
     ...getJudicialExperienceHeaders(),
   ];
 
@@ -76,46 +65,45 @@ const reportHeaders = (maxQualificationNum, maxExperienceNum, isJudicial = null)
  * Get the report data
  * @param {db} db
  * @param {array} applications
- * @param {boolean} isJudicial
  * @returns {array}
  */
-const reportData = (db, applications, isJudicial = null) => {
+const reportData = (db, applications) => {
   let maxQualificationNum = 0;
-  let maxExperienceNum = 0;
+  let maxJudicialExperienceNum = 0;
+  let maxNonJudicialExperienceNum = 0;
 
   const data = applications.map((application) => {
     const personalDetails = application.personalDetails || {}; 
     const qualifications = application.qualifications || [];
     const experiences = application.experience || [];
-    // filter experiences by judicial/non-judicial
-    const filteredExperiences = experiences.filter(experience => {
-      if (isJudicial === null) return true;
-      
-      if (isJudicial) {
-        return Array.isArray(experience.tasks) ? experience.tasks.includes('judicial-functions') : false;
-      } else {
-        return Array.isArray(experience.tasks) ? !experience.tasks.includes('judicial-functions') : true;
-      }
-    });
     // sort experiences by start date descending
-    filteredExperiences.sort((a, b) => getDate(b.startDate) > getDate(a.startDate));
+    experiences.sort((a, b) => getDate(b.startDate) > getDate(a.startDate));
+    const judicialExperiences = experiences.filter(experience => {
+      return Array.isArray(experience.tasks) && experience.tasks.includes('judicial-functions');
+    });
+    const nonJudicialExperiences = experiences.filter(experience => {
+      return !Array.isArray(experience.tasks) || !experience.tasks.includes('judicial-functions');
+    });
 
     maxQualificationNum = qualifications.length > maxQualificationNum ? qualifications.length : maxQualificationNum;
-    maxExperienceNum = filteredExperiences.length > maxExperienceNum ? filteredExperiences.length : maxExperienceNum;
+    maxJudicialExperienceNum = judicialExperiences.length > maxJudicialExperienceNum ? judicialExperiences.length : maxJudicialExperienceNum;
+    maxNonJudicialExperienceNum = nonJudicialExperiences.length > maxNonJudicialExperienceNum ? nonJudicialExperiences.length : maxNonJudicialExperienceNum;
 
     return {
       firstName: personalDetails.firstName || null,
       lastName: personalDetails.lastName || null,
       suffix: personalDetails.suffix || null,
       ...getQualificationData(qualifications),
-      ...getExperienceData(filteredExperiences),
+      ...getExperienceData(judicialExperiences),
+      ...getExperienceData(nonJudicialExperiences),
       ...getJudicialExperienceData(application),
     };
   });
 
   return {
     maxQualificationNum,
-    maxExperienceNum,
+    maxJudicialExperienceNum,
+    maxNonJudicialExperienceNum,
     data,
   };
 };
