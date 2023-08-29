@@ -12,21 +12,31 @@ module.exports = (firebase, db) => {
    * Generates an export of all application contacts for the specified exercise
    * @param {*} exerciseId 
    * @param {*} status - Application status
-   * @param {*} exercise 
+   * @param {*} processingStage - Processing stage (optional)
+   * @param {*} processingStatus - Processing status (optional)
    * @returns 
    */
-  async function exportApplicationContactsData(exerciseId, status) {
+  async function exportApplicationContactsData(params) {
     // get submitted applications
-    const applications = await getDocuments(db.collection('applications')
-      .where('exerciseId', '==', exerciseId)
-      .where('status', '==', status)
-    );
-    
-    const exercise = await getDocument(db.collection('exercises').doc(exerciseId));
+    let applicationsRef = db.collection('applications')
+      .where('exerciseId', '==', params.exerciseId)
+      .where('status', '==', params.status);
+    if (params.processingStage) {
+      applicationsRef = applicationsRef.where('_processing.stage', '==', params.processingStage);
+    }
+    if (params.processingStatus) {
+      applicationsRef = applicationsRef.where('_processing.status', '==', params.processingStatus);
+    }
+    const applications = await getDocuments(applicationsRef);
+
+    // get exercise
+    const exercise = await getDocument(db.collection('exercises').doc(params.exerciseId));        
 
     const headers = {
       referenceNumber: 'Reference number',
       status: 'Status',
+      processingStage: 'Processing stage',
+      processingStatus: 'Processing status',
       isWelsh: 'Welsh Application',
       fullName: 'Name',
       email: 'Email',
@@ -53,6 +63,15 @@ module.exports = (firebase, db) => {
       platform: 'Platform',
       timezone: 'Timezone',
     };
+    if (exercise.locationQuestion) {
+      headers.locationPreferences = 'Location preferences';
+    }
+    if (exercise.jurisdictionQuestion) {
+      headers.jurisdictionPreferences = 'Jurisdiction preferences';
+    }
+    if (exercise.additionalWorkingPreferences) {
+      exercise.additionalWorkingPreferences.forEach((pref, index) => headers[`additionalPreference${index}`] = pref.question);
+    }
 
     // Add checks for different fields after 01-04-2023, remove headers accordingly
     if (applicationOpenDatePost01042023(exercise)) {
@@ -72,13 +91,15 @@ module.exports = (firebase, db) => {
 
 const contactsExport = (applications, exercise) => {
   return applications.map((application) => {
-    // the following ensure application has sufficient fields for the export
+    // the following ensures application has sufficient fields for the export
     if (!Object.keys(application).includes('personalDetails')) { application.personalDetails = {}; }
     if (!Object.keys(application).includes('equalityAndDiversitySurvey')) { application.equalityAndDiversitySurvey = {}; }
 
     const returnObj = {
       referenceNumber: application.referenceNumber,
       status: lookup(application.status),
+      processingStage: application._processing ? application._processing.stage: '',
+      processingStatus: application._processing ? application._processing.status: '',
       isWelsh: helpers.toYesNo(application._language === 'cym'),
       fullName: application.personalDetails.fullName,
       email: application.personalDetails.email,
@@ -106,6 +127,18 @@ const contactsExport = (applications, exercise) => {
       timezone: application.client ? application.client.timezone : 'No Data',
     };
 
+    if (exercise.locationQuestion) {
+      returnObj.locationPreferences = getPreferenceValueAsString(exercise.locationQuestionType, application.locationPreferences);
+    }
+    if (exercise.jurisdictionQuestion) {
+      returnObj.jurisdictionPreferences = getPreferenceValueAsString(exercise.jurisdictionQuestionType, application.jurisdictionPreferences);
+    }
+    if (exercise.additionalWorkingPreferences) {
+      exercise.additionalWorkingPreferences.forEach((pref, index) => {
+        returnObj[`additionalPreference${index}`] = getPreferenceValueAsString(pref.questionType, additionalWorkingPreferenceAnswer(application.additionalWorkingPreferences, index));
+      });
+    }
+
     // Add checks for different fields after 01-04-2023 remove rows accordingly
     if (applicationOpenDatePost01042023(exercise)) {
       delete returnObj['firstGenerationStudent'];
@@ -115,4 +148,27 @@ const contactsExport = (applications, exercise) => {
 
     return returnObj;
   });
+};
+
+const getPreferenceValueAsString = (type, value) => {
+  if (!value) return '';
+  switch (type) {
+    case 'single-choice':
+      return value;
+    case 'multiple-choice':
+      return value.join('\n');
+    case 'ranked-choice':
+      return value.map((v,i) => `${i+1}: ${v}`).join('\n');
+  }
+  return '';
+};
+
+const additionalWorkingPreferenceAnswer = (preferences, index) => {
+  let result = null;
+  if (preferences) {
+    if (preferences[index]) {
+      result = preferences[index].selection;
+    }
+  }
+  return result;
 };

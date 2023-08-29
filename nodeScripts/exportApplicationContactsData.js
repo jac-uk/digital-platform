@@ -3,7 +3,12 @@
 const { firebase, app, db } = require('./shared/admin.js');
 const { exportApplicationContactsData } = require('../functions/actions/exercises/exportApplicationContactsData.js')(firebase, db);
 const main = async () => {
-  return exportApplicationContactsData('rxqeJzA9WjZ21dEXf03p','applied');
+  return exportApplicationContactsData({
+    exerciseId: 'nJrIBstsDNMDs6VAxDUf',
+    status: 'applied',
+    processingStage: 'selected',
+    //processingStatus: '',
+  });
 };
 
 main()
