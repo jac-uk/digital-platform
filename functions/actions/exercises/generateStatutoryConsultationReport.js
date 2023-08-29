@@ -77,7 +77,7 @@ const reportData = (db, applications) => {
     const qualifications = application.qualifications || [];
     const experiences = application.experience || [];
     // sort experiences by start date descending
-    experiences.sort((a, b) => getDate(b.startDate) > getDate(a.startDate));
+    experiences.sort((a, b) => (getDate(b.startDate) > getDate(a.startDate)) ? 1 : -1);
     const judicialExperiences = [];
     const nonJudicialExperiences = [];
     experiences.forEach(experience => {
