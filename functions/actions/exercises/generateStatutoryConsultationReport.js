@@ -1,4 +1,4 @@
-const { getAllDocuments, getDocuments, formatDate } = require('../../shared/helpers');
+const { getAllDocuments, getDocuments, formatDate, getDate } = require('../../shared/helpers');
 const lookup = require('../../shared/converters/lookup');
 const { NOT_COMPLETE_PUPILLAGE_REASONS } = require('../../shared/config');
 const helpers = require('../../shared/converters/helpers');
@@ -19,10 +19,9 @@ module.exports = (firebase, db) => {
     const applications = await getAllDocuments(db, applicationRefs);
 
     // get report rows
-    const { maxQualificationNum, maxExperienceNum, data: rows } = reportData(db, applications);
-
+    const { maxQualificationNum, maxJudicialExperienceNum, maxNonJudicialExperienceNum, data: rows } = reportData(db, applications);
     // get report headers
-    const headers = reportHeaders(maxQualificationNum, maxExperienceNum);
+    const headers = reportHeaders(maxQualificationNum, maxJudicialExperienceNum, maxNonJudicialExperienceNum);
 
     // construct the report document
     const report = {
@@ -44,17 +43,19 @@ module.exports = (firebase, db) => {
  * Get the report headers
  * 
  * @param {number} maxQualificationNum
- * @param {number} maxExperienceNum
+ * @param {number} maxJudicialExperienceNum
+ * @param {number} maxNonJudicialExperienceNum
  * @return {array}
  */
-const reportHeaders = (maxQualificationNum, maxExperienceNum) => {
+const reportHeaders = (maxQualificationNum, maxJudicialExperienceNum, maxNonJudicialExperienceNum) => {
   const headers = [
     { title: 'First name', ref: 'firstName' },
     { title: 'Last name', ref: 'lastName' },
     { title: 'Suffix', ref: 'suffix' },
     ...getQualificationHeaders(maxQualificationNum),
-    ...getExperienceHeaders(maxExperienceNum),
-    ...getJudicialExperienceHeaders(),
+    ...getJudicialExperienceHeaders(maxJudicialExperienceNum),
+    ...getNonJudicialExperienceHeaders(maxNonJudicialExperienceNum),
+    ...getFeePaidOrSalariedHeaders(),
   ];
 
   return headers;
@@ -62,36 +63,50 @@ const reportHeaders = (maxQualificationNum, maxExperienceNum) => {
 
 /**
  * Get the report data
- *
  * @param {db} db
  * @param {array} applications
  * @returns {array}
  */
 const reportData = (db, applications) => {
   let maxQualificationNum = 0;
-  let maxExperienceNum = 0;
+  let maxJudicialExperienceNum = 0;
+  let maxNonJudicialExperienceNum = 0;
 
   const data = applications.map((application) => {
     const personalDetails = application.personalDetails || {}; 
     const qualifications = application.qualifications || [];
     const experiences = application.experience || [];
+    // sort experiences by start date descending
+    experiences.sort((a, b) => getDate(b.startDate) > getDate(a.startDate));
+    const judicialExperiences = [];
+    const nonJudicialExperiences = [];
+    experiences.forEach(experience => {
+      if (Array.isArray(experience.tasks) && experience.tasks.includes('judicial-functions')) {
+        judicialExperiences.push(experience);
+      } else {
+        nonJudicialExperiences.push(experience);
+      }
+    });
 
     maxQualificationNum = qualifications.length > maxQualificationNum ? qualifications.length : maxQualificationNum;
-    maxExperienceNum = experiences.length > maxExperienceNum ? experiences.length : maxExperienceNum;
+    maxJudicialExperienceNum = judicialExperiences.length > maxJudicialExperienceNum ? judicialExperiences.length : maxJudicialExperienceNum;
+    maxNonJudicialExperienceNum = nonJudicialExperiences.length > maxNonJudicialExperienceNum ? nonJudicialExperiences.length : maxNonJudicialExperienceNum;
 
     return {
       firstName: personalDetails.firstName || null,
       lastName: personalDetails.lastName || null,
       suffix: personalDetails.suffix || null,
       ...getQualificationData(qualifications),
-      ...getExperienceData(experiences),
-      ...getJudicialExperienceData(application),
+      ...getJudicialExperienceData(judicialExperiences),
+      ...getNonJudicialExperienceData(nonJudicialExperiences),
+      ...getFeePaidOrSalariedData(application),
     };
   });
 
   return {
     maxQualificationNum,
-    maxExperienceNum,
+    maxJudicialExperienceNum,
+    maxNonJudicialExperienceNum,
     data,
   };
 };
@@ -110,11 +125,25 @@ function getQualificationHeaders(n) {
   return headers;
 }
 
-function getExperienceHeaders(n) {
+function getJudicialExperienceHeaders(n) {
   const headers = [];
   for (let i = 1; i <= n; i++) {
     headers.push(
-      { title: `${ordinal(i)} Organisation or business`, ref: `orgBusinessName${i}` },
+      { title: `${ordinal(i)} Judicial Role`, ref: `judicialOrgBusinessName${i}` },
+      { title: 'Job title', ref: `judicialJobTitle${i}` },
+      { title: 'Dates', ref: `judicialExperienceDates${i}` },
+      { title: 'Location', ref: `judicialExperienceLocation${i}` },
+      { title: 'Jurisdiction', ref: `judicialJurisdiction${i}` }
+    );
+  }
+  return headers;
+}
+
+function getNonJudicialExperienceHeaders(n) {
+  const headers = [];
+  for (let i = 1; i <= n; i++) {
+    headers.push(
+      { title: `${ordinal(i)} Organisational Business`, ref: `orgBusinessName${i}` },
       { title: 'Job title', ref: `jobTitle${i}` },
       { title: 'Dates', ref: `experienceDates${i}` },
       { title: 'Location', ref: `experienceLocation${i}` },
@@ -124,7 +153,7 @@ function getExperienceHeaders(n) {
   return headers;
 }
 
-function getJudicialExperienceHeaders() {
+function getFeePaidOrSalariedHeaders() {
   return [
     { title: 'Fee-paid or salaried judge', ref: 'feePaidOrSalariedJudge' },
     { title: 'Sat for at least [X] days', ref: 'feePaidOrSalariedSatForThirtyDays' },
@@ -159,7 +188,25 @@ function getNotCompletePupillageReason(qualification) {
     return '';
 }
 
-function getExperienceData(experiences) {
+function getJudicialExperienceData(experiences) {
+  const data = {};
+  for (let i = 0; i < experiences.length; i++) {
+    const experience = experiences[i];
+    const index = i + 1;
+    const dates = [];
+    if (experience.startDate) dates.push(formatDate(experience.startDate, 'DD/MM/YYYY'));
+    if (experience.endDate) dates.push(formatDate(experience.endDate, 'DD/MM/YYYY'));
+
+    data[`judicialOrgBusinessName${index}`] = experience.orgBusinessName || '';
+    data[`judicialJobTitle${index}`] = experience.jobTitle || '';
+    data[`judicialExperienceDates${index}`] = dates.join(' - ');
+    data[`judicialExperienceLocation${index}`] = experience.taskDetails && experience.taskDetails.location ? experience.taskDetails.location : '';
+    data[`judicialJurisdiction${index}`] = experience.taskDetails && experience.taskDetails.jurisdiction ? experience.taskDetails.jurisdiction : '';
+  }
+  return data;
+}
+
+function getNonJudicialExperienceData(experiences) {
   const data = {};
   for (let i = 0; i < experiences.length; i++) {
     const experience = experiences[i];
@@ -177,7 +224,7 @@ function getExperienceData(experiences) {
   return data;
 }
 
-function getJudicialExperienceData(application) {
+function getFeePaidOrSalariedData(application) {
   const data = {};
   data['feePaidOrSalariedJudge'] = helpers.toYesNo(application.feePaidOrSalariedJudge) || '';
   data['feePaidOrSalariedSatForThirtyDays'] = helpers.toYesNo(application.feePaidOrSalariedSatForThirtyDays) || '';
