@@ -1,0 +1,15 @@
+##### This is a stand-alone file that may or may not be useful as a starter-for-ten for managing data migrations (and other jobs) to be run following as part of a release
+##### I have used YAML (I think!) so that this could be consumed by a job-runner script. If the job runner detects that the release includes the mentioned PR (or issue) then it will run each of the associated commands
+##### There is likely an off-the-shelf solution but if not then this could provide a quick & simple way forward that does what we need. This file also provides a history of migration / release commands.
+##### Warning: would need to be careful about who could edit this file as we don't want to run just any old commands
+##### Responsible idiot: Warren Searle
+
+924:
+  npm run production:nodeScript temp/syncExerciseAndVacancyForCompare.js
+920:
+  npm run production:nodeScript temp/syncApplicationsSearchMap.js
+  npm run production:nodeScript temp/syncAssessmentsSearchMap.js
+  npm run production:nodeScript temp/syncCandidatesSearchMap.js
+  npm run production:nodeScript temp/syncExercisesSearchMap.js
+916:
+  npm run production:nodeScript migrateAssessmentMethods
