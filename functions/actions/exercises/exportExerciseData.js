@@ -180,7 +180,7 @@ module.exports = (config, firebase, db) => {
         ].join(', ');
       }).join('\n');
     }
-    return data;
+    return '';
   }
   function formatFeePaidOrSalariedJudge(application) {
     if (!application) { return application; }
