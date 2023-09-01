@@ -60,8 +60,8 @@ describe('firstGenerationUniversityStats', () => {
     // Expected Results
     const results1 = {
       firstGenerationUniversity: { total: 3, percent: ((3/6) * 100) },
-      declaration: { total: 8, percent: ((6/8) * 100) },
-      total: 6,
+      declaration: { total: 6, percent: ((6/8) * 100) },
+      total: 8,
     };
 
     const resultData1 = firstGenerationUniversityStats(applications1, exercise);
@@ -94,8 +94,8 @@ describe('firstGenerationUniversityStats', () => {
     // Expected Results
     const results1 = {
       firstGenerationUniversity: { total: 3, percent: ((3/8) * 100) },
-      declaration: { total: 11, percent: ((8/11) * 100) },
-      total: 8,
+      declaration: { total: 8, percent: ((8/11) * 100) },
+      total: 11,
     };
 
     const resultData1 = firstGenerationUniversityStats(applications1, exercise);

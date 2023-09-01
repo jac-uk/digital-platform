@@ -114,21 +114,17 @@ const calculatePercents = (report) => {
     const ignoreKeys = ['total', 'declaration', 'preferNotToSay', 'noAnswer', 'other'];
     for (let i = 0, len = keys.length; i < len; ++i) {
       if (!ignoreKeys.includes(keys[i])) {
-        report[keys[i]].percent = 100 * report[keys[i]].total / report.total;
+        report[keys[i]].percent = 100 * report[keys[i]].total / report.declaration.total;
       }
     }
-    report.declaration.percent = (report.total / report.declaration.total) * 100;
+    report.declaration.percent = (report.declaration.total / report.total) * 100;
   }
   return report;
 };
 
 const empStats = (applicationRecords) => {
   const stats = {
-    //total: 0,
-    declaration: {
-      total: 0,
-      //percent: 0,
-    },
+    total: 0,
     applied: {
       total: 0,
       percent: 0,
@@ -151,30 +147,21 @@ const empStats = (applicationRecords) => {
     switch (empFlag) {
       case true:
         stats.applied.total += 1;
-        //stats.total += 1;
         break;
       case 'gender':
         stats.gender.total += 1;
-        //stats.total += 1;
         break;
       case 'ethnicity':
         stats.ethnicity.total += 1;
-        //stats.total += 1;
         break;
       default:
         stats.noAnswer.total += 1;
     }
-    //stats.declaration.total += 1;
   }
-
-  // Basing these stats on the declaration total NOT the total (which the other stats are being compared to!)
-  // @TODO: Awaiting confirmation that using the decalration total is the right thing to do here
-  stats.declaration.total = applicationRecords.length;
-  stats.applied.percent = stats.applied.total ? (stats.applied.total / stats.declaration.total) * 100 : 0;
-  stats.gender.percent = stats.gender.total ? (stats.gender.total / stats.declaration.total) * 100 : 0;
-  stats.ethnicity.percent = stats.ethnicity.total ? (stats.ethnicity.total / stats.declaration.total) * 100 : 0;
-
-  //calculatePercents(stats);
+  stats.total = applicationRecords.length;
+  stats.applied.percent = stats.applied.total ? (stats.applied.total / stats.total) * 100 : 0;
+  stats.gender.percent = stats.gender.total ? (stats.gender.total / stats.total) * 100 : 0;
+  stats.ethnicity.percent = stats.ethnicity.total ? (stats.ethnicity.total / stats.total) * 100 : 0;
   return stats;
 };
 
@@ -215,11 +202,11 @@ const genderStats = (applications) => {
     switch (application.gender) {
       case 'male':
         stats.male.total += 1;
-        stats.total += 1;
+        stats.declaration.total += 1;
         break;
       case 'female':
         stats.female.total += 1;
-        stats.total += 1;
+        stats.declaration.total += 1;
         break;
       case 'prefer-not-to-say':
         stats.preferNotToSay.total += 1;
@@ -237,7 +224,7 @@ const genderStats = (applications) => {
     }
     //stats.declaration.total += 1;
   }
-  stats.declaration.total = applications.length;
+  stats.total = applications.length;
   calculatePercents(stats);
   return stats;
 };
@@ -279,7 +266,7 @@ const ethnicityStats = (applications) => {
         case 'gypsy-irish-traveller':
         case 'other-white':
           stats.white.total += 1;
-          stats.total += 1;
+          stats.declaration.total += 1;
           break;
         case 'prefer-not-to-say':
           stats.preferNotToSay.total += 1;
@@ -287,18 +274,18 @@ const ethnicityStats = (applications) => {
         case 'other-ethnic-group':
           //stats.other.total += 1;
           stats.bame.total += 1;  // Count it as 'bame'
-          stats.total += 1;
+          stats.declaration.total += 1;
           break;
         default:
           stats.bame.total += 1;
-          stats.total += 1;
+          stats.declaration.total += 1;
       }
     } else {
       stats.noAnswer.total += 1;
     }
     //stats.declaration.total += 1;
   }
-  stats.declaration.total = applications.length;
+  stats.total = applications.length;
   calculatePercents(stats);
   return stats;
 };
@@ -332,10 +319,10 @@ const disabilityStats = (applications) => {
     // @todo amend how we store disability answers to be string only
     if (application.disability === true) {
       stats.yes.total += 1;
-      stats.total += 1;
+      stats.declaration.total += 1;
     } else if (application.disability === false) {
       stats.no.total += 1;
-      stats.total += 1;
+      stats.declaration.total += 1;
     } else if (application.disability === 'prefer-not-to-say') {
       stats.preferNotToSay.total += 1;
     } else {
@@ -343,7 +330,7 @@ const disabilityStats = (applications) => {
     }
     //stats.declaration.total += 1;
   }
-  stats.declaration.total = applications.length;
+  stats.total = applications.length;
   calculatePercents(stats);
   return stats;
 };
@@ -406,10 +393,10 @@ const professionalBackgroundStats = (applications) => {
       stats.noAnswer.total += 1;
     }
     if (incrementTotal) {
-      stats.total += 1;
+      stats.declaration.total += 1;
     }
   }
-  stats.declaration.total = applications.length;  // As can have multiple answers per application
+  stats.total = applications.length;  // As can have multiple answers per application
   calculatePercents(stats);
   return stats;
 };
@@ -441,11 +428,11 @@ const attendedUKStateSchoolStats = (applications, exercise) => {
         //stats.total += 1;
       }
       if (application[attendedUKStateSchoolFieldName] !== 'prefer-not-to-say') {
-        stats.total += 1;
+        stats.declaration.total += 1;
       }
     }
   }
-  stats.declaration.total = applications.length;
+  stats.total = applications.length;
   calculatePercents(stats);
   return stats;
 };
@@ -468,14 +455,14 @@ const parentsNotAttendedUniversityStats = (applications) => {
     if (Object.prototype.hasOwnProperty.call(application, 'parentsAttendedUniversity')) {
       if (application.parentsAttendedUniversity === false) {
         stats.parentsNotAttendedUniversity.total += 1;
-        stats.total += 1;
+        stats.declaration.total += 1;
       }
       else if (application.parentsAttendedUniversity !== 'prefer-not-to-say') {
-        stats.total += 1;
+        stats.declaration.total += 1;
       }
     }
   }
-  stats.declaration.total = applications.length;
+  stats.total = applications.length;
   calculatePercents(stats);
   return stats;
 };
@@ -498,14 +485,14 @@ const firstGenerationUniversityStats = (applications) => {
     if (Object.prototype.hasOwnProperty.call(application, 'firstGenerationStudent')) {
       if (application.firstGenerationStudent === true) {
         stats.firstGenerationUniversity.total += 1;
-        stats.total += 1;
+        stats.declaration.total += 1;
       }
       else if (application.firstGenerationStudent !== 'prefer-not-to-say') {
-        stats.total += 1;
+        stats.declaration.total += 1;
       }
     }
   }
-  stats.declaration.total = applications.length;
+  stats.total = applications.length;
   calculatePercents(stats);
   return stats;
 };

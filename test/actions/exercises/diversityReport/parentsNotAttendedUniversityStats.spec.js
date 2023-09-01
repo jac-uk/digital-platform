@@ -55,8 +55,8 @@ describe('parentsNotAttendedUniversityStats', () => {
     // Expected Results
     const results1 = {
       parentsNotAttendedUniversity: { total: 2, percent: ((2/5) * 100) },
-      declaration: { total: 7, percent: ((5/7) * 100) },
-      total: 5,
+      declaration: { total: 5, percent: ((5/7) * 100) },
+      total: 7,
     };
 
     const resultData1 = parentsNotAttendedUniversityStats(applications1, exercise);
@@ -89,8 +89,8 @@ describe('parentsNotAttendedUniversityStats', () => {
     // Expected Results
     const results1 = {
       parentsNotAttendedUniversity: { total: 2, percent: ((2/8) * 100) },
-      declaration: { total: 10, percent: ((8/10) * 100) },
-      total: 8,
+      declaration: { total: 8, percent: ((8/10) * 100) },
+      total: 10,
     };
 
     const resultData1 = parentsNotAttendedUniversityStats(applications1, exercise);

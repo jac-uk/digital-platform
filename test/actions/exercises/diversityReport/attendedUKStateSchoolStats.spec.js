@@ -98,8 +98,8 @@ describe('attendedUKStateSchoolStats', () => {
     // Expected Results
     const results1 = {
       attendedUKStateSchool: { total: 2, percent: ((2/6) * 100) },
-      declaration: { total: 7, percent: ((6/7) * 100) },
-      total: 6,
+      declaration: { total: 6, percent: ((6/7) * 100) },
+      total: 7,
     };
 
     const resultData1 = attendedUKStateSchoolStats(applicationsPre, exercisePre);
@@ -133,8 +133,8 @@ describe('attendedUKStateSchoolStats', () => {
     // Expected Results
     const results1 = {
       attendedUKStateSchool: { total: 2, percent: ((2/9) * 100) },
-      declaration: { total: 10, percent: ((9/10) * 100) },
-      total: 9,
+      declaration: { total: 9, percent: ((9/10) * 100) },
+      total: 10,
     };
 
     const resultData1 = attendedUKStateSchoolStats(applicationsPre, exercisePre);
@@ -152,8 +152,8 @@ describe('attendedUKStateSchoolStats', () => {
     // Expected Results
     const results1 = {
       attendedUKStateSchool: { total: 2, percent: ((2/6) * 100) },
-      declaration: { total: 7, percent: ((6/7) * 100) },
-      total: 6,
+      declaration: { total: 6, percent: ((6/7) * 100) },
+      total: 7,
     };
 
     const resultData1 = attendedUKStateSchoolStats(applicationsPost, exercisePost);
@@ -186,8 +186,8 @@ describe('attendedUKStateSchoolStats', () => {
     // Expected Results
     const results1 = {
       attendedUKStateSchool: { total: 2, percent: ((2/9) * 100) },
-      declaration: { total: 10, percent: ((9/10) * 100) },
-      total: 9,
+      declaration: { total: 9, percent: ((9/10) * 100) },
+      total: 10,
     };
 
     const resultData1 = attendedUKStateSchoolStats(applicationsPost, exercisePost);
