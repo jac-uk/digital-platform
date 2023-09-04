@@ -8,36 +8,46 @@ module.exports = (config, firebase) => {
   };
 
   function returnChanges(original, modified) {
-    let changes = '';
-    let originalIndex = 0;
-    let modifiedIndex = 0;
-    let insideChange = false;
+    let changes = '';             // Initialize the changes string.
+    let originalIndex = 0;        // Initialize the index for the original string.
+    let modifiedIndex = 0;        // Initialize the index for the modified string.
+    let insideChange = false;     // A flag to track whether we are inside a change sequence.
+    let hasAddedChange = false;   // A flag to track whether a change has been added.
   
+    // Iterate through both strings until one of them is fully processed.
     while (originalIndex < original.length && modifiedIndex < modified.length) {
       if (original[originalIndex] === modified[modifiedIndex]) {
         if (insideChange) {
-          changes += '\n';
-          insideChange = false;
+          // If we were inside a change sequence and now the characters match,
+          // add a single line break to separate the change sequence.
+          changes += '\n \n';
+          insideChange = false;   // Reset the change flag.
+          hasAddedChange = true; // Set the flag to indicate that a change has been added.
         }
-        originalIndex++;
-        modifiedIndex++;
+        originalIndex++;         // Move to the next character in the original string.
+        modifiedIndex++;         // Move to the next character in the modified string.
       } else {
+        // If the characters are different, add the modified character to the changes string.
         changes += modified[modifiedIndex];
-        modifiedIndex++;
-        insideChange = true;
+        modifiedIndex++;         // Move to the next character in the modified string.
+        insideChange = true;     // Set the change flag.
+        hasAddedChange = true;   // Set the flag to indicate that a change has been added.
       }
     }
   
-    if (insideChange) {
-      changes += '\n';
-    }
-  
+    // Append any remaining characters from the modified string.
     if (modifiedIndex < modified.length) {
       changes += modified.substring(modifiedIndex);
     }
   
-    return changes;
-  }  
+    // If a change was added at the end, remove the trailing line break.
+    if (hasAddedChange && changes.endsWith('\n \n')) {
+      changes = changes.slice(0, -3);
+    }
+  
+    return changes;  // Return the generated string representing the changes.
+  }
+  
 
   // Function to extract and compare document content
   async function extractDocumentContent(templatePath, documentPath) {
