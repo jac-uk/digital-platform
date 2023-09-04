@@ -57,7 +57,7 @@ function log(message) {
 }
 
 const applicationOpenDatePost01042023 = (exercise) => {
-  const usesPre01042023Questions = ['JAC00130', 'JAC00123', 'JAC00164'].includes(exercise.ref);
+  const usesPre01042023Questions = ['JAC00130', 'JAC00123', 'JAC00164'].includes(exercise.referenceNumber);
   if (usesPre01042023Questions) {
     return false;
   }
