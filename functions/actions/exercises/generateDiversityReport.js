@@ -108,10 +108,9 @@ const diversityReport = (applications, applicationRecords, exercise) => {
   return report;
 };
 
-const calculatePercents = (report) => {
+const calculatePercents = (report, ignoreKeys) => {
   if (report.total && report.declaration.total) {
     const keys = Object.keys(report);
-    const ignoreKeys = ['total', 'declaration', 'preferNotToSay', 'noAnswer', 'other'];
     for (let i = 0, len = keys.length; i < len; ++i) {
       if (!ignoreKeys.includes(keys[i])) {
         report[keys[i]].percent = 100 * report[keys[i]].total / report.declaration.total;
@@ -225,7 +224,8 @@ const genderStats = (applications) => {
     //stats.declaration.total += 1;
   }
   stats.total = applications.length;
-  calculatePercents(stats);
+  const ignoreKeys = ['total', 'declaration', 'preferNotToSay', 'noAnswer', 'other'];
+  calculatePercents(stats, ignoreKeys);
   return stats;
 };
 
@@ -286,7 +286,8 @@ const ethnicityStats = (applications) => {
     //stats.declaration.total += 1;
   }
   stats.total = applications.length;
-  calculatePercents(stats);
+  const ignoreKeys = ['total', 'declaration', 'preferNotToSay', 'noAnswer'];
+  calculatePercents(stats, ignoreKeys);
   return stats;
 };
 
@@ -331,7 +332,8 @@ const disabilityStats = (applications) => {
     //stats.declaration.total += 1;
   }
   stats.total = applications.length;
-  calculatePercents(stats);
+  const ignoreKeys = ['total', 'declaration', 'preferNotToSay', 'noAnswer'];
+  calculatePercents(stats, ignoreKeys);
   return stats;
 };
 
@@ -385,6 +387,7 @@ const professionalBackgroundStats = (applications) => {
       }
       if (application.professionalBackground.indexOf('other-professional-background') >= 0) {
         stats.other.total += 1;
+        incrementTotal = true;
       }
       if (application.professionalBackground.indexOf('prefer-not-to-say') >= 0) {
         stats.preferNotToSay.total += 1;
@@ -397,7 +400,8 @@ const professionalBackgroundStats = (applications) => {
     }
   }
   stats.total = applications.length;  // As can have multiple answers per application
-  calculatePercents(stats);
+  const ignoreKeys = ['total', 'declaration', 'preferNotToSay', 'noAnswer'];
+  calculatePercents(stats, ignoreKeys);
   return stats;
 };
 
@@ -433,7 +437,8 @@ const attendedUKStateSchoolStats = (applications, exercise) => {
     }
   }
   stats.total = applications.length;
-  calculatePercents(stats);
+  const ignoreKeys = ['total', 'declaration', 'preferNotToSay', 'noAnswer', 'other'];
+  calculatePercents(stats, ignoreKeys);
   return stats;
 };
 
@@ -463,7 +468,8 @@ const parentsNotAttendedUniversityStats = (applications) => {
     }
   }
   stats.total = applications.length;
-  calculatePercents(stats);
+  const ignoreKeys = ['total', 'declaration', 'preferNotToSay', 'noAnswer', 'other'];
+  calculatePercents(stats, ignoreKeys);
   return stats;
 };
 
@@ -493,6 +499,7 @@ const firstGenerationUniversityStats = (applications) => {
     }
   }
   stats.total = applications.length;
-  calculatePercents(stats);
+  const ignoreKeys = ['total', 'declaration', 'preferNotToSay', 'noAnswer', 'other'];
+  calculatePercents(stats, ignoreKeys);
   return stats;
 };
