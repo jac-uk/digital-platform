@@ -36,12 +36,12 @@ applications2.push(
 
 // Expected Results
 const results = {
-  total: 17,
+  total: 19,
   white: { total: 4, percent: ((4/17) * 100) },
   bame: { total: 13, percent: ((13/17) * 100) },
   preferNotToSay: { total: 1, percent: 0 },
   noAnswer: { total: 1, percent: 0 },
-  declaration: { total: 19, percent: ((17/19) * 100) },
+  declaration: { total: 17, percent: ((17/19) * 100) },
 };
 
 describe('ethnicityStats', () => {

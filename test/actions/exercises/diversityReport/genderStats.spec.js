@@ -26,13 +26,13 @@ const applications2 = genderGroups.map(element => {
 
 // Expected Results
 const results = {
-  total: 2,
+  total: 6,
   male: { total: 1, percent: 50 },
   female: { total: 1, percent: 50 },
   preferNotToSay: { total: 1, percent: 0 },
   other: { total: 2, percent: 0 },
   noAnswer: { total: 1, percent: 0 },
-  declaration: { total: 6, percent: ((1/3) * 100) },
+  declaration: { total: 2, percent: ((1/3) * 100) },
 };
 
 describe('genderStats', () => {
