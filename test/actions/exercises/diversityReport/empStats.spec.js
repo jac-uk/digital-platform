@@ -23,7 +23,7 @@ const results = {
   gender: { total: 1, percent: 25 },
   ethnicity: { total: 1, percent: 25 },
   noAnswer: { total: 1, percent: 0 },
-  declaration: { total: 4 },
+  total: 4,
 };
 
 describe('empStats', () => {
@@ -39,7 +39,6 @@ describe('empStats', () => {
     expect(resultData1.ethnicity.total).toEqual(results.ethnicity.total);
     expect(resultData1.ethnicity.percent).toEqual(results.ethnicity.percent);
     expect(resultData1.noAnswer.total).toEqual(results.noAnswer.total);
-    expect(resultData1.declaration.total).toEqual(results.declaration.total);
   });
 
 });

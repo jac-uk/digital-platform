@@ -36,12 +36,12 @@ applications2.push(
 
 // Expected Results
 const results = {
-  total: 2,
+  total: 4,
   yes: { total: 1, percent: 50 },
   no: { total: 1, percent: 50 },
   preferNotToSay: { total: 1, percent: 0 },
   noAnswer: { total: 1, percent: 0 },
-  declaration: { total: 4, percent: 50 },
+  declaration: { total: 2, percent: 50 },
 };
 
 describe('disabilityStats', () => {

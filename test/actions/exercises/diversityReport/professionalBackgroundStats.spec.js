@@ -67,14 +67,14 @@ const applications2 = [
 
 // Expected Results
 const results = {
-  total: 4,
+  total: 7,
   barrister: { total: 2, percent: 50 },
   cilex: { total: 1, percent: 25 },
   solicitor: { total: 1, percent: 25 },
   other:  { total: 2, percent: 0 },
   preferNotToSay: { total: 1, percent: 0 },
   noAnswer: { total: 1, percent: 0 },
-  declaration: { total: 7, percent: ((4/7) * 100) },
+  declaration: { total: 4, percent: ((4/7) * 100) },
 };
 
 describe('professionalBackgroundStats', () => {
