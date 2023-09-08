@@ -28,6 +28,10 @@ const PERMISSIONS = {
         label: 'Can create users',
         value: 'u6',
       },
+      canReadUsers: {
+        label: 'Can read users',
+        value: 'u7',
+      },
     },
   },
   exercises: {
