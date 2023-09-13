@@ -88,7 +88,7 @@ describe('includeZScores(finalScores)', () => {
       { expectedZScore: 0.424264068711928, expectedCATZScore: 0, expectedSJTZScore: 0.707106781186548, scoreSheet: { qualifyingTest: {CA: { percent: 100}, SJ: { percent: 87.5} } } },
       { expectedZScore: 0, expectedCATZScore: 0, expectedSJTZScore: 0, scoreSheet: { qualifyingTest: {CA: { percent: 100}, SJ: { percent: 75} } } },
       { expectedZScore: -0.424264068711928, expectedCATZScore: 0, expectedSJTZScore: -0.707106781186548, scoreSheet: { qualifyingTest: {CA: { percent: 100}, SJ: { percent: 62.5} } } },
-      { expectedZScore: -0.848528137423857, expectedCATZScore: 0, expectedSJTZScore: -1.4142135623731, scoreSheet: { qualifyingTest: {CA: { percent: 100}, SJ: { percent: 50} } } }
+      { expectedZScore: -0.848528137423857, expectedCATZScore: 0, expectedSJTZScore: -1.4142135623731, scoreSheet: { qualifyingTest: {CA: { percent: 100}, SJ: { percent: 50} } } },
     ];
     const resultData = includeZScores(sourceData);
     // console.log('resultData', resultData);
