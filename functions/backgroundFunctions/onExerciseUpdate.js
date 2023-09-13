@@ -6,7 +6,6 @@ const onUpdate = require('../actions/exercises/onUpdate')(config, firebase, db, 
 module.exports = functions.region('europe-west2').firestore
   .document('exercises/{exerciseId}')
   .onUpdate(async (change, context) => {
-    console.log('hello warren!!');
     const after = change.after.data();
     const before = change.before.data();
     const exerciseId = context.params.exerciseId;
