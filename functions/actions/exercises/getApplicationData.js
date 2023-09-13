@@ -61,12 +61,15 @@ module.exports = (config, firebase, db, auth) => {
           }
         }
         // Handle array values
-        else if (['locationPreferences', 'jurisdictionPreferences'].includes(column)) {
+        else if (['personalDetails.VATNumbers', 'locationPreferences', 'jurisdictionPreferences'].includes(column)) {
           if (column === 'locationPreferences') {
             record[column] = formatPreference(record[column], exerciseData.locationQuestionType);
           }
           if (column === 'jurisdictionPreferences') {
             record[column] = formatPreference(record[column], exerciseData.jurisdictionQuestionType);
+          }
+          if (column === 'personalDetails.VATNumbers' && Array.isArray(record[column])) {
+            record[column] = record[column].map(item => item.VATNumber).join(',');
           }
         }
         else if(_.isArray(record[column])) {
