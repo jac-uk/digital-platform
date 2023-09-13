@@ -730,7 +730,7 @@ module.exports = (config, firebase, db) => {
     if (didNotParticipateStatus) {
       const scoredApplicationIdMap = {};
       task.finalScores.forEach(scoreData => scoredApplicationIdMap[scoreData.id] = true);
-      task.applications.filter(application => applicationIdMap[application.id]).filter(application => !scoredApplicationIdMap[application.id]).forEach(application => {
+      applications.filter(application => applicationIdMap[application.id]).filter(application => !scoredApplicationIdMap[application.id]).forEach(application => {
         outcomeStats[didNotParticipateStatus] += 1;
         const saveData = {};
         if (!(task.allowStatusUpdates === false)) { saveData.status = didNotParticipateStatus; }  // here we update status unless this has been explicitly denied
@@ -784,6 +784,17 @@ module.exports = (config, firebase, db) => {
                 if (application) {
                   applications.push(application);
                 }
+              } else {
+                // update application record status to failed first test
+                outcomeStats[failStatus] += 1;
+                const saveData = {};
+                if (!(task.allowStatusUpdates === false)) { saveData.status = failStatus; }  // here we update status unless this has been explicitly denied
+                saveData[`statusLog.${failStatus}`] = firebase.firestore.FieldValue.serverTimestamp(); // we still always log the status change
+                commands.push({
+                  command: 'update',
+                  ref: db.collection('applicationRecords').doc(application.id),
+                  data: saveData,
+                });         
               }
             }
           });

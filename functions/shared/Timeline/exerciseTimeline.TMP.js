@@ -36,7 +36,7 @@ module.exports = (config) => {
       date: selectionDay.selectionDayStart,
       endDate: selectionDay.selectionDayEnd,
       dateString: null,
-      taskType: TASK_TYPE.SELECTION,
+      taskType: TASK_TYPE.SELECTION_DAY,
     };
 
     const selectionDayStart = getDateString(selectionDay.selectionDayStart);
