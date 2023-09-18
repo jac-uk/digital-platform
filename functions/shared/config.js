@@ -263,7 +263,7 @@ module.exports = {
   },
   TASK_TYPE: {
     SIFT: 'sift',
-    SELECTION: 'selection',
+    SELECTION_DAY: 'selectionDay',
     SCENARIO: 'scenarioTest',
     CRITICAL_ANALYSIS: 'criticalAnalysis',
     SITUATIONAL_JUDGEMENT: 'situationalJudgement',

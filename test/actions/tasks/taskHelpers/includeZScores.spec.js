@@ -82,6 +82,26 @@ describe('includeZScores(finalScores)', () => {
     }
   });
 
+  describe('zScore calculations: custom data (all same score for one test)', () => {
+    const sourceData = [
+      { expectedZScore: 0.848528137423857, expectedCATZScore: 0, expectedSJTZScore: 1.4142135623731, scoreSheet: { qualifyingTest: {CA: { percent: 100}, SJ: { percent: 100} } } },
+      { expectedZScore: 0.424264068711928, expectedCATZScore: 0, expectedSJTZScore: 0.707106781186548, scoreSheet: { qualifyingTest: {CA: { percent: 100}, SJ: { percent: 87.5} } } },
+      { expectedZScore: 0, expectedCATZScore: 0, expectedSJTZScore: 0, scoreSheet: { qualifyingTest: {CA: { percent: 100}, SJ: { percent: 75} } } },
+      { expectedZScore: -0.424264068711928, expectedCATZScore: 0, expectedSJTZScore: -0.707106781186548, scoreSheet: { qualifyingTest: {CA: { percent: 100}, SJ: { percent: 62.5} } } },
+      { expectedZScore: -0.848528137423857, expectedCATZScore: 0, expectedSJTZScore: -1.4142135623731, scoreSheet: { qualifyingTest: {CA: { percent: 100}, SJ: { percent: 50} } } },
+    ];
+    const resultData = includeZScores(sourceData);
+    // console.log('resultData', resultData);
+    it('calculated zScores match expected zScores', async () => {
+      resultData.forEach(resultItem => {
+        expect(resultItem.zScore).toBeCloseTo(resultItem.expectedZScore);
+        expect(resultItem.scoreSheet.qualifyingTest.zScore).toBeCloseTo(resultItem.expectedZScore);
+        expect(resultItem.scoreSheet.qualifyingTest.CA.zScore).toBeCloseTo(resultItem.expectedCATZScore);
+        expect(resultItem.scoreSheet.qualifyingTest.SJ.zScore).toBeCloseTo(resultItem.expectedSJTZScore);
+      });
+    });
+  });
+
   describe('zScore calculations: simple test', () => {
     /** 
      * NOTE: the following test data has been generated from [this spreadsheet](https://docs.google.com/spreadsheets/d/1Hpt2nvkDBJYgc8A7fwImMA_vXoMOU4go3wWJ2HbeIsQ/edit)
