@@ -221,7 +221,7 @@ module.exports = {
   },
   TASK_TYPE: {
     SIFT: 'sift',
-    SELECTION: 'selection',
+    SELECTION_DAY: 'selectionDay',
     SCENARIO: 'scenarioTest',
     CRITICAL_ANALYSIS: 'criticalAnalysis',
     SITUATIONAL_JUDGEMENT: 'situationalJudgement',
@@ -245,7 +245,7 @@ module.exports = {
     MODERATION_ACTIVATED: 'moderationActivated',
     STATUS_CHANGES: 'statusChanges',
     FINALISED: 'finalised',
-    CHECKS: 'checks',
+    STAGE_OUTCOME: 'stageOutcome',
     COMPLETED: 'completed',
   },
   PANEL_STATUS: {
