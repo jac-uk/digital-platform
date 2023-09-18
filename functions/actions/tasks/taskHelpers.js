@@ -65,7 +65,7 @@ module.exports = (config) => {
         ];
         break;
       case config.TASK_TYPE.SIFT:
-      case config.TASK_TYPE.SELECTION:
+      case config.TASK_TYPE.SELECTION_DAY:
         availableStatuses = [
           config.TASK_STATUS.DATA_INITIALISED,
           config.TASK_STATUS.DATA_ACTIVATED,
@@ -199,7 +199,7 @@ module.exports = (config) => {
       case config.TASK_TYPE.SIFT:
         scoreSheet[type] = exercise.capabilities.reduce((acc, curr) => (acc[curr] = '', acc), {});
         break;
-      case config.TASK_TYPE.SELECTION:
+      case config.TASK_TYPE.SELECTION_DAY:
         exercise.selectionCategories.forEach(category => {
           scoreSheet[category] = exercise.capabilities.reduce((acc, curr) => (acc[curr] = '', acc), {});
         });
@@ -262,7 +262,7 @@ module.exports = (config) => {
       console.log('sift', getExerciseCapabilities(exercise));
       markingScheme.push(createMarkingSchemeGroup(taskType, getExerciseCapabilities(exercise)));
       break;
-    case config.TASK_TYPE.SELECTION:
+    case config.TASK_TYPE.SELECTION_DAY:
       getExerciseSelectionCategories(exercise).forEach(cat => {
         markingScheme.push(createMarkingSchemeGroup(cat, getExerciseCapabilities(exercise)));
       });
@@ -481,8 +481,8 @@ module.exports = (config) => {
       const CAstdev = calculateStandardDeviation(CApercents);
       const SJstdev = calculateStandardDeviation(SJpercents);
       finalScores.forEach(item => {
-        item.scoreSheet.qualifyingTest.CA.zScore = (item.scoreSheet.qualifyingTest.CA.percent - CAmean) / CAstdev;
-        item.scoreSheet.qualifyingTest.SJ.zScore = (item.scoreSheet.qualifyingTest.SJ.percent - SJmean) / SJstdev;
+        item.scoreSheet.qualifyingTest.CA.zScore = CAstdev ? (item.scoreSheet.qualifyingTest.CA.percent - CAmean) / CAstdev : 0;
+        item.scoreSheet.qualifyingTest.SJ.zScore = SJstdev ? (item.scoreSheet.qualifyingTest.SJ.percent - SJmean) / SJstdev : 0;
       });
       finalScores.forEach(item => {
         item.zScore = (0.4 * item.scoreSheet.qualifyingTest.CA.zScore) + (0.6 * item.scoreSheet.qualifyingTest.SJ.zScore);
