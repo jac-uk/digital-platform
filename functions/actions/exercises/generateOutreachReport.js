@@ -1,4 +1,5 @@
-const { getDocuments } = require('../../shared/helpers');
+const { getDocuments, objectHasNestedProperty } = require('../../shared/helpers');
+const ignoreKeys = ['total', 'declaration', 'preferNotToSay', 'noAnswer'];
 
 module.exports = (firebase, db) => {
   return {
@@ -29,19 +30,15 @@ module.exports = (firebase, db) => {
     if (applicationRecords.length) {
       const handoverIds = applicationRecords.filter(doc => doc.stage === 'handover').map(doc => doc.id);
       const handoverApplications = applications.filter(doc => handoverIds.indexOf(doc.id) >= 0);
-      //const handoverApplicationRecords = applicationRecords.filter(doc => doc.stage === 'handover');
 
       const recommendedIds = applicationRecords.filter(doc => doc.stage === 'recommended').map(doc => doc.id);
       const recommendedApplications = handoverApplications.concat(applications.filter(doc => recommendedIds.indexOf(doc.id) >= 0));
-      //const recommendedApplicationRecords = applicationRecords.filter(doc => doc.stage === 'recommended');
 
       const selectedIds = applicationRecords.filter(doc => doc.stage === 'selected').map(doc => doc.id);
       const selectedApplications = recommendedApplications.concat(applications.filter(doc => selectedIds.indexOf(doc.id) >= 0));
-      //const selectedApplicationRecords = applicationRecords.filter(doc => doc.stage === 'selected');
 
       const shortlistedIds = applicationRecords.filter(doc => doc.stage === 'shortlisted').map(doc => doc.id);
       const shortlistedApplications = selectedApplications.concat(applications.filter(doc => shortlistedIds.indexOf(doc.id) >= 0));
-      //const shortlistedApplicationRecords = applicationRecords.filter(doc => doc.stage === 'shortlisted');
 
       report.handover = outreachReport(handoverApplications);
       report.recommended = outreachReport(recommendedApplications);
@@ -49,28 +46,13 @@ module.exports = (firebase, db) => {
       report.shortlisted = outreachReport(shortlistedApplications);
     }
     await db.collection('exercises').doc(exerciseId).collection('reports').doc('outreach').set(report);
-
-    console.log('report:');
-    console.log(report);
-
     return report;
   }
 };
 
-// const outreachReport = (applications) => {
-//   return {
-//     outreach: outreachStats(applications),
-//   };
-// };
-
 const outreachReport = (applications) => {
   let report = {
     totalApplications: applications.length,
-    // gender: genderStats(applications),
-    // ethnicity: ethnicityStats(applications),
-    // disability: disabilityStats(applications),
-    // professionalBackground: professionalBackgroundStats(applications),
-
     attended: attendedOutreachStats(applications),
     workshadowing: workshadowingStats(applications),
     outreach: outreachStats(applications),
@@ -78,21 +60,6 @@ const outreachReport = (applications) => {
   };
   return report;
 };
-
-// const calculatePercents = (report) => {
-//   if (report.total) {
-//     let keys = Object.keys(report);
-//     keys = keys.filter( item => !item.startsWith('total'));
-
-//     keys.forEach(item => {
-//       const itemTotal = report[item].total;
-//       const reportTotal = report.total;
-//       const myPercent = 100 * itemTotal / reportTotal;
-//       report[item].percent = myPercent;
-//     });
-
-//   }
-// };
 
 const calculatePercents = (report, ignoreKeys) => {
   if (report.total && report.declaration.total) {
@@ -104,22 +71,13 @@ const calculatePercents = (report, ignoreKeys) => {
     }
     report.declaration.percent = (report.declaration.total / report.total) * 100;
   }
-
-  console.log('RETURN FROM calculatePercents:');
-  console.log(report);
-
   return report;
 };
 
 const outreachStats = (applications) => {
-
-  console.log('********* OUTREACH (GENERAL) *********');
-
   const stats = {
     totalApplications: 0,
-    //totalApplicationsAnswered: 0,
     total: 0, // total Answers
-
     'jac-website': {
       total: 0,
       percent: 0,
@@ -160,7 +118,10 @@ const outreachStats = (applications) => {
       total: 0,
       percent: 0,
     },
-    //total: 0,
+    noAnswer: {
+      total: 0,
+      percent: 0,
+    },
     declaration: {
       total: 0,
       percent: 0,
@@ -168,8 +129,8 @@ const outreachStats = (applications) => {
   };
   for (let i = 0, len = applications.length; i < len; ++i) {
     let incrementTotal = false;
-    const application = applications[i].equalityAndDiversitySurvey ? applications[i].equalityAndDiversitySurvey : applications[i];
-    if (application.additionalInfo && application.additionalInfo.listedSources) {
+    const application = applications[i];
+    if (objectHasNestedProperty(application, 'additionalInfo.listedSources')) {
       if (application.additionalInfo.listedSources.indexOf('jac-website') >= 0) {
         stats['jac-website'].total += 1;
         incrementTotal = true;
@@ -217,20 +178,11 @@ const outreachStats = (applications) => {
     }
   }
   stats.total = applications.length;  // As can have multiple answers per application
-
-  console.log('STATS TO calculatePercents:');
-  console.log(stats);
-
-  // @TODO: Ignore keys can prob be a single constant!!
-
-  const ignoreKeys = ['total', 'declaration', 'preferNotToSay', 'noAnswer'];
   calculatePercents(stats, ignoreKeys);
+  return stats;
 };
 
 const attendedOutreachStats = (applications) => {
-
-  console.log('********* ATTENDED OUTREACH *********');
-
   const stats = {
     total: 0,
     declaration: {
@@ -267,18 +219,13 @@ const attendedOutreachStats = (applications) => {
     } else {
       stats.noAnswer.total += 1;
     }
-    //stats.declaration.total += 1;
   }
   stats.total = applications.length;
-  const ignoreKeys = ['total', 'declaration', 'preferNotToSay', 'noAnswer'];
   calculatePercents(stats, ignoreKeys);
   return stats;
 };
 
 const workshadowingStats = (applications) => {
-
-  console.log('********* PAJE OUTREACH *********');
-
   const stats = {
     total: 0,
     declaration: {
@@ -315,17 +262,13 @@ const workshadowingStats = (applications) => {
     } else {
       stats.noAnswer.total += 1;
     }
-    //stats.declaration.total += 1;
   }
   stats.total = applications.length;
-  const ignoreKeys = ['total', 'declaration', 'preferNotToSay', 'noAnswer'];
   calculatePercents(stats, ignoreKeys);
   return stats;
 };
 
 const hasTakenPAJEStats = (applications) => {
-  console.log('********* HAS TAKEN PAJE OUTREACH *********');
-
   const stats = {
     total: 0,
     declaration: {
@@ -351,10 +294,12 @@ const hasTakenPAJEStats = (applications) => {
   };
   for (let i = 0, len = applications.length; i < len; ++i) {
     const application = applications[i].equalityAndDiversitySurvey ? applications[i].equalityAndDiversitySurvey : applications[i];
-    if (application.hasTakenPAJE === true) {
+    const hasTakenPAJE = application.hasTakenPAJE === true || application.hasTakenPAJE === 'online-only' || application.hasTakenPAJE === 'online-and-judge-led';
+    const hasNotTakenPAJE = application.hasTakenPAJE === false || application.hasTakenPAJE.toLowerCase() === 'no';
+    if (hasTakenPAJE) {
       stats.yes.total += 1;
       stats.declaration.total += 1;
-    } else if (application.hasTakenPAJE === false) {
+    } else if (hasNotTakenPAJE) {
       stats.no.total += 1;
       stats.declaration.total += 1;
     } else if (application.hasTakenPAJE === 'prefer-not-to-say') {
@@ -362,10 +307,8 @@ const hasTakenPAJEStats = (applications) => {
     } else {
       stats.noAnswer.total += 1;
     }
-    //stats.declaration.total += 1;
   }
   stats.total = applications.length;
-  const ignoreKeys = ['total', 'declaration', 'preferNotToSay', 'noAnswer'];
   calculatePercents(stats, ignoreKeys);
   return stats;
 };
