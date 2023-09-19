@@ -7,6 +7,7 @@ module.exports = (firebase, db) => {
     attendedOutreachStats,
     workshadowingStats,
     hasTakenPAJEStats,
+    outreachStats,
   };
 
   async function generateOutreachReport(exerciseId) {
@@ -110,7 +111,7 @@ const outreachStats = (applications) => {
       total: 0,
       percent: 0,
     },
-    'prefer-not-to-say': {
+    preferNotToSay: {
       total: 0,
       percent: 0,
     },
@@ -130,7 +131,7 @@ const outreachStats = (applications) => {
   for (let i = 0, len = applications.length; i < len; ++i) {
     let incrementTotal = false;
     const application = applications[i];
-    if (objectHasNestedProperty(application, 'additionalInfo.listedSources')) {
+    if (objectHasNestedProperty(application, 'additionalInfo.listedSources') && application.additionalInfo.listedSources.length) {
       if (application.additionalInfo.listedSources.indexOf('jac-website') >= 0) {
         stats['jac-website'].total += 1;
         incrementTotal = true;
@@ -283,10 +284,6 @@ const hasTakenPAJEStats = (applications) => {
       total: 0,
       percent: 0,
     },
-    preferNotToSay: {
-      total: 0,
-      percent: 0,
-    },
     noAnswer: {
       total: 0,
       percent: 0,
@@ -294,17 +291,29 @@ const hasTakenPAJEStats = (applications) => {
   };
   for (let i = 0, len = applications.length; i < len; ++i) {
     const application = applications[i].equalityAndDiversitySurvey ? applications[i].equalityAndDiversitySurvey : applications[i];
-    const hasTakenPAJE = application.hasTakenPAJE === true || application.hasTakenPAJE === 'online-only' || application.hasTakenPAJE === 'online-and-judge-led';
-    const hasNotTakenPAJE = application.hasTakenPAJE === false || application.hasTakenPAJE.toLowerCase() === 'no';
-    if (hasTakenPAJE) {
-      stats.yes.total += 1;
-      stats.declaration.total += 1;
-    } else if (hasNotTakenPAJE) {
-      stats.no.total += 1;
-      stats.declaration.total += 1;
-    } else if (application.hasTakenPAJE === 'prefer-not-to-say') {
-      stats.preferNotToSay.total += 1;
-    } else {
+    if (objectHasNestedProperty(application, 'hasTakenPAJE')) {
+      if (application.hasTakenPAJE === null || application.hasTakenPAJE === undefined) {
+        stats.noAnswer.total += 1;
+      }
+      else if (
+        application.hasTakenPAJE === true
+        || application.hasTakenPAJE === 'online-only'
+        || application.hasTakenPAJE === 'online-and-judge-led'
+      ) {
+        stats.yes.total += 1;
+        stats.declaration.total += 1;
+      }
+      else if (
+        application.hasTakenPAJE === false
+        || String.prototype.toLowerCase.call(application.hasTakenPAJE) === 'no'
+      ) {
+        stats.no.total += 1;
+        stats.declaration.total += 1;
+      } else {
+        stats.noAnswer.total += 1;
+      }
+    }
+    else {
       stats.noAnswer.total += 1;
     }
   }
