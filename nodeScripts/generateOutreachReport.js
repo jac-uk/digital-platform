@@ -1,15 +1,13 @@
 'use strict';
 
 const { firebase, app, db } = require('./shared/admin.js');
-const { generateDiversityReport } = require('../functions/actions/exercises/generateDiversityReport')(firebase, db);
+const { generateOutreachReport } = require('../functions/actions/exercises/generateOutreachReport.js')(firebase, db);
 
 const main = async () => {
-  //return generateDiversityReport('wdpALbyICL7ZxxN5AQt8');
-  //return generateDiversityReport('yZrD8lLdIHbbwA6TD7AM');
 
   // @TOOD: Add your outreach stuff debugging in here!
 
-  return generateDiversityReport('1qef6rsaSLvvsZHrJuw7');
+  return generateOutreachReport('1qef6rsaSLvvsZHrJuw7');
 };
 
 main()
