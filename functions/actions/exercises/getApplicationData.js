@@ -1,4 +1,4 @@
-const { getDocument, getDocuments, formatDate } = require('../../shared/helpers');
+const { getDocument, getDocuments, formatDate, formatAddress, formatPreviousAddresses } = require('../../shared/helpers');
 
 const _ = require('lodash');
 
@@ -61,13 +61,22 @@ module.exports = (config, firebase, db, auth) => {
           }
         }
         // Handle array values
-        else if (['locationPreferences', 'jurisdictionPreferences'].includes(column)) {
+        else if (['personalDetails.address.previous', 'personalDetails.VATNumbers', 'locationPreferences', 'jurisdictionPreferences'].includes(column)) {
           if (column === 'locationPreferences') {
             record[column] = formatPreference(record[column], exerciseData.locationQuestionType);
           }
           if (column === 'jurisdictionPreferences') {
             record[column] = formatPreference(record[column], exerciseData.jurisdictionQuestionType);
           }
+          if (column === 'personalDetails.address.previous' && Array.isArray(record[column])) {
+            record[column] = formatPreviousAddresses(record[column]);
+          }
+          if (column === 'personalDetails.VATNumbers' && Array.isArray(record[column])) {
+            record[column] = record[column].map(item => item.VATNumber).join(',');
+          }
+        }
+        else if (column === 'personalDetails.address.current' && _.isObject(record[column]) && !_.isArray(record[column])) {
+          record[column] = formatAddress(record[column]);
         }
         else if(_.isArray(record[column])) {
           let formattedArray = '';

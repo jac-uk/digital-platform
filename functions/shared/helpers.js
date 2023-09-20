@@ -26,6 +26,8 @@ module.exports = {
   calculateStandardDeviation,
   objectHasNestedProperty,
   replaceCharacters,
+  formatAddress,
+  formatPreviousAddresses,
 };
 
 function calculateMean(numArray) {
@@ -377,4 +379,37 @@ function replaceCharacters(inputString, characterMap) {
 
   // Convert the modified array back to a string and return it
   return inputArray.join('');
+}
+
+/**
+ * Format an address object into a string
+ * 
+ * @param {object} address 
+ * @returns {string}
+ */
+function formatAddress(address) {
+  const result = [];
+  if (address.street) result.push(address.street);
+  if (address.street2) result.push(address.street2);
+  if (address.town) result.push(address.town);
+  if (address.county) result.push(address.county);
+  if (address.postcode) result.push(address.postcode);
+  return result.join(' ');
+}
+
+/**
+ * Format an array of previous addresses into a string
+ * 
+ * @param {array} previousAddresses 
+ * @returns {string}
+ */
+function formatPreviousAddresses(previousAddresses) {
+  if (Array.isArray(previousAddresses) && previousAddresses.length) {
+    return previousAddresses.map((address) => {
+      const dates = `${formatDate(address.startDate)} - ${formatDate(address.endDate)}`;
+      const formattedAddress = formatAddress(address);
+      return `${dates} ${formattedAddress}`;
+    }).join('\n\n');
+  }
+  return '';
 }

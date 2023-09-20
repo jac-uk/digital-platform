@@ -1,4 +1,17 @@
-const { checkArguments, applyUpdates, convertStringToSearchParts, getEarliestDate, getLatestDate, removeHtml, normaliseNIN, normaliseNINs, objectHasNestedProperty, replaceCharacters } = require('../../functions/shared/helpers');
+const {
+  checkArguments,
+  applyUpdates,
+  convertStringToSearchParts,
+  getEarliestDate,
+  getLatestDate,
+  removeHtml,
+  normaliseNIN,
+  normaliseNINs,
+  objectHasNestedProperty,
+  replaceCharacters,
+  formatAddress,
+  formatPreviousAddresses,
+} = require('../../functions/shared/helpers');
 
 describe('checkArguments()', () => {
 
@@ -532,4 +545,83 @@ describe('replaceCharacters()', () => {
   });
 });
 
+describe('formatAddress()', () => {
+  it('should return a formatted address string with all fields present', () => {
+    const address = {
+      street: '123 Main St',
+      street2: 'Apt 4B',
+      town: 'New York',
+      county: 'Manhattan',
+      postcode: '10001',
+    };
+    const result = formatAddress(address);
+    expect(result).toBe('123 Main St Apt 4B New York Manhattan 10001');
+  });
 
+  it('should return a formatted address string with only required fields present', () => {
+    const address = {
+      street: '123 Main St',
+      town: 'New York',
+      postcode: '10001',
+    };
+    const result = formatAddress(address);
+    expect(result).toBe('123 Main St New York 10001');
+  });
+
+  it('should return an empty string when no fields are present', () => {
+    const address = {};
+    const result = formatAddress(address);
+    expect(result).toBe('');
+  });
+
+  it('should return a formatted address string with only one field present', () => {
+    const address = {
+      street: '123 Main St',
+    };
+    const result = formatAddress(address);
+    expect(result).toBe('123 Main St');
+  });
+});
+
+describe('formatPreviousAddresses()', () => {
+  it('should return an empty string when given an empty array', () => {
+    const previousAddresses = [];
+    const result = formatPreviousAddresses(previousAddresses);
+    expect(result).toEqual('');
+  });
+
+  it('should return a formatted string when given an array with one element', () => {
+    const previousAddresses = [
+      {
+        startDate: new Date('2022-01-01'),
+        endDate: new Date('2022-02-01'),
+        street: '123 Main St',
+        town: 'City',
+        postcode: '12345',
+      },
+    ];
+    const result = formatPreviousAddresses(previousAddresses);
+    expect(result).toEqual('2022-01-01 - 2022-02-01 123 Main St City 12345');
+  });
+
+  it('should return a formatted string when given an array with multiple elements', () => {
+    const previousAddresses = [
+      {
+        startDate: new Date('2022-01-01'),
+        endDate: new Date('2022-02-01'),
+        street: '123 Main St',
+        town: 'City',
+        postcode: '12345',
+      },
+      {
+        startDate: new Date('2022-03-01'),
+        endDate: new Date('2022-04-01'),
+        street: '456 Elm St',
+        town: 'Town',
+        postcode: '67890',
+      },
+    ];
+    const result = formatPreviousAddresses(previousAddresses);
+    expect(result).toEqual('2022-01-01 - 2022-02-01 123 Main St City 12345\n\n2022-03-01 - 2022-04-01 456 Elm St Town 67890');
+  });
+});
