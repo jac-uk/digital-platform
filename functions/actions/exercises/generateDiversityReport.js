@@ -80,6 +80,10 @@ module.exports = (firebase, db) => {
       report.shortlisted = diversityReport(shortlistedApplications, shortlistedApplicationRecords, exercise);
     }
     await db.collection('exercises').doc(exerciseId).collection('reports').doc('diversity').set(report);
+
+    console.log('report:');
+    console.log(report);
+
     return report;
   }
 };
