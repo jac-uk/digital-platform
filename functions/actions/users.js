@@ -9,6 +9,7 @@ module.exports = (auth, db) => {
     deleteUsers,
     importUsers,
     onUserUpdate,
+    updateUserCustomClaims,
   };
 
   async function generateSignInWithEmailLink(ref, email, returnUrl) {
@@ -185,6 +186,34 @@ module.exports = (auth, db) => {
         }
       }
 
+      return true;
+    } catch(error) {
+      console.log(error);
+      return false;
+    }
+  }
+
+
+  /**
+   * Update user custom claims
+   * 
+   * @param {string} userId
+   */
+  async function updateUserCustomClaims(userId) {
+    try {
+      const userDoc = await getDocument(db.collection('users').doc(userId));
+      // update role permissions in custom claims
+      if (userDoc) {
+        const user = await auth.getUser(userId);
+        const role = await getDocument(db.collection('roles').doc(userDoc.role.id));
+        if (role) {
+          const convertedPermissions = convertPermissions(role);
+          const customClaims = user.customClaims || {};
+          customClaims.r = role.id;
+          customClaims.rp = convertedPermissions;
+          await auth.setCustomUserClaims(userId, customClaims);
+        }
+      }
       return true;
     } catch(error) {
       console.log(error);

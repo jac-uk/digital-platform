@@ -279,9 +279,17 @@ service cloud.firestore {
 
       // allow admins
       allow read: if userIsAuthenticated() && userIsJAC() && hasPermission('u7');
-      allow create: if userIsAuthenticated() && userIsJAC() && hasPermission('u6');
+      allow create: if userIsAuthenticated() && userIsJAC();
       allow update: if userIsAuthenticated() && userIsJAC();
       allow delete: if userIsAuthenticated() && userIsJAC() && hasPermission('u4');
+    }
+
+    match /userInvitations/{userId} {
+      // allow admins
+      allow read: if userIsAuthenticated() && userIsJAC();
+      allow create: if userIsAuthenticated() && userIsJAC() && hasPermission('u6');
+      allow update: if userIsAuthenticated() && userIsJAC();
+      allow delete: if userIsAuthenticated() && userIsJAC();
     }
 
     match /roles/{roleId} {

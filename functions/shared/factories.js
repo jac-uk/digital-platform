@@ -720,8 +720,6 @@ module.exports = (CONSTANTS) => {
     return {
       displayName: user.displayName || null,
       email: user.email || null,
-      emailVerified: user.emailVerified || false,
-      providerData: JSON.parse(JSON.stringify(user.providerData)) || null,
       disabled: user.disabled || false,
       role: {
         id: user.customClaims && user.customClaims.r ? user.customClaims.r : null,
