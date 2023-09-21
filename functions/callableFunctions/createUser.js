@@ -12,11 +12,8 @@ module.exports = functions.region('europe-west2').https.onCall(async (data, cont
   hasPermissions(context.auth.token.rp, [PERMISSIONS.users.permissions.canCreateUsers.value]);
 
   if (!checkArguments({
-    displayName: { required: true },
     email: { required: true },
     password: { required: true },
-    roleId: { required: true },
-    permissions: { required: true },
   }, data)) {
     throw new functions.https.HttpsError('invalid-argument', 'Please provide valid arguments');
   }

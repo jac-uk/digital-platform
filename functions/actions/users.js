@@ -45,45 +45,18 @@ module.exports = (auth, db) => {
   }
 
   /**
-   * Create a user in authentication and firestore
+   * Create a user
    * 
-   * @param {string} displayName
-   * @param {string} email
-   * @param {string} password
-   * @param {string} roleId
-   * @param {array} permissions
-   * @returns {object}
+   * @param {object} user
+   *
    */
-   async function createUser({ displayName, email, password, roleId, permissions }) {
+  async function createUser(user) {
     try {
-      // create user in authentication database
-      const user = await auth.createUser({ email, password, displayName });
-
-      // set user role in custom claims
-      const customClaims = user.customClaims || {};
-      customClaims.r = roleId;
-      customClaims.rp = permissions;
-      await auth.setCustomUserClaims(user.uid, customClaims);
-
-      // create user in firestore
-      const data = newUser({
-        ...user,
-        customClaims: {
-          r: roleId,
-        },
-      });
-      await db.collection('users').doc(user.uid).set(data);
-
-      return {
-        status: 'success',
-        data: { id: user.uid, ...data },
-      };
+      const res = await auth.createUser(user);
+      return res;
     } catch(error) {
       console.log(error);
-      return {
-        status: 'error',
-        data: error,
-      };
+      return error;
     }
   }
 
