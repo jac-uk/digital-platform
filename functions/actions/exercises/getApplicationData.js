@@ -1,4 +1,4 @@
-const { getDocument, getDocuments, formatDate, formatAddress, formatPreviousAddresses } = require('../../shared/helpers');
+const { getDocument, getDocuments, formatDate, formatAddress, formatPreviousAddresses, isValidDate } = require('../../shared/helpers');
 
 const _ = require('lodash');
 
@@ -44,7 +44,7 @@ module.exports = (config, firebase, db, auth) => {
 
     for(const result of results) {
       let record = {};
-      for (const column of params.columns) {        
+      for (const column of params.columns) {
         record[column] = _.get(result, column, '- No answer provided -');
         // if key is blank or doesn't exist, set it to - No answer provided -
         if(record[column] === '' || record[column] === null) {
@@ -108,7 +108,7 @@ module.exports = (config, firebase, db, auth) => {
         }
 
         // Handle time values
-        if(_.get(record[column], '_seconds', null)) {
+        if(_.get(record[column], '_seconds', null) || isValidDate(record[column])) {
           record[column] = formatDate(record[column]);
         }
 
