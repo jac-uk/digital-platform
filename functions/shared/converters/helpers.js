@@ -130,6 +130,12 @@ const applicationOpenDatePost01042023 = (exercise) => {
   return Object.prototype.hasOwnProperty.call(exercise, 'applicationOpenDate') && exercise.applicationOpenDate.toDate() > new Date('2023-04-01');
 };
 
+const ordinal = (n) => {
+  const s = ['th', 'st', 'nd', 'rd'];
+  const v = n % 100;
+  return n + (s[(v - 20) % 10] || s[v] || s[0]);
+};
+
 module.exports = {
   addField,
   toYesNo,
@@ -141,4 +147,5 @@ module.exports = {
   flattenProfessionalBackground,
   attendedUKStateSchool,
   applicationOpenDatePost01042023,
+  ordinal,
 };
