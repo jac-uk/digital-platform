@@ -208,6 +208,9 @@ function isDate(date) {
 }
 
 function isValidDate(dateString) {
+  if (typeof dateString !== 'string') {
+    return false;
+  }
   return !isNaN(Date.parse(dateString));
 }
 
