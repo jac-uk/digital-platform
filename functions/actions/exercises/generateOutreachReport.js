@@ -11,11 +11,11 @@ module.exports = (firebase, db) => {
   };
 
   async function generateOutreachReport(exerciseId) {
-
     // get submitted applications
     const applications = await getDocuments(db.collection('applications')
       .where('exerciseId', '==', exerciseId)
       .where('status', 'in', ['applied', 'withdrawn'])
+      .select('additionalInfo', 'equalityAndDiversitySurvey', 'attendedOutreachEvents', 'participatedInJudicialWorkshadowingScheme', 'hasTakenPAJE')
     );
 
     const report = {
@@ -23,24 +23,36 @@ module.exports = (firebase, db) => {
       createdAt: firebase.firestore.Timestamp.fromDate(new Date()),
       applied: outreachReport(applications),
     };
+    if (applications.length) {
 
-    // get application records
-    const applicationRecords = await getDocuments(db.collection('applicationRecords')
-      .where('exercise.id', '==', exerciseId)
-    );
-    if (applicationRecords.length) {
-      const handoverIds = applicationRecords.filter(doc => doc.stage === 'handover').map(doc => doc.id);
-      const handoverApplications = applications.filter(doc => handoverIds.indexOf(doc.id) >= 0);
+      const handoverApplications = [];
+      const recommendedApplications = [];
+      const selectedApplications = [];
+      const shortlistedApplications = [];
 
-      const recommendedIds = applicationRecords.filter(doc => doc.stage === 'recommended').map(doc => doc.id);
-      const recommendedApplications = handoverApplications.concat(applications.filter(doc => recommendedIds.indexOf(doc.id) >= 0));
+      for (let i = 0, len = applications.length; i < len; ++i) {
+        const application = applications[i];
+        const hasStageAndStatus = objectHasNestedProperty(application, '_processing.stage') && objectHasNestedProperty(application, '_processing.status');
+        if (hasStageAndStatus) {
+          switch(application._process.stage) {
+            case 'handover':
+              handoverApplications.push(application);
+              break;
+            case 'recommended':
+              recommendedApplications.push(application);
+              break;
+            case 'selected':
+              selectedApplications.push(application);
+              break;
+            case 'shortlisted':
+              shortlistedApplications.push(application);
+              break;
+            default:
+              break;
+          }
+        }
 
-      const selectedIds = applicationRecords.filter(doc => doc.stage === 'selected').map(doc => doc.id);
-      const selectedApplications = recommendedApplications.concat(applications.filter(doc => selectedIds.indexOf(doc.id) >= 0));
-
-      const shortlistedIds = applicationRecords.filter(doc => doc.stage === 'shortlisted').map(doc => doc.id);
-      const shortlistedApplications = selectedApplications.concat(applications.filter(doc => shortlistedIds.indexOf(doc.id) >= 0));
-
+      }
       report.handover = outreachReport(handoverApplications);
       report.recommended = outreachReport(recommendedApplications);
       report.selected = outreachReport(selectedApplications);
@@ -49,6 +61,7 @@ module.exports = (firebase, db) => {
     await db.collection('exercises').doc(exerciseId).collection('reports').doc('outreach').set(report);
     return report;
   }
+
 };
 
 const outreachReport = (applications) => {
@@ -280,6 +293,14 @@ const hasTakenPAJEStats = (applications) => {
       total: 0,
       percent: 0,
     },
+    'online-only': {
+      total: 0,
+      percent: 0,
+    },
+    'online-and-judge-led': {
+      total: 0,
+      percent: 0,
+    },
     no: {
       total: 0,
       percent: 0,
@@ -297,12 +318,23 @@ const hasTakenPAJEStats = (applications) => {
       }
       else if (
         application.hasTakenPAJE === true
-        || application.hasTakenPAJE === 'online-only'
-        || application.hasTakenPAJE === 'online-and-judge-led'
       ) {
         stats.yes.total += 1;
         stats.declaration.total += 1;
       }
+      else if (
+        application.hasTakenPAJE === 'online-only'
+      ) {
+        stats['online-only'].total += 1;
+        stats.declaration.total += 1;
+      }
+      else if (
+        application.hasTakenPAJE === 'online-and-judge-led'
+      ) {
+        stats['online-and-judge-led'].total += 1;
+        stats.declaration.total += 1;
+      }
+
       else if (
         application.hasTakenPAJE === false
         || String.prototype.toLowerCase.call(application.hasTakenPAJE) === 'no'
