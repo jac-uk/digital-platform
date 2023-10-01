@@ -1,9 +1,8 @@
 const helpers = require('../../shared/converters/helpers');
 const lookup = require('../../shared/converters/lookup');
-const { getDocuments } = require('../../shared/helpers');
-const { getDocument } = require('../../shared/helpers');
+const { getDocuments, getDocument, formatDate } = require('../../shared/helpers');
 const _ = require('lodash');
-const { formatDate, ordinal } = require('../../shared/converters/helpers');
+const { ordinal } = require('../../shared/converters/helpers');
 const htmlWriter = require('../../shared/htmlWriter');
 const config = require('../../shared/config');
 const drive = require('../../shared/google-drive')();
@@ -743,7 +742,8 @@ function getPostQualificationExperiences(postQualificationExperiences) {
     const experience = postQualificationExperiences[i];
     const index = i + 1;
     if (experience.jobTitle) {
-      data[`postQualificationExperience${index}`] = formatDate(experience.startDate) + ' - ' + experience.jobTitle + ' at ' + experience.orgBusinessName;
+      data[`postQualificationExperience${index}`] =
+        `${formatDate(experience.startDate, 'MM-YYYY')} - ${formatDate(experience.endDate, 'MM-YYYY')} ${experience.jobTitle} at ${experience.orgBusinessName}`;
     }
   }
   return data;
