@@ -215,11 +215,13 @@ const formatPersonalDetails = (personalDetails) => {
 
   let formattedPreviousAddresses;
   if (personalDetails.address && !personalDetails.address.currentMoreThan5Years) {
-    formattedPreviousAddresses = personalDetails.address.previous.map((address) => {
-      const dates = `${helpers.formatDate(address.startDate)} - ${helpers.formatDate(address.endDate)}`;
-      const formattedAddress = formatAddress(address);
-      return `${dates} ${formattedAddress}`;
-    }).join('\n\n');
+    if (personalDetails.address.previous) {
+      formattedPreviousAddresses = personalDetails.address.previous.map((address) => {
+        const dates = `${helpers.formatDate(address.startDate)} - ${helpers.formatDate(address.endDate)}`;
+        const formattedAddress = formatAddress(address);
+        return `${dates} ${formattedAddress}`;
+      }).join('\n\n');  
+    }
   }
 
   let candidate = {
