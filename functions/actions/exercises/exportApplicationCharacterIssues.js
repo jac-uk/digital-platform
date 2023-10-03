@@ -397,7 +397,7 @@ module.exports = (firebase, db) => {
       const index = i + 1;
       if (experience.jobTitle) {
         data[`postQualificationExperience${index}`] =
-          `${formatDate(experience.startDate, 'MM-YYYY')} - ${formatDate(experience.endDate, 'MM-YYYY')} ${experience.jobTitle} at ${experience.orgBusinessName}`;
+          `${formatDate(experience.startDate, 'MM-YYYY')} - ${formatDate(experience.endDate, 'MM-YYYY') || 'Ongoing'} ${experience.jobTitle} at ${experience.orgBusinessName}`;
       }
     }
     return data;
