@@ -341,15 +341,15 @@ module.exports = (firebase, db) => {
       if (typeof qualification.type === 'undefined' || typeof qualification.date === 'undefined') {
         continue;
       }
-      let description = `${qualification.type.toUpperCase()} - ${formatDate(qualification.date)}\r\n`;
+      let description = `${qualification.type.toUpperCase()} - ${formatDate(qualification.date)} \r\n`;
       if (qualification.location) {
-        description = description + qualification.location.replace('-', '/').toUpperCase() + '\r\n';
+        description = description + qualification.location.replace('-', '/').toUpperCase() + ' \r\n';
       }
       if (qualification.calledToBarDate) {
-        description = description + `Called to the bar: ${formatDate(qualification.calledToBarDate)}\r\n`;
+        description = description + `Called to the bar: ${formatDate(qualification.calledToBarDate)} \r\n`;
       }
       if (qualification.details) {
-        description = description + `${qualification.details}\r\n`;
+        description = description + `${qualification.details} \r\n`;
       }
       data[`qualification${index}`] = description;
     }
