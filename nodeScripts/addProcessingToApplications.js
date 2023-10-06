@@ -9,8 +9,10 @@ const { firebase, app, db } = require('./shared/admin.js');
 const { getDocument, getDocuments, applyUpdates, objectHasNestedProperty } = require('../functions/shared/helpers.js');
 
 async function checkAllApplications() {
-  const applications = await getDocuments(db.collection('applications'));
-  const arr = [];
+  const applications = await getDocuments(db.collection('applications')
+    .where('status', 'in', ['applied', 'withdrawn'])
+    .select('_processing', 'referenceNumber')
+  );
   const commands = [];
   for (let i = 0, len = applications.length; i < len; ++i) {
     const application = applications[i];
@@ -18,7 +20,6 @@ async function checkAllApplications() {
     const hasStageAndStatus = objectHasNestedProperty(application, '_processing.stage') && objectHasNestedProperty(application, '_processing.status');
 
     if (!hasStageAndStatus) {
-      arr.push(application.referenceNumber);
 
       const applicationRecord = await getDocument(db.doc(`applicationRecords/${application.id}`));
 
