@@ -207,7 +207,7 @@ module.exports = (firebase, db) => {
         professionalName: _.get(applicationRecord, 'application.personalDetails.professionalName', ''),
         email: _.get(applicationRecord, 'application.personalDetails.email', ''),
         phone: _.get(applicationRecord, 'application.personalDetails.phone', ''),
-        dob: formatDate(_.get(applicationRecord, 'application.personalDetails.dateOfBirth', '')),
+        dob: formatDate(_.get(applicationRecord, 'application.personalDetails.dateOfBirth', ''), 'DD/MM/YYYY'),
         nationalInsuranceNumber: _.get(applicationRecord, 'application.personalDetails.nationalInsuranceNumber', ''),
         citizenship: _.get(applicationRecord, 'application.personalDetails.citizenship', ''),
         reasonableAdjustments: _.get(applicationRecord, 'application.personalDetails.reasonableAdjustmentsDetails', ''),
@@ -341,12 +341,12 @@ module.exports = (firebase, db) => {
       if (typeof qualification.type === 'undefined' || typeof qualification.date === 'undefined') {
         continue;
       }
-      let description = `${qualification.type.toUpperCase()} - ${formatDate(qualification.date)} \r\n`;
+      let description = `${qualification.type.toUpperCase()} - ${formatDate(qualification.date, 'DD/MM/YYYY')} \r\n`;
       if (qualification.location) {
         description = description + qualification.location.replace('-', '/').toUpperCase() + ' \r\n';
       }
       if (qualification.calledToBarDate) {
-        description = description + `Called to the bar: ${formatDate(qualification.calledToBarDate)} \r\n`;
+        description = description + `Called to the bar: ${formatDate(qualification.calledToBarDate, 'DD/MM/YYYY')} \r\n`;
       }
       if (qualification.details) {
         description = description + `${qualification.details} \r\n`;
@@ -363,7 +363,7 @@ module.exports = (firebase, db) => {
       if (!issue.events || issue.events.length === 0) continue;
       const index = i + 1;
       data[`characterInformation${index}`] = issue.events.map((event) => {
-        return `${issue.summary.toUpperCase()}\r\n${swapDY(formatDate(event.date))} - ${event.title || ''}\r\n${event.details}`;
+        return `${issue.summary.toUpperCase()}\r\n${swapDY(formatDate(event.date, 'DD/MM/YYYY'))} - ${event.title || ''}\r\n${event.details}`;
       }).join('\r\n\r\n\r\n').trim();
     }
     return data;
@@ -397,7 +397,7 @@ module.exports = (firebase, db) => {
       const index = i + 1;
       if (experience.jobTitle) {
         data[`postQualificationExperience${index}`] =
-          `${formatDate(experience.startDate, 'MM-YYYY')} - ${formatDate(experience.endDate, 'MM-YYYY') || 'Ongoing'} ${experience.jobTitle} at ${experience.orgBusinessName}`;
+          `${formatDate(experience.startDate, 'MMM YYYY')} - ${formatDate(experience.endDate, 'MMM YYYY') || 'Ongoing'} ${experience.jobTitle} at ${experience.orgBusinessName}`;
       }
     }
     return data;

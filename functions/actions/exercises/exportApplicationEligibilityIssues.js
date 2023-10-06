@@ -709,7 +709,7 @@ function getRows(applicationRecords) {
       professionalName: _.get(applicationRecord,'application.personalDetails.professionalName', null),
       email: _.get(applicationRecord, 'application.personalDetails.email', null),
       citizenship: _.get(applicationRecord, 'application.personalDetails.citizenship', null),
-      dateOfBirth: formatDate(_.get(applicationRecord, 'application.personalDetails.dateOfBirth', null)),
+      dateOfBirth: formatDate(_.get(applicationRecord, 'application.personalDetails.dateOfBirth', null), 'DD/MM/YYYY'),
       ...getQualifications(qualifications),
       ...getPostQualificationExperiences(postQualificationExperiences),
     };
@@ -729,7 +729,7 @@ function getQualifications(qualifications) {
     const index = i + 1;
     data[`qualification${index}`] = [
       `${lookup(qualification.type)}`,
-      `Date: ${formatDate(qualification.date)}`,
+      `Date: ${formatDate(qualification.date, 'DD/MM/YYYY')}`,
       `Location: ${lookup(qualification.location)}`,
     ].join(' - ');
   }
@@ -743,7 +743,7 @@ function getPostQualificationExperiences(postQualificationExperiences) {
     const index = i + 1;
     if (experience.jobTitle) {
       data[`postQualificationExperience${index}`] =
-        `${formatDate(experience.startDate, 'MM-YYYY')} - ${formatDate(experience.endDate, 'MM-YYYY') || 'Ongoing'} ${experience.jobTitle} at ${experience.orgBusinessName}`;
+        `${formatDate(experience.startDate, 'MMM YYYY')} - ${formatDate(experience.endDate, 'MMM YYYY') || 'Ongoing'} ${experience.jobTitle} at ${experience.orgBusinessName}`;
     }
   }
   return data;
