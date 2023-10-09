@@ -21,7 +21,7 @@ const main = async () => {
   log(`- Total users: ${users.length}`);
 
   log('Filter by JAC users...');
-  const filteredUsers = users.filter(item => item.email.indexOf('@judicialappointments.') > 0);
+  const filteredUsers = users.filter(item => item.email.match(/(.*@judicialappointments|.*@justice)[.](digital|gov[.]uk)/));
   log(`- Total JAC users: ${filteredUsers.length}`);
 
   filteredUsers.forEach((user) => {
