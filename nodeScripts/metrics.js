@@ -5,7 +5,7 @@ const { app, db } = require('./shared/admin.js');
 
 const main = async () => {
   const stats = {};
-  const startDate = new Date(2023,6,1);
+  const startDate = new Date(2023,7,25);
   const applications = await db.collection('applications').where('appliedAt', '>', startDate).select().get();
   stats.applications = applications.docs.length;
   const candidates = await db.collection('candidates').where('created', '>', startDate).select().get();

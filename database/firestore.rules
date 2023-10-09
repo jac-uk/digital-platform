@@ -253,43 +253,6 @@ service cloud.firestore {
         // TODO allow uploads after the due date but before the hard limit resource.data.dueDate >= request.time;
     }
 
-    match /qualifyingTests/{qualifyingTestId} {
-      // allow admins read permission
-      allow read: if userIsAuthenticated() && userIsJAC() && hasPermission('qt1');
-      allow create: if userIsAuthenticated() && userIsJAC() && hasPermission('qt2');
-      allow update: if userIsAuthenticated() && userIsJAC() && hasPermission('qt3');
-      allow delete: if userIsAuthenticated() && hasPermission('qt4');  // TODO only super admins
-    }
-
-    match /qualifyingTestReports/{qualifyingTestReportId} {
-      // allow admins read permission
-      allow read: if userIsAuthenticated() && userIsJAC() && hasPermission('qtrp1');
-      allow create: if userIsAuthenticated() && userIsJAC() && hasPermission('qtrp2');
-      allow update: if userIsAuthenticated() && userIsJAC() && hasPermission('qtrp3');
-      allow delete: if userIsAuthenticated() && userIsJAC() && hasPermission('qtrp4');  // TODO only super admins
-    }
-
-    match /qualifyingTestResponses/{qualifyingTestResponseId} {
-      // allow admins read permission
-      allow read: if userIsAuthenticated() && userIsJAC() && hasPermission('qtr1');
-      allow update: if userIsAuthenticated() && userIsJAC() && hasPermission('qtr3');
-
-      // allow candidate to read their own document
-      allow read: if userIsAuthenticated()
-        && (
-          fieldHasValue(resource.data.candidate, 'id', currentUser())
-          || fieldHasValue(resource.data.candidate, 'email', request.auth.token.email)
-        );
-
-      // allow candidates to update their own document
-      // @TODO but only the responses field and only if within allowed duration from start time
-      allow update: if (
-          fieldHasValue(resource.data.candidate, 'id', currentUser())
-          || fieldHasValue(resource.data.candidate, 'email', request.auth.token.email)
-        )
-        && request.resource.data.candidate.id == currentUser();
-    }
-
     match /invitations/{invitationId} {
       // allow admins to read invitations
       allow read: if userIsAuthenticated() && userIsJAC() && hasPermission('i1');
