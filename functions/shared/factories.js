@@ -725,6 +725,7 @@ module.exports = (CONSTANTS) => {
         id: user.customClaims && user.customClaims.r ? user.customClaims.r : null,
         isChanged: false,
       },
+      uid: user.uid || null,
     };
   }
 };
