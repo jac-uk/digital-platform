@@ -3,9 +3,6 @@
     "rules": "database/firestore.rules",
     "indexes": "database/firestore.indexes.json"
   },
-  "database": {
-    "rules": "database/realtime.rules.json"
-  },
   "emulators": {
     "auth": {
       "host": "localhost",
@@ -18,10 +15,6 @@
     "firestore": {
       "host": "localhost",
       "port": 8080
-    },
-    "database": {
-      "host": "localhost",
-      "port": 9000
     },
     "pubsub": {
       "host": "localhost",

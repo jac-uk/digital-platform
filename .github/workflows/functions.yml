@@ -32,11 +32,9 @@ jobs:
         run: echo "Under construction"
         # run: npm run test:functions
       - name: Test actions
-        run: echo "Under construction"
-        # run: npm run test:actions
+        run: npm run test:actions
       - name: Test shared
-        run: echo "Under construction"
-        # run: npm run test:shared
+        run: npm run test:shared
 
       ## Update release notes and bump version (for pushes)
       - name: Update release notes (for pushes)
