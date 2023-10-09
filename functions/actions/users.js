@@ -1,5 +1,4 @@
 const { getDocument } = require('../shared/helpers');
-const { newUser } = require('../shared/factories')();
 const { convertPermissions } = require('../shared/permissions');
 
 module.exports = (auth, db) => {
