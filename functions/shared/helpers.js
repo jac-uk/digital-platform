@@ -260,6 +260,10 @@ function formatDate(value, type) {
         // e.g. 30/11/2022 (ref: https://momentjs.com/docs/#/displaying/format/)
         value = `${day}/${month}/${year}`; // toLocaleDateString('en-GB') returns 30/11/2022 for some reason
         break;
+      case 'MMM YYYY':
+        // e.g. NOV 2022
+        value = `${value.toLocaleDateString('en-GB', { month: 'short' }).toUpperCase()} ${value.toLocaleDateString('en-GB', { year: 'numeric' })}`;
+        break;
       case 'date-hour-minute':
         // e.g. Wednesday, 30 November, 2022 at 13:00
         value = `${value.toLocaleDateString('en-GB', { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' })} at ${time}`;
