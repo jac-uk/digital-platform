@@ -2,7 +2,6 @@ const { getDocument, getDocuments, applyUpdates } = require('../shared/helpers')
 
 module.exports = (config, firebase, db, auth) => {
   const { newApplicationRecord } = require('../shared/factories')(config);
-  const newQualifyingTestResponse = require('../shared/factories/QualifyingTests/newQualifyingTestResponse')(config, firebase);
   const { logEvent } = require('./logs/logEvent')(firebase, db, auth);
   const { refreshApplicationCounts } = require('../actions/exercises/refreshApplicationCounts')(firebase, db);
 
@@ -148,38 +147,6 @@ module.exports = (config, firebase, db, auth) => {
       applications: applications,
       applicationRecords: applicationRecords,
     });
-
-    // check for initialised/activated qts
-    const qualifyingTests = await getDocuments(
-      db.collection('qualifyingTests')
-      .where('vacancy.id', '==', params.exerciseId)
-      .where('status', 'in', [
-        config.QUALIFYING_TEST.STATUS.INITIALISED,
-        config.QUALIFYING_TEST.STATUS.ACTIVATED,
-        config.QUALIFYING_TEST.STATUS.PAUSED,
-        config.QUALIFYING_TEST.STATUS.COMPLETED,
-      ])
-    );
-    if (qualifyingTests.length) {
-      qualifyingTests.forEach(qualifyingTest => {
-        if (!qualifyingTest.mode) {
-          if (
-            qualifyingTest.type === config.QUALIFYING_TEST.TYPE.CRITICAL_ANALYSIS ||
-            qualifyingTest.type === config.QUALIFYING_TEST.TYPE.SITUATIONAL_JUDGEMENT
-          ) {
-            // add qualifyingTestResponse for each application
-            for (let i = 0, len = missingApplications.length; i < len; ++i) {
-              const application = missingApplications[i];
-              commands.push({
-                command: 'set',
-                ref: db.collection('qualifyingTestResponses').doc(),
-                data: newQualifyingTestResponse(qualifyingTest, newApplicationRecord(firebase, exercise, application)),
-              });
-            }
-          }
-        }
-      });
-    }
 
     // write to db
     const result = await applyUpdates(db, commands);
