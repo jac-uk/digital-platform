@@ -37,7 +37,6 @@ exports.sendApplicationReminders = require('./callableFunctions/sendApplicationR
 exports.sendCharacterCheckRequests = require('./callableFunctions/sendCharacterCheckRequests');
 exports.enableCharacterChecks = require('./callableFunctions/enableCharacterChecks');
 exports.initialiseMissingApplicationRecords = require('./callableFunctions/initialiseMissingApplicationRecords');
-exports.updateStatus = require('./callableFunctions/updateStatus');
 exports.exportExerciseData = require('./callableFunctions/exportExerciseData');
 exports.targetedOutreachReport = require('./callableFunctions/targetedOutreachReport');
 exports.transferHandoverData = require('./callableFunctions/transferHandoverData');
