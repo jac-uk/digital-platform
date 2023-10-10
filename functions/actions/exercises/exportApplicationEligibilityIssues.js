@@ -1,9 +1,8 @@
 const helpers = require('../../shared/converters/helpers');
 const lookup = require('../../shared/converters/lookup');
-const { getDocuments } = require('../../shared/helpers');
-const { getDocument } = require('../../shared/helpers');
+const { getDocuments, getDocument, formatDate } = require('../../shared/helpers');
 const _ = require('lodash');
-const {formatDate} = require('../../shared/converters/helpers');
+const { ordinal } = require('../../shared/converters/helpers');
 const htmlWriter = require('../../shared/htmlWriter');
 const config = require('../../shared/config');
 const drive = require('../../shared/google-drive')();
@@ -30,20 +29,6 @@ module.exports = (firebase, db) => {
       .where('exercise.id', '==', exerciseId)
       .where('flags.eligibilityIssues', '==', true));
 
-    const headers = [
-      'Ref',
-      'Name',
-      'Middle name(s)',
-      'Suffix',
-      'Previous known name(s)',
-      'Professional name',
-      'Email',
-      'Citizenship',
-      'Date of Birth',
-      'Qualifications',
-      'Post-qualification Experience',
-    ];
-
     for (let i = 0, len = applicationRecords.length; i < len; i++) {
       const applicationRecord = applicationRecords[i];
       //add application records to applicationRecords.application records
@@ -57,10 +42,19 @@ module.exports = (firebase, db) => {
     if (format === 'googledoc') {
       return exportToGoogleDoc(exercise, applicationRecords);
     }
-    
+
+    // get report rows
+    const {
+      maxQualificationNum,
+      maxPostQualificationExperienceNum,
+      data: rows,
+    } = getRows(applicationRecords);
+    // get report headers
+    const headers = getHeaders(maxQualificationNum, maxPostQualificationExperienceNum);
+
     return {
-      headers: headers,
-      rows: eligibilityIssuesExport(applicationRecords),
+      headers,
+      rows,
     };
   }
 
@@ -657,49 +651,100 @@ module.exports = (firebase, db) => {
   }
 };
 
-const eligibilityIssuesExport = (applicationRecords) => {
-  return applicationRecords.map((applicationRecord) => {
+function getHeaders(maxQualificationNum, maxPostQualificationExperienceNum) {
+  const headers = [
+    { title: 'Ref', ref: 'ref' },
+    { title: 'Name', ref: 'name' },
+    { title: 'Middle name(s)', ref: 'middleNames' },
+    { title: 'Suffix', ref: 'suffix' },
+    { title: 'Previous known name(s)', ref: 'previousNames' },
+    { title: 'Professional name', ref: 'professionalName' },
+    { title: 'Email', ref: 'email' },
+    { title: 'Citizenship', ref: 'citizenship '},
+    { title: 'Date of Birth', ref: 'dateOfBirth' },
+    ...getQualificationHeaders(maxQualificationNum),
+    ...getPostQualificationExperienceHeaders(maxPostQualificationExperienceNum),
+  ];
+  return headers;
+}
+
+function getQualificationHeaders(n) {
+  const headers = [];
+  for (let i = 1; i <= n; i++) {
+    headers.push(
+      { title: `${ordinal(i)} Qualification`, ref: `qualification${i}` }
+    );
+  }
+  return headers;
+}
+
+function getPostQualificationExperienceHeaders(n) {
+  const headers = [];
+  for (let i = 1; i <= n; i++) {
+    headers.push(
+      { title: `${ordinal(i)} Post-qualification experience`, ref: `postQualificationExperience${i}` }
+    );
+  }
+  return headers;
+}
+
+function getRows(applicationRecords) {
+  let maxQualificationNum = 0;
+  let maxPostQualificationExperienceNum = 0;
+
+  const data = applicationRecords.map((applicationRecord) => {
     const application = applicationRecord.application;
+    const qualifications = application.qualifications || [];
+    const postQualificationExperiences = application.experience || [];
+
+    maxQualificationNum = qualifications.length > maxQualificationNum ? qualifications.length : maxQualificationNum;
+    maxPostQualificationExperienceNum = postQualificationExperiences.length > maxPostQualificationExperienceNum ? postQualificationExperiences.length : maxPostQualificationExperienceNum;
+
     return {
-      referenceNumber: _.get(applicationRecord, 'application.referenceNumber', null),
-      fullName: _.get(applicationRecord,'candidate.fullName', null),
+      ref: _.get(applicationRecord, 'application.referenceNumber', null),
+      name: _.get(applicationRecord,'candidate.fullName', null),
       middleNames: _.get(applicationRecord,'application.personalDetails.middleNames', null),
       suffix: _.get(applicationRecord,'application.personalDetails.suffix', null),
       previousNames: _.get(applicationRecord,'application.personalDetails.previousNames', null),
       professionalName: _.get(applicationRecord,'application.personalDetails.professionalName', null),
       email: _.get(applicationRecord, 'application.personalDetails.email', null),
       citizenship: _.get(applicationRecord, 'application.personalDetails.citizenship', null),
-      dateOfBirth: formatDate(_.get(applicationRecord, 'application.personalDetails.dateOfBirth', null)),
-      qualifications: formatQualifications(_.get(applicationRecord, 'application.qualifications', null)),
-      postQualificationExperience: getPostQualificationExperienceString(application),
+      dateOfBirth: formatDate(_.get(applicationRecord, 'application.personalDetails.dateOfBirth', null), 'DD/MM/YYYY'),
+      ...getQualifications(qualifications),
+      ...getPostQualificationExperiences(postQualificationExperiences),
     };
   });
-};
 
-function formatQualifications(data) {
-  if (data && data.length) {
-    return data.map(qualification => {
-      return [
-        `${lookup(qualification.type)}`,
-        `Date: ${formatDate(qualification.date)}`,
-        `Location: ${lookup(qualification.location)}`,
-      ].join(' - ');
-    }).join('; \n');
+  return {
+    maxQualificationNum,
+    maxPostQualificationExperienceNum,
+    data,
+  };
+}
+
+function getQualifications(qualifications) {
+  const data = {};
+  for (let i = 0; i < qualifications.length; i++) {
+    const qualification = qualifications[i];
+    const index = i + 1;
+    data[`qualification${index}`] = [
+      `${lookup(qualification.type)}`,
+      `Date: ${formatDate(qualification.date, 'DD/MM/YYYY')}`,
+      `Location: ${lookup(qualification.location)}`,
+    ].join(' - ');
   }
   return data;
 }
 
-function getPostQualificationExperienceString(application)
-{
-  if (!application.experience || application.experience.length === 0 ) {
-    return '';
-  } else {
-    return application.experience.map((job) => {
-      if (job.jobTitle) {
-        return formatDate(job.startDate) + ' - ' + job.jobTitle + ' at ' + job.orgBusinessName;
-      } else {
-        return '';
-      }
-    }).join('\r\n\r\n\r\n').trim();
+function getPostQualificationExperiences(postQualificationExperiences) {
+  const data = {};
+  for (let i = 0; i < postQualificationExperiences.length; i++) {
+    const experience = postQualificationExperiences[i];
+    const index = i + 1;
+    if (experience.jobTitle) {
+      data[`postQualificationExperience${index}`] =
+        `${formatDate(experience.startDate, 'MMM YYYY')} - ${formatDate(experience.endDate, 'MMM YYYY') || 'Ongoing'} ${experience.jobTitle} at ${experience.orgBusinessName}`;
+    }
   }
+  return data;
 }

@@ -1,7 +1,7 @@
 const lookup = require('../../shared/converters/lookup');
 const helpers = require('../../shared/converters/helpers');
 const { getDocuments, getDocument, formatDate, getDate } = require('../../shared/helpers');
-const { applicationOpenDatePost01042023 } = require('../../shared/converters/helpers');
+const { applicationOpenDatePost01042023, ordinal } = require('../../shared/converters/helpers');
 const _ = require('lodash');
 const htmlWriter = require('../../shared/htmlWriter');
 const config = require('../../shared/config');
@@ -46,12 +46,23 @@ module.exports = (firebase, db) => {
       return exportToGoogleDoc(exercise, applicationRecords);
     }
 
+    // get report rows
+    const {
+      maxCharacterInformationNum,
+      maxProfessionalBackgroundNum,
+      maxQualificationNum,
+      maxPostQualificationExperienceNum,
+      data: rows,
+    } = getRows(applicationRecords);
+    // get report headers
+    const headers = getHeaders(exercise, maxCharacterInformationNum, maxProfessionalBackgroundNum, maxQualificationNum, maxPostQualificationExperienceNum);
+
     // return data for export (to Excel)
     return {
       total: applicationRecords.length,
       createdAt: firebase.firestore.Timestamp.fromDate(new Date()),
-      headers: getHeaders(exercise),
-      rows: getRows(applicationRecords),
+      headers,
+      rows,
     };
 
   }
@@ -103,61 +114,89 @@ module.exports = (firebase, db) => {
 
   }
 
-  function getHeaders(exercise) {
+  function getHeaders(exercise, maxCharacterInformationNum, maxProfessionalBackgroundNum, maxQualificationNum, maxPostQualificationExperienceNum) {
     let headers = [
-      { title: 'Ref', name: 'ref' },
-      { title: 'Name', name: 'name' },
-      { title: 'Middle name(s)', name: 'middleNames' },
-      { title: 'Suffix', name: 'suffix' },
-      { title: 'Previous known name(s)', name: 'previousNames' },
-      { title: 'Professional name', name: 'professionalName' },
-      { title: 'Email', name: 'email' },
-      { title: 'Phone', name: 'phone' },
-      { title: 'Date of Birth', name: 'dob' },
-      { title: 'NI Number', name: 'nationalInsuranceNumber' },
-      { title: 'Citizenship', name: 'citizenship '},
-      { title: 'Reasonable Adjustments', name: 'reasonableAdjustments' },
-      { title: 'Character Information', name: 'characterInformation' },
-      { title: 'Agreed to share data', name: 'shareData' },
-      { title: 'Professional background', name: 'professionalBackground' },
-      { title: 'Current legal role', name: 'currentLegalRole' },
-      { title: 'Held fee-paid judicial role', name: 'feePaidJudicialRole' },
-      { title: 'Attended Oxbridge universities', name: 'oxbridgeUni' },
-      { title: 'First generation to go to university', name: 'firstGenerationStudent' },
-      { title: 'Occupation of main household earner', name: 'occupationOfChildhoodEarner' },
-      { title: 'Either parent attended university to gain a degree', name: 'parentsAttendedUniversity' },
-      { title: 'Ethnic group', name: 'ethnicGroup' },
-      { title: 'Gender', name: 'gender' },
-      { title: 'Gender is the same as sex assigned at birth', name: 'changedGender' },
-      { title: 'Sexual orientation', name: 'sexualOrientation' },
-      { title: 'Disability', name: 'disability' },
-      { title: 'Religion or faith', name: 'religionFaith' },
-      { title: 'Attended Outreach events', name: 'attendedOutreachEvents'},
-      { title: 'Participated in a Judicial Workshadowing Scheme', name: 'participatedInJudicialWorkshadowingScheme' },
-      { title: 'Participated in Pre-Application Judicial Education programme', name: 'hasTakenPAJE' },
-      { title: 'Location Preferences', name: 'locationPreferences' },
-      { title: 'Jurisdiction Preferences', name: 'jurisdictionPreferences' },
-      { title: 'Qualifications', name: 'qualifications' },
-      { title: 'Post-qualification Experience', name: 'postQualificationExperience' },
-      { title: 'Judicial Experience', name: 'judicialExperience' },
+      { title: 'Ref', ref: 'ref' },
+      { title: 'Name', ref: 'name' },
+      { title: 'Middle name(s)', ref: 'middleNames' },
+      { title: 'Suffix', ref: 'suffix' },
+      { title: 'Previous known name(s)', ref: 'previousNames' },
+      { title: 'Professional name', ref: 'professionalName' },
+      { title: 'Email', ref: 'email' },
+      { title: 'Phone', ref: 'phone' },
+      { title: 'Date of Birth', ref: 'dob' },
+      { title: 'NI Number', ref: 'nationalInsuranceNumber' },
+      { title: 'Citizenship', ref: 'citizenship '},
+      { title: 'Reasonable Adjustments', ref: 'reasonableAdjustments' },
+      ...getCharacterInformationHeaders(maxCharacterInformationNum),
+      { title: 'Agreed to share data', ref: 'shareData' },
+      ...getProfessionalBackgroundHeaders(maxProfessionalBackgroundNum),
+      { title: 'Current legal role', ref: 'currentLegalRole' },
+      { title: 'Held fee-paid judicial role', ref: 'feePaidJudicialRole' },
+      { title: 'Attended Oxbridge universities', ref: 'oxbridgeUni' },
+      { title: 'First generation to go to university', ref: 'firstGenerationStudent' },
+      { title: 'Occupation of main household earner', ref: 'occupationOfChildhoodEarner' },
+      { title: 'Either parent attended university to gain a degree', ref: 'parentsAttendedUniversity' },
+      { title: 'Ethnic group', ref: 'ethnicGroup' },
+      { title: 'Gender', ref: 'gender' },
+      { title: 'Gender is the same as sex assigned at birth', ref: 'changedGender' },
+      { title: 'Sexual orientation', ref: 'sexualOrientation' },
+      { title: 'Disability', ref: 'disability' },
+      { title: 'Religion or faith', ref: 'religionFaith' },
+      { title: 'Attended Outreach events', ref: 'attendedOutreachEvents'},
+      { title: 'Participated in a Judicial Workshadowing Scheme', ref: 'participatedInJudicialWorkshadowingScheme' },
+      { title: 'Participated in Pre-Application Judicial Education programme', ref: 'hasTakenPAJE' },
+      { title: 'Location Preferences', ref: 'locationPreferences' },
+      { title: 'Jurisdiction Preferences', ref: 'jurisdictionPreferences' },
+      ...getQualificationHeaders(maxQualificationNum),
+      ...getPostQualificationExperienceHeaders(maxPostQualificationExperienceNum),
+      { title: 'Judicial Experience', ref: 'judicialExperience' },
     ];
 
     // Add a column based on whether it's pre/post 01-04-2023
     let addColumn;
     if (applicationOpenDatePost01042023(exercise)) {
-      addColumn = { title: 'Attended state or fee-paying school', name: 'stateOrFeeSchool16' };
+      addColumn = { title: 'Attended state or fee-paying school', ref: 'stateOrFeeSchool16' };
     }
     else {
-      addColumn = { title: 'Attended state or fee-paying school', name: 'stateOrFeeSchool' };
+      addColumn = { title: 'Attended state or fee-paying school', ref: 'stateOrFeeSchool' };
     }
-    // Add column to array at index 10
-    headers.splice(17, 0, addColumn);
+    const index = headers.findIndex((header) => header.name === 'feePaidJudicialRole');
+    if (index > -1) headers.splice(index, 0, addColumn);
     return headers;
   }
 
   function getRows(applicationRecords) {
-    return applicationRecords.map((applicationRecord) => {
+    let maxCharacterInformationNum = 0;
+    let maxProfessionalBackgroundNum = 0;
+    let maxQualificationNum = 0;
+    let maxPostQualificationExperienceNum = 0;
+
+    const data = applicationRecords.map((applicationRecord) => {
       const application = applicationRecord.application;
+      
+      let characterIssues = [];
+      // check if candidate has completed the section
+      if (
+        application.progress &&
+        application.progress.characterInformation &&
+        (application.characterInformation || application.characterInformationV2)
+      ) {
+        characterIssues = applicationRecord.issues.characterIssues || [];
+      }
+
+      let professionalBackgrounds = [];
+      if (application.equalityAndDiversitySurvey) {
+        professionalBackgrounds = application.equalityAndDiversitySurvey.professionalBackground || [];
+      }
+
+      const qualifications = application.qualifications || [];
+      const postQualificationExperiences = application.experience || [];
+      
+      maxCharacterInformationNum = characterIssues.length > maxCharacterInformationNum ? characterIssues.length : maxCharacterInformationNum;
+      maxProfessionalBackgroundNum = professionalBackgrounds.length > maxProfessionalBackgroundNum ? professionalBackgrounds.length : maxProfessionalBackgroundNum;
+      maxQualificationNum = qualifications.length > maxQualificationNum ? qualifications.length : maxQualificationNum;
+      maxPostQualificationExperienceNum = postQualificationExperiences.length > maxPostQualificationExperienceNum ? postQualificationExperiences.length : maxPostQualificationExperienceNum;
 
       return {
         ref: _.get(applicationRecord, 'application.referenceNumber', ''),
@@ -168,19 +207,68 @@ module.exports = (firebase, db) => {
         professionalName: _.get(applicationRecord, 'application.personalDetails.professionalName', ''),
         email: _.get(applicationRecord, 'application.personalDetails.email', ''),
         phone: _.get(applicationRecord, 'application.personalDetails.phone', ''),
-        dob: formatDate(_.get(applicationRecord, 'application.personalDetails.dateOfBirth', '')),
+        dob: formatDate(_.get(applicationRecord, 'application.personalDetails.dateOfBirth', ''), 'DD/MM/YYYY'),
         nationalInsuranceNumber: _.get(applicationRecord, 'application.personalDetails.nationalInsuranceNumber', ''),
         citizenship: _.get(applicationRecord, 'application.personalDetails.citizenship', ''),
         reasonableAdjustments: _.get(applicationRecord, 'application.personalDetails.reasonableAdjustmentsDetails', ''),
-        characterInformation: getCharacterInformationString(applicationRecord, application),
+        ...getCharacterInformation(characterIssues),
+        ...getProfessionalBackgrounds(application.equalityAndDiversitySurvey),
         ...getEqualityAndDiversityData(application),
         locationPreferences: getLocationPreferencesString(application),
         jurisdictionPreferences: getJurisdictionPreferencesString(application),
-        qualifications: getQualificationInformationString(application),
-        postQualificationExperience: getPostQualificationExperienceString(application),
+        ...getQualifications(qualifications),
+        ...getPostQualificationExperiences(postQualificationExperiences),
         judicialExperience: getJudicialExperienceString(application),
       };
     });
+
+    return {
+      maxCharacterInformationNum,
+      maxProfessionalBackgroundNum,
+      maxQualificationNum,
+      maxPostQualificationExperienceNum,
+      data,
+    };
+  }
+
+  function getCharacterInformationHeaders(n) {
+    const headers = [];
+    for (let i = 1; i <= n; i++) {
+      headers.push(
+        { title: `${ordinal(i)} Character information`, ref: `characterInformation${i}` }
+      );
+    }
+    return headers;
+  }
+
+  function getProfessionalBackgroundHeaders(n) {
+    const headers = [];
+    for (let i = 1; i <= n; i++) {
+      headers.push(
+        { title: `${ordinal(i)} Professional background`, ref: `professionalBackground${i}` }
+      );
+    }
+    return headers;
+  }
+
+  function getQualificationHeaders(n) {
+    const headers = [];
+    for (let i = 1; i <= n; i++) {
+      headers.push(
+        { title: `${ordinal(i)} Qualification`, ref: `qualification${i}` }
+      );
+    }
+    return headers;
+  }
+
+  function getPostQualificationExperienceHeaders(n) {
+    const headers = [];
+    for (let i = 1; i <= n; i++) {
+      headers.push(
+        { title: `${ordinal(i)} Post-qualification experience`, ref: `postQualificationExperience${i}` }
+      );
+    }
+    return headers;
   }
 
   function getEqualityAndDiversityData (application) {
@@ -197,7 +285,6 @@ module.exports = (firebase, db) => {
 
     const formattedDiversityData = {
       shareData: helpers.toYesNo(survey.shareData),
-      professionalBackground: helpers.flattenProfessionalBackground(application.equalityAndDiversitySurvey),
       currentLegalRole: helpers.flattenCurrentLegalRole(application.equalityAndDiversitySurvey),
       formattedFeePaidJudicialRole: formattedFeePaidJudicialRole || null,
       stateOrFeeSchool: lookup(survey.stateOrFeeSchool),
@@ -246,44 +333,56 @@ module.exports = (firebase, db) => {
     return application.jurisdictionPreferences;
   }
 
-  function getQualificationInformationString(application) {
-    if (!application.qualifications) return '';
-    if (!application.qualifications.length) return '';
-
-    return application.qualifications.map(qualification => {
-      if (typeof qualification.type === 'undefined' || typeof qualification.data === 'undefined') {
-        return '';
+  function getQualifications(qualifications) {
+    const data = {};
+    for (let i = 0; i < qualifications.length; i++) {
+      const qualification = qualifications[i];
+      const index = i + 1;
+      if (typeof qualification.type === 'undefined' || typeof qualification.date === 'undefined') {
+        continue;
       }
-      let description = `${qualification.type.toUpperCase()} - ${formatDate(qualification.date)}\r\n`;
+      let description = `${qualification.type.toUpperCase()} - ${formatDate(qualification.date, 'DD/MM/YYYY')} \r\n`;
       if (qualification.location) {
-        description = description + qualification.location.replace('-', '/').toUpperCase() + '\r\n';
+        description = description + qualification.location.replace('-', '/').toUpperCase() + ' \r\n';
       }
       if (qualification.calledToBarDate) {
-        description = description + `Called to the bar: ${formatDate(qualification.calledToBarDate)}\r\n`;
+        description = description + `Called to the bar: ${formatDate(qualification.calledToBarDate, 'DD/MM/YYYY')} \r\n`;
       }
       if (qualification.details) {
-        description = description + `${qualification.details}\r\n`;
+        description = description + `${qualification.details} \r\n`;
       }
-      return description;
-    }).join('\r\n\r\n\r\n').trim();
+      data[`qualification${index}`] = description;
+    }
+    return data;
   }
 
-  function getCharacterInformationString(applicationRecord, application) {
-    if (!application.progress || !application.progress.characterInformation) {
-      return ''; //If they haven't completed the section, skip it in the report.
+  function getCharacterInformation(characterIssues) {
+    const data = {};
+    for (let i = 0; i < characterIssues.length; i++) {
+      const issue = characterIssues[i];
+      if (!issue.events || issue.events.length === 0) continue;
+      const index = i + 1;
+      data[`characterInformation${index}`] = issue.events.map((event) => {
+        return `${issue.summary.toUpperCase()}\r\n${swapDY(formatDate(event.date, 'DD/MM/YYYY'))} - ${event.title || ''}\r\n${event.details}`;
+      }).join('\r\n\r\n\r\n').trim();
     }
-    if (!application.characterInformation && !application.characterInformationV2) {
-      return '';
-    }
+    return data;
+  }
 
-    return applicationRecord.issues.characterIssues.map((issue) => {
-      if (!issue.events || issue.events.length === 0) {
-        return '';
+  function getProfessionalBackgrounds(equalityAndDiversitySurvey) {
+    if (!(equalityAndDiversitySurvey && equalityAndDiversitySurvey.professionalBackground)) return {};
+
+    const data = {};
+    for (let i = 0; i < equalityAndDiversitySurvey.professionalBackground.length; i++) {
+      const role = equalityAndDiversitySurvey.professionalBackground[i];
+      const index = i + 1;
+      if (role === 'other-professional-background') {
+        data[`professionalBackground${index}`] = `Other: ${ equalityAndDiversitySurvey.otherProfessionalBackgroundDetails }`;
+      } else {
+        data[`professionalBackground${index}`] = lookup(role);
       }
-      return issue.events.map((event) => {
-        return `${issue.summary.toUpperCase()}\r\n${swapDY(formatDate(event.date))} - ${event.title || ''}\r\n${event.details}`;
-      }).join('\r\n\r\n\r\n').trim(); //Each separate section should have space in the cell between them.
-    }).join('\r\n\r\n\r\n').trim(); //Each separate section should have space in the cell between them.
+    }
+    return data;
   }
 
   function swapDY(d) {
@@ -291,19 +390,17 @@ module.exports = (firebase, db) => {
     return `${parts[2]}/${parts[1]}/${parts[0]}`;
   }
 
-  function getPostQualificationExperienceString(application)
-  {
-    if (!application.experience || application.experience.length === 0 ) {
-      return '';
-    } else {
-      return application.experience.map((job) => {
-        if (job.jobTitle) {
-          return formatDate(job.startDate) + ' - ' + job.jobTitle + ' at ' + job.orgBusinessName;
-        } else {
-          return '';
-        }
-      }).join('\r\n\r\n\r\n').trim();
+  function getPostQualificationExperiences(postQualificationExperiences) {
+    const data = {};
+    for (let i = 0; i < postQualificationExperiences.length; i++) {
+      const experience = postQualificationExperiences[i];
+      const index = i + 1;
+      if (experience.jobTitle) {
+        data[`postQualificationExperience${index}`] =
+          `${formatDate(experience.startDate, 'MMM YYYY')} - ${formatDate(experience.endDate, 'MMM YYYY') || 'Ongoing'} ${experience.jobTitle} at ${experience.orgBusinessName}`;
+      }
     }
+    return data;
   }
 
   function getJudicialExperienceString(application)
