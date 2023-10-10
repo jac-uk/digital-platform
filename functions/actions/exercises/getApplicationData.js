@@ -109,7 +109,11 @@ module.exports = (config, firebase, db, auth) => {
 
         // Handle time values
         if(_.get(record[column], '_seconds', null) || isValidDate(record[column])) {
-          record[column] = formatDate(record[column]);
+          if (column === 'personalDetails.dateOfBirth') {
+            record[column] = formatDate(record[column], 'DD/MM/YYYY');
+          } else {
+            record[column] = formatDate(record[column]);
+          }
         }
 
       }
