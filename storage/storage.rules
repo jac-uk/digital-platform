@@ -63,8 +63,5 @@ service firebase.storage {
       allow write: if userIsAuthenticated() && userIsJAC() && isOkForUpload();
     }
 
-    match /exercise/{exerciseId}/qualifying-tests/{qualifyingTestId}/{fileName} {
-      allow write: if userIsAuthenticated() && userIsJAC() && isOkForUpload();
-    }
   }
 }

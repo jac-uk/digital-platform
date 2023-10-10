@@ -267,43 +267,6 @@
 						}
 					},
 					"response": []
-				},
-				{
-					"name": "Export Qualifying Test Responses",
-					"request": {
-						"auth": {
-							"type": "bearer",
-							"bearer": [
-								{
-									"key": "token",
-									"value": "{{token}}",
-									"type": "string"
-								}
-							]
-						},
-						"method": "POST",
-						"header": [
-							{
-								"key": "Content-Type",
-								"value": "application/json",
-								"type": "text"
-							}
-						],
-						"body": {
-							"mode": "raw",
-							"raw": "{\r\n    \"data\": {\r\n        \"qualifyingTestId\": \"hfYsGDT85QopB9zq7eTY\"\r\n    }\r\n}"
-						},
-						"url": {
-							"raw": "{{host}}/exportQualifyingTestResponses",
-							"host": [
-								"{{host}}"
-							],
-							"path": [
-								"exportQualifyingTestResponses"
-							]
-						}
-					},
-					"response": []
 				}
 			]
 		},
@@ -379,43 +342,6 @@
 							],
 							"path": [
 								"generateOutreachReport"
-							]
-						}
-					},
-					"response": []
-				},
-				{
-					"name": "Generate Qualifying Test Report",
-					"request": {
-						"auth": {
-							"type": "bearer",
-							"bearer": [
-								{
-									"key": "token",
-									"value": "{{token}}",
-									"type": "string"
-								}
-							]
-						},
-						"method": "POST",
-						"header": [
-							{
-								"key": "Content-Type",
-								"value": "application/json",
-								"type": "text"
-							}
-						],
-						"body": {
-							"mode": "raw",
-							"raw": "{\r\n    \"data\": {\r\n        \"qualifyingTestReportId\": \"11upv9nVGEgU74PCJ4Li\"\r\n    }\r\n}"
-						},
-						"url": {
-							"raw": "{{host}}/generateQualifyingTestReport",
-							"host": [
-								"{{host}}"
-							],
-							"path": [
-								"generateQualifyingTestReport"
 							]
 						}
 					},
@@ -839,43 +765,6 @@
 					"response": []
 				},
 				{
-					"name": "Initialise Qualifiying Test",
-					"request": {
-						"auth": {
-							"type": "bearer",
-							"bearer": [
-								{
-									"key": "token",
-									"value": "{{token}}",
-									"type": "string"
-								}
-							]
-						},
-						"method": "POST",
-						"header": [
-							{
-								"key": "Content-Type",
-								"value": "application/json",
-								"type": "text"
-							}
-						],
-						"body": {
-							"mode": "raw",
-							"raw": "{\r\n    \"data\": {\r\n        \"qualifyingTestId\": \"RiXj39U37FJrHunCwWUy\",\r\n        \"stage\": \"selected\",\r\n        \"status\": \"all\"\r\n    }\r\n}"
-						},
-						"url": {
-							"raw": "{{host}}/initialiseQualifyingTest",
-							"host": [
-								"{{host}}"
-							],
-							"path": [
-								"initialiseQualifyingTest"
-							]
-						}
-					},
-					"response": []
-				},
-				{
 					"name": "Initialise Missing Application Records",
 					"request": {
 						"auth": {
@@ -981,48 +870,6 @@
 							],
 							"path": [
 								"copyExerciseToQTTest"
-							]
-						}
-					},
-					"response": []
-				}
-			]
-		},
-		{
-			"name": "Capacity Testing",
-			"item": [
-				{
-					"name": "Initialise QTs",
-					"request": {
-						"auth": {
-							"type": "bearer",
-							"bearer": [
-								{
-									"key": "token",
-									"value": "{{token}}",
-									"type": "string"
-								}
-							]
-						},
-						"method": "POST",
-						"header": [
-							{
-								"key": "Content-Type",
-								"value": "application/json",
-								"type": "text"
-							}
-						],
-						"body": {
-							"mode": "raw",
-							"raw": "{\r\n    \"data\": {\r\n        \"exerciseId\": \"8CIlAsDbtMfr2vnfjmYh\",\r\n        \"qualifyingTestId\": \"1zm5Q3LSRbSLBFakRbJ2\",\r\n        \"noOfCandidates\": 10000,\r\n        \"refPrefix\": \"prefix3\",\r\n        \"userId\": \"RW9nHLejKQRzTb7QACC6cte1UJu2\"\r\n    }\r\n}\r\n"
-						},
-						"url": {
-							"raw": "{{host}}/capacityTest_initialiseQTs",
-							"host": [
-								"{{host}}"
-							],
-							"path": [
-								"capacityTest_initialiseQTs"
 							]
 						}
 					},
@@ -1139,48 +986,6 @@
 							],
 							"path": [
 								"copyExerciseToQTTest"
-							]
-						}
-					},
-					"response": []
-				}
-			]
-		},
-		{
-			"name": "Capacity Testing",
-			"item": [
-				{
-					"name": "Initialise QTs",
-					"request": {
-						"auth": {
-							"type": "bearer",
-							"bearer": [
-								{
-									"key": "token",
-									"value": "{{token}}",
-									"type": "string"
-								}
-							]
-						},
-						"method": "POST",
-						"header": [
-							{
-								"key": "Content-Type",
-								"value": "application/json",
-								"type": "text"
-							}
-						],
-						"body": {
-							"mode": "raw",
-							"raw": "{\r\n    \"data\": {\r\n        \"exerciseId\": \"8CIlAsDbtMfr2vnfjmYh\",\r\n        \"qualifyingTestId\": \"1zm5Q3LSRbSLBFakRbJ2\",\r\n        \"noOfCandidates\": 10000,\r\n        \"refPrefix\": \"prefix3\",\r\n        \"userId\": \"RW9nHLejKQRzTb7QACC6cte1UJu2\"\r\n    }\r\n}\r\n"
-						},
-						"url": {
-							"raw": "{{host}}/capacityTest_initialiseQTs",
-							"host": [
-								"{{host}}"
-							],
-							"path": [
-								"capacityTest_initialiseQTs"
 							]
 						}
 					},
