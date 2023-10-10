@@ -44,7 +44,7 @@ const applications = [
 // Expected Results
 const results = {
   total: 7,
-  yes: { total: 3, percent: ((3/5) * 100) },
+  yes: { total: 1, percent: ((1/5) * 100) },
   no: { total: 2, percent: ((2/5 * 100)) },
   preferNotToSay: { total: 1, percent: 0 },
   noAnswer: { total: 2, percent: 0 },
