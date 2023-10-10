@@ -49,7 +49,6 @@ module.exports = (config, firebase, db) => {
       { title: 'Fee-paid or salaried judge', ref: 'application.feePaidOrSalariedJudge', formatter: { function: formatFeePaidOrSalariedJudge, ref: 'application' } },
       { title: 'Stage', ref: 'applicationRecord.stage', formatter: lookup },
       { title: 'Status', ref: 'applicationRecord.status', formatter: lookup },
-      // @TODO { title: 'QT scores', ref: 'applicationRecord.qualifyingTests', type: 'json' },
     ];
 
     // get rows for all selected exercises

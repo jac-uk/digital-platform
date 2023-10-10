@@ -161,28 +161,6 @@ module.exports = (config, firebase, db) => {
             return '';
           }).catch(e => 'Error: Independent Assessment 2')
         );
-      } else if (panel.type === 'scenario') {
-        let qTests = await getDocuments(db.collection('qualifyingTests').where('vacancy.id', '==', panel.exerciseId));
-        qTests = qTests.map(qTest => qTest.id);
-        console.log('qualifying tests: ', JSON.stringify(qTests));
-        const qtResponses = await getDocuments(db.collection('qualifyingTestResponses').where('candidate.id', '==', application.userId)
-          .where('qualifyingTest.id', 'in', qTests));
-        console.log('qt responses: ', JSON.stringify(qtResponses));
-        qtResponses.forEach((qtResponse, idx) => {
-          promises.push(
-            drive.createFile(qtResponse.qualifyingTest.title, {
-              folderId: folderId,
-              sourceType: drive.MIME_TYPE.HTML,
-              sourceContent: qtConverter.getHtmlQualifyingTestResponse(qtResponse, exercise, application,{ showNames }),
-              destinationType: drive.MIME_TYPE.DOCUMENT,
-            }).catch(e => `Error: QT Response ${idx + 1}`)
-          );
-        });
-        if (!qtResponses.length) {
-          promises.push(
-            drive.deleteFolder(folderId) //If the candiate hasn't taken the test, delete their folder.
-          );
-        }
       }
 
       // Get fileIds & errors

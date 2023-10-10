@@ -73,7 +73,6 @@ exports.deleteApplications = require('./callableFunctions/deleteApplications');
 exports.createTestUsers = require('./callableFunctions/createTestUsers');
 exports.deleteTestUsers = require('./callableFunctions/deleteTestUsers');
 exports.createTask = require('./callableFunctions/tasks/createTask');
-exports.createTaskForExistingQT = require('./callableFunctions/tasks/createTaskForExistingQT');
 exports.updateTask = require('./callableFunctions/tasks/updateTask');
 exports.verifyRecaptcha = require('./callableFunctions/verifyRecaptcha');
 exports.processNotificationsNow = require('./callableFunctions/processNotifications');
