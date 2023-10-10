@@ -1,6 +1,5 @@
-const { getDocument, getDocuments } = require('../../shared/helpers');
+const { getDocument } = require('../../shared/helpers');
 const applicationConverter = require('../../shared/converters/applicationConverter')();
-const qtConverter = require('../../shared/converters/qtConverter')();
 const drive = require('../../shared/google-drive')();
 
 module.exports = (config, firebase, db) => {
