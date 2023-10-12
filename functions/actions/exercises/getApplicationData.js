@@ -108,8 +108,9 @@ module.exports = (config, firebase, db, auth) => {
 
         // Handle time values
         if(_.get(record[column], '_seconds', null)) {
-          record[column] = formatDate(record[column], 'DD/MM/YYYY');
+          record[column] = formatDate(record[column]);
         }
+
       }
 
       data.push(record);
