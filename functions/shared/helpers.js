@@ -10,6 +10,7 @@ module.exports = {
   applyUpdates,
   checkArguments,
   isDate,
+  isValidDate,
   isDateInPast, // @TODO we want one set of date & exercise helpers (see actions/shared/converters)
   formatDate,
   getDate,
@@ -204,6 +205,14 @@ function checkArguments(definitions, data) {
 
 function isDate(date) {
   return date instanceof Date;
+}
+
+function isValidDate(dateString) {
+  if (typeof dateString !== 'string') {
+    return false;
+  }
+  const date = new Date(dateString);
+  return !isNaN(date.getTime());
 }
 
 function isDateInPast(date) {

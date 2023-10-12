@@ -11,6 +11,7 @@ const {
   replaceCharacters,
   formatAddress,
   formatPreviousAddresses,
+  isValidDate,
 } = require('../../functions/shared/helpers');
 
 describe('checkArguments()', () => {
@@ -623,5 +624,19 @@ describe('formatPreviousAddresses()', () => {
     ];
     const result = formatPreviousAddresses(previousAddresses);
     expect(result).toEqual('2022-01-01 - 2022-02-01 123 Main St City 12345\n\n2022-03-01 - 2022-04-01 456 Elm St Town 67890');
+  });
+});
+
+describe('isValidDate()', () => {
+  it('should return true when given a valid date string in ISO format', () => {
+    expect(isValidDate('2021-01-01')).toBe(true);
+  });
+
+  it('should return false when given a non-string input', () => {
+    expect(isValidDate(123)).toBe(false);
+  });
+
+  it('should return false when given an empty string input', () => {
+    expect(isValidDate('')).toBe(false);
   });
 });
