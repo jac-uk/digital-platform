@@ -211,7 +211,8 @@ function isValidDate(dateString) {
   if (typeof dateString !== 'string') {
     return false;
   }
-  return !isNaN(Date.parse(dateString));
+  const date = new Date(dateString);
+  return !isNaN(date.getTime());
 }
 
 function isDateInPast(date) {

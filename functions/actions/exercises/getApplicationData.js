@@ -79,41 +79,31 @@ module.exports = (config, firebase, db, auth) => {
           record[column] = formatAddress(record[column]);
         }
         else if(_.isArray(record[column])) {
-          let formattedArray = '';
+          let formattedArray = [];
           for (const arrayItem of record[column]) {
             const arrayValuePaths = getArrayValuePath(column);
-            if(arrayValuePaths) {
+            if (arrayValuePaths) {
+              const arr = [];
               for (const arrayValuePath of arrayValuePaths) {
                 const str = _.get(arrayItem, arrayValuePath, '- No answer provided -');
                 // Handle time values
-                formattedArray += (_.get(str, '_seconds', null) ? formatDate(str) : str) + ' - ';
+                const val = _.get(str, '_seconds', null) || isValidDate(str) ? formatDate(str, 'DD/MM/YYYY') : str;
+                arr.push(val);
               }
-              // remove the last ' - ' from string
-              formattedArray = formattedArray.substring(0, formattedArray.length - 3);
+              formattedArray.push(arr.join(' - '));
             } else {
-              formattedArray += arrayItem ? arrayItem : '- No answer provided -';
+              formattedArray.push(arrayItem ? arrayItem : '- No answer provided -');
             }
-            formattedArray += ', ';
           }
-
-          // remove the last ', ' from string
-          formattedArray = formattedArray.substring(0, formattedArray.length - 2);
 
           // if something went wrong with parsing the array, just return true
-          if (formattedArray === '') {
+          if (formattedArray.length === 0) {
             record[column] = 'True';
           } else {
-            record[column] = formattedArray;
+            record[column] = formattedArray.join(', ');
           }
-        }
-
-        // Handle time values
-        if(_.get(record[column], '_seconds', null) || isValidDate(record[column])) {
-          if (column === 'personalDetails.dateOfBirth') {
-            record[column] = formatDate(record[column], 'DD/MM/YYYY');
-          } else {
-            record[column] = formatDate(record[column]);
-          }
+        } else if (column === 'personalDetails.dateOfBirth') {
+          record[column] = formatDate(record[column], 'DD/MM/YYYY');
         }
 
       }
