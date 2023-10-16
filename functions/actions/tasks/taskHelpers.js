@@ -291,7 +291,31 @@ module.exports = (config) => {
   function getTimelineTasks(exercise, taskType) {
     const timeline = createTimeline(exerciseTimeline(exercise));
     const timelineTasks = timeline.filter(item => item.taskType && (!taskType || item.taskType === taskType));
-    return timelineTasks;
+    if (exercise._processingVersion >= 2) {
+      const supportedTaskTypes = [
+        TASK_TYPE.SIFT,
+        TASK_TYPE.CRITICAL_ANALYSIS,
+        TASK_TYPE.SITUATIONAL_JUDGEMENT,
+        TASK_TYPE.QUALIFYING_TEST,
+        TASK_TYPE.SCENARIO,
+        TASK_TYPE.TELEPHONE_ASSESSMENT,
+        TASK_TYPE.ELIGIBILITY_SCC,
+        TASK_TYPE.STATUTORY_CONSULTATION,
+        TASK_TYPE.CHARACTER_AND_SELECTION_SCC,  
+        TASK_TYPE.EMP_TIEBREAKER,
+        TASK_TYPE.SELECTION_DAY,
+      ];
+      return timelineTasks.filter(task => supportedTaskTypes.indexOf(task.taskType) >= 0);
+    } else {
+      const supportedTaskTypes = [
+        TASK_TYPE.CRITICAL_ANALYSIS,
+        TASK_TYPE.SITUATIONAL_JUDGEMENT,
+        TASK_TYPE.QUALIFYING_TEST,
+        TASK_TYPE.SCENARIO,
+        TASK_TYPE.EMP_TIEBREAKER,
+      ];
+      return timelineTasks.filter(task => supportedTaskTypes.indexOf(task.taskType) >= 0);
+    } 
   }
 
   function getTaskTypes(exercise, stage) {
