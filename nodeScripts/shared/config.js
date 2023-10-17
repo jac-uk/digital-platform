@@ -4,10 +4,6 @@ module.exports = {
   // QT_URL: 'http://localhost:5001/jac-qualifying-tests-develop/europe-west2/api/v1',
   QT_URL: process.env.QT_PLATFORM_URL,
   QT_KEY: process.env.QT_PLATFORM_KEY,
-
-  ZENHUB_GRAPH_QL_API_KEY: process.env.ZENHUB_GRAPH_QL_API_KEY, // graphQL personal api key
-  ZENHUB_REST_API_KEY: process.env.ZENHUB_REST_API_KEY, // REST personal api key
-
   APPLICATION: {
     STATUS: {
       QUALIFYING_TEST_PASSED: 'qualifyingTestPassed',
@@ -277,7 +273,4 @@ module.exports = {
   NOTIFY_KEY: process.env.NOTIFY_LIMITED_KEY,
   SLACK_URL: process.env.SLACK_URL,
   STORAGE_URL: process.env.PROJECT_ID + '.appspot.com',
-  ZENHUB_REST_URL: process.env.ZENHUB_REST_URL,
-  ZENHUB_GRAPH_QL_URL: process.env.ZENHUB_GRAPH_QL_URL,
-  ZENHUB_USE_GRAPH_QL_API: process.env.ZENHUB_USE_GRAPH_QL_API,
 };
