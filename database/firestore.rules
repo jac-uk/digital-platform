@@ -104,8 +104,9 @@ service cloud.firestore {
 
     match /meta/stats {
       allow read: if userIsAuthenticated() && userIsJAC() && hasPermission('m1');
-      // Admin users can increment stats.exercisesCount by 1
+      // Admin users can increment stats.exercisesCount and stats.bugReportsCount by 1
       allow update: if userIsAuthenticated() && userIsJAC() && hasPermission('m3') && request.resource.data.exercisesCount == resource.data.exercisesCount + 1;
+      allow update: if userIsAuthenticated() && userIsJAC() && hasPermission('m3') && request.resource.data.bugReportsCount == resource.data.bugReportsCount + 1;
     }
 
     match /settings/services {
@@ -267,5 +268,9 @@ service cloud.firestore {
       );
     }
 
+    match /bugReports/{bugReportId} {
+      // Allow JAC to read and write
+      allow read, write: if userIsAuthenticated() && userIsJAC();
+    }
   }
 }
