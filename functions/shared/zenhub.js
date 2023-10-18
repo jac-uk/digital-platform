@@ -89,6 +89,8 @@ module.exports = (config) => {
   // },
   //}
             
+  // @TODO: NOW GET IT WORKING WITH THE VARIABLES (TIMESTAMP ETC) AND OTHER DATA GETTING PASSED FROM THE CALLING FUNCTION
+  // ENSURE THE ERROR HANDLING DETECTS THE STATUS AND CONSOLE LOGS
 
   async function createIssue(bodyParams) {
 
