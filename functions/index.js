@@ -18,6 +18,7 @@ exports.onDocumentUploaded = require('./backgroundFunctions/onDocumentUploaded')
 exports.onCandidatePersonalDetailsCreate = require('./backgroundFunctions/onCandidatePersonalDetailsCreate');
 exports.onCandidatePersonalDetailsUpdate = require('./backgroundFunctions/onCandidatePersonalDetailsUpdate');
 exports.onMessageCreate = require('./backgroundFunctions/onMessageCreate');
+exports.onBugReportCreate = require('./backgroundFunctions/onBugReportCreate');
 
 // Callable
 exports.getApplicationData = require('./callableFunctions/getApplicationData');

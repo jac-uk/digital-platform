@@ -30,7 +30,7 @@ module.exports = (config) => {
     if (baseApiUrl && apiKey) {
       try {
         const timestamp = Date.now();
-        newIssue.title = `OJ Zenhub API Test ${timestamp}`;
+        newIssue.title = `User Raised Issue ${timestamp}`;
         const result = await axios({
           url: baseApiUrl,
           method: 'post',
