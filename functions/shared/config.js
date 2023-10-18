@@ -6,6 +6,7 @@ module.exports = {
   // QT_URL: 'http://localhost:5001/jac-qualifying-tests-develop/europe-west2/api/v1',
   QT_URL: functions.config().qt_platform.url,
   QT_KEY: functions.config().qt_platform.key,
+  ZENHUB_GRAPH_QL_API_KEY: functions.config().zenhub.graph_ql_api_key, // graphQL personal api key
   APPLICATION: {
     STATUS: {
       QUALIFYING_TEST_PASSED: 'qualifyingTestPassed',
@@ -323,4 +324,5 @@ module.exports = {
     CALLED_PRE_2002: 'called-pre-2002',
     OTHER: 'other',
   },
+  ZENHUB_GRAPH_QL_URL: functions.config().zenhub.graph_ql_url,
 };
