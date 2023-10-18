@@ -26,11 +26,12 @@ module.exports = (config) => {
     createIssue,
   };
 
-  async function createIssue(body) {
+  async function createIssue(referenceNumber, body) {
     if (baseApiUrl && apiKey) {
       try {
-        const timestamp = Date.now();
-        newIssue.title = `User Raised Issue ${timestamp}`;
+        //const timestamp = Date.now();
+        //newIssue.title = `User Raised Issue ${timestamp}`;
+        newIssue.title = `User Raised Issue ${referenceNumber}`;
         const result = await axios({
           url: baseApiUrl,
           method: 'post',
