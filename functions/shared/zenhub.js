@@ -1,19 +1,13 @@
 const axios = require('axios');
+const { objectHasNestedProperty } = require('./helpers');
 
-// @TODO: 
-// The token is sent in the X-Authentication-Token header. For example, using curl it would be:
-
-// curl -H 'X-Authentication-Token: TOKEN' URL
-// Alternatively, you can choose to send the token in the URL using the access_token query string attribute. To do so, add ?access_token=TOKEN to any URL.
-
-// ERRORS
-// As this is a GraphQL API, a response code of 200 does not guarantee that the request was successful. Responses in GraphQL are in JSON and this JSON may contain an "errors" field with a list of errors that occurred with your request. Most of the time, if there's an error or something goes wrong with the request you're trying to make, this error field in the response is where you can find information about it.
-
-// It's possible for a few other response codes to come from our API:
-
-// Status Code	Description
-// 401	The token is not valid. See Authentication.
-
+/**
+ * Zenhub GraphQL API calls
+ * As this is a GraphQL API, a response code of 200 does not guarantee that the request was successful.
+ * Responses in GraphQL are in JSON and this JSON may contain an "errors" field with a list of errors that occurred with your request.
+ * @param {*} config 
+ * @returns 
+ */
 module.exports = (config) => {
 
   const newIssue = {
@@ -62,14 +56,19 @@ module.exports = (config) => {
           },
         });
 
-        // @TODO: STORE THE ISSUE ID IN THE DB!!
-
-        console.log('ZENHUB ISSUE ID:');
-        console.log(result.data.data.createIssue.issue.id);
-
-        return result;
+        if (objectHasNestedProperty(result, 'data.errors')) {
+          const errorsStr = result.data.errors.map(e => e.message).join('\n');
+          throw new Error(errorsStr);
+        }
+        else if (objectHasNestedProperty(result, 'data.data.createIssue.issue.id')) {
+          // Return the new issue id from the API
+          return result.data.data.createIssue.issue.id;
+        }
+        else {
+          throw new Error('New issue id was not returned from the API');
+        }
       } catch(error) {
-        console.log('Zenhub createIssue error:');
+        console.log('Zenhub createIssue errors:');
         console.log(error);
       }
     }

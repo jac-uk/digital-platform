@@ -14,8 +14,8 @@ const main = async () => {
 };
 
 main()
-  .then((result) => {
-    //console.log(result);
+  .then((newIssueID) => {
+    console.log(`New issue ID: ${newIssueID}`);
     return process.exit();
   })
   .catch((error) => {
