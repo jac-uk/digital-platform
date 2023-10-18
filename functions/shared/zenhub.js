@@ -16,110 +16,41 @@ const axios = require('axios');
 
 module.exports = (config) => {
 
-  let baseApiUrl, apiKey;
-  if (config.ZENHUB_USE_GRAPH_QL_API) {
-    baseApiUrl = config.ZENHUB_GRAPH_QL_URL;
-    apiKey = config.ZENHUB_GRAPH_QL_API_KEY;
-  }
-  else {
-    baseApiUrl = config.ZENHUB_REST_URL;
-    apiKey = config.ZENHUB_REST_API_KEY; 
-  }
-
+  const newIssue = {
+    label: 'User Feedback',
+    assignee: 'drieJAC',
+    repositoryId: 'Z2lkOi8vcmFwdG9yL1JlcG9zaXRvcnkvNjAzMjc4NjY',  // Admin repo
+  };
+  const baseApiUrl = config.ZENHUB_GRAPH_QL_URL;
+  const apiKey = config.ZENHUB_GRAPH_QL_API_KEY;
   const axiosHeaders = {
     Authorization: `Bearer ${apiKey}`,
     'Content-Type': 'application/json',
-    Accept: 'application/json',
-    //'Access-Control-Allow-Origin': '*',
   };
   
-
   return {
-    //post,
     createIssue,
-    //getRepos,
   };
 
-  // async function post(msgString) {
-  //   if (config.SLACK_URL) {
-  //     const result = await axios.post(
-  //       config.SLACK_URL,
-  //       {
-  //         text: msgString,
-  //       }
-  //     );
-  //     return result;
-  //   }
-  //   return false;
-  // }
-
-  // data: {
-  //  query: `
-  //   mutation updateUserCity($id: Int!, $city: String!) {
-  //     updateUserCity(userID: $id, city: $city) {
-  //       id
-  //       name
-  //       age
-  //       city
-  //       knowledge {
-  //         language
-  //         frameworks
-  //       }
-  //     }
-  //   }
-  // `,
-  // query: `
-  //   mutation createIssue ($title: String!, $body String!, $id: String!, $assignee: String!, $labels: Array!) {
-  //     createIssue(title: $title, body: $body, repositoryId: $id, labels: $labels, assignee: $assignee) {
-  //         issue {
-  //             id
-  //             title
-  //         }
-  //     }
-  //   }
-  // `,
-  // variables: {
-  //   // id: 2,
-  //   // city: 'Test',
-  //   title: `OJ Zenhub API Test ${timestamp}`,
-  //   body: 'My new issue body',
-  //   repositoryId: 'Z2lkOi8vcmFwdG9yL1JlcG9zaXRvcnkvNjAzMjc4NjY',
-  //   labels: ['User Feedback'],
-  //   assignees: ['drieJAC'],
-  // },
-  //}
-            
-  // @TODO: NOW GET IT WORKING WITH THE VARIABLES (TIMESTAMP ETC) AND OTHER DATA GETTING PASSED FROM THE CALLING FUNCTION
-  // ENSURE THE ERROR HANDLING DETECTS THE STATUS AND CONSOLE LOGS
-
-  async function createIssue(bodyParams) {
-
-    console.log('bodyParams:');
-    console.log(bodyParams);
-
+  async function createIssue(body) {
     if (baseApiUrl && apiKey) {
-
       try {
-        
         const timestamp = Date.now();
-
+        newIssue.title = `OJ Zenhub API Test ${timestamp}`;
         const result = await axios({
           url: baseApiUrl,
           method: 'post',
-          headers: {
-            Authorization: `Bearer ${apiKey}`,
-            'Content-Type': 'application/json',
-          },
+          headers: axiosHeaders,
           data: {
             operationName: 'createIssue',
             query: `
               mutation createIssue {
                 createIssue(input: {
-                    title: "OJ Zenhub API Test 5",
-                    body: "My new issue body",
-                    repositoryId: "Z2lkOi8vcmFwdG9yL1JlcG9zaXRvcnkvNjAzMjc4NjY",
-                    labels: ["User Feedback"],
-                    assignees: ["drieJAC"]
+                    title: "${newIssue.title}",
+                    body: "${body}",
+                    repositoryId: "${newIssue.repositoryId}",
+                    labels: ["${newIssue.label}"],
+                    assignees: ["${newIssue.assignee}"]
                 }) {
                     issue {
                         id
@@ -131,10 +62,13 @@ module.exports = (config) => {
           },
         });
 
+        // @TODO: STORE THE ISSUE ID IN THE DB!!
+
+        console.log('ZENHUB ISSUE ID:');
+        console.log(result.data.data.createIssue.issue.id);
+
         return result;
-
       } catch(error) {
-
         console.log('Zenhub createIssue error:');
         console.log(error);
       }

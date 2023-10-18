@@ -10,18 +10,12 @@ const config = require('./shared/config');
 const zenhub = require('../functions/shared/zenhub')(config);
 
 const main = async () => {
-
-  // @TODO: TEST CREATE ISSUE
-  return zenhub.createIssue({
-    unused_param: 'test',
-  });
-
-  //return zenhub.getRepos();
+  return zenhub.createIssue('Test new issue body');
 };
 
 main()
   .then((result) => {
-    console.log(result);
+    //console.log(result);
     return process.exit();
   })
   .catch((error) => {

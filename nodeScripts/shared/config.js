@@ -279,5 +279,4 @@ module.exports = {
   STORAGE_URL: process.env.PROJECT_ID + '.appspot.com',
   ZENHUB_REST_URL: process.env.ZENHUB_REST_URL,
   ZENHUB_GRAPH_QL_URL: process.env.ZENHUB_GRAPH_QL_URL,
-  ZENHUB_USE_GRAPH_QL_API: process.env.ZENHUB_USE_GRAPH_QL_API,
 };
