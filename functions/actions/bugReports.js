@@ -20,12 +20,14 @@ module.exports = (config, firebase, db) => {
     const issue = data.issue;
     const criticality = data.criticality;
     const reporter = data.reporter;
-    let slackMessage = `The following ${criticality} issue was raised by ${reporter}`;
+    const referenceNumber = data.referenceNumber;
+    let body = `The following ${criticality} issue was raised by ${reporter}`;
     if (data.exercise.referenceNumber) {
-      slackMessage += ` for exercise ${data.exercise.referenceNumber}`;
+      body += ` for exercise ${data.exercise.referenceNumber}`;
     }
-    slackMessage += `.\nDescription: ${issue}`;
-    const zenhubIssueId = await zenhub.createIssue(issue);
+    body += `.\nDescription: ${issue}`;
+    let slackMessage = body;
+    const zenhubIssueId = await zenhub.createIssue(body);
     if (zenhubIssueId) {
       await db.doc(`bugReports/${bugReportId}`).update({
         zenhubIssueId: zenhubIssueId,
