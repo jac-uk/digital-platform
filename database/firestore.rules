@@ -272,5 +272,29 @@ service cloud.firestore {
       // Allow JAC to read and write
       allow read, write: if userIsAuthenticated() && userIsJAC();
     }
+
+    match /users/{userId} {
+      // allow users to read & write to their own documents
+      allow read, write: if userIsAuthenticated() && request.auth.uid == userId;
+
+      // allow admins
+      allow read: if userIsAuthenticated() && userIsJAC() && hasPermission('u7');
+      allow create: if userIsAuthenticated() && userIsJAC();
+      allow update: if userIsAuthenticated() && userIsJAC();
+      allow delete: if userIsAuthenticated() && userIsJAC() && hasPermission('u4');
+    }
+
+    match /userInvitations/{userId} {
+      // allow admins
+      allow read: if userIsAuthenticated() && userIsJAC();
+      allow create: if userIsAuthenticated() && userIsJAC() && hasPermission('u6');
+      allow update: if userIsAuthenticated() && userIsJAC();
+      allow delete: if userIsAuthenticated() && userIsJAC();
+    }
+
+    match /roles/{roleId} {
+      allow read: if userIsAuthenticated() && userIsJAC();
+      allow write: if userIsAuthenticated() && userIsJAC() && hasPermission('u3');
+    }
   }
 }
