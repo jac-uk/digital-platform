@@ -5,6 +5,7 @@ module.exports = {
   QT_URL: process.env.QT_PLATFORM_URL,
   QT_KEY: process.env.QT_PLATFORM_KEY,
   ZENHUB_GRAPH_QL_API_KEY: process.env.ZENHUB_GRAPH_QL_API_KEY, // graphQL personal api key
+  ZENHUB_ISSUES_WORKSPACE_ID: process.env.ZENHUB_ISSUES_WORKSPACE_ID,
   APPLICATION: {
     STATUS: {
       QUALIFYING_TEST_PASSED: 'qualifyingTestPassed',
