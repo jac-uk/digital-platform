@@ -10,7 +10,7 @@ const config = require('./shared/config');
 const zenhub = require('../functions/shared/zenhub')(config);
 
 const main = async () => {
-  return zenhub.createIssue('Test new issue body');
+  return zenhub.createZenhubIssue('BR0001', 'Test new issue body');
 };
 
 main()

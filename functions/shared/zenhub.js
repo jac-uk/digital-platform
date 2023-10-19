@@ -10,11 +10,7 @@ const { objectHasNestedProperty } = require('./helpers');
  */
 module.exports = (config) => {
 
-  const newIssue = {
-    label: 'User Feedback',
-    assignee: 'drieJAC',
-    repositoryId: 'Z2lkOi8vcmFwdG9yL1JlcG9zaXRvcnkvNjAzMjc4NjY',  // Admin repo
-  };
+  const platformIssuesRepositoryId = 'Z2lkOi8vcmFwdG9yL1JlcG9zaXRvcnkvMTMzOTUyNzky';
   const baseApiUrl = config.ZENHUB_GRAPH_QL_URL;
   const apiKey = config.ZENHUB_GRAPH_QL_API_KEY;
   const axiosHeaders = {
@@ -23,15 +19,20 @@ module.exports = (config) => {
   };
   
   return {
-    createIssue,
+    createZenhubIssue,
   };
 
-  async function createIssue(referenceNumber, body) {
+  /**
+   * Creates issue ONLY in Zenhub
+   * Cannot set assigness nor labels
+   * @param {*} referenceNumber 
+   * @param {*} body 
+   * @returns 
+   */
+  async function createZenhubIssue(referenceNumber, body) {
     if (baseApiUrl && apiKey) {
       try {
-        //const timestamp = Date.now();
-        //newIssue.title = `User Raised Issue ${timestamp}`;
-        newIssue.title = `User Raised Issue ${referenceNumber}`;
+        const title = `User Raised Issue ${referenceNumber}`;
         const result = await axios({
           url: baseApiUrl,
           method: 'post',
@@ -41,11 +42,9 @@ module.exports = (config) => {
             query: `
               mutation createIssue {
                 createIssue(input: {
-                    title: "${newIssue.title}",
+                    title: "${title}",
                     body: "${body}",
-                    repositoryId: "${newIssue.repositoryId}",
-                    labels: ["${newIssue.label}"],
-                    assignees: ["${newIssue.assignee}"]
+                    repositoryId: "${platformIssuesRepositoryId}"
                 }) {
                     issue {
                         id
