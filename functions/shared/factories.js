@@ -564,6 +564,7 @@ module.exports = (CONSTANTS) => {
       assessmentOptions: null,
       authorisations: null,
       characterChecks: null,
+      commissioners: null,
       contactIndependentAssessors: null,
       criticalAnalysisTestDate: null,
       criticalAnalysisTestEndTime: null,
@@ -642,7 +643,11 @@ module.exports = (CONSTANTS) => {
     const dataKeys = Object.keys(data);
     for (var key in vacancyModel) {
       if (dataKeys.includes(key)) {
-        vacancy[key] = data[key];
+        if (key === 'commissioners') {
+          vacancy[key] = data[key].map(item => ({ name: item.name }));
+        } else {
+          vacancy[key] = data[key];
+        }
       }
     }
     return vacancy;
