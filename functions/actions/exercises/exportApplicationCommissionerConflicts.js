@@ -91,6 +91,19 @@ module.exports = (firebase, db) => {
    */
   function getHtmlCommissionerConflicts(exercise, applications) {
     let writer = new htmlWriter();
+    writer.setStylesheet(`
+<style>
+  body {
+    font-family: Khula, HelveticaNeue, Arial, Helvetica, sans-serif;
+    font-size: 1.1875rem;
+  }
+  table, th, td {
+    border: 1px solid black;
+    border-collapse: collapse;
+    padding: 4px 8px;
+  }
+</style>
+  `);
 
     writer.addHeading('Candidates\' Declarations', 'center');
     writer.addRaw(`
