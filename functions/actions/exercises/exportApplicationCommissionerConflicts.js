@@ -125,7 +125,7 @@ module.exports = (firebase, db) => {
     <td>${index === 0 ? application.personalDetails.lastName : ''}</td>
     <td>${index === 0 ? application.personalDetails.firstName : ''}</td>
     <td>${conflict.name}</td>
-    <td>${conflict.detail}</td>
+    <td>${conflict.details}</td>
   </tr>`
             );
         });
