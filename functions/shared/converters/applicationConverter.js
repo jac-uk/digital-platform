@@ -107,36 +107,38 @@ module.exports = () => {
     return data;
   }
 
-  function getAdditionalWorkingPreferences(application, exercise) {
-    const additionalWorkingPreferenceData = application.additionalWorkingPreferences;
-    const data = [];
-    additionalWorkingPreferenceData.forEach((item, index) => {
-      addField(data, lookup(exercise.additionalWorkingPreferences[index].questionType));
-      if (exercise.additionalWorkingPreferences[index].questionType === 'single-choice') {
-        addField(data, exercise.additionalWorkingPreferences[index].question, item.selection);
-      }
-      if (exercise.additionalWorkingPreferences[index].questionType === 'multiple-choice' && item.selection) {
-        const multipleChoice = [];
-          item.selection.forEach((choice) => {
-            multipleChoice.push(`<br/>${choice}`);
-          });
-        addField(data, exercise.additionalWorkingPreferences[index].question, `answer: ${multipleChoice}`);
-      } else {
-        addField(data, exercise.additionalWorkingPreferences[index].question, 'answer: <br/> no answer provided');
-      }
-      if (exercise.additionalWorkingPreferences[index].questionType === 'ranked-choice' && item.selection) {
-        const rankedAnswer = [];
-        item.selection.forEach((choice, index) => {
-          rankedAnswer.push(`<br/>${index + 1}: ${choice}`);
-        });
-        addField(data, exercise.additionalWorkingPreferences[index].question, `answer: ${rankedAnswer}`);
-      } else {
-        addField(data, exercise.additionalWorkingPreferences[index].question, 'answer: <br/> no answer provided');
-      }
-    });
-    console.log(data);
-    return data;
-  }
+function getAdditionalWorkingPreferences(application, exercise) {
+  const data = [];
+
+  application.additionalWorkingPreferences.forEach((item, index) => {
+    const questionType = exercise.additionalWorkingPreferences[index].questionType;
+    const question = exercise.additionalWorkingPreferences[index].question;
+    const selection = item.selection || [];
+
+    let answer = '';
+
+    if (questionType === 'single-choice') {
+      answer = `answer: ${selection}`;
+    } else if (questionType === 'multiple-choice') {
+      answer = selection.length > 0
+        ? `answer: ${selection.join('<br/>')}`
+        : 'answer: <br/> no answer provided';
+    } else if (questionType === 'ranked-choice') {
+      answer = selection.length > 0
+        ? `answer: ${selection.map((choice, index) => `${index + 1}: ${choice}`).join('<br/>')}`
+        : 'answer: <br/> no answer provided';
+    } else {
+      answer = 'Invalid question type';
+    }
+
+    addField(data, question, answer);
+  });
+
+  console.log(data);
+  return data;
+}
+
+  
 
   function getQualificationData(exercise, application) {
     const qualificationData = application.qualifications;

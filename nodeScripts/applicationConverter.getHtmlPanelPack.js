@@ -15,8 +15,8 @@ const { app, db } = require('./shared/admin.js');
 const { getHtmlPanelPack } = require('../functions/shared/converters/applicationConverter')();
 
 const main = async () => {
-    const exerciseId = 'zIpZ7DWHfk0b6uLUes4O';
-    const applicationId = 'A4cvknDsHS3GmGXBQANd';
+    const exerciseId = 'HdvJaVf4QIpGTDJDmeYz';
+    const applicationId = '9i19zY8rtCBLB2O4H3pe';
 
     const exercise = await getDocument(db.collection('exercises').doc(exerciseId));
     if (!exercise) return 'no exercise';
