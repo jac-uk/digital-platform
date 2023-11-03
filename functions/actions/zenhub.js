@@ -4,25 +4,29 @@ module.exports = (config, firebase, db) => {
 
   const zenhub = require('../shared/zenhub')(config);
   const slack = require('../shared/slack')(config);
+  const { getDocument } = require('../shared/helpers');
 
   return {
-    onBugReportCreated,
+    createZenhubIssue,
   };
 
   /**
    * Create an issue in Zenhub
    * Send a message to a Slack channel notifying the team of the bug
    * Update the bugReport collection with the Zenhub Issue ID
+   * 
    * @param {*} bugReportId 
-   * @param {*} data 
    */
-  async function onBugReportCreated(bugReportId, data) {
+  async function createZenhubIssue(bugReportId) {
+
+    // @TODO: Get the bug report
+    const bugReport = await getDocument(db.collection('bugReports').doc(bugReportId));
 
     // Build Zenhub message
-    const body = buildZenhubPayload(data);
+    const body = buildZenhubPayload(bugReport);
 
     // Create issue in Zenhub
-    const zenhubIssueId = await zenhub.createZenhubIssue(data.referenceNumber, body);
+    const zenhubIssueId = await zenhub.createZenhubIssue(bugReport.referenceNumber, body);
 
     // Update bugReport with Zenhub issue ID in firestore
     if (zenhubIssueId) {
@@ -35,9 +39,9 @@ module.exports = (config, firebase, db) => {
     // Build Slack msg using markdown
     const blocksArr = [];
     blocksArr.push(addSlackDivider());
-    blocksArr.push(addSlackSection1(data));
-    blocksArr.push(addSlackSection2(data));
-    blocksArr.push(addSlackSection3(data));
+    blocksArr.push(addSlackSection1(bugReport));
+    blocksArr.push(addSlackSection2(bugReport));
+    blocksArr.push(addSlackSection3(bugReport));
     blocksArr.push(addSlackSection4(zenhubIssueId));
     const blocks = {
       'blocks': blocksArr,

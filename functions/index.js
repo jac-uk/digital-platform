@@ -18,7 +18,6 @@ exports.onDocumentUploaded = require('./backgroundFunctions/onDocumentUploaded')
 exports.onCandidatePersonalDetailsCreate = require('./backgroundFunctions/onCandidatePersonalDetailsCreate');
 exports.onCandidatePersonalDetailsUpdate = require('./backgroundFunctions/onCandidatePersonalDetailsUpdate');
 exports.onMessageCreate = require('./backgroundFunctions/onMessageCreate');
-exports.onBugReportCreate = require('./backgroundFunctions/onBugReportCreate');
 exports.onUserUpdate = require('./backgroundFunctions/onUserUpdate');
 exports.onUserDelete = require('./backgroundFunctions/onUserDelete');
 exports.onRoleUpdate = require('./backgroundFunctions/onRoleUpdate');
@@ -82,6 +81,7 @@ exports.processNotificationsNow = require('./callableFunctions/processNotificati
 exports.checkEnabledUserByEmail = require('./callableFunctions/checkEnabledUserByEmail');
 exports.extractDocumentContent = require('./callableFunctions/extractDocumentContent');
 exports.updateUserCustomClaims = require('./callableFunctions/updateUserCustomClaims');
+exports.createZenhubIssue = require('./callableFunctions/createZenhubIssue');
 
 // Callable - QTs v2
 exports.listQualifyingTests = require('./callableFunctions/qualifyingTests/v2/listQualifyingTests');
