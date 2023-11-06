@@ -277,8 +277,9 @@ module.exports = {
     SHORTLISTING_OUTCOME: 'shortlistingOutcome',
     WELSH_ASSESSMENT: 'welshAssessment',
     SELECTION_OUTCOME: 'selectionOutcome',
+    EMP_TIEBREAKER: 'empTiebreaker',
   },
-  TASK_STATUS: {
+  TASK_STATUS: {  // aka task STEPS
     DATA_INITIALISED: 'dataInitialised',
     DATA_ACTIVATED: 'dataActivated',
     TEST_INITIALISED: 'testInitialised',
@@ -289,7 +290,7 @@ module.exports = {
     MODERATION_ACTIVATED: 'moderationActivated',
     STATUS_CHANGES: 'statusChanges',
     FINALISED: 'finalised',
-    STAGE_OUTCOME: 'stageOutcome',
+    STAGE_OUTCOME: 'stageOutcome',  // TODO check this is correct
     COMPLETED: 'completed',
   },
   PANEL_STATUS: {

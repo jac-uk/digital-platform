@@ -5,6 +5,7 @@ const { convertToDate, calculateMean, calculateStandardDeviation } = require('..
 module.exports = (config) => {
   const exerciseTimeline = require('../../shared/Timeline/exerciseTimeline.TMP')(config);
   const TASK_TYPE = config.TASK_TYPE;
+  const APPLICATION_STATUS = config.APPLICATION.STATUS;
   return {
     scoreSheet,
     getTimelineDate,
@@ -45,6 +46,7 @@ module.exports = (config) => {
         ];
         break;
       case config.TASK_TYPE.SCENARIO:
+      case config.TASK_TYPE.EMP_TIEBREAKER:
         availableStatuses = [
           config.TASK_STATUS.TEST_INITIALISED,
           config.TASK_STATUS.TEST_ACTIVATED,
@@ -291,7 +293,31 @@ module.exports = (config) => {
   function getTimelineTasks(exercise, taskType) {
     const timeline = createTimeline(exerciseTimeline(exercise));
     const timelineTasks = timeline.filter(item => item.taskType && (!taskType || item.taskType === taskType));
-    return timelineTasks;
+    if (exercise._processingVersion >= 2) {
+      const supportedTaskTypes = [
+        TASK_TYPE.SIFT,
+        TASK_TYPE.CRITICAL_ANALYSIS,
+        TASK_TYPE.SITUATIONAL_JUDGEMENT,
+        TASK_TYPE.QUALIFYING_TEST,
+        TASK_TYPE.SCENARIO,
+        TASK_TYPE.TELEPHONE_ASSESSMENT,
+        TASK_TYPE.ELIGIBILITY_SCC,
+        TASK_TYPE.STATUTORY_CONSULTATION,
+        TASK_TYPE.CHARACTER_AND_SELECTION_SCC,  
+        TASK_TYPE.EMP_TIEBREAKER,
+        TASK_TYPE.SELECTION_DAY,
+      ];
+      return timelineTasks.filter(task => supportedTaskTypes.indexOf(task.taskType) >= 0);
+    } else {
+      const supportedTaskTypes = [
+        TASK_TYPE.CRITICAL_ANALYSIS,
+        TASK_TYPE.SITUATIONAL_JUDGEMENT,
+        TASK_TYPE.QUALIFYING_TEST,
+        TASK_TYPE.SCENARIO,
+        TASK_TYPE.EMP_TIEBREAKER,
+      ];
+      return timelineTasks.filter(task => supportedTaskTypes.indexOf(task.taskType) >= 0);
+    } 
   }
 
   function getTaskTypes(exercise, stage) {
@@ -331,6 +357,7 @@ module.exports = (config) => {
   function taskApplicationsEntryStatus(exercise, type) {
     let status = '';
     if (!exercise) return status;
+    if (type === TASK_TYPE.EMP_TIEBREAKER) return APPLICATION_STATUS.SECOND_STAGE_INVITED;  // TODO: remove this eventually: override entry status for EMP tie-breakers
     const prevTaskType = previousTaskType(exercise, type);
     if (prevTaskType) {
       console.log('previousTaskType', prevTaskType);
