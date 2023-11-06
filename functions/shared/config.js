@@ -275,6 +275,7 @@ module.exports = {
     SHORTLISTING_OUTCOME: 'shortlistingOutcome',
     WELSH_ASSESSMENT: 'welshAssessment',
     SELECTION_OUTCOME: 'selectionOutcome',
+    EMP_TIEBREAKER: 'empTiebreaker',
   },
   TASK_STATUS: {  // aka task STEPS
     DATA_INITIALISED: 'dataInitialised',

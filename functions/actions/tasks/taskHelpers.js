@@ -5,6 +5,7 @@ const { convertToDate, calculateMean, calculateStandardDeviation } = require('..
 module.exports = (config) => {
   const exerciseTimeline = require('../../shared/Timeline/exerciseTimeline.TMP')(config);
   const TASK_TYPE = config.TASK_TYPE;
+  const APPLICATION_STATUS = config.APPLICATION.STATUS;
   return {
     scoreSheet,
     getTimelineDate,
@@ -45,6 +46,7 @@ module.exports = (config) => {
         ];
         break;
       case config.TASK_TYPE.SCENARIO:
+      case config.TASK_TYPE.EMP_TIEBREAKER:
         availableStatuses = [
           config.TASK_STATUS.TEST_INITIALISED,
           config.TASK_STATUS.TEST_ACTIVATED,
@@ -355,6 +357,7 @@ module.exports = (config) => {
   function taskApplicationsEntryStatus(exercise, type) {
     let status = '';
     if (!exercise) return status;
+    if (type === TASK_TYPE.EMP_TIEBREAKER) return APPLICATION_STATUS.SECOND_STAGE_INVITED;  // TODO: remove this eventually: override entry status for EMP tie-breakers
     const prevTaskType = previousTaskType(exercise, type);
     if (prevTaskType) {
       console.log('previousTaskType', prevTaskType);
