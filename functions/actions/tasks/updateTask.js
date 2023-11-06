@@ -353,12 +353,13 @@ module.exports = (config, firebase, db) => {
       success: false,
       data: {},
     };
+    const QTType = testType === config.TASK_TYPE.EMP_TIEBREAKER ? config.TASK_TYPE.SCENARIO : testType;
     // initialise test on QT Platform
     const qts = require('../../shared/qts')(config);
     const response = await qts.post('qualifying-test', {
       folder: folderName,
       test: {
-        type: testType,
+        type: QTType,
         startDate: startDate,
         endDate: endDate,
       },
@@ -495,7 +496,7 @@ module.exports = (config, firebase, db) => {
 
     // get scoresheet
     let emptyScoreSheet = task.emptyScoreSheet;
-    if (task.type === config.TASK_TYPE.SCENARIO) {
+    if (task.type === config.TASK_TYPE.SCENARIO || task.type === config.TASK_TYPE.EMP_TIEBREAKER) {
       // get test
       const qts = require('../../shared/qts')(config);
       const response = await qts.get('scores', {

@@ -1,5 +1,8 @@
-
-const mockConfig = jest.fn();
+const mockConfig = {
+  APPLICATION: {
+    STATUS: {},
+  },
+};
 
 const { includeZScores } = require('../../../../functions/actions/tasks/taskHelpers.js')(mockConfig);
 
