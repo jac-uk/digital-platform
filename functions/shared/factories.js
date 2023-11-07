@@ -516,7 +516,7 @@ module.exports = (CONSTANTS) => {
         status: 'not requested',
       },
       active: true,
-      stage: 'review',  // TODO change to 'applied'
+      stage: exercise._processingVersion >= 2 ? 'applied' : 'review',
       status: '',
       flags: {
         characterIssues: false,
