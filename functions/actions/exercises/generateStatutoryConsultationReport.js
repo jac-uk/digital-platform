@@ -142,7 +142,7 @@ function getJudicialExperienceHeaders(exercise, n) {
       headers.push(
         { title: 'Judicial or quasi-judicial post', ref: `judicialExperienceType${i}` },
         { title: 'Sitting days', ref: `judicialExperienceDuration${i}` },
-        { title: 'Is a legal qualification a requisite for appointment', ref: `judicialExperienceIsLegalQualification${i}` },
+        { title: 'Is a legal qualification a requisite for appointment', ref: `judicialExperienceIsLegalQualificationRequired${i}` },
         { title: 'Details', ref: `judicialExperienceDetails${i}` }
       );
     }
@@ -224,8 +224,8 @@ function getJudicialExperienceData(exercise, experiences) {
       // only show these fields for application version 3 and above
       data[`judicialExperienceType${index}`] = experience.judicialFunctions && experience.judicialFunctions.type ? lookup(experience.judicialFunctions.type) : '';
       data[`judicialExperienceDuration${index}`] = experience.judicialFunctions && experience.judicialFunctions.duration ? experience.judicialFunctions.duration : '';
-      data[`judicialExperienceIsLegalQualification${index}`] = experience.judicialFunctions && experience.judicialFunctions.isLegalQualification.toString()
-        ? helpers.toYesNo(experience.judicialFunctions.isLegalQualification) : '';
+      data[`judicialExperienceIsLegalQualificationRequired${index}`] = experience.judicialFunctions && experience.judicialFunctions.isLegalQualificationRequired.toString()
+        ? helpers.toYesNo(experience.judicialFunctions.isLegalQualificationRequired) : '';
       data[`judicialExperienceDetails${index}`] = experience.judicialFunctions && experience.judicialFunctions.details ? experience.judicialFunctions.details : '';
     }
 
