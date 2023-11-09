@@ -138,6 +138,7 @@ function getJudicialExperienceHeaders(exercise, n) {
     );
 
     if (exercise._applicationVersion >= 3) {
+      // only show these fields for application version 3 and above
       headers.push(
         { title: 'Judicial or quasi-judicial post', ref: `judicialExperienceType${i}` },
         { title: 'Sitting days', ref: `judicialExperienceDuration${i}` },
@@ -220,6 +221,7 @@ function getJudicialExperienceData(exercise, experiences) {
     data[`judicialExperienceDates${index}`] = dates.join(' - ');
 
     if (exercise._applicationVersion >= 3) {
+      // only show these fields for application version 3 and above
       data[`judicialExperienceType${index}`] = experience.judicialFunctions && experience.judicialFunctions.type ? lookup(experience.judicialFunctions.type) : '';
       data[`judicialExperienceDuration${index}`] = experience.judicialFunctions && experience.judicialFunctions.duration ? experience.judicialFunctions.duration : '';
       data[`judicialExperienceIsLegalQualification${index}`] = experience.judicialFunctions && experience.judicialFunctions.isLegalQualification.toString()
