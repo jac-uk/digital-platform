@@ -79,12 +79,12 @@ module.exports = (config, firebase, db, auth) => {
     // slack.post(`${data.exerciseRef}. New application started`);
     if (data.userId) { await updateCandidate(data.userId); }
 
+    const fullNameUC = data.personalDetails && data.personalDetails.fullName ? data.personalDetails.fullName.toUpperCase() : '';
+
     // update application
-    if (data.personalDetails && data.personalDetails.fullName) {
-      await ref.update({
-        '_sort.fullNameUC': data.personalDetails.fullName.toUpperCase(),
-      });
-    }
+    await ref.update({
+      '_sort.fullNameUC': fullNameUC,
+    });
 
     // update counts
     console.log(`Update application counts: _applications.${data.status}`);
