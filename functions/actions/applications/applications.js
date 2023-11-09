@@ -83,11 +83,9 @@ module.exports = (config, firebase, db, auth) => {
 
     // update application
     const applicationData = {};
+    applicationData._sort = {};
 
-    if (data.personalDetails && data.personalDetails.fullName) {
-      applicationData._sort = {};
-      applicationData._sort.fullNameUC = data.personalDetails.fullName.toUpperCase();
-    }
+    applicationData._sort.fullNameUC = data.personalDetails && data.personalDetails.fullName ? data.personalDetails.fullName.toUpperCase() : '';
 
     // add search map
     applicationData._search = getSearchMap([
