@@ -212,9 +212,9 @@ function getJudicialExperienceData(exercise, experiences) {
     const experience = experiences[i];
     const index = i + 1;
     const dates = [];
-    if (experience.startDate) dates.push(formatDate(experience.startDate, 'DD/MM/YYYY'));
+    if (experience.startDate) dates.push(formatDate(experience.startDate, 'MMM YYYY'));
     if (experience.isOngoing) dates.push('Ongoing');
-    else if (experience.endDate) dates.push(formatDate(experience.endDate, 'DD/MM/YYYY'));
+    else if (experience.endDate) dates.push(formatDate(experience.endDate, 'MMM YYYY'));
 
     data[`judicialOrgBusinessName${index}`] = experience.orgBusinessName || '';
     data[`judicialJobTitle${index}`] = experience.jobTitle || '';
@@ -242,9 +242,9 @@ function getNonJudicialExperienceData(experiences) {
     const experience = experiences[i];
     const index = i + 1;
     const dates = [];
-    if (experience.startDate) dates.push(formatDate(experience.startDate, 'DD/MM/YYYY'));
+    if (experience.startDate) dates.push(formatDate(experience.startDate, 'MMM YYYY'));
     if (experience.isOngoing) dates.push('Ongoing');
-    else if (experience.endDate) dates.push(formatDate(experience.endDate, 'DD/MM/YYYY'));
+    else if (experience.endDate) dates.push(formatDate(experience.endDate, 'MMM YYYY'));
 
     data[`orgBusinessName${index}`] = experience.orgBusinessName || '';
     data[`jobTitle${index}`] = experience.jobTitle || '';
