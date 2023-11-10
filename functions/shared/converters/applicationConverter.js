@@ -64,8 +64,10 @@ module.exports = () => {
       }
 
       if ((exercise.typeOfExercise === 'legal' || exercise.typeOfExercise === 'leadership') && exercise.previousJudicialExperienceApply) {
-        html.addHeading('Judicial experience');
-        html.addTable(getJudicialExperience(application, exercise));
+        if (exercise._applicationVersion < 3) {
+          html.addHeading('Judicial experience');
+          html.addTable(getJudicialExperience(application, exercise));
+        }
       }
 
       if (exercise.typeOfExercise === 'non-legal' || exercise.typeOfExercise === 'leadership-non-legal') {
@@ -74,12 +76,14 @@ module.exports = () => {
       }
 
       if (exercise.typeOfExercise === 'legal' || exercise.typeOfExercise === 'leadership') {
-        html.addHeading('Employment gaps');
-        const data = getEmploymentGaps(application);
-        if (data.length > 0) {
-          html.addTable(data);
-        } else {
-          html.addParagraph('No gaps in employment declared');
+        if (exercise._applicationVersion < 3) {
+          html.addHeading('Employment gaps');
+          const data = getEmploymentGaps(application);
+          if (data.length > 0) {
+            html.addTable(data);
+          } else {
+            html.addParagraph('No gaps in employment declared');
+          }
         }
       }
 
@@ -197,9 +201,14 @@ module.exports = () => {
     const data = [];
     if (experienceData && experienceData.length) {
       experienceData.forEach((e, idx) => {
+        const dates = [];
+        if (e.startDate) dates.push(formatDate(e.startDate));
+        if (e.isOngoing) dates.push('Ongoing');
+        else if (e.endDate) dates.push(formatDate(e.endDate));
+
         addField(data, 'Job title', e.jobTitle, idx !== 0);
         addField(data, 'Organisation or business', e.orgBusinessName);
-        addField(data, 'Dates worked', `${formatDate(e.startDate)} - ${formatDate(e.endDate) || 'current'}`);
+        addField(data, 'Dates worked', dates.join(' - '));
         addField(data, 'Law related tasks', formatLawRelatedTasks(e));
 
         // check if the application version is 3 or above
