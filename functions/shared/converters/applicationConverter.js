@@ -2,7 +2,8 @@
 
 const htmlWriter = require('../htmlWriter');
 const lookup = require('./lookup');
-const { addField, formatDate, toDateString, toYesNo } = require('./helpers');
+const { addField, formatDate, toYesNo } = require('./helpers');
+const helpers = require('../../shared/helpers');
 
 module.exports = () => {
 
@@ -202,9 +203,9 @@ module.exports = () => {
     if (experienceData && experienceData.length) {
       experienceData.forEach((e, idx) => {
         const dates = [];
-        if (e.startDate) dates.push(formatDate(e.startDate));
+        if (e.startDate) dates.push(helpers.formatDate(e.startDate, 'MMM YYYY'));
         if (e.isOngoing) dates.push('Ongoing');
-        else if (e.endDate) dates.push(formatDate(e.endDate));
+        else if (e.endDate) dates.push(helpers.formatDate(e.endDate, 'MMM YYYY'));
 
         addField(data, 'Job title', e.jobTitle, idx !== 0);
         addField(data, 'Organisation or business', e.orgBusinessName);
