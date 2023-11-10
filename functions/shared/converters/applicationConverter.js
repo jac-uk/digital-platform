@@ -2,7 +2,7 @@
 
 const htmlWriter = require('../htmlWriter');
 const lookup = require('./lookup');
-const {addField, formatDate, toDateString, toYesNo} = require('./helpers');
+const { addField, formatDate, toDateString, toYesNo } = require('./helpers');
 
 module.exports = () => {
 
@@ -60,7 +60,7 @@ module.exports = () => {
 
       if (exercise.typeOfExercise === 'legal' || exercise.typeOfExercise === 'leadership') {
         html.addHeading('Post-qualification experience');
-        html.addTable(getPostQualificationData(application));
+        html.addTable(getPostQualificationData(application, exercise));
       }
 
       if ((exercise.typeOfExercise === 'legal' || exercise.typeOfExercise === 'leadership') && exercise.previousJudicialExperienceApply) {
@@ -192,7 +192,7 @@ module.exports = () => {
     return data;
   }
 
-  function getPostQualificationData(application) {
+  function getPostQualificationData(application, exercise) {
     const experienceData = application.experience;
     const data = [];
     if (experienceData && experienceData.length) {
@@ -201,6 +201,18 @@ module.exports = () => {
         addField(data, 'Organisation or business', e.orgBusinessName);
         addField(data, 'Dates worked', `${formatDate(e.startDate)} - ${formatDate(e.endDate) || 'current'}`);
         addField(data, 'Law related tasks', formatLawRelatedTasks(e));
+
+        // check if the application version is 3 or above
+        if (Array.isArray(e.tasks) && e.tasks.includes('judicial-functions') && exercise._applicationVersion >= 3 && e.judicialFunctions) {
+          const { type, duration, isLegalQualificationRequired, details } = e.judicialFunctions;
+          addField(data, 'Judicial or quasi-judicial post', type ? lookup(type) : '');
+          addField(data, 'Sitting days', duration ? duration : '');
+          addField(data, 'Legal qualification required', isLegalQualificationRequired.toString() ? toYesNo(isLegalQualificationRequired) : '');
+
+          if (type === 'quasi-judicial-post') {
+            addField(data, 'Details', details ? details : '');
+          }
+        }
       });
     }
     return data;
