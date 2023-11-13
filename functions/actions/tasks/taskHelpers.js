@@ -5,6 +5,7 @@ const { convertToDate, calculateMean, calculateStandardDeviation } = require('..
 module.exports = (config) => {
   const exerciseTimeline = require('../../shared/Timeline/exerciseTimeline.TMP')(config);
   const TASK_TYPE = config.TASK_TYPE;
+  const SHORTLISTING_TASK_TYPES = config.SHORTLISTING_TASK_TYPES;
   const APPLICATION_STATUS = config.APPLICATION.STATUS;
   return {
     scoreSheet,
@@ -292,32 +293,50 @@ module.exports = (config) => {
 
   function getTimelineTasks(exercise, taskType) {
     const timeline = createTimeline(exerciseTimeline(exercise));
-    const timelineTasks = timeline.filter(item => item.taskType && (!taskType || item.taskType === taskType));
+    let timelineTasks = timeline.filter(item => item.taskType && (!taskType || item.taskType === taskType));
+    let supportedTaskTypes = [];
     if (exercise._processingVersion >= 2) {
-      const supportedTaskTypes = [
+      supportedTaskTypes = [
+        TASK_TYPE.TELEPHONE_ASSESSMENT,
         TASK_TYPE.SIFT,
         TASK_TYPE.CRITICAL_ANALYSIS,
         TASK_TYPE.SITUATIONAL_JUDGEMENT,
         TASK_TYPE.QUALIFYING_TEST,
         TASK_TYPE.SCENARIO,
-        TASK_TYPE.TELEPHONE_ASSESSMENT,
+        TASK_TYPE.SHORTLISTING_OUTCOME,
         TASK_TYPE.ELIGIBILITY_SCC,
         TASK_TYPE.STATUTORY_CONSULTATION,
-        TASK_TYPE.CHARACTER_AND_SELECTION_SCC,  
+        TASK_TYPE.CHARACTER_AND_SELECTION_SCC,
         TASK_TYPE.EMP_TIEBREAKER,
         TASK_TYPE.SELECTION_DAY,
       ];
-      return timelineTasks.filter(task => supportedTaskTypes.indexOf(task.taskType) >= 0);
     } else {
-      const supportedTaskTypes = [
+      supportedTaskTypes = [
         TASK_TYPE.CRITICAL_ANALYSIS,
         TASK_TYPE.SITUATIONAL_JUDGEMENT,
         TASK_TYPE.QUALIFYING_TEST,
         TASK_TYPE.SCENARIO,
         TASK_TYPE.EMP_TIEBREAKER,
       ];
-      return timelineTasks.filter(task => supportedTaskTypes.indexOf(task.taskType) >= 0);
-    } 
+    }
+    timelineTasks = timelineTasks.filter(task => supportedTaskTypes.indexOf(task.taskType) >= 0);
+    if (timelineTasks.find((item) => item.taskType === TASK_TYPE.SHORTLISTING_OUTCOME)) {  // ensure shortlisting outcome comes after shortlisting methods!
+      let shortlistingOutcomeIndex = -1;
+      let lastShortlistingMethodIndex = -1;
+      timelineTasks.forEach((item, index) => {
+        if (item.taskType === TASK_TYPE.SHORTLISTING_OUTCOME) shortlistingOutcomeIndex = index;
+        if (
+          (SHORTLISTING_TASK_TYPES.indexOf(item.taskType) >= 0)
+          && index > lastShortlistingMethodIndex
+        ) {
+          lastShortlistingMethodIndex = index;
+        }
+      });
+      if (lastShortlistingMethodIndex > shortlistingOutcomeIndex) {
+        timelineTasks.splice(lastShortlistingMethodIndex, 0, timelineTasks.splice(shortlistingOutcomeIndex, 1)[0]);
+      }
+    }
+    return timelineTasks;
   }
 
   function getTaskTypes(exercise, stage) {

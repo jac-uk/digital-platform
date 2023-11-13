@@ -19,6 +19,8 @@ module.exports = (config, firebase, db) => {
     includeZScores,
   } = require('./taskHelpers')(config);
 
+  const { refreshApplicationCounts } = require('../exercises/refreshApplicationCounts')(firebase, db);
+
   return {
     updateTask,
     initialisePanelTask,
@@ -897,7 +899,6 @@ module.exports = (config, firebase, db) => {
    * @returns Result object of the form `{ success: Boolean, data: Object }`. If successful then `data` is to be stored in the `task` document
    */
   async function completeStageOutcomeTask(exercise, task, nextStage) {
-    console.log('complete stage outcome task');
     const result = {
       success: false,
       data: {},
@@ -914,10 +915,15 @@ module.exports = (config, firebase, db) => {
     // get next status
     const nextApplicationStatus = getApplicationPassStatus(exercise, task);
 
+    const outcomeStats = {};
+    outcomeStats[nextApplicationStatus] = 0;
+    // TODO get stats for other statuses in this stage
+
     // update successfull appplication records
     const commands = [];
     applicationRecords.forEach(applicationRecord => {
       const saveData = {};
+      outcomeStats[nextApplicationStatus] += 1;
       saveData.stage = nextStage;
       saveData[`stageLog.${nextStage}`] = firebase.firestore.FieldValue.serverTimestamp();
       saveData.status = nextApplicationStatus;
@@ -930,8 +936,11 @@ module.exports = (config, firebase, db) => {
     });
     await applyUpdates(db, commands);
 
+    await refreshApplicationCounts({ exerciseId: exercise.id });
+
     // return data to be saved in `task` document
     result.success = true;
+    result.data['_stats.totalForEachOutcome'] = outcomeStats;
     return result;
   }
 
