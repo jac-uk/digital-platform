@@ -142,7 +142,7 @@ function getJudicialExperienceHeaders(exercise, n) {
       headers.push(
         { title: 'Judicial or quasi-judicial post', ref: `judicialExperienceType${i}` },
         { title: 'Sitting days', ref: `judicialExperienceDuration${i}` },
-        { title: 'Is a legal qualification a requisite for appointment', ref: `judicialExperienceIsLegalQualificationRequired${i}` },
+        { title: 'Legal qualification required', ref: `judicialExperienceIsLegalQualificationRequired${i}` },
         { title: 'Details', ref: `judicialExperienceDetails${i}` }
       );
     }
