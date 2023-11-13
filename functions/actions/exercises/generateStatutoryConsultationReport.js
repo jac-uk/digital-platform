@@ -100,7 +100,7 @@ const reportData = (exercise, applications) => {
       lastName: personalDetails.lastName || null,
       suffix: personalDetails.suffix || null,
       ...getQualificationData(qualifications),
-      ...getJudicialExperienceData(exercise, judicialExperiences),
+      ...getJudicialExperienceData(exercise, application, judicialExperiences),
       ...getNonJudicialExperienceData(nonJudicialExperiences),
       ...getFeePaidOrSalariedData(application),
     };
@@ -140,10 +140,10 @@ function getJudicialExperienceHeaders(exercise, n) {
     if (exercise._applicationVersion >= 3) {
       // only show these fields for application version 3 and above
       headers.push(
-        { title: 'Judicial or quasi-judicial post', ref: `judicialExperienceType${i}` },
-        { title: 'Sitting days', ref: `judicialExperienceDuration${i}` },
-        { title: 'Legal qualification required', ref: `judicialExperienceIsLegalQualificationRequired${i}` },
-        { title: 'Details', ref: `judicialExperienceDetails${i}` }
+        { title: 'Is this a judicial or quasi-judicial post?', ref: `judicialExperienceType${i}` },
+        { title: 'How many sitting days have you accumulated in this post?', ref: `judicialExperienceDuration${i}` },
+        { title: 'Is a legal qualification a requisite for appointment?', ref: `judicialExperienceIsLegalQualificationRequired${i}` },
+        { title: 'Powers, procedures and main responsibilities', ref: `judicialExperienceDetails${i}` }
       );
     }
 
@@ -153,6 +153,11 @@ function getJudicialExperienceHeaders(exercise, n) {
       { title: 'Working basis', ref: `judicialWorkingBasis${i}` }
     );
   }
+
+  if (exercise._applicationVersion >= 3) {
+    headers.push({ title: 'Details of how you have acquired the necessary skills', ref: 'experienceDetails' });
+  }
+
   return headers;
 }
 
@@ -206,7 +211,7 @@ function getNotCompletePupillageReason(qualification) {
     return '';
 }
 
-function getJudicialExperienceData(exercise, experiences) {
+function getJudicialExperienceData(exercise, application, experiences) {
   const data = {};
   for (let i = 0; i < experiences.length; i++) {
     const experience = experiences[i];
@@ -224,8 +229,7 @@ function getJudicialExperienceData(exercise, experiences) {
       // only show these fields for application version 3 and above
       data[`judicialExperienceType${index}`] = experience.judicialFunctions && experience.judicialFunctions.type ? lookup(experience.judicialFunctions.type) : '';
       data[`judicialExperienceDuration${index}`] = experience.judicialFunctions && experience.judicialFunctions.duration ? experience.judicialFunctions.duration : '';
-      data[`judicialExperienceIsLegalQualificationRequired${index}`] = experience.judicialFunctions && experience.judicialFunctions.isLegalQualificationRequired.toString()
-        ? helpers.toYesNo(experience.judicialFunctions.isLegalQualificationRequired) : '';
+      data[`judicialExperienceIsLegalQualificationRequired${index}`] = experience.judicialFunctions ? helpers.toYesNo(experience.judicialFunctions.isLegalQualificationRequired) : '';
       data[`judicialExperienceDetails${index}`] = experience.judicialFunctions && experience.judicialFunctions.details ? experience.judicialFunctions.details : '';
     }
 
@@ -233,6 +237,11 @@ function getJudicialExperienceData(exercise, experiences) {
     data[`judicialJurisdiction${index}`] = experience.taskDetails && experience.taskDetails.jurisdiction ? experience.taskDetails.jurisdiction : '';
     data[`judicialWorkingBasis${index}`] = experience.taskDetails && experience.taskDetails.workingBasis ? experience.taskDetails.workingBasis : '';
   }
+
+  if (exercise._applicationVersion >= 3) {
+    data['experienceDetails'] = application.experienceDetails || '';
+  }
+
   return data;
 }
 
