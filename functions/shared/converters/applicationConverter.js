@@ -77,14 +77,12 @@ module.exports = () => {
       }
 
       if (exercise.typeOfExercise === 'legal' || exercise.typeOfExercise === 'leadership') {
-        if (exercise._applicationVersion < 3) {
-          html.addHeading('Employment gaps');
-          const data = getEmploymentGaps(application);
-          if (data.length > 0) {
-            html.addTable(data);
-          } else {
-            html.addParagraph('No gaps in employment declared');
-          }
+        html.addHeading('Employment gaps');
+        const data = getEmploymentGaps(application);
+        if (data.length > 0) {
+          html.addTable(data);
+        } else {
+          html.addParagraph('No gaps in employment declared');
         }
       }
 
@@ -212,7 +210,7 @@ module.exports = () => {
         addField(data, 'Dates worked', dates.join(' - '));
         addField(data, 'Law related tasks', formatLawRelatedTasks(e));
 
-        // check if the application version is 3 or above
+        // check if application version is 3 or above
         if (Array.isArray(e.tasks) && e.tasks.includes('judicial-functions') && exercise._applicationVersion >= 3 && e.judicialFunctions) {
           const { type, duration, isLegalQualificationRequired, details } = e.judicialFunctions;
           addField(data, 'Judicial or quasi-judicial post', type ? lookup(type) : '');

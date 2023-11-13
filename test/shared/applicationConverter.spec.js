@@ -92,11 +92,11 @@ describe('applicationConverter', () => {
             experience: [
               {
                 jobTitle: 'Developer',
-              orgBusinessName: 'JAC',
-              startDate: new Date(2020, 3, 20),
-              endDate: new Date(2121, 3, 20),
-              tasks: ['one', 'two'],
-              otherTasks: 'other task',
+                orgBusinessName: 'JAC',
+                startDate: new Date(2020, 3, 20),
+                endDate: new Date(2121, 3, 20),
+                tasks: ['one', 'two'],
+                otherTasks: 'other task',
               },
             ],
             qualifications: [
