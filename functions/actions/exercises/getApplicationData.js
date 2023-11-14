@@ -92,8 +92,15 @@ module.exports = (config, firebase, db, auth) => {
                 }
 
                 const str = _.get(arrayItem, arrayValuePath, '- No answer provided -');
-                // Handle time values
-                const val = _.get(str, '_seconds', null) || isValidDate(str) ? formatDate(str, 'DD/MM/YYYY') : str;
+                // handle time values
+                let val = str;
+                if (_.get(str, '_seconds', null) || isValidDate(str)) {
+                  if (column === 'experience') {
+                    val = formatDate(str, 'MMM YYYY');
+                  } else {
+                    val = formatDate(str, 'DD/MM/YYYY');
+                  }
+                }
                 arr.push(val);
               }
               formattedArray.push(arr.join(' - '));
