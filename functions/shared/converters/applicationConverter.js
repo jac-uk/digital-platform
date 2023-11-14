@@ -213,12 +213,12 @@ module.exports = () => {
         // check if application version is 3 or above
         if (Array.isArray(e.tasks) && e.tasks.includes('judicial-functions') && exercise._applicationVersion >= 3 && e.judicialFunctions) {
           const { type, duration, isLegalQualificationRequired, details } = e.judicialFunctions;
-          addField(data, 'Judicial or quasi-judicial post', type ? lookup(type) : '');
-          addField(data, 'Sitting days', duration ? duration : '');
-          addField(data, 'Legal qualification required', isLegalQualificationRequired.toString() ? toYesNo(isLegalQualificationRequired) : '');
+          addField(data, 'Is this a judicial or quasi-judicial post?', type ? lookup(type) : '');
+          addField(data, 'How many sitting days have you accumulated in this post?', duration || '');
+          addField(data, 'Is a legal qualification a requisite for appointment?', toYesNo(isLegalQualificationRequired) || '');
 
           if (type === 'quasi-judicial-post') {
-            addField(data, 'Details', details ? details : '');
+            addField(data, 'Powers, procedures and main responsibilities', details || '');
           }
         }
       });
