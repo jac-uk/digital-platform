@@ -85,6 +85,12 @@ module.exports = (config, firebase, db, auth) => {
             if (arrayValuePaths) {
               const arr = [];
               for (const arrayValuePath of arrayValuePaths) {
+                // check if endDate is empty and isOngoing is true
+                if (arrayValuePath === 'endDate' && !arrayItem.endDate && arrayItem.isOngoing) {
+                  arr.push('Ongoing');
+                  continue;
+                }
+
                 const str = _.get(arrayItem, arrayValuePath, '- No answer provided -');
                 // Handle time values
                 const val = _.get(str, '_seconds', null) || isValidDate(str) ? formatDate(str, 'DD/MM/YYYY') : str;
