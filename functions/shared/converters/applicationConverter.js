@@ -223,6 +223,12 @@ module.exports = () => {
         }
       });
     }
+
+    // check if application version is 3 or above
+    if (exercise._applicationVersion >= 3 && application.experienceDetails) {
+      addField(data, 'Details of how you have acquired the necessary skills', application.experienceDetails);
+    }
+
     return data;
   }
 
