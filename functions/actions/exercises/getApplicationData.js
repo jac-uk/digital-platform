@@ -95,7 +95,7 @@ module.exports = (config, firebase, db, auth) => {
                 // handle time values
                 let val = str;
                 if (_.get(str, '_seconds', null) || isValidDate(str)) {
-                  if (column === 'experience') {
+                  if (['experience', 'employmentGaps'].includes(column)) {
                     val = formatDate(str, 'MMM YYYY');
                   } else {
                     val = formatDate(str, 'DD/MM/YYYY');
@@ -163,6 +163,7 @@ module.exports = (config, firebase, db, auth) => {
     const arrayValuePaths = {
       qualifications: ['type', 'location', 'date'],
       experience: ['jobTitle', 'startDate', 'endDate'],
+      employmentGaps: ['details', 'startDate', 'endDate'],
     };
     return arrayValuePaths[column];
   }
