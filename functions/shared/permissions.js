@@ -146,6 +146,15 @@ const PERMISSIONS = {
       },
     },
   },
+  panellists: {
+    label: 'Panellists',
+    permissions: {
+      canManagePanellists: {
+        label: 'Can manage panellist data',
+        value: 'pa1',
+      },
+    },
+  },  
   panels: {
     label: 'Panels',
     permissions: {

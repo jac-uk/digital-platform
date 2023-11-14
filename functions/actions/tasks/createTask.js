@@ -2,7 +2,7 @@ const { getDocument, getDocuments, applyUpdates } = require('../../shared/helper
 
 module.exports = (config, firebase, db) => {
   const { getTimelineTasks, taskNextStatus, taskApplicationsEntryStatus } = require('./taskHelpers')(config);
-  const { initialisePanelTask, initialiseTestTask, initialiseStatusChangesTask, initialiseDataTask, initialiseStageOutcomeTask } = require('./updateTask')(config, firebase, db);
+  const { initialisePanelTask, initialiseTestTask, initialiseStatusChangesTask, initialiseCandidateFormTask, initialiseDataTask, initialiseStageOutcomeTask } = require('./updateTask')(config, firebase, db);
 
   return createTask;
 
@@ -65,6 +65,9 @@ module.exports = (config, firebase, db) => {
       break;
     case config.TASK_STATUS.STATUS_CHANGES:
       result = await initialiseStatusChangesTask(exercise, params.type, applicationRecords);
+      break;
+    case config.TASK_STATUS.CANDIDATE_FORM_CONFIGURE:
+      result = await initialiseCandidateFormTask(exercise, params.type);
       break;
     case config.TASK_STATUS.DATA_INITIALISED:
       result = await initialiseDataTask(exercise, params.type);

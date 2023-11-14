@@ -6,6 +6,7 @@ module.exports = (config) => {
   const exerciseTimeline = require('../../shared/Timeline/exerciseTimeline.TMP')(config);
   const TASK_TYPE = config.TASK_TYPE;
   const SHORTLISTING_TASK_TYPES = config.SHORTLISTING_TASK_TYPES;
+  const TASK_STATUS = config.TASK_STATUS;
   const APPLICATION_STATUS = config.APPLICATION.STATUS;
   return {
     scoreSheet,
@@ -31,58 +32,65 @@ module.exports = (config) => {
   function taskStatuses(taskType) {
     let availableStatuses = [];
     switch (taskType) {
-      case config.TASK_TYPE.CRITICAL_ANALYSIS:
-      case config.TASK_TYPE.SITUATIONAL_JUDGEMENT:
+      case TASK_TYPE.CRITICAL_ANALYSIS:
+      case TASK_TYPE.SITUATIONAL_JUDGEMENT:
         availableStatuses = [
-          config.TASK_STATUS.TEST_INITIALISED,
-          config.TASK_STATUS.TEST_ACTIVATED,
-          config.TASK_STATUS.FINALISED,
-          config.TASK_STATUS.COMPLETED,
+          TASK_STATUS.TEST_INITIALISED,
+          TASK_STATUS.TEST_ACTIVATED,
+          TASK_STATUS.FINALISED,
+          TASK_STATUS.COMPLETED,
         ];
         break;
-      case config.TASK_TYPE.QUALIFYING_TEST:
+      case TASK_TYPE.QUALIFYING_TEST:
         availableStatuses = [
-          config.TASK_STATUS.FINALISED,
-          config.TASK_STATUS.COMPLETED,
+          TASK_STATUS.FINALISED,
+          TASK_STATUS.COMPLETED,
         ];
         break;
-      case config.TASK_TYPE.SCENARIO:
-      case config.TASK_TYPE.EMP_TIEBREAKER:
+      case TASK_TYPE.SCENARIO:
+      case TASK_TYPE.EMP_TIEBREAKER:
         availableStatuses = [
-          config.TASK_STATUS.TEST_INITIALISED,
-          config.TASK_STATUS.TEST_ACTIVATED,
-          // config.TASK_STATUS.PANELS_INITIALISED,
-          // config.TASK_STATUS.PANELS_ACTIVATED,
-          config.TASK_STATUS.DATA_ACTIVATED,
-          config.TASK_STATUS.FINALISED,
-          config.TASK_STATUS.COMPLETED,
+          TASK_STATUS.TEST_INITIALISED,
+          TASK_STATUS.TEST_ACTIVATED,
+          // TASK_STATUS.PANELS_INITIALISED,
+          // TASK_STATUS.PANELS_ACTIVATED,
+          TASK_STATUS.DATA_ACTIVATED,
+          TASK_STATUS.FINALISED,
+          TASK_STATUS.COMPLETED,
         ];
         break;
-      case config.TASK_TYPE.TELEPHONE_ASSESSMENT:
-      case config.TASK_TYPE.ELIGIBILITY_SCC:
-      case config.TASK_TYPE.STATUTORY_CONSULTATION:
-      case config.TASK_TYPE.CHARACTER_AND_SELECTION_SCC:
+      case TASK_TYPE.TELEPHONE_ASSESSMENT:
+      case TASK_TYPE.ELIGIBILITY_SCC:
+      case TASK_TYPE.STATUTORY_CONSULTATION:
+      case TASK_TYPE.CHARACTER_AND_SELECTION_SCC:
           availableStatuses = [
-          config.TASK_STATUS.STATUS_CHANGES,
-          config.TASK_STATUS.COMPLETED,
+          TASK_STATUS.STATUS_CHANGES,
+          TASK_STATUS.COMPLETED,
         ];
         break;
-      case config.TASK_TYPE.SIFT:
-      case config.TASK_TYPE.SELECTION_DAY:
+      case TASK_TYPE.PRE_SELECTION_DAY_QUESTIONNAIRE:
         availableStatuses = [
-          config.TASK_STATUS.DATA_INITIALISED,
-          config.TASK_STATUS.DATA_ACTIVATED,
-          // config.TASK_STATUS.PANELS_INITIALISED,
-          // config.TASK_STATUS.PANELS_ACTIVATED,
-          config.TASK_STATUS.FINALISED,
-          config.TASK_STATUS.COMPLETED,
+          TASK_STATUS.CANDIDATE_FORM_CONFIGURE,
+          TASK_STATUS.CANDIDATE_FORM_MONITOR,
+          TASK_STATUS.COMPLETED,
         ];
         break;
-      case config.TASK_TYPE.SHORTLISTING_OUTCOME:
-      case config.TASK_TYPE.SELECTION_OUTCOME:
+      case TASK_TYPE.SIFT:
+      case TASK_TYPE.SELECTION_DAY:
         availableStatuses = [
-          config.TASK_STATUS.STAGE_OUTCOME,
-          config.TASK_STATUS.COMPLETED,
+          TASK_STATUS.DATA_INITIALISED,
+          TASK_STATUS.DATA_ACTIVATED,
+          // TASK_STATUS.PANELS_INITIALISED,
+          // TASK_STATUS.PANELS_ACTIVATED,
+          TASK_STATUS.FINALISED,
+          TASK_STATUS.COMPLETED,
+        ];
+        break;
+      case TASK_TYPE.SHORTLISTING_OUTCOME:
+      case TASK_TYPE.SELECTION_OUTCOME:
+        availableStatuses = [
+          TASK_STATUS.STAGE_OUTCOME,
+          TASK_STATUS.COMPLETED,
         ];
         break;
     }
@@ -137,6 +145,8 @@ module.exports = (config) => {
       return 'noTestSubmitted';
     case TASK_TYPE.SCENARIO:
       return 'noScenarioTestSubmitted';
+    // case TASK_TYPE.PRE_SELECTION_DAY_QUESTIONNAIRE:
+    //   return 'noSelectionDayQuestionnaireSubmitted';
     default:
       return null;
     }
@@ -308,6 +318,7 @@ module.exports = (config) => {
         TASK_TYPE.STATUTORY_CONSULTATION,
         TASK_TYPE.CHARACTER_AND_SELECTION_SCC,
         TASK_TYPE.EMP_TIEBREAKER,
+        TASK_TYPE.PRE_SELECTION_DAY_QUESTIONNAIRE,
         TASK_TYPE.SELECTION_DAY,
       ];
     } else {
