@@ -82,6 +82,7 @@ exports.processNotificationsNow = require('./callableFunctions/processNotificati
 exports.checkEnabledUserByEmail = require('./callableFunctions/checkEnabledUserByEmail');
 exports.extractDocumentContent = require('./callableFunctions/extractDocumentContent');
 exports.updateUserCustomClaims = require('./callableFunctions/updateUserCustomClaims');
+exports.exportApplicationCommissionerConflicts = require('./callableFunctions/exportApplicationCommissionerConflicts');
 
 // Callable - QTs v2
 exports.listQualifyingTests = require('./callableFunctions/qualifyingTests/v2/listQualifyingTests');
