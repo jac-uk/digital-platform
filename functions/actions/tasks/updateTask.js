@@ -525,6 +525,7 @@ module.exports = (config, firebase, db) => {
     if (!result.data.applications.length) { result.message = 'No applications'; return result; }
 
     // TODO create candidate form responses
+    
 
     result.success = true;
     return result;
