@@ -20,6 +20,7 @@ module.exports = (config, firebase, db) => {
   } = require('./taskHelpers')(config);
 
   const { refreshApplicationCounts } = require('../exercises/refreshApplicationCounts')(firebase, db);
+  const { newCandidateFormResponse } = require('../../shared/factories')(config);
 
   return {
     updateTask,
@@ -39,7 +40,6 @@ module.exports = (config, firebase, db) => {
   *   `type` (required) type of task
   */
   async function updateTask(params) {
-
     let result = {
       success: false,
       data: {},
@@ -81,7 +81,7 @@ module.exports = (config, firebase, db) => {
       result = await initialiseCandidateFormTask(exercise, task.type);
       break;
     case config.TASK_STATUS.CANDIDATE_FORM_MONITOR:
-      result = await monitorCandidateFormTask(exercise, task.type);
+      result = await monitorCandidateFormTask(exercise, task);
       break;
     case config.TASK_STATUS.DATA_INITIALISED:
       result = await initialiseDataTask(exercise, task.type);
@@ -520,13 +520,48 @@ module.exports = (config, firebase, db) => {
       data: {},
     };
 
+    // get candidateForm
+    const results = await getDocuments(
+      db.collection('candidateForms')
+      .where('exercise.id', '==', exercise.id)
+      .where('task.type', '==', task.type)
+    );
+    const candidateForm = results[0];
+
     // get applications
-    result.data.applications = await getApplications(exercise, task);
-    if (!result.data.applications.length) { result.message = 'No applications'; return result; }
+    let applicationsRef = db.collection('applications')
+    .where('exerciseId', '==', exercise.id)
+    .where('status', '==', 'applied');
+    if (task.applicationEntryStatus) {
+      applicationsRef = applicationsRef.where('_processing.status', '==', task.applicationEntryStatus);
+    }
+    const applications = await getDocuments(applicationsRef);
+    if (!applications.length) { result.message = 'No applications'; return result; }
 
-    // TODO create candidate form responses
+    // create candidate form responses
+    const commands = [];
+    const camndidateIds = [];
+    applications.forEach(application => {
+      camndidateIds.push(application.userId);
+      commands.push({
+        command: 'set',
+        ref: db.collection(`candidateForms/${candidateForm.id}/responses`).doc(application.userId),
+        data: newCandidateFormResponse(firebase, candidateForm.id),
+      });
+    });
+
+    // update candidate form
+    commands.push({
+      command: 'update',
+      ref: candidateForm.ref,
+      data: {
+        candidateIds: camndidateIds,
+      },
+    });
+
+    await applyUpdates(db, commands);
     
-
+    result.data.formId = candidateForm.id;  // TODO enable this to be sent from the front end
     result.success = true;
     return result;
   }

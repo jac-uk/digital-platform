@@ -15,8 +15,6 @@ module.exports = (config, firebase, db) => {
   */
   async function createTask(params) {
 
-    console.log('createTask', params);
-
     let result = {
       success: false,
       data: {},

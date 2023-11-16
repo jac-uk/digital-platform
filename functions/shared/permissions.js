@@ -352,6 +352,27 @@ const PERMISSIONS = {
       },
     },
   },
+  candidateForms: {
+    label: 'CandidateForms',
+    permissions: {
+      canRead: {
+        label: 'Can read candidate forms',
+        value: 'cf1',
+      },
+      canCreate: {
+        label: 'Can create candidate forms',
+        value: 'cf2',
+      },
+      canUpdate: {
+        label: 'Can update candidate forms',
+        value: 'cf3',
+      },
+      canDelete: {
+        label: 'Can delete candidate forms',
+        value: 'cf4',
+      },
+    },
+  },
 };
 
 module.exports = {

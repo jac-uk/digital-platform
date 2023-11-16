@@ -251,7 +251,6 @@ const CONSTANTS = {
 
 const TASK_TYPE = {
   SIFT: 'sift',
-  SELECTION_DAY: 'selectionDay',
   SCENARIO: 'scenarioTest',
   CRITICAL_ANALYSIS: 'criticalAnalysis',
   SITUATIONAL_JUDGEMENT: 'situationalJudgement',
@@ -262,6 +261,8 @@ const TASK_TYPE = {
   STATUTORY_CONSULTATION: 'statutoryConsultation',
   SHORTLISTING_OUTCOME: 'shortlistingOutcome',
   WELSH_ASSESSMENT: 'welshAssessment',
+  PRE_SELECTION_DAY_QUESTIONNAIRE: 'preSelectionDayQuestionnaire',
+  SELECTION_DAY: 'selectionDay',
   SELECTION_OUTCOME: 'selectionOutcome',
   EMP_TIEBREAKER: 'empTiebreaker',
 };
@@ -275,7 +276,9 @@ const SHORTLISTING_TASK_TYPES = [
   TASK_TYPE.SCENARIO,
 ];
 
-const TASK_STATUS = {  // aka task STEPS
+const TASK_STATUS = { // aka task STEPS
+  CANDIDATE_FORM_CONFIGURE: 'candidateFormConfigure',
+  CANDIDATE_FORM_MONITOR: 'candidateFormMonitor',
   DATA_INITIALISED: 'dataInitialised',
   DATA_ACTIVATED: 'dataActivated',
   TEST_INITIALISED: 'testInitialised',
@@ -285,8 +288,9 @@ const TASK_STATUS = {  // aka task STEPS
   MODERATION_INITIALISED: 'moderationInitialised',
   MODERATION_ACTIVATED: 'moderationActivated',
   STATUS_CHANGES: 'statusChanges',
+  STAGE_OUTCOME: 'stageOutcome',
   FINALISED: 'finalised',
-  STAGE_OUTCOME: 'stageOutcome',  // TODO check this is correct
+  CHECKS: 'checks',
   COMPLETED: 'completed',
 };
 
