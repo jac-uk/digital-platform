@@ -300,6 +300,12 @@ service cloud.firestore {
     match /candidateForms/{formId} {
       allow read: if userIsAuthenticated() && userIsJAC();
       allow write: if userIsAuthenticated() && userIsJAC() && hasPermission('cf3');
+
+      match /responses/{responseId} {
+        allow update: if userIsAuthenticated() && userIsJAC();
+        allow read: if userIsAuthenticated() && userIsJAC();
+        allow read: if userIsAuthenticated() && currentUser() == responseId;
+      }
     }
 
   }
