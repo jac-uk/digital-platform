@@ -302,9 +302,11 @@ service cloud.firestore {
       allow write: if userIsAuthenticated() && userIsJAC() && hasPermission('cf3');
 
       match /responses/{responseId} {
-        allow update: if userIsAuthenticated() && userIsJAC();
-        allow read: if userIsAuthenticated() && userIsJAC();
+        // jac admins can read and update
+        allow read, update: if userIsAuthenticated() && userIsJAC();
+
         allow read: if userIsAuthenticated() && currentUser() == responseId;
+        allow update: if userIsAuthenticated() && currentUser() == responseId && request.resource.data.applicationId == resource.data.applicationId;
       }
     }
 

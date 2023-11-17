@@ -730,9 +730,10 @@ module.exports = (CONSTANTS) => {
     };
   }
 
-  function newCandidateFormResponse(firebase, formId) {
+  function newCandidateFormResponse(firebase, formId, applicationId) {
     return {
       formId: formId,
+      applicationId,
       status: 'created',  // TODO use constant
       statusLog: {
         created: firebase.firestore.FieldValue.serverTimestamp(),

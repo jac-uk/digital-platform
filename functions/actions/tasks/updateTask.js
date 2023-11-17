@@ -538,15 +538,23 @@ module.exports = (config, firebase, db) => {
     const applications = await getDocuments(applicationsRef);
     if (!applications.length) { result.message = 'No applications'; return result; }
 
-    // create candidate form responses
+    // create candidate form responses and update application records
     const commands = [];
-    const camndidateIds = [];
+    const candidateIds = [];
     applications.forEach(application => {
-      camndidateIds.push(application.userId);
+      candidateIds.push(application.userId);
+      const newResponse = newCandidateFormResponse(firebase, candidateForm.id, application.id);
       commands.push({
         command: 'set',
         ref: db.collection(`candidateForms/${candidateForm.id}/responses`).doc(application.userId),
-        data: newCandidateFormResponse(firebase, candidateForm.id),
+        data: newResponse,
+      });
+      const appplicationRecordData = {};
+      appplicationRecordData[task.type] = { status: newResponse.status };
+      commands.push({
+        command: 'update',
+        ref: db.collection('applicationRecords').doc(application.id),
+        data: appplicationRecordData,
       });
     });
 
@@ -555,7 +563,7 @@ module.exports = (config, firebase, db) => {
       command: 'update',
       ref: candidateForm.ref,
       data: {
-        candidateIds: camndidateIds,
+        candidateIds: candidateIds,
       },
     });
 
