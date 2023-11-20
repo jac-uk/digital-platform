@@ -299,6 +299,7 @@ service cloud.firestore {
 
     match /candidateForms/{formId} {
       allow read: if userIsAuthenticated() && userIsJAC();
+      allow read: if userIsAuthenticated() && currentUser() in resource.data.candidateIds;
       allow write: if userIsAuthenticated() && userIsJAC() && hasPermission('cf3');
 
       match /responses/{responseId} {
