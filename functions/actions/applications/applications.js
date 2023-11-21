@@ -17,6 +17,7 @@ module.exports = (config, firebase, db, auth) => {
     sendApplicationReminders,
     sendApplicationInWelsh,
     sendCharacterCheckRequests,
+    sendPreSelectionDayQuestionnaireNotifications,
     createApplication,
     createApplications,
     loadTestApplications,
@@ -291,6 +292,75 @@ module.exports = (config, firebase, db, auth) => {
             'emailLog.characterCheckSubmitted': firebase.firestore.Timestamp.fromDate(new Date()),
           },
         });
+      }
+    }
+
+    // write to db
+    const result = await applyUpdates(db, commands);
+    return result ? applications.length : false;
+  }
+
+  /**
+  * Send pre-selection day questionnaire notification for each application
+  *
+  * @param {*} `params` is an object containing
+  *   `items` (required) IDs of applications
+  *   `type` (required) request type (request, reminder, submit)
+  */
+  async function sendPreSelectionDayQuestionnaireNotifications(params) {
+    const applicationIds = params.items;
+    const type = params.type;
+    const exerciseMailbox = params.exerciseMailbox;
+    const exerciseManagerName = params.exerciseManagerName;
+    const dueDate = params.dueDate;
+    // get applications
+    const applicationRefs = applicationIds.map(id => db.collection('applications').doc(id));
+    const applications = await getAllDocuments(db, applicationRefs);
+
+    // create database commands
+    const commands = [];
+    for (let i = 0, len = applications.length; i < len; ++i) {
+      const application = applications[i];
+
+      // TODO: create notification
+
+      // update application and applicationRecord
+      if (type === 'request') {
+        const data = {
+          'preSelectionDayQuestionnaire.requestedAt': firebase.firestore.Timestamp.fromDate(new Date()),
+          'preSelectionDayQuestionnaire.status': 'requested',
+        };
+        commands.push(
+          {
+            command: 'update',
+            ref: application.ref,
+            data,
+          },
+          {
+            command: 'update',
+            ref: db.collection('applicationRecords').doc(application.id),
+            data,
+          }
+        );
+      } else if (type === 'reminder') {
+        const data = {
+          'preSelectionDayQuestionnaire.reminderSentAt': firebase.firestore.Timestamp.fromDate(new Date()),
+          'preSelectionDayQuestionnaire.status': 'requested',
+        };
+        commands.push(
+          {
+            command: 'update',
+            ref: application.ref,
+            data,
+          },
+          {
+            command: 'update',
+            ref: db.collection('applicationRecords').doc(application.id),
+            data,
+          }
+        );
+      } else if (type === 'submit') {
+        // TODO: create notification
       }
     }
 
