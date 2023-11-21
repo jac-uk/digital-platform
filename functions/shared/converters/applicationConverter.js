@@ -225,7 +225,7 @@ module.exports = () => {
     }
 
     // check if application version is 3 or above
-    if (exercise._applicationVersion >= 3 && application.experienceDetails) {
+    if (exercise._applicationVersion >= 3) {
       addField(data, 'Details of how you have acquired the necessary skills', application.experienceDetails);
     }
 
