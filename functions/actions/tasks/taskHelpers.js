@@ -5,6 +5,8 @@ const { convertToDate, calculateMean, calculateStandardDeviation } = require('..
 module.exports = (config) => {
   const exerciseTimeline = require('../../shared/Timeline/exerciseTimeline.TMP')(config);
   const TASK_TYPE = config.TASK_TYPE;
+  const SHORTLISTING_TASK_TYPES = config.SHORTLISTING_TASK_TYPES;
+  const TASK_STATUS = config.TASK_STATUS;
   const APPLICATION_STATUS = config.APPLICATION.STATUS;
   return {
     scoreSheet,
@@ -30,58 +32,65 @@ module.exports = (config) => {
   function taskStatuses(taskType) {
     let availableStatuses = [];
     switch (taskType) {
-      case config.TASK_TYPE.CRITICAL_ANALYSIS:
-      case config.TASK_TYPE.SITUATIONAL_JUDGEMENT:
+      case TASK_TYPE.CRITICAL_ANALYSIS:
+      case TASK_TYPE.SITUATIONAL_JUDGEMENT:
         availableStatuses = [
-          config.TASK_STATUS.TEST_INITIALISED,
-          config.TASK_STATUS.TEST_ACTIVATED,
-          config.TASK_STATUS.FINALISED,
-          config.TASK_STATUS.COMPLETED,
+          TASK_STATUS.TEST_INITIALISED,
+          TASK_STATUS.TEST_ACTIVATED,
+          TASK_STATUS.FINALISED,
+          TASK_STATUS.COMPLETED,
         ];
         break;
-      case config.TASK_TYPE.QUALIFYING_TEST:
+      case TASK_TYPE.QUALIFYING_TEST:
         availableStatuses = [
-          config.TASK_STATUS.FINALISED,
-          config.TASK_STATUS.COMPLETED,
+          TASK_STATUS.FINALISED,
+          TASK_STATUS.COMPLETED,
         ];
         break;
-      case config.TASK_TYPE.SCENARIO:
-      case config.TASK_TYPE.EMP_TIEBREAKER:
+      case TASK_TYPE.SCENARIO:
+      case TASK_TYPE.EMP_TIEBREAKER:
         availableStatuses = [
-          config.TASK_STATUS.TEST_INITIALISED,
-          config.TASK_STATUS.TEST_ACTIVATED,
-          // config.TASK_STATUS.PANELS_INITIALISED,
-          // config.TASK_STATUS.PANELS_ACTIVATED,
-          config.TASK_STATUS.DATA_ACTIVATED,
-          config.TASK_STATUS.FINALISED,
-          config.TASK_STATUS.COMPLETED,
+          TASK_STATUS.TEST_INITIALISED,
+          TASK_STATUS.TEST_ACTIVATED,
+          // TASK_STATUS.PANELS_INITIALISED,
+          // TASK_STATUS.PANELS_ACTIVATED,
+          TASK_STATUS.DATA_ACTIVATED,
+          TASK_STATUS.FINALISED,
+          TASK_STATUS.COMPLETED,
         ];
         break;
-      case config.TASK_TYPE.TELEPHONE_ASSESSMENT:
-      case config.TASK_TYPE.ELIGIBILITY_SCC:
-      case config.TASK_TYPE.STATUTORY_CONSULTATION:
-      case config.TASK_TYPE.CHARACTER_AND_SELECTION_SCC:
+      case TASK_TYPE.TELEPHONE_ASSESSMENT:
+      case TASK_TYPE.ELIGIBILITY_SCC:
+      case TASK_TYPE.STATUTORY_CONSULTATION:
+      case TASK_TYPE.CHARACTER_AND_SELECTION_SCC:
           availableStatuses = [
-          config.TASK_STATUS.STATUS_CHANGES,
-          config.TASK_STATUS.COMPLETED,
+          TASK_STATUS.STATUS_CHANGES,
+          TASK_STATUS.COMPLETED,
         ];
         break;
-      case config.TASK_TYPE.SIFT:
-      case config.TASK_TYPE.SELECTION_DAY:
+      case TASK_TYPE.PRE_SELECTION_DAY_QUESTIONNAIRE:
         availableStatuses = [
-          config.TASK_STATUS.DATA_INITIALISED,
-          config.TASK_STATUS.DATA_ACTIVATED,
-          // config.TASK_STATUS.PANELS_INITIALISED,
-          // config.TASK_STATUS.PANELS_ACTIVATED,
-          config.TASK_STATUS.FINALISED,
-          config.TASK_STATUS.COMPLETED,
+          TASK_STATUS.CANDIDATE_FORM_CONFIGURE,
+          TASK_STATUS.CANDIDATE_FORM_MONITOR,
+          TASK_STATUS.COMPLETED,
         ];
         break;
-      case config.TASK_TYPE.SHORTLISTING_OUTCOME:
-      case config.TASK_TYPE.SELECTION_OUTCOME:
+      case TASK_TYPE.SIFT:
+      case TASK_TYPE.SELECTION_DAY:
         availableStatuses = [
-          config.TASK_STATUS.STAGE_OUTCOME,
-          config.TASK_STATUS.COMPLETED,
+          TASK_STATUS.DATA_INITIALISED,
+          TASK_STATUS.DATA_ACTIVATED,
+          // TASK_STATUS.PANELS_INITIALISED,
+          // TASK_STATUS.PANELS_ACTIVATED,
+          TASK_STATUS.FINALISED,
+          TASK_STATUS.COMPLETED,
+        ];
+        break;
+      case TASK_TYPE.SHORTLISTING_OUTCOME:
+      case TASK_TYPE.SELECTION_OUTCOME:
+        availableStatuses = [
+          TASK_STATUS.STAGE_OUTCOME,
+          TASK_STATUS.COMPLETED,
         ];
         break;
     }
@@ -136,6 +145,8 @@ module.exports = (config) => {
       return 'noTestSubmitted';
     case TASK_TYPE.SCENARIO:
       return 'noScenarioTestSubmitted';
+    // case TASK_TYPE.PRE_SELECTION_DAY_QUESTIONNAIRE:
+    //   return 'noSelectionDayQuestionnaireSubmitted';
     default:
       return null;
     }
@@ -292,32 +303,51 @@ module.exports = (config) => {
 
   function getTimelineTasks(exercise, taskType) {
     const timeline = createTimeline(exerciseTimeline(exercise));
-    const timelineTasks = timeline.filter(item => item.taskType && (!taskType || item.taskType === taskType));
+    let timelineTasks = timeline.filter(item => item.taskType && (!taskType || item.taskType === taskType));
+    let supportedTaskTypes = [];
     if (exercise._processingVersion >= 2) {
-      const supportedTaskTypes = [
+      supportedTaskTypes = [
+        TASK_TYPE.TELEPHONE_ASSESSMENT,
         TASK_TYPE.SIFT,
         TASK_TYPE.CRITICAL_ANALYSIS,
         TASK_TYPE.SITUATIONAL_JUDGEMENT,
         TASK_TYPE.QUALIFYING_TEST,
         TASK_TYPE.SCENARIO,
-        TASK_TYPE.TELEPHONE_ASSESSMENT,
+        TASK_TYPE.SHORTLISTING_OUTCOME,
         TASK_TYPE.ELIGIBILITY_SCC,
         TASK_TYPE.STATUTORY_CONSULTATION,
-        TASK_TYPE.CHARACTER_AND_SELECTION_SCC,  
+        TASK_TYPE.CHARACTER_AND_SELECTION_SCC,
         TASK_TYPE.EMP_TIEBREAKER,
+        TASK_TYPE.PRE_SELECTION_DAY_QUESTIONNAIRE,
         TASK_TYPE.SELECTION_DAY,
       ];
-      return timelineTasks.filter(task => supportedTaskTypes.indexOf(task.taskType) >= 0);
     } else {
-      const supportedTaskTypes = [
+      supportedTaskTypes = [
         TASK_TYPE.CRITICAL_ANALYSIS,
         TASK_TYPE.SITUATIONAL_JUDGEMENT,
         TASK_TYPE.QUALIFYING_TEST,
         TASK_TYPE.SCENARIO,
         TASK_TYPE.EMP_TIEBREAKER,
       ];
-      return timelineTasks.filter(task => supportedTaskTypes.indexOf(task.taskType) >= 0);
-    } 
+    }
+    timelineTasks = timelineTasks.filter(task => supportedTaskTypes.indexOf(task.taskType) >= 0);
+    if (timelineTasks.find((item) => item.taskType === TASK_TYPE.SHORTLISTING_OUTCOME)) {  // ensure shortlisting outcome comes after shortlisting methods!
+      let shortlistingOutcomeIndex = -1;
+      let lastShortlistingMethodIndex = -1;
+      timelineTasks.forEach((item, index) => {
+        if (item.taskType === TASK_TYPE.SHORTLISTING_OUTCOME) shortlistingOutcomeIndex = index;
+        if (
+          (SHORTLISTING_TASK_TYPES.indexOf(item.taskType) >= 0)
+          && index > lastShortlistingMethodIndex
+        ) {
+          lastShortlistingMethodIndex = index;
+        }
+      });
+      if (lastShortlistingMethodIndex > shortlistingOutcomeIndex) {
+        timelineTasks.splice(lastShortlistingMethodIndex, 0, timelineTasks.splice(shortlistingOutcomeIndex, 1)[0]);
+      }
+    }
+    return timelineTasks;
   }
 
   function getTaskTypes(exercise, stage) {

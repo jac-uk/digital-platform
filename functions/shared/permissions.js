@@ -146,6 +146,15 @@ const PERMISSIONS = {
       },
     },
   },
+  panellists: {
+    label: 'Panellists',
+    permissions: {
+      canManagePanellists: {
+        label: 'Can manage panellist data',
+        value: 'pa1',
+      },
+    },
+  },  
   panels: {
     label: 'Panels',
     permissions: {
@@ -340,6 +349,27 @@ const PERMISSIONS = {
       canDeleteMessages: {
         label: 'Can delete messages',
         value: 'msg4',
+      },
+    },
+  },
+  candidateForms: {
+    label: 'CandidateForms',
+    permissions: {
+      canRead: {
+        label: 'Can read candidate forms',
+        value: 'cf1',
+      },
+      canCreate: {
+        label: 'Can create candidate forms',
+        value: 'cf2',
+      },
+      canUpdate: {
+        label: 'Can update candidate forms',
+        value: 'cf3',
+      },
+      canDelete: {
+        label: 'Can delete candidate forms',
+        value: 'cf4',
       },
     },
   },

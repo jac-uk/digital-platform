@@ -19,11 +19,15 @@ module.exports = (config, firebase, db) => {
     includeZScores,
   } = require('./taskHelpers')(config);
 
+  const { refreshApplicationCounts } = require('../exercises/refreshApplicationCounts')(firebase, db);
+  const { newCandidateFormResponse } = require('../../shared/factories')(config);
+
   return {
     updateTask,
     initialisePanelTask,
     initialiseTestTask,
     initialiseStatusChangesTask,
+    initialiseCandidateFormTask,
     initialiseDataTask,
     initialiseStageOutcomeTask,
   };
@@ -36,7 +40,6 @@ module.exports = (config, firebase, db) => {
   *   `type` (required) type of task
   */
   async function updateTask(params) {
-
     let result = {
       success: false,
       data: {},
@@ -74,6 +77,12 @@ module.exports = (config, firebase, db) => {
     case config.TASK_STATUS.TEST_ACTIVATED:
       result = await activateTestTask(exercise, task);
       break;
+    case config.TASK_STATUS.CANDIDATE_FORM_CONFIGURE:
+      result = await initialiseCandidateFormTask(exercise, task.type);
+      break;
+    case config.TASK_STATUS.CANDIDATE_FORM_MONITOR:
+      result = await monitorCandidateFormTask(exercise, task);
+      break;
     case config.TASK_STATUS.DATA_INITIALISED:
       result = await initialiseDataTask(exercise, task.type);
       break;
@@ -109,6 +118,9 @@ module.exports = (config, firebase, db) => {
         break;
       case config.TASK_STATUS.STAGE_OUTCOME:
         result = await completeStageOutcomeTask(exercise, task, params.nextStage);
+        break;
+      case config.TASK_STATUS.CANDIDATE_FORM_MONITOR:
+        result = await completeCandidateFormTask(exercise, task);
         break;
       default:
         result = await completeTask(exercise, task);
@@ -432,6 +444,24 @@ module.exports = (config, firebase, db) => {
     return result;
   }
 
+
+  /**
+   * initialiseCandidateFormTask
+   * Initialises a candidate data task. Currently does nothing!
+   * @param {*} exercise
+   * @param {*} taskType
+   * @returns Result object of the form `{ success: Boolean, data: Object }`. If successful then `data` is to be stored in the `task` document
+   */
+  async function initialiseCandidateFormTask(exercise, taskType) {
+    console.log('initialiseCandidateFormTask', taskType);
+    const result = {
+      success: false,
+      data: {},
+    };
+    result.success = true;
+    return result;
+  }
+
   /**
    * initialiseDataTask
    * Initialises a data task. Currently does nothing!
@@ -475,6 +505,73 @@ module.exports = (config, firebase, db) => {
       }
     });
     return applicationsData;
+  }
+
+  /**
+   * monitorCandidateFormTask
+   * Activates a data task. Currently does nothing!
+   * @param {*} exercise
+   * @param {*} task
+   * @returns Result object of the form `{ success: Boolean, data: Object }`. If successful then `data` is to be stored in the `task` document
+   */
+  async function monitorCandidateFormTask(exercise, task) {
+    const result = {
+      success: false,
+      data: {},
+    };
+
+    // get candidateForm
+    const results = await getDocuments(
+      db.collection('candidateForms')
+      .where('exercise.id', '==', exercise.id)
+      .where('task.type', '==', task.type)
+    );
+    const candidateForm = results[0];
+
+    // get applications
+    let applicationsRef = db.collection('applications')
+    .where('exerciseId', '==', exercise.id)
+    .where('status', '==', 'applied');
+    if (task.applicationEntryStatus) {
+      applicationsRef = applicationsRef.where('_processing.status', '==', task.applicationEntryStatus);
+    }
+    const applications = await getDocuments(applicationsRef);
+    if (!applications.length) { result.message = 'No applications'; return result; }
+
+    // create candidate form responses and update application records
+    const commands = [];
+    const candidateIds = [];
+    applications.forEach(application => {
+      candidateIds.push(application.userId);
+      const newResponse = newCandidateFormResponse(firebase, candidateForm.id, application.id);
+      commands.push({
+        command: 'set',
+        ref: db.collection(`candidateForms/${candidateForm.id}/responses`).doc(application.userId),
+        data: newResponse,
+      });
+      const appplicationRecordData = {};
+      appplicationRecordData[task.type] = { status: newResponse.status };
+      commands.push({
+        command: 'update',
+        ref: db.collection('applicationRecords').doc(application.id),
+        data: appplicationRecordData,
+      });
+    });
+
+    // update candidate form
+    commands.push({
+      command: 'update',
+      ref: candidateForm.ref,
+      data: {
+        candidateIds: candidateIds,
+      },
+    });
+
+    await applyUpdates(db, commands);
+    
+    result.data.formId = candidateForm.id;  // TODO enable this to be sent from the front end
+    result.success = true;
+    return result;
   }
 
   /**
@@ -667,6 +764,34 @@ module.exports = (config, firebase, db) => {
     // TODO remove un-necessary fields
     return result;
   }
+  
+  /**
+   * completeCandidateFormTask
+   * Completes a candidate data entry task.
+   * @param {*} exercise
+   * @param {*} task
+   * @returns Result object of the form `{ success: Boolean, data: Object }`. If successful then `data` is to be stored in the `task` document
+   */
+  async function completeCandidateFormTask(exercise, task) {
+    const result = {
+      success: false,
+      data: {},
+    };
+
+    const outcomeStats = {};
+    const passStatus = getApplicationPassStatus(exercise, task);
+    const failStatus = getApplicationFailStatus(exercise, task);
+    outcomeStats[passStatus] = 0;
+    outcomeStats[failStatus] = 0;
+
+    // TODO update application status here, perhaps, or just get stats for completed vs not completed
+
+    result.success = true;
+    result.data['_stats.totalForEachOutcome'] = outcomeStats;
+
+    return result;
+  }
+
 
   /**
    * completeTask
@@ -897,7 +1022,6 @@ module.exports = (config, firebase, db) => {
    * @returns Result object of the form `{ success: Boolean, data: Object }`. If successful then `data` is to be stored in the `task` document
    */
   async function completeStageOutcomeTask(exercise, task, nextStage) {
-    console.log('complete stage outcome task');
     const result = {
       success: false,
       data: {},
@@ -914,10 +1038,15 @@ module.exports = (config, firebase, db) => {
     // get next status
     const nextApplicationStatus = getApplicationPassStatus(exercise, task);
 
+    const outcomeStats = {};
+    outcomeStats[nextApplicationStatus] = 0;
+    // TODO get stats for other statuses in this stage
+
     // update successfull appplication records
     const commands = [];
     applicationRecords.forEach(applicationRecord => {
       const saveData = {};
+      outcomeStats[nextApplicationStatus] += 1;
       saveData.stage = nextStage;
       saveData[`stageLog.${nextStage}`] = firebase.firestore.FieldValue.serverTimestamp();
       saveData.status = nextApplicationStatus;
@@ -930,8 +1059,11 @@ module.exports = (config, firebase, db) => {
     });
     await applyUpdates(db, commands);
 
+    await refreshApplicationCounts({ exerciseId: exercise.id });
+
     // return data to be saved in `task` document
     result.success = true;
+    result.data['_stats.totalForEachOutcome'] = outcomeStats;
     return result;
   }
 

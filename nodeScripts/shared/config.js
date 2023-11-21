@@ -1,4 +1,4 @@
-module.exports = {
+const CONSTANTS = {
   PROJECT_ID: process.env.PROJECT_ID,
   APPLY_URL: process.env.APPLY_URL,
   // QT_URL: 'http://localhost:5001/jac-qualifying-tests-develop/europe-west2/api/v1',
@@ -221,36 +221,6 @@ module.exports = {
       COMPLETED: 'completed',
     },
   },
-  TASK_TYPE: {
-    SIFT: 'sift',
-    SELECTION_DAY: 'selectionDay',
-    SCENARIO: 'scenarioTest',
-    CRITICAL_ANALYSIS: 'criticalAnalysis',
-    SITUATIONAL_JUDGEMENT: 'situationalJudgement',
-    QUALIFYING_TEST: 'qualifyingTest',
-    TELEPHONE_ASSESSMENT: 'telephoneAssessment',
-    ELIGIBILITY_SCC: 'eligibilitySCC',
-    CHARACTER_AND_SELECTION_SCC: 'characterAndSelectionSCC',
-    STATUTORY_CONSULTATION: 'statutoryConsultation',
-    SHORTLISTING_OUTCOME: 'shortlistingOutcome',
-    WELSH_ASSESSMENT: 'welshAssessment',
-    SELECTION_OUTCOME: 'selectionOutcome',
-    EMP_TIEBREAKER: 'empTiebreaker',
-  },
-  TASK_STATUS: {
-    DATA_INITIALISED: 'dataInitialised',
-    DATA_ACTIVATED: 'dataActivated',
-    TEST_INITIALISED: 'testInitialised',
-    TEST_ACTIVATED: 'testActivated',
-    PANELS_INITIALISED: 'panelsInitialised',
-    PANELS_ACTIVATED: 'panelsActivated',
-    MODERATION_INITIALISED: 'moderationInitialised',
-    MODERATION_ACTIVATED: 'moderationActivated',
-    STATUS_CHANGES: 'statusChanges',
-    FINALISED: 'finalised',
-    STAGE_OUTCOME: 'stageOutcome',
-    COMPLETED: 'completed',
-  },
   PANEL_STATUS: {
     // TODO include all statuses
     DRAFT: 'draft',
@@ -277,4 +247,56 @@ module.exports = {
   SLACK_URL: process.env.SLACK_URL,
   STORAGE_URL: process.env.PROJECT_ID + '.appspot.com',
   ZENHUB_GRAPH_QL_URL: process.env.ZENHUB_GRAPH_QL_URL,
+};
+
+const TASK_TYPE = {
+  SIFT: 'sift',
+  SCENARIO: 'scenarioTest',
+  CRITICAL_ANALYSIS: 'criticalAnalysis',
+  SITUATIONAL_JUDGEMENT: 'situationalJudgement',
+  QUALIFYING_TEST: 'qualifyingTest',
+  TELEPHONE_ASSESSMENT: 'telephoneAssessment',
+  ELIGIBILITY_SCC: 'eligibilitySCC',
+  CHARACTER_AND_SELECTION_SCC: 'characterAndSelectionSCC',
+  STATUTORY_CONSULTATION: 'statutoryConsultation',
+  SHORTLISTING_OUTCOME: 'shortlistingOutcome',
+  WELSH_ASSESSMENT: 'welshAssessment',
+  PRE_SELECTION_DAY_QUESTIONNAIRE: 'preSelectionDayQuestionnaire',
+  SELECTION_DAY: 'selectionDay',
+  SELECTION_OUTCOME: 'selectionOutcome',
+  EMP_TIEBREAKER: 'empTiebreaker',
+};
+
+const SHORTLISTING_TASK_TYPES = [
+  TASK_TYPE.TELEPHONE_ASSESSMENT,
+  TASK_TYPE.SIFT,
+  TASK_TYPE.CRITICAL_ANALYSIS,
+  TASK_TYPE.SITUATIONAL_JUDGEMENT,
+  TASK_TYPE.QUALIFYING_TEST,
+  TASK_TYPE.SCENARIO,
+];
+
+const TASK_STATUS = { // aka task STEPS
+  CANDIDATE_FORM_CONFIGURE: 'candidateFormConfigure',
+  CANDIDATE_FORM_MONITOR: 'candidateFormMonitor',
+  DATA_INITIALISED: 'dataInitialised',
+  DATA_ACTIVATED: 'dataActivated',
+  TEST_INITIALISED: 'testInitialised',
+  TEST_ACTIVATED: 'testActivated',
+  PANELS_INITIALISED: 'panelsInitialised',
+  PANELS_ACTIVATED: 'panelsActivated',
+  MODERATION_INITIALISED: 'moderationInitialised',
+  MODERATION_ACTIVATED: 'moderationActivated',
+  STATUS_CHANGES: 'statusChanges',
+  STAGE_OUTCOME: 'stageOutcome',
+  FINALISED: 'finalised',
+  CHECKS: 'checks',
+  COMPLETED: 'completed',
+};
+
+module.exports = {
+  ...CONSTANTS,
+  TASK_TYPE,
+  SHORTLISTING_TASK_TYPES,
+  TASK_STATUS,
 };
