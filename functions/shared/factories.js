@@ -20,6 +20,7 @@ module.exports = (CONSTANTS) => {
     newNotificationLateApplicationRequest,
     newNotificationLateApplicationResponse,
     newUser,
+    newCandidateFormResponse,
   };
 
   function newNotificationExerciseApprovalSubmit(firebase, exerciseId, exercise, email) {
@@ -731,6 +732,18 @@ module.exports = (CONSTANTS) => {
         isChanged: false,
       },
       uid: user.uid || null,
+    };
+  }
+
+  function newCandidateFormResponse(firebase, formId, applicationId) {
+    return {
+      formId: formId,
+      applicationId,
+      status: 'created',  // TODO use constant
+      statusLog: {
+        created: firebase.firestore.FieldValue.serverTimestamp(),
+      },
+      progress: {},
     };
   }
 };
