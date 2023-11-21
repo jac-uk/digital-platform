@@ -85,17 +85,18 @@ describe('applicationConverter', () => {
       describe('legal', () => {
         beforeEach(()=>{
           mockExercise = {
+            _applicationVersion: 2,
             typeOfExercise: 'legal',
           };
           mockApplication = {
             experience: [
               {
                 jobTitle: 'Developer',
-              orgBusinessName: 'JAC',
-              startDate: new Date(2020, 3, 20),
-              endDate: new Date(2121, 3, 20),
-              tasks: ['one', 'two'],
-              otherTasks: 'other task',
+                orgBusinessName: 'JAC',
+                startDate: new Date(2020, 3, 20),
+                endDate: new Date(2121, 3, 20),
+                tasks: ['one', 'two'],
+                otherTasks: 'other task',
               },
             ],
             qualifications: [
@@ -182,6 +183,7 @@ describe('applicationConverter', () => {
               feePaidOrSalariedJudge: false,
             };
             mockExercise = {
+              _applicationVersion: 2,
               typeOfExercise: 'legal',
               previousJudicialExperienceApply: true,
             };
@@ -229,6 +231,7 @@ describe('applicationConverter', () => {
                 feePaidOrSalariedJudge: true,
               };
               mockExercise = {
+                _applicationVersion: 2,
                 typeOfExercise: 'legal',
                 previousJudicialExperienceApply: true,
               };
@@ -278,6 +281,7 @@ describe('applicationConverter', () => {
                 feePaidOrSalariedSatForThirtyDays: true,
               };
               mockExercise = {
+                _applicationVersion: 2,
                 typeOfExercise: 'legal',
                 previousJudicialExperienceApply: true,
                 pjeDays: 100,
@@ -328,6 +332,7 @@ describe('applicationConverter', () => {
                 feePaidOrSalariedSittingDaysDetails: 'fee paid details',
               };
               mockExercise = {
+                _applicationVersion: 2,
                 typeOfExercise: 'legal',
                 previousJudicialExperienceApply: true,
                 pjeDays: 100,
@@ -369,6 +374,7 @@ describe('applicationConverter', () => {
           ],
         };
         mockExercise = {
+          _applicationVersion: 2,
           typeOfExercise: 'leadership',
         };
         // set up
