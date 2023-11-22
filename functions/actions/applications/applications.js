@@ -17,7 +17,7 @@ module.exports = (config, firebase, db, auth) => {
     sendApplicationReminders,
     sendApplicationInWelsh,
     sendCharacterCheckRequests,
-    sendPreSelectionDayQuestionnaireNotifications,
+    sendCandidateFormNotifications,
     createApplication,
     createApplications,
     loadTestApplications,
@@ -301,18 +301,22 @@ module.exports = (config, firebase, db, auth) => {
   }
 
   /**
-  * Send pre-selection day questionnaire notification for each application
+  * Send candidate form notification for each application
   *
   * @param {*} `params` is an object containing
+  *   `type` (required) task type
+  *   `notificationType` (required) request type (request, reminder, submit)
   *   `items` (required) IDs of applications
-  *   `type` (required) request type (request, reminder, submit)
   */
-  async function sendPreSelectionDayQuestionnaireNotifications(params) {
-    const applicationIds = params.items;
-    const type = params.type;
-    const exerciseMailbox = params.exerciseMailbox;
-    const exerciseManagerName = params.exerciseManagerName;
-    const dueDate = params.dueDate;
+  async function sendCandidateFormNotifications(params) {
+    const { 
+      type,
+      notificationType,
+      items: applicationIds,
+      exerciseMailbox,
+      exerciseManagerName,
+    } = params;
+
     // get applications
     const applicationRefs = applicationIds.map(id => db.collection('applications').doc(id));
     const applications = await getAllDocuments(db, applicationRefs);
@@ -325,10 +329,10 @@ module.exports = (config, firebase, db, auth) => {
       // TODO: create notification
 
       // update application and applicationRecord
-      if (type === 'request') {
+      if (notificationType === 'request') {
         const data = {
-          'preSelectionDayQuestionnaire.requestedAt': firebase.firestore.Timestamp.fromDate(new Date()),
-          'preSelectionDayQuestionnaire.status': 'requested',
+          [`${type}.requestedAt`]: firebase.firestore.Timestamp.fromDate(new Date()),
+          [`${type}.status`]: 'requested',
         };
         commands.push(
           {
@@ -344,8 +348,8 @@ module.exports = (config, firebase, db, auth) => {
         );
       } else if (type === 'reminder') {
         const data = {
-          'preSelectionDayQuestionnaire.reminderSentAt': firebase.firestore.Timestamp.fromDate(new Date()),
-          'preSelectionDayQuestionnaire.status': 'requested',
+          [`${type}.reminderSentAt`]: firebase.firestore.Timestamp.fromDate(new Date()),
+          [`${type}.status`]: 'requested',
         };
         commands.push(
           {
