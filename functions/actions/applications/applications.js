@@ -346,7 +346,7 @@ module.exports = (config, firebase, db, auth) => {
             data,
           }
         );
-      } else if (type === 'reminder') {
+      } else if (notificationType === 'reminder') {
         const data = {
           [`${type}.reminderSentAt`]: firebase.firestore.Timestamp.fromDate(new Date()),
           [`${type}.status`]: 'requested',
@@ -363,7 +363,7 @@ module.exports = (config, firebase, db, auth) => {
             data,
           }
         );
-      } else if (type === 'submit') {
+      } else if (notificationType === 'submit') {
         // TODO: create notification
       }
     }
