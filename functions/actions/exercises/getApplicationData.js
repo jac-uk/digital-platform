@@ -85,9 +85,22 @@ module.exports = (config, firebase, db, auth) => {
             if (arrayValuePaths) {
               const arr = [];
               for (const arrayValuePath of arrayValuePaths) {
+                // check if endDate is empty and isOngoing is true
+                if (arrayValuePath === 'endDate' && !arrayItem.endDate && arrayItem.isOngoing) {
+                  arr.push('Ongoing');
+                  continue;
+                }
+
                 const str = _.get(arrayItem, arrayValuePath, '- No answer provided -');
-                // Handle time values
-                const val = _.get(str, '_seconds', null) || isValidDate(str) ? formatDate(str, 'DD/MM/YYYY') : str;
+                // handle time values
+                let val = str;
+                if (_.get(str, '_seconds', null) || isValidDate(str)) {
+                  if (['experience', 'employmentGaps'].includes(column)) {
+                    val = formatDate(str, 'MMM YYYY');
+                  } else {
+                    val = formatDate(str, 'DD/MM/YYYY');
+                  }
+                }
                 arr.push(val);
               }
               formattedArray.push(arr.join(' - '));
@@ -150,6 +163,7 @@ module.exports = (config, firebase, db, auth) => {
     const arrayValuePaths = {
       qualifications: ['type', 'location', 'date'],
       experience: ['jobTitle', 'startDate', 'endDate'],
+      employmentGaps: ['details', 'startDate', 'endDate'],
     };
     return arrayValuePaths[column];
   }
