@@ -326,7 +326,7 @@ module.exports = (config, firebase, db, auth) => {
     for (let i = 0, len = applications.length; i < len; ++i) {
       const application = applications[i];
 
-      // TODO: create notification
+      // TODO: create email notification
 
       // update application and applicationRecord
       if (notificationType === 'request') {
@@ -364,7 +364,13 @@ module.exports = (config, firebase, db, auth) => {
           }
         );
       } else if (notificationType === 'submit') {
-        // TODO: create notification
+        commands.push({
+          command: 'update',
+          ref: application.ref,
+          data: {
+            'emailLog.preSelectionDayQuestionnaireSubmitted': firebase.firestore.Timestamp.fromDate(new Date()),
+          },
+        });
       }
     }
 
