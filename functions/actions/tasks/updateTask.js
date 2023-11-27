@@ -458,7 +458,26 @@ module.exports = (config, firebase, db) => {
       success: false,
       data: {},
     };
+
+    // create candidateForm
+    const saveData = {
+      exercise: {
+        id: exercise.id,
+      },
+      task: {
+        type: taskType,
+      },
+      openDate: exercise.preSelectionDayQuestionnaireSendDate,
+      closeDate: exercise.preSelectionDayQuestionnaireReturnDate,
+      parts: [],
+      status: config.CANDIDATE_FORM_STATUS.CREATED,
+      statusLog: {},
+    };
+    saveData.statusLog[config.CANDIDATE_FORM_STATUS.CREATED] = firebase.firestore.FieldValue.serverTimestamp();
+    const candidateForm = await db.collection('candidateForms').add(saveData);
+
     result.success = true;
+    result.data.formId = candidateForm.id;
     return result;
   }
 
@@ -509,7 +528,7 @@ module.exports = (config, firebase, db) => {
 
   /**
    * monitorCandidateFormTask
-   * Activates a data task. Currently does nothing!
+   * Starts monitoring candidate forms
    * @param {*} exercise
    * @param {*} task
    * @returns Result object of the form `{ success: Boolean, data: Object }`. If successful then `data` is to be stored in the `task` document
@@ -521,12 +540,8 @@ module.exports = (config, firebase, db) => {
     };
 
     // get candidateForm
-    const results = await getDocuments(
-      db.collection('candidateForms')
-      .where('exercise.id', '==', exercise.id)
-      .where('task.type', '==', task.type)
-    );
-    const candidateForm = results[0];
+    const candidateForm = await getDocument(db.collection('candidateForms').doc(task.formId));
+    if (!candidateForm) { result.message = 'No candidate form'; return result; }
 
     // get applications
     let applicationsRef = db.collection('applications')
@@ -569,7 +584,6 @@ module.exports = (config, firebase, db) => {
 
     await applyUpdates(db, commands);
     
-    result.data.formId = candidateForm.id;  // TODO enable this to be sent from the front end
     result.success = true;
     return result;
   }

@@ -225,23 +225,23 @@ module.exports = (config) => {
       );
     }
   
-    if (data.selectionDayQuestionnaireSendDate) {
+    if (data.preSelectionDayQuestionnaireSendDate) {
       timeline.push(
         {
           entry: 'Selection Day Questionnaire - sent',
-          date: data.selectionDayQuestionnaireSendDate,
-          dateString: getDateString(data.selectionDayQuestionnaireSendDate),
+          date: data.preSelectionDayQuestionnaireSendDate,
+          dateString: getDateString(data.preSelectionDayQuestionnaireSendDate),
           taskType: TASK_TYPE.PRE_SELECTION_DAY_QUESTIONNAIRE,
         }
       );
     }
   
-    if (data.selectionDayQuestionnaireReturnDate) {
+    if (data.preSelectionDayQuestionnaireReturnDate) {
       timeline.push(
         {
           entry: 'Selection Day Questionnaire - return',
-          date: data.selectionDayQuestionnaireReturnDate,
-          dateString: getDateString(data.selectionDayQuestionnaireReturnDate),
+          date: data.preSelectionDayQuestionnaireReturnDate,
+          dateString: getDateString(data.preSelectionDayQuestionnaireReturnDate),
         }
       );
     }
