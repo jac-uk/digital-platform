@@ -294,9 +294,23 @@ const TASK_STATUS = { // aka task STEPS
   COMPLETED: 'completed',
 };
 
+const CANDIDATE_FORM_STATUS = {
+  CREATED: 'created',
+  OPEN: 'open',
+  CLOSED: 'closed',
+};
+
+const CANDIDATE_FORM_RESPONSE_STATUS = {
+  CREATED: 'created',
+  REQUESTED: 'requested',
+  COMPLETED: 'completed',
+};
+
 module.exports = {
   ...CONSTANTS,
   TASK_TYPE,
   SHORTLISTING_TASK_TYPES,
   TASK_STATUS,
+  CANDIDATE_FORM_STATUS,
+  CANDIDATE_FORM_RESPONSE_STATUS,
 };
