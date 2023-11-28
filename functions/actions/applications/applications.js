@@ -7,7 +7,14 @@ const testApplicationsFileName = 'test_applications.json';
 module.exports = (config, firebase, db, auth) => {
   const { initialiseApplicationRecords } = require('../../actions/applicationRecords')(config, firebase, db, auth);
   const { refreshApplicationCounts } = require('../../actions/exercises/refreshApplicationCounts')(firebase, db);
-  const { newNotificationApplicationSubmit, newNotificationApplicationReminder, newNotificationApplicationInWelsh, newNotificationCharacterCheckRequest, newNotificationCandidateFlagConfirmation } = require('../../shared/factories')(config);
+  const {
+    newNotificationApplicationSubmit,
+    newNotificationApplicationReminder,
+    newNotificationApplicationInWelsh,
+    newNotificationCharacterCheckRequest,
+    newNotificationCandidateFlagConfirmation,
+    newCandidateFormNotification,
+  } = require('../../shared/factories')(config);
   const slack = require('../../shared/slack')(config);
   const { updateCandidate } = require('../candidates/search')(firebase, db);
   return {
@@ -315,6 +322,7 @@ module.exports = (config, firebase, db, auth) => {
       items: applicationIds,
       exerciseMailbox,
       exerciseManagerName,
+      dueDate,
     } = params;
 
     // get applications
@@ -326,7 +334,15 @@ module.exports = (config, firebase, db, auth) => {
     for (let i = 0, len = applications.length; i < len; ++i) {
       const application = applications[i];
 
-      // TODO: create email notification
+      // create notification
+      const notification = newCandidateFormNotification(firebase, application, notificationType, exerciseMailbox, exerciseManagerName, dueDate);
+      if (notification) {
+        commands.push({
+          command: 'set',
+          ref: db.collection('notifications').doc(),
+          data: notification,
+        });
+      }
 
       // update application and applicationRecord
       if (notificationType === 'request') {
