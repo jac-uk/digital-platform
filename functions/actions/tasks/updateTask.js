@@ -472,7 +472,17 @@ module.exports = (config, firebase, db) => {
       parts: [],
       status: config.CANDIDATE_FORM_STATUS.CREATED,
       statusLog: {},
+      candidateAvailabilityDates: [],
     };
+
+    exercise.selectionDays.forEach(item => {
+      const location = item.selectionDayLocation;
+      const startDate = item.selectionDayStart;
+      const endDate = item.selectionDayEnd;
+      const dates = dateRange(startDate, endDate);
+      dates.forEach(date => saveData.candidateAvailabilityDates.push({ date: date, location: location }));
+    });
+
     saveData.statusLog[config.CANDIDATE_FORM_STATUS.CREATED] = firebase.firestore.FieldValue.serverTimestamp();
     const candidateForm = await db.collection('candidateForms').add(saveData);
 
@@ -480,6 +490,26 @@ module.exports = (config, firebase, db) => {
     result.data.formId = candidateForm.id;
     return result;
   }
+
+/**
+ * Get dates between two dates
+ * Optionally specify a step size (in days)
+ * @param {*} startDate
+ * @param {*} endDate
+ * @param {*} steps
+ * @returns
+ */
+function dateRange(startDate, endDate, steps = 1) {
+  const dateArray = [];
+  const currentDate = new Date(startDate);
+  while (currentDate <= new Date(endDate)) {
+    dateArray.push(new Date(currentDate));
+    // Use UTC date to prevent problems with time zones and DST
+    currentDate.setUTCDate(currentDate.getUTCDate() + steps);
+  }
+  return dateArray;
+};
+
 
   /**
    * initialiseDataTask
