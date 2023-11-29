@@ -479,7 +479,7 @@ module.exports = (config, firebase, db) => {
       const location = item.selectionDayLocation;
       const startDate = item.selectionDayStart;
       const endDate = item.selectionDayEnd;
-      const dates = dateRange(startDate, endDate);
+      const dates = excludeWeekends(dateRange(startDate, endDate));
       dates.forEach(date => saveData.candidateAvailabilityDates.push({ date: date, location: location }));
     });
 
@@ -508,6 +508,10 @@ module.exports = (config, firebase, db) => {
       currentDate.setUTCDate(currentDate.getUTCDate() + steps);
     }
     return dateArray;
+  }
+
+  function excludeWeekends(dates) {
+    return dates.filter(item => item.getDay() > 0 && item.getDay() < 6);
   }
 
   /**
