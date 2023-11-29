@@ -21,6 +21,7 @@ module.exports = (CONSTANTS) => {
     newNotificationLateApplicationResponse,
     newUser,
     newCandidateFormResponse,
+    newCandidateFormNotification,
   };
 
   function newNotificationExerciseApprovalSubmit(firebase, exerciseId, exercise, email) {
@@ -744,6 +745,47 @@ module.exports = (CONSTANTS) => {
         created: firebase.firestore.FieldValue.serverTimestamp(),
       },
       progress: {},
+    };
+  }
+
+  function newCandidateFormNotification(firebase, application, type, exerciseMailbox, exerciseManagerName, dueDate) {
+    let templateId = '';
+    let templateName = '';
+    
+    if (type === 'request') {
+      templateId = 'bba6cebb-b3b3-4ba3-818b-af7b9a011f77';
+      templateName = 'Candidate form consent form request';
+    } else if (type === 'reminder') {
+      templateId = '59522cc8-ede1-464c-8ab9-91b05f00af25';
+      templateName = 'Candidate form consent form reminder';
+    } else if (type === 'submit') {
+      templateId = '1492dd03-75b1-45e3-af19-875b7c1bdf11';
+      templateName = 'Candidate form consent form submit';
+    }
+
+    if (!templateId || !templateName) return null;
+
+    return {
+      email: application.personalDetails.email,
+      replyTo: exerciseMailbox,
+      template: {
+        name: templateName,
+        id: templateId,
+      },
+      personalisation: {
+        exerciseName: application.exerciseName,
+        dueDate,
+        urlRequired: `${CONSTANTS.APPLY_URL}/sign-in`,
+        applicantName: application.personalDetails.fullName,
+        selectionExerciseManager: exerciseManagerName,
+        exerciseMailbox,
+      },
+      reference: {
+        collection: 'applications',
+        id: application.id,
+      },
+      createdAt: firebase.firestore.Timestamp.fromDate(new Date()),
+      status: 'ready',
     };
   }
 };
