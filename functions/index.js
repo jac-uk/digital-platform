@@ -38,6 +38,7 @@ exports.generateSignInWithEmailLink = require('./callableFunctions/generateSignI
 exports.initialiseApplicationRecords = require('./callableFunctions/initialiseApplicationRecords');
 exports.sendApplicationReminders = require('./callableFunctions/sendApplicationReminders');
 exports.sendCharacterCheckRequests = require('./callableFunctions/sendCharacterCheckRequests');
+exports.sendCandidateFormNotifications = require('./callableFunctions/sendCandidateFormNotifications');
 exports.enableCharacterChecks = require('./callableFunctions/enableCharacterChecks');
 exports.initialiseMissingApplicationRecords = require('./callableFunctions/initialiseMissingApplicationRecords');
 exports.exportExerciseData = require('./callableFunctions/exportExerciseData');
