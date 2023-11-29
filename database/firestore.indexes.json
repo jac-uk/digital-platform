@@ -179,6 +179,28 @@
           "order": "ASCENDING"
         },
         {
+          "fieldPath": "preSelectionDayQuestionnaire.status",
+          "order": "ASCENDING"
+        },
+        {
+          "fieldPath": "candidate.fullName",
+          "order": "ASCENDING"
+        }
+      ]
+    },
+    {
+      "collectionGroup": "applicationRecords",
+      "queryScope": "COLLECTION",
+      "fields": [
+        {
+          "fieldPath": "active",
+          "order": "ASCENDING"
+        },
+        {
+          "fieldPath": "exercise.id",
+          "order": "ASCENDING"
+        },
+        {
           "fieldPath": "scenario.panelId",
           "order": "ASCENDING"
         },
