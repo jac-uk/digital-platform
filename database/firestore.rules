@@ -205,6 +205,11 @@ service cloud.firestore {
           resource.data.characterChecks.status == "requested" &&
           request.resource.data.characterChecks.status in ["requested", "completed"]
           )
+          ||
+          (  // pre selection day questionnaire information is requested
+          resource.data.status in ["draft", "applied"] && request.resource.data.status in ["draft", "applied"] &&
+          get(/databases/$(database)/documents/applicationRecords/$(applicationId)).data.preSelectionDayQuestionnaire.status in ["created", "requested"]
+          )
         );
 
       // allow JAC admins to edit an application @TODO restrict what can be changed and by which role
