@@ -208,7 +208,7 @@ service cloud.firestore {
           ||
           (  // pre selection day questionnaire information is requested
           resource.data.status in ["draft", "applied"] && request.resource.data.status in ["draft", "applied"] &&
-          get(/databases/$(database)/documents/applicationRecords/$(applicationId)).data.preSelectionDayQuestionnaire.status in ["created", "requested"]
+          request.resource.data.preSelectionDayQuestionnaire.status in ["requested", "completed"]
           )
         );
 
