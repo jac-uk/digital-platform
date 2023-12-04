@@ -160,7 +160,7 @@ const reportData = (db, exercise, applicationRecords, applications) => {
     let qualifications;
     let memberships;
     if (exercise.typeOfExercise === 'legal' || exercise.typeOfExercise === 'leadership') {
-      qualifications = formatLegalData(application);
+      qualifications = formatLegalData(exercise, application);
     } else if (exercise.typeOfExercise === 'non-legal') {
       memberships = formatNonLegalData(application, exercise);
     }
@@ -283,7 +283,7 @@ const formatDiversityData = (survey, exercise) => {
   return formattedDiversityData;
 };
 
-const formatLegalData = (application) => {
+const formatLegalData = (exercise, application) => {
   let qualifications = '';
   if (application.qualifications && Array.isArray(application.qualifications)) {
     qualifications = application.qualifications.map(qualification => {
@@ -297,12 +297,40 @@ const formatLegalData = (application) => {
   }
 
   let judicialExperience;
-  if (application.feePaidOrSalariedJudge) {
-    judicialExperience = `Fee paid or salaried judge - ${lookup(application.feePaidOrSalariedSittingDaysDetails)} days`;
-  } else if (application.declaredAppointmentInQuasiJudicialBody) {
-    judicialExperience = `Quasi-judicial body - ${lookup(application.quasiJudicialSittingDaysDetails)} days`;
+  if (exercise._applicationVersion >= 3) {
+    let quasiJudicialSittingDays = 0;
+    let feePaidOrSalariedSittingDays = 0;
+    Array.isArray(application.experience) && application.experience.forEach(experience => {
+      if (
+        experience.judicialFunctions &&
+        experience.judicialFunctions.duration &&
+        experience.taskDetails &&
+        experience.taskDetails.workingBasis
+      ) {
+        if (experience.judicialFunctions.type === 'quasi-judicial-post') {
+          quasiJudicialSittingDays += experience.judicialFunctions.duration;
+        }
+        if (['Full-time', 'Salaried part-time', 'Fee paid'].includes(experience.taskDetails.workingBasis)) {
+          feePaidOrSalariedSittingDays += 0;
+        }
+      }
+    });
+
+    if (quasiJudicialSittingDays) {
+      judicialExperience = `Quasi-judicial body - ${quasiJudicialSittingDays} days`;
+    } else if (feePaidOrSalariedSittingDays) {
+      judicialExperience = `Fee paid or salaried judge - ${lookup(feePaidOrSalariedSittingDays)} days`;
+    } else {
+      judicialExperience = `Acquired skills in other way - ${lookup(application.experienceDetails)}`;
+    }
   } else {
-    judicialExperience = `Acquired skills in other way - ${lookup(application.skillsAquisitionDetails)}`;
+    if (application.feePaidOrSalariedJudge) {
+      judicialExperience = `Fee paid or salaried judge - ${lookup(application.feePaidOrSalariedSittingDaysDetails)} days`;
+    } else if (application.declaredAppointmentInQuasiJudicialBody) {
+      judicialExperience = `Quasi-judicial body - ${lookup(application.quasiJudicialSittingDaysDetails)} days`;
+    } else {
+      judicialExperience = `Acquired skills in other way - ${lookup(application.skillsAquisitionDetails)}`;
+    }
   }
 
   return {
