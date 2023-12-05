@@ -599,6 +599,12 @@ module.exports = (config, firebase, db) => {
       });
       const appplicationRecordData = {};
       appplicationRecordData[task.type] = { status: newResponse.status };
+      // store status both in application and applicationRecord
+      commands.push({
+        command: 'update',
+        ref: db.collection('applications').doc(application.id),
+        data: appplicationRecordData,
+      });
       commands.push({
         command: 'update',
         ref: db.collection('applicationRecords').doc(application.id),
