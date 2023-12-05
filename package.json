@@ -60,6 +60,10 @@
     "production:service-online": "npm run production:deploy:rules; npm run production:deploy:storage-rules"
   },
   "dependencies": {
+    "@firebase/app": "^0.9.24",
+    "@firebase/app-compat": "^0.2.24",
+    "@firebase/component": "^0.6.4",
+    "@firebase/logger": "^0.4.0",
     "@google-cloud/storage": "^5.7.2",
     "axios": "^0.21.2",
     "bottleneck": "^2.19.5",
@@ -69,6 +73,7 @@
     "firebase-functions-test": "^0.2.3",
     "firebase-tools": "^11.21.0",
     "googleapis": "^67.0.0",
+    "idb": "^7.1.1",
     "lodash": "^4.17.21",
     "mammoth": "^1.6.0",
     "notifications-node-client": "^4.9.0"
