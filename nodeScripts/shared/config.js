@@ -1,9 +1,11 @@
-module.exports = {
+const CONSTANTS = {
   PROJECT_ID: process.env.PROJECT_ID,
   APPLY_URL: process.env.APPLY_URL,
   // QT_URL: 'http://localhost:5001/jac-qualifying-tests-develop/europe-west2/api/v1',
   QT_URL: process.env.QT_PLATFORM_URL,
   QT_KEY: process.env.QT_PLATFORM_KEY,
+  ZENHUB_GRAPH_QL_API_KEY: process.env.ZENHUB_GRAPH_QL_API_KEY, // graphQL personal api key
+  ZENHUB_ISSUES_WORKSPACE_ID: process.env.ZENHUB_ISSUES_WORKSPACE_ID,
   APPLICATION: {
     STATUS: {
       QUALIFYING_TEST_PASSED: 'qualifyingTestPassed',
@@ -167,6 +169,16 @@ module.exports = {
     },
   },
   ASSESSMENTS_URL: process.env.ASSESSMENTS_URL,
+  ASSESSMENT_METHOD: {
+    SELF_ASSESSMENT_WITH_COMPETENCIES: 'selfAssessmentWithCompetencies',
+    COVERING_LETTER: 'coveringLetter',
+    CV: 'cv',
+    STATEMENT_OF_SUITABILITY_WITH_COMPETENCIES: 'statementOfSuitabilityWithCompetencies',
+    STATEMENT_OF_SUITABILITY_WITH_SKILLS_AND_ABILITIES: 'statementOfSuitabilityWithSkillsAndAbilities',
+    STATEMENT_OF_ELIGIBILITY: 'statementOfEligibility',
+    INDEPENDENT_ASSESSMENTS: 'independentAssessments',
+    LEADERSHIP_JUDGE_ASSESSMENT: 'leadershipJudgeAssessment',
+  },
   ASSESSMENT_TYPE: {
     COMPETENCY: 'competency',
     SKILLS: 'skills',
@@ -209,35 +221,6 @@ module.exports = {
       COMPLETED: 'completed',
     },
   },
-  TASK_TYPE: {
-    SIFT: 'sift',
-    SELECTION: 'selection',
-    SCENARIO: 'scenarioTest',
-    CRITICAL_ANALYSIS: 'criticalAnalysis',
-    SITUATIONAL_JUDGEMENT: 'situationalJudgement',
-    QUALIFYING_TEST: 'qualifyingTest',
-    TELEPHONE_ASSESSMENT: 'telephoneAssessment',
-    ELIGIBILITY_SCC: 'eligibilitySCC',
-    CHARACTER_AND_SELECTION_SCC: 'characterAndSelectionSCC',
-    STATUTORY_CONSULTATION: 'statutoryConsultation',
-    SHORTLISTING_OUTCOME: 'shortlistingOutcome',
-    WELSH_ASSESSMENT: 'welshAssessment',
-    SELECTION_OUTCOME: 'selectionOutcome',
-  },
-  TASK_STATUS: {
-    DATA_INITIALISED: 'dataInitialised',
-    DATA_ACTIVATED: 'dataActivated',
-    TEST_INITIALISED: 'testInitialised',
-    TEST_ACTIVATED: 'testActivated',
-    PANELS_INITIALISED: 'panelsInitialised',
-    PANELS_ACTIVATED: 'panelsActivated',
-    MODERATION_INITIALISED: 'moderationInitialised',
-    MODERATION_ACTIVATED: 'moderationActivated',
-    STATUS_CHANGES: 'statusChanges',
-    FINALISED: 'finalised',
-    CHECKS: 'checks',
-    COMPLETED: 'completed',
-  },
   PANEL_STATUS: {
     // TODO include all statuses
     DRAFT: 'draft',
@@ -263,4 +246,71 @@ module.exports = {
   NOTIFY_KEY: process.env.NOTIFY_LIMITED_KEY,
   SLACK_URL: process.env.SLACK_URL,
   STORAGE_URL: process.env.PROJECT_ID + '.appspot.com',
+  ZENHUB_GRAPH_QL_URL: process.env.ZENHUB_GRAPH_QL_URL,
+};
+
+const TASK_TYPE = {
+  SIFT: 'sift',
+  SCENARIO: 'scenarioTest',
+  CRITICAL_ANALYSIS: 'criticalAnalysis',
+  SITUATIONAL_JUDGEMENT: 'situationalJudgement',
+  QUALIFYING_TEST: 'qualifyingTest',
+  TELEPHONE_ASSESSMENT: 'telephoneAssessment',
+  ELIGIBILITY_SCC: 'eligibilitySCC',
+  CHARACTER_AND_SELECTION_SCC: 'characterAndSelectionSCC',
+  STATUTORY_CONSULTATION: 'statutoryConsultation',
+  SHORTLISTING_OUTCOME: 'shortlistingOutcome',
+  WELSH_ASSESSMENT: 'welshAssessment',
+  PRE_SELECTION_DAY_QUESTIONNAIRE: 'preSelectionDayQuestionnaire',
+  SELECTION_DAY: 'selectionDay',
+  SELECTION_OUTCOME: 'selectionOutcome',
+  EMP_TIEBREAKER: 'empTiebreaker',
+};
+
+const SHORTLISTING_TASK_TYPES = [
+  TASK_TYPE.TELEPHONE_ASSESSMENT,
+  TASK_TYPE.SIFT,
+  TASK_TYPE.CRITICAL_ANALYSIS,
+  TASK_TYPE.SITUATIONAL_JUDGEMENT,
+  TASK_TYPE.QUALIFYING_TEST,
+  TASK_TYPE.SCENARIO,
+];
+
+const TASK_STATUS = { // aka task STEPS
+  CANDIDATE_FORM_CONFIGURE: 'candidateFormConfigure',
+  CANDIDATE_FORM_MONITOR: 'candidateFormMonitor',
+  DATA_INITIALISED: 'dataInitialised',
+  DATA_ACTIVATED: 'dataActivated',
+  TEST_INITIALISED: 'testInitialised',
+  TEST_ACTIVATED: 'testActivated',
+  PANELS_INITIALISED: 'panelsInitialised',
+  PANELS_ACTIVATED: 'panelsActivated',
+  MODERATION_INITIALISED: 'moderationInitialised',
+  MODERATION_ACTIVATED: 'moderationActivated',
+  STATUS_CHANGES: 'statusChanges',
+  STAGE_OUTCOME: 'stageOutcome',
+  FINALISED: 'finalised',
+  CHECKS: 'checks',
+  COMPLETED: 'completed',
+};
+
+const CANDIDATE_FORM_STATUS = {
+  CREATED: 'created',
+  OPEN: 'open',
+  CLOSED: 'closed',
+};
+
+const CANDIDATE_FORM_RESPONSE_STATUS = {
+  CREATED: 'created',
+  REQUESTED: 'requested',
+  COMPLETED: 'completed',
+};
+
+module.exports = {
+  ...CONSTANTS,
+  TASK_TYPE,
+  SHORTLISTING_TASK_TYPES,
+  TASK_STATUS,
+  CANDIDATE_FORM_STATUS,
+  CANDIDATE_FORM_RESPONSE_STATUS,
 };

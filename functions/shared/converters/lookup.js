@@ -82,7 +82,8 @@ const lookup = (value) => {
       'legal': 'Legal',
       'linked-in': 'LinkedIn',
       'lord-chancellor': 'Lord Chancellor',
-      'lord-chief-justice': 'Lord Chief Justice',
+      'lady-chief-justice': 'Lady Chief Justice',
+      'lord-chief-justice': 'Lady Chief Justice',
       'male': 'Male',
       'multiple-choice': 'Multiple choice',
       'muslim': 'Muslim',
@@ -208,6 +209,13 @@ const lookup = (value) => {
       'transferred': 'Qualified solicitor, qualified lawyer from another jurisdiction, or a legal academic transferred to the Bar',
       'called-pre-2002': 'Called to the Bar prior to 1 January 2002',
       // 'xxx': 'xxx',`
+
+      // post-qualification experience
+      'full-time': 'Full-time',
+      'salaried-part-time': 'Salaried part-time',
+      'voluntary': 'Voluntary',
+      'judicial-post': 'Judicial',
+      'quasi-judicial-post': 'Quasi-judicial',
     };
 
     return lookup[value] || value;

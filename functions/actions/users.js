@@ -1,4 +1,5 @@
 const { getDocument } = require('../shared/helpers');
+const { convertPermissions } = require('../shared/permissions');
 
 module.exports = (auth, db) => {
   return {
@@ -6,6 +7,8 @@ module.exports = (auth, db) => {
     createUser,
     deleteUsers,
     importUsers,
+    onUserUpdate,
+    updateUserCustomClaims,
   };
 
   async function generateSignInWithEmailLink(ref, email, returnUrl) {
@@ -46,7 +49,7 @@ module.exports = (auth, db) => {
    * @param {object} user
    *
    */
-   async function createUser(user) {
+  async function createUser(user) {
     try {
       const res = await auth.createUser(user);
       return res;
@@ -118,4 +121,75 @@ module.exports = (auth, db) => {
     return result;
   }
 
+  /**
+   * User updated event handler
+   * 
+   * @param {string} userId
+   * @param {object} dataBefore
+   * @param {object} dataAfter
+   */
+  async function onUserUpdate(userId, dataBefore, dataAfter) {
+    const fields = ['displayName', 'email', 'disabled'];
+    const data = {};
+    fields.forEach(field => {
+      if (dataBefore[field] !== dataAfter[field]) data[field] = dataAfter[field];
+    });
+    
+    try {
+      if (Object.keys(data).length) {
+        await auth.updateUser(userId, data);
+      }
+
+      // update role permissions in custom claims
+      if (dataBefore.role && dataAfter.role && !dataBefore.role.isChanged && dataAfter.role.isChanged && dataAfter.role.id) {
+        const user = await auth.getUser(userId);
+        const role = await getDocument(db.collection('roles').doc(dataAfter.role.id));
+        if (role) {
+          const convertedPermissions = convertPermissions(role);
+          const customClaims = user.customClaims || {};
+          customClaims.r = dataAfter.role.id;
+          customClaims.rp = convertedPermissions;
+          await auth.setCustomUserClaims(userId, user.customClaims);
+  
+          // mark role.isChanged as false
+          await db.collection('users').doc(userId).update({
+            'role.isChanged': false,
+          });
+        }
+      }
+
+      return true;
+    } catch(error) {
+      console.log(error);
+      return false;
+    }
+  }
+
+
+  /**
+   * Update user custom claims
+   * 
+   * @param {string} userId
+   */
+  async function updateUserCustomClaims(userId) {
+    try {
+      const userDoc = await getDocument(db.collection('users').doc(userId));
+      // update role permissions in custom claims
+      if (userDoc) {
+        const user = await auth.getUser(userId);
+        const role = await getDocument(db.collection('roles').doc(userDoc.role.id));
+        if (role) {
+          const convertedPermissions = convertPermissions(role);
+          const customClaims = user.customClaims || {};
+          customClaims.r = role.id;
+          customClaims.rp = convertedPermissions;
+          await auth.setCustomUserClaims(userId, customClaims);
+        }
+      }
+      return true;
+    } catch(error) {
+      console.log(error);
+      return false;
+    }
+  }
 };

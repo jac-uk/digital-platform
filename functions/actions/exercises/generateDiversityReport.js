@@ -27,7 +27,9 @@ module.exports = (firebase, db) => {
     ethnicityStats,
     disabilityStats,
     professionalBackgroundStats,
-    socialMobilityStats,
+    attendedUKStateSchoolStats,
+    parentsNotAttendedUniversityStats,
+    firstGenerationUniversityStats,
     empStats,
   };
 
@@ -78,45 +80,54 @@ module.exports = (firebase, db) => {
       report.shortlisted = diversityReport(shortlistedApplications, shortlistedApplicationRecords, exercise);
     }
     await db.collection('exercises').doc(exerciseId).collection('reports').doc('diversity').set(report);
+
+    console.log('report:');
+    console.log(report);
+
     return report;
   }
 };
 
 const diversityReport = (applications, applicationRecords, exercise) => {
+  const openDatePost01042023 = applicationOpenDatePost01042023(exercise);
   let report = {
     totalApplications: applications.length,
     gender: genderStats(applications),
     ethnicity: ethnicityStats(applications),
     disability: disabilityStats(applications),
     professionalBackground: professionalBackgroundStats(applications),
-    socialMobility: socialMobilityStats(applications, exercise),
+    attendedUKStateSchool: attendedUKStateSchoolStats(applications, exercise),
   };
+  // Social Mobility
+  if (openDatePost01042023) {
+    report.parentsNotAttendedUniversity = parentsNotAttendedUniversityStats(applications);
+  }
+  else {
+    report.firstGenerationUniversity = firstGenerationUniversityStats(applications);
+  }
+
   if (applicationRecords) {
     report.emp = empStats(applicationRecords);
   }
   return report;
 };
 
-const calculatePercents = (report) => {
+const calculatePercents = (report, ignoreKeys) => {
   if (report.total && report.declaration.total) {
     const keys = Object.keys(report);
-    const ignoreKeys = ['total', 'declaration', 'preferNotToSay', 'noAnswer', 'other'];
     for (let i = 0, len = keys.length; i < len; ++i) {
       if (!ignoreKeys.includes(keys[i])) {
-        report[keys[i]].percent = 100 * report[keys[i]].total / report.total;
+        report[keys[i]].percent = 100 * report[keys[i]].total / report.declaration.total;
       }
     }
-    report.declaration.percent = (report.total / report.declaration.total) * 100;
+    report.declaration.percent = (report.declaration.total / report.total) * 100;
   }
+  return report;
 };
 
 const empStats = (applicationRecords) => {
   const stats = {
-    //total: 0,
-    declaration: {
-      total: 0,
-      //percent: 0,
-    },
+    total: 0,
     applied: {
       total: 0,
       percent: 0,
@@ -139,30 +150,21 @@ const empStats = (applicationRecords) => {
     switch (empFlag) {
       case true:
         stats.applied.total += 1;
-        //stats.total += 1;
         break;
       case 'gender':
         stats.gender.total += 1;
-        //stats.total += 1;
         break;
       case 'ethnicity':
         stats.ethnicity.total += 1;
-        //stats.total += 1;
         break;
       default:
         stats.noAnswer.total += 1;
     }
-    //stats.declaration.total += 1;
   }
-
-  // Basing these stats on the declaration total NOT the total (which the other stats are being compared to!)
-  // @TODO: Awaiting confirmation that using the decalration total is the right thing to do here
-  stats.declaration.total = applicationRecords.length;
-  stats.applied.percent = stats.applied.total ? (stats.applied.total / stats.declaration.total) * 100 : 0;
-  stats.gender.percent = stats.gender.total ? (stats.gender.total / stats.declaration.total) * 100 : 0;
-  stats.ethnicity.percent = stats.ethnicity.total ? (stats.ethnicity.total / stats.declaration.total) * 100 : 0;
-
-  //calculatePercents(stats);
+  stats.total = applicationRecords.length;
+  stats.applied.percent = stats.applied.total ? (stats.applied.total / stats.total) * 100 : 0;
+  stats.gender.percent = stats.gender.total ? (stats.gender.total / stats.total) * 100 : 0;
+  stats.ethnicity.percent = stats.ethnicity.total ? (stats.ethnicity.total / stats.total) * 100 : 0;
   return stats;
 };
 
@@ -203,11 +205,11 @@ const genderStats = (applications) => {
     switch (application.gender) {
       case 'male':
         stats.male.total += 1;
-        stats.total += 1;
+        stats.declaration.total += 1;
         break;
       case 'female':
         stats.female.total += 1;
-        stats.total += 1;
+        stats.declaration.total += 1;
         break;
       case 'prefer-not-to-say':
         stats.preferNotToSay.total += 1;
@@ -225,8 +227,9 @@ const genderStats = (applications) => {
     }
     //stats.declaration.total += 1;
   }
-  stats.declaration.total = applications.length;
-  calculatePercents(stats);
+  stats.total = applications.length;
+  const ignoreKeys = ['total', 'declaration', 'preferNotToSay', 'noAnswer', 'other'];
+  calculatePercents(stats, ignoreKeys);
   return stats;
 };
 
@@ -267,7 +270,7 @@ const ethnicityStats = (applications) => {
         case 'gypsy-irish-traveller':
         case 'other-white':
           stats.white.total += 1;
-          stats.total += 1;
+          stats.declaration.total += 1;
           break;
         case 'prefer-not-to-say':
           stats.preferNotToSay.total += 1;
@@ -275,19 +278,20 @@ const ethnicityStats = (applications) => {
         case 'other-ethnic-group':
           //stats.other.total += 1;
           stats.bame.total += 1;  // Count it as 'bame'
-          stats.total += 1;
+          stats.declaration.total += 1;
           break;
         default:
           stats.bame.total += 1;
-          stats.total += 1;
+          stats.declaration.total += 1;
       }
     } else {
       stats.noAnswer.total += 1;
     }
     //stats.declaration.total += 1;
   }
-  stats.declaration.total = applications.length;
-  calculatePercents(stats);
+  stats.total = applications.length;
+  const ignoreKeys = ['total', 'declaration', 'preferNotToSay', 'noAnswer'];
+  calculatePercents(stats, ignoreKeys);
   return stats;
 };
 
@@ -320,10 +324,10 @@ const disabilityStats = (applications) => {
     // @todo amend how we store disability answers to be string only
     if (application.disability === true) {
       stats.yes.total += 1;
-      stats.total += 1;
+      stats.declaration.total += 1;
     } else if (application.disability === false) {
       stats.no.total += 1;
-      stats.total += 1;
+      stats.declaration.total += 1;
     } else if (application.disability === 'prefer-not-to-say') {
       stats.preferNotToSay.total += 1;
     } else {
@@ -331,8 +335,9 @@ const disabilityStats = (applications) => {
     }
     //stats.declaration.total += 1;
   }
-  stats.declaration.total = applications.length;
-  calculatePercents(stats);
+  stats.total = applications.length;
+  const ignoreKeys = ['total', 'declaration', 'preferNotToSay', 'noAnswer'];
+  calculatePercents(stats, ignoreKeys);
   return stats;
 };
 
@@ -386,6 +391,7 @@ const professionalBackgroundStats = (applications) => {
       }
       if (application.professionalBackground.indexOf('other-professional-background') >= 0) {
         stats.other.total += 1;
+        incrementTotal = true;
       }
       if (application.professionalBackground.indexOf('prefer-not-to-say') >= 0) {
         stats.preferNotToSay.total += 1;
@@ -394,86 +400,110 @@ const professionalBackgroundStats = (applications) => {
       stats.noAnswer.total += 1;
     }
     if (incrementTotal) {
-      stats.total += 1;
+      stats.declaration.total += 1;
     }
   }
-  stats.declaration.total = applications.length;  // As can have multiple answers per application
-  calculatePercents(stats);
+  stats.total = applications.length;  // As can have multiple answers per application
+  const ignoreKeys = ['total', 'declaration', 'preferNotToSay', 'noAnswer'];
+  calculatePercents(stats, ignoreKeys);
   return stats;
 };
 
-const socialMobilityStats = (applications, exercise) => {
+const attendedUKStateSchoolStats = (applications, exercise) => {
   const openDatePost01042023 = applicationOpenDatePost01042023(exercise);
+  const attendedUKStateSchoolFieldName = openDatePost01042023 ? 'stateOrFeeSchool16' : 'stateOrFeeSchool';
   const stats = {
-    //total: 0,
+    total: 0,
     declaration: {
       total: 0,
-      //percent: 0,
+      percent: 0,
     },
     attendedUKStateSchool: {
       total: 0,
       percent: 0,
     },
   };
-  // Add checks for different fields after 01-04-2023
-  if (openDatePost01042023) {
-    stats.parentsAttendedUniversity = {
-      total: 0,
-      percent: 0,
-    };
-  }
-  else {
-    stats.firstGenerationUniversity = {
-      total: 0,
-      percent: 0,
-    };
-  }
   for (let i = 0, len = applications.length; i < len; ++i) {
     const application = applications[i].equalityAndDiversitySurvey ? applications[i].equalityAndDiversitySurvey : applications[i];
-    // Add checks for different fields after 01-04-2023
-    if (openDatePost01042023) {
+
+    if (Object.prototype.hasOwnProperty.call(application, attendedUKStateSchoolFieldName)) {
+      // Add checks for different fields after 01-04-2023
       if (
-        application.stateOrFeeSchool16 === 'uk-state-selective'
-        || application.stateOrFeeSchool16 === 'uk-state-non-selective'
+        application[attendedUKStateSchoolFieldName] === 'uk-state-selective'
+        || application[attendedUKStateSchoolFieldName] === 'uk-state-non-selective'
       ) {
         stats.attendedUKStateSchool.total += 1;
         //stats.total += 1;
-        //stats.declaration.total += 1; // Put this inside the if-else statements in case of leakage of pre/post 01-04
       }
-      if (application.parentsAttendedUniversity === true) {
-        stats.parentsAttendedUniversity.total += 1;
-        //stats.total += 1;
-        //stats.declaration.total += 1;
+      if (application[attendedUKStateSchoolFieldName] !== 'prefer-not-to-say') {
+        stats.declaration.total += 1;
       }
     }
-    else {
-      if (
-        application.stateOrFeeSchool === 'uk-state-selective'
-        || application.stateOrFeeSchool === 'uk-state-non-selective'
-      ) {
-        stats.attendedUKStateSchool.total += 1;
-        //stats.total += 1;
-        //stats.declaration.total += 1;
+  }
+  stats.total = applications.length;
+  const ignoreKeys = ['total', 'declaration', 'preferNotToSay', 'noAnswer', 'other'];
+  calculatePercents(stats, ignoreKeys);
+  return stats;
+};
+
+const parentsNotAttendedUniversityStats = (applications) => {
+  const stats = {
+    total: 0,
+    declaration: {
+      total: 0,
+      percent: 0,
+    },
+    parentsNotAttendedUniversity: {
+      total: 0,
+      percent: 0,
+    },
+  };
+  for (let i = 0, len = applications.length; i < len; ++i) {
+    const application = applications[i].equalityAndDiversitySurvey ? applications[i].equalityAndDiversitySurvey : applications[i];
+
+    if (Object.prototype.hasOwnProperty.call(application, 'parentsAttendedUniversity')) {
+      if (application.parentsAttendedUniversity === false) {
+        stats.parentsNotAttendedUniversity.total += 1;
+        stats.declaration.total += 1;
       }
+      else if (application.parentsAttendedUniversity !== 'prefer-not-to-say') {
+        stats.declaration.total += 1;
+      }
+    }
+  }
+  stats.total = applications.length;
+  const ignoreKeys = ['total', 'declaration', 'preferNotToSay', 'noAnswer', 'other'];
+  calculatePercents(stats, ignoreKeys);
+  return stats;
+};
+
+const firstGenerationUniversityStats = (applications) => {
+  const stats = {
+    total: 0,
+    declaration: {
+      total: 0,
+      percent: 0,
+    },
+    firstGenerationUniversity: {
+      total: 0,
+      percent: 0,
+    },
+  };
+  for (let i = 0, len = applications.length; i < len; ++i) {
+    const application = applications[i].equalityAndDiversitySurvey ? applications[i].equalityAndDiversitySurvey : applications[i];
+
+    if (Object.prototype.hasOwnProperty.call(application, 'firstGenerationStudent')) {
       if (application.firstGenerationStudent === true) {
         stats.firstGenerationUniversity.total += 1;
-        //stats.total += 1;
-        //stats.declaration.total += 1;
+        stats.declaration.total += 1;
+      }
+      else if (application.firstGenerationStudent !== 'prefer-not-to-say') {
+        stats.declaration.total += 1;
       }
     }
   }
-
-  // Basing these stats on the declaration total NOT the total (which the other stats are being compared to!)
-  // @TODO: Awaiting confirmation that using the decalration total is the right thing to do here
-  stats.declaration.total = applications.length;
-
-  stats.attendedUKStateSchool.percent = stats.attendedUKStateSchool.total ? (stats.attendedUKStateSchool.total / stats.declaration.total) * 100 : 0;
-  if (Object.prototype.hasOwnProperty.call(stats, 'parentsAttendedUniversity')) {
-    stats.parentsAttendedUniversity.percent = stats.parentsAttendedUniversity.total ? (stats.parentsAttendedUniversity.total / stats.declaration.total) * 100 : 0;
-  }
-  if (Object.prototype.hasOwnProperty.call(stats, 'firstGenerationUniversity')) {
-    stats.firstGenerationUniversity.percent = stats.firstGenerationUniversity.total ? (stats.firstGenerationUniversity.total / stats.declaration.total) * 100 : 0;
-  }
-  //calculatePercents(stats);
+  stats.total = applications.length;
+  const ignoreKeys = ['total', 'declaration', 'preferNotToSay', 'noAnswer', 'other'];
+  calculatePercents(stats, ignoreKeys);
   return stats;
 };

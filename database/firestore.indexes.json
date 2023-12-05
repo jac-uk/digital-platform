@@ -179,6 +179,94 @@
           "order": "ASCENDING"
         },
         {
+          "fieldPath": "preSelectionDayQuestionnaire.status",
+          "order": "ASCENDING"
+        },
+        {
+          "fieldPath": "application.referenceNumber",
+          "order": "ASCENDING"
+        }
+      ]
+    },
+    {
+      "collectionGroup": "applicationRecords",
+      "queryScope": "COLLECTION",
+      "fields": [
+        {
+          "fieldPath": "active",
+          "order": "ASCENDING"
+        },
+        {
+          "fieldPath": "exercise.id",
+          "order": "ASCENDING"
+        },
+        {
+          "fieldPath": "preSelectionDayQuestionnaire.status",
+          "order": "ASCENDING"
+        },
+        {
+          "fieldPath": "application.referenceNumber",
+          "order": "DESCENDING"
+        }
+      ]
+    },
+    {
+      "collectionGroup": "applicationRecords",
+      "queryScope": "COLLECTION",
+      "fields": [
+        {
+          "fieldPath": "active",
+          "order": "ASCENDING"
+        },
+        {
+          "fieldPath": "exercise.id",
+          "order": "ASCENDING"
+        },
+        {
+          "fieldPath": "preSelectionDayQuestionnaire.status",
+          "order": "ASCENDING"
+        },
+        {
+          "fieldPath": "candidate.fullName",
+          "order": "ASCENDING"
+        }
+      ]
+    },
+    {
+      "collectionGroup": "applicationRecords",
+      "queryScope": "COLLECTION",
+      "fields": [
+        {
+          "fieldPath": "active",
+          "order": "ASCENDING"
+        },
+        {
+          "fieldPath": "exercise.id",
+          "order": "ASCENDING"
+        },
+        {
+          "fieldPath": "preSelectionDayQuestionnaire.status",
+          "order": "ASCENDING"
+        },
+        {
+          "fieldPath": "candidate.fullName",
+          "order": "DESCENDING"
+        }
+      ]
+    },
+    {
+      "collectionGroup": "applicationRecords",
+      "queryScope": "COLLECTION",
+      "fields": [
+        {
+          "fieldPath": "active",
+          "order": "ASCENDING"
+        },
+        {
+          "fieldPath": "exercise.id",
+          "order": "ASCENDING"
+        },
+        {
           "fieldPath": "scenario.panelId",
           "order": "ASCENDING"
         },
@@ -2637,6 +2725,34 @@
           "order": "ASCENDING"
         },
         {
+          "fieldPath": "_applications.applied",
+          "order": "ASCENDING"
+        }
+      ]
+    },
+    {
+      "collectionGroup": "exercises",
+      "queryScope": "COLLECTION",
+      "fields": [
+        {
+          "fieldPath": "state",
+          "order": "ASCENDING"
+        },
+        {
+          "fieldPath": "_applications.applied",
+          "order": "DESCENDING"
+        }
+      ]
+    },
+    {
+      "collectionGroup": "exercises",
+      "queryScope": "COLLECTION",
+      "fields": [
+        {
+          "fieldPath": "state",
+          "order": "ASCENDING"
+        },
+        {
           "fieldPath": "_lateApplicationRequests",
           "order": "ASCENDING"
         },
@@ -3131,426 +3247,16 @@
       ]
     },
     {
-      "collectionGroup": "qualifyingTestReports",
+      "collectionGroup": "userInvitations",
       "queryScope": "COLLECTION",
       "fields": [
-        {
-          "fieldPath": "exercise.id",
-          "order": "ASCENDING"
-        },
-        {
-          "fieldPath": "title",
-          "order": "ASCENDING"
-        }
-      ]
-    },
-    {
-      "collectionGroup": "qualifyingTestResponses",
-      "queryScope": "COLLECTION",
-      "fields": [
-        {
-          "fieldPath": "candidate.reasonableAdjustments",
-          "order": "ASCENDING"
-        },
-        {
-          "fieldPath": "qualifyingTest.id",
-          "order": "ASCENDING"
-        },
-        {
-          "fieldPath": "candidate.fullName",
-          "order": "ASCENDING"
-        }
-      ]
-    },
-    {
-      "collectionGroup": "qualifyingTestResponses",
-      "queryScope": "COLLECTION",
-      "fields": [
-        {
-          "fieldPath": "candidate.reasonableAdjustments",
-          "order": "ASCENDING"
-        },
-        {
-          "fieldPath": "qualifyingTest.id",
-          "order": "ASCENDING"
-        },
-        {
-          "fieldPath": "candidate.fullName",
-          "order": "DESCENDING"
-        }
-      ]
-    },
-    {
-      "collectionGroup": "qualifyingTestResponses",
-      "queryScope": "COLLECTION",
-      "fields": [
-        {
-          "fieldPath": "candidate.reasonableAdjustments",
-          "order": "ASCENDING"
-        },
-        {
-          "fieldPath": "qualifyingTest.id",
-          "order": "ASCENDING"
-        },
-        {
-          "fieldPath": "duration.testDurationAdjusted",
-          "order": "ASCENDING"
-        }
-      ]
-    },
-    {
-      "collectionGroup": "qualifyingTestResponses",
-      "queryScope": "COLLECTION",
-      "fields": [
-        {
-          "fieldPath": "candidate.reasonableAdjustments",
-          "order": "ASCENDING"
-        },
-        {
-          "fieldPath": "qualifyingTest.id",
-          "order": "ASCENDING"
-        },
-        {
-          "fieldPath": "duration.testDurationAdjusted",
-          "order": "DESCENDING"
-        }
-      ]
-    },
-    {
-      "collectionGroup": "qualifyingTestResponses",
-      "queryScope": "COLLECTION",
-      "fields": [
-        {
-          "fieldPath": "candidate.reasonableAdjustments",
-          "order": "ASCENDING"
-        },
-        {
-          "fieldPath": "qualifyingTest.id",
-          "order": "ASCENDING"
-        },
-        {
-          "fieldPath": "status",
-          "order": "ASCENDING"
-        }
-      ]
-    },
-    {
-      "collectionGroup": "qualifyingTestResponses",
-      "queryScope": "COLLECTION",
-      "fields": [
-        {
-          "fieldPath": "candidate.reasonableAdjustments",
-          "order": "ASCENDING"
-        },
-        {
-          "fieldPath": "qualifyingTest.id",
-          "order": "ASCENDING"
-        },
-        {
-          "fieldPath": "status",
-          "order": "DESCENDING"
-        }
-      ]
-    },
-    {
-      "collectionGroup": "qualifyingTestResponses",
-      "queryScope": "COLLECTION",
-      "fields": [
-        {
-          "fieldPath": "qualifyingTest.id",
-          "order": "ASCENDING"
-        },
-        {
-          "fieldPath": "candidate.email",
-          "order": "ASCENDING"
-        }
-      ]
-    },
-    {
-      "collectionGroup": "qualifyingTestResponses",
-      "queryScope": "COLLECTION",
-      "fields": [
-        {
-          "fieldPath": "qualifyingTest.id",
-          "order": "ASCENDING"
-        },
-        {
-          "fieldPath": "candidate.email",
-          "order": "DESCENDING"
-        }
-      ]
-    },
-    {
-      "collectionGroup": "qualifyingTestResponses",
-      "queryScope": "COLLECTION",
-      "fields": [
-        {
-          "fieldPath": "qualifyingTest.id",
-          "order": "ASCENDING"
-        },
-        {
-          "fieldPath": "candidate.fullName",
-          "order": "ASCENDING"
-        }
-      ]
-    },
-    {
-      "collectionGroup": "qualifyingTestResponses",
-      "queryScope": "COLLECTION",
-      "fields": [
-        {
-          "fieldPath": "qualifyingTest.id",
-          "order": "ASCENDING"
-        },
-        {
-          "fieldPath": "candidate.fullName",
-          "order": "DESCENDING"
-        }
-      ]
-    },
-    {
-      "collectionGroup": "qualifyingTestResponses",
-      "queryScope": "COLLECTION",
-      "fields": [
-        {
-          "fieldPath": "qualifyingTest.id",
-          "order": "ASCENDING"
-        },
-        {
-          "fieldPath": "duration.testDurationAdjusted",
-          "order": "ASCENDING"
-        }
-      ]
-    },
-    {
-      "collectionGroup": "qualifyingTestResponses",
-      "queryScope": "COLLECTION",
-      "fields": [
-        {
-          "fieldPath": "qualifyingTest.id",
-          "order": "ASCENDING"
-        },
-        {
-          "fieldPath": "duration.testDurationAdjusted",
-          "order": "DESCENDING"
-        }
-      ]
-    },
-    {
-      "collectionGroup": "qualifyingTestResponses",
-      "queryScope": "COLLECTION",
-      "fields": [
-        {
-          "fieldPath": "qualifyingTest.id",
-          "order": "ASCENDING"
-        },
-        {
-          "fieldPath": "status",
-          "order": "ASCENDING"
-        }
-      ]
-    },
-    {
-      "collectionGroup": "qualifyingTestResponses",
-      "queryScope": "COLLECTION",
-      "fields": [
-        {
-          "fieldPath": "qualifyingTest.id",
-          "order": "ASCENDING"
-        },
         {
           "fieldPath": "status",
           "order": "ASCENDING"
         },
         {
-          "fieldPath": "candidate.email",
+          "fieldPath": "email",
           "order": "ASCENDING"
-        }
-      ]
-    },
-    {
-      "collectionGroup": "qualifyingTestResponses",
-      "queryScope": "COLLECTION",
-      "fields": [
-        {
-          "fieldPath": "qualifyingTest.id",
-          "order": "ASCENDING"
-        },
-        {
-          "fieldPath": "status",
-          "order": "ASCENDING"
-        },
-        {
-          "fieldPath": "candidate.email",
-          "order": "DESCENDING"
-        }
-      ]
-    },
-    {
-      "collectionGroup": "qualifyingTestResponses",
-      "queryScope": "COLLECTION",
-      "fields": [
-        {
-          "fieldPath": "qualifyingTest.id",
-          "order": "ASCENDING"
-        },
-        {
-          "fieldPath": "status",
-          "order": "ASCENDING"
-        },
-        {
-          "fieldPath": "candidate.fullName",
-          "order": "ASCENDING"
-        }
-      ]
-    },
-    {
-      "collectionGroup": "qualifyingTestResponses",
-      "queryScope": "COLLECTION",
-      "fields": [
-        {
-          "fieldPath": "qualifyingTest.id",
-          "order": "ASCENDING"
-        },
-        {
-          "fieldPath": "status",
-          "order": "ASCENDING"
-        },
-        {
-          "fieldPath": "candidate.fullName",
-          "order": "DESCENDING"
-        }
-      ]
-    },
-    {
-      "collectionGroup": "qualifyingTestResponses",
-      "queryScope": "COLLECTION",
-      "fields": [
-        {
-          "fieldPath": "qualifyingTest.id",
-          "order": "ASCENDING"
-        },
-        {
-          "fieldPath": "status",
-          "order": "ASCENDING"
-        },
-        {
-          "fieldPath": "duration.testDurationAdjusted",
-          "order": "ASCENDING"
-        }
-      ]
-    },
-    {
-      "collectionGroup": "qualifyingTestResponses",
-      "queryScope": "COLLECTION",
-      "fields": [
-        {
-          "fieldPath": "qualifyingTest.id",
-          "order": "ASCENDING"
-        },
-        {
-          "fieldPath": "status",
-          "order": "ASCENDING"
-        },
-        {
-          "fieldPath": "duration.testDurationAdjusted",
-          "order": "DESCENDING"
-        }
-      ]
-    },
-    {
-      "collectionGroup": "qualifyingTestResponses",
-      "queryScope": "COLLECTION",
-      "fields": [
-        {
-          "fieldPath": "qualifyingTest.id",
-          "order": "ASCENDING"
-        },
-        {
-          "fieldPath": "status",
-          "order": "DESCENDING"
-        }
-      ]
-    },
-    {
-      "collectionGroup": "qualifyingTestResponses",
-      "queryScope": "COLLECTION",
-      "fields": [
-        {
-          "fieldPath": "qualifyingTest.id",
-          "order": "ASCENDING"
-        },
-        {
-          "fieldPath": "statusLog.started",
-          "order": "ASCENDING"
-        },
-        {
-          "fieldPath": "candidate.email",
-          "order": "ASCENDING"
-        }
-      ]
-    },
-    {
-      "collectionGroup": "qualifyingTestResponses",
-      "queryScope": "COLLECTION",
-      "fields": [
-        {
-          "fieldPath": "qualifyingTest.id",
-          "order": "ASCENDING"
-        },
-        {
-          "fieldPath": "statusLog.started",
-          "order": "ASCENDING"
-        },
-        {
-          "fieldPath": "candidate.fullName",
-          "order": "ASCENDING"
-        }
-      ]
-    },
-    {
-      "collectionGroup": "qualifyingTests",
-      "queryScope": "COLLECTION",
-      "fields": [
-        {
-          "fieldPath": "vacancy.id",
-          "order": "ASCENDING"
-        },
-        {
-          "fieldPath": "title",
-          "order": "ASCENDING"
-        }
-      ]
-    },
-    {
-      "collectionGroup": "qualifyingTests",
-      "queryScope": "COLLECTION",
-      "fields": [
-        {
-          "fieldPath": "vacancy.id",
-          "order": "ASCENDING"
-        },
-        {
-          "fieldPath": "title",
-          "order": "ASCENDING"
-        },
-        {
-          "fieldPath": "startDate",
-          "order": "ASCENDING"
-        }
-      ]
-    },
-    {
-      "collectionGroup": "qualifyingTests",
-      "queryScope": "COLLECTION",
-      "fields": [
-        {
-          "fieldPath": "vacancy.id",
-          "order": "ASCENDING"
-        },
-        {
-          "fieldPath": "title",
-          "order": "DESCENDING"
         }
       ]
     }

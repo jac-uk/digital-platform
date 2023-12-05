@@ -1,14 +1,10 @@
-//const { getDocument, applyUpdates, isDateInPast, formatDate } = require('../../shared/helpers');
+const { objectHasNestedProperty } = require('../../shared/helpers');
 
 module.exports = (config, firebase, db, auth) => {
   const { sendExerciseReadyForApproval } = require('./sendExerciseReadyForApproval')(config, firebase, db, auth);
   const { updateVacancy, deleteVacancy } = require('../vacancies')(config, db);
-  function isExercisePreviouslyApproved(exercise) {
-    if (exercise && exercise._approval && exercise._approval.approved && exercise._approval.approved.date) {
-      return true;
-    }
-    return false;
-  }
+  const { updateExercise } = require('./exercises')(db);
+  const { getSearchMap } = require('../../shared/search');
 
   return onUpdate;
 
@@ -19,7 +15,7 @@ module.exports = (config, firebase, db, auth) => {
   async function onUpdate(exerciseId, dataBefore, dataAfter) {
 
     const isDraftOrReady = dataAfter.state === 'draft' || dataAfter.state === 'ready';
-    const isPreviouslyApproved = isExercisePreviouslyApproved(dataAfter);
+    const isPreviouslyApproved = objectHasNestedProperty(dataAfter, '_approval.initialApprovalDate');
     const isUnlocked = isDraftOrReady && isPreviouslyApproved;
 
     if (dataAfter.published === true) {
@@ -41,6 +37,16 @@ module.exports = (config, firebase, db, auth) => {
         exerciseId,
         exercise: dataAfter,
       });
+    }
+
+    // Update search map if searchable keys have changed (ie name/ref no)
+    const hasUpdatedName = dataBefore.name !== dataAfter.name;
+    const hasUpdatedReferenceNumber = dataBefore.referenceNumber !== dataAfter.referenceNumber;
+    if (hasUpdatedName || hasUpdatedReferenceNumber) {
+      // Update search map
+      const data = {};
+      data._search = getSearchMap([dataAfter.name, dataAfter.referenceNumber]);
+      updateExercise(exerciseId, data);
     }
 
     return true;

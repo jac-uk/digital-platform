@@ -123,7 +123,27 @@ const attendedUKStateSchool = (equalityAndDiversitySurvey, exercise) => {
 };
 
 const applicationOpenDatePost01042023 = (exercise) => {
+  const usesPre01042023Questions = ['JAC00130', 'JAC00123', 'JAC00164'].includes(exercise.referenceNumber);
+  if (usesPre01042023Questions) {
+    return false;
+  }
   return Object.prototype.hasOwnProperty.call(exercise, 'applicationOpenDate') && exercise.applicationOpenDate.toDate() > new Date('2023-04-01');
+};
+
+/**
+ * Returns the number with its corresponding ordinal suffix.
+ *
+ * @param {number} n - The number for which the ordinal suffix needs to be determined.
+ * @returns {string} - The input number with its corresponding ordinal suffix.
+ *
+ * @example
+ * const result = ordinal(1);
+ * console.log(result); // Output: 1st
+ */
+const ordinal = (n) => {
+  const s = ['th', 'st', 'nd', 'rd'];
+  const v = n % 100;
+  return n + (s[(v - 20) % 10] || s[v] || s[0]);
 };
 
 module.exports = {
@@ -137,4 +157,5 @@ module.exports = {
   flattenProfessionalBackground,
   attendedUKStateSchool,
   applicationOpenDatePost01042023,
+  ordinal,
 };

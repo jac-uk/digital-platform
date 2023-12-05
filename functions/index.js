@@ -7,18 +7,22 @@ exports.scheduleScanAllFiles = require('./scheduledFunctions/scheduleScanAllFile
 
 // Background
 exports.onDelete = require('./backgroundFunctions/onDelete');
-// exports.onExerciseCreate = require('./backgroundFunctions/onExerciseCreate');
+exports.onExerciseCreate = require('./backgroundFunctions/onExerciseCreate');
 exports.onExerciseUpdate = require('./backgroundFunctions/onExerciseUpdate');
 exports.onApplicationCreate = require('./backgroundFunctions/onApplicationCreate');
 exports.onApplicationUpdate = require('./backgroundFunctions/onApplicationUpdate');
 exports.onAssessmentUpdate = require('./backgroundFunctions/onAssessmentUpdate');
 exports.onApplicationRecordUpdate = require('./backgroundFunctions/onApplicationRecordUpdate');
-exports.onQualifyingTestResponseUpdate = require('./backgroundFunctions/onQualifyingTestResponseUpdate');
 exports.onPanelUpdate = require('./backgroundFunctions/onPanelUpdate');
 exports.onDocumentUploaded = require('./backgroundFunctions/onDocumentUploaded');
 exports.onCandidatePersonalDetailsCreate = require('./backgroundFunctions/onCandidatePersonalDetailsCreate');
 exports.onCandidatePersonalDetailsUpdate = require('./backgroundFunctions/onCandidatePersonalDetailsUpdate');
 exports.onMessageCreate = require('./backgroundFunctions/onMessageCreate');
+exports.onBugReportCreate = require('./backgroundFunctions/onBugReportCreate');
+exports.onUserUpdate = require('./backgroundFunctions/onUserUpdate');
+exports.onUserDelete = require('./backgroundFunctions/onUserDelete');
+exports.onRoleUpdate = require('./backgroundFunctions/onRoleUpdate');
+exports.onCandidateFormResponseUpdate = require('./backgroundFunctions/onCandidateFormResponseUpdate');
 
 // Callable
 exports.getApplicationData = require('./callableFunctions/getApplicationData');
@@ -36,15 +40,9 @@ exports.generateSignInWithEmailLink = require('./callableFunctions/generateSignI
 exports.initialiseApplicationRecords = require('./callableFunctions/initialiseApplicationRecords');
 exports.sendApplicationReminders = require('./callableFunctions/sendApplicationReminders');
 exports.sendCharacterCheckRequests = require('./callableFunctions/sendCharacterCheckRequests');
+exports.sendCandidateFormNotifications = require('./callableFunctions/sendCandidateFormNotifications');
 exports.enableCharacterChecks = require('./callableFunctions/enableCharacterChecks');
-exports.initialiseQualifyingTest = require('./callableFunctions/initialiseQualifyingTest');
-exports.activateQualifyingTest = require('./callableFunctions/activateQualifyingTest');
 exports.initialiseMissingApplicationRecords = require('./callableFunctions/initialiseMissingApplicationRecords');
-exports.sendQualifyingTestReminders = require('./callableFunctions/sendQualifyingTestReminders');
-exports.scoreQualifyingTest = require('./callableFunctions/scoreQualifyingTest');
-exports.cutOffScoreUpdateStatuses = require('./callableFunctions/cutOffScoreUpdateStatuses');
-exports.updateStatus = require('./callableFunctions/updateStatus');
-exports.generateQualifyingTestReport = require('./callableFunctions/generateQualifyingTestReport');
 exports.exportExerciseData = require('./callableFunctions/exportExerciseData');
 exports.targetedOutreachReport = require('./callableFunctions/targetedOutreachReport');
 exports.transferHandoverData = require('./callableFunctions/transferHandoverData');
@@ -52,7 +50,6 @@ exports.exportApplicationContactsData = require('./callableFunctions/exportAppli
 exports.exportApplicationEligibilityIssues = require('./callableFunctions/exportApplicationEligibilityIssues');
 exports.generateHandoverReport = require('./callableFunctions/generateHandoverReport');
 exports.generateReasonableAdjustmentsReport = require('./callableFunctions/generateReasonableAdjustmentsReport');
-exports.exportQualifyingTestResponses = require('./callableFunctions/exportQualifyingTestResponses');
 exports.generateAgencyReport = require('./callableFunctions/generateAgencyReport');
 exports.generateStatutoryConsultationReport = require('./callableFunctions/generateStatutoryConsultationReport');
 exports.logEvent = require('./callableFunctions/logEvent');
@@ -81,12 +78,13 @@ exports.deleteApplications = require('./callableFunctions/deleteApplications');
 exports.createTestUsers = require('./callableFunctions/createTestUsers');
 exports.deleteTestUsers = require('./callableFunctions/deleteTestUsers');
 exports.createTask = require('./callableFunctions/tasks/createTask');
-exports.createTaskForExistingQT = require('./callableFunctions/tasks/createTaskForExistingQT');
 exports.updateTask = require('./callableFunctions/tasks/updateTask');
 exports.verifyRecaptcha = require('./callableFunctions/verifyRecaptcha');
 exports.processNotificationsNow = require('./callableFunctions/processNotifications');
 exports.checkEnabledUserByEmail = require('./callableFunctions/checkEnabledUserByEmail');
 exports.extractDocumentContent = require('./callableFunctions/extractDocumentContent');
+exports.updateUserCustomClaims = require('./callableFunctions/updateUserCustomClaims');
+exports.exportApplicationCommissionerConflicts = require('./callableFunctions/exportApplicationCommissionerConflicts');
 
 // Callable - QTs v2
 exports.listQualifyingTests = require('./callableFunctions/qualifyingTests/v2/listQualifyingTests');

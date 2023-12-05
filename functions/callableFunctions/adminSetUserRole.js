@@ -22,4 +22,3 @@ module.exports = functions.region('europe-west2').https.onCall(async (data, cont
 
   return await adminSetUserRole(data);
 });
-

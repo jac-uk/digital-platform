@@ -1,5 +1,7 @@
 const { formatDate } = require('./helpers');
 const { applicationOpenDatePost01042023 } = require('./converters/helpers');
+const { getSearchMap } = require('./search');
+const { objectHasNestedProperty } = require('./helpers');
 
 module.exports = (CONSTANTS) => {
   return {
@@ -17,6 +19,9 @@ module.exports = (CONSTANTS) => {
     newVacancy,
     newNotificationLateApplicationRequest,
     newNotificationLateApplicationResponse,
+    newUser,
+    newCandidateFormResponse,
+    newCandidateFormNotification,
   };
 
   function newNotificationExerciseApprovalSubmit(firebase, exerciseId, exercise, email) {
@@ -363,22 +368,39 @@ module.exports = (CONSTANTS) => {
       default:
         assessment.assessor = {};
     }
+
     // assessment type
-    switch (exercise.assessmentOptions) {
-      case 'self-assessment-with-competencies':
-      case 'self-assessment-with-competencies-and-cv':
-      case 'statement-of-suitability-with-competencies':
+    if (exercise.assessmentMethods) {
+      if (
+        exercise.assessmentMethods[CONSTANTS.ASSESSMENT_METHOD.SELF_ASSESSMENT_WITH_COMPETENCIES] ||
+        exercise.assessmentMethods[CONSTANTS.ASSESSMENT_METHOD.STATEMENT_OF_SUITABILITY_WITH_COMPETENCIES]
+      ) {
         assessment.type = CONSTANTS.ASSESSMENT_TYPE.COMPETENCY;
-        break;
-      case 'statement-of-suitability-with-skills-and-abilities':
-      case 'statement-of-suitability-with-skills-and-abilities-and-cv':
+      } else if (exercise.assessmentMethods[CONSTANTS.ASSESSMENT_METHOD.STATEMENT_OF_SUITABILITY_WITH_SKILLS_AND_ABILITIES]) {
         assessment.type = CONSTANTS.ASSESSMENT_TYPE.SKILLS;
-        break;
-      case 'statement-of-eligibility':
-      default:
-        assessment.type = CONSTANTS.ASSESSMENT_TYPE.GENERAL;
-        break;
+      }
     }
+    if (!assessment.type) {
+      assessment.type = CONSTANTS.ASSESSMENT_TYPE.GENERAL;
+    }
+
+    // build searchables for search map
+    const searchables = [
+      application.personalDetails.fullName, // candidate name
+      application.referenceNumber,
+    ];
+    // Add assessor details (if they exist)
+    if (objectHasNestedProperty(assessment, 'assessor.fullName')) {
+      searchables.push(assessment.assessor.fullName);
+    }
+    if (objectHasNestedProperty(assessment, 'assessor.email')) {
+      searchables.push(assessment.assessor.email);
+    }
+    // build search map
+    const searchMap = getSearchMap(searchables);
+    // add search map to assessment
+    assessment._search = searchMap;
+
     return assessment;
   }
 
@@ -470,7 +492,16 @@ module.exports = (CONSTANTS) => {
   }
 
   function newApplicationRecord(firebase, exercise, application) {
+    // add search map
+    const search = getSearchMap([
+      application.personalDetails.fullName,
+      application.personalDetails.email,
+      application.personalDetails.nationalInsuranceNumber,
+      application.referenceNumber,
+    ]);
+    
     let applicationRecord = {
+      _search: search,
       exercise: {
         id: exercise.id,
         name: exercise.name,
@@ -487,7 +518,7 @@ module.exports = (CONSTANTS) => {
         status: 'not requested',
       },
       active: true,
-      stage: 'review',  // TODO change to 'applied'
+      stage: exercise._processingVersion >= 2 ? 'applied' : 'review',
       status: '',
       flags: {
         characterIssues: false,
@@ -535,6 +566,7 @@ module.exports = (CONSTANTS) => {
       assessmentOptions: null,
       authorisations: null,
       characterChecks: null,
+      commissioners: null,
       contactIndependentAssessors: null,
       criticalAnalysisTestDate: null,
       criticalAnalysisTestEndTime: null,
@@ -613,7 +645,11 @@ module.exports = (CONSTANTS) => {
     const dataKeys = Object.keys(data);
     for (var key in vacancyModel) {
       if (dataKeys.includes(key)) {
-        vacancy[key] = data[key];
+        if (key === 'commissioners') {
+          vacancy[key] = data[key].map(item => ({ name: item.name }));
+        } else {
+          vacancy[key] = data[key];
+        }
       }
     }
     return vacancy;
@@ -681,6 +717,73 @@ module.exports = (CONSTANTS) => {
       reference: {
         collection: 'messages',
         id: messageId,
+      },
+      createdAt: firebase.firestore.Timestamp.fromDate(new Date()),
+      status: 'ready',
+    };
+  }
+
+  function newUser(user) {
+    return {
+      displayName: user.displayName || null,
+      email: user.email || null,
+      disabled: user.disabled || false,
+      role: {
+        id: user.customClaims && user.customClaims.r ? user.customClaims.r : null,
+        isChanged: false,
+      },
+      uid: user.uid || null,
+    };
+  }
+
+  function newCandidateFormResponse(firebase, formId, taskType, applicationId) {
+    return {
+      formId,
+      taskType,
+      applicationId,
+      status: 'created',  // TODO use constant
+      statusLog: {
+        created: firebase.firestore.FieldValue.serverTimestamp(),
+      },
+      progress: {},
+    };
+  }
+
+  function newCandidateFormNotification(firebase, application, type, exerciseMailbox, exerciseManagerName, dueDate) {
+    let templateId = '';
+    let templateName = '';
+    
+    if (type === 'request') {
+      templateId = 'bba6cebb-b3b3-4ba3-818b-af7b9a011f77';
+      templateName = 'Candidate form consent form request';
+    } else if (type === 'reminder') {
+      templateId = '59522cc8-ede1-464c-8ab9-91b05f00af25';
+      templateName = 'Candidate form consent form reminder';
+    } else if (type === 'submit') {
+      templateId = '1492dd03-75b1-45e3-af19-875b7c1bdf11';
+      templateName = 'Candidate form consent form submit';
+    }
+
+    if (!templateId || !templateName) return null;
+
+    return {
+      email: application.personalDetails.email,
+      replyTo: exerciseMailbox,
+      template: {
+        name: templateName,
+        id: templateId,
+      },
+      personalisation: {
+        exerciseName: application.exerciseName,
+        dueDate,
+        urlRequired: `${CONSTANTS.APPLY_URL}/sign-in`,
+        applicantName: application.personalDetails.fullName,
+        selectionExerciseManager: exerciseManagerName,
+        exerciseMailbox,
+      },
+      reference: {
+        collection: 'applications',
+        id: application.id,
       },
       createdAt: firebase.firestore.Timestamp.fromDate(new Date()),
       status: 'ready',
