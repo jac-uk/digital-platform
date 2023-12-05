@@ -8,7 +8,6 @@ module.exports = (config, firebase, db, auth) => {
    * Event handler for Update
    */
   async function onUpdate(docId, dataBefore, dataAfter) {
-    console.log('FORM RESPONSE UPDATED');
     const commands = [];
     if (dataBefore.status !== dataAfter.status && dataAfter.applicationId && dataAfter.taskType) {
       const saveData = {};
