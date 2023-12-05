@@ -38,6 +38,19 @@ module.exports = (config, firebase, db, auth) => {
         });
       }
     }
+
+    // check for candidate form response status changes
+    const supportedCandidateForms = [ 'preSelectionDayQuestionnaire' ];
+    supportedCandidateForms.forEach(async form => {
+      if (dataAfter[form]) {  // form is relevant
+        if (!dataBefore[form] || (dataBefore[form] && dataBefore[form].status !== dataAfter[form].status)) {  // status has been introduced or changed
+          const applicationData = {};
+          applicationData[form] = dataAfter[form];
+          await db.doc(`applications/${dataBefore.application.id}`).update(applicationData);
+        }
+      }
+    });
+
     return true;
   }
 

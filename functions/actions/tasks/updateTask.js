@@ -591,7 +591,7 @@ module.exports = (config, firebase, db) => {
     const candidateIds = [];
     applications.forEach(application => {
       candidateIds.push(application.userId);
-      const newResponse = newCandidateFormResponse(firebase, candidateForm.id, application.id);
+      const newResponse = newCandidateFormResponse(firebase, candidateForm.id, task.type, application.id);
       commands.push({
         command: 'set',
         ref: db.collection(`candidateForms/${candidateForm.id}/responses`).doc(application.userId),
@@ -599,12 +599,6 @@ module.exports = (config, firebase, db) => {
       });
       const appplicationRecordData = {};
       appplicationRecordData[task.type] = { status: newResponse.status };
-      // store status both in application and applicationRecord
-      commands.push({
-        command: 'update',
-        ref: db.collection('applications').doc(application.id),
-        data: appplicationRecordData,
-      });
       commands.push({
         command: 'update',
         ref: db.collection('applicationRecords').doc(application.id),
