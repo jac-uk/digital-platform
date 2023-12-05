@@ -591,7 +591,7 @@ module.exports = (config, firebase, db) => {
     const candidateIds = [];
     applications.forEach(application => {
       candidateIds.push(application.userId);
-      const newResponse = newCandidateFormResponse(firebase, candidateForm.id, application.id);
+      const newResponse = newCandidateFormResponse(firebase, candidateForm.id, task.type, application.id);
       commands.push({
         command: 'set',
         ref: db.collection(`candidateForms/${candidateForm.id}/responses`).doc(application.userId),

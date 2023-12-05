@@ -736,9 +736,10 @@ module.exports = (CONSTANTS) => {
     };
   }
 
-  function newCandidateFormResponse(firebase, formId, applicationId) {
+  function newCandidateFormResponse(firebase, formId, taskType, applicationId) {
     return {
-      formId: formId,
+      formId,
+      taskType,
       applicationId,
       status: 'created',  // TODO use constant
       statusLog: {
