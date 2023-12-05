@@ -344,18 +344,13 @@ module.exports = (config, firebase, db, auth) => {
         });
       }
 
-      // update application and applicationRecord
+      // update applicationRecord
       if (notificationType === 'request') {
         const data = {
           [`${type}.requestedAt`]: firebase.firestore.Timestamp.fromDate(new Date()),
           [`${type}.status`]: 'requested',
         };
         commands.push(
-          {
-            command: 'update',
-            ref: application.ref,
-            data,
-          },
           {
             command: 'update',
             ref: db.collection('applicationRecords').doc(application.id),
@@ -370,16 +365,11 @@ module.exports = (config, firebase, db, auth) => {
         commands.push(
           {
             command: 'update',
-            ref: application.ref,
-            data,
-          },
-          {
-            command: 'update',
             ref: db.collection('applicationRecords').doc(application.id),
             data,
           }
         );
-      } else if (notificationType === 'submit') {
+      } else if (notificationType === 'submit') { // TODO check this works ok
         commands.push({
           command: 'update',
           ref: application.ref,
