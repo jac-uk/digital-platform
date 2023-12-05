@@ -43,6 +43,14 @@ service cloud.firestore {
     //  && request.resource.data.keys().hasOnly(all);
   }
 
+  function canUpdateApplicationViaCandidateForm(formId) {
+    return resource.data.status == request.resource.data.status &&
+      resource.data.status in ["draft", "applied"] &&
+      formId in resource.data &&
+      resource.data[formId].status in ["created", "requested"] &&
+      request.resource.data[formId].status in ["created", "requested"];
+  }
+
   match /databases/{database}/documents {
 
     match /{document=**} {
@@ -205,6 +213,8 @@ service cloud.firestore {
           resource.data.characterChecks.status == "requested" &&
           request.resource.data.characterChecks.status in ["requested", "completed"]
           )
+          ||
+          canUpdateApplicationViaCandidateForm('preSelectionDayQuestionnaire')
         );
 
       // allow JAC admins to edit an application @TODO restrict what can be changed and by which role
@@ -307,7 +317,7 @@ service cloud.firestore {
         allow read, update: if userIsAuthenticated() && userIsJAC();
 
         allow read: if userIsAuthenticated() && currentUser() == responseId;
-        allow update: if userIsAuthenticated() && currentUser() == responseId && request.resource.data.applicationId == resource.data.applicationId;
+        allow update: if userIsAuthenticated() && currentUser() == responseId && request.resource.data.applicationId == resource.data.applicationId && resource.data.status != 'completed';
       }
     }
 

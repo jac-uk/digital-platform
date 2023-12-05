@@ -1,7 +1,6 @@
 'use strict';
 
-const config = require('../../functions/shared/config.js');
-const { auth, firebase, app, db } = require('../../functions/shared/admin.js');
+const { app, db } = require('../../functions/shared/admin.js');
 
 const main = async () => {
   const documentId = 'JypoxJYQCvV5MEU3T5u3';
