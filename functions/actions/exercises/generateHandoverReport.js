@@ -296,31 +296,28 @@ const formatLegalData = (exercise, application) => {
     }).join('\n');
   }
 
-  let judicialExperience;
+  let judicialExperience = '';
   if (exercise._applicationVersion >= 3) {
-    let quasiJudicialSittingDays = 0;
-    let feePaidOrSalariedSittingDays = 0;
+    let judicialExperiences = [];
+    let quasiJudicialExperiences = [];
     Array.isArray(application.experience) && application.experience.forEach(experience => {
-      if (
-        experience.judicialFunctions &&
-        experience.judicialFunctions.duration &&
-        experience.taskDetails &&
-        experience.taskDetails.workingBasis
-      ) {
-        if (experience.judicialFunctions.type === 'quasi-judicial-post') {
-          quasiJudicialSittingDays += experience.judicialFunctions.duration;
-        }
-        if (['Full-time', 'Salaried part-time', 'Fee paid'].includes(experience.taskDetails.workingBasis)) {
-          feePaidOrSalariedSittingDays += 0;
+      if (experience.jobTitle && experience.judicialFunctions) {
+        if (experience.judicialFunctions.type === 'judicial-post') {
+          judicialExperiences.push(experience.jobTitle);
+        } else if (experience.judicialFunctions.type === 'quasi-judicial-post') {
+          quasiJudicialExperiences.push(experience.jobTitle);
         }
       }
     });
 
-    if (quasiJudicialSittingDays) {
-      judicialExperience = `Quasi-judicial body - ${quasiJudicialSittingDays} days`;
-    } else if (feePaidOrSalariedSittingDays) {
-      judicialExperience = `Fee paid or salaried judge - ${lookup(feePaidOrSalariedSittingDays)} days`;
-    } else {
+    if (judicialExperiences.length) {
+      judicialExperience += `Judicial - ${judicialExperiences.join(', ')}\n`;
+    }
+    if (quasiJudicialExperiences.length) {
+      judicialExperience += `Quasi-judicial - ${quasiJudicialExperiences.join(', ')}`;
+    }
+
+    if (!judicialExperience) {
       judicialExperience = `Acquired skills in other way - ${lookup(application.experienceDetails)}`;
     }
   } else {
