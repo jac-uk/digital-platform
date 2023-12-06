@@ -619,7 +619,7 @@ module.exports = (CONSTANTS) => {
       selectionCriteria: null,
       selectionDays: null,
       selectionExerciseManagerFullName: null,
-      selfAssessmentWordLimit: null,
+      selfAssessmentWordLimits: null,
       shortlistingMethods: null,
       siftStartDate: null,
       siftEndDate: null,
