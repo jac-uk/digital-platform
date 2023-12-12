@@ -472,7 +472,7 @@ module.exports = (config, firebase, db) => {
       commands.push({
         command: 'set',
         ref: db.collection('notifications').doc(),
-        data: newNotificationAssessmentRequest(firebase, assessment),
+        data: newNotificationAssessmentRequest(firebase, assessment, exercise),
       });
       // update assessment
       if (assessment.status === 'draft') { countDraft++; }
@@ -511,6 +511,9 @@ module.exports = (config, firebase, db) => {
   *       all assessments
   */
   async function sendAssessmentReminders(params) {
+    // get exercise
+    const exercise = await getExercise(params.exerciseId);
+
     // get assessments
     let assessments = null;
     if (params.assessmentId) {
@@ -544,7 +547,7 @@ module.exports = (config, firebase, db) => {
       commands.push({
         command: 'set',
         ref: db.collection('notifications').doc(),
-        data: newNotificationAssessmentReminder(firebase, assessment),
+        data: newNotificationAssessmentReminder(firebase, assessment, exercise),
       });
     }
 

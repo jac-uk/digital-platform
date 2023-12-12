@@ -204,7 +204,7 @@ module.exports = (CONSTANTS) => {
     };
   }
 
-  function newNotificationAssessmentRequest(firebase, assessment) {
+  function newNotificationAssessmentRequest(firebase, assessment, exercise) {
     const link = `${CONSTANTS.ASSESSMENTS_URL}/sign-in?email=${assessment.assessor.email}&ref=assessments/${assessment.id}`;
     let xCompetencyAreasOrXSkillsAndAbilities;
     switch (assessment.type) {
@@ -219,7 +219,7 @@ module.exports = (CONSTANTS) => {
     }
     return {
       email: assessment.assessor.email,
-      replyTo: assessment.exercise.exerciseMailbox,
+      replyTo: exercise.exerciseMailbox,
       template: {
         name: 'Assessment Request',
         id: '37093b3e-3743-45bb-b2d6-9e8465d97944',
@@ -227,14 +227,14 @@ module.exports = (CONSTANTS) => {
       personalisation: {
         assessorName: assessment.assessor.fullName,
         applicantName: assessment.candidate.fullName,
-        exerciseName: assessment.exercise.name,
+        exerciseName: exercise.name,
         xCompetencyAreasOrXSkillsAndAbilities: xCompetencyAreasOrXSkillsAndAbilities,
         submitAssessmentDueDate: assessment.dueDate.toDate().toLocaleDateString('en-GB', { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' }),
         uploadUrl: link,
         downloadUrl: link,
-        exerciseMailbox: assessment.exercise.exerciseMailbox,
-        exercisePhoneNumber: assessment.exercise.exercisePhoneNumber,
-        selectionExerciseManager: assessment.exercise.emailSignatureName,
+        exerciseMailbox: exercise.exerciseMailbox,
+        exercisePhoneNumber: exercise.exercisePhoneNumber,
+        selectionExerciseManager: exercise.emailSignatureName,
       },
       reference: {
         collection: 'assessments',
@@ -245,7 +245,7 @@ module.exports = (CONSTANTS) => {
     };
   }
 
-  function newNotificationAssessmentReminder(firebase, assessment) {
+  function newNotificationAssessmentReminder(firebase, assessment, exercise) {
     const link = `${CONSTANTS.ASSESSMENTS_URL}/sign-in?email=${assessment.assessor.email}&ref=assessments/${assessment.id}`;
     let xCompetencyAreasOrXSkillsAndAbilities;
     switch (assessment.type) {
@@ -260,7 +260,7 @@ module.exports = (CONSTANTS) => {
     }
     return {
       email: assessment.assessor.email,
-      replyTo: assessment.exercise.exerciseMailbox,
+      replyTo: exercise.exerciseMailbox,
       template: {
         name: 'Assessment Reminder',
         id: '5bd78bc3-5d3b-4cdf-88f5-2daba5464719',
@@ -268,14 +268,14 @@ module.exports = (CONSTANTS) => {
       personalisation: {
         assessorName: assessment.assessor.fullName,
         applicantName: assessment.candidate.fullName,
-        exerciseName: assessment.exercise.name,
+        exerciseName: exercise.name,
         xCompetencyAreasOrXSkillsAndAbilities: xCompetencyAreasOrXSkillsAndAbilities,
         submitAssessmentDueDate: assessment.dueDate.toDate().toLocaleDateString('en-GB', { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' }),
         uploadUrl: link,
         downloadUrl: link,
-        exerciseMailbox: assessment.exercise.exerciseMailbox,
-        exercisePhoneNumber: assessment.exercise.exercisePhoneNumber,
-        selectionExerciseManager: assessment.exercise.emailSignatureName,
+        exerciseMailbox: exercise.exerciseMailbox,
+        exercisePhoneNumber: exercise.exercisePhoneNumber,
+        selectionExerciseManager: exercise.emailSignatureName,
       },
       reference: {
         collection: 'assessments',
