@@ -144,6 +144,8 @@ const reportData = (db, exercise, applications) => {
       gmcNumber: application.generalMedicalCouncilNumber || null,
       riscDate: helpers.formatDate(application.royalInstitutionCharteredSurveyorsDate),
       riscNumber: application.royalInstitutionCharteredSurveyorsNumber || null,
+      applicationId: application.id,
+      applicationReferenceNumber: application.referenceNumber,
     };
   });
 
