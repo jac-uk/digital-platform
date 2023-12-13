@@ -136,6 +136,7 @@ const reportData = (db, exercise, applications) => {
       bsbNumber: bsb ? bsb.membershipNumber || null : null,
       qualifications: getFormattedQualifications(qualifications),
       qualificationsDates: getFormattedQualificationsDates(qualifications),
+      qualificationsLocations: qualifications.map(e => { return { type: e.type, location: e.location }; }),
       otherMemberships: getFormattedOtherMemberships(exercise, application),
       jcioOffice: helpers.toYesNo(application.feePaidOrSalariedJudge) || null,
       jcioPosts: application.experience ? application.experience.map(e => e.jobTitle).join(', ') : null,
@@ -146,6 +147,7 @@ const reportData = (db, exercise, applications) => {
       riscNumber: application.royalInstitutionCharteredSurveyorsNumber || null,
       applicationId: application.id,
       applicationReferenceNumber: application.referenceNumber,
+      applicationStatus: application.status,
     };
   });
 
