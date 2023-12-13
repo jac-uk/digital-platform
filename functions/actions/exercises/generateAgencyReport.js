@@ -16,7 +16,7 @@ module.exports = (firebase, db) => {
       .where('characterChecks.consent', '==', true));
 
     // get report headers
-    const headers = reportHeaders(exercise);
+    const headers = reportHeaders(exercise, applications);
 
     // get report rows
     const rows = reportData(db, exercise, applications);
@@ -43,8 +43,9 @@ module.exports = (firebase, db) => {
  * @param {document} exercise
  * @return {array}
  */
-const reportHeaders = (exercise) => {
+const reportHeaders = (exercise, applications) => {
   const headers = [
+    { title: 'JAC Reference', ref: 'applicationReferenceNumber' },
     { title: 'Title', ref: 'title' },
     { title: 'Surname', ref: 'lastName' },
     { title: 'Forename(s)', ref: 'firstName' },
@@ -84,6 +85,12 @@ const reportHeaders = (exercise) => {
     { title: 'RISC - Membership No.', ref: 'riscNumber' }
   );
 
+  const maxQualificationLength = applications ? Math.max(...applications.map(e => e.qualifications ? e.qualifications.length : 0)) : 0;
+  for (let i = 1; i <= maxQualificationLength; i++) {
+    headers.push({ title: `Qual ${i}`, ref: `qual${i}` });
+    headers.push({ title: 'Region', ref: `region${i}` });
+  }
+
   return headers;
 };
 
@@ -113,7 +120,7 @@ const reportData = (db, exercise, applications) => {
       lastName = names.join(' ');
     }
 
-    return {
+    const data = {
       title: personalDetails.title || null,
       fullName: fullName || null,
       lastName: lastName || null,
@@ -149,6 +156,13 @@ const reportData = (db, exercise, applications) => {
       applicationReferenceNumber: application.referenceNumber,
       applicationStatus: application.status,
     };
+
+    for (let i = 0; i < qualifications.length; i++) {
+      data[`qual${i+1}`] = qualifications[i].type;
+      data[`region${i+1}`] = qualifications[i].location;
+    }
+
+    return data;
   });
 
   /**
