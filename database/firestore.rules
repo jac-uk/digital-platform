@@ -122,8 +122,8 @@ service cloud.firestore {
       allow update: if userIsAuthenticated() && userIsJAC() && hasPermission('s3');
     }
 
-    // allow candidates to access candidateData
-    match /settings/candidateData {
+    // allow candidates to access candidateSettings
+    match /settings/candidateSettings {
       allow read: if userIsAuthenticated();
     }
 
