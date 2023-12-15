@@ -159,8 +159,8 @@ const calculationChangeFromPreviousStage = (current, previous) => {
   for (const key in current) {
     if (previous[key] && key !== 'totalApplications') {
       for (const subKey in current[key]) {
-        if (current[key][subKey] && previous[key][subKey] && previous[key][subKey].total) {
-          current[key][subKey].change = (previous[key][subKey].total - current[key][subKey].total) * 100 / previous[key][subKey].total;
+        if (current[key][subKey] && previous[key][subKey] && previous.totalApplications) {
+          current[key][subKey].change = (previous[key][subKey].total - current[key][subKey].total) * 100 / previous.totalApplications;
         }
       }
     }
