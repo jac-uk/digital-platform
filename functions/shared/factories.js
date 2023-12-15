@@ -566,7 +566,6 @@ module.exports = (CONSTANTS) => {
       assessmentOptions: null,
       authorisations: null,
       characterChecks: null,
-      commissioners: null,
       contactIndependentAssessors: null,
       criticalAnalysisTestDate: null,
       criticalAnalysisTestEndTime: null,
