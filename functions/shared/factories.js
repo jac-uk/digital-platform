@@ -301,7 +301,7 @@ module.exports = (CONSTANTS) => {
     }
     return {
       email: assessment.assessor.email,
-      replyTo: assessment.exercise.exerciseMailbox,
+      replyTo: exercise.exerciseMailbox,
       template: {
         name: 'Assessment Submit',
         id: '5b933b71-3359-488a-aa86-13ceb581209c',
