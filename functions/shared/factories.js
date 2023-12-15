@@ -645,8 +645,8 @@ module.exports = (CONSTANTS) => {
     const dataKeys = Object.keys(data);
     for (var key in vacancyModel) {
       if (dataKeys.includes(key)) {
-        if (key === 'commissioners') {
-          vacancy[key] = data[key].map(item => ({ name: item.name }));
+        if (key === 'commissioners') { // this is redundant code however has been retained so that we do not copy `commissioners` to `vacancy` document
+          vacancy[key] = [];
         } else {
           vacancy[key] = data[key];
         }
