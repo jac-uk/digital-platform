@@ -10,7 +10,11 @@ module.exports = functions.region('europe-west2').https.onCall(async (bugReportI
   if (!context.auth) {
     throw new functions.https.HttpsError('failed-precondition', 'The function must be called while authenticated.');
   }
-  hasPermissions(context.auth.token.rp, [PERMISSIONS.zenhub.permissions.canCreateZHIssues.value]);
+  // Validate @judicialappointments.gov.uk and @judicialappointments.digital
+  const validEmailPattern = /@judicialappointments\.gov\.uk$|@judicialappointments\.digital$/;
+  if (!validEmailPattern.test(context.auth.token.email)) {
+    throw new functions.https.HttpsError('failed-precondition', 'The function is restricted to JAC Staff.');
+  }
   return await createZenhubIssue(bugReportId);
 });
 

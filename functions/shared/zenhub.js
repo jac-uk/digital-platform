@@ -9,11 +9,6 @@ const { objectHasNestedProperty } = require('./helpers');
  * @returns 
  */
 module.exports = (config) => {
-
-  //const platformIssuesRepositoryId = 'Z2lkOi8vcmFwdG9yL1JlcG9zaXRvcnkvMTMzOTUyNzky';
-  const platformIssuesRepositoryId = config.ZENHUB_ISSUES_WORKSPACE_ID;
-
-
   const baseApiUrl = config.ZENHUB_GRAPH_QL_URL;
   const apiKey = config.ZENHUB_GRAPH_QL_API_KEY;
   const axiosHeaders = {
@@ -33,6 +28,7 @@ module.exports = (config) => {
    * @returns 
    */
   async function createZenhubIssue(referenceNumber, body) {
+    const platformIssuesRepositoryId = config.ZENHUB_ISSUES_WORKSPACE_ID;
     if (baseApiUrl && apiKey) {
       try {
         const title = `User Raised Issue ${referenceNumber}`;
