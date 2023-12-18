@@ -85,12 +85,6 @@ const reportHeaders = (exercise, applications) => {
     { title: 'RISC - Membership No.', ref: 'riscNumber' }
   );
 
-  const maxQualificationLength = applications ? Math.max(...applications.map(e => e.qualifications ? e.qualifications.length : 0)) : 0;
-  for (let i = 1; i <= maxQualificationLength; i++) {
-    headers.push({ title: `Qual ${i}`, ref: `qual${i}` });
-    headers.push({ title: 'Region', ref: `region${i}` });
-  }
-
   return headers;
 };
 
