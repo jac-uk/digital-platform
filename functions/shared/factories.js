@@ -22,6 +22,7 @@ module.exports = (CONSTANTS) => {
     newUser,
     newCandidateFormResponse,
     newCandidateFormNotification,
+    newNotificationUserInvitation,
   };
 
   function newNotificationExerciseApprovalSubmit(firebase, exerciseId, exercise, email) {
@@ -783,6 +784,28 @@ module.exports = (CONSTANTS) => {
       reference: {
         collection: 'applications',
         id: application.id,
+      },
+      createdAt: firebase.firestore.Timestamp.fromDate(new Date()),
+      status: 'ready',
+    };
+  }
+
+  function newNotificationUserInvitation(firebase, invitationId, userInvitation, user) {
+    const link = '';
+
+    return {
+      email: userInvitation.email,
+      replyTo: '', // TODO:
+      template: {
+        name: '', // TODO:
+        id: '', // TODO:
+      },
+      personalisation: {
+        userName: user.displayName,
+      },
+      reference: {
+        collection: 'userInvitations',
+        id: invitationId,
       },
       createdAt: firebase.firestore.Timestamp.fromDate(new Date()),
       status: 'ready',
