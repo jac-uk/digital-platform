@@ -56,10 +56,10 @@ function log(message) {
   console.log(`${now.toLocaleDateString('en-GB')} ${now.toLocaleTimeString('en-GB')} - ${message}`);
 }
 
-const applicationOpenDatePost01042023 = (exercise) => {
+function applicationOpenDatePost01042023(exercise) {
   const usesPre01042023Questions = ['JAC00130', 'JAC00123', 'JAC00164'].includes(exercise.referenceNumber);
   if (usesPre01042023Questions) {
     return false;
   }
   return Object.prototype.hasOwnProperty.call(exercise, 'applicationOpenDate') && exercise.applicationOpenDate.toDate() > new Date('2023-04-01');
-};
+}
