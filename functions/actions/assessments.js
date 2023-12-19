@@ -62,10 +62,11 @@ module.exports = (config, firebase, db) => {
       });
 
       // send notification
+      const exercise = await getExercise(assessment.exercise.id);
       commands.push({
         command: 'set',
         ref: db.collection('notifications').doc(),
-        data: newNotificationAssessmentSubmit(firebase, assessment),
+        data: newNotificationAssessmentSubmit(firebase, assessment, exercise),
       });
     }
 
@@ -359,22 +360,24 @@ module.exports = (config, firebase, db) => {
   */
   async function testAssessmentNotification(params) {
     const results = [];
+    let exercise = null;
     for (let i = 0; i < params.assessmentIds.length; i++) {
       const assessmentId = params.assessmentIds[i];
       const assessment = await getDocument(db.doc(`assessments/${assessmentId}`));
       let result = false;
 
       if (assessment) {
+        if (!exercise) exercise = await getExercise(assessment.exercise.id);
         // @TODO update to handle other assessment templates
         switch (params.notificationType) {
           case 'request':
-            result = await testNotification(newNotificationAssessmentRequest(firebase, assessment), params.email);
+            result = await testNotification(newNotificationAssessmentRequest(firebase, assessment, exercise), params.email);
             break;
           case 'reminder':
-            result = await testNotification(newNotificationAssessmentReminder(firebase, assessment), params.email);
+            result = await testNotification(newNotificationAssessmentReminder(firebase, assessment, exercise), params.email);
             break;
           case 'success':
-            result = await testNotification(newNotificationAssessmentRequest(firebase, assessment), params.email);
+            result = await testNotification(newNotificationAssessmentRequest(firebase, assessment, exercise), params.email);
             break;
           default:
             break;
@@ -472,7 +475,7 @@ module.exports = (config, firebase, db) => {
       commands.push({
         command: 'set',
         ref: db.collection('notifications').doc(),
-        data: newNotificationAssessmentRequest(firebase, assessment),
+        data: newNotificationAssessmentRequest(firebase, assessment, exercise),
       });
       // update assessment
       if (assessment.status === 'draft') { countDraft++; }
@@ -511,6 +514,9 @@ module.exports = (config, firebase, db) => {
   *       all assessments
   */
   async function sendAssessmentReminders(params) {
+    // get exercise
+    const exercise = await getExercise(params.exerciseId);
+
     // get assessments
     let assessments = null;
     if (params.assessmentId) {
@@ -544,7 +550,7 @@ module.exports = (config, firebase, db) => {
       commands.push({
         command: 'set',
         ref: db.collection('notifications').doc(),
-        data: newNotificationAssessmentReminder(firebase, assessment),
+        data: newNotificationAssessmentReminder(firebase, assessment, exercise),
       });
     }
 
