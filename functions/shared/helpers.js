@@ -139,6 +139,9 @@ async function applyUpdates(db, commands) {
         const batch = db.batch();
         for (let i = 0, len = commands.length; i < len; ++i) {
           switch (commands[i].command) {
+          case 'delete':
+            batch.delete(commands[i].ref);
+            break;
           case 'set':
               batch.set(commands[i].ref, commands[i].data, { merge: true });
             break;
