@@ -16,7 +16,7 @@ module.exports = (firebase, db) => {
       .where('characterChecks.consent', '==', true));
 
     // get report headers
-    const headers = reportHeaders(exercise);
+    const headers = reportHeaders(exercise, applications);
 
     // get report rows
     const rows = reportData(db, exercise, applications);
@@ -43,8 +43,9 @@ module.exports = (firebase, db) => {
  * @param {document} exercise
  * @return {array}
  */
-const reportHeaders = (exercise) => {
+const reportHeaders = (exercise, applications) => {
   const headers = [
+    { title: 'JAC Reference', ref: 'applicationReferenceNumber' },
     { title: 'Title', ref: 'title' },
     { title: 'Surname', ref: 'lastName' },
     { title: 'Forename(s)', ref: 'firstName' },
@@ -113,7 +114,7 @@ const reportData = (db, exercise, applications) => {
       lastName = names.join(' ');
     }
 
-    return {
+    const data = {
       title: personalDetails.title || null,
       fullName: fullName || null,
       lastName: lastName || null,
@@ -136,6 +137,7 @@ const reportData = (db, exercise, applications) => {
       bsbNumber: bsb ? bsb.membershipNumber || null : null,
       qualifications: getFormattedQualifications(qualifications),
       qualificationsDates: getFormattedQualificationsDates(qualifications),
+      qualificationsLocations: qualifications.map(e => { return { type: e.type, location: e.location, membershipNumber: e.membershipNumber }; }),
       otherMemberships: getFormattedOtherMemberships(exercise, application),
       jcioOffice: helpers.toYesNo(application.feePaidOrSalariedJudge) || null,
       jcioPosts: application.experience ? application.experience.map(e => e.jobTitle).join(', ') : null,
@@ -144,7 +146,19 @@ const reportData = (db, exercise, applications) => {
       gmcNumber: application.generalMedicalCouncilNumber || null,
       riscDate: helpers.formatDate(application.royalInstitutionCharteredSurveyorsDate),
       riscNumber: application.royalInstitutionCharteredSurveyorsNumber || null,
+      applicationId: application.id,
+      applicationReferenceNumber: application.referenceNumber,
+      applicationStatus: application.status,
     };
+
+    for (let i = 0; i < qualifications.length; i++) {
+      const membershipNumber = qualifications[i].membershipNumber;
+      data[`qual${i+1}`] = qualifications[i].type;
+      data[`region${i+1}`] = qualifications[i].location;
+      data[`qualNumber${i+1}`] = membershipNumber ? `${membershipNumber}` : null;
+    }
+
+    return data;
   });
 
   /**
