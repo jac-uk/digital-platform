@@ -7,6 +7,7 @@ module.exports = (auth, db) => {
     createUser,
     deleteUsers,
     importUsers,
+    onUserCreate,
     onUserUpdate,
     updateUserCustomClaims,
   };
@@ -120,19 +121,26 @@ module.exports = (auth, db) => {
 
     return result;
   }
-
-  /**
- * User updated event handler
- * 
- * @param {string} userId
- * @param {object} dataBefore
- * @param {object} dataAfter
- */
-  async function onUserCreate(userId, data) {
-    // TODO: add firstName, lastName
-    
-  }
   
+  /**
+   * User created event handler
+   * - Adds first name, last name for search and sorting
+   */
+  async function onUserCreate(ref, data) {
+    console.log('user created');
+
+    // Add first name, last name
+    const { firstName, lastName } = parseDisplayName(data.displayName);
+    const userData = {
+      firstName,
+      lastName,
+    };
+
+    await ref.update(userData);
+
+    console.log('success');
+  }
+
   /**
    * User updated event handler
    * 
