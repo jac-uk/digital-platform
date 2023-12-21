@@ -122,6 +122,18 @@ module.exports = (auth, db) => {
   }
 
   /**
+ * User updated event handler
+ * 
+ * @param {string} userId
+ * @param {object} dataBefore
+ * @param {object} dataAfter
+ */
+  async function onUserCreate(userId, data) {
+    // TODO: add firstName, lastName
+    
+  }
+  
+  /**
    * User updated event handler
    * 
    * @param {string} userId
@@ -136,6 +148,9 @@ module.exports = (auth, db) => {
     });
     
     try {
+      if (data[displayName]) {
+        Object.assign(data, parseDisplayName(displayName));
+      }
       if (Object.keys(data).length) {
         await auth.updateUser(userId, data);
       }
@@ -191,5 +206,24 @@ module.exports = (auth, db) => {
       console.log(error);
       return false;
     }
+  }
+
+  /**
+   * Parse first/last name from display name.
+   * 
+   * @param {string} displayName 
+   * @returns {object} ex. { firstName: 'Harry', lastName: 'Potter' }
+   */
+  function parseDisplayName(displayName) {
+    const parsed = { firstName: '', lastName: ''};
+
+    if (!displayName || displayName.trim()) return parsed;
+    const names = displayName.split(' ');
+    parsed.firstName = names[0];
+    if (names.length > 1) {
+      parsed.lastName = names[-1];
+    }
+
+    return parsed;
   }
 };
