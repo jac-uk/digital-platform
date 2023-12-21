@@ -137,7 +137,7 @@ const reportData = (db, exercise, applications) => {
       bsbNumber: bsb ? bsb.membershipNumber || null : null,
       qualifications: getFormattedQualifications(qualifications),
       qualificationsDates: getFormattedQualificationsDates(qualifications),
-      qualificationsLocations: qualifications.map(e => { return { type: e.type, location: e.location }; }),
+      qualificationsLocations: qualifications.map(e => { return { type: e.type, location: e.location, membershipNumber: e.membershipNumber }; }),
       otherMemberships: getFormattedOtherMemberships(exercise, application),
       jcioOffice: helpers.toYesNo(application.feePaidOrSalariedJudge) || null,
       jcioPosts: application.experience ? application.experience.map(e => e.jobTitle).join(', ') : null,
@@ -152,8 +152,10 @@ const reportData = (db, exercise, applications) => {
     };
 
     for (let i = 0; i < qualifications.length; i++) {
+      const membershipNumber = qualifications[i].membershipNumber;
       data[`qual${i+1}`] = qualifications[i].type;
       data[`region${i+1}`] = qualifications[i].location;
+      data[`qualNumber${i+1}`] = membershipNumber ? `${membershipNumber}` : null;
     }
 
     return data;
