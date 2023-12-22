@@ -1,5 +1,6 @@
 const { getDocument } = require('../shared/helpers');
 const { convertPermissions } = require('../shared/permissions');
+const { getSearchMap } = require('../shared/search');
 
 module.exports = (auth, db) => {
   return {
@@ -132,6 +133,7 @@ module.exports = (auth, db) => {
     // Add first name, last name
     const { firstName, lastName } = parseDisplayName(data.displayName);
     const userData = {
+      _search: getUserSearchMap(data),
       firstName,
       lastName,
     };
@@ -156,11 +158,15 @@ module.exports = (auth, db) => {
     });
     
     try {
-      if (data[displayName]) {
-        Object.assign(data, parseDisplayName(displayName));
+      if (data['displayName']) {
+        console.log('Set new displayName');
+        Object.assign(data, parseDisplayName(data['displayName']), { _search: getUserSearchMap(dataAfter)});
       }
       if (Object.keys(data).length) {
+        console.log('Updating user data:');
+        console.log(JSON.stringify(data));
         await auth.updateUser(userId, data);
+        await db.collection('users').doc(userId).update(data);
       }
 
       // update role permissions in custom claims
@@ -225,13 +231,28 @@ module.exports = (auth, db) => {
   function parseDisplayName(displayName) {
     const parsed = { firstName: '', lastName: ''};
 
-    if (!displayName || displayName.trim()) return parsed;
+    if (!displayName || !displayName.trim()) return parsed;
     const names = displayName.split(' ');
     parsed.firstName = names[0];
     if (names.length > 1) {
-      parsed.lastName = names[-1];
+      parsed.lastName = names[names.length-1];
     }
 
     return parsed;
+  }
+
+  /**
+   * 
+   * @param {object} user 
+   * @returns {array}
+   */
+  function getUserSearchMap(user) {
+    const { firstName, lastName } = parseDisplayName(user.displayName);
+    
+    return getSearchMap([
+      firstName,
+      lastName,
+      user.email,
+    ]);
   }
 };
