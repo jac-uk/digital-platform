@@ -191,6 +191,24 @@ describe('selectionDayTimetable', () => {
         },
       ];
 
+    mockPanelData = [
+      { 
+        panel: { 
+          id: 'panel1', 
+        },
+        panellists: [
+          {
+            id: 'panellist1',
+          },
+          {
+            id: 'panellist2',
+          },
+        ],
+        date: new Date('2023-01-01'),
+        totalSlots: 5,
+      },
+    ];
+
       mockPanelConflicts = [
         { 
           candidate: {
@@ -332,8 +350,8 @@ describe('selectionDayTimetable', () => {
 
       const result = selectionDayTimetable(mockPanelData, mockCandidateInfo, mockReasonableAdjustments, mockPanelConflicts);
 
-      expect(result.timetable).toHaveLength(5); 
-      expect(result.unassignedCandidates).toEqual([mockCandidateInfo[5]]);  
+      expect(result.timetable).toHaveLength(0); 
+      expect(result.unassignedCandidates).toEqual(mockCandidateInfo);  
     });
   });
     

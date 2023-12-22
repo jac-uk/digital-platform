@@ -11,7 +11,13 @@ function selectionDayTimetable(panelData, candidateInfo, reasonableAdjustments, 
 
     candidatesForPanel = candidateInfo.filter((candidate) => {
       const candidateIsAvailable = candidate.availableDates.some((date) => date.getTime() === panel.date.getTime());
+      // if (candidateIsAvailable) {
+      //   result.unassignedCandidates.push(candidate);
+      // }
       const candidateHasPanelConflict = panelConflicts.some((conflict) => conflict.candidate.id === candidate.candidate.id && panel.panellists.some((panellist) => conflict.panellist.id === panellist.id));
+      if (candidateHasPanelConflict) {
+        result.unassignedCandidates.push(candidate);
+      }
       return candidateIsAvailable && !candidateHasPanelConflict;
     });
     

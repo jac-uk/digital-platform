@@ -12,7 +12,7 @@ const { listAllUsers } = require('./shared/helpers');
 const { log } = require('./shared/helpers.js');
 
 // whether to make changes in `users` collection in firestore
-const isAction = false;
+const isAction = true;
 
 const main = async () => {
   log('Get users from authentication database...');
