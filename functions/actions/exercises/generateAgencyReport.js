@@ -101,7 +101,8 @@ const reportData = (db, exercise, applications) => {
     const personalDetails = application.personalDetails || {}; 
     const qualifications = application.qualifications || [];
     const sra = qualifications.find((qualification) => qualification.type === 'solicitor');
-    const bsb = qualifications.find((qualification) => qualification.type === 'barrister');
+    const bsb = qualifications.find((qualification) => qualification.type === 'barrister' 
+                                    || (qualification.type && qualification.type.includes('advocate')));
 
     let firstName = personalDetails.firstName;
     let lastName = personalDetails.lastName;
@@ -138,7 +139,7 @@ const reportData = (db, exercise, applications) => {
       qualifications: getFormattedQualifications(qualifications),
       qualificationsDates: getFormattedQualificationsDates(qualifications),
       sraQualifications: qualifications.filter(e => e.type === 'solicitor').map(e => { return { type: e.type, location: e.location, membershipNumber: e.membershipNumber }; }),
-      bsbQualifications: qualifications.filter(e => e.type === 'barrister' || e.type === 'advocate').map(e => { return { type: e.type, location: e.location, membershipNumber: e.membershipNumber }; }),
+      bsbQualifications: qualifications.filter(e => e.type === 'barrister' || (e.type && e.type.includes('advocate'))).map(e => { return { type: e.type, location: e.location, membershipNumber: e.membershipNumber }; }),
       otherMemberships: getFormattedOtherMemberships(exercise, application),
       jcioOffice: helpers.toYesNo(application.feePaidOrSalariedJudge) || null,
       jcioPosts: application.experience ? application.experience.map(e => e.jobTitle).join(', ') : null,
