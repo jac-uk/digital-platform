@@ -42,7 +42,7 @@
     "test:rules": "export FIRESTORE_EMULATOR_HOST='localhost:8080' && mocha './test/rules/**/*.spec.js' --timeout=10000",
     "test:rule": "export FIRESTORE_EMULATOR_HOST='localhost:8080' && mocha './test/rules/**/1.database.spec.js' --timeout=10000",
     "test:functions": "mocha './test/functions/**/*.spec.js' --timeout=10000",
-    "test:actions": "jest test/actions",
+    "test:actions": "jest test/actions/tasks/selectionDayTimetable",
     "test:shared": "jest test/shared",
     "watch:test:rules": "export FIRESTORE_EMULATOR_HOST='localhost:8080' && mocha './test/rules/**/*.spec.js' --timeout=10000 --reporter=min --watch --watch-extensions=rules",
     "ci:test:rules": "firebase emulators:exec --only firestore 'npm run test:rules'",
