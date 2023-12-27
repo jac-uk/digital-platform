@@ -152,13 +152,14 @@ module.exports = (auth, db) => {
    */
   async function onUserUpdate(userId, dataBefore, dataAfter) {
     const fields = ['displayName', 'email', 'disabled'];
-    const data = {};
+const data = {};
     fields.forEach(field => {
       if (dataBefore[field] !== dataAfter[field]) data[field] = dataAfter[field];
     });
     
     try {
-      if (data['displayName']) {
+      if (data['displayName'] 
+          || !(dataAfter.firstName && dataAfter.lastName && dataAfter._search)) {
         console.log('Set new displayName');
         Object.assign(data, parseDisplayName(data['displayName']), { _search: getUserSearchMap(dataAfter)});
       }
