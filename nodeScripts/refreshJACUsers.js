@@ -7,7 +7,7 @@
 const { app, db, firebase, auth } = require('./shared/admin');
 const config = require('./shared/config');
 const { applyUpdates } = require('../functions/shared/helpers');
-const { getUserSearchMap } = require('../functions/actions/users')(config, firebase, db, auth);
+const { getUserSearchMap, parseDisplayName } = require('../functions/actions/users')(config, firebase, db, auth);
 const { listAllUsers } = require('./shared/helpers');
 const { log } = require('./shared/helpers.js');
 
@@ -24,13 +24,18 @@ const main = async () => {
   const filteredUsers = users.filter(item => item.email.match(/(.*@judicialappointments|.*@justice)[.](digital|gov[.]uk)/));
   log(`- Total JAC users: ${filteredUsers.length}`);
 
+
   filteredUsers.forEach((user) => {
+    const data = {};
+    Object.assign(data, {
+      _search: getUserSearchMap(user),
+    }, parseDisplayName(user.displayName));
+    console.log('updating user:');
+    console.log(data);
     commands.push({
       command: 'set',
       ref: db.collection('users').doc(user.uid),
-      data: {
-        _search: getUserSearchMap(user),
-      },
+      data,
     });
   });
 

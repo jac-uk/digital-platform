@@ -12,6 +12,7 @@ module.exports = (auth, db) => {
     onUserUpdate,
     updateUserCustomClaims,
     getUserSearchMap,
+    parseDisplayName,
   };
 
   async function generateSignInWithEmailLink(ref, email, returnUrl) {
@@ -234,7 +235,7 @@ const data = {};
     const parsed = { firstName: '', lastName: ''};
 
     if (!displayName || !displayName.trim()) return parsed;
-    const names = displayName.split(' ');
+    const names = displayName.replace(',', '').split(' ');
     parsed.firstName = names[0];
     if (names.length > 1) {
       parsed.lastName = names[names.length-1];
