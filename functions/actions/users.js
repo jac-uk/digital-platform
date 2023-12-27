@@ -11,6 +11,7 @@ module.exports = (auth, db) => {
     onUserCreate,
     onUserUpdate,
     updateUserCustomClaims,
+    getUserSearchMap,
   };
 
   async function generateSignInWithEmailLink(ref, email, returnUrl) {
