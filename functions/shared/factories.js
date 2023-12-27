@@ -2,6 +2,7 @@ const { formatDate } = require('./helpers');
 const { applicationOpenDatePost01042023 } = require('./converters/helpers');
 const { getSearchMap } = require('./search');
 const { objectHasNestedProperty } = require('./helpers');
+const _ = require('lodash');
 
 module.exports = (CONSTANTS) => {
   return {
@@ -790,19 +791,23 @@ module.exports = (CONSTANTS) => {
     };
   }
 
-  function newNotificationUserInvitation(firebase, invitationId, userInvitation, user) {
-    const link = '';
+  function newNotificationUserInvitation(firebase, invitationId, userInvitation) {
 
+    let username = userInvitation.email.split('@')[0];
+    username = username.split('.').map(e => _.capitalize(e)).join(' ');
+    const personalisation = {
+      username,
+      email: userInvitation.email,
+    };
+    console.log(JSON.stringify(personalisation));
     return {
       email: userInvitation.email,
       replyTo: '', // TODO:
       template: {
         name: '', // TODO:
-        id: '', // TODO:
+        id: '4f221946-629e-468d-a83e-dec3d4d3d7d2',
       },
-      personalisation: {
-        userName: user.displayName,
-      },
+      personalisation,
       reference: {
         collection: 'userInvitations',
         id: invitationId,

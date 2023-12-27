@@ -21,6 +21,7 @@ exports.onMessageCreate = require('./backgroundFunctions/onMessageCreate');
 exports.onUserCreate = require('./backgroundFunctions/onUserCreate');
 exports.onUserUpdate = require('./backgroundFunctions/onUserUpdate');
 exports.onUserDelete = require('./backgroundFunctions/onUserDelete');
+exports.onUserInvitationCreate = require('./backgroundFunctions/onUserInvitationCreate');
 exports.onRoleUpdate = require('./backgroundFunctions/onRoleUpdate');
 exports.onCandidateFormResponseUpdate = require('./backgroundFunctions/onCandidateFormResponseUpdate');
 exports.onSettingsUpdate = require('./backgroundFunctions/onSettingsUpdate');
