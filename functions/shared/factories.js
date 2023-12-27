@@ -800,11 +800,12 @@ module.exports = (CONSTANTS) => {
       email: userInvitation.email,
     };
     console.log(JSON.stringify(personalisation));
+
     return {
       email: userInvitation.email,
-      replyTo: '', // TODO:
+      replyTo: '', // TODO: Add reply to email
       template: {
-        name: '', // TODO:
+        name: '', // TODO: Add template name
         id: '4f221946-629e-468d-a83e-dec3d4d3d7d2',
       },
       personalisation,
