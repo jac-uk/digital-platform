@@ -8,7 +8,6 @@ module.exports = (auth, db) => {
     createUser,
     deleteUsers,
     importUsers,
-    onUserCreate,
     onUserUpdate,
     updateUserCustomClaims,
     getUserSearchMap,
@@ -123,26 +122,6 @@ module.exports = (auth, db) => {
     }
 
     return result;
-  }
-  
-  /**
-   * User created event handler
-   * - Adds first name, last name for search and sorting
-   */
-  async function onUserCreate(ref, data) {
-    console.log('user created');
-
-    // Add first name, last name
-    const { firstName, lastName } = parseDisplayName(data.displayName);
-    const userData = {
-      _search: getUserSearchMap(data),
-      firstName,
-      lastName,
-    };
-
-    await ref.update(userData);
-
-    console.log('success');
   }
 
   /**
