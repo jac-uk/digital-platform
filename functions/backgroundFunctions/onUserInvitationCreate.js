@@ -5,14 +5,12 @@ const { onUserInvitationCreate } = require('../actions/userInvitations')(config,
 const { logEvent } = require('../actions/logs/logEvent')(firebase, db, auth);
 
 module.exports = functions.region('europe-west2').firestore
-  .document('userInvitations/{invitationId}')
+  .document('userInvitations/{userInvitationId}')
   .onCreate((snap, context) => {
-
+    const userInvitationId = context.params.userInvitationId;
     const details = {
-      invitationId: context.params.invitationId,
+      userInvitationId,
     };
-
     logEvent('info', 'UserInvitation created', details);
-
-    return onUserInvitationCreate(snap.ref, snap.data());
+    return onUserInvitationCreate(snap.ref, userInvitationId, snap.data());
   });

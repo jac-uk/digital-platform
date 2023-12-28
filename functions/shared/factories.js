@@ -21,9 +21,9 @@ module.exports = (CONSTANTS) => {
     newNotificationLateApplicationRequest,
     newNotificationLateApplicationResponse,
     newUser,
+    newNotificationUserInvitation,
     newCandidateFormResponse,
     newCandidateFormNotification,
-    newNotificationUserInvitation,
   };
 
   function newNotificationExerciseApprovalSubmit(firebase, exerciseId, exercise, email) {
@@ -791,27 +791,25 @@ module.exports = (CONSTANTS) => {
     };
   }
 
-  function newNotificationUserInvitation(firebase, invitationId, userInvitation) {
-
+  function newNotificationUserInvitation(firebase, userInvitationId, userInvitation) {
     let username = userInvitation.email.split('@')[0];
     username = username.split('.').map(e => _.capitalize(e)).join(' ');
     const personalisation = {
       username,
       email: userInvitation.email,
     };
-    console.log(JSON.stringify(personalisation));
 
     return {
       email: userInvitation.email,
       replyTo: '', // TODO: Add reply to email
       template: {
-        name: '', // TODO: Add template name
+        name: 'New user invitation confirmation',
         id: '4f221946-629e-468d-a83e-dec3d4d3d7d2',
       },
       personalisation,
       reference: {
         collection: 'userInvitations',
-        id: invitationId,
+        id: userInvitationId,
       },
       createdAt: firebase.firestore.Timestamp.fromDate(new Date()),
       status: 'ready',

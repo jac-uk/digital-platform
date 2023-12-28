@@ -1,4 +1,5 @@
 const { applyUpdates } = require('../shared/helpers');
+
 module.exports = (config, firebase, db, auth) => {
   const { newNotificationUserInvitation } = require('../shared/factories')(config);
   
@@ -6,16 +7,36 @@ module.exports = (config, firebase, db, auth) => {
     onUserInvitationCreate,
   };
 
-  async function onUserInvitationCreate(invitationId, userInvitation) {
+  /**
+   * User Invitation created evente handler
+   * 
+   * @param {object} ref
+   * @param {string} userInvitationId
+   * @param {object} userInvitation
+   */
+  async function onUserInvitationCreate(ref, userInvitationId, userInvitation) {
     const commands = [];
-    commands.push({
-      command: 'set',
-      ref: db.collection('notifications').doc(),
-      data: newNotificationUserInvitation(firebase, invitationId, userInvitation),
-    });
-    // write to db
-    const result = await applyUpdates(db, commands);
+    if (
+      userInvitation.status === 'pending' && 
+      !(userInvitation.emailLog && userInvitation.emailLog.created)
+    ) {
+      commands.push(
+        {
+          command: 'set',
+          ref: db.collection('notifications').doc(),
+          data: newNotificationUserInvitation(firebase, userInvitationId, userInvitation),
+        },
+        {
+          command: 'update',
+          ref,
+          data: {
+            'emailLog.created': firebase.firestore.Timestamp.fromDate(new Date()),
+          },
+        }
+      );
+    }
 
-    return result;
+    const result = await applyUpdates(db, commands);
+    return result ? true : false;
   }
 };
