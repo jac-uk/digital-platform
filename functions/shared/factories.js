@@ -792,13 +792,6 @@ module.exports = (CONSTANTS) => {
   }
 
   function newNotificationUserInvitation(firebase, userInvitationId, userInvitation) {
-    let username = userInvitation.email.split('@')[0];
-    username = username.split('.').map(e => _.capitalize(e)).join(' ');
-    const personalisation = {
-      username,
-      email: userInvitation.email,
-    };
-
     return {
       email: userInvitation.email,
       replyTo: '', // TODO: Add reply to email
@@ -806,7 +799,10 @@ module.exports = (CONSTANTS) => {
         name: 'New user invitation confirmation',
         id: '4f221946-629e-468d-a83e-dec3d4d3d7d2',
       },
-      personalisation,
+      personalisation: {
+        username: userInvitation.email,
+        email: userInvitation.email,
+      },
       reference: {
         collection: 'userInvitations',
         id: userInvitationId,

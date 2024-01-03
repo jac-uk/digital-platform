@@ -132,7 +132,6 @@ module.exports = (auth, db) => {
     const userData = {
       _search: getUserSearchMap(data),
     };
-
     await ref.update(userData);
   }
 
@@ -151,7 +150,7 @@ module.exports = (auth, db) => {
     });
     
     try {
-      if (data['displayName'] || !dataAfter._search) {
+      if (data.displayName || !dataAfter._search) {
         console.log('Set _search for search and sorting');
         Object.assign(data, { _search: getUserSearchMap(dataAfter)});
       }
