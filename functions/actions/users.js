@@ -171,7 +171,7 @@ module.exports = (auth, db) => {
           const customClaims = user.customClaims || {};
           customClaims.r = dataAfter.role.id;
           customClaims.rp = convertedPermissions;
-          await auth.setCustomUserClaims(userId, user.customClaims);
+          await auth.setCustomUserClaims(userId, customClaims);
   
           // mark role.isChanged as false
           await db.collection('users').doc(userId).update({
