@@ -18,6 +18,7 @@ exports.onDocumentUploaded = require('./backgroundFunctions/onDocumentUploaded')
 exports.onCandidatePersonalDetailsCreate = require('./backgroundFunctions/onCandidatePersonalDetailsCreate');
 exports.onCandidatePersonalDetailsUpdate = require('./backgroundFunctions/onCandidatePersonalDetailsUpdate');
 exports.onMessageCreate = require('./backgroundFunctions/onMessageCreate');
+exports.onUserCreate = require('./backgroundFunctions/onUserCreate');
 exports.onUserUpdate = require('./backgroundFunctions/onUserUpdate');
 exports.onUserDelete = require('./backgroundFunctions/onUserDelete');
 exports.onUserInvitationCreate = require('./backgroundFunctions/onUserInvitationCreate');

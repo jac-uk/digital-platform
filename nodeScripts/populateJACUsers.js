@@ -8,7 +8,7 @@ const { app, db, firebase, auth } = require('./shared/admin');
 const config = require('./shared/config');
 const { applyUpdates } = require('../functions/shared/helpers');
 const { newUser } = require('../functions/shared/factories')(config);
-const { getUserSearchMap, parseDisplayName } = require('../functions/actions/users')(config, firebase, db, auth);
+const { getUserSearchMap } = require('../functions/actions/users')(config, firebase, db, auth);
 const { listAllUsers } = require('./shared/helpers');
 const { log } = require('./shared/helpers.js');
 
@@ -29,7 +29,7 @@ const main = async () => {
     const userData = newUser(user);
     Object.assign(userData, {
       _search: getUserSearchMap(user),
-    }, parseDisplayName(user.displayName));
+    });
     commands.push({
       command: 'set',
       ref: db.collection('users').doc(user.uid),

@@ -8,10 +8,10 @@ module.exports = (auth, db) => {
     createUser,
     deleteUsers,
     importUsers,
+    onUserCreate,
     onUserUpdate,
     updateUserCustomClaims,
     getUserSearchMap,
-    parseDisplayName,
   };
 
   async function generateSignInWithEmailLink(ref, email, returnUrl) {
@@ -125,6 +125,18 @@ module.exports = (auth, db) => {
   }
 
   /**
+   * User created event handler
+   * - Add _search for search and sorting
+   */
+  async function onUserCreate(ref, data) {
+    const userData = {
+      _search: getUserSearchMap(data),
+    };
+
+    await ref.update(userData);
+  }
+
+  /**
    * User updated event handler
    * 
    * @param {string} userId
@@ -139,10 +151,9 @@ module.exports = (auth, db) => {
     });
     
     try {
-      if (data['displayName'] 
-          || !(dataAfter.firstName && dataAfter.lastName && dataAfter._search)) {
-        console.log('Set new displayName');
-        Object.assign(data, parseDisplayName(data['displayName']), { _search: getUserSearchMap(dataAfter)});
+      if (data['displayName'] || !dataAfter._search) {
+        console.log('Set _search for search and sorting');
+        Object.assign(data, { _search: getUserSearchMap(dataAfter)});
       }
       if (Object.keys(data).length) {
         console.log('Updating user data:');
@@ -205,47 +216,13 @@ module.exports = (auth, db) => {
   }
 
   /**
-   * Parse first/last name from display name.
-   * 
-   * @param {string} displayName 
-   * @returns {object} ex. { firstName: 'Harry', lastName: 'Potter' }
-   */
-  function parseDisplayName(displayName) {
-    const parsed = { firstName: '', lastName: ''};
-
-    if (!displayName || !displayName.trim()) return parsed;
-
-    // remove '| (He/They)' from displayName (e.g. 'Isaac, Andrew | (He/They)' becomes 'Isaac, Andrew')
-    displayName = displayName.split('|')[0].trim();
-    // assume displayName is 'firstName lastName' (Google) or 'lastName, firstName' (Microsoft)
-    if (displayName.indexOf(',') === -1) {
-      const names = displayName.split(' ');
-      if (names.length > 1) {
-        parsed.lastName = names[names.length - 1].trim();
-        parsed.firstName = names.slice(0, names.length - 1).join(' ').trim();
-      } else if (names[0]) {
-        parsed.lastName = names[0].trim();
-      }
-    } else {
-      const names = displayName.split(',');
-      if (names[0]) parsed.lastName = names[0].trim();
-      if (names[1]) parsed.firstName = names[1].trim();
-    }
-
-    return parsed;
-  }
-
-  /**
    * 
    * @param {object} user 
    * @returns {array}
    */
   function getUserSearchMap(user) {
-    const { firstName, lastName } = parseDisplayName(user.displayName);
-    
     return getSearchMap([
-      firstName,
-      lastName,
+      user.displayName,
       user.email,
     ]);
   }
