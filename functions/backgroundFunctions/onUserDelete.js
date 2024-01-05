@@ -11,4 +11,5 @@ module.exports = functions.region('europe-west2').firestore
     if (user.providerData && user.providerData.length === 1) {
       return deleteUsers([userId]);
     }
+    return true;
   });
