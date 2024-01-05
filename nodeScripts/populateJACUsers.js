@@ -22,7 +22,24 @@ const main = async () => {
   log(`- Total users: ${users.length}`);
 
   log('Filter by JAC users...');
-  const filteredUsers = users.filter(item => item.email.match(/(.*@judicialappointments|.*@justice)[.](digital|gov[.]uk)/));
+  const filteredUsers = users.filter(user => {
+    let isJacAdmin = false;
+    if (user.providerData.length === 1) {
+      const provider = user.providerData[0];
+      if (
+        user.email.match(/(.*@judicialappointments|.*@justice)[.](digital|gov[.]uk)/) && 
+        (provider.providerId === 'google.com' || provider.providerId === 'microsoft.com')
+      ) {
+        isJacAdmin = true; // user has authenticated successfully with google or microsoft
+      }
+    } else if (user.providerData.length > 1) {
+      isJacAdmin = true;
+    } else {
+      isJacAdmin = false;
+    }
+
+    return isJacAdmin;
+  });
   log(`- Total JAC users: ${filteredUsers.length}`);
 
   filteredUsers.forEach((user) => {
