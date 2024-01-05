@@ -795,7 +795,7 @@ module.exports = (CONSTANTS) => {
   function newNotificationUserInvitation(firebase, userInvitationId, userInvitation) {
     return {
       email: userInvitation.email,
-      replyTo: '', // TODO: Add reply to email
+      replyTo: '',
       template: {
         name: 'New user invitation confirmation',
         id: '4f221946-629e-468d-a83e-dec3d4d3d7d2',
