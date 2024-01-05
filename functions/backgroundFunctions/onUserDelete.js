@@ -7,5 +7,8 @@ module.exports = functions.region('europe-west2').firestore
   .onDelete((snap, context) => {
     const user = snap.data();
     const userId = context.params.userId;
-    return deleteUsers([userId]);
+    // if user has only one provider, delete user from authentication database
+    if (user.providerData && user.providerData.length === 1) {
+      return deleteUsers([userId]);
+    }
   });

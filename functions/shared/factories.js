@@ -729,6 +729,7 @@ module.exports = (CONSTANTS) => {
       displayName: user.displayName || null,
       email: user.email || null,
       disabled: user.disabled || false,
+      providerData: user.providerData ? user.providerData.map(p => p.providerId) : [],
       role: {
         id: user.customClaims && user.customClaims.r ? user.customClaims.r : null,
         isChanged: false,
