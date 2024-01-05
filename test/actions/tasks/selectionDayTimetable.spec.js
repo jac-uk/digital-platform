@@ -176,8 +176,6 @@ describe('selectionDayTimetable', () => {
 
       const result = selectionDayTimetable(mockPanelData, mockCandidateInfo, mockReasonableAdjustments, mockPanelConflicts);
 
-      console.log(result);
-
       expect(result.timetable).toHaveLength(5); 
       expect(result.unassignedCandidates).toEqual([mockCandidateInfo[5]]);
     });
