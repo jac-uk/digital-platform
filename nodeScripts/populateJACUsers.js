@@ -4,10 +4,11 @@
 
 'use strict';
 
-const { app, db } = require('./shared/admin');
+const { app, db, firebase, auth } = require('./shared/admin');
 const config = require('./shared/config');
 const { applyUpdates } = require('../functions/shared/helpers');
 const { newUser } = require('../functions/shared/factories')(config);
+const { getUserSearchMap } = require('../functions/actions/users')(config, firebase, db, auth);
 const { listAllUsers } = require('./shared/helpers');
 const { log } = require('./shared/helpers.js');
 
@@ -21,14 +22,35 @@ const main = async () => {
   log(`- Total users: ${users.length}`);
 
   log('Filter by JAC users...');
-  const filteredUsers = users.filter(item => item.email.match(/(.*@judicialappointments|.*@justice)[.](digital|gov[.]uk)/));
+  const filteredUsers = users.filter(user => {
+    let isJacAdmin = false;
+    if (user.providerData.length === 1) {
+      const provider = user.providerData[0];
+      if (
+        user.email.match(/(.*@judicialappointments|.*@justice)[.](digital|gov[.]uk)/) && 
+        (provider.providerId === 'google.com' || provider.providerId === 'microsoft.com')
+      ) {
+        isJacAdmin = true; // user has authenticated successfully with google or microsoft
+      }
+    } else if (user.providerData.length > 1) {
+      isJacAdmin = true;
+    } else {
+      isJacAdmin = false;
+    }
+
+    return isJacAdmin;
+  });
   log(`- Total JAC users: ${filteredUsers.length}`);
 
   filteredUsers.forEach((user) => {
+    const userData = newUser(user);
+    Object.assign(userData, {
+      _search: getUserSearchMap(user),
+    });
     commands.push({
       command: 'set',
       ref: db.collection('users').doc(user.uid),
-      data: newUser(user),
+      data: userData,
     });
   });
 

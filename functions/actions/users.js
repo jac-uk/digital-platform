@@ -1,5 +1,6 @@
 const { getDocument } = require('../shared/helpers');
 const { convertPermissions } = require('../shared/permissions');
+const { getSearchMap } = require('../shared/search');
 
 module.exports = (auth, db) => {
   return {
@@ -7,8 +8,10 @@ module.exports = (auth, db) => {
     createUser,
     deleteUsers,
     importUsers,
+    onUserCreate,
     onUserUpdate,
     updateUserCustomClaims,
+    getUserSearchMap,
   };
 
   async function generateSignInWithEmailLink(ref, email, returnUrl) {
@@ -122,6 +125,17 @@ module.exports = (auth, db) => {
   }
 
   /**
+   * User created event handler
+   * - Add _search for search and sorting
+   */
+  async function onUserCreate(ref, data) {
+    const userData = {
+      _search: getUserSearchMap(data),
+    };
+    await ref.update(userData);
+  }
+
+  /**
    * User updated event handler
    * 
    * @param {string} userId
@@ -136,8 +150,15 @@ module.exports = (auth, db) => {
     });
     
     try {
+      if (data.displayName || !dataAfter._search) {
+        console.log('Set _search for search and sorting');
+        Object.assign(data, { _search: getUserSearchMap(dataAfter)});
+      }
       if (Object.keys(data).length) {
+        console.log('Updating user data:');
+        console.log(JSON.stringify(data));
         await auth.updateUser(userId, data);
+        await db.collection('users').doc(userId).update(data);
       }
 
       // update role permissions in custom claims
@@ -149,7 +170,7 @@ module.exports = (auth, db) => {
           const customClaims = user.customClaims || {};
           customClaims.r = dataAfter.role.id;
           customClaims.rp = convertedPermissions;
-          await auth.setCustomUserClaims(userId, user.customClaims);
+          await auth.setCustomUserClaims(userId, customClaims);
   
           // mark role.isChanged as false
           await db.collection('users').doc(userId).update({
@@ -191,5 +212,17 @@ module.exports = (auth, db) => {
       console.log(error);
       return false;
     }
+  }
+
+  /**
+   * 
+   * @param {object} user 
+   * @returns {array}
+   */
+  function getUserSearchMap(user) {
+    return getSearchMap([
+      user.displayName,
+      user.email,
+    ]);
   }
 };

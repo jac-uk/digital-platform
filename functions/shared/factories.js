@@ -2,6 +2,7 @@ const { formatDate } = require('./helpers');
 const { applicationOpenDatePost01042023 } = require('./converters/helpers');
 const { getSearchMap } = require('./search');
 const { objectHasNestedProperty } = require('./helpers');
+const _ = require('lodash');
 
 module.exports = (CONSTANTS) => {
   return {
@@ -20,6 +21,7 @@ module.exports = (CONSTANTS) => {
     newNotificationLateApplicationRequest,
     newNotificationLateApplicationResponse,
     newUser,
+    newNotificationUserInvitation,
     newCandidateFormResponse,
     newCandidateFormNotification,
   };
@@ -727,6 +729,7 @@ module.exports = (CONSTANTS) => {
       displayName: user.displayName || null,
       email: user.email || null,
       disabled: user.disabled || false,
+      providerData: user.providerData ? user.providerData.map(p => p.providerId) : [],
       role: {
         id: user.customClaims && user.customClaims.r ? user.customClaims.r : null,
         isChanged: false,
@@ -783,6 +786,27 @@ module.exports = (CONSTANTS) => {
       reference: {
         collection: 'applications',
         id: application.id,
+      },
+      createdAt: firebase.firestore.Timestamp.fromDate(new Date()),
+      status: 'ready',
+    };
+  }
+
+  function newNotificationUserInvitation(firebase, userInvitationId, userInvitation) {
+    return {
+      email: userInvitation.email,
+      replyTo: '',
+      template: {
+        name: 'New user invitation confirmation',
+        id: '4f221946-629e-468d-a83e-dec3d4d3d7d2',
+      },
+      personalisation: {
+        username: userInvitation.email,
+        email: userInvitation.email,
+      },
+      reference: {
+        collection: 'userInvitations',
+        id: userInvitationId,
       },
       createdAt: firebase.firestore.Timestamp.fromDate(new Date()),
       status: 'ready',
