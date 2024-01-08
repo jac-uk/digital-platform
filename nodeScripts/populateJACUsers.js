@@ -24,18 +24,15 @@ const main = async () => {
   log('Filter by JAC users...');
   const filteredUsers = users.filter(user => {
     let isJacAdmin = false;
-    if (user.providerData.length === 1) {
-      const provider = user.providerData[0];
-      if (
-        user.email.match(/(.*@judicialappointments|.*@justice)[.](digital|gov[.]uk)/) && 
-        (provider.providerId === 'google.com' || provider.providerId === 'microsoft.com')
-      ) {
-        isJacAdmin = true; // user has authenticated successfully with google or microsoft
+    if (user.email.match(/(.*@judicialappointments|.*@justice)[.](digital|gov[.]uk)/)) {
+      if (user.providerData.length === 1) {
+        const provider = user.providerData[0];
+        if (provider.providerId === 'google.com' || provider.providerId === 'microsoft.com') {
+          isJacAdmin = true; // user has authenticated successfully with google or microsoft
+        }
+      } else if (user.providerData.length > 1) {
+        isJacAdmin = true;
       }
-    } else if (user.providerData.length > 1) {
-      isJacAdmin = true;
-    } else {
-      isJacAdmin = false;
     }
 
     return isJacAdmin;
