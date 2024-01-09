@@ -25,8 +25,11 @@ module.exports = (config, firebase, db) => {
     // Build Zenhub message
     const body = buildZenhubPayload(bugReport);
 
+    const label = bugReport.candidate ? 'Apply' : 'Admin';
+
     // Create issue in Zenhub
-    const zenhubIssueId = await zenhub.createZenhubIssue(bugReport.referenceNumber, body);
+    //const zenhubIssueId = await zenhub.createZenhubIssue(bugReport.referenceNumber, body);
+    const zenhubIssueId = await zenhub.createGithubIssue(bugReport.referenceNumber, body, label);
 
     // Update bugReport with Zenhub issue ID in firestore
     if (zenhubIssueId) {
@@ -59,6 +62,7 @@ module.exports = (config, firebase, db) => {
     if (data.exercise.candidate) {
       payload += `\nCandidate: ${data.exercise.candidate}`;
     }
+    payload += `.\nCriticality: ${data.criticality}`;
     payload += `.\nDescription: ${data.issue}`;
     payload += `.\nExpectation: ${data.expectation}`;
     payload += `.\nBrowser: ${data.browser}`;
@@ -68,7 +72,15 @@ module.exports = (config, firebase, db) => {
     payload += `.\nCPS Device? ${data.cpsDevice === '0' ? 'No' : 'Yes'}`;
     if (data.screenshot) {
       payload += `.\nScreenshot Link: ${data.screenshot.downloadUrl}`;
+      payload += '.\nScreenshot:';
+      //payload += '.\n<img src=\'https://imageio.forbes.com/specials-images/imageserve/5d35eacaf1176b0008974b54/2020-Chevrolet-Corvette-Stingray/0x0.jpg?format=jpg&crop=4560,2565,x790,y784,safe&width=1440\' />';
+
+      // @TODO: BELOW DOESNT WORK DUE TO THE LOCALHOST IN THE LINK
+      payload += `.\n<img src='${data.screenshot.downloadUrl}' />`;
     }
+    //payload += '.\n<!-- test = { id: 23, name: \'tester\' } -->';
+    payload += `.\n<!-- reporter = { email: '${data.contactDetails}' } -->`;
+   
     return payload;
   }
 

@@ -6,6 +6,7 @@ module.exports = (auth, db) => {
   return {
     generateSignInWithEmailLink,
     createUser,
+    updateUser,
     deleteUsers,
     importUsers,
     onUserCreate,
@@ -56,6 +57,21 @@ module.exports = (auth, db) => {
     try {
       const res = await auth.createUser(user);
       return res;
+    } catch(error) {
+      console.log(error);
+      return error;
+    }
+  }
+
+  /**
+   * Update a user
+   * @param {string} userId 
+   * @param {object} data 
+   * @returns 
+   */
+  async function updateUser(userId, data) {
+    try {
+      return await db.collection('users').doc(userId).update(data);
     } catch(error) {
       console.log(error);
       return error;
