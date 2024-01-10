@@ -1,6 +1,6 @@
 const config = require('../shared/config');
 
-module.exports = (config, firebase, db) => {
+module.exports = (config, firebase, db, auth) => {
 
   const zenhub = require('../shared/zenhub')(config);
   const slack = require('../shared/slack')(config);
@@ -18,12 +18,11 @@ module.exports = (config, firebase, db) => {
    * @param {*} bugReportId 
    */
   async function createZenhubIssue(bugReportId) {
-
-    // @TODO: Get the bug report
+    const authUser = auth.currentUser;
     const bugReport = await getDocument(db.collection('bugReports').doc(bugReportId));
 
     // Build Zenhub message
-    const body = buildZenhubPayload(bugReport);
+    const body = buildZenhubPayload(bugReport, authUser);
 
     const label = bugReport.candidate ? 'Apply' : 'Admin';
 
@@ -54,7 +53,12 @@ module.exports = (config, firebase, db) => {
     slack.postBlocks(blocks);
   }
 
-  function buildZenhubPayload(data) {
+  function buildZenhubPayload(data, authUser) {
+
+
+    console.log(`AuthUser slack member id: ${authUser.slackMemberId}`);
+
+
     let payload = `The following ${data.criticality} issue was raised by ${data.reporter}`;
     if (data.exercise.referenceNumber) {
       payload += ` for exercise ${data.exercise.referenceNumber}`;
@@ -75,11 +79,12 @@ module.exports = (config, firebase, db) => {
       payload += '.\nScreenshot:';
       //payload += '.\n<img src=\'https://imageio.forbes.com/specials-images/imageserve/5d35eacaf1176b0008974b54/2020-Chevrolet-Corvette-Stingray/0x0.jpg?format=jpg&crop=4560,2565,x790,y784,safe&width=1440\' />';
 
-      // @TODO: BELOW DOESNT WORK DUE TO THE LOCALHOST IN THE LINK
+      // Note:The image src below does not work when using localhost
       payload += `.\n<img src='${data.screenshot.downloadUrl}' />`;
     }
     //payload += '.\n<!-- test = { id: 23, name: \'tester\' } -->';
-    payload += `.\n<!-- reporter = { email: '${data.contactDetails}' } -->`;
+    //payload += `.\n<!-- reporter = { email: '${data.contactDetails}' } -->`;
+    payload += `.\n<!-- { reporter: '${authUser.slackMemberId}', developer: 'U052NR5U43Z' } -->`;
    
     return payload;
   }

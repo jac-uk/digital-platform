@@ -1,7 +1,7 @@
 const functions = require('firebase-functions');
 const config = require('../shared/config');
-const { firebase, db } = require('../shared/admin.js');
-const { createZenhubIssue } = require('../actions/zenhub')(config, firebase, db);
+const { firebase, db, auth } = require('../shared/admin.js');
+const { createZenhubIssue } = require('../actions/zenhub')(config, firebase, db, auth);
 const { checkFunctionEnabled } = require('../shared/serviceSettings.js')(db);
 const { PERMISSIONS, hasPermissions } = require('../shared/permissions.js');
 
