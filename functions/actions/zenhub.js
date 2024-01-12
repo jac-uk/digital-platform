@@ -73,14 +73,13 @@ module.exports = (config, firebase, db, auth) => {
     if (data.screenshot) {
       payload += `.\nScreenshot Link: ${data.screenshot.downloadUrl}`;
       payload += '.\nScreenshot:';
-      //payload += '.\n<img src=\'https://imageio.forbes.com/specials-images/imageserve/5d35eacaf1176b0008974b54/2020-Chevrolet-Corvette-Stingray/0x0.jpg?format=jpg&crop=4560,2565,x790,y784,safe&width=1440\' />';
 
       // Note:The image src below does not work when using localhost
       payload += `.\n<img src='${data.screenshot.downloadUrl}' />`;
     }
     //payload += '.\n<!-- test = { id: 23, name: \'tester\' } -->';
     //payload += `.\n<!-- reporter = { email: '${data.contactDetails}' } -->`;
-    payload += `.\n<!-- { reporter: '${user.slackMemberId}', developer: 'U052NR5U43Z' } -->`;
+    //payload += `.\n<!-- { reporter: '${user.slackMemberId}', developer: 'U052NR5U43Z' } -->`;
    
     return payload;
   }
