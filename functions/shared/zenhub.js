@@ -83,11 +83,7 @@ module.exports = (config) => {
    * @returns 
    */
   async function createGithubIssue(referenceNumber, body, label) {
-    
     const platformIssuesRepositoryId = 'Z2lkOi8vcmFwdG9yL1JlcG9zaXRvcnkvMTMzOTczMzA2';
-
-    const assignee = 'drieJAC';
-
     if (baseApiUrl && apiKey) {
       try {
         const title = `User Raised Issue ${referenceNumber}`;
@@ -104,7 +100,6 @@ module.exports = (config) => {
                     body: "${body}",
                     repositoryId: "${platformIssuesRepositoryId}"
                     labels: ["${label}"],
-                    assignees: ["${assignee}"]
                 }) {
                     issue {
                         id
@@ -115,10 +110,6 @@ module.exports = (config) => {
             `,
           },
         });
-
-        // console.log('result.data.data:');
-        // console.log(result.data.data);
-
         if (objectHasNestedProperty(result, 'data.errors')) {
           const errorsStr = result.data.errors.map(e => e.message).join('\n');
           throw new Error(errorsStr);

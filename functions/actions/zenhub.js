@@ -4,10 +4,11 @@ module.exports = (config, firebase, db, auth) => {
 
   const zenhub = require('../shared/zenhub')(config);
   const slack = require('../shared/slack')(config);
-  const { getDocument } = require('../shared/helpers');
+  const { getDocument, objectHasNestedProperty } = require('../shared/helpers');
 
   return {
     createZenhubIssue,
+    processAssignedIssueHook,
   };
 
   /**
@@ -17,12 +18,12 @@ module.exports = (config, firebase, db, auth) => {
    * 
    * @param {*} bugReportId 
    */
-  async function createZenhubIssue(bugReportId) {
-    const authUser = auth.currentUser;
+  async function createZenhubIssue(bugReportId, userId) {
+    const user = await getDocument(db.collection('users').doc(userId));
     const bugReport = await getDocument(db.collection('bugReports').doc(bugReportId));
 
     // Build Zenhub message
-    const body = buildZenhubPayload(bugReport, authUser);
+    const body = buildZenhubPayload(bugReport, user);
 
     const label = bugReport.candidate ? 'Apply' : 'Admin';
 
@@ -53,12 +54,7 @@ module.exports = (config, firebase, db, auth) => {
     slack.postBlocks(blocks);
   }
 
-  function buildZenhubPayload(data, authUser) {
-
-
-    console.log(`AuthUser slack member id: ${authUser.slackMemberId}`);
-
-
+  function buildZenhubPayload(data, user) {
     let payload = `The following ${data.criticality} issue was raised by ${data.reporter}`;
     if (data.exercise.referenceNumber) {
       payload += ` for exercise ${data.exercise.referenceNumber}`;
@@ -84,7 +80,7 @@ module.exports = (config, firebase, db, auth) => {
     }
     //payload += '.\n<!-- test = { id: 23, name: \'tester\' } -->';
     //payload += `.\n<!-- reporter = { email: '${data.contactDetails}' } -->`;
-    payload += `.\n<!-- { reporter: '${authUser.slackMemberId}', developer: 'U052NR5U43Z' } -->`;
+    payload += `.\n<!-- { reporter: '${user.slackMemberId}', developer: 'U052NR5U43Z' } -->`;
    
     return payload;
   }
@@ -167,6 +163,75 @@ module.exports = (config, firebase, db, auth) => {
         },
       };
     }
+  }
+
+
+
+
+  // @TODO: ALL THE CODE BELOW SHOUDL GO INTO ITS OWN FILE AND THIS FILE WILL NEED RENAMING THEN CAN UPDATE THE FN NAMES FOR THE SLACK STUFF BELOW HERE!
+  /**
+   * assigneeUser is the user who has been assigned/unassigned retrieved from our db by their githubUsername
+   * @param {*} params 
+   * @param {*} bugReport 
+   * @param {*} assigneeUser 
+   */
+  async function processAssignedIssueHook(params, bugReport, assigneeUser) {
+    const issue = {
+      action: params.action,
+      url: params.issue.html_url,
+      id: params.issue.id,
+      number: params.issue.number,
+      title: params.issue.title,
+    };
+
+    const assigneesOrig = params.issue.assignees;
+
+    // Use the map function to transform the array
+    const assignees = assigneesOrig.map(({ id, login, type }) => ({ id, login, type }));
+
+    // Assignee who has been ASSIGNED OR UNASSIGNED!
+    const assignee = {
+      login: params.assignee.login,
+      id: params.assignee.id,
+    };
+
+    // Update the bugReport
+    const bugReportId = bugReport.id; // Get the ID of the document
+
+    console.log(`bugReportId: ${bugReportId}`);
+
+    // Update the record
+    await db.collection('bugReports').doc(bugReportId).update({
+      githubAssignees: assignees,
+    });
+
+    // Build Slack msg using markdown
+    const blocksArr = [];
+    blocksArr.push(addSlackDivider());
+    blocksArr.push(addSlackSection1P(issue, bugReport, assigneeUser));
+
+    const blocks = {
+      'blocks': blocksArr,
+    };
+
+    // Send Slack msg
+    slack.postBlocks(blocks);
+  }
+
+  // @TODO: RENAME FUNCTION ONCE MOVED TO DEDICATED MODULE
+  function addSlackSection1P(issue, data, user) {
+
+    console.log(`Slack member id is: ${user.slackMemberId}`);
+
+    const assignText = issue.action === 'assigned' ? 'has been assigned to' : 'has been unassigned from';
+    let text = `The following *${data.criticality}* issue <${issue.url}|#${issue.number}> raised by *${data.reporter}* ${assignText} <@${user.slackMemberId}>`;
+    return {
+      'type': 'section',
+      'text': {
+        'type': 'mrkdwn',
+        'text': text,
+      },
+    };
   }
 
 };

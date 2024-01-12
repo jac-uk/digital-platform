@@ -95,3 +95,5 @@ exports.listQualifyingTests = require('./callableFunctions/qualifyingTests/v2/li
 exports.updateQualifyingTestParticipants = require('./callableFunctions/qualifyingTests/v2/updateQualifyingTestParticipants');
 exports.updateQualifyingTestScores = require('./callableFunctions/qualifyingTests/v2/updateQualifyingTestScores');
 
+// HTTP
+exports.ticketingGithubWebhook = require('./httpFunctions/ticketingGithubWebhook');
