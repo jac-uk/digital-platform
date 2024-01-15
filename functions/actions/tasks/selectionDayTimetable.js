@@ -53,7 +53,7 @@ function selectionDayTimetable(panelData, candidateInfo, reasonableAdjustments, 
     });
 
     oneDateCandidates.forEach((candidate) => {
-      if (availableSlots > 0) {
+      if (availableSlots > 0 && !candidate.sorted) {
 
         const assignedCandidate = candidateInfo.find((c) => c.candidate.id === candidate);
 
@@ -88,7 +88,7 @@ function selectionDayTimetable(panelData, candidateInfo, reasonableAdjustments, 
 
     if (multiDateCandidates.length) {
       multiDateCandidates.forEach((candidate) => {
-        if (availableSlots > 0) {
+        if (availableSlots > 0 && !candidate.sorted) {
 
           const assignedCandidate = candidateInfo.find((c) => c.candidate.id === candidate);
           
@@ -104,9 +104,11 @@ function selectionDayTimetable(panelData, candidateInfo, reasonableAdjustments, 
           availableSlots--;
 
           result.timetable.push(row);
-
+          
           // Remove assigned candidate from suitableCandidates
-          panel.suitableCandidates = panel.suitableCandidates.filter((candidateId) => candidateId !== candidate);
+          panelData.forEach((panelToRemoveCandidate) => {
+            panelToRemoveCandidate.suitableCandidates = panelToRemoveCandidate.suitableCandidates.filter((candidateId) => candidateId !== candidate);
+          });
           // Add sorted flag to candidate on candidateInfo array (for determining unassigned candidates)
           assignedCandidate.sorted = true;
         }
