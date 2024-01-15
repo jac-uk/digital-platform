@@ -1,15 +1,11 @@
-const config = require('../shared/config');
+module.exports = (config, firebase, db) => {
 
-module.exports = (config, firebase, db, auth) => {
-
-  const zenhub = require('../shared/zenhub')(config);
-  const slack = require('../shared/slack')(config);
-  const { getDocument, objectHasNestedProperty } = require('../shared/helpers');
-  const { getUser } = require('./users')(auth, db);
+  const zenhub = require('../../shared/zenhub')(config);
+  const slack = require('../../shared/slack')(config);
+  const { getDocument } = require('../../shared/helpers');
 
   return {
-    createZenhubIssue,
-    processAssignedIssueHook,
+    createIssue,
   };
 
   /**
@@ -19,7 +15,7 @@ module.exports = (config, firebase, db, auth) => {
    * 
    * @param {*} bugReportId 
    */
-  async function createZenhubIssue(bugReportId, userId) {
+  async function createIssue(bugReportId, userId) {
     const user = await getDocument(db.collection('users').doc(userId));
     const bugReport = await getDocument(db.collection('bugReports').doc(bugReportId));
 
@@ -163,76 +159,6 @@ module.exports = (config, firebase, db, auth) => {
         },
       };
     }
-  }
-
-
-
-
-  // @TODO: ALL THE CODE BELOW SHOUDL GO INTO ITS OWN FILE AND THIS FILE WILL NEED RENAMING THEN CAN UPDATE THE FN NAMES FOR THE SLACK STUFF BELOW HERE!
-  /**
-   * assigneeUser is the user who has been assigned/unassigned retrieved from our db by their githubUsername
-   * @param {*} params 
-   * @param {*} bugReport 
-   * @param {*} assigneeUser 
-   */
-  async function processAssignedIssueHook(params, bugReport, assigneeUser) {
-
-    // @TODO: May be worth putting the reporter and userId fields into one object inside the bugReport collection record!?
-    const reporterUser = await getUser(bugReport.userId);
-
-    const issue = {
-      action: params.action,
-      url: params.issue.html_url,
-      id: params.issue.id,
-      number: params.issue.number,
-      title: params.issue.title,
-    };
-
-    const assigneesOrig = params.issue.assignees;
-
-    // Use the map function to transform the array
-    const assignees = assigneesOrig.map(({ id, login, type }) => ({ id, login, type }));
-
-    // Assignee who has been ASSIGNED OR UNASSIGNED!
-    const assignee = {
-      login: params.assignee.login,
-      id: params.assignee.id,
-    };
-
-    // Update the bugReport
-    const bugReportId = bugReport.id; // Get the ID of the document
-
-    console.log(`bugReportId: ${bugReportId}`);
-
-    // Update the record
-    await db.collection('bugReports').doc(bugReportId).update({
-      githubAssignees: assignees,
-    });
-
-    // Build Slack msg using markdown
-    const blocksArr = [];
-    blocksArr.push(addSlackDivider());
-    blocksArr.push(addSlackSection1P(issue, bugReport, assigneeUser, reporterUser));
-
-    const blocks = {
-      'blocks': blocksArr,
-    };
-
-    // Send Slack msg
-    slack.postBlocks(blocks);
-  }
-
-  // @TODO: RENAME FUNCTION ONCE MOVED TO DEDICATED MODULE
-  function addSlackSection1P(issue, data, assigneeUser, reporterUser) {
-    const assignText = issue.action === 'assigned' ? 'has been assigned to' : 'has been unassigned from';
-    let text = `The following *${data.criticality}* issue <${issue.url}|#${issue.number}> raised by <@${reporterUser.slackMemberId}> ${assignText} <@${assigneeUser.slackMemberId}>`;
-    return {
-      'type': 'section',
-      'text': {
-        'type': 'mrkdwn',
-        'text': text,
-      },
-    };
   }
 
 };

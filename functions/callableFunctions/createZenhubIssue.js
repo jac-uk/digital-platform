@@ -1,7 +1,7 @@
 const functions = require('firebase-functions');
 const config = require('../shared/config');
 const { firebase, db, auth } = require('../shared/admin.js');
-const { createZenhubIssue } = require('../actions/zenhub')(config, firebase, db, auth);
+const { createIssue } = require('../actions/zenhub/createIssue')(config, firebase, db);
 const { checkFunctionEnabled } = require('../shared/serviceSettings.js')(db);
 const { PERMISSIONS, hasPermissions } = require('../shared/permissions.js');
 
@@ -15,6 +15,6 @@ module.exports = functions.region('europe-west2').https.onCall(async (data, cont
   if (!validEmailPattern.test(context.auth.token.email)) {
     throw new functions.https.HttpsError('failed-precondition', 'The function is restricted to JAC Staff.');
   }
-  return await createZenhubIssue(data.bugReportId, data.userId);
+  return await createIssue(data.bugReportId, data.userId);
 });
 

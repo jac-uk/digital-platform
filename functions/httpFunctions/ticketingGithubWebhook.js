@@ -6,10 +6,8 @@ const { checkArguments } = require('../shared/helpers.js');
 const { checkFunctionEnabled } = require('../shared/serviceSettings.js')(db);
 const { PERMISSIONS, hasPermissions } = require('../shared/permissions.js');
 const { getUserByGithubUsername } = require('../actions/users')(auth, db);
-
 const { getBugReportByRef } = require('../actions/bugReports')(db);
-
-const { processAssignedIssueHook } = require('../actions/zenhub')(config, firebase, db, auth);
+const { onAssignedIssue } = require('../actions/zenhub/hooks/onAssignedIssue')(config, db, auth);
 
 const slack = require('../actions/slack.js')(auth, config, db);
 
@@ -76,7 +74,7 @@ module.exports = functions.region('europe-west2').https.onRequest(async (req, re
                 res.status(422).send(errorMsg);
               }
               else {
-                processAssignedIssueHook(req.body, bugReport, user);
+                onAssignedIssue(req.body, bugReport, user);
                 // Your callable function logic here
                 res.status(200).send('Function executed successfully');
               }
