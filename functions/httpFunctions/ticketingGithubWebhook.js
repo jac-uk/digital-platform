@@ -5,6 +5,9 @@ const { getDocuments, getMissingNestedProperties, objectHasNestedProperty } = re
 const { checkArguments } = require('../shared/helpers.js');
 const { checkFunctionEnabled } = require('../shared/serviceSettings.js')(db);
 const { PERMISSIONS, hasPermissions } = require('../shared/permissions.js');
+const { getUserByGithubUsername } = require('../actions/users')(auth, db);
+
+const { getBugReportByRef } = require('../actions/bugReports')(db);
 
 const { processAssignedIssueHook } = require('../actions/zenhub')(config, firebase, db, auth);
 
@@ -25,11 +28,10 @@ module.exports = functions.region('europe-west2').https.onRequest(async (req, re
   }
   else {
     const action = req.body.action;
-    const assignee = req.body.assignee.login;
     if (!Array.prototype.includes.call(supportedEventHooks, action)) {
-      const errorMsg = `The action: ${action} is currently not supported`;
-      console.error(errorMsg);
-      res.status(422).send(errorMsg); 
+      const warningMsg = `The action: ${action} is currently not supported`;
+      console.log(warningMsg);
+      res.status(200).send(warningMsg); 
     }
     else {
       if (Array.prototype.includes.call(['assigned', 'unassigned'], action)) {
@@ -41,6 +43,8 @@ module.exports = functions.region('europe-west2').https.onRequest(async (req, re
           res.status(422).send(errorMsg);
         }
         else {
+          const assignee = req.body.assignee.login;
+
           // Check that the bugReport referenceNumber can be extracted from the request params
           const issueTitle = req.body.issue.title;
 
@@ -58,23 +62,21 @@ module.exports = functions.region('europe-west2').https.onRequest(async (req, re
           }
           else {
             const referenceNumber = matchResult[0];
-            const bugReportsRef = db.collection('bugReports').where('referenceNumber', '==', referenceNumber);
-            let bugReports = await getDocuments(bugReportsRef);
-            if (bugReports.length === 0) {
+            const bugReport = await getBugReportByRef(referenceNumber);
+            if (!bugReport) {
               const errorMsg = 'The bugReport for this issue could not be found';
               console.error(errorMsg);
               res.status(422).send(errorMsg);
             }
             else {
-              const usersRef = db.collection('users').where('githubUsername', '==', assignee);
-              let users = await getDocuments(usersRef);
-              if (users.length === 0) {
+              const user = await getUserByGithubUsername(assignee);
+              if (!user) {
                 const errorMsg = 'The user for this assignee could not be found from their githubUsername';
                 console.error(errorMsg);
                 res.status(422).send(errorMsg);
               }
               else {
-                processAssignedIssueHook(req.body, bugReports[0], users[0]);
+                processAssignedIssueHook(req.body, bugReport, user);
                 // Your callable function logic here
                 res.status(200).send('Function executed successfully');
               }

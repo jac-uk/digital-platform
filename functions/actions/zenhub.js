@@ -5,6 +5,7 @@ module.exports = (config, firebase, db, auth) => {
   const zenhub = require('../shared/zenhub')(config);
   const slack = require('../shared/slack')(config);
   const { getDocument, objectHasNestedProperty } = require('../shared/helpers');
+  const { getUser } = require('./users')(auth, db);
 
   return {
     createZenhubIssue,
@@ -175,6 +176,10 @@ module.exports = (config, firebase, db, auth) => {
    * @param {*} assigneeUser 
    */
   async function processAssignedIssueHook(params, bugReport, assigneeUser) {
+
+    // @TODO: May be worth putting the reporter and userId fields into one object inside the bugReport collection record!?
+    const reporterUser = await getUser(bugReport.userId);
+
     const issue = {
       action: params.action,
       url: params.issue.html_url,
@@ -207,7 +212,7 @@ module.exports = (config, firebase, db, auth) => {
     // Build Slack msg using markdown
     const blocksArr = [];
     blocksArr.push(addSlackDivider());
-    blocksArr.push(addSlackSection1P(issue, bugReport, assigneeUser));
+    blocksArr.push(addSlackSection1P(issue, bugReport, assigneeUser, reporterUser));
 
     const blocks = {
       'blocks': blocksArr,
@@ -218,12 +223,9 @@ module.exports = (config, firebase, db, auth) => {
   }
 
   // @TODO: RENAME FUNCTION ONCE MOVED TO DEDICATED MODULE
-  function addSlackSection1P(issue, data, user) {
-
-    console.log(`Slack member id is: ${user.slackMemberId}`);
-
+  function addSlackSection1P(issue, data, assigneeUser, reporterUser) {
     const assignText = issue.action === 'assigned' ? 'has been assigned to' : 'has been unassigned from';
-    let text = `The following *${data.criticality}* issue <${issue.url}|#${issue.number}> raised by *${data.reporter}* ${assignText} <@${user.slackMemberId}>`;
+    let text = `The following *${data.criticality}* issue <${issue.url}|#${issue.number}> raised by <@${reporterUser.slackMemberId}> ${assignText} <@${assigneeUser.slackMemberId}>`;
     return {
       'type': 'section',
       'text': {

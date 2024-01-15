@@ -1,4 +1,4 @@
-const { getDocument } = require('../shared/helpers');
+const { getDocument, getDocuments } = require('../shared/helpers');
 const { convertPermissions } = require('../shared/permissions');
 const { getSearchMap } = require('../shared/search');
 
@@ -13,6 +13,8 @@ module.exports = (auth, db) => {
     onUserUpdate,
     updateUserCustomClaims,
     getUserSearchMap,
+    getUserByGithubUsername,
+    getUser,
   };
 
   async function generateSignInWithEmailLink(ref, email, returnUrl) {
@@ -106,6 +108,19 @@ module.exports = (auth, db) => {
     }
 
     return result;
+  }
+
+  async function getUserByGithubUsername(githubUsername) {
+    const usersRef = db.collection('users').where('githubUsername', '==', githubUsername);
+    let users = await getDocuments(usersRef);
+    if (users.length === 0) {
+      return null;
+    }
+    return users[0];
+  }
+
+  async function getUser(userId) {
+    return getDocument(db.collection('users').doc(userId));
   }
 
   /**
