@@ -1,6 +1,5 @@
 module.exports = (config, db, auth) => {
 
-  const zenhub = require('../../../shared/zenhub')(config);
   const slack = require('../../../shared/slack')(config);
   const { getUser } = require('../../users')(auth, db);
 
@@ -9,6 +8,7 @@ module.exports = (config, db, auth) => {
   };
 
   /**
+   * Hook called when an issue is assigned/unassigned in github
    * assigneeUser is the user who has been assigned/unassigned retrieved from our db by their githubUsername
    * @param {*} params 
    * @param {*} bugReport 
@@ -66,8 +66,7 @@ module.exports = (config, db, auth) => {
 			'type': 'divider',
 		};
   }
-  
-  // @TODO: RENAME FUNCTION ONCE MOVED TO DEDICATED MODULE
+
   function addSlackSection(issue, data, assigneeUser, reporterUser) {
     const assignText = issue.action === 'assigned' ? 'has been assigned to' : 'has been unassigned from';
     let text = `The following *${data.criticality}* issue <${issue.url}|#${issue.number}> raised by <@${reporterUser.slackMemberId}> ${assignText} <@${assigneeUser.slackMemberId}>`;
