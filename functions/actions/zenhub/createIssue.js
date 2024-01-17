@@ -39,10 +39,12 @@ module.exports = (config, firebase, db) => {
     // Build Slack msg using markdown
     const blocksArr = [];
     blocksArr.push(addSlackDivider());
-    blocksArr.push(addSlackSection1(bugReport));
+    blocksArr.push(addSlackSection1(bugReport, user));
     blocksArr.push(addSlackSection2(bugReport));
-    blocksArr.push(addSlackSection3(bugReport));
-    blocksArr.push(addSlackSection4(zenhubIssueId));
+    if (bugReport.candidate) {
+      blocksArr.push(addSlackSection3(bugReport));
+    }
+    //blocksArr.push(addSlackSection4(zenhubIssueId));
     const blocks = {
       'blocks': blocksArr,
     };
@@ -87,8 +89,10 @@ module.exports = (config, firebase, db) => {
 		};
   }
 
-  function addSlackSection1(data) {
-    let text = `The following *${data.criticality}* issue was raised by *${data.reporter}*`;
+  function addSlackSection1(data, user) {
+    //let text = `The following *${data.criticality}* issue was raised by *${data.reporter}*`;
+    let text = `The following *${data.criticality}* issue was raised by <@${user.slackMemberId}>`;
+
     if (data.exercise.referenceNumber) {
       text += ` for exercise: *${data.exercise.referenceNumber}*`;
     }
@@ -116,24 +120,24 @@ module.exports = (config, firebase, db) => {
   
   function addSlackSection3(data) {
     let fields = [];
-    fields.push(      {
+    // fields.push(      {
+    //   'type': 'mrkdwn',
+    //   'text': `*Bug Reference Number:*\n${data.referenceNumber}`,
+    // });
+    //if (data.candidate) {
+    fields.push({
       'type': 'mrkdwn',
-      'text': `*Bug Reference Number:*\n${data.referenceNumber}`,
+      'text': `*Candidate:*\n${data.candidate}`,
     });
-    if (data.candidate) {
-      fields.push({
-        'type': 'mrkdwn',
-        'text': `*Candidate:*\n${data.candidate}`,
-      });
-      fields.push({
-        'type': 'mrkdwn',
-        'text': `*CPS Device:*\n${data.cpsDevice === '1' ? 'true' : 'false'}`,
-      });
-    }
-    fields.push(      {
+    fields.push({
       'type': 'mrkdwn',
-      'text': `*Link to page:*\n<${data.url}>`,
+      'text': `*CPS Device:*\n${data.cpsDevice === '1' ? 'true' : 'false'}`,
     });
+    //}
+    // fields.push(      {
+    //   'type': 'mrkdwn',
+    //   'text': `*Link to page:*\n<${data.url}>`,
+    // });
     return {
       'type': 'section',
       'fields': fields,
