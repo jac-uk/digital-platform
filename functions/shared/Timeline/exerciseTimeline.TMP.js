@@ -131,6 +131,7 @@ module.exports = (config) => {
             {
               entry: 'Situational judgement qualifying test (QT)',
               date: getDateAndTime(data.situationalJudgementTestDate, data.situationalJudgementTestStartTime),
+              endDate: getDateAndTime(data.situationalJudgementTestDate, data.situationalJudgementTestEndTime),
               dateString: getDateAndTimeString(data.situationalJudgementTestDate, data.situationalJudgementTestStartTime, data.situationalJudgementTestEndTime),
               taskType: TASK_TYPE.SITUATIONAL_JUDGEMENT,
             }
@@ -153,6 +154,7 @@ module.exports = (config) => {
             {
               entry: 'Critical analysis qualifying test (QT)',
               date: getDateAndTime(data.criticalAnalysisTestDate, data.criticalAnalysisTestStartTime),
+              endDate: getDateAndTime(data.criticalAnalysisTestDate, data.criticalAnalysisTestEndTime),
               dateString: getDateAndTimeString(data.criticalAnalysisTestDate, data.criticalAnalysisTestStartTime, data.criticalAnalysisTestEndTime),
               taskType: TASK_TYPE.CRITICAL_ANALYSIS,
             }
@@ -175,6 +177,7 @@ module.exports = (config) => {
             {
               entry: 'Scenario test',
               date: getDateAndTime(data.scenarioTestDate, data.scenarioTestStartTime),
+              endDate: getDateAndTime(data.scenarioTestDate, data.scenarioTestEndTime),
               dateString: getDateAndTimeString(data.scenarioTestDate, data.scenarioTestStartTime, data.scenarioTestEndTime),
               taskType: TASK_TYPE.SCENARIO,
             }
