@@ -26,6 +26,7 @@ module.exports = {
   calculateMean,
   calculateStandardDeviation,
   objectHasNestedProperty,
+  getMissingNestedProperties,
   replaceCharacters,
   formatAddress,
   formatPreviousAddresses,
@@ -370,6 +371,16 @@ function objectHasNestedProperty(obj, dotPath) {
     currentObj = currentObj[key];
   }
   return true;
+}
+
+function getMissingNestedProperties(obj, dotPaths) {
+  const missingPaths = [];
+  for (let i = 0; i < dotPaths.length; i++) {
+    if (!objectHasNestedProperty(obj, dotPaths[i])) {
+      missingPaths.push(dotPaths[i]);
+    }
+  }
+  return missingPaths;
 }
 
 /**
