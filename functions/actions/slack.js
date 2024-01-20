@@ -14,6 +14,8 @@ module.exports = (auth, config, db) => {
    */
   async function lookupSlackUser(userId, slackMemberId, addSlackIdToUserRecord) {
     const memberExists = await slackWebApi.getUser(slackMemberId);
+    // @TODO: console log to help investigate any errors reported due to the lookup
+    console.log(`Lookup slack user with memberId: ${slackMemberId}, userId: ${userId}, addSlackIdToUserRecord: ${addSlackIdToUserRecord}`);
     if (memberExists && addSlackIdToUserRecord) {
       await updateUser(userId, {
         slackMemberId: slackMemberId,
