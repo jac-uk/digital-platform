@@ -68,11 +68,28 @@ module.exports = (config, db) => {
       .where('status', '==', 'applied')
     );
 
+    /**
+     * {
+     *    stage1 : {
+     *        status1: 1,
+     *        status2: 2
+     *    },
+     *    stage2 : {
+     *        status3: 5,
+     *    },
+     * }
+     */
+    // count application stage and status for character issue report
+    const characterIssueStatusCounts = {};
+
     // construct commands
     const commands = [];
     for (let i = 0, len = applications.length; i < len; ++i) {
       const eligibilityIssues = getEligibilityIssues(exercise, applications[i]);
       const characterIssues = getCharacterIssues(exercise, applications[i]);
+      
+      const stage = applications[i]._processing.stage;
+      const status = applications[i]._processing.status;
 
       const data = {};
       if (eligibilityIssues && eligibilityIssues.length > 0) {
@@ -85,6 +102,10 @@ module.exports = (config, db) => {
       if (characterIssues && characterIssues.length > 0) {
         data['flags.characterIssues'] = true;
         data['issues.characterIssues'] = characterIssues;
+
+        if (!characterIssueStatusCounts[stage]) characterIssueStatusCounts[stage] = {};
+        if (!characterIssueStatusCounts[stage][status]) characterIssueStatusCounts[stage][status] = 0;
+        characterIssueStatusCounts[stage][status] += 1;
       } else {
         data['flags.characterIssues'] = false;
         data['issues.characterIssues'] = [];
@@ -98,6 +119,17 @@ module.exports = (config, db) => {
         });
       }
     }
+
+    // count application status
+    commands.push({
+      command: 'set',
+      ref: db.collection('exercises').doc(`${exerciseId}`),
+      data: {
+        '_characterIssue': {
+          'statusCounts': characterIssueStatusCounts,
+        },
+      },
+    });
 
     // write to db
     const result = await applyUpdates(db, commands);
