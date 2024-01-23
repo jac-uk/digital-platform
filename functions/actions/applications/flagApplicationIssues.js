@@ -68,10 +68,19 @@ module.exports = (config, db) => {
       .where('status', '==', 'applied')
     );
 
+    /**
+     * {
+     *    stage1 : {
+     *        status1: 1,
+     *        status2: 2
+     *    },
+     *    stage2 : {
+     *        status3: 5,
+     *    },
+     * }
+     */
     // count application stage and status for character issue report
-    const characterIssueStageCounts = {};
     const characterIssueStatusCounts = {};
-
 
     // construct commands
     const commands = [];
@@ -93,10 +102,10 @@ module.exports = (config, db) => {
       if (characterIssues && characterIssues.length > 0) {
         data['flags.characterIssues'] = true;
         data['issues.characterIssues'] = characterIssues;
-        if (!characterIssueStageCounts[stage]) characterIssueStageCounts[stage] = 0;
-        characterIssueStageCounts[stage] += 1;
-        if (!characterIssueStatusCounts[status]) characterIssueStatusCounts[status] = 0;
-        characterIssueStatusCounts[status] += 1;
+
+        if (!characterIssueStatusCounts[stage]) characterIssueStatusCounts[stage] = {};
+        if (!characterIssueStatusCounts[stage][status]) characterIssueStatusCounts[stage][status] = 0;
+        characterIssueStatusCounts[stage][status] += 1;
       } else {
         data['flags.characterIssues'] = false;
         data['issues.characterIssues'] = [];
@@ -113,11 +122,10 @@ module.exports = (config, db) => {
 
     // count application status
     commands.push({
-      command: 'update',
+      command: 'set',
       ref: db.collection('exercises').doc(`${exerciseId}`),
       data: {
         '_characterIssue': {
-          'stageCounts': characterIssueStageCounts,
           'statusCounts': characterIssueStatusCounts,
         },
       },
