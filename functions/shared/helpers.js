@@ -181,6 +181,10 @@ function checkArguments(definitions, data) {
   // check data only contains defined props
   const allowedKeys = Object.keys(definitions);
   const providedKeys = Object.keys(data);
+
+  console.log('providedKeys:');
+  console.log(providedKeys);
+
   for (let i = 0, len = providedKeys.length; i < len; ++i) {
     if (allowedKeys.indexOf(providedKeys[i]) < 0) {
       // console.log('data contains non-defined props');
@@ -193,6 +197,10 @@ function checkArguments(definitions, data) {
   for (key in definitions) {
     if (definitions[key].required) { requiredKeys.push(key); }
   }
+
+  console.log('requiredKeys:');
+  console.log(requiredKeys);
+
   for (let i = 0, len = requiredKeys.length; i < len; ++i) {
     if (providedKeys.indexOf(requiredKeys[i]) < 0) {
       // console.log('data does not contain required props');

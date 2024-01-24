@@ -11,6 +11,10 @@ const { PERMISSIONS, hasPermissions } = require('../shared/permissions');
 const slack = require('../actions/slack')(auth, config, db);
 
 module.exports = functions.region('europe-west2').https.onCall(async (data, context) => {
+
+  console.log('Verfiy slack user, data:');
+  console.log(data);
+
   await checkFunctionEnabled();
   if (!context.auth) {
     throw new functions.https.HttpsError('failed-precondition', 'The function must be called while authenticated.');
