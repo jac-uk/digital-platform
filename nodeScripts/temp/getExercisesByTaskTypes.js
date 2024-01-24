@@ -48,8 +48,8 @@ const main = async () => {
     const exercise = exercises[i];
 
     const testFlag = objectHasNestedProperty(exercise, 'tasks');
-    const id = exercise.id;
-    console.log(`exercise id: ${id}`);
+    const exerciseId = exercise.id;
+    console.log(`exercise id: ${exerciseId}`);
     if (testFlag) {
       console.log('--has tasks');
     }
@@ -84,7 +84,7 @@ const main = async () => {
     //   }
     // }
 
-    const taskRef = db.collection(`exercises/${id}/tasks`);
+    const taskRef = db.collection(`exercises/${exerciseId}/tasks`);
     const tasks = await getDocuments(taskRef);
 
     if (tasks.length > 0) {
@@ -98,7 +98,7 @@ const main = async () => {
 
           console.log(`MATCH ON: ${task.type}`);
 
-          results[`id-${task.type}`] = task;
+          results[`id-${task.type}-${exerciseId}`] = task;
 
           const index = typesToRetrieve.indexOf(task.type);
           if (index !== -1) {
