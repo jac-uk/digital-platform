@@ -46,9 +46,8 @@ const reportHeaders = () => {
     { title: 'Name', ref: 'name' },
     { title: 'Email', ref: 'email' },
     { title: 'Phone number', ref: 'phone' },
-    { title: 'Details', ref: 'details' },
-    { title: 'Most recent exercise', ref: 'mostRecentExercise' },
-    { title: 'Most recent details', ref: 'mostRecentDetails' },
+    { title: 'Details provided by candidate', ref: 'details' },
+    { title: 'Agreed Reasonable Adjustments', ref: 'note' },
   ];
 };
 
