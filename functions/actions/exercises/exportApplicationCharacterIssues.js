@@ -1013,7 +1013,7 @@ module.exports = (firebase, db) => {
     // flatten this into a simple list of issues
 
     let applications = [];
-
+    
     applicationRecords.forEach(ar => {
       if (ar.issues && ar.issues.characterIssues && ar.issues.characterIssues.length > 0) {
         let application = {
@@ -1023,6 +1023,7 @@ module.exports = (firebase, db) => {
           issues: [],
         };
         ar.issues.characterIssues.forEach(ci => {
+          if (!ci.events) return;
           ci.events.forEach(e => {
             application.issues.push({
               date: e.date || ci.date,
