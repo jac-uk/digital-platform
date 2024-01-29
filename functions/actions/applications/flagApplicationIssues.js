@@ -88,8 +88,9 @@ module.exports = (config, db) => {
       const eligibilityIssues = getEligibilityIssues(exercise, applications[i]);
       const characterIssues = getCharacterIssues(exercise, applications[i]);
       
-      const stage = applications[i]._processing.stage;
-      const status = applications[i]._processing.status;
+      const processing = applications[i]._processing;
+      const stage = processing ? processing.stage : '';
+      const status = processing ? processing.status : '';
 
       const data = {};
       if (eligibilityIssues && eligibilityIssues.length > 0) {
@@ -103,9 +104,12 @@ module.exports = (config, db) => {
         data['flags.characterIssues'] = true;
         data['issues.characterIssues'] = characterIssues;
 
-        if (!characterIssueStatusCounts[stage]) characterIssueStatusCounts[stage] = {};
-        if (!characterIssueStatusCounts[stage][status]) characterIssueStatusCounts[stage][status] = 0;
-        characterIssueStatusCounts[stage][status] += 1;
+        if (stage && status) {
+          if (!characterIssueStatusCounts[stage]) characterIssueStatusCounts[stage] = {};
+          if (!characterIssueStatusCounts[stage][status]) characterIssueStatusCounts[stage][status] = 0;
+          characterIssueStatusCounts[stage][status] += 1;
+        }
+
       } else {
         data['flags.characterIssues'] = false;
         data['issues.characterIssues'] = [];
