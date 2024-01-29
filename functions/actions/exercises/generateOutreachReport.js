@@ -34,7 +34,7 @@ module.exports = (firebase, db) => {
         const application = applications[i];
         const hasStageAndStatus = objectHasNestedProperty(application, '_processing.stage') && objectHasNestedProperty(application, '_processing.status');
         if (hasStageAndStatus) {
-          switch(application._process.stage) {
+          switch(application._processing.stage) {
             case 'handover':
               handoverApplications.push(application);
               break;
@@ -42,6 +42,7 @@ module.exports = (firebase, db) => {
               recommendedApplications.push(application);
               break;
             case 'selected':
+            case 'selectable':
               selectedApplications.push(application);
               break;
             case 'shortlisted':

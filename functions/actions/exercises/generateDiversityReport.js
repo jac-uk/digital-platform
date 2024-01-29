@@ -66,7 +66,13 @@ module.exports = (firebase, db) => {
       const recommendedIds = recommendedApplicationRecords.map(doc => doc.id);
       const recommendedApplications = handoverApplications.concat(applications.filter(doc => recommendedIds.indexOf(doc.id) >= 0));
 
-      const selectedApplicationRecords = applicationRecords.filter(doc => doc.stage === 'selected');
+      const selectedApplicationRecords = applicationRecords.filter(doc => {
+        if (exercise._processingVersion >= 2) {
+          return doc.stage === 'selectable';
+        } else {
+          return doc.stage === 'selected';
+        }
+      });
       const selectedIds = selectedApplicationRecords.map(doc => doc.id);
       const selectedApplications = recommendedApplications.concat(applications.filter(doc => selectedIds.indexOf(doc.id) >= 0));
 
