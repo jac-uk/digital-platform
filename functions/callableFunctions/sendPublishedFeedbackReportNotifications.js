@@ -1,21 +1,22 @@
 const functions = require('firebase-functions');
-const { firebase, db } = require('../shared/admin.js');
-//const { exportApplicationCommissionerConflicts } = require('../actions/exercises/exportApplicationCommissionerConflicts.js')(firebase, db);
+const config = require('../shared/config');
+const { firebase, db, auth } = require('../shared/admin.js');
+const { sendPublishedFeedbackReportNotifications } = require('../actions/applications/applications.js')(config, firebase, db, auth);
 const { checkFunctionEnabled } = require('../shared/serviceSettings.js')(db);
 const { PERMISSIONS, hasPermissions } = require('../shared/permissions.js');
 
 module.exports = functions.region('europe-west2').https.onCall(async (data, context) => {
-  //await checkFunctionEnabled();
+  await checkFunctionEnabled();
 
   // authenticate request
-  // if (!context.auth) {
-  //   throw new functions.https.HttpsError('failed-precondition', 'The function must be called while authenticated.');
-  // }
+  if (!context.auth) {
+    throw new functions.https.HttpsError('failed-precondition', 'The function must be called while authenticated.');
+  }
 
-  // hasPermissions(context.auth.token.rp, [
-  //   PERMISSIONS.applications.permissions.canReadApplications.value,
-  //   PERMISSIONS.exercises.permissions.canReadExercises.value,
-  // ]);
+  hasPermissions(context.auth.token.rp, [
+    PERMISSIONS.applications.permissions.canReadApplications.value,
+    PERMISSIONS.exercises.permissions.canReadExercises.value,
+  ]);
 
   // validate input parameters
   if (!(typeof data.exerciseId === 'string') || data.exerciseId.length === 0) {
@@ -28,5 +29,9 @@ module.exports = functions.region('europe-west2').https.onCall(async (data, cont
   // @TODO: 
   // @TODO: Get the candidates and send the email
 
-  return result;
+  console.log('data:');
+  console.log(data);
+
+  return await sendPublishedFeedbackReportNotifications(data.exerciseId, data.type);
+
 });

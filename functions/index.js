@@ -88,7 +88,7 @@ exports.extractDocumentContent = require('./callableFunctions/extractDocumentCon
 exports.updateUserCustomClaims = require('./callableFunctions/updateUserCustomClaims');
 exports.createZenhubIssue = require('./callableFunctions/createZenhubIssue');
 exports.exportApplicationCommissionerConflicts = require('./callableFunctions/exportApplicationCommissionerConflicts');
-exports.sendPublishedFeedbackReportNotification = require('./callableFunctions/sendPublishedFeedbackReportNotification');
+exports.sendPublishedFeedbackReportNotifications = require('./callableFunctions/sendPublishedFeedbackReportNotifications');
 
 // Callable - QTs v2
 exports.listQualifyingTests = require('./callableFunctions/qualifyingTests/v2/listQualifyingTests');
