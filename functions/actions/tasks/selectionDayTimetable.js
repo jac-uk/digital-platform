@@ -1,3 +1,4 @@
+// function generates a selection day timetable - result is an object containing a 'timetable' (with headings  Panel: String, Date: Date, Slot: Number, CandidateRef: String, ReasonableAdjustment: Boolean)
 function selectionDayTimetable(panelData, candidateInfo, reasonableAdjustments, panelConflicts) {
   const result = {
     timetable: [],
