@@ -88,9 +88,12 @@ exports.extractDocumentContent = require('./callableFunctions/extractDocumentCon
 exports.updateUserCustomClaims = require('./callableFunctions/updateUserCustomClaims');
 exports.createZenhubIssue = require('./callableFunctions/createZenhubIssue');
 exports.exportApplicationCommissionerConflicts = require('./callableFunctions/exportApplicationCommissionerConflicts');
+exports.verifySlackUser = require('./callableFunctions/verifySlackUser');
 
 // Callable - QTs v2
 exports.listQualifyingTests = require('./callableFunctions/qualifyingTests/v2/listQualifyingTests');
 exports.updateQualifyingTestParticipants = require('./callableFunctions/qualifyingTests/v2/updateQualifyingTestParticipants');
 exports.updateQualifyingTestScores = require('./callableFunctions/qualifyingTests/v2/updateQualifyingTestScores');
 
+// HTTP
+exports.ticketingGithubWebhook = require('./httpFunctions/ticketingGithubWebhook');
