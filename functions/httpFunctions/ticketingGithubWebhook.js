@@ -1,10 +1,7 @@
 const functions = require('firebase-functions');
 const config = require('../shared/config.js');
-const { firebase, db, auth } = require('../shared/admin.js');
-const { getDocuments, getMissingNestedProperties, objectHasNestedProperty } = require('../shared/helpers.js');
-const { checkArguments } = require('../shared/helpers.js');
-const { checkFunctionEnabled } = require('../shared/serviceSettings.js')(db);
-const { PERMISSIONS, hasPermissions } = require('../shared/permissions.js');
+const { db, auth } = require('../shared/admin.js');
+const { getMissingNestedProperties, objectHasNestedProperty } = require('../shared/helpers.js');
 const { getUserByGithubUsername } = require('../actions/users')(auth, db);
 const { getBugReportByRef } = require('../actions/bugReports')(db);
 const { onAssignedIssue } = require('../actions/zenhub/hooks/onAssignedIssue')(config, db, auth);
