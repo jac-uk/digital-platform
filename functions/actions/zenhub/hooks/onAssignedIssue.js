@@ -41,8 +41,6 @@ module.exports = (config, db, auth) => {
     // Update the bugReport
     const bugReportId = bugReport.id; // Get the ID of the document
 
-    console.log(`bugReportId: ${bugReportId}`);
-
     // Update the record
     await db.collection('bugReports').doc(bugReportId).update({
       githubAssignees: assignees,

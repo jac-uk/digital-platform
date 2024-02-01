@@ -9,6 +9,7 @@ const CONSTANTS = {
   QT_KEY: functions.config().qt_platform.key,
   ZENHUB_GRAPH_QL_API_KEY: functions.config().zenhub.graph_ql_api_key, // graphQL personal api key
   ZENHUB_ISSUES_WORKSPACE_ID: functions.config().zenhub.workspace_id,
+  GITHUB_WEBHOOK_SECRET: functions.config().github.webhook_secret,
   SLACK_TICKETING_APP_BOT_TOKEN: functions.config().slack.ticketing_app_bot_token,
   APPLICATION: {
     STATUS: {

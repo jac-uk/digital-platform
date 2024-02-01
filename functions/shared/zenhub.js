@@ -1,4 +1,5 @@
 const axios = require('axios');
+const crypto = require('crypto');
 const { objectHasNestedProperty } = require('./helpers');
 
 /**
@@ -19,6 +20,7 @@ module.exports = (config) => {
   return {
     createZenhubIssue,
     createGithubIssue,
+    validateWebhookRequest,
   };
 
   /**
@@ -127,5 +129,21 @@ module.exports = (config) => {
       }
     }
     return false;
+  }
+
+  /**
+   * Validate a webhook request from Github
+   * @param {string} secret 
+   * @param {string} header 
+   * @param {object} payload 
+   * @returns 
+   */
+  async function validateWebhookRequest(secret, header, payload) {
+    const [algorithm, sigHex] = header.split('=');
+    const key = Buffer.from(secret, 'utf-8');
+    const hmac = crypto.createHmac('sha256', key);
+    const payloadString = JSON.stringify(payload); // Convert payload to a string
+    const calculatedSigHex = hmac.update(payloadString).digest('hex');
+    return calculatedSigHex === sigHex;
   }
 };
