@@ -12,9 +12,10 @@ module.exports = (config, db, auth) => {
    * Send a message to a Slack channel notifying the team of the bug
    * 
    * @param {object} params 
-   * @param {object} bugReport 
+   * @param {object} bugReport
+   * @param {string} slackChannelId
    */
-  async function onCreatedIssue(params, bugReport) {
+  async function onCreatedIssue(params, bugReport, slackChannelId) {
 
     // @TODO: May be worth putting the reporter and userId fields into one object inside the bugReport collection record!?
     const reporterUser = await getUser(bugReport.userId);
@@ -35,12 +36,11 @@ module.exports = (config, db, auth) => {
     if (bugReport.candidate) {
       blocksArr.push(addSlackSection3(bugReport));
     }
-    const blocks = {
-      'blocks': blocksArr,
-    };
+
+    console.log(`Posting OPEN to slack channel: ${slackChannelId}`);
 
     // Send Slack msg
-    slack.postBlocks(blocks);
+    slack.postBotBlocksMsgToChannel(slackChannelId, blocksArr);
   }
 
   function addSlackDivider() {

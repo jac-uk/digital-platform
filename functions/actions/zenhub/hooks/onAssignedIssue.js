@@ -10,12 +10,12 @@ module.exports = (config, db, auth) => {
   /**
    * Hook called when an issue is assigned/unassigned in github
    * assigneeUser is the user who has been assigned/unassigned retrieved from our db by their githubUsername
-   * @param {*} params 
-   * @param {*} bugReport 
-   * @param {*} assigneeUser 
+   * @param {object} params 
+   * @param {object} bugReport 
+   * @param {object} assigneeUser
+   * @param {string} slackChannelId
    */
-  async function onAssignedIssue(params, bugReport, assigneeUser) {
-
+  async function onAssignedIssue(params, bugReport, assigneeUser, slackChannelId) {
     // @TODO: May be worth putting the reporter and userId fields into one object inside the bugReport collection record!?
     const reporterUser = await getUser(bugReport.userId);
 
@@ -51,12 +51,8 @@ module.exports = (config, db, auth) => {
     blocksArr.push(addSlackDivider());
     blocksArr.push(addSlackSection(issue, bugReport, assigneeUser, reporterUser));
 
-    const blocks = {
-      'blocks': blocksArr,
-    };
-
     // Send Slack msg
-    slack.postBlocks(blocks);
+    slack.postBotBlocksMsgToChannel(slackChannelId, blocksArr);
   }
 
   function addSlackDivider() {

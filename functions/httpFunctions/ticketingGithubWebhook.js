@@ -11,6 +11,18 @@ const { validateWebhookRequest } = require('../shared/zenhub')(config);
 
 module.exports = functions.region('europe-west2').https.onRequest(async (req, res) => {
 
+  if (!Object.prototype.hasOwnProperty.call(config, 'SLACK_TICKETING_APP_BOT_TOKEN')) {
+    console.log('The config is missing a SLACK_TICKETING_APP_BOT_TOKEN');
+    res.status(422).send('The application isnt configured correctly');
+    return;
+  }
+
+  if (!Object.prototype.hasOwnProperty.call(config, 'SLACK_TICKETING_APP_CHANNEL_ID')) {
+    console.log('The config is missing a SLACK_TICKETING_APP_CHANNEL_ID');
+    res.status(422).send('The application isnt configured correctly');
+    return;
+  }
+
   // VALIDATE THE REQUEST
 
   if (!Object.prototype.hasOwnProperty.call(req.headers, 'x-hub-signature-256')) {
@@ -79,7 +91,7 @@ module.exports = functions.region('europe-west2').https.onRequest(async (req, re
       res.status(422).send(errorMsg);
       return;
     }
-    onCreatedIssue(req.body, bugReport);
+    onCreatedIssue(req.body, bugReport, config.SLACK_TICKETING_APP_CHANNEL_ID);
     res.status(200).send('Function executed successfully');
   }
   // ASSIGNED/UNASSIGNED ACTIONS
@@ -121,7 +133,7 @@ module.exports = functions.region('europe-west2').https.onRequest(async (req, re
       res.status(422).send(errorMsg);
       return;
     }
-    onAssignedIssue(req.body, bugReport, user);
+    onAssignedIssue(req.body, bugReport, user, config.SLACK_TICKETING_APP_CHANNEL_ID);
     // Your callable function logic here
     res.status(200).send('Function executed successfully');
   }

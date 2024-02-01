@@ -11,6 +11,7 @@ const CONSTANTS = {
   ZENHUB_ISSUES_WORKSPACE_ID: functions.config().zenhub.workspace_id,
   GITHUB_WEBHOOK_SECRET: functions.config().github.webhook_secret,
   SLACK_TICKETING_APP_BOT_TOKEN: functions.config().slack.ticketing_app_bot_token,
+  SLACK_TICKETING_APP_CHANNEL_ID: functions.config().slack.ticketing_app_channel_id,
   APPLICATION: {
     STATUS: {
       QUALIFYING_TEST_PASSED: 'qualifyingTestPassed',
