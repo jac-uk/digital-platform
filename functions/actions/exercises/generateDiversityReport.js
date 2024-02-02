@@ -66,31 +66,27 @@ module.exports = (firebase, db) => {
       const recommendedIds = recommendedApplicationRecords.map(doc => doc.id);
       const recommendedApplications = handoverApplications.concat(applications.filter(doc => recommendedIds.indexOf(doc.id) >= 0));
 
-      report.handover = diversityReport(handoverApplications, handoverApplicationRecords, exercise);
-      report.recommended = diversityReport(recommendedApplications, recommendedApplicationRecords, exercise);
+      const selectedApplicationRecords = applicationRecords.filter(doc => {
+        if (exercise._processingVersion >= 2) {
+          return doc.stage === 'selectable';
+        }
+        return doc.stage === 'selected';
+      });
+      const selectedIds = selectedApplicationRecords.map(doc => doc.id);
+      const selectedApplications = recommendedApplications.concat(applications.filter(doc => selectedIds.indexOf(doc.id) >= 0));
 
       const shortlistedApplicationRecords = applicationRecords.filter(doc => doc.stage === 'shortlisted');
       const shortlistedIds = shortlistedApplicationRecords.map(doc => doc.id);
+      const shortlistedApplications = selectedApplications.concat(applications.filter(doc => shortlistedIds.indexOf(doc.id) >= 0));
 
+      report.handover = diversityReport(handoverApplications, handoverApplicationRecords, exercise);
+      report.recommended = diversityReport(recommendedApplications, recommendedApplicationRecords, exercise);
       if (exercise._processingVersion >= 2) {
-        const selectableApplicationRecords = applicationRecords.filter(doc => doc.stage === 'selectable');
-        const selectableIds = selectableApplicationRecords.map(doc => doc.id);
-        const selectableApplications = recommendedApplications.concat(applications.filter(doc => selectableIds.indexOf(doc.id) >= 0));
-
-        const shortlistedApplications = selectableApplications.concat(applications.filter(doc => shortlistedIds.indexOf(doc.id) >= 0));
-
-        report.selectable = diversityReport(selectableApplications, selectableApplicationRecords, exercise);
-        report.shortlisted = diversityReport(shortlistedApplications, shortlistedApplicationRecords, exercise);
+        report.selectable = diversityReport(selectedApplications, selectedApplicationRecords, exercise);
       } else {
-        const selectedApplicationRecords = applicationRecords.filter(doc => doc.stage === 'selected');
-        const selectedIds = selectedApplicationRecords.map(doc => doc.id);
-        const selectedApplications = recommendedApplications.concat(applications.filter(doc => selectedIds.indexOf(doc.id) >= 0));
-
-        const shortlistedApplications = selectedApplications.concat(applications.filter(doc => shortlistedIds.indexOf(doc.id) >= 0));
-
         report.selected = diversityReport(selectedApplications, selectedApplicationRecords, exercise);
-        report.shortlisted = diversityReport(shortlistedApplications, shortlistedApplicationRecords, exercise);
       }
+      report.shortlisted = diversityReport(shortlistedApplications, shortlistedApplicationRecords, exercise);
     }
     await db.collection('exercises').doc(exerciseId).collection('reports').doc('diversity').set(report);
 
