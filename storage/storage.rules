@@ -39,7 +39,7 @@ service firebase.storage {
       (request.resource == null) ||
       (
         request.resource.size > 0
-        && request.resource.size <= 2 * 1024 * 1024
+        && request.resource.size <= 2 * 1024 * 1024 * 5
         && request.resource.name.matches('.*\\.(png)')
       );
   }
