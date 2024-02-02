@@ -12,13 +12,13 @@ const { validateWebhookRequest } = require('../shared/zenhub')(config);
 module.exports = functions.region('europe-west2').https.onRequest(async (req, res) => {
 
   if (!Object.prototype.hasOwnProperty.call(config, 'SLACK_TICKETING_APP_BOT_TOKEN')) {
-    console.log('The config is missing a SLACK_TICKETING_APP_BOT_TOKEN');
+    console.error('The config is missing a SLACK_TICKETING_APP_BOT_TOKEN');
     res.status(422).send('The application isnt configured correctly');
     return;
   }
 
   if (!Object.prototype.hasOwnProperty.call(config, 'SLACK_TICKETING_APP_CHANNEL_ID')) {
-    console.log('The config is missing a SLACK_TICKETING_APP_CHANNEL_ID');
+    console.error('The config is missing a SLACK_TICKETING_APP_CHANNEL_ID');
     res.status(422).send('The application isnt configured correctly');
     return;
   }
@@ -27,12 +27,12 @@ module.exports = functions.region('europe-west2').https.onRequest(async (req, re
 
   if (!Object.prototype.hasOwnProperty.call(req.headers, 'x-hub-signature-256')) {
     const githubErrorMsg = 'x-hub-signature-256 header is missing from the github webhook request so cannot validate the request';
-    console.log(githubErrorMsg);
+    console.error(githubErrorMsg);
     res.status(422).send(githubErrorMsg);
     return;
   }
   if (!Object.prototype.hasOwnProperty.call(config, 'GITHUB_WEBHOOK_SECRET')) {
-    console.log('GITHUB_WEBHOOK_SECRET has not been set for this env so cannot validate the request');
+    console.error('GITHUB_WEBHOOK_SECRET has not been set for this env so cannot validate the request');
     res.status(422).send('Secret cannot be validated');
     return;
   }

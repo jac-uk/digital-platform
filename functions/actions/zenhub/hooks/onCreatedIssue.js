@@ -37,8 +37,6 @@ module.exports = (config, db, auth) => {
       blocksArr.push(addSlackSection3(bugReport));
     }
 
-    console.log(`Posting OPEN to slack channel: ${slackChannelId}`);
-
     // Send Slack msg
     slack.postBotBlocksMsgToChannel(slackChannelId, blocksArr);
   }
