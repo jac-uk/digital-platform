@@ -33,6 +33,7 @@ const CONSTANTS = {
       RECOMMENDED_FUTURE: 'recommendedFuture',
       RECONSIDER: 'reconsider',
       SECOND_STAGE_INVITED: 'secondStageInvited',
+      SCC_TO_RECONSIDER: 'sccToReconsider',
     },
     CHARACTER_ISSUES: { // this gives a map from issue to corresponding details field TODO improve naming or where we store this
       criminalOffences: {
