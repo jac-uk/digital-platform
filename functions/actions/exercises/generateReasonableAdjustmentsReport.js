@@ -47,7 +47,9 @@ const reportHeaders = () => {
     { title: 'Email', ref: 'email' },
     { title: 'Phone number', ref: 'phone' },
     { title: 'Details provided by candidate', ref: 'details' },
-    { title: 'Agreed Reasonable Adjustments', ref: 'note' },
+    { title: 'Approval Status', ref: 'status' },
+    { title: 'RA allocated', ref: 'timeAllocation' },
+    { title: 'Describe RA given', ref: 'note' },
   ];
 };
 
