@@ -561,87 +561,38 @@ module.exports = (config, firebase, db, auth) => {
   }
 
   async function sendPublishedFeedbackReportNotifications(exerciseId, taskType) {
-
-    console.log('sendPublishedFeedbackReportNotifications running ...');
-
     const validTaskTypes = [
       config.TASK_TYPE.CRITICAL_ANALYSIS,
       config.TASK_TYPE.QUALIFYING_TEST,
       config.TASK_TYPE.SCENARIO,
       config.TASK_TYPE.SITUATIONAL_JUDGEMENT,
     ];
-
-    console.log('validTaskTypes:');
-    console.log(validTaskTypes);
-  
-    console.log(`exerciseId: ${exerciseId}`);
-    console.log(`taskType: ${taskType}`);
-
     if (!validTaskTypes.includes(taskType)) {
       console.log(`sendPublishedFeedbackReportNotifications called with invalid task type: ${taskType}`);
       return false;
     }
-
-    // @TODO: Test below and ensure console logging is ok, then uncomment the notification stuff in here and see if it gets logged ok somewhere
-    // @TODO: Ensure perms are ok, eg accessing report
-    // @TODO: do summat with ticketing-system (repo) pr as its not merged into main
-    // @TODO: ticketing - change url or create new hook for live
-
     const taskRef = db.collection(`exercises/${exerciseId}/tasks`);
-
     const tasks = await getDocuments(taskRef);
-
-    console.log(`tasks.length: ${tasks.length}`);
-
-    console.log('Got tasks');
-
     if (tasks.length > 0) {
       const matchedTasks = tasks.filter(task => task.type === taskType);
-
-      console.log('matchedTasks:');
-      console.log(matchedTasks);
-
       if (matchedTasks.length > 0) {
-        console.log('Task matches!');
-
-        // @TODO: Get the applications (emails)
-
         const matchedTask = matchedTasks[0];
-        console.log('Task:');
-        console.log(matchedTasks[0].applications);
-
-        const applications = Object.hasOwnProperty.call(matchedTasks[0], 'applications') ? matchedTasks[0].applications : [];
-
+        const applications = Object.hasOwnProperty.call(matchedTask, 'applications') ? matchedTask.applications : [];
         const emails = applications.map(o => o.email);
-        
-        console.log('emails:');
-        console.log(emails);
-
-        const exercise = getDocument(db.collection('exercises').doc(exerciseId));
-
+        const exercise = await getDocument(db.collection('exercises').doc(exerciseId));
         const commands = [];
-
         for (let i=0; i<emails.length; ++i) {
-
-          console.log(`Send notification for ${emails[0]} with exercise name: ${exercise.name} and testType: ${testType}`);
-
           commands.push(
             {
               command: 'set',
               ref: db.collection('notifications').doc(),
-              data: newNotificationPublishedeFeedbackReport(firebase, emails[i], exercise.name, testType),
+              data: newNotificationPublishedeFeedbackReport(firebase, emails[i], exercise.name, taskType),
             }
           );
         }
-
-        const result = await applyUpdates(db, commands);
-        if (result) {
-          console.log(`There was a problem sending published feedback report notifications for the ${testType} test for exercise ${exercise.name}`);
-          console.log(`The result was: ${result}`);
-        }
+        return await applyUpdates(db, commands);
       }
     }
-    
     return true;
   }
 };

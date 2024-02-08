@@ -817,36 +817,21 @@ module.exports = (CONSTANTS) => {
   function newNotificationPublishedeFeedbackReport(firebase, email, exerciseName, testType) {
     const templateName = 'Generic Feedback Report Publication';
     const templateId = 'f74f3fda-419a-4c78-ad15-fbe0e33656ee';
-
     const reportsLink = 'https://judicialappointments.gov.uk/feedback-and-evaluation-reports#OnlineTests';
-
     return {
       email: email,
-
-      // @TODO: What to do for the reply to??
-
-      //replyTo: exercise.exerciseMailbox,
+      replyTo: '',
       template: {
         name: templateName,
         id: templateId,
       },
       personalisation: {
-        // exerciseId: exercise.id,
-        // exerciseRef: exercise.referenceNumber,
         exerciseName: exerciseName,
         testType: testType,
-        // applicantName: application.personalDetails.fullName,
-        // exerciseCloseDate: formatDate(exercise.applicationCloseDate.toDate(), 'date-hour-minute'),
-        // refNumber: application.referenceNumber || null,
-        // selectionExerciseManager: exercise.emailSignatureName,
-        // exerciseMailbox: exercise.exerciseMailbox,
+        reportsLink: reportsLink,
+        createdAt: firebase.firestore.FieldValue.serverTimestamp(),
+        status: 'ready',
       },
-      // reference: {
-      //   collection: 'applications',
-      //   id: applicationId,
-      // },
-      createdAt: firebase.firestore.FieldValue.serverTimestamp(),
-      status: 'ready',
     };
   }
 };

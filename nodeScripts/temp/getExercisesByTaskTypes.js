@@ -1,6 +1,7 @@
 
 /**
- * Example local script
+ * Get a list of exercises with tasks that match the ones in the typesToRetrieve
+ * This was used to help find exercises to use when testing the sendPublishedFeedbackReportNotifications function
  *
  * EXAMPLE USAGE:
  *   ```
@@ -10,72 +11,63 @@
  'use strict';
 
 const config = require('../shared/config.js');
-const { firebase, app, db, auth } = require('../shared/admin.js');
+const { app, db } = require('../shared/admin.js');
 const {getDocuments, objectHasNestedProperty} = require('../../functions/shared/helpers.js');
-
-const { sendPublishedFeedbackReportNotifications } = require('../../functions/actions/applications/applications')(config, firebase, db, auth);
-
 
 const main = async () => {
 
-  const tester = await sendPublishedFeedbackReportNotifications('m3vtltvjqdpUZTdMBWKT', 'scenarioTest');
+  const results = {};
+  let typesToRetrieve = [
+    config.TASK_TYPE.CRITICAL_ANALYSIS,
+    config.TASK_TYPE.QUALIFYING_TEST,
+    config.TASK_TYPE.SCENARIO,
+    config.TASK_TYPE.SITUATIONAL_JUDGEMENT,
+  ];
 
-  console.log(`tester: ${tester}`);
+  let exercisesRef = db.collection('exercises');
+  const exercises = await getDocuments(exercisesRef);
+  for (let i = 0; i < exercises.length; i++) {
+    if (typesToRetrieve.length === 0) {
+      console.log('Found all of them!');
+      console.log('results:');
+      console.log(results);
+      return true;
+    }
+    const exercise = exercises[i];
 
-  // const results = {};
-  // let typesToRetrieve = [
-  //   config.TASK_TYPE.CRITICAL_ANALYSIS,
-  //   config.TASK_TYPE.QUALIFYING_TEST,
-  //   config.TASK_TYPE.SCENARIO,
-  //   config.TASK_TYPE.SITUATIONAL_JUDGEMENT,
-  // ];
+    const testFlag = objectHasNestedProperty(exercise, 'tasks');
+    const exerciseId = exercise.id;
+    console.log(`exercise id: ${exerciseId}`);
+    if (testFlag) {
+      console.log('--has tasks');
+    }
 
-  // let exercisesRef = db.collection('exercises');
-  // const exercises = await getDocuments(exercisesRef);
-  // for (let i = 0; i < exercises.length; i++) {
-  //   if (typesToRetrieve.length === 0) {
-  //     console.log('Found all of them!');
-  //     console.log('results:');
-  //     console.log(results);
-  //     return true;
-  //   }
-  //   const exercise = exercises[i];
+    const taskRef = db.collection(`exercises/${exerciseId}/tasks`);
+    const tasks = await getDocuments(taskRef);
 
-  //   const testFlag = objectHasNestedProperty(exercise, 'tasks');
-  //   const exerciseId = exercise.id;
-  //   console.log(`exercise id: ${exerciseId}`);
-  //   if (testFlag) {
-  //     console.log('--has tasks');
-  //   }
+    if (tasks.length > 0) {
 
-  //   const taskRef = db.collection(`exercises/${exerciseId}/tasks`);
-  //   const tasks = await getDocuments(taskRef);
+      for (let j = 0; j < tasks.length; j++) {
+        const task = tasks[j];
 
-  //   if (tasks.length > 0) {
-  //     //console.log('TASKS EXIST!!');
+        if (typesToRetrieve.includes(task.type)) {
 
-  //     for (let j = 0; j < tasks.length; j++) {
-  //       const task = tasks[j];
-  //       //console.log(`task type: ${task.type}`);
+          console.log(`MATCH ON: ${task.type}`);
 
-  //       if (typesToRetrieve.includes(task.type)) {
+          results[`id-${task.type}-${exerciseId}`] = task;
 
-  //         console.log(`MATCH ON: ${task.type}`);
+          const index = typesToRetrieve.indexOf(task.type);
+          if (index !== -1) {
+            typesToRetrieve.splice(index, 1);
+          }
+        }
+      }
+    }
+  }
 
-  //         results[`id-${task.type}-${exerciseId}`] = task;
-
-  //         const index = typesToRetrieve.indexOf(task.type);
-  //         if (index !== -1) {
-  //           typesToRetrieve.splice(index, 1);
-  //         }
-  //       }
-  //     }
-  //   }
-  // }
-
-  // console.log('Didnt find all of them!');
-  // console.log('results:');
-  // console.log(results);
+  console.log('Didnt find all of them!');
+  console.log('results:');
+  console.log(results);
   return true;
 
 };

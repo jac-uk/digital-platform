@@ -26,12 +26,7 @@ module.exports = functions.region('europe-west2').https.onCall(async (data, cont
     throw new functions.https.HttpsError('invalid-argument', 'Please specify a type');
   }
 
-  // @TODO: 
-  // @TODO: Get the candidates and send the email
-
-  console.log('data:');
-  console.log(data);
-
+  // Get the candidates and send the email
   return await sendPublishedFeedbackReportNotifications(data.exerciseId, data.type);
 
 });
