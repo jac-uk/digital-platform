@@ -216,6 +216,12 @@ const lookup = (value) => {
       'voluntary': 'Voluntary',
       'judicial-post': 'Judicial',
       'quasi-judicial-post': 'Quasi-judicial',
+
+      // Qualifying Tests
+      'scenarioTest': 'Scenario Test',
+      'criticalAnalysis': 'Critical Analysis Test',
+      'situationalJudgement': 'Situational Judgement Test',
+      'empTiebreaker': 'EMP Tie-breaker',
     };
 
     return lookup[value] || value;

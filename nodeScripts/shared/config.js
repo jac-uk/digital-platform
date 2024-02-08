@@ -1,11 +1,13 @@
 const CONSTANTS = {
   PROJECT_ID: process.env.PROJECT_ID,
+  IS_LOCAL: process.env.IS_LOCAL,
   APPLY_URL: process.env.APPLY_URL,
   // QT_URL: 'http://localhost:5001/jac-qualifying-tests-develop/europe-west2/api/v1',
   QT_URL: process.env.QT_PLATFORM_URL,
   QT_KEY: process.env.QT_PLATFORM_KEY,
   ZENHUB_GRAPH_QL_API_KEY: process.env.ZENHUB_GRAPH_QL_API_KEY, // graphQL personal api key
   ZENHUB_ISSUES_WORKSPACE_ID: process.env.ZENHUB_ISSUES_WORKSPACE_ID,
+  SLACK_TICKETING_APP_BOT_TOKEN: process.env.SLACK_TICKETING_APP_BOT_TOKEN,
   APPLICATION: {
     STATUS: {
       QUALIFYING_TEST_PASSED: 'qualifyingTestPassed',
@@ -245,6 +247,7 @@ const CONSTANTS = {
   SELECTION_CATEGORIES: ['leadership', 'roleplay', 'situational', 'interview', 'overall'],
   NOTIFY_KEY: process.env.NOTIFY_LIMITED_KEY,
   SLACK_URL: process.env.SLACK_URL,
+  SLACK_API_STUB: process.env.SLACK_API_STUB,
   STORAGE_URL: process.env.PROJECT_ID + '.appspot.com',
   ZENHUB_GRAPH_QL_URL: process.env.ZENHUB_GRAPH_QL_URL,
 };

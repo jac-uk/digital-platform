@@ -2,12 +2,16 @@ const functions = require('firebase-functions');
 
 const CONSTANTS = {
   PROJECT_ID: functions.config().project.id,
+  IS_LOCAL: functions.config().project.is_local,
   APPLY_URL: functions.config().apply.url,
   // QT_URL: 'http://localhost:5001/jac-qualifying-tests-develop/europe-west2/api/v1',
   QT_URL: functions.config().qt_platform.url,
   QT_KEY: functions.config().qt_platform.key,
   ZENHUB_GRAPH_QL_API_KEY: functions.config().zenhub.graph_ql_api_key, // graphQL personal api key
   ZENHUB_ISSUES_WORKSPACE_ID: functions.config().zenhub.workspace_id,
+  GITHUB_WEBHOOK_SECRET: functions.config().github.webhook_secret,
+  SLACK_TICKETING_APP_BOT_TOKEN: functions.config().slack.ticketing_app_bot_token,
+  SLACK_TICKETING_APP_CHANNEL_ID: functions.config().slack.ticketing_app_channel_id,
   APPLICATION: {
     STATUS: {
       QUALIFYING_TEST_PASSED: 'qualifyingTestPassed',
@@ -29,6 +33,7 @@ const CONSTANTS = {
       RECOMMENDED_FUTURE: 'recommendedFuture',
       RECONSIDER: 'reconsider',
       SECOND_STAGE_INVITED: 'secondStageInvited',
+      SCC_TO_RECONSIDER: 'sccToReconsider',
     },
     CHARACTER_ISSUES: { // this gives a map from issue to corresponding details field TODO improve naming or where we store this
       criminalOffences: {
@@ -287,6 +292,7 @@ const CONSTANTS = {
   SELECTION_CATEGORIES: ['leadership', 'roleplay', 'situational', 'interview', 'overall'],
   NOTIFY_KEY: functions.config().notify.key,
   SLACK_URL: functions.config().slack.url,
+  SLACK_API_STUB: functions.config().slack.api_url,
   STORAGE_URL: functions.config().project.id + '.appspot.com',
   SCAN_SERVICE_URL: functions.config().scan_service.url,
   GOOGLE_RECAPTCHA_VALIDATION_URL: functions.config().google_recaptcha.url,
