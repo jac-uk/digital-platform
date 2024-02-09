@@ -14,7 +14,7 @@ module.exports = (config, firebase, db, auth) => {
     newNotificationCharacterCheckRequest,
     newNotificationCandidateFlagConfirmation,
     newCandidateFormNotification,
-    newNotificationPublishedeFeedbackReport,
+    newNotificationPublishedFeedbackReport,
   } = require('../../shared/factories')(config);
   const slack = require('../../shared/slack')(config);
   const { updateCandidate } = require('../candidates/search')(firebase, db);
@@ -586,7 +586,7 @@ module.exports = (config, firebase, db, auth) => {
             {
               command: 'set',
               ref: db.collection('notifications').doc(),
-              data: newNotificationPublishedeFeedbackReport(firebase, emails[i], exercise.name, taskType),
+              data: newNotificationPublishedFeedbackReport(firebase, emails[i], exercise.name, taskType),
             }
           );
         }

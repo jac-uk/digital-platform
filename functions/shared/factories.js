@@ -24,7 +24,7 @@ module.exports = (CONSTANTS) => {
     newNotificationUserInvitation,
     newCandidateFormResponse,
     newCandidateFormNotification,
-    newNotificationPublishedeFeedbackReport,
+    newNotificationPublishedFeedbackReport,
   };
 
   function newNotificationExerciseApprovalSubmit(firebase, exerciseId, exercise, email) {
@@ -816,7 +816,7 @@ module.exports = (CONSTANTS) => {
     };
   }
 
-  function newNotificationPublishedeFeedbackReport(firebase, email, exerciseName, testType) {
+  function newNotificationPublishedFeedbackReport(firebase, email, exerciseName, testType) {
     const templateName = 'Generic Feedback Report Publication';
     const templateId = 'f74f3fda-419a-4c78-ad15-fbe0e33656ee';
     const reportsLink = 'https://judicialappointments.gov.uk/feedback-and-evaluation-reports#OnlineTests';
