@@ -14,6 +14,7 @@ module.exports = (config, firebase, db, auth) => {
     newNotificationCharacterCheckRequest,
     newNotificationCandidateFlagConfirmation,
     newCandidateFormNotification,
+    newNotificationPublishedFeedbackReport,
   } = require('../../shared/factories')(config);
   const slack = require('../../shared/slack')(config);
   const { updateCandidate } = require('../candidates/search')(firebase, db);
@@ -31,6 +32,7 @@ module.exports = (config, firebase, db, auth) => {
     createTestApplications,
     deleteApplications,
     sendCandidateFlagConfirmation,
+    sendPublishedFeedbackReportNotifications,
   };
 
   /**
@@ -556,5 +558,41 @@ module.exports = (config, firebase, db, auth) => {
     // write to db
     const result = await applyUpdates(db, commands);
     return result ? true : false;
+  }
+
+  async function sendPublishedFeedbackReportNotifications(exerciseId, taskType) {
+    const validTaskTypes = [
+      config.TASK_TYPE.CRITICAL_ANALYSIS,
+      config.TASK_TYPE.QUALIFYING_TEST,
+      config.TASK_TYPE.SCENARIO,
+      config.TASK_TYPE.SITUATIONAL_JUDGEMENT,
+    ];
+    if (!validTaskTypes.includes(taskType)) {
+      console.log(`sendPublishedFeedbackReportNotifications called with invalid task type: ${taskType}`);
+      return false;
+    }
+    const taskRef = db.collection(`exercises/${exerciseId}/tasks`);
+    const tasks = await getDocuments(taskRef);
+    if (tasks.length > 0) {
+      const matchedTasks = tasks.filter(task => task.type === taskType);
+      if (matchedTasks.length > 0) {
+        const matchedTask = matchedTasks[0];
+        const applications = Object.hasOwnProperty.call(matchedTask, 'applications') ? matchedTask.applications : [];
+        const emails = applications.map(o => o.email);
+        const exercise = await getDocument(db.collection('exercises').doc(exerciseId));
+        const commands = [];
+        for (let i=0; i<emails.length; ++i) {
+          commands.push(
+            {
+              command: 'set',
+              ref: db.collection('notifications').doc(),
+              data: newNotificationPublishedFeedbackReport(firebase, emails[i], exercise.name, taskType),
+            }
+          );
+        }
+        return await applyUpdates(db, commands);
+      }
+    }
+    return true;
   }
 };
