@@ -1,6 +1,5 @@
 module.exports = (config, firebase) => {
   
-  const SCAN_SERVICE_URL = config.SCAN_SERVICE_URL;
   const mammoth = require('mammoth');
   
   return {
@@ -20,7 +19,7 @@ module.exports = (config, firebase) => {
 
       console.log(templateContent, documentContent);
       
-      // Extract raw text content using mammoth library
+      // Extract raw text content using mammoth library (each paragraph is followed by two newlines `\n\n`)
       const [templateResult, documentResult] = await Promise.all([
         mammoth.extractRawText({ buffer: templateContent[0] }),
         mammoth.extractRawText({ buffer: documentContent[0] }),
@@ -40,43 +39,48 @@ module.exports = (config, firebase) => {
   }
 
   function returnChanges(original, modified) {
-    let changes = [];            // Initialize the changes array.
-    let originalIndex = 0;        // Initialize the index for the original string.
-    let modifiedIndex = 0;        // Initialize the index for the modified string.
-    let insideChange = false;     // A flag to track whether we are inside a change sequence.
-    let currentChange = '';       // Variable to accumulate characters for the current change.
-  
-    // Iterate through both strings until one of them is fully processed.
-    while (originalIndex < original.length && modifiedIndex < modified.length) {
-      if (original[originalIndex] === modified[modifiedIndex]) {
-        if (insideChange) {
-          // If we were inside a change sequence and now the characters match,
-          // add the current change to the changes array.
-          changes.push(currentChange);
-          insideChange = false;   // Reset the change flag.
-          currentChange = '';     // Reset the current change variable.
-        }
-        originalIndex++;         // Move to the next character in the original string.
-        modifiedIndex++;         // Move to the next character in the modified string.
-      } else {
-        // If the characters are different, add the modified character to the current change.
-        currentChange += modified[modifiedIndex];
-        modifiedIndex++;         // Move to the next character in the modified string.
-        insideChange = true;     // Set the change flag.
+    console.log(JSON.stringify(original));
+    console.log(JSON.stringify(modified));
+
+    // Split the strings into paragraphs and compare them
+    const originalParagraphs = original.split('\n\n');
+    const modifiedParagraphs = modified.split('\n\n').filter(paragraph => {
+      // Skip empty paragraphs
+      if (paragraph === '') return true;
+      const index = originalParagraphs.indexOf(paragraph);
+      if (index > -1) {
+        // Remove the paragraph from the original list to avoid duplicates
+        originalParagraphs.splice(index, 1);
+        return false;
       }
-    }
-  
-    // Add the last change to the changes array if there's any.
-    if (insideChange) {
-      changes.push(currentChange);
-    }
-  
-    // Append any remaining characters from the modified string.
-    if (modifiedIndex < modified.length) {
-      changes.push(modified.substring(modifiedIndex));
-    }
-  
-    return changes;  // Return the array representing the changes.
+      return true;
+    });
+
+    const changes = []; // Store final changes
+    const paragraphs = []; // Store paragraphs belonging to the same question
+    let isSameQuestion = false; // Flag to track whether the paragraphs belong to the same question
+    modifiedParagraphs.forEach(paragraph => {
+      // If the paragraph is empty, it means we are moving to the next question
+      if (paragraph === '') {
+        if (!isSameQuestion) {
+          // Flag to track whether the next paragraphs belong to the same question
+          isSameQuestion = true;
+        } else if (paragraphs.length) {
+          // If we are already in the same question, push the paragraphs to the changes list
+          changes.push(paragraphs.join('\n'));
+          paragraphs.length = 0;
+          isSameQuestion = false;
+        }
+      } else {
+        if (isSameQuestion) {
+          // If we are in the same question, push the paragraph to the paragraphs list
+          paragraphs.push(paragraph);
+        } else {
+          changes.push(paragraph);
+        }
+      }
+    });
+    return changes;
   }
   
 };
