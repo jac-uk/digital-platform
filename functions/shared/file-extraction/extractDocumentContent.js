@@ -17,8 +17,6 @@ module.exports = (config, firebase) => {
         bucket.file(documentPath).download(),
       ]);
 
-      console.log(templateContent, documentContent);
-      
       // Extract raw text content using mammoth library (each paragraph is followed by two newlines `\n\n`)
       const [templateResult, documentResult] = await Promise.all([
         mammoth.extractRawText({ buffer: templateContent[0] }),
