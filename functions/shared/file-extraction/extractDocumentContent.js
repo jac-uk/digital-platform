@@ -62,7 +62,7 @@ module.exports = (config, firebase) => {
           isSameQuestion = true;
         } else if (paragraphs.length) {
           // If we are already in the same question, push the paragraphs to the changes list
-          changes.push(paragraphs.join('\n\n'));
+          changes.push(paragraphs.join('\n'));
           paragraphs.length = 0;
           isSameQuestion = false;
         }
