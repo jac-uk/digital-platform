@@ -37,9 +37,6 @@ module.exports = (config, firebase) => {
   }
 
   function returnChanges(original, modified) {
-    console.log(JSON.stringify(original));
-    console.log(JSON.stringify(modified));
-
     // Split the strings into paragraphs and compare them
     const originalParagraphs = original.split('\n\n');
     const modifiedParagraphs = modified.split('\n\n').filter(paragraph => {
