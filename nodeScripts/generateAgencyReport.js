@@ -9,7 +9,6 @@ const main = async () => {
 
 main()
   .then((result) => {
-    result;
     console.log('result', result);
     app.delete();
     return process.exit();
