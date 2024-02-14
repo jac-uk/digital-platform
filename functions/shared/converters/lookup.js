@@ -178,6 +178,7 @@ const lookup = (value) => {
       'review': 'Review',
       'shortlisted': 'Shortlisted',
       'selected': 'Selected',
+      'selectable': 'Selectable',
       'recommended': 'Recommended',
       'handover': 'Handover',
       /* Exercise stages: end */

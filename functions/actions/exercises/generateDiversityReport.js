@@ -66,7 +66,12 @@ module.exports = (firebase, db) => {
       const recommendedIds = recommendedApplicationRecords.map(doc => doc.id);
       const recommendedApplications = handoverApplications.concat(applications.filter(doc => recommendedIds.indexOf(doc.id) >= 0));
 
-      const selectedApplicationRecords = applicationRecords.filter(doc => doc.stage === 'selected');
+      const selectedApplicationRecords = applicationRecords.filter(doc => {
+        if (exercise._processingVersion >= 2) {
+          return doc.stage === 'selectable';
+        }
+        return doc.stage === 'selected';
+      });
       const selectedIds = selectedApplicationRecords.map(doc => doc.id);
       const selectedApplications = recommendedApplications.concat(applications.filter(doc => selectedIds.indexOf(doc.id) >= 0));
 
@@ -76,7 +81,11 @@ module.exports = (firebase, db) => {
 
       report.handover = diversityReport(handoverApplications, handoverApplicationRecords, exercise);
       report.recommended = diversityReport(recommendedApplications, recommendedApplicationRecords, exercise);
-      report.selected = diversityReport(selectedApplications, selectedApplicationRecords, exercise);
+      if (exercise._processingVersion >= 2) {
+        report.selectable = diversityReport(selectedApplications, selectedApplicationRecords, exercise);
+      } else {
+        report.selected = diversityReport(selectedApplications, selectedApplicationRecords, exercise);
+      }
       report.shortlisted = diversityReport(shortlistedApplications, shortlistedApplicationRecords, exercise);
     }
     await db.collection('exercises').doc(exerciseId).collection('reports').doc('diversity').set(report);

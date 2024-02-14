@@ -1,4 +1,4 @@
-const { getDocuments, objectHasNestedProperty } = require('../../shared/helpers');
+const { getDocument, getDocuments, objectHasNestedProperty } = require('../../shared/helpers');
 const ignoreKeys = ['total', 'declaration', 'preferNotToSay', 'noAnswer'];
 
 module.exports = (firebase, db) => {
@@ -11,6 +11,10 @@ module.exports = (firebase, db) => {
   };
 
   async function generateOutreachReport(exerciseId) {
+    // get exercise
+    const exercise = await getDocument(db.collection('exercises').doc(exerciseId));
+    if (!exercise) { return false; }
+
     // get submitted applications
     const applications = await getDocuments(db.collection('applications')
       .where('exerciseId', '==', exerciseId)
@@ -28,13 +32,14 @@ module.exports = (firebase, db) => {
       const handoverApplications = [];
       const recommendedApplications = [];
       const selectedApplications = [];
+      const selectableApplications = [];
       const shortlistedApplications = [];
 
       for (let i = 0, len = applications.length; i < len; ++i) {
         const application = applications[i];
         const hasStageAndStatus = objectHasNestedProperty(application, '_processing.stage') && objectHasNestedProperty(application, '_processing.status');
         if (hasStageAndStatus) {
-          switch(application._process.stage) {
+          switch(application._processing.stage) {
             case 'handover':
               handoverApplications.push(application);
               break;
@@ -43,6 +48,9 @@ module.exports = (firebase, db) => {
               break;
             case 'selected':
               selectedApplications.push(application);
+              break;
+            case 'selectable':
+              selectableApplications.push(application);
               break;
             case 'shortlisted':
               shortlistedApplications.push(application);
@@ -55,7 +63,13 @@ module.exports = (firebase, db) => {
       }
       report.handover = outreachReport(handoverApplications);
       report.recommended = outreachReport(recommendedApplications);
-      report.selected = outreachReport(selectedApplications);
+
+      if (exercise._processingVersion >= 2) {
+        report.selectable = outreachReport(selectableApplications);
+      } else {
+        report.selected = outreachReport(selectedApplications);
+      }
+
       report.shortlisted = outreachReport(shortlistedApplications);
     }
     await db.collection('exercises').doc(exerciseId).collection('reports').doc('outreach').set(report);
