@@ -40,8 +40,7 @@ module.exports = (config, firebase) => {
     // Split the strings into paragraphs and compare them
     const originalParagraphs = original.split('\n\n');
     const modifiedParagraphs = modified.split('\n\n').filter(paragraph => {
-      // Skip empty paragraphs
-      if (paragraph === '') return true;
+      if (paragraph === '') return false;
       const index = originalParagraphs.indexOf(paragraph);
       if (index > -1) {
         // Remove the paragraph from the original list to avoid duplicates
@@ -51,31 +50,7 @@ module.exports = (config, firebase) => {
       return true;
     });
 
-    const changes = []; // Store final changes
-    const paragraphs = []; // Store paragraphs belonging to the same question
-    let isSameQuestion = false; // Flag to track whether the paragraphs belong to the same question
-    modifiedParagraphs.forEach(paragraph => {
-      // If the paragraph is empty, it means we are moving to the next question
-      if (paragraph === '') {
-        if (!isSameQuestion) {
-          // Flag to track whether the next paragraphs belong to the same question
-          isSameQuestion = true;
-        } else if (paragraphs.length) {
-          // If we are already in the same question, push the paragraphs to the changes list
-          changes.push(paragraphs.join('\n\n'));
-          paragraphs.length = 0;
-          isSameQuestion = false;
-        }
-      } else {
-        if (isSameQuestion) {
-          // If we are in the same question, push the paragraph to the paragraphs list
-          paragraphs.push(paragraph);
-        } else {
-          changes.push(paragraph);
-        }
-      }
-    });
-    return changes;
+    return modifiedParagraphs;
   }
   
 };
