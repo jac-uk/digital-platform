@@ -40,7 +40,7 @@ module.exports = (config, firebase) => {
     // Split the strings into paragraphs and compare them
     const originalParagraphs = original.split('\n\n');
     const modifiedParagraphs = modified.split('\n\n').filter(paragraph => {
-      if (paragraph === '') return false;
+      if (!paragraph.trim()) return false;
       const index = originalParagraphs.indexOf(paragraph);
       if (index > -1) {
         // Remove the paragraph from the original list to avoid duplicates
