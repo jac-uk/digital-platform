@@ -2105,6 +2105,28 @@
       "queryScope": "COLLECTION",
       "fields": [
         {
+          "fieldPath": "_applicationVersion",
+          "order": "ASCENDING"
+        },
+        {
+          "fieldPath": "published",
+          "order": "ASCENDING"
+        },
+        {
+          "fieldPath": "state",
+          "order": "ASCENDING"
+        },
+        {
+          "fieldPath": "applicationOpenDate",
+          "order": "ASCENDING"
+        }
+      ]
+    },
+    {
+      "collectionGroup": "exercises",
+      "queryScope": "COLLECTION",
+      "fields": [
+        {
           "fieldPath": "_approval.status",
           "order": "ASCENDING"
         },
