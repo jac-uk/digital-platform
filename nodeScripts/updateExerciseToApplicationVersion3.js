@@ -1,3 +1,7 @@
+/*
+ * This script updates exercises that have not been launched and are in application version 2 to application version 3.
+ */
+
 'use strict';
 
 const { firebase, app, db } = require('./shared/admin.js');
