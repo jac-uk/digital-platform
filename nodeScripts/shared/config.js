@@ -309,6 +309,79 @@ const CANDIDATE_FORM_RESPONSE_STATUS = {
   COMPLETED: 'completed',
 };
 
+const EXERCISE_STAGE = {
+  REVIEW: 'review', // to be replaced with applied
+  APPLIED: 'applied',
+  SHORTLISTED: 'shortlisted',
+  SELECTABLE: 'selectable',
+  SELECTED: 'selected', // to be replaced with selectable
+  RECOMMENDED: 'recommended',
+  HANDOVER: 'handover',
+};
+
+const APPLICATION_STATUS = {
+  // v2
+  CRITICAL_ANALYSIS_PASSED: 'criticalAnalysisPassed',
+  CRITICAL_ANALYSIS_FAILED: 'criticalAnalysisFailed',
+  SITUATIONAL_JUDGEMENT_PASSED: 'situationalJudgementPassed',
+  SITUATIONAL_JUDGEMENT_FAILED: 'situationalJudgementFailed',
+  QUALIFYING_TEST_PASSED: 'qualifyingTestPassed',
+  QUALIFYING_TEST_FAILED: 'qualifyingTestFailed',
+  QUALIFYING_TEST_NOT_STARTED: 'qualifyingTestNotStarted',
+  SCENARIO_TEST_PASSED: 'scenarioTestPassed',
+  SCENARIO_TEST_FAILED: 'scenarioTestFailed',
+  SCENARIO_TEST_NOT_STARTED: 'scenarioTestNotStarted',
+  SIFT_PASSED: 'siftPassed',
+  SIFT_FAILED: 'siftFailed',
+  TELEPHONE_ASSESSMENT_PASSED: 'telephoneAssessmentPassed',
+  TELEPHONE_ASSESSMENT_FAILED: 'telephoneAssessmentFailed',
+  SHORTLISTING_PASSED: 'shortlistingPassed',
+  SHORTLISTING_FAILED: 'shortlistingFailed',
+  FULL_APPLICATION_NOT_SUBMITTED: 'fullApplicationNotSubmitted',
+  INELIGIBLE_STATUTORY_REJECTED: 'ineligibleStatutoryRejected',
+  INELIGIBLE_ASC_REJECTED: 'ineligibleASCRejected',
+  SELECTION_DAY_PASSED: 'selectionDayPassed',
+  SELECTION_DAY_FAILED: 'selectionDayFailed',
+  RECOMMENDED_TO_SCC: 'recommendedToSCC',
+  CHARACTER_REJECTED: 'characterRejected',
+  RECOMMENDED_IMMEDIATE: 'recommendedImmediate',
+  RECOMMENDED_FUTURE: 'recommendedFuture',
+  EMP_TIEBREAKER_INVITED: 'empTiebreakerInvited',
+  EMP_TIEBREAKER_PASSED: 'empTiebreakerPassed',
+  EMP_TIEBREAKER_FAILED: 'empTiebreakerFailed',
+  APPROVED_IMMEDIATE: 'approvedImmediate',
+  APPROVED_FUTURE: 'approvedFuture',
+  RECONSIDER: 'reconsider',
+  WITHDREW: 'withdrew',
+
+  // v1 REVIEW
+  PASSED_SIFT: 'passedSift',
+  FAILED_SIFT: 'failedSift',
+  SUBMITTED_FIRST_TEST: 'submittedFirstTest',
+  FAILED_FIRST_TEST: 'failedFirstTest',
+  SUBMITTED_SCENARIO_TEST: 'submittedScenarioTest',
+  PASSED_FIRST_TEST: 'passedFirstTest',
+  FAILED_SCENARIO_TEST: 'failedScenarioTest',
+  PASSED_SCENARIO_TEST: 'passedScenarioTest',
+  FAILED_TELEPHONE_ASSESSMENT: 'failedTelephoneAssessment',
+  PASSED_TELEPHONE_ASSESSMENT: 'passedTelephoneAssessment',
+  NO_TEST_SUBMITTED: 'noTestSubmitted',
+  TEST_SUBMITTED_OVER_TIME: 'testSubmittedOverTime',
+  WITHDREW_APPLICATION: 'withdrewApplication',
+  REJECTED_AS_INELIGIBLE: 'rejectedAsIneligible',
+  // v1 SHORTLISTED
+  INVITED_TO_SELECTION_DAY: 'invitedToSelectionDay',
+  // v1 SELECTED
+  PASSED_SELECTION: 'passedSelection',
+  FAILED_SELECTION: 'failedSelection',
+  PASSED_BUT_NOT_RECOMMENDED: 'passedButNotRecommended',
+  // v1 RECOMMENDED
+  REJECTED_BY_CHARACTER: 'rejectedByCharacter',
+  APPROVED_FOR_IMMEDIATE_APPOINTMENT: 'approvedForImmediateAppointment',
+  APPROVED_FOR_FUTURE_APPOINTMENT: 'approvedForFutureAppointment',
+  SCC_TO_RECONSIDER: 'sccToReconsider',
+};
+
 module.exports = {
   ...CONSTANTS,
   TASK_TYPE,
@@ -316,4 +389,6 @@ module.exports = {
   TASK_STATUS,
   CANDIDATE_FORM_STATUS,
   CANDIDATE_FORM_RESPONSE_STATUS,
+  EXERCISE_STAGE,
+  APPLICATION_STATUS,
 };
