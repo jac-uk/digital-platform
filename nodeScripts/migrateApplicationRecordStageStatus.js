@@ -10,17 +10,26 @@ const { applyUpdates, getDocuments } = require('../functions/shared/helpers');
 
 // whether to make changes in firestore
 const isAction = false;
-const exerciseId = 'exerciseId';
+const exerciseId = 'Y1gSQnCMhbqpA0nHmDaM';
 
 const main = async () => {
+  const previousStats = {
+    stage: {},
+    status: {},
+  };
+  const finalStats = {
+    stage: {},
+    status: {},
+  };
+
   // get all applicationRecords for the exercise
-  console.log('Fetching applicationRecords...');
+  console.log('-- Fetching applicationRecords...');
   const applicationRecords = await getDocuments(db.collection('applicationRecords').where('exercise.id', '==', exerciseId));
-  console.log(`Fetched applicationRecords: ${applicationRecords.length}`);
+  console.log(`-- Fetched applicationRecords: ${applicationRecords.length}`);
   const commands = [];
 
   // get payload for each applicationRecord
-  console.log('Processing applicationRecords...');
+  console.log('-- Processing applicationRecords...');
   for (let i = 0; i < applicationRecords.length; i++) {
     const applicationRecord = applicationRecords[i];
     const payload = {};
@@ -111,17 +120,37 @@ const main = async () => {
         data: payload,
       });
     }
+
+    const finalStage = payload.stage || applicationRecord.stage;
+    const finalStatus = payload.status || applicationRecord.status;
+    calculateStats(applicationRecord.stage, applicationRecord.status, previousStats);
+    calculateStats(finalStage, finalStatus, finalStats);
   }
-  console.log(`Processed applicationRecords: ${commands.length}`);
+  console.log(`-- Processed applicationRecords: ${commands.length}`);
+  console.log(`-- Previous stats: ${JSON.stringify(previousStats, null, 2)}`);
+  console.log(`-- Final stats: ${JSON.stringify(finalStats, null, 2)}`);
 
   if (isAction && commands.length) {
     const res = await applyUpdates(db, commands);
-    console.log(`Updated applicationRecords: ${res}`);
+    console.log(`-- Updated applicationRecords: ${res}`);
     return res;
   }
 
-  return 'No changes made.';
+  return '-- No changes made';
 };
+
+function calculateStats(stage, status, stats) {
+  if (stats.stage[stage]) {
+    stats.stage[stage]++;
+  } else {
+    stats.stage[stage] = 1;
+  }
+  if (stats.status[status]) {
+    stats.status[status]++;
+  } else {
+    stats.status[status] = 1;
+  }
+}
 
 main()
   .then((result) => {
