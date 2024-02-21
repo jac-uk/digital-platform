@@ -43,7 +43,7 @@ const main = async () => {
         payload.status = APPLICATION_STATUS.QUALIFYING_TEST_FAILED;
         break;
       case APPLICATION_STATUS.NO_TEST_SUBMITTED:
-        payload.status = APPLICATION_STATUS.QUALIFYING_TEST_NOT_STARTED;
+        payload.status = APPLICATION_STATUS.QUALIFYING_TEST_NOT_SUBMITTED;
         break;
       case APPLICATION_STATUS.TEST_SUBMITTED_OVER_TIME:
         payload.status = APPLICATION_STATUS.QUALIFYING_TEST_FAILED;
@@ -73,7 +73,7 @@ const main = async () => {
         payload.status = APPLICATION_STATUS.SHORTLISTING_PASSED;
         break;
       case APPLICATION_STATUS.REJECTED_AS_INELIGIBLE:
-        payload.status = APPLICATION_STATUS.INELIGIBLE_ASC_REJECTED;
+        payload.status = APPLICATION_STATUS.REJECTED_INELIGIBLE_ADDITIONAL;
         break;
       case APPLICATION_STATUS.PASSED_SELECTION:
         payload.status = APPLICATION_STATUS.SELECTION_DAY_PASSED;
@@ -82,10 +82,10 @@ const main = async () => {
         payload.status = APPLICATION_STATUS.SELECTION_DAY_FAILED;
         break;
       case APPLICATION_STATUS.REJECTED_BY_CHARACTER:
-        payload.status = APPLICATION_STATUS.CHARACTER_REJECTED;
+        payload.status = APPLICATION_STATUS.REJECTED_CHARACTER;
         break;
       case APPLICATION_STATUS.PASSED_BUT_NOT_RECOMMENDED:
-        payload.status = APPLICATION_STATUS.RECOMMENDED_TO_SCC;
+        payload.status = APPLICATION_STATUS.PASSED_RECOMMENDED;
         break;
       case APPLICATION_STATUS.APPROVED_FOR_IMMEDIATE_APPOINTMENT:
         payload.status = APPLICATION_STATUS.APPROVED_IMMEDIATE;
@@ -97,7 +97,7 @@ const main = async () => {
         payload.status = APPLICATION_STATUS.RECONSIDER;
         break;
       case APPLICATION_STATUS.WITHDREW_APPLICATION:
-        payload.status = APPLICATION_STATUS.WITHDREW;
+        payload.status = APPLICATION_STATUS.WITHDRAWN;
         break;
       case APPLICATION_STATUS.SUBMITTED_FIRST_TEST:
         break;
