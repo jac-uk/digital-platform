@@ -32,7 +32,7 @@ const main = async () => {
 
   const templatePath = `exercise/${exercise.id}/${exercise.downloads.candidateAssessementForms[0].file}`;
   const documentPath = `exercise/${exercise.id}/user/${application.userId}/${application.uploadedSelfAssessment}`;
-  const questions = exercise.selfAssessmentWordLimits.map(section => section.question ? section.question.trim() : '');
+  const questions = Array.isArray(exercise.selfAssessmentWordLimits) ? exercise.selfAssessmentWordLimits.map(section => section.question ? section.question.trim() : '') : [];
 
   log('templatePath: ' + templatePath);
   log('documentPath: ' + documentPath);
