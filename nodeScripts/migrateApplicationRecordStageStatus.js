@@ -130,6 +130,7 @@ const main = async () => {
   console.log(`-- Previous stats: ${JSON.stringify(previousStats, null, 2)}`);
   console.log(`-- Final stats: ${JSON.stringify(finalStats, null, 2)}`);
 
+  console.log(`-- Number of applicationRecords to update: ${commands.length}`);
   if (isAction && commands.length) {
     const res = await applyUpdates(db, commands);
     console.log(`-- Updated applicationRecords: ${res}`);
