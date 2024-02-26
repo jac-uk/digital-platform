@@ -1,7 +1,7 @@
 const lookup = require('../../shared/converters/lookup');
 const helpers = require('../../shared/converters/helpers');
 const { getDocuments, getDocument, formatDate, getDate } = require('../../shared/helpers');
-const { applicationOpenDatePost01042023, ordinal } = require('../../shared/converters/helpers');
+const { applicationOpenDatePost01042023, ordinal, getJudicialExperienceString } = require('../../shared/converters/helpers');
 const _ = require('lodash');
 const htmlWriter = require('../../shared/htmlWriter');
 const config = require('../../shared/config');
@@ -53,7 +53,7 @@ module.exports = (firebase, db) => {
       maxQualificationNum,
       maxPostQualificationExperienceNum,
       data: rows,
-    } = getRows(applicationRecords);
+    } = getRows(exercise, applicationRecords);
     // get report headers
     const headers = getHeaders(exercise, maxCharacterInformationNum, maxProfessionalBackgroundNum, maxQualificationNum, maxPostQualificationExperienceNum);
 
@@ -166,7 +166,7 @@ module.exports = (firebase, db) => {
     return headers;
   }
 
-  function getRows(applicationRecords) {
+  function getRows(exercise, applicationRecords) {
     let maxCharacterInformationNum = 0;
     let maxProfessionalBackgroundNum = 0;
     let maxQualificationNum = 0;
@@ -218,7 +218,7 @@ module.exports = (firebase, db) => {
         jurisdictionPreferences: getJurisdictionPreferencesString(application),
         ...getQualifications(qualifications),
         ...getPostQualificationExperiences(postQualificationExperiences),
-        judicialExperience: getJudicialExperienceString(application),
+        judicialExperience: getJudicialExperienceString(exercise, application),
       };
     });
 
@@ -402,18 +402,6 @@ module.exports = (firebase, db) => {
     }
     return data;
   }
-
-  function getJudicialExperienceString(application)
-  {
-    if (application.feePaidOrSalariedJudge) {
-      return `Fee paid or salaried judge\n${lookup(application.feePaidOrSalariedSittingDaysDetails)}`;
-    } else if (application.declaredAppointmentInQuasiJudicialBody) {
-      return `Quasi-judicial body\n${lookup(application.quasiJudicialSittingDaysDetails)}`;
-    } else {
-      return `Acquired skills in other way\n${lookup(application.skillsAquisitionDetails)}`;
-    }
-  }
-
 
   /**
    * Generates the Character Issues report, in HTML format

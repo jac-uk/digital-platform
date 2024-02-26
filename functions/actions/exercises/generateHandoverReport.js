@@ -296,39 +296,7 @@ const formatLegalData = (exercise, application) => {
     }).join('\n');
   }
 
-  let judicialExperience = '';
-  if (exercise._applicationVersion >= 3) {
-    let judicialExperiences = [];
-    let quasiJudicialExperiences = [];
-    Array.isArray(application.experience) && application.experience.forEach(experience => {
-      if (experience.jobTitle && experience.judicialFunctions) {
-        if (experience.judicialFunctions.type === 'judicial-post') {
-          judicialExperiences.push(experience.jobTitle);
-        } else if (experience.judicialFunctions.type === 'quasi-judicial-post') {
-          quasiJudicialExperiences.push(experience.jobTitle);
-        }
-      }
-    });
-
-    if (judicialExperiences.length) {
-      judicialExperience += `Judicial - ${judicialExperiences.join(', ')}\n`;
-    }
-    if (quasiJudicialExperiences.length) {
-      judicialExperience += `Quasi-judicial - ${quasiJudicialExperiences.join(', ')}`;
-    }
-
-    if (!judicialExperience) {
-      judicialExperience = `Acquired skills in other way - ${lookup(application.experienceDetails)}`;
-    }
-  } else {
-    if (application.feePaidOrSalariedJudge) {
-      judicialExperience = `Fee paid or salaried judge - ${lookup(application.feePaidOrSalariedSittingDaysDetails)} days`;
-    } else if (application.declaredAppointmentInQuasiJudicialBody) {
-      judicialExperience = `Quasi-judicial body - ${lookup(application.quasiJudicialSittingDaysDetails)} days`;
-    } else {
-      judicialExperience = `Acquired skills in other way - ${lookup(application.skillsAquisitionDetails)}`;
-    }
-  }
+  const judicialExperience = helpers.getJudicialExperienceString(exercise, application);
 
   return {
     qualifications: qualifications,
