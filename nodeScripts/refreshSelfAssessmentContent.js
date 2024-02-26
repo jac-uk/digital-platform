@@ -13,7 +13,7 @@ const { log } = require('./shared/helpers.js');
 
 // whether to make changes in `applications` collection in firestore
 const isAction = false;
-const applicationId = 'SfXdsHE0DE46Ux9Cj3Tc';
+const applicationId = 'XpynYgjoDCHg46wGO1Bn';
 
 const main = async () => {
   if (!applicationId) throw new Error('applicationId is required');
@@ -32,10 +32,11 @@ const main = async () => {
 
   const templatePath = `exercise/${exercise.id}/${exercise.downloads.candidateAssessementForms[0].file}`;
   const documentPath = `exercise/${exercise.id}/user/${application.userId}/${application.uploadedSelfAssessment}`;
+  const questions = Array.isArray(exercise.selfAssessmentWordLimits) ? exercise.selfAssessmentWordLimits.map(section => section.question ? section.question.trim() : '') : [];
 
   log('templatePath: ' + templatePath);
   log('documentPath: ' + documentPath);
-  const uploadedSelfAssessmentContent = await extractDocumentContent(templatePath, documentPath);
+  const uploadedSelfAssessmentContent = await extractDocumentContent(templatePath, documentPath, questions);
   log('uploadedSelfAssessmentContent: ' + JSON.stringify(uploadedSelfAssessmentContent));
 
   if (isAction) {
