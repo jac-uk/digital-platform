@@ -76,7 +76,7 @@ module.exports = (config, firebase) => {
         continue;
       }
       // Extract the paragraphs between the question and the next question
-      const paragraphs = modifiedParagraphs.slice(startIndex + 1, endIndex === -1 ? question.length : endIndex);
+      const paragraphs = endIndex === -1 ? modifiedParagraphs.slice(startIndex + 1) : modifiedParagraphs.slice(startIndex + 1, endIndex);
       changes.push(paragraphs.join('\n'));
     }
 
