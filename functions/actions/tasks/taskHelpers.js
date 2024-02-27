@@ -387,7 +387,7 @@ module.exports = (config) => {
   function taskApplicationsEntryStatus(exercise, type) {
     let status = '';
     if (!exercise) return status;
-    if (type === TASK_TYPE.EMP_TIEBREAKER) return APPLICATION_STATUS.RECONSIDER;  // TODO: remove this eventually: override entry status for EMP tie-breakers
+    if (type === TASK_TYPE.EMP_TIEBREAKER) return APPLICATION_STATUS.SCC_TO_RECONSIDER;  // TODO: remove this eventually: override entry status for EMP tie-breakers
     const prevTaskType = previousTaskType(exercise, type);
     if (prevTaskType) {
       console.log('previousTaskType', prevTaskType);
