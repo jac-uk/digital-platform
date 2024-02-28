@@ -91,6 +91,9 @@ const reportData = async (firebase, db, applications) => {
       email: application.personalDetails.email || null,
       phone: application.personalDetails.phone || null,
       details: application.personalDetails.reasonableAdjustmentsDetails || null,
+      status: application.personalDetails.reasonableAdjustmentsState.status || null,
+      timeAllocation: application.personalDetails.reasonableAdjustmentsState.timeAllocation || null,
+      note: application.personalDetails.reasonableAdjustmentsState.note || null,
       ...mostRecentApplicationData,
     });
   }
