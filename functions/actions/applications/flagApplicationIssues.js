@@ -166,7 +166,7 @@ module.exports = (config, db) => {
         }
       }
     } else {
-      issues.push(newIssue('rls', 'No date of birth provided'));
+      issues.push(newIssue('rls', 'Not Met (No date of birth provided)'));
     }
 
     if (['legal', 'leadership'].indexOf(exercise.typeOfExercise) >= 0) {
@@ -224,20 +224,22 @@ module.exports = (config, db) => {
                 if (otherExperience.hasValue()) {
                   issues.push(newIssue('pqe', `Candidate has ${relevantExperience.toString()} of relevant experience and ${otherExperience.toString()} to be checked`));
                 } else {
-                  issues.push(newIssue('pqe', `Candidate has ${relevantExperience.toString()} of relevant experience`));
+                  issues.push(newIssue('pqe', `Not Met (${relevantExperience.toString()})`));
                 }
               } else {
-                issues.push(newIssue('pqe', 'Candidate has no relevant experience'));
+                issues.push(newIssue('pqe', 'Not Met (Candidate has no relevant experience)'));
               }
+            } else {
+              issues.push(newIssue('pqe', `Met (${relevantExperience.toString()})`));
             }
           } else {
-            issues.push(newIssue('pqe', 'No experience provided'));
+            issues.push(newIssue('pqe', 'Not Met (No experience provided)'));
           }
         } else {
-          issues.push(newIssue('pqe', 'No qualifications provided'));
+          issues.push(newIssue('pqe', 'Not Met (No qualifications provided)'));
         }
       } else {
-        issues.push(newIssue('pqe', 'No qualifications provided'));
+        issues.push(newIssue('pqe', 'Not Met (No qualifications provided)'));
       }
 
       // previous judicial experience
@@ -256,7 +258,7 @@ module.exports = (config, db) => {
   }
 
   function getQualificationIssue(exercise, application) {
-    if (!exercise.qualifications || !exercise.qualifications.length) return null;
+    if (!exercise.qualifications || !exercise.qualifications.length) return newIssue('pq', 'Not required');
     if (!application.qualifications || !application.qualifications.length) return newIssue('pq', 'Not Met');
 
     let isMet = false;
@@ -272,6 +274,8 @@ module.exports = (config, db) => {
   }
 
   function getPreviousJudicialExperienceIssue(exercise, application) {
+    if (!exercise.pjeDays) return newIssue('pje', 'Not required');
+
     // met: the number of sitting days acquired by the candidate (PQE is `judicial` with`the carrying-out of judicial functions of any court or tribunal`) is greater than or equal to what is requested
     let isMet = false;
 
@@ -297,10 +301,10 @@ module.exports = (config, db) => {
   }
 
   function getProfessionalRegistrationIssue(exercise, application) {
-    if (!exercise.memberships || !exercise.memberships.length || exercise.memberships.indexOf('none') > -1) return null;
+    if (!exercise.memberships || !exercise.memberships.length || exercise.memberships.indexOf('none') > -1) return newIssue('pr', 'Not required');
 
     const membershipData = [];
-    const membershipFields = [
+    const membershipList = [
       { field: 'charteredAssociationBuildingEngineersNumber', value: 'chartered-association-of-building-engineers' },
       { field: 'charteredInstituteBuildingNumber', value: 'chartered-institute-of-building' },
       { field: 'charteredInstituteEnvironmentalHealthNumber', value: 'chartered-institute-of-environmental-health' },
@@ -309,13 +313,13 @@ module.exports = (config, db) => {
       { field: 'royalInstitutionCharteredSurveyorsNumber', value: 'royal-institution-of-chartered-surveyors' },
       { field: 'royalInstituteBritishArchitectsNumber', value: 'royal-institute-of-british-architects' },
     ];
-    membershipFields.forEach(field => {
-      if (application[field]) {
-        membershipData.push(lookup(application[field]));
+    membershipList.forEach(item => {
+      if (application[item.field]) {
+        membershipData.push(lookup(item.value));
       }
     });
 
-    return newIssue('pr', membershipFields.join(', '));
+    return newIssue('pr', membershipData.join(', '));
   }
 
   function getCharacterIssues(exercise, application) {
