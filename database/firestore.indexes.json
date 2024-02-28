@@ -1117,6 +1117,28 @@
           "order": "ASCENDING"
         },
         {
+          "fieldPath": "flags.eligibilityIssuesMet",
+          "order": "ASCENDING"
+        },
+        {
+          "fieldPath": "candidate.fullName",
+          "order": "ASCENDING"
+        }
+      ]
+    },
+    {
+      "collectionGroup": "applicationRecords",
+      "queryScope": "COLLECTION",
+      "fields": [
+        {
+          "fieldPath": "exercise.id",
+          "order": "ASCENDING"
+        },
+        {
+          "fieldPath": "flags.eligibilityIssues",
+          "order": "ASCENDING"
+        },
+        {
           "fieldPath": "personalDetails.fullName",
           "order": "ASCENDING"
         }

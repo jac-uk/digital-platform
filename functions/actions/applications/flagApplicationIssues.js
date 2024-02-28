@@ -96,9 +96,12 @@ module.exports = (config, db) => {
       const data = {};
       if (eligibilityIssues && eligibilityIssues.length > 0) {
         data['flags.eligibilityIssues'] = true;
+        // check if all eligibility issues are met
+        data['flags.eligibilityIssuesMet'] = eligibilityIssues.every(issue => ['rls', 'pq', 'pqe', 'pje'].includes(issue.type) ? issue.summary.indexOf('Met') === 0 : true);
         data['issues.eligibilityIssues'] = eligibilityIssues;
       } else {
         data['flags.eligibilityIssues'] = false;
+        data['flags.eligibilityIssuesMet'] = false;
         data['issues.eligibilityIssues'] = [];
       }
       if (characterIssues && characterIssues.length > 0) {
