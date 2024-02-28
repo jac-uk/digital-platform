@@ -258,7 +258,7 @@ module.exports = (config, db) => {
   }
 
   function getQualificationIssue(exercise, application) {
-    if (!exercise.qualifications || !exercise.qualifications.length) return newIssue('pq', 'Not required');
+    if (!exercise.qualifications || !exercise.qualifications.length) return null;
     if (!application.qualifications || !application.qualifications.length) return newIssue('pq', 'Not Met');
 
     let isMet = false;
@@ -274,7 +274,7 @@ module.exports = (config, db) => {
   }
 
   function getPreviousJudicialExperienceIssue(exercise, application) {
-    if (!exercise.pjeDays) return newIssue('pje', 'Not required');
+    if (!exercise.pjeDays) return null;
 
     // met: the number of sitting days acquired by the candidate (PQE is `judicial` with`the carrying-out of judicial functions of any court or tribunal`) is greater than or equal to what is requested
     let isMet = false;
@@ -301,7 +301,7 @@ module.exports = (config, db) => {
   }
 
   function getProfessionalRegistrationIssue(exercise, application) {
-    if (!exercise.memberships || !exercise.memberships.length || exercise.memberships.indexOf('none') > -1) return newIssue('pr', 'Not required');
+    if (!exercise.memberships || !exercise.memberships.length || exercise.memberships.indexOf('none') > -1) return null;
 
     const membershipData = [];
     const membershipList = [
