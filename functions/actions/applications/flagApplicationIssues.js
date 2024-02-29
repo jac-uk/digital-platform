@@ -225,7 +225,7 @@ module.exports = (config, db) => {
             if (relevantExperience.years < minimumYearsExperience) {
               if (relevantExperience.hasValue()) {
                 if (otherExperience.hasValue()) {
-                  issues.push(newIssue('pqe', `Candidate has ${relevantExperience.toString()} of relevant experience and ${otherExperience.toString()} to be checked`));
+                  issues.push(newIssue('pqe', `Not Met (Candidate has ${relevantExperience.toString()} of relevant experience and ${otherExperience.toString()} to be checked)`));
                 } else {
                   issues.push(newIssue('pqe', `Not Met (${relevantExperience.toString()})`));
                 }
