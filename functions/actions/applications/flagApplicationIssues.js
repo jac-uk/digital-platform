@@ -1,7 +1,7 @@
 const { getDocument, getDocuments, isEmpty, applyUpdates, getDate, formatDate } = require('../../shared/helpers');
 const lookup = require('../../shared/converters/lookup');
 
-module.exports = (config, db) => {
+module.exports = (firebase, config, db) => {
   return {
     flagApplicationIssues,
     flagApplicationIssuesForExercise,
@@ -138,6 +138,23 @@ module.exports = (config, db) => {
         },
       },
     });
+    // add timestamp for character and eligibility issues reports
+    commands.push(
+      {
+        command: 'set',
+        ref: db.collection('exercises').doc(exerciseId).collection('reports').doc('characterIssues'),
+        data: {
+          createdAt: firebase.firestore.Timestamp.fromDate(new Date()),
+        },
+      },
+      {
+        command: 'set',
+        ref: db.collection('exercises').doc(exerciseId).collection('reports').doc('eligibilityIssues'),
+        data: {
+          createdAt: firebase.firestore.Timestamp.fromDate(new Date()),
+        },
+      }
+    );
 
     // write to db
     const result = await applyUpdates(db, commands);
