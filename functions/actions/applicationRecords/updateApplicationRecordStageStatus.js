@@ -20,7 +20,7 @@ module.exports = (config, db) => {
     const { exerciseId, version } = params;
 
     // get application records from reference numbers
-    const applicationRecords = await getDocuments(db.collection('applicationRecords').where('exercise.id', '==', exerciseId));
+    const applicationRecords = await getDocuments(db.collection('applicationRecords').where('exercise.id', '==', exerciseId).select('_backup', 'stage', 'status'));
 
     // construct db commands
     const commands = [];
