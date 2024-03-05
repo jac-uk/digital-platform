@@ -1,6 +1,6 @@
 const { getDocument, getDocuments, applyUpdates, getDocumentsFromQueries } = require('../../shared/helpers');
 
-module.exports = (config, db) => {
+module.exports = (firebase, config, db) => {
   const { EXERCISE_STAGE, APPLICATION_STATUS } = config;
 
   return {
@@ -58,6 +58,9 @@ module.exports = (config, db) => {
       const { stage, status } = applicationRecord._backups.processingVersion1;
       if (applicationRecord.stage !== stage) payload.stage = stage;
       if (applicationRecord.status !== status) payload.status = status;
+
+      // remove back up stage and status
+      payload['_backups.processingVersion1'] = firebase.firestore.FieldValue.delete();
     } else if (version === 2) {
       // back up stage and status
       payload['_backups.processingVersion1.stage'] = applicationRecord.stage;
@@ -65,11 +68,15 @@ module.exports = (config, db) => {
 
       // update stage
       switch (applicationRecord.stage) {
+        case EXERCISE_STAGE.APPLIED:
         case EXERCISE_STAGE.REVIEW:
           payload.stage = EXERCISE_STAGE.SHORTLISTING;
           break;
         case EXERCISE_STAGE.SHORTLISTED:
           payload.stage = EXERCISE_STAGE.SELECTION;
+          break;
+        case EXERCISE_STAGE.SELECTABLE:
+          payload.stage = EXERCISE_STAGE.SCC;
           break;
         case EXERCISE_STAGE.SELECTED:
         case EXERCISE_STAGE.RECOMMENDED:

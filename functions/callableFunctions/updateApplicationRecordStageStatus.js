@@ -1,7 +1,7 @@
 const functions = require('firebase-functions');
 const config = require('../shared/config');
-const { db } = require('../shared/admin.js');
-const { updateApplicationRecordStageStatus } = require('../actions/applicationRecords/updateApplicationRecordStageStatus.js')(config, db);
+const { firebase, db } = require('../shared/admin.js');
+const { updateApplicationRecordStageStatus } = require('../actions/applicationRecords/updateApplicationRecordStageStatus.js')(firebase, config, db);
 const { checkArguments } = require('../shared/helpers.js');
 const { checkFunctionEnabled } = require('../shared/serviceSettings.js')(db);
 const { PERMISSIONS, hasPermissions } = require('../shared/permissions.js');
