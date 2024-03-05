@@ -44,6 +44,13 @@ module.exports = (config, db) => {
     return result ? commands.length : false;
   }
 
+  /**
+   * Get stage and status for the application record based on the version
+   * 
+   * @param {object} applicationRecord 
+   * @param {number} version 
+   * @returns 
+   */
   function getStageStatus(applicationRecord, version) {
     const payload = {};
 
@@ -59,10 +66,15 @@ module.exports = (config, db) => {
       // update stage
       switch (applicationRecord.stage) {
         case EXERCISE_STAGE.REVIEW:
-          payload.stage = EXERCISE_STAGE.APPLIED;
+          payload.stage = EXERCISE_STAGE.SHORTLISTING;
+          break;
+        case EXERCISE_STAGE.SHORTLISTED:
+          payload.stage = EXERCISE_STAGE.SELECTION;
           break;
         case EXERCISE_STAGE.SELECTED:
-          payload.stage = EXERCISE_STAGE.SELECTABLE;
+        case EXERCISE_STAGE.RECOMMENDED:
+        case EXERCISE_STAGE.HANDOVER:
+          payload.stage = EXERCISE_STAGE.RECOMMENDATION;
           break;
         default:
       }
