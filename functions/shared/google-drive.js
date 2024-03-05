@@ -27,6 +27,7 @@ module.exports = () => {
     createFile,
     deleteFile,
     copyFile,
+    exportFile,
     addPermission,
     getMimeType,
     MIME_TYPE,
@@ -146,6 +147,16 @@ module.exports = () => {
 
   function deleteFolder(folderId) {
     return deleteFile(folderId);
+  }
+
+  function exportFile(fileId, mimeType) {
+    if (fileId && mimeType) {
+      return drive.files.export({
+        fileId: fileId,
+        mimeType: mimeType,
+      });
+    }
+    return false;
   }
 
   async function addPermission(fileId, permission) {

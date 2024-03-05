@@ -1,6 +1,6 @@
 const lookup = require('../../shared/converters/lookup');
 const helpers = require('../../shared/converters/helpers');
-const { getDocuments, getDocument, formatDate, getDate } = require('../../shared/helpers');
+const { getDocuments, getDocument, formatDate, getDate, splitFullName } = require('../../shared/helpers');
 const { applicationOpenDatePost01042023, ordinal, getJudicialExperienceString } = require('../../shared/converters/helpers');
 const _ = require('lodash');
 const htmlWriter = require('../../shared/htmlWriter');
@@ -43,7 +43,7 @@ module.exports = (firebase, db) => {
 
     // generate the export (to Google Doc)
     if (format === 'googledoc') {
-      return exportToGoogleDoc(exercise, applicationRecords);
+      return await exportToGoogleDoc(exercise, applicationRecords);
     } else if (format === 'annex') {
       return await exportCharacterAnnexReport(exercise, applicationRecords);
     }
@@ -102,12 +102,17 @@ module.exports = (firebase, db) => {
     }
 
     // Create character issues document
-    await drive.createFile(filename, {
+    const fileId = await drive.createFile(filename, {
       folderId: folderId,
       sourceType: drive.MIME_TYPE.HTML,
       sourceContent: getHtmlCharacterIssues(exercise, applicationRecords),
       destinationType: drive.MIME_TYPE.DOCUMENT,
     });
+    console.log('fileId', fileId);
+
+    if (fileId) {
+      return await drive.exportFile(fileId, 'application/vnd.openxmlformats-officedocument.wordprocessingml.document');
+    }
 
     // return the path of the file to the caller
     return {
@@ -159,10 +164,7 @@ module.exports = (firebase, db) => {
     console.log('fileId', fileId);
 
     if (fileId) {
-      return await drive.exportFile({
-        fileId,
-        mimeType: 'application/vnd.openxmlformats-officedocument.wordprocessingml.document',
-      });
+      return await drive.exportFile(fileId, 'application/vnd.openxmlformats-officedocument.wordprocessingml.document');
     }
     return false;
   }
@@ -1562,7 +1564,7 @@ REPRODUCE THIS TABLE AS APPROPRIATE.<span class="red">&gt;</span></b>
     writer.addRaw(`
 <table style="font-size: 0.75rem;">
   <tbody>
-    <tr><td width="50"><b>No.</b></td><td colspan="2" style="text-align:center;"><b>Detail</b></td></tr>
+    <tr><td width="50"><b>No.</b></td><td colspan="2" style="text-align:center;"><b>Details</b></td></tr>
     `);
 
     Object.values(config.APPLICATION.CHARACTER_ISSUE_OFFENCE_CATEGORY).forEach(offenceCategory => {
@@ -1578,7 +1580,14 @@ REPRODUCE THIS TABLE AS APPROPRIATE.<span class="red">&gt;</span></b>
           writer.addRaw('<tr><td colspan="3" style="background-color:#ddd; padding:0">&nbsp</td></tr>');
         }
 
-        const fullName = ar.candidate.fullName || '';
+        const fullName = splitFullName(ar.candidate.fullName);
+        const firstName = fullName[0] || '';
+        const lastName = fullName[1] || '';
+        const names = [];
+        if (lastName) names.push(lastName);
+        if (firstName) names.push(firstName);
+        const formattedName = names.join(', ');
+
         const characterIssuesStatus = ar.issues && ar.issues.characterIssuesStatus ? lookup(ar.issues.characterIssuesStatus) : '';
         const characterIssuesStatusReason = ar.issues && ar.issues.characterIssuesStatusReason ? ar.issues.characterIssuesStatusReason : '';
         let natureAndDateOfIssue = '';
@@ -1600,7 +1609,7 @@ REPRODUCE THIS TABLE AS APPROPRIATE.<span class="red">&gt;</span></b>
         });
 
         writer.addRaw(`
-<tr><td rowspan="6" width="50"><b>${candidateCount}.</b></td><td width="175"><b>Name</b></td><td>${fullName}</td></tr>
+<tr><td rowspan="6" width="50"><b>${candidateCount}.</b></td><td width="175"><b>Name</b></td><td>${formattedName}</td></tr>
 <tr><td><b>Nature and date of issue</b></td><td>${natureAndDateOfIssue}</td></tr>
 <tr><td><b>Declaration</b></td><td>${declaration}</td></tr>
 <tr><td><b>Recommendation</b></td><td>${characterIssuesStatus}</td></tr>

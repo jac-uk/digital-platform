@@ -1,6 +1,6 @@
 const helpers = require('../../shared/converters/helpers');
 const lookup = require('../../shared/converters/lookup');
-const { getDocuments, getDocument, formatDate } = require('../../shared/helpers');
+const { getDocuments, getDocument, formatDate, splitFullName } = require('../../shared/helpers');
 const _ = require('lodash');
 const { ordinal } = require('../../shared/converters/helpers');
 const htmlWriter = require('../../shared/htmlWriter');
@@ -633,21 +633,6 @@ module.exports = (firebase, db) => {
     });
 
     console.log('*** Dump - END ***');
-  }
-
-  function splitFullName(fullName) {
-    const name = fullName.split(' ');
-    let firstName = null;
-    let lastName = null;
-    if (name.length > 1) {
-      firstName = name[0];
-      name.shift();
-      lastName = name.join(' ');
-    } else {
-      firstName = '';
-      lastName = name[0];
-    }
-    return ([firstName, lastName]);
   }
 };
 
