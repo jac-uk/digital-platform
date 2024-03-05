@@ -1,3 +1,4 @@
+const config = require('../config');
 
 const lookup = (value) => {
   if (typeof value === 'string') {
@@ -224,6 +225,25 @@ const lookup = (value) => {
       'situationalJudgement': 'Situational Judgement Test',
       'empTiebreaker': 'EMP Tie-breaker',
     };
+
+    // character issues status
+    lookup[config.APPLICATION.CHARACTER_ISSUE_STATUS.PROCEED] = 'Proceed';
+    lookup[config.APPLICATION.CHARACTER_ISSUE_STATUS.REJECT] = 'Reject';
+    lookup[config.APPLICATION.CHARACTER_ISSUE_STATUS.REJECT_NON_DECLARATION] = 'Reject Non-Declaration';
+    lookup[config.APPLICATION.CHARACTER_ISSUE_STATUS.DISCUSS] = 'Discuss';
+    
+    // character issues offence category
+    lookup[config.APPLICATION.CHARACTER_ISSUE_OFFENCE_CATEGORY.SINGLE_CRIMINAL_OFFENCE] = 'Single criminal offence';
+    lookup[config.APPLICATION.CHARACTER_ISSUE_OFFENCE_CATEGORY.MULTIPLE_CRIMINAL_OFFENCES] = 'Multiple criminal offences';
+    lookup[config.APPLICATION.CHARACTER_ISSUE_OFFENCE_CATEGORY.SINGLE_MOTORING_OFFENCE] = 'Single motoring offence';
+    lookup[config.APPLICATION.CHARACTER_ISSUE_OFFENCE_CATEGORY.MULTIPLE_MOTORING_OFFENCES] = 'Multiple motoring offences';
+    lookup[config.APPLICATION.CHARACTER_ISSUE_OFFENCE_CATEGORY.SINGLE_FINANCIAL_OFFENCE] = 'Single financial offence';
+    lookup[config.APPLICATION.CHARACTER_ISSUE_OFFENCE_CATEGORY.MULTIPLE_FINANCIAL_OFFENCES] = 'Multiple financial offences';
+    lookup[config.APPLICATION.CHARACTER_ISSUE_OFFENCE_CATEGORY.SINGLE_PROFESSIONAL_CONDUCT] = 'Single professional conduct';
+    lookup[config.APPLICATION.CHARACTER_ISSUE_OFFENCE_CATEGORY.MULTIPLE_PROFESSIONAL_CONDUCTS] = 'Multiple professional conducts';
+    lookup[config.APPLICATION.CHARACTER_ISSUE_OFFENCE_CATEGORY.SINGLE_OTHER_MATTER] = 'Single other matter';
+    lookup[config.APPLICATION.CHARACTER_ISSUE_OFFENCE_CATEGORY.MULTIPLE_OTHER_MATTERS] = 'Multiple other matters';
+    lookup[config.APPLICATION.CHARACTER_ISSUE_OFFENCE_CATEGORY.MIXED] = 'Mixed';
 
     return lookup[value] || value;
   }
