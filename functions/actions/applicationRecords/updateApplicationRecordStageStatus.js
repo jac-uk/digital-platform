@@ -1,11 +1,12 @@
-const { getDocument, getDocuments, applyUpdates, getDocumentsFromQueries } = require('../../shared/helpers');
+const { getDocument, getDocuments, applyUpdates } = require('../../shared/helpers');
 
 module.exports = (firebase, config, db) => {
   const { EXERCISE_STAGE, APPLICATION_STATUS } = config;
 
   return {
     updateApplicationRecordStageStatus,
-    getStageStatus,
+    getApplicationRecordStageStatus,
+    getExerciseApplicationRecords,
   };
 
   /**
@@ -18,7 +19,7 @@ module.exports = (firebase, config, db) => {
    */
   async function updateApplicationRecordStageStatus(params) {
     const { exerciseId, version } = params;
-
+    const exercise = await getDocument(db.collection('exercises').doc(exerciseId));
     // get application records from reference numbers
     const ref = db.collection('applicationRecords')
       .where('exercise.id', '==', exerciseId)
@@ -29,7 +30,7 @@ module.exports = (firebase, config, db) => {
     const commands = [];
     for (let i = 0, len = applicationRecords.length; i < len; ++i) {
       const applicationRecord = applicationRecords[i];
-      const payload = getStageStatus(applicationRecord, version);
+      const payload = getApplicationRecordStageStatus(applicationRecord, version);
 
       if (Object.keys(payload).length) {
         commands.push({
@@ -38,6 +39,16 @@ module.exports = (firebase, config, db) => {
           data: payload,
         });
       }
+    }
+
+    // update count of applicationRecords in exercise
+    const exercisePayload = getExerciseApplicationRecords(exercise, version);
+    if (Object.keys(exercisePayload).length) {
+      commands.push({
+        command: 'update',
+        ref: exercise.ref,
+        data: exercisePayload,
+      });
     }
 
     // write to db
@@ -122,7 +133,7 @@ module.exports = (firebase, config, db) => {
    * @param {number} version 
    * @returns 
    */
-  function getStageStatus(applicationRecord, version) {
+  function getApplicationRecordStageStatus(applicationRecord, version) {
     const payload = {};
 
     if (version === 1 && applicationRecord._backups && applicationRecord._backups.processingVersion1) {
@@ -172,6 +183,42 @@ module.exports = (firebase, config, db) => {
             }
         });
       }
+    }
+
+    return payload;
+  }
+
+  /**
+   * Get new value of _applicationRecords in exercise based on the version
+   * 
+   * @param {object} exercise 
+   * @param {number} version 
+   * @returns 
+   */
+  function getExerciseApplicationRecords(exercise, version) {
+    const payload = {};
+    if (version === 1 && exercise._backups && exercise._backups.processingVersion1) {
+      const { _applicationRecords } = exercise._backups.processingVersion1;
+      if (_applicationRecords) {
+        payload._applicationRecords = _applicationRecords;
+      }
+      // remove back up
+      payload['_backups.processingVersion1'] = firebase.firestore.FieldValue.delete();
+    } else if (version === 2 && (!exercise._backups || !exercise._backups.processingVersion1)) {
+      // back up
+      payload['_backups.processingVersion1._applicationRecords'] = exercise._applicationRecords || {};
+
+      Object.entries(exercise._applicationRecords).forEach(([key, value]) => {
+        const newStage = convertStageToVersion2(key);
+        if (newStage) {
+          if (payload[`_applicationRecords.${newStage}`]) {
+            payload[`_applicationRecords.${newStage}`] += value;
+          } else {
+            payload[`_applicationRecords.${newStage}`] = value;
+          }
+          payload[`_applicationRecords.${key}`] = firebase.firestore.FieldValue.delete();
+        }
+      });
     }
 
     return payload;

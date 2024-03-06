@@ -6,8 +6,8 @@
 
 const config = require('./shared/config');
 const { firebase, app, db } = require('./shared/admin');
-const { applyUpdates, getDocuments } = require('../functions/shared/helpers');
-const { getStageStatus } = require('../functions/actions/applicationRecords/updateApplicationRecordStageStatus')(firebase, config, db);
+const { applyUpdates, getDocuments, getDocument } = require('../functions/shared/helpers');
+const { getApplicationRecordStageStatus, getExerciseApplicationRecords } = require('../functions/actions/applicationRecords/updateApplicationRecordStageStatus')(firebase, config, db);
 
 // whether to make changes in firestore
 const isAction = false;
@@ -24,6 +24,8 @@ const main = async () => {
     status: {},
   };
 
+  // get exercise
+  const exercise = await getDocument(db.collection('exercises').doc(exerciseId));
   // get all applicationRecords for the exercise
   console.log('-- Fetching applicationRecords...');
   const applicationRecords = await getDocuments(db.collection('applicationRecords').where('exercise.id', '==', exerciseId));
@@ -34,7 +36,7 @@ const main = async () => {
   console.log('-- Processing applicationRecords...');
   for (let i = 0; i < applicationRecords.length; i++) {
     const applicationRecord = applicationRecords[i];
-    const payload = getStageStatus(applicationRecord, version);
+    const payload = getApplicationRecordStageStatus(applicationRecord, version);
 
     if (Object.keys(payload).length) {
       commands.push({
@@ -52,8 +54,18 @@ const main = async () => {
   console.log(`-- Processed applicationRecords: ${commands.length}`);
   console.log(`-- Previous stats: ${JSON.stringify(previousStats, null, 2)}`);
   console.log(`-- Final stats: ${JSON.stringify(finalStats, null, 2)}`);
-
   console.log(`-- Number of applicationRecords to update: ${commands.length}`);
+
+  // update count of applicationRecords in exercise
+  const exercisePayload = getExerciseApplicationRecords(exercise, version);
+  if (Object.keys(exercisePayload).length) {
+    commands.push({
+      command: 'update',
+      ref: exercise.ref,
+      data: exercisePayload,
+    });
+  }
+
   if (isAction && commands.length) {
     const res = await applyUpdates(db, commands);
     console.log(`-- Updated applicationRecords: ${res}`);
