@@ -44,6 +44,74 @@ module.exports = (firebase, config, db) => {
     return result ? commands.length : false;
   }
 
+  function convertStageToVersion2(stage) {
+    switch (stage) {
+      case EXERCISE_STAGE.APPLIED:
+      case EXERCISE_STAGE.REVIEW:
+        return EXERCISE_STAGE.SHORTLISTING;
+      case EXERCISE_STAGE.SHORTLISTED:
+        return EXERCISE_STAGE.SELECTION;
+      case EXERCISE_STAGE.SELECTABLE:
+        return EXERCISE_STAGE.SCC;
+      case EXERCISE_STAGE.SELECTED:
+      case EXERCISE_STAGE.RECOMMENDED:
+      case EXERCISE_STAGE.HANDOVER:
+        return EXERCISE_STAGE.RECOMMENDATION;
+      default:
+        return '';
+    }
+  }
+
+  function convertStatusToVersion2(status) {
+    switch (status) {
+      case APPLICATION_STATUS.PASSED_FIRST_TEST:
+        return APPLICATION_STATUS.QUALIFYING_TEST_PASSED;
+      case APPLICATION_STATUS.FAILED_FIRST_TEST:
+        return APPLICATION_STATUS.QUALIFYING_TEST_FAILED;
+      case APPLICATION_STATUS.NO_TEST_SUBMITTED:
+        return APPLICATION_STATUS.QUALIFYING_TEST_NOT_SUBMITTED;
+      case APPLICATION_STATUS.TEST_SUBMITTED_OVER_TIME:
+        return APPLICATION_STATUS.QUALIFYING_TEST_FAILED;
+      case APPLICATION_STATUS.PASSED_SCENARIO_TEST:
+        return APPLICATION_STATUS.SCENARIO_TEST_PASSED;
+      case APPLICATION_STATUS.FAILED_SCENARIO_TEST:
+        return APPLICATION_STATUS.SCENARIO_TEST_FAILED;
+      case APPLICATION_STATUS.SUBMITTED_SCENARIO_TEST:
+        return APPLICATION_STATUS.SCENARIO_TEST_FAILED;
+      case APPLICATION_STATUS.PASSED_SIFT:
+        return APPLICATION_STATUS.SIFT_PASSED;
+      case APPLICATION_STATUS.FAILED_SIFT:
+        return APPLICATION_STATUS.SIFT_FAILED;
+      case APPLICATION_STATUS.PASSED_TELEPHONE_ASSESSMENT:
+        return APPLICATION_STATUS.TELEPHONE_ASSESSMENT_PASSED;
+      case APPLICATION_STATUS.FAILED_TELEPHONE_ASSESSMENT:
+        return APPLICATION_STATUS.TELEPHONE_ASSESSMENT_FAILED;
+      case APPLICATION_STATUS.INVITED_TO_SELECTION_DAY:
+        return APPLICATION_STATUS.SHORTLISTING_PASSED;
+      case APPLICATION_STATUS.REJECTED_AS_INELIGIBLE:
+        return APPLICATION_STATUS.REJECTED_INELIGIBLE_ADDITIONAL;
+      case APPLICATION_STATUS.PASSED_SELECTION:
+        return APPLICATION_STATUS.SELECTION_DAY_PASSED;
+      case APPLICATION_STATUS.FAILED_SELECTION:
+        return APPLICATION_STATUS.SELECTION_DAY_FAILED;
+      case APPLICATION_STATUS.REJECTED_BY_CHARACTER:
+        return APPLICATION_STATUS.REJECTED_CHARACTER;
+      case APPLICATION_STATUS.PASSED_BUT_NOT_RECOMMENDED:
+        return APPLICATION_STATUS.PASSED_RECOMMENDED;
+      case APPLICATION_STATUS.APPROVED_FOR_IMMEDIATE_APPOINTMENT:
+        return APPLICATION_STATUS.APPROVED_IMMEDIATE;
+      case APPLICATION_STATUS.APPROVED_FOR_FUTURE_APPOINTMENT:
+        return APPLICATION_STATUS.APPROVED_FUTURE;
+      case APPLICATION_STATUS.SCC_TO_RECONSIDER:
+        return APPLICATION_STATUS.RECONSIDER;
+      case APPLICATION_STATUS.WITHDREW_APPLICATION:
+        return APPLICATION_STATUS.WITHDRAWN;
+      case APPLICATION_STATUS.SUBMITTED_FIRST_TEST:
+      default:
+        return '';
+    }
+  }
+
   /**
    * Get stage and status for the application record based on the version
    * 
@@ -55,104 +123,51 @@ module.exports = (firebase, config, db) => {
     const payload = {};
 
     if (version === 1 && applicationRecord._backups && applicationRecord._backups.processingVersion1) {
-      const { stage, status } = applicationRecord._backups.processingVersion1;
-      if (applicationRecord.stage !== stage) payload.stage = stage;
-      if (applicationRecord.status !== status) payload.status = status;
+      const { stage, status, stageLog, statusLog } = applicationRecord._backups.processingVersion1;
+      if (stage && applicationRecord.stage !== stage) payload.stage = stage;
+      if (stageLog) payload.stageLog = stageLog;
+      if (status && applicationRecord.status !== status) payload.status = status;
+      if (statusLog) payload.statusLog = statusLog;
 
       // remove back up stage and status
       payload['_backups.processingVersion1'] = firebase.firestore.FieldValue.delete();
     } else if (version === 2) {
       // back up stage and status
-      payload['_backups.processingVersion1.stage'] = applicationRecord.stage;
-      payload['_backups.processingVersion1.status'] = applicationRecord.status;
+      payload['_backups.processingVersion1.stage'] = applicationRecord.stage || '';
+      payload['_backups.processingVersion1.stageLog'] = applicationRecord.stageLog || {};
+      payload['_backups.processingVersion1.status'] = applicationRecord.status || '';
+      payload['_backups.processingVersion1.statusLog'] = applicationRecord.statusLog || {};
 
       // update stage
-      switch (applicationRecord.stage) {
-        case EXERCISE_STAGE.APPLIED:
-        case EXERCISE_STAGE.REVIEW:
-          payload.stage = EXERCISE_STAGE.SHORTLISTING;
-          break;
-        case EXERCISE_STAGE.SHORTLISTED:
-          payload.stage = EXERCISE_STAGE.SELECTION;
-          break;
-        case EXERCISE_STAGE.SELECTABLE:
-          payload.stage = EXERCISE_STAGE.SCC;
-          break;
-        case EXERCISE_STAGE.SELECTED:
-        case EXERCISE_STAGE.RECOMMENDED:
-        case EXERCISE_STAGE.HANDOVER:
-          payload.stage = EXERCISE_STAGE.RECOMMENDATION;
-          break;
-        default:
+      payload.stage = convertStageToVersion2(applicationRecord.stage);
+
+      if (applicationRecord.stageLog && Object.keys(applicationRecord.stageLog).length) {
+        payload.stageLog = {};
+        Object.entries(applicationRecord.stageLog)
+          .sort((a, b) => a[1] - b[1]) // sort by timestamp in ascending order
+          .forEach(([stage, timestamp]) => {
+            const newStage = convertStageToVersion2(stage);
+            if (newStage && !payload.stageLog[newStage]) {
+              // only update if the new stage is not already in the stageLog
+              payload.stageLog[newStage] = timestamp;
+            }
+        });
       }
+
       // update status
-      switch (applicationRecord.status) {
-        case APPLICATION_STATUS.PASSED_FIRST_TEST:
-          payload.status = APPLICATION_STATUS.QUALIFYING_TEST_PASSED;
-          break;
-        case APPLICATION_STATUS.FAILED_FIRST_TEST:
-          payload.status = APPLICATION_STATUS.QUALIFYING_TEST_FAILED;
-          break;
-        case APPLICATION_STATUS.NO_TEST_SUBMITTED:
-          payload.status = APPLICATION_STATUS.QUALIFYING_TEST_NOT_SUBMITTED;
-          break;
-        case APPLICATION_STATUS.TEST_SUBMITTED_OVER_TIME:
-          payload.status = APPLICATION_STATUS.QUALIFYING_TEST_FAILED;
-          break;
-        case APPLICATION_STATUS.PASSED_SCENARIO_TEST:
-          payload.status = APPLICATION_STATUS.SCENARIO_TEST_PASSED;
-          break;
-        case APPLICATION_STATUS.FAILED_SCENARIO_TEST:
-          payload.status = APPLICATION_STATUS.SCENARIO_TEST_FAILED;
-          break;
-        case APPLICATION_STATUS.SUBMITTED_SCENARIO_TEST:
-          payload.status = APPLICATION_STATUS.SCENARIO_TEST_FAILED;
-          break;
-        case APPLICATION_STATUS.PASSED_SIFT:
-          payload.status = APPLICATION_STATUS.SIFT_PASSED;
-          break;
-        case APPLICATION_STATUS.FAILED_SIFT:
-          payload.status = APPLICATION_STATUS.SIFT_FAILED;
-          break;
-        case APPLICATION_STATUS.PASSED_TELEPHONE_ASSESSMENT:
-          payload.status = APPLICATION_STATUS.TELEPHONE_ASSESSMENT_PASSED;
-          break;
-        case APPLICATION_STATUS.FAILED_TELEPHONE_ASSESSMENT:
-          payload.status = APPLICATION_STATUS.TELEPHONE_ASSESSMENT_FAILED;
-          break;
-        case APPLICATION_STATUS.INVITED_TO_SELECTION_DAY:
-          payload.status = APPLICATION_STATUS.SHORTLISTING_PASSED;
-          break;
-        case APPLICATION_STATUS.REJECTED_AS_INELIGIBLE:
-          payload.status = APPLICATION_STATUS.REJECTED_INELIGIBLE_ADDITIONAL;
-          break;
-        case APPLICATION_STATUS.PASSED_SELECTION:
-          payload.status = APPLICATION_STATUS.SELECTION_DAY_PASSED;
-          break;
-        case APPLICATION_STATUS.FAILED_SELECTION:
-          payload.status = APPLICATION_STATUS.SELECTION_DAY_FAILED;
-          break;
-        case APPLICATION_STATUS.REJECTED_BY_CHARACTER:
-          payload.status = APPLICATION_STATUS.REJECTED_CHARACTER;
-          break;
-        case APPLICATION_STATUS.PASSED_BUT_NOT_RECOMMENDED:
-          payload.status = APPLICATION_STATUS.PASSED_RECOMMENDED;
-          break;
-        case APPLICATION_STATUS.APPROVED_FOR_IMMEDIATE_APPOINTMENT:
-          payload.status = APPLICATION_STATUS.APPROVED_IMMEDIATE;
-          break;
-        case APPLICATION_STATUS.APPROVED_FOR_FUTURE_APPOINTMENT:
-          payload.status = APPLICATION_STATUS.APPROVED_FUTURE;
-          break;
-        case APPLICATION_STATUS.SCC_TO_RECONSIDER:
-          payload.status = APPLICATION_STATUS.RECONSIDER;
-          break;
-        case APPLICATION_STATUS.WITHDREW_APPLICATION:
-          payload.status = APPLICATION_STATUS.WITHDRAWN;
-          break;
-        case APPLICATION_STATUS.SUBMITTED_FIRST_TEST:
-          break;
-        default:
+      payload.status = convertStatusToVersion2(applicationRecord.status);
+
+      if (applicationRecord.statusLog && Object.keys(applicationRecord.statusLog).length) {
+        payload.statusLog = {};
+        Object.entries(applicationRecord.statusLog)
+          .sort((a, b) => a[1] - b[1]) // sort by timestamp in ascending order
+          .forEach(([status, timestamp]) => {
+            const newStatus = convertStatusToVersion2(status);
+            if (newStatus && !payload.statusLog[newStatus]) {
+              // only update if the new stage is not already in the stageLog
+              payload.statusLog[newStatus] = timestamp;
+            }
+        });
       }
     }
 
