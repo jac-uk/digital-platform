@@ -85,28 +85,6 @@ const reportData = async (firebase, db, applicationRecords, exerciseId) => {
     // get candidate details including RA states from applicationRecords
     const candidateDetails = applicationRecord.candidate || {};
     const reasonableAdjustmentsStates = candidateDetails.reasonableAdjustmentsStates || [];
-    
-    // get most recent reasonable adjustments
-    const otherApplications = await getDocuments(db.collection('applications')
-      .where('userId', '==', application.userId)
-      .where('referenceNumber', '!=', application.referenceNumber)
-      .where('personalDetails.reasonableAdjustments', '==', true)
-      .orderBy('referenceNumber', 'desc')
-      .orderBy('appliedAt', 'desc')
-      .limit(1)
-    );
-
-    let mostRecentApplicationData = {
-      mostRecentExercise: '',
-      mostRecentDetails: '',
-    };
-    if (otherApplications && otherApplications.length) {
-      const mostRecentApplication = otherApplications[0];
-      mostRecentApplicationData = {
-        mostRecentExercise: `${mostRecentApplication.exerciseRef} ${mostRecentApplication.exerciseName}`,
-        mostRecentDetails: mostRecentApplication.personalDetails.reasonableAdjustmentsDetails || null,
-      };
-    }
 
     for (const state of reasonableAdjustmentsStates) {
       data.push({
@@ -118,7 +96,7 @@ const reportData = async (firebase, db, applicationRecords, exerciseId) => {
         status: state.status || null,
         timeAllocation: state.timeAllocation || null,
         note: state.note || null,
-        ...mostRecentApplicationData,
+        mostRecentExercise: application.exerciseRef,
       }); 
     }
   }
@@ -138,7 +116,7 @@ function formatName(application) {
     }
   }
   if (firstName && lastName){
-    name = `${firstName}, ${lastName}`; 
+    name = `${lastName}, ${firstName}`; 
   } 
   return name;
 }
