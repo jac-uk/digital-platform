@@ -20,7 +20,10 @@ module.exports = (firebase, config, db) => {
     const { exerciseId, version } = params;
 
     // get application records from reference numbers
-    const applicationRecords = await getDocuments(db.collection('applicationRecords').where('exercise.id', '==', exerciseId).select('_backup', 'stage', 'status'));
+    const ref = db.collection('applicationRecords')
+      .where('exercise.id', '==', exerciseId)
+      .select('_backups', 'stage', 'stageLog', 'status', 'statusLog');
+    const applicationRecords = await getDocuments(ref);
 
     // construct db commands
     const commands = [];
@@ -131,7 +134,7 @@ module.exports = (firebase, config, db) => {
 
       // remove back up stage and status
       payload['_backups.processingVersion1'] = firebase.firestore.FieldValue.delete();
-    } else if (version === 2) {
+    } else if (version === 2 && (!applicationRecord._backups || !applicationRecord._backups.processingVersion1)) {
       // back up stage and status
       payload['_backups.processingVersion1.stage'] = applicationRecord.stage || '';
       payload['_backups.processingVersion1.stageLog'] = applicationRecord.stageLog || {};
