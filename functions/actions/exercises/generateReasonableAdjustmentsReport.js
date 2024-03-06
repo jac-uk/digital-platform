@@ -7,22 +7,21 @@ module.exports = (firebase, db) => {
 
   async function generateReasonableAdjustmentsReport(exerciseId) {
 
-    // get submitted applications that have reasonable adjustments
-    const applications = await getDocuments(db.collection('applications')
-      .where('exerciseId', '==', exerciseId)
-      .where('status', '==', 'applied')
-      .where('personalDetails.reasonableAdjustments', '==', true)
+    // get application records that have reasonable adjustments
+    const applicationRecords = await getDocuments(db.collection('applicationRecords')
+      .where('exercise.id', '==', exerciseId)
+      .where('candidate.reasonableAdjustments', '==', true)
     );
 
     // get report headers
-    const headers = reportHeaders();
+    const headers = reportHeaders(applicationRecords);
 
     // get report rows
-    const rows = await reportData(firebase, db, applications);
+    const rows = await reportData(firebase, db, applicationRecords, exerciseId);
 
     // construct the report document
     const report = {
-      totalApplications: applications.length,
+      totalApplications: applicationRecords.length,
       createdAt: firebase.firestore.Timestamp.fromDate(new Date()),
       headers,
       rows,
@@ -47,9 +46,11 @@ const reportHeaders = () => {
     { title: 'Email', ref: 'email' },
     { title: 'Phone number', ref: 'phone' },
     { title: 'Details provided by candidate', ref: 'details' },
+    { title: 'RA applied to', ref: 'reason' },
     { title: 'Approval Status', ref: 'status' },
     { title: 'RA allocated', ref: 'timeAllocation' },
     { title: 'Describe RA given', ref: 'note' },
+    { title: 'Most Recent Exercise', ref: 'mostRecentExercise' },
   ];
 };
 
@@ -58,12 +59,33 @@ const reportHeaders = () => {
  *
  * @param {firebase} firebase
  * @param {db} db
- * @param {array} applications
+ * @param {array} applicationRecords
+ * @param {string} exerciseId
+ *  
  * @returns {array}
  */
-const reportData = async (firebase, db, applications) => {
+const reportData = async (firebase, db, applicationRecords, exerciseId) => {
   const data = [];
-  for (const application of applications) {
+  // get applications for personal details
+  const applications = await getDocuments(db.collection('applications')
+    .where('exerciseId', '==', exerciseId)
+    .where('personalDetails.reasonableAdjustments', '==', true)
+  );
+
+  const idToApplication = applications.reduce((acc, cur) => {
+    acc[cur.id] = cur;
+    return acc;
+  }, {});
+
+  for (const applicationRecord of applicationRecords) {
+    // get personal details from application
+    const application = idToApplication[applicationRecord.id] || {};
+    const personalDetails = application.personalDetails || {};
+
+    // get candidate details including RA states from applicationRecords
+    const candidateDetails = applicationRecord.candidate || {};
+    const reasonableAdjustmentsStates = candidateDetails.reasonableAdjustmentsStates || [];
+    
     // get most recent reasonable adjustments
     const otherApplications = await getDocuments(db.collection('applications')
       .where('userId', '==', application.userId)
@@ -82,23 +104,23 @@ const reportData = async (firebase, db, applications) => {
       const mostRecentApplication = otherApplications[0];
       mostRecentApplicationData = {
         mostRecentExercise: `${mostRecentApplication.exerciseRef} ${mostRecentApplication.exerciseName}`,
-        mostRecentDetails: mostRecentApplication.personalDetails.reasonableAdjustmentsDetails,
+        mostRecentDetails: mostRecentApplication.personalDetails.reasonableAdjustmentsDetails || null,
       };
     }
 
-    const personalDetails = application.personalDetails || {};
-    const reasonableAdjustmentsState = personalDetails.reasonableAdjustmentsState || {};
-
-    data.push({
-      name: formatName(application),
-      email: personalDetails.email || null,
-      phone: personalDetails.phone || null,
-      details: personalDetails.reasonableAdjustmentsDetails || null,
-      status: reasonableAdjustmentsState.status || null,
-      timeAllocation: reasonableAdjustmentsState.timeAllocation || null,
-      note: reasonableAdjustmentsState.note || null,
-      ...mostRecentApplicationData,
-    });
+    for (const state of reasonableAdjustmentsStates) {
+      data.push({
+        name: formatName(application),
+        email: personalDetails.email || null,
+        phone: personalDetails.phone || null,
+        details: candidateDetails.reasonableAdjustmentsDetails || null,
+        reason: state.reason || null,
+        status: state.status || null,
+        timeAllocation: state.timeAllocation || null,
+        note: state.note || null,
+        ...mostRecentApplicationData,
+      }); 
+    }
   }
 
   return data;
