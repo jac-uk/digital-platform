@@ -85,18 +85,38 @@ const reportData = async (firebase, db, applications) => {
         mostRecentDetails: mostRecentApplication.personalDetails.reasonableAdjustmentsDetails,
       };
     }
-    
+
+    const personalDetails = application.personalDetails || {};
+    const reasonableAdjustmentsState = personalDetails.reasonableAdjustmentsState || {};
+
     data.push({
-      name: application.personalDetails.fullName || null,
-      email: application.personalDetails.email || null,
-      phone: application.personalDetails.phone || null,
-      details: application.personalDetails.reasonableAdjustmentsDetails || null,
-      status: application.personalDetails.reasonableAdjustmentsState.status || null,
-      timeAllocation: application.personalDetails.reasonableAdjustmentsState.timeAllocation || null,
-      note: application.personalDetails.reasonableAdjustmentsState.note || null,
+      name: formatName(application),
+      email: personalDetails.email || null,
+      phone: personalDetails.phone || null,
+      details: personalDetails.reasonableAdjustmentsDetails || null,
+      status: reasonableAdjustmentsState.status || null,
+      timeAllocation: reasonableAdjustmentsState.timeAllocation || null,
+      note: reasonableAdjustmentsState.note || null,
       ...mostRecentApplicationData,
     });
   }
 
   return data;
 };
+
+function formatName(application) {
+  let name = null;
+  let firstName = application.personalDetails.firstName || null;
+  let lastName = application.personalDetails.lastName || null;
+  if ((!firstName || !lastName) && application.personalDetails.fullName) {
+    const nameParts = application.personalDetails.fullName.split(' ');
+    if (nameParts.length) {
+      firstName = nameParts[0];
+      lastName = nameParts.slice(1).join(' ');
+    }
+  }
+  if (firstName && lastName){
+    name = `${firstName}, ${lastName}`; 
+  } 
+  return name;
+}
