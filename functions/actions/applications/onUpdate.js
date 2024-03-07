@@ -147,6 +147,7 @@ module.exports = (config, firebase, db, auth) => {
         // Update application record
         await db.collection('applicationRecords').doc(`${applicationId}`).update({
           _search: searchData,
+          'candidate.fullName': dataAfter.personalDetails.fullName,
         });
       }
 
