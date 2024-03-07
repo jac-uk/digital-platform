@@ -99,7 +99,7 @@ const reportData = (exercise, applications) => {
     maxJudicialExperienceNum = judicialExperiences.length > maxJudicialExperienceNum ? judicialExperiences.length : maxJudicialExperienceNum;
     maxNonJudicialExperienceNum = nonJudicialExperiences.length > maxNonJudicialExperienceNum ? nonJudicialExperiences.length : maxNonJudicialExperienceNum;
 
-    const res = {
+    let res = {
       firstName: personalDetails.firstName || null,
       lastName: personalDetails.lastName || null,
       suffix: personalDetails.suffix || null,
@@ -110,7 +110,7 @@ const reportData = (exercise, applications) => {
 
     if (exercise._applicationVersion < 3) {
       // only show these fields for application version 2 and below
-      res.push(...getFeePaidOrSalariedData(application));
+      res = { ...res, ...getFeePaidOrSalariedData(application) };
     }
 
     return res;
