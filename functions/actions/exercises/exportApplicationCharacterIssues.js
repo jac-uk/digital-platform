@@ -102,17 +102,12 @@ module.exports = (firebase, db) => {
     }
 
     // Create character issues document
-    const fileId = await drive.createFile(filename, {
+    await drive.createFile(filename, {
       folderId: folderId,
       sourceType: drive.MIME_TYPE.HTML,
       sourceContent: getHtmlCharacterIssues(exercise, applicationRecords),
       destinationType: drive.MIME_TYPE.DOCUMENT,
     });
-    console.log('fileId', fileId);
-
-    if (fileId) {
-      return await drive.exportFile(fileId, 'application/vnd.openxmlformats-officedocument.wordprocessingml.document');
-    }
 
     // return the path of the file to the caller
     return {
@@ -495,7 +490,6 @@ module.exports = (firebase, db) => {
     addHtmlCharacterIssues_AppointmentsVacancyRequest(writer);
     writer.addPageBreak();
     addHtmlCharacterIssues_DiversityStatistics(writer);
-    writer.addPageBreak();
 
     return writer.toString();
 
