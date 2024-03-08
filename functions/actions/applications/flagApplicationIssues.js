@@ -226,9 +226,9 @@ module.exports = (firebase, config, db) => {
             for (let i = 0, len = experienceSinceFirstQualification.length; i < len; ++i) {
               // @TODO look for any un-explained gaps > 1 year
               const el = experienceSinceFirstQualification[i];
-              let startDate = getDate(el.startDate) < latestValidEndDate ? latestValidEndDate : getDate(el.startDate);
+              const startDate = getDate(el.startDate) < latestValidEndDate ? latestValidEndDate : getDate(el.startDate);
               // subtract 1 month from the total calculated
-              startDate = startDate.setMonth(startDate.getMonth() + 1);
+              startDate.setMonth(startDate.getMonth() + 1);
               const endDate = el.endDate ? getDate(el.endDate) : getDate(exercise.characterAndSCCDate);
               if (el.tasks && el.tasks.length > 0) {
                 if (el.tasks.indexOf('other') >= 0) {
