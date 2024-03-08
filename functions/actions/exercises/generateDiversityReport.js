@@ -278,6 +278,7 @@ const ethnicityStats = (applications) => {
         case 'irish':
         case 'gypsy-irish-traveller':
         case 'other-white':
+        case 'roma':
           stats.white.total += 1;
           stats.declaration.total += 1;
           break;
