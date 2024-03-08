@@ -156,7 +156,6 @@ module.exports = (firebase, db) => {
       sourceContent: getHtmlCharacterAnnexReport(exercise, applicationRecords),
       destinationType: drive.MIME_TYPE.DOCUMENT,
     });
-    console.log('fileId', fileId);
 
     if (fileId) {
       return await drive.exportFile(fileId, 'application/vnd.openxmlformats-officedocument.wordprocessingml.document');
