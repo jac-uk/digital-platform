@@ -14,7 +14,7 @@ module.exports = (firebase, db) => {
     );
 
     // get report headers
-    const headers = reportHeaders(applicationRecords);
+    const headers = reportHeaders();
 
     // get report rows
     const rows = await reportData(firebase, db, applicationRecords, exerciseId);
