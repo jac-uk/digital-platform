@@ -1525,7 +1525,7 @@ REPRODUCE THIS TABLE AS APPROPRIATE.<span class="red">&gt;</span></b>
   }
 
   /**
-   * Generates the Character Annex report, in HTML format
+   * Generate the Character Annex report, in HTML format
    *
    * @param {*} exercise
    * @param {*} applicationRecords
@@ -1537,8 +1537,8 @@ REPRODUCE THIS TABLE AS APPROPRIATE.<span class="red">&gt;</span></b>
     return writer.toString();
   }
 
-    /**
-   * Adds the main body content of the Character Issues report
+  /**
+   * Add the main body content of the Character Issues report
    *
    * @param {htmlWriter} writer
    * @param {*} exercise
