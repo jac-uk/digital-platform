@@ -72,7 +72,7 @@ module.exports = (firebase, db) => {
 
     // generate the export (to Google Doc)
     if (format === 'googledoc') {
-      return await exportToGoogleDoc(exercise, applicationRecords);
+      return exportToGoogleDoc(exercise, applicationRecords);
     } else if (format === 'annex') {
       return await exportCharacterAnnexReport(exercise, applicationRecords);
     }
