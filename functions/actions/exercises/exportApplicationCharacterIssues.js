@@ -86,7 +86,7 @@ module.exports = (firebase, db) => {
 
     // generate a filename for the document we are going to create
     const timestamp = (new Date()).toISOString();
-    const filename = exercise.referenceNumber + '_Character Annex Report_' + timestamp;
+    const filename = exercise.referenceNumber + '_' + timestamp;
 
     // make sure a destination folder exists to create the file in
     const folderName = 'Character Export';
