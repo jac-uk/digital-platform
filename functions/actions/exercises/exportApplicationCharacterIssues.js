@@ -130,9 +130,9 @@ module.exports = (firebase, db) => {
   /**
    * Export character annex report to a Google Docs file and return the base64 encoded file
    *
-   * @param {object} exercise
-   * @param {object} applicationRecords
-   * @returns
+   * @param   {object} exercise
+   * @param   {object} applicationRecords
+   * @returns {string} base64 encoded file
    */
   async function exportCharacterAnnexReport(exercise, applicationRecords) {
     // generate a filename for the document we are going to create
