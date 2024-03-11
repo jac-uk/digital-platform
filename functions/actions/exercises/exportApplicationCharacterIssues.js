@@ -12,6 +12,35 @@ module.exports = (firebase, db) => {
     exportApplicationCharacterIssues,
   };
 
+  /**
+   * Initialise the Google Drive service and return the folder ID for the specified folder
+   * 
+   * @param   {string} folderName 
+   * @returns {string} The folder ID
+   */
+  async function initialiseGoogleDriveFolder(folderName = 'Character Export') {
+    // get drive service
+    await drive.login();
+
+    // get settings and apply them
+    const settings = await getDocument(db.collection('settings').doc('services'));
+    drive.setDriveId(settings.google.driveId);
+
+    // make sure a destination folder exists to create the file in
+    const folders = await drive.listFolders();
+    let folderId = 0;
+    folders.forEach((v, i) => {
+      if (v.name === folderName) {
+        folderId = v.id;
+      }
+    });
+    if (folderId === 0) { // folder doesn't exist so create it
+      folderId = await drive.createFolder(folderName);
+    }
+
+    return folderId;
+  }
+
   async function exportApplicationCharacterIssues(exerciseId, stage, status, format) {
 
     // get the exercise
@@ -76,34 +105,16 @@ module.exports = (firebase, db) => {
    * @returns
    */
   async function exportToGoogleDoc(exercise, applicationRecords) {
-
-    // get drive service
-    await drive.login();
-
-    // get settings and apply them
-    const settings = await getDocument(db.collection('settings').doc('services'));
-    drive.setDriveId(settings.google.driveId);
-
     // generate a filename for the document we are going to create
     const timestamp = (new Date()).toISOString();
     const filename = exercise.referenceNumber + '_' + timestamp;
 
-    // make sure a destination folder exists to create the file in
-    const folderName = 'Character Export';
-    const folders = await drive.listFolders();
-    let folderId = 0;
-    folders.forEach((v, i) => {
-      if (v.name === folderName) {
-        folderId = v.id;
-      }
-    });
-    if (folderId === 0) { // folder doesn't exist so create it
-      folderId = await drive.createFolder(folderName);
-    }
+    // initialise the Google Drive folder
+    const folderId = await initialiseGoogleDriveFolder('Character Export');
 
     // Create character issues document
     await drive.createFile(filename, {
-      folderId: folderId,
+      folderId,
       sourceType: drive.MIME_TYPE.HTML,
       sourceContent: getHtmlCharacterIssues(exercise, applicationRecords),
       destinationType: drive.MIME_TYPE.DOCUMENT,
@@ -117,41 +128,23 @@ module.exports = (firebase, db) => {
   }
 
   /**
-   * Exports character annex report to a Google Docs file
+   * Export character annex report to a Google Docs file and return the base64 encoded file
    *
    * @param {object} exercise
    * @param {object} applicationRecords
    * @returns
    */
   async function exportCharacterAnnexReport(exercise, applicationRecords) {
-
-    // get drive service
-    await drive.login();
-
-    // get settings and apply them
-    const settings = await getDocument(db.collection('settings').doc('services'));
-    drive.setDriveId(settings.google.driveId);
-
     // generate a filename for the document we are going to create
     const timestamp = (new Date()).toISOString();
     const filename = exercise.referenceNumber + '_Character Annex Report_' + timestamp;
 
-    // make sure a destination folder exists to create the file in
-    const folderName = 'Character Export';
-    const folders = await drive.listFolders();
-    let folderId = 0;
-    folders.forEach((v, i) => {
-      if (v.name === folderName) {
-        folderId = v.id;
-      }
-    });
-    if (folderId === 0) { // folder doesn't exist so create it
-      folderId = await drive.createFolder(folderName);
-    }
+    // initialise the Google Drive folder
+    const folderId = await initialiseGoogleDriveFolder('Character Export');
 
     // Create character annex report document
     const fileId = await drive.createFile(filename, {
-      folderId: folderId,
+      folderId,
       sourceType: drive.MIME_TYPE.HTML,
       sourceContent: getHtmlCharacterAnnexReport(exercise, applicationRecords),
       destinationType: drive.MIME_TYPE.DOCUMENT,
