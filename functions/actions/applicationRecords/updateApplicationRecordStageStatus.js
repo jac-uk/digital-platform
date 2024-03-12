@@ -7,6 +7,8 @@ module.exports = (firebase, config, db) => {
     updateApplicationRecordStageStatus,
     getApplicationRecordStageStatus,
     getExerciseApplicationRecords,
+    convertStageToVersion2,
+    convertStatusToVersion2
   };
 
   /**
@@ -66,8 +68,8 @@ module.exports = (firebase, config, db) => {
       case EXERCISE_STAGE.SHORTLISTED:
         return EXERCISE_STAGE.SELECTION;
       case EXERCISE_STAGE.SELECTABLE:
-        return EXERCISE_STAGE.SCC;
       case EXERCISE_STAGE.SELECTED:
+        return EXERCISE_STAGE.SCC;
       case EXERCISE_STAGE.RECOMMENDED:
       case EXERCISE_STAGE.HANDOVER:
         return EXERCISE_STAGE.RECOMMENDATION;
@@ -111,7 +113,7 @@ module.exports = (firebase, config, db) => {
       case APPLICATION_STATUS.REJECTED_BY_CHARACTER:
         return APPLICATION_STATUS.REJECTED_CHARACTER;
       case APPLICATION_STATUS.PASSED_BUT_NOT_RECOMMENDED:
-        return APPLICATION_STATUS.PASSED_RECOMMENDED;
+        return APPLICATION_STATUS.PASSED_NOT_RECOMMENDED;
       case APPLICATION_STATUS.APPROVED_FOR_IMMEDIATE_APPOINTMENT:
         return APPLICATION_STATUS.APPROVED_IMMEDIATE;
       case APPLICATION_STATUS.APPROVED_FOR_FUTURE_APPOINTMENT:
