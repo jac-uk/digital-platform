@@ -8,7 +8,7 @@ module.exports = (firebase, config, db) => {
     getApplicationRecordStageStatus,
     getExerciseApplicationRecords,
     convertStageToVersion2,
-    convertStatusToVersion2
+    convertStatusToVersion2,
   };
 
   /**
