@@ -27,6 +27,7 @@ module.exports = () => {
     createFile,
     deleteFile,
     copyFile,
+    exportFile,
     addPermission,
     getMimeType,
     MIME_TYPE,
@@ -146,6 +147,29 @@ module.exports = () => {
 
   function deleteFolder(folderId) {
     return deleteFile(folderId);
+  }
+
+  /**
+   * Export a file to base64 string
+   * 
+   * @param {string} fileId 
+   * @param {string} mimeType 
+   * @returns 
+   */
+  async function exportFile(fileId, mimeType) {
+    try {
+      const res = await drive.files.export({
+        fileId: fileId,
+        mimeType: mimeType,
+      }, {
+        responseType: 'arraybuffer',
+      });
+      if (!res.data) return null;
+      return Buffer.from(res.data).toString('base64');
+    } catch (error) {
+      console.error(error);
+      return null;
+    }
   }
 
   async function addPermission(fileId, permission) {
