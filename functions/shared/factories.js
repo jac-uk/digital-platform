@@ -595,6 +595,7 @@ module.exports = (CONSTANTS) => {
       locationQuestion: null,
       locationQuestionAnswers: null,
       locationQuestionType: null,
+      locationWelsh: null,
       memberships: null,
       name: null,
       noSalaryDetails: null,
