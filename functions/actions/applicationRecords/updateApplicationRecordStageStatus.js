@@ -66,11 +66,12 @@ module.exports = (firebase, config, db) => {
       case EXERCISE_STAGE.REVIEW:
         return EXERCISE_STAGE.SHORTLISTING;
       case EXERCISE_STAGE.SHORTLISTED:
-        return EXERCISE_STAGE.SELECTION;
+        return EXERCISE_STAGE.SHORTLISTING;
       case EXERCISE_STAGE.SELECTABLE:
       case EXERCISE_STAGE.SELECTED:
-        return EXERCISE_STAGE.SCC;
+        return EXERCISE_STAGE.SELECTION;
       case EXERCISE_STAGE.RECOMMENDED:
+        return EXERCISE_STAGE.SCC;
       case EXERCISE_STAGE.HANDOVER:
         return EXERCISE_STAGE.RECOMMENDATION;
       default:
