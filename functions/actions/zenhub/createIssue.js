@@ -45,6 +45,8 @@ module.exports = (config, firebase, db) => {
     payload += `.\nCriticality: ${data.criticality}`;
     payload += `.\nDescription: ${data.issue}`;
     payload += `.\nExpectation: ${data.expectation}`;
+    payload += `.\nPlatform: ${data.platform}`;
+    payload += `.\nEnvironment: ${data.environment}`;
     payload += `.\nBrowser: ${data.browser}`;
     payload += `.\nOS: ${data.os}`;
     payload += `.\nContact Details: ${data.contactDetails}`;
