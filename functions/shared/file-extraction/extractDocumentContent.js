@@ -6,8 +6,14 @@ module.exports = (config, firebase) => {
     extractDocumentContent,
   };
 
-  // Function to extract and compare document content
-  async function extractDocumentContent(templatePath, documentPath, sectionsInt) {
+  /*
+   * Extract and compare document content
+   * 
+   * @param {string} templatePath - The path to the template file in the storage
+   * @param {string} documentPath - The path to the document file in the storage
+   * @param {array}  questions    - List of questions used to extract the answers from the document
+   */
+  async function extractDocumentContent(templatePath, documentPath, questions) {
     const bucket = firebase.storage().bucket(config.STORAGE_URL);
   
     try {
@@ -28,7 +34,7 @@ module.exports = (config, firebase) => {
       const extractedDocumentContent = documentResult.value;
   
       // Return changes between template and document content
-      return returnChanges(extractedTemplateContent, extractedDocumentContent);
+      return returnChanges(extractedTemplateContent, extractedDocumentContent, questions);
     } catch (error) {
       // Handle errors and log them
       console.error('Error:', error);
@@ -36,11 +42,19 @@ module.exports = (config, firebase) => {
     }
   }
 
-  function returnChanges(original, modified) {
+  function returnChanges(original, modified, questions) {
     // Split the strings into paragraphs and compare them
     const originalParagraphs = original.split('\n\n');
-    const modifiedParagraphs = modified.split('\n\n').filter(paragraph => {
+    const modifiedParagraphs = modified.split('\n\n')
+      .map(paragraph => {
+        const value = paragraph ? paragraph.trim() : '';
+        if (questions.includes(value)) return value;
+        return paragraph;
+      })
+      .filter(paragraph => {
       if (!paragraph.trim()) return false;
+      // Keep questions in the list
+      if (questions.includes(paragraph.trim())) return true;
       const index = originalParagraphs.indexOf(paragraph);
       if (index > -1) {
         // Remove the paragraph from the original list to avoid duplicates
@@ -50,7 +64,23 @@ module.exports = (config, firebase) => {
       return true;
     });
 
-    return modifiedParagraphs;
+    if (!questions || !questions.length) return modifiedParagraphs;
+
+    const changes = []; // Store final changes
+    for (let i = 0; i < questions.length; i++) {
+      const question = questions[i];
+      const startIndex = modifiedParagraphs.indexOf(question); // Find the question in the modified list
+      const endIndex = modifiedParagraphs.indexOf(questions[i + 1]); // Find the next question in the modified list
+      if (startIndex === -1) {
+        changes.push('');
+        continue;
+      }
+      // Extract the paragraphs between the question and the next question
+      const paragraphs = endIndex === -1 ? modifiedParagraphs.slice(startIndex + 1) : modifiedParagraphs.slice(startIndex + 1, endIndex);
+      changes.push(paragraphs.join('\n'));
+    }
+
+    return changes;
   }
-  
+
 };

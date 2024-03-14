@@ -223,6 +223,25 @@ const lookup = (value) => {
       'criticalAnalysis': 'Critical Analysis Test',
       'situationalJudgement': 'Situational Judgement Test',
       'empTiebreaker': 'EMP Tie-breaker',
+
+      // character issues status
+      'proceed': 'Proceed',
+      'reject': 'Reject',
+      'reject-non-declaration': 'Reject Non-Declaration',
+      'discuss': 'Discuss',
+
+      // character issues offence category
+      'singleCriminalOffence': 'Single criminal offence',
+      'multipleCriminalOffences': 'Multiple criminal offences',
+      'singleMotoringOffence': 'Single motoring offence',
+      'multipleMotoringOffences': 'Multiple motoring offences',
+      'singleFinancialOffence': 'Single financial offence',
+      'multipleFinancialOffences': 'Multiple financial offences',
+      'singleProfessionalConduct': 'Single professional conduct',
+      'multipleProfessionalConducts': 'Multiple professional conducts',
+      'singleOtherMatter': 'Single other matter',
+      'multipleOtherMatters': 'Multiple other matters',
+      'mixed': 'Mixed',
     };
 
     return lookup[value] || value;

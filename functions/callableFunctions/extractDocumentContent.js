@@ -15,7 +15,7 @@ module.exports = functions.region('europe-west2').https.onCall(async (data, cont
   }
 
   // generate the report
-  const result = await extractDocumentContent(data.templatePath, data.documentPath);
+  const result = await extractDocumentContent(data.templatePath, data.documentPath, data.questions);
 
   // log an event
   // const exercise = await getDocument(db.collection('exercises').doc(data.exerciseId));

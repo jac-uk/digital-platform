@@ -1117,6 +1117,28 @@
           "order": "ASCENDING"
         },
         {
+          "fieldPath": "flags.eligibilityIssuesMet",
+          "order": "ASCENDING"
+        },
+        {
+          "fieldPath": "candidate.fullName",
+          "order": "ASCENDING"
+        }
+      ]
+    },
+    {
+      "collectionGroup": "applicationRecords",
+      "queryScope": "COLLECTION",
+      "fields": [
+        {
+          "fieldPath": "exercise.id",
+          "order": "ASCENDING"
+        },
+        {
+          "fieldPath": "flags.eligibilityIssues",
+          "order": "ASCENDING"
+        },
+        {
           "fieldPath": "personalDetails.fullName",
           "order": "ASCENDING"
         }
@@ -2105,6 +2127,28 @@
       "queryScope": "COLLECTION",
       "fields": [
         {
+          "fieldPath": "_applicationVersion",
+          "order": "ASCENDING"
+        },
+        {
+          "fieldPath": "published",
+          "order": "ASCENDING"
+        },
+        {
+          "fieldPath": "state",
+          "order": "ASCENDING"
+        },
+        {
+          "fieldPath": "applicationOpenDate",
+          "order": "ASCENDING"
+        }
+      ]
+    },
+    {
+      "collectionGroup": "exercises",
+      "queryScope": "COLLECTION",
+      "fields": [
+        {
           "fieldPath": "_approval.status",
           "order": "ASCENDING"
         },
@@ -2444,6 +2488,24 @@
       "fields": [
         {
           "fieldPath": "_approval.status",
+          "order": "ASCENDING"
+        },
+        {
+          "fieldPath": "state",
+          "order": "ASCENDING"
+        },
+        {
+          "fieldPath": "referenceNumber",
+          "order": "DESCENDING"
+        }
+      ]
+    },
+    {
+      "collectionGroup": "exercises",
+      "queryScope": "COLLECTION",
+      "fields": [
+        {
+          "fieldPath": "_lateApplicationRequests",
           "order": "ASCENDING"
         },
         {

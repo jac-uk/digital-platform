@@ -5,7 +5,7 @@
  * which breaks the comparison between the two when showing changes during exercise approval process.
  * The vacancy fields need to adopt the value in the exercise.
  * The fields are:
- * aboutTheRoleWelsh, aSCApply, inviteOnly, previousJudicialExperienceApply, roleSummaryWelsh, welshPosts, welshRequirement
+ * aboutTheRoleWelsh, aSCApply, inviteOnly, previousJudicialExperienceApply, roleSummaryWelsh, welshPosts, welshRequirement, locationWelsh
  * 
  * Run with: > npm run local:nodeScript temp/syncExerciseAndVacancyForCompare
  */
@@ -16,7 +16,7 @@ const { objectHasNestedProperty } = require('../../functions/shared/helpers.js')
 
 async function updateVacancies() {
   const commands = [];
-  const exercises = await getDocuments(db.collection('exercises').select('welshRequirement', 'inviteOnly', 'previousJudicialExperienceApply', 'welshPosts', 'aboutTheRoleWelsh', 'aSCApply', 'roleSummaryWelsh'));
+  const exercises = await getDocuments(db.collection('exercises').select('welshRequirement', 'inviteOnly', 'previousJudicialExperienceApply', 'welshPosts', 'aboutTheRoleWelsh', 'aSCApply', 'roleSummaryWelsh', 'locationWelsh'));
   for (let i = 0, len = exercises.length; i < len; ++i) {
     const exercise = exercises[i];
 
@@ -28,8 +28,9 @@ async function updateVacancies() {
     const hasATRW = objectHasNestedProperty(exercise, 'aboutTheRoleWelsh');
     const hasAA = objectHasNestedProperty(exercise, 'aSCApply');
     const hasRSW = objectHasNestedProperty(exercise, 'roleSummaryWelsh');
+    const hasLW = objectHasNestedProperty(exercise, 'locationWelsh');
 
-    if (hasWR || hasIO || hasPJEA || hasWP || hasATRW || hasAA || hasRSW) {
+    if (hasWR || hasIO || hasPJEA || hasWP || hasATRW || hasAA || hasRSW || hasLW) {
       const vacancy = await getDocument(db.doc(`vacancies/${exercise.id}`));
       if (vacancy) {
         console.log(`vacancy id: ${vacancy.id}`);
@@ -56,6 +57,9 @@ async function updateVacancies() {
         }
         if (hasRSW) {
           data.roleSummaryWelsh = exercise.roleSummaryWelsh;
+        }
+        if (hasLW) {
+          data.locationWelsh = exercise.locationWelsh;
         }
   
         commands.push({

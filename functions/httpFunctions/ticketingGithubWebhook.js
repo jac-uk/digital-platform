@@ -11,12 +11,14 @@ const { validateWebhookRequest } = require('../shared/zenhub')(config);
 
 module.exports = functions.region('europe-west2').https.onRequest(async (req, res) => {
 
+  // Ensure config var is set for communicating with slack
   if (!Object.prototype.hasOwnProperty.call(config, 'SLACK_TICKETING_APP_BOT_TOKEN')) {
     console.error('The config is missing a SLACK_TICKETING_APP_BOT_TOKEN');
     res.status(422).send('The application isnt configured correctly');
     return;
   }
 
+  // Ensure config var is set for communicating with slack
   if (!Object.prototype.hasOwnProperty.call(config, 'SLACK_TICKETING_APP_CHANNEL_ID')) {
     console.error('The config is missing a SLACK_TICKETING_APP_CHANNEL_ID');
     res.status(422).send('The application isnt configured correctly');
@@ -71,8 +73,9 @@ module.exports = functions.region('europe-west2').https.onRequest(async (req, re
     const issueTitle = req.body.issue.title;
 
     // Extract the bugReport referenceNUmber from the github issue title
-    // The test method check if the string contains the pattern 'BR_' followed by 6 digits
-    const regex = /BR_\d{6}/;
+    // The test method check if the string contains the pattern:
+    // BR_<platform>_<2 letter environment>_<timestamp or numerical count>
+    const regex = /^BR_[A-Za-z]+_[A-Za-z]{2}_(\d{6}|\d{13})$/;
 
     // Use the match method to extract the matching string
     const matchResult = issueTitle.match(regex);
