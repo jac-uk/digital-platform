@@ -1,5 +1,6 @@
 const { getDocument, getDocuments } = require('../../shared/helpers');
 const { applicationOpenDatePost01042023 } = require('../../shared/converters/helpers');
+const { availableStages } = require('../../shared/exerciseHelper');
 
 /**
  * For the diversity reports:
@@ -56,37 +57,23 @@ module.exports = (firebase, db) => {
       applied: diversityReport(applications, applicationRecords, exercise),
     };
 
-
-    if (applicationRecords.length) {
-      const handoverApplicationRecords = applicationRecords.filter(doc => doc.stage === 'handover');
-      const handoverIds = handoverApplicationRecords.map(doc => doc.id);
-      const handoverApplications = applications.filter(doc => handoverIds.indexOf(doc.id) >= 0);
-
-      const recommendedApplicationRecords = applicationRecords.filter(doc => doc.stage === 'recommended');
-      const recommendedIds = recommendedApplicationRecords.map(doc => doc.id);
-      const recommendedApplications = handoverApplications.concat(applications.filter(doc => recommendedIds.indexOf(doc.id) >= 0));
-
-      const selectedApplicationRecords = applicationRecords.filter(doc => {
-        if (exercise._processingVersion >= 2) {
-          return doc.stage === 'selectable';
+    const stages = availableStages(exercise);
+    let applicationRecordsByPreviousStage = [];
+    if (stages.length && applicationRecords.length) {
+      for (let i = stages.length - 1; i >= 0; --i) {
+        const stage = stages[i];
+        const applicationRecordsByStage = applicationRecords.filter(doc => doc.stage === stage);
+        const applicationIdsByStage = applicationRecordsByStage.map(doc => doc.id);
+        let applicationsByStage = applications.filter(doc => applicationIdsByStage.indexOf(doc.id) >= 0);
+        if (applicationRecordsByPreviousStage.length) {
+          applicationsByStage = applicationsByStage.concat(applicationRecordsByPreviousStage);
         }
-        return doc.stage === 'selected';
-      });
-      const selectedIds = selectedApplicationRecords.map(doc => doc.id);
-      const selectedApplications = recommendedApplications.concat(applications.filter(doc => selectedIds.indexOf(doc.id) >= 0));
-
-      const shortlistedApplicationRecords = applicationRecords.filter(doc => doc.stage === 'shortlisted');
-      const shortlistedIds = shortlistedApplicationRecords.map(doc => doc.id);
-      const shortlistedApplications = selectedApplications.concat(applications.filter(doc => shortlistedIds.indexOf(doc.id) >= 0));
-
-      report.handover = diversityReport(handoverApplications, handoverApplicationRecords, exercise);
-      report.recommended = diversityReport(recommendedApplications, recommendedApplicationRecords, exercise);
-      if (exercise._processingVersion >= 2) {
-        report.selectable = diversityReport(selectedApplications, selectedApplicationRecords, exercise);
-      } else {
-        report.selected = diversityReport(selectedApplications, selectedApplicationRecords, exercise);
+        report[stage] = diversityReport(applicationsByStage, applicationRecordsByStage, exercise);
+        
+        if (i !== stages.length - 1) {
+          applicationRecordsByPreviousStage = applicationsByStage;
+        }
       }
-      report.shortlisted = diversityReport(shortlistedApplications, shortlistedApplicationRecords, exercise);
     }
     await db.collection('exercises').doc(exerciseId).collection('reports').doc('diversity').set(report);
 
