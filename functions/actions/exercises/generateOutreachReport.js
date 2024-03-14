@@ -1,4 +1,6 @@
 const { getDocument, getDocuments, objectHasNestedProperty } = require('../../shared/helpers');
+const { availableStages } = require('../../shared/exerciseHelper');
+
 const ignoreKeys = ['total', 'declaration', 'preferNotToSay', 'noAnswer'];
 
 module.exports = (firebase, db) => {
@@ -27,50 +29,18 @@ module.exports = (firebase, db) => {
       createdAt: firebase.firestore.Timestamp.fromDate(new Date()),
       applied: outreachReport(applications),
     };
-    if (applications.length) {
 
-      const handoverApplications = [];
-      const recommendedApplications = [];
-      const selectedApplications = [];
-      const selectableApplications = [];
-      const shortlistedApplications = [];
-
-      for (let i = 0, len = applications.length; i < len; ++i) {
-        const application = applications[i];
-        const hasStageAndStatus = objectHasNestedProperty(application, '_processing.stage') && objectHasNestedProperty(application, '_processing.status');
-        if (hasStageAndStatus) {
-          switch(application._processing.stage) {
-            case 'handover':
-              handoverApplications.push(application);
-              break;
-            case 'recommended':
-              recommendedApplications.push(application);
-              break;
-            case 'selected':
-              selectedApplications.push(application);
-              break;
-            case 'selectable':
-              selectableApplications.push(application);
-              break;
-            case 'shortlisted':
-              shortlistedApplications.push(application);
-              break;
-            default:
-              break;
-          }
-        }
-
+    const stages = availableStages(exercise);
+    if (stages.length && applications.length) {
+      for (let i = stages.length - 1; i >= 0; --i) {
+        const stage = stages[i];
+        const applicationsByStage = applications.filter(application => 
+          objectHasNestedProperty(application, '_processing.stage') &&
+          objectHasNestedProperty(application, '_processing.status') && 
+          application._processing.stage === stage
+        );
+        report[stage] = outreachReport(applicationsByStage);
       }
-      report.handover = outreachReport(handoverApplications);
-      report.recommended = outreachReport(recommendedApplications);
-
-      if (exercise._processingVersion >= 2) {
-        report.selectable = outreachReport(selectableApplications);
-      } else {
-        report.selected = outreachReport(selectedApplications);
-      }
-
-      report.shortlisted = outreachReport(shortlistedApplications);
     }
     await db.collection('exercises').doc(exerciseId).collection('reports').doc('outreach').set(report);
     return report;
