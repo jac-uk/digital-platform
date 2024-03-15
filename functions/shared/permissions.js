@@ -77,6 +77,10 @@ const PERMISSIONS = {
         label: 'Can send application reminders',
         value: 'e10',
       },
+      canConfigureExercise: {
+        label: 'Can configure exercise',
+        value: 'e11',
+      },
     },
   },
   candidates: {
