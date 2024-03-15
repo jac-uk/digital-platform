@@ -69,10 +69,8 @@ module.exports = (firebase, db) => {
           applicationsByStage = applicationsByStage.concat(applicationRecordsByPreviousStage);
         }
         report[stage] = diversityReport(applicationsByStage, applicationRecordsByStage, exercise);
-        
-        if (i !== stages.length - 1) {
-          applicationRecordsByPreviousStage = applicationsByStage;
-        }
+        // store for next iteration
+        applicationRecordsByPreviousStage = applicationsByStage;
       }
     }
     await db.collection('exercises').doc(exerciseId).collection('reports').doc('diversity').set(report);
