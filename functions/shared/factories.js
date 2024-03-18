@@ -521,7 +521,7 @@ module.exports = (CONSTANTS) => {
         status: 'not requested',
       },
       active: true,
-      stage: exercise._processingVersion >= 2 ? 'applied' : 'review',
+      stage: exercise._processingVersion >= 2 ? CONSTANTS.EXERCISE_STAGE.SHORTLISTING : CONSTANTS.EXERCISE_STAGE.REVIEW,
       status: '',
       flags: {
         characterIssues: false,
