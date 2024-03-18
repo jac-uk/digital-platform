@@ -19,7 +19,7 @@ module.exports = (firebase, db) => {
     const applications = await getAllDocuments(db, applicationRefs);
 
     const headers = reportHeaders(exercise);
-    const rows = reportData(applicationRecords, applications);
+    const rows = reportData(exercise, applications, applicationRecords);
 
     const report = {
       totalApplications: applications.length,
@@ -45,29 +45,23 @@ const reportHeaders = (exercise) => {
     { title: 'Surname', ref: 'lastName'},
     { title: 'Forename', ref: 'firstName'},
     { title: 'Home Postcode', ref: 'postcode'},
+    ...getWorkingPreferenceHeaders(exercise.locationQuestionType, exercise.locationQuestionAnswers),
+    { title: 'Suitable for a post in Wales', ref: 'suitableForWales'},
+    ...getWorkingPreferenceHeaders(exercise.jurisdictionQuestionType, exercise.jurisdictionQuestionAnswers),
   ];
 
-  if (Array.isArray(exercise.locationQuestionAnswers)) {
-    exercise.locationQuestionAnswers.forEach((question) => {
-      reportHeaders.push({ title: question.answer, ref: question.answer });
-    });
-  }
-  if (Array.isArray(exercise.jurisdictionQuestionAnswers)) {
-    exercise.jurisdictionQuestionAnswers.forEach((question) => {
-      reportHeaders.push({ title: question.answer, ref: question.answer });
-    });
-  }
   return reportHeaders;
 };
 
 /**
  * Get the report data for the given applications
  *
+ * @param {object} exercise
  * @param {array} applicationRecords
  * @param {array} applications
  * @returns {array}
  */
-const reportData = (applicationRecords, applications) => {
+const reportData = (exercise, applications, applicationRecords) => {
 
   return applications.map((application) => {
     const result = {
@@ -75,17 +69,9 @@ const reportData = (applicationRecords, applications) => {
       referenceNumber: application.referenceNumber || null,
       candidateId: getCandidateId(applicationRecords, application),
       ...formatPersonalDetails(application.personalDetails),
+      ...getWorkingPreferenceData(exercise.locationQuestionType, application.locationPreferences),
+      ...getWorkingPreferenceData(exercise.jurisdictionQuestionType, application.jurisdictionPreferences),
     };
-    if (Array.isArray(application.locationPreferences)) {
-      application.locationPreferences.forEach((locationPreference, index) => {
-        result[locationPreference] = index + 1;
-      });
-    }
-    if (Array.isArray(application.jurisdictionPreferences)) {
-      application.jurisdictionPreferences.forEach((jurisdictionPreference, index) => {
-        result[jurisdictionPreference] = index + 1;
-      });
-    }
 
     return result;
 
@@ -111,4 +97,46 @@ const formatPersonalDetails = (personalDetails) => {
     candidate.fullName = personalDetails.fullName;
   }
   return candidate;
+};
+
+const getWorkingPreferenceHeaders = (type, questionAnswers) => {
+  if (!Array.isArray(questionAnswers)) return [];
+
+  const headers = [];
+
+  switch (type) {
+    case 'single-choice':
+    case 'multiple-choice':
+    case 'ranked-choice':
+      questionAnswers.forEach((questionAnswer) => {
+        headers.push({ title: questionAnswer.answer, ref: questionAnswer.answer });
+      });
+      break;
+    default:
+  }
+
+  return headers;
+};
+
+const getWorkingPreferenceData = (type, answers) => {
+  const result = {};
+
+  switch (type) {
+    case 'single-choice':
+      result[answers] = 'Yes';
+      break;
+    case 'multiple-choice':
+      Array.isArray(answers) && answers.forEach((answer, index) => {
+        result[answer] = 'Yes';
+      });
+      break;
+    case 'ranked-choice':
+      Array.isArray(answers) && answers.forEach((answer, index) => {
+        result[answer] = index + 1;
+      });
+      break;
+    default:
+  }
+
+  return result;
 };
