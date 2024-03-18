@@ -11,6 +11,7 @@ module.exports = (firebase, db) => {
     // get submitted application records (which are at the handover stage)
     const applicationRecords = await getDocuments(db.collection('applicationRecords')
       .where('exercise.id', '==', exerciseId)
+      .where('stage', '==', 'handover')
     );
 
     // get the parent application records for the above
@@ -41,12 +42,12 @@ module.exports = (firebase, db) => {
  */
 const reportHeaders = (exercise) => {
   const reportHeaders = [
-    { title: 'Merit Order', ref: 'meritOrder'},
+    { title: 'Merit Order', ref: 'meritOrder'}, // placeholder column
     { title: 'Surname', ref: 'lastName'},
     { title: 'Forename', ref: 'firstName'},
     { title: 'Home Postcode', ref: 'postcode'},
     ...getWorkingPreferenceHeaders(exercise.locationQuestionType, exercise.locationQuestionAnswers),
-    { title: 'Suitable for a post in Wales', ref: 'suitableForWales'},
+    { title: 'Suitable for a post in Wales', ref: 'suitableForWales'}, // placeholder column
     ...getWorkingPreferenceHeaders(exercise.jurisdictionQuestionType, exercise.jurisdictionQuestionAnswers),
   ];
 
