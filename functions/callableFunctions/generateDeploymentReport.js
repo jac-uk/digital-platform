@@ -1,10 +1,11 @@
 const functions = require('firebase-functions');
-const { firebase, db, auth } = require('../shared/admin.js');
-const { generateDeploymentReport } = require('../actions/exercises/generateDeploymentReport.js')(firebase, db);
-const { getDocument } = require('../shared/helpers.js');
-const { logEvent } = require('../actions/logs/logEvent.js')(firebase, db, auth);
-const { checkFunctionEnabled } = require('../shared/serviceSettings.js')(db);
-const { PERMISSIONS, hasPermissions } = require('../shared/permissions.js');
+const config = require('../shared/config');
+const { firebase, db, auth } = require('../shared/admin');
+const { generateDeploymentReport } = require('../actions/exercises/generateDeploymentReport')(config, firebase, db);
+const { getDocument } = require('../shared/helpers');
+const { logEvent } = require('../actions/logs/logEvent')(firebase, db, auth);
+const { checkFunctionEnabled } = require('../shared/serviceSettings')(db);
+const { PERMISSIONS, hasPermissions } = require('../shared/permissions');
 
 module.exports = functions.region('europe-west2').https.onCall(async (data, context) => {
   await checkFunctionEnabled();
@@ -40,9 +41,5 @@ module.exports = functions.region('europe-west2').https.onCall(async (data, cont
   };
   await logEvent('info', 'Deployment report generated', details, user);
 
-  // return the report to the caller
-  return {
-    result: result,
-  };
-
+  return { result };
 });
