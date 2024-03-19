@@ -17,7 +17,7 @@ module.exports = functions.region('europe-west2').firestore
 
     if (updateSearchMap) {
       // add search map
-      await db.doc(`assessments/${before.id}`).update({
+      await db.doc(`assessments/${context.params.assessmentId}`).update({
         _search: getSearchMap([
           after.assessor.fullName,
           after.assessor.email,
