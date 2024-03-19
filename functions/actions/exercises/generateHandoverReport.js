@@ -134,8 +134,6 @@ const reportHeaders = (exercise) => {
   }
 
   reportHeaders.push(
-    { title: 'Location Preferences', ref: 'locationPreferences' },
-    { title: 'Jurisdiction Preferences', ref: 'jurisdictionPreferences' },
     { title: 'Additional Preferences', ref: 'additionalPreferences' },
     { title: 'Welsh posts', ref: 'welshPosts' }
   );
@@ -165,10 +163,6 @@ const reportData = (db, exercise, applicationRecords, applications) => {
       memberships = formatNonLegalData(application, exercise);
     }
 
-    const locationPreferences = application.locationPreferences && application.locationPreferences.length
-      ? getLocationPreferences(application, exercise).map(x => `${removeHtml(x.label)}\n${removeHtml(x.value)}`).join('\n\n') : '';
-    const jurisdictionPreferences = application.jurisdictionPreferences && application.jurisdictionPreferences.length
-      ? getJurisdictionPreferences(application, exercise).map(x => `${removeHtml(x.label)}\n${removeHtml(x.value)}`).join('\n\n') : '';
     const additionalPreferences = application.additionalWorkingPreferences && application.additionalWorkingPreferences.length
       ? getAdditionalWorkingPreferences(application, exercise).map(x => `${removeHtml(x.label)}\n${removeHtml(x.value)}`).join('\n\n') : '';
     const welshPosts = exercise.welshRequirement
@@ -187,8 +181,6 @@ const reportData = (db, exercise, applicationRecords, applications) => {
       ...qualifications,
       ...memberships,
       ...formatDiversityData(application.equalityAndDiversitySurvey, exercise),
-      locationPreferences,
-      jurisdictionPreferences,
       additionalPreferences,
       welshPosts,
       ...partTimeWorkingPreferences,
