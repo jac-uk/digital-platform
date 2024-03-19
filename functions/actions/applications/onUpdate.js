@@ -116,6 +116,35 @@ module.exports = (config, firebase, db, auth) => {
       }
     }
 
+    // update first and second assessment assessor details
+    const firstAssessmentData = {};
+    if (dataBefore.firstAssessorType !== dataAfter.firstAssessorType) {
+      firstAssessmentData['assessor.type'] = dataAfter.firstAssessorType || '';
+    }
+    if (dataBefore.firstAssessorFullName !== dataAfter.firstAssessorFullName) {
+      firstAssessmentData['assessor.fullName'] = dataAfter.firstAssessorFullName || '';
+    }
+    if (dataBefore.firstAssessorEmail !== dataAfter.firstAssessorEmail) {
+      firstAssessmentData['assessor.email'] = dataAfter.firstAssessorEmail || '';
+    }
+    if (Object.keys(firstAssessmentData).length) {
+      await db.doc(`assessments/${applicationId}-1`).update(firstAssessmentData);
+    }
+
+    const secondAssessmentData = {};
+    if (dataBefore.secondAssessorType !== dataAfter.secondAssessorType) {
+      secondAssessmentData['assessor.type'] = dataAfter.secondAssessorType || '';
+    }
+    if (dataBefore.secondAssessorFullName !== dataAfter.secondAssessorFullName) {
+      secondAssessmentData['assessor.fullName'] = dataAfter.secondAssessorFullName || '';
+    }
+    if (dataBefore.secondAssessorEmail !== dataAfter.secondAssessorEmail) {
+      secondAssessmentData['assessor.email'] = dataAfter.secondAssessorEmail || '';
+    }
+    if (Object.keys(secondAssessmentData).length) {
+      await db.doc(`assessments/${applicationId}-2`).update(secondAssessmentData);
+    }
+
     // Build an object with changes to the application record
     let updateApplicationData = {};
 
