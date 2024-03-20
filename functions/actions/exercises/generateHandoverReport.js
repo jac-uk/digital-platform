@@ -2,7 +2,7 @@ const helpers = require('../../shared/converters/helpers');
 const lookup = require('../../shared/converters/lookup');
 const { getDocument, getDocuments, getAllDocuments, removeHtml } = require('../../shared/helpers');
 const applicationConverter = require('../../shared/converters/applicationConverter')();
-const { getLocationPreferences, getJurisdictionPreferences, getAdditionalWorkingPreferences, getWelshData } = applicationConverter;
+const { getAdditionalWorkingPreferences, getWelshData } = applicationConverter;
 
 module.exports = (firebase, db) => {
   return {
@@ -133,8 +133,14 @@ const reportHeaders = (exercise) => {
     );
   }
 
+  // separate additional working preferences
+  if (Array.isArray(exercise.additionalWorkingPreferences)) {
+    exercise.additionalWorkingPreferences.forEach((additionalWorkingPreference, index) => {
+      reportHeaders.push({ title: additionalWorkingPreference.question, ref: `additionalWorkingPreference${index}` });
+    });
+  }
+
   reportHeaders.push(
-    { title: 'Additional Preferences', ref: 'additionalPreferences' },
     { title: 'Welsh posts', ref: 'welshPosts' }
   );
 
@@ -163,8 +169,13 @@ const reportData = (db, exercise, applicationRecords, applications) => {
       memberships = formatNonLegalData(application, exercise);
     }
 
-    const additionalPreferences = application.additionalWorkingPreferences && application.additionalWorkingPreferences.length
-      ? getAdditionalWorkingPreferences(application, exercise).map(x => `${removeHtml(x.label)}\n${removeHtml(x.value)}`).join('\n\n') : '';
+    const additionalPreferences = {};
+    if (Array.isArray(application.additionalWorkingPreferences)) {
+      getAdditionalWorkingPreferences(application, exercise).forEach((additionalWorkingPreference, index) => {
+        additionalPreferences[`additionalWorkingPreference${index}`] = removeHtml(additionalWorkingPreference.value).replace('answer:', '').trim() || '';
+      });
+    }
+
     const welshPosts = exercise.welshRequirement
       ? getWelshData(application).map(x => `${removeHtml(x.label)}\n${removeHtml(x.value)}`).join('\n\n') : '';
     const partTimeWorkingPreferences = {
@@ -181,7 +192,7 @@ const reportData = (db, exercise, applicationRecords, applications) => {
       ...qualifications,
       ...memberships,
       ...formatDiversityData(application.equalityAndDiversitySurvey, exercise),
-      additionalPreferences,
+      ...additionalPreferences,
       welshPosts,
       ...partTimeWorkingPreferences,
     };
