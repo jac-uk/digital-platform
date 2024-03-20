@@ -3,7 +3,7 @@ const config = require('../shared/config.js');
 const { db, auth } = require('../shared/admin.js');
 const { getMissingNestedProperties, objectHasNestedProperty } = require('../shared/helpers.js');
 const { getUserByGithubUsername } = require('../actions/users')(auth, db);
-const { getBugReportByRef } = require('../actions/bugReports')(db);
+const { getBugReportByRef, getBugReportNumberFromIssueTitle } = require('../actions/bugReports')(db);
 const { onAssignedIssue } = require('../actions/zenhub/hooks/onAssignedIssue')(config, db, auth);
 const { onCreatedIssue } = require('../actions/zenhub/hooks/onCreatedIssue')(config, db, auth);
 
@@ -71,22 +71,14 @@ module.exports = functions.region('europe-west2').https.onRequest(async (req, re
     }
     // Check that the bugReport referenceNumber can be extracted from the request params
     const issueTitle = req.body.issue.title;
-
     // Extract the bugReport referenceNUmber from the github issue title
-    // The test method check if the string contains the pattern:
-    // BR_<platform>_<2 letter environment>_<timestamp or numerical count>
-    const regex = /^BR_[A-Za-z]+_[A-Za-z]{2}_(\d{6}|\d{13})$/;
-
-    // Use the match method to extract the matching string
-    const matchResult = issueTitle.match(regex);
-
-    if (!matchResult) {
+    const referenceNumber = getBugReportNumberFromIssueTitle(issueTitle);
+    if (!referenceNumber) {
       const errorMsg = 'The github issue title is missing the bugReport reference number which begins with BR_ followed by 6 digits';
       console.error(errorMsg);
       res.status(422).send(errorMsg);
       return;
     }
-    const referenceNumber = matchResult[0];
     const bugReport = await getBugReportByRef(referenceNumber);
     if (!bugReport) {
       const errorMsg = 'The bugReport for this issue could not be found';
@@ -111,17 +103,13 @@ module.exports = functions.region('europe-west2').https.onRequest(async (req, re
     // Check that the bugReport referenceNumber can be extracted from the request params
     const issueTitle = req.body.issue.title;
     // Extract the bugReport referenceNUmber from the github issue title
-    // The test method check if the string contains the pattern 'BR_' followed by 6 digits
-    const regex = /BR_\d{6}/;
-    // Use the match method to extract the matching string
-    const matchResult = issueTitle.match(regex);
-    if (!matchResult) {
+    const referenceNumber = getBugReportNumberFromIssueTitle(issueTitle);
+    if (!referenceNumber) {
       const errorMsg = 'The github issue title is missing the bugReport reference number which begins with BR_ followed by 6 digits';
       console.error(errorMsg);
       res.status(422).send(errorMsg);
       return;
     }
-    const referenceNumber = matchResult[0];
     const bugReport = await getBugReportByRef(referenceNumber);
     if (!bugReport) {
       const errorMsg = 'The bugReport for this issue could not be found';
