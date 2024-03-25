@@ -1,5 +1,8 @@
 const { formatDate } = require('./helpers');
 const { applicationOpenDatePost01042023 } = require('./converters/helpers');
+const { getSearchMap } = require('./search');
+const { objectHasNestedProperty } = require('./helpers');
+const _ = require('lodash');
 
 module.exports = (CONSTANTS) => {
   return {
@@ -17,6 +20,11 @@ module.exports = (CONSTANTS) => {
     newVacancy,
     newNotificationLateApplicationRequest,
     newNotificationLateApplicationResponse,
+    newUser,
+    newNotificationUserInvitation,
+    newCandidateFormResponse,
+    newCandidateFormNotification,
+    newNotificationPublishedFeedbackReport,
   };
 
   function newNotificationExerciseApprovalSubmit(firebase, exerciseId, exercise, email) {
@@ -199,7 +207,7 @@ module.exports = (CONSTANTS) => {
     };
   }
 
-  function newNotificationAssessmentRequest(firebase, assessment) {
+  function newNotificationAssessmentRequest(firebase, assessment, exercise) {
     const link = `${CONSTANTS.ASSESSMENTS_URL}/sign-in?email=${assessment.assessor.email}&ref=assessments/${assessment.id}`;
     let xCompetencyAreasOrXSkillsAndAbilities;
     switch (assessment.type) {
@@ -214,7 +222,7 @@ module.exports = (CONSTANTS) => {
     }
     return {
       email: assessment.assessor.email,
-      replyTo: assessment.exercise.exerciseMailbox,
+      replyTo: exercise.exerciseMailbox,
       template: {
         name: 'Assessment Request',
         id: '37093b3e-3743-45bb-b2d6-9e8465d97944',
@@ -227,9 +235,9 @@ module.exports = (CONSTANTS) => {
         submitAssessmentDueDate: assessment.dueDate.toDate().toLocaleDateString('en-GB', { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' }),
         uploadUrl: link,
         downloadUrl: link,
-        exerciseMailbox: assessment.exercise.exerciseMailbox,
-        exercisePhoneNumber: assessment.exercise.exercisePhoneNumber,
-        selectionExerciseManager: assessment.exercise.emailSignatureName,
+        exerciseMailbox: exercise.exerciseMailbox,
+        exercisePhoneNumber: exercise.exercisePhoneNumber,
+        selectionExerciseManager: exercise.emailSignatureName,
       },
       reference: {
         collection: 'assessments',
@@ -240,7 +248,7 @@ module.exports = (CONSTANTS) => {
     };
   }
 
-  function newNotificationAssessmentReminder(firebase, assessment) {
+  function newNotificationAssessmentReminder(firebase, assessment, exercise) {
     const link = `${CONSTANTS.ASSESSMENTS_URL}/sign-in?email=${assessment.assessor.email}&ref=assessments/${assessment.id}`;
     let xCompetencyAreasOrXSkillsAndAbilities;
     switch (assessment.type) {
@@ -255,7 +263,7 @@ module.exports = (CONSTANTS) => {
     }
     return {
       email: assessment.assessor.email,
-      replyTo: assessment.exercise.exerciseMailbox,
+      replyTo: exercise.exerciseMailbox,
       template: {
         name: 'Assessment Reminder',
         id: '5bd78bc3-5d3b-4cdf-88f5-2daba5464719',
@@ -268,9 +276,9 @@ module.exports = (CONSTANTS) => {
         submitAssessmentDueDate: assessment.dueDate.toDate().toLocaleDateString('en-GB', { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' }),
         uploadUrl: link,
         downloadUrl: link,
-        exerciseMailbox: assessment.exercise.exerciseMailbox,
-        exercisePhoneNumber: assessment.exercise.exercisePhoneNumber,
-        selectionExerciseManager: assessment.exercise.emailSignatureName,
+        exerciseMailbox: exercise.exerciseMailbox,
+        exercisePhoneNumber: exercise.exercisePhoneNumber,
+        selectionExerciseManager: exercise.emailSignatureName,
       },
       reference: {
         collection: 'assessments',
@@ -281,7 +289,7 @@ module.exports = (CONSTANTS) => {
     };
   }
 
-  function newNotificationAssessmentSubmit(firebase, assessment) {
+  function newNotificationAssessmentSubmit(firebase, assessment, exercise) {
     const link = `${CONSTANTS.ASSESSMENTS_URL}/sign-in?email=${assessment.assessor.email}&ref=assessments/${assessment.id}`;
     let xCompetencyAreasOrXSkillsAndAbilities;
     switch (assessment.type) {
@@ -296,7 +304,7 @@ module.exports = (CONSTANTS) => {
     }
     return {
       email: assessment.assessor.email,
-      replyTo: assessment.exercise.exerciseMailbox,
+      replyTo: exercise.exerciseMailbox,
       template: {
         name: 'Assessment Submit',
         id: '5b933b71-3359-488a-aa86-13ceb581209c',
@@ -309,9 +317,9 @@ module.exports = (CONSTANTS) => {
         submitAssessmentDueDate: assessment.dueDate.toDate().toLocaleDateString('en-GB', { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' }),
         uploadUrl: link,
         downloadUrl: link,
-        exerciseMailbox: assessment.exercise.exerciseMailbox,
-        exercisePhoneNumber: assessment.exercise.exercisePhoneNumber,
-        selectionExerciseManager: assessment.exercise.emailSignatureName,
+        exerciseMailbox: exercise.exerciseMailbox,
+        exercisePhoneNumber: exercise.exercisePhoneNumber,
+        selectionExerciseManager: exercise.emailSignatureName,
       },
       reference: {
         collection: 'assessments',
@@ -334,9 +342,9 @@ module.exports = (CONSTANTS) => {
         name: exercise.name,
         referenceNumber: exercise.referenceNumber,
         template: (exercise.downloads && exercise.downloads.independentAssessors && exercise.downloads.independentAssessors[0]) ? exercise.downloads.independentAssessors[0] : '',
-        exerciseMailbox: exercise.exerciseMailbox,
-        exercisePhoneNumber: exercise.exercisePhoneNumber,
-        emailSignatureName: exercise.emailSignatureName,
+        // exerciseMailbox: exercise.exerciseMailbox,
+        // exercisePhoneNumber: exercise.exercisePhoneNumber,
+        // emailSignatureName: exercise.emailSignatureName,
       },
       application: {
         id: application.id,
@@ -363,22 +371,39 @@ module.exports = (CONSTANTS) => {
       default:
         assessment.assessor = {};
     }
+
     // assessment type
-    switch (exercise.assessmentOptions) {
-      case 'self-assessment-with-competencies':
-      case 'self-assessment-with-competencies-and-cv':
-      case 'statement-of-suitability-with-competencies':
+    if (exercise.assessmentMethods) {
+      if (
+        exercise.assessmentMethods[CONSTANTS.ASSESSMENT_METHOD.SELF_ASSESSMENT_WITH_COMPETENCIES] ||
+        exercise.assessmentMethods[CONSTANTS.ASSESSMENT_METHOD.STATEMENT_OF_SUITABILITY_WITH_COMPETENCIES]
+      ) {
         assessment.type = CONSTANTS.ASSESSMENT_TYPE.COMPETENCY;
-        break;
-      case 'statement-of-suitability-with-skills-and-abilities':
-      case 'statement-of-suitability-with-skills-and-abilities-and-cv':
+      } else if (exercise.assessmentMethods[CONSTANTS.ASSESSMENT_METHOD.STATEMENT_OF_SUITABILITY_WITH_SKILLS_AND_ABILITIES]) {
         assessment.type = CONSTANTS.ASSESSMENT_TYPE.SKILLS;
-        break;
-      case 'statement-of-eligibility':
-      default:
-        assessment.type = CONSTANTS.ASSESSMENT_TYPE.GENERAL;
-        break;
+      }
     }
+    if (!assessment.type) {
+      assessment.type = CONSTANTS.ASSESSMENT_TYPE.GENERAL;
+    }
+
+    // build searchables for search map
+    const searchables = [
+      application.personalDetails.fullName, // candidate name
+      application.referenceNumber,
+    ];
+    // Add assessor details (if they exist)
+    if (objectHasNestedProperty(assessment, 'assessor.fullName')) {
+      searchables.push(assessment.assessor.fullName);
+    }
+    if (objectHasNestedProperty(assessment, 'assessor.email')) {
+      searchables.push(assessment.assessor.email);
+    }
+    // build search map
+    const searchMap = getSearchMap(searchables);
+    // add search map to assessment
+    assessment._search = searchMap;
+
     return assessment;
   }
 
@@ -470,7 +495,16 @@ module.exports = (CONSTANTS) => {
   }
 
   function newApplicationRecord(firebase, exercise, application) {
+    // add search map
+    const search = getSearchMap([
+      application.personalDetails.fullName,
+      application.personalDetails.email,
+      application.personalDetails.nationalInsuranceNumber,
+      application.referenceNumber,
+    ]);
+    
     let applicationRecord = {
+      _search: search,
       exercise: {
         id: exercise.id,
         name: exercise.name,
@@ -487,7 +521,7 @@ module.exports = (CONSTANTS) => {
         status: 'not requested',
       },
       active: true,
-      stage: 'review',  // TODO change to 'applied'
+      stage: exercise._processingVersion >= 2 ? CONSTANTS.EXERCISE_STAGE.SHORTLISTING : CONSTANTS.EXERCISE_STAGE.REVIEW,
       status: '',
       flags: {
         characterIssues: false,
@@ -552,13 +586,16 @@ module.exports = (CONSTANTS) => {
       isCourtOrTribunal: null,
       isSPTWOffered: null,
       jurisdiction: null,
+      jurisdictionPreferences: null,
       jurisdictionQuestion: null,
       jurisdictionQuestionAnswers: null,
       jurisdictionQuestionType: null,
       location: null,
+      locationPreferences: null,
       locationQuestion: null,
       locationQuestionAnswers: null,
       locationQuestionType: null,
+      locationWelsh: null,
       memberships: null,
       name: null,
       noSalaryDetails: null,
@@ -587,6 +624,7 @@ module.exports = (CONSTANTS) => {
       selectionCriteria: null,
       selectionDays: null,
       selectionExerciseManagerFullName: null,
+      selfAssessmentWordLimits: null,
       shortlistingMethods: null,
       siftStartDate: null,
       siftEndDate: null,
@@ -609,9 +647,14 @@ module.exports = (CONSTANTS) => {
       yesSalaryDetails: null,
     };
     const vacancy = { ...vacancyModel };
+    const dataKeys = Object.keys(data);
     for (var key in vacancyModel) {
-      if (data[key]) {
-        vacancy[key] = data[key];
+      if (dataKeys.includes(key)) {
+        if (key === 'commissioners') { // this is redundant code however has been retained so that we do not copy `commissioners` to `vacancy` document
+          vacancy[key] = [];
+        } else {
+          vacancy[key] = data[key];
+        }
       }
     }
     return vacancy;
@@ -682,6 +725,116 @@ module.exports = (CONSTANTS) => {
       },
       createdAt: firebase.firestore.Timestamp.fromDate(new Date()),
       status: 'ready',
+    };
+  }
+
+  function newUser(user) {
+    return {
+      displayName: user.displayName || null,
+      email: user.email || null,
+      disabled: user.disabled || false,
+      providerData: user.providerData ? user.providerData.map(p => p.providerId) : [],
+      role: {
+        id: user.customClaims && user.customClaims.r ? user.customClaims.r : null,
+        isChanged: false,
+      },
+      uid: user.uid || null,
+    };
+  }
+
+  function newCandidateFormResponse(firebase, formId, taskType, applicationId) {
+    return {
+      formId,
+      taskType,
+      applicationId,
+      status: 'created',  // TODO use constant
+      statusLog: {
+        created: firebase.firestore.FieldValue.serverTimestamp(),
+      },
+      progress: {},
+    };
+  }
+
+  function newCandidateFormNotification(firebase, application, type, exerciseMailbox, exerciseManagerName, dueDate) {
+    let templateId = '';
+    let templateName = '';
+    
+    if (type === 'request') {
+      templateId = 'bba6cebb-b3b3-4ba3-818b-af7b9a011f77';
+      templateName = 'Candidate form consent form request';
+    } else if (type === 'reminder') {
+      templateId = '59522cc8-ede1-464c-8ab9-91b05f00af25';
+      templateName = 'Candidate form consent form reminder';
+    } else if (type === 'submit') {
+      templateId = '1492dd03-75b1-45e3-af19-875b7c1bdf11';
+      templateName = 'Candidate form consent form submit';
+    }
+
+    if (!templateId || !templateName) return null;
+
+    return {
+      email: application.personalDetails.email,
+      replyTo: exerciseMailbox,
+      template: {
+        name: templateName,
+        id: templateId,
+      },
+      personalisation: {
+        exerciseName: application.exerciseName,
+        dueDate,
+        urlRequired: `${CONSTANTS.APPLY_URL}/sign-in`,
+        applicantName: application.personalDetails.fullName,
+        selectionExerciseManager: exerciseManagerName,
+        exerciseMailbox,
+      },
+      reference: {
+        collection: 'applications',
+        id: application.id,
+      },
+      createdAt: firebase.firestore.Timestamp.fromDate(new Date()),
+      status: 'ready',
+    };
+  }
+
+  function newNotificationUserInvitation(firebase, userInvitationId, userInvitation) {
+    return {
+      email: userInvitation.email,
+      replyTo: '',
+      template: {
+        name: 'New user invitation confirmation',
+        id: '4f221946-629e-468d-a83e-dec3d4d3d7d2',
+      },
+      personalisation: {
+        username: userInvitation.email,
+        email: userInvitation.email,
+      },
+      reference: {
+        collection: 'userInvitations',
+        id: userInvitationId,
+      },
+      createdAt: firebase.firestore.Timestamp.fromDate(new Date()),
+      status: 'ready',
+    };
+  }
+
+  function newNotificationPublishedFeedbackReport(firebase, email, exerciseName, testType) {
+    const templateName = 'Generic Feedback Report Publication';
+    const templateId = 'f74f3fda-419a-4c78-ad15-fbe0e33656ee';
+    const reportsLink = 'https://judicialappointments.gov.uk/feedback-and-evaluation-reports#OnlineTests';
+    return {
+      email: email,
+      replyTo: '',
+      template: {
+        name: templateName,
+        id: templateId,
+      },
+      personalisation: {
+        exerciseName: exerciseName,
+        testType: testType,
+        reportsLink: reportsLink,
+        createdAt: firebase.firestore.FieldValue.serverTimestamp(),
+        status: 'ready',
+      },
     };
   }
 };

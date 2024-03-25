@@ -1,4 +1,18 @@
-const { checkArguments, applyUpdates, convertStringToSearchParts, getEarliestDate, getLatestDate, removeHtml, normaliseNIN, normaliseNINs } = require('../../functions/shared/helpers');
+const {
+  checkArguments,
+  applyUpdates,
+  convertStringToSearchParts,
+  getEarliestDate,
+  getLatestDate,
+  removeHtml,
+  normaliseNIN,
+  normaliseNINs,
+  objectHasNestedProperty,
+  replaceCharacters,
+  formatAddress,
+  formatPreviousAddresses,
+  isValidDate,
+} = require('../../functions/shared/helpers');
 
 describe('checkArguments()', () => {
 
@@ -471,5 +485,158 @@ describe('normaliseNIN', () => {
 describe('normaliseNINs', () => {
   it('remove HTML tags from a given string', () => {
     expect(normaliseNINs(['AA 123456       V', 'QQ 12 34 56 C'])).toStrictEqual(['aa123456v','qq123456c']);
+  });
+});
+
+describe('objectHasNestedProperty()', () => {
+  describe('empty dotPath arg', () => {
+    const obj = {
+      test1: {
+        test2: 'test3',
+      },
+      test4: {
+        test5: {
+          test6: null,
+          test7: undefined,
+        },
+      },
+    };
+    // FALSY
+    it('returns false if no dotPath arg', () => {
+      expect(objectHasNestedProperty(obj)).toBe(false);
+    });
+    it('returns false if empty string dotPath arg', () => {
+      expect(objectHasNestedProperty(obj, '')).toBe(false);
+    });
+    it('returns false if wrong type for dotPath arg', () => {
+      expect(objectHasNestedProperty(obj, [])).toBe(false);
+    });
+    //TRUTHY
+    it('returns true if match for depth 1 dotPath arg', () => {
+      expect(objectHasNestedProperty(obj, 'test1')).toBe(true);
+    });
+    it('returns true if match for depth 2 dotPath arg', () => {
+      expect(objectHasNestedProperty(obj, 'test1.test2')).toBe(true);
+    });
+
+    it('returns true if match for null value at valid path', () => {
+      expect(objectHasNestedProperty(obj, 'test4.test5.test6')).toBe(true);
+    });
+    it('returns true if match for undefined value at valid path', () => {
+      expect(objectHasNestedProperty(obj, 'test4.test5.test7')).toBe(true);
+    });
+  });
+});
+
+describe('replaceCharacters()', () => {
+  describe('replaces characters according to map', () => {
+    const inputStr = 'test-\'&/\\|[].@';
+    const characterMap = {
+      '[': 'a',
+      ']': 'b',
+      '.': 'c',
+      '@': 'd',
+      '*': 'e',
+      '/': 'f',
+      '\\': 'g',
+    };
+    it('returns string with replacements', () => {
+      expect(replaceCharacters(inputStr, characterMap)).toStrictEqual('test-\'&fg|abcd');
+    });
+  });
+});
+
+describe('formatAddress()', () => {
+  it('should return a formatted address string with all fields present', () => {
+    const address = {
+      street: '123 Main St',
+      street2: 'Apt 4B',
+      town: 'New York',
+      county: 'Manhattan',
+      postcode: '10001',
+    };
+    const result = formatAddress(address);
+    expect(result).toBe('123 Main St Apt 4B New York Manhattan 10001');
+  });
+
+  it('should return a formatted address string with only required fields present', () => {
+    const address = {
+      street: '123 Main St',
+      town: 'New York',
+      postcode: '10001',
+    };
+    const result = formatAddress(address);
+    expect(result).toBe('123 Main St New York 10001');
+  });
+
+  it('should return an empty string when no fields are present', () => {
+    const address = {};
+    const result = formatAddress(address);
+    expect(result).toBe('');
+  });
+
+  it('should return a formatted address string with only one field present', () => {
+    const address = {
+      street: '123 Main St',
+    };
+    const result = formatAddress(address);
+    expect(result).toBe('123 Main St');
+  });
+});
+
+describe('formatPreviousAddresses()', () => {
+  it('should return an empty string when given an empty array', () => {
+    const previousAddresses = [];
+    const result = formatPreviousAddresses(previousAddresses);
+    expect(result).toEqual('');
+  });
+
+  it('should return a formatted string when given an array with one element', () => {
+    const previousAddresses = [
+      {
+        startDate: new Date('2022-01-01'),
+        endDate: new Date('2022-02-01'),
+        street: '123 Main St',
+        town: 'City',
+        postcode: '12345',
+      },
+    ];
+    const result = formatPreviousAddresses(previousAddresses);
+    expect(result).toEqual('2022-01-01 - 2022-02-01 123 Main St City 12345');
+  });
+
+  it('should return a formatted string when given an array with multiple elements', () => {
+    const previousAddresses = [
+      {
+        startDate: new Date('2022-01-01'),
+        endDate: new Date('2022-02-01'),
+        street: '123 Main St',
+        town: 'City',
+        postcode: '12345',
+      },
+      {
+        startDate: new Date('2022-03-01'),
+        endDate: new Date('2022-04-01'),
+        street: '456 Elm St',
+        town: 'Town',
+        postcode: '67890',
+      },
+    ];
+    const result = formatPreviousAddresses(previousAddresses);
+    expect(result).toEqual('2022-01-01 - 2022-02-01 123 Main St City 12345\n\n2022-03-01 - 2022-04-01 456 Elm St Town 67890');
+  });
+});
+
+describe('isValidDate()', () => {
+  it('should return true when given a valid date string in ISO format', () => {
+    expect(isValidDate('2021-01-01')).toBe(true);
+  });
+
+  it('should return false when given a non-string input', () => {
+    expect(isValidDate(123)).toBe(false);
+  });
+
+  it('should return false when given an empty string input', () => {
+    expect(isValidDate('')).toBe(false);
   });
 });

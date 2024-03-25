@@ -82,7 +82,8 @@ const lookup = (value) => {
       'legal': 'Legal',
       'linked-in': 'LinkedIn',
       'lord-chancellor': 'Lord Chancellor',
-      'lord-chief-justice': 'Lord Chief Justice',
+      'lady-chief-justice': 'Lady Chief Justice',
+      'lord-chief-justice': 'Lady Chief Justice',
       'male': 'Male',
       'multiple-choice': 'Multiple choice',
       'muslim': 'Muslim',
@@ -177,6 +178,7 @@ const lookup = (value) => {
       'review': 'Review',
       'shortlisted': 'Shortlisted',
       'selected': 'Selected',
+      'selectable': 'Selectable',
       'recommended': 'Recommended',
       'handover': 'Handover',
       /* Exercise stages: end */
@@ -208,6 +210,38 @@ const lookup = (value) => {
       'transferred': 'Qualified solicitor, qualified lawyer from another jurisdiction, or a legal academic transferred to the Bar',
       'called-pre-2002': 'Called to the Bar prior to 1 January 2002',
       // 'xxx': 'xxx',`
+
+      // post-qualification experience
+      'full-time': 'Full-time',
+      'salaried-part-time': 'Salaried part-time',
+      'voluntary': 'Voluntary',
+      'judicial-post': 'Judicial',
+      'quasi-judicial-post': 'Quasi-judicial',
+
+      // Qualifying Tests
+      'scenarioTest': 'Scenario Test',
+      'criticalAnalysis': 'Critical Analysis Test',
+      'situationalJudgement': 'Situational Judgement Test',
+      'empTiebreaker': 'EMP Tie-breaker',
+
+      // character issues status
+      'proceed': 'Proceed',
+      'reject': 'Reject',
+      'reject-non-declaration': 'Reject Non-Declaration',
+      'discuss': 'Discuss',
+
+      // character issues offence category
+      'singleCriminalOffence': 'Single criminal offence',
+      'multipleCriminalOffences': 'Multiple criminal offences',
+      'singleMotoringOffence': 'Single motoring offence',
+      'multipleMotoringOffences': 'Multiple motoring offences',
+      'singleFinancialOffence': 'Single financial offence',
+      'multipleFinancialOffences': 'Multiple financial offences',
+      'singleProfessionalConduct': 'Single professional conduct',
+      'multipleProfessionalConducts': 'Multiple professional conducts',
+      'singleOtherMatter': 'Single other matter',
+      'multipleOtherMatters': 'Multiple other matters',
+      'mixed': 'Mixed',
     };
 
     return lookup[value] || value;

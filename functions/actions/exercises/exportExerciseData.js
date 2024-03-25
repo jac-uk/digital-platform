@@ -31,8 +31,10 @@ module.exports = (config, firebase, db) => {
       { title: 'Professional background', ref: 'application.equalityAndDiversitySurvey.professionalBackground', formatter: formatProfessionalBackground },
       { title: 'Current legal role', ref: 'application.equalityAndDiversitySurvey.currentLegalRole', formatter: { function: applicationHelpers.flattenCurrentLegalRole, ref: 'application.equalityAndDiversitySurvey' } },
       { title: 'Held fee-paid judicial role', ref: 'application.equalityAndDiversitySurvey.feePaidJudicialRole', formatter: applicationHelpers.heldFeePaidJudicialRole },
-      { title: 'Attended Oxbridge universities', ref: 'application.equalityAndDiversitySurvey.oxbridgeUni', formatter: formatYesNoLookup },
-      { title: 'First generation to go to university', ref: 'application.equalityAndDiversitySurvey.firstGenerationStudent', formatter: formatYesNoLookup },
+      { title: '[pre 01/04/2023] Attended state or fee-paying school', ref: 'application.equalityAndDiversitySurvey.stateOrFeeSchool', formatter: lookup },
+      { title: 'Attended state or fee-paying school', ref: 'application.equalityAndDiversitySurvey.stateOrFeeSchool16', formatter: lookup },
+      { title: '[pre 01/04/2023] Attended Oxbridge universities', ref: 'application.equalityAndDiversitySurvey.oxbridgeUni', formatter: formatYesNoLookup },
+      { title: '[pre 01/04/2023] First generation to go to university', ref: 'application.equalityAndDiversitySurvey.firstGenerationStudent', formatter: formatYesNoLookup },
       { title: 'Occupation of main household earner', ref: 'application.equalityAndDiversitySurvey.occupationOfChildhoodEarner', formatter: lookup },
       { title: 'Either parent attended university to gain a degree', ref: 'application.equalityAndDiversitySurvey.parentsAttendedUniversity', formatter: formatYesNoLookup },
       { title: 'Ethnic group', ref: 'application.equalityAndDiversitySurvey.ethnicGroup', formatter: lookup },
@@ -49,24 +51,12 @@ module.exports = (config, firebase, db) => {
       { title: 'Fee-paid or salaried judge', ref: 'application.feePaidOrSalariedJudge', formatter: { function: formatFeePaidOrSalariedJudge, ref: 'application' } },
       { title: 'Stage', ref: 'applicationRecord.stage', formatter: lookup },
       { title: 'Status', ref: 'applicationRecord.status', formatter: lookup },
-      // @TODO { title: 'QT scores', ref: 'applicationRecord.qualifyingTests', type: 'json' },
     ];
 
     // get rows for all selected exercises
     let rows = [];
     for (let i = 0, len = exercises.length; i < len; i++) {
       const exercise = exercises[i];
-
-      // Add a column based on whether it's pre/post 01-04-2023
-      let addColumn;
-      if (applicationHelpers.applicationOpenDatePost01042023(exercise)) {
-        addColumn = { title: 'Attended state or fee-paying school', ref: 'application.equalityAndDiversitySurvey.stateOrFeeSchool16', formatter: lookup };
-      }
-      else {
-        addColumn = { title: 'Attended state or fee-paying school', ref: 'application.equalityAndDiversitySurvey.stateOrFeeSchool', formatter: lookup };
-      }
-      // Add column to array at index 10
-      columns.splice(10, 0, addColumn);
 
       // get application records & applications
       const applicationRecords = await getDocuments(
@@ -180,7 +170,7 @@ module.exports = (config, firebase, db) => {
         ].join(', ');
       }).join('\n');
     }
-    return data;
+    return '';
   }
   function formatFeePaidOrSalariedJudge(application) {
     if (!application) { return application; }

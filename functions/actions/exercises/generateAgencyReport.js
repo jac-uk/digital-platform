@@ -16,7 +16,7 @@ module.exports = (firebase, db) => {
       .where('characterChecks.consent', '==', true));
 
     // get report headers
-    const headers = reportHeaders(exercise);
+    const headers = reportHeaders(exercise, applications);
 
     // get report rows
     const rows = reportData(db, exercise, applications);
@@ -43,8 +43,9 @@ module.exports = (firebase, db) => {
  * @param {document} exercise
  * @return {array}
  */
-const reportHeaders = (exercise) => {
+const reportHeaders = (exercise, applications) => {
   const headers = [
+    { title: 'JAC Reference', ref: 'applicationReferenceNumber' },
     { title: 'Title', ref: 'title' },
     { title: 'Surname', ref: 'lastName' },
     { title: 'Forename(s)', ref: 'firstName' },
@@ -100,7 +101,8 @@ const reportData = (db, exercise, applications) => {
     const personalDetails = application.personalDetails || {}; 
     const qualifications = application.qualifications || [];
     const sra = qualifications.find((qualification) => qualification.type === 'solicitor');
-    const bsb = qualifications.find((qualification) => qualification.type === 'barrister');
+    const bsb = qualifications.find((qualification) => qualification.type === 'barrister' 
+                                    || (qualification.type && qualification.type.includes('advocate')));
 
     let firstName = personalDetails.firstName;
     let lastName = personalDetails.lastName;
@@ -113,7 +115,7 @@ const reportData = (db, exercise, applications) => {
       lastName = names.join(' ');
     }
 
-    return {
+    const data = {
       title: personalDetails.title || null,
       fullName: fullName || null,
       lastName: lastName || null,
@@ -136,6 +138,8 @@ const reportData = (db, exercise, applications) => {
       bsbNumber: bsb ? bsb.membershipNumber || null : null,
       qualifications: getFormattedQualifications(qualifications),
       qualificationsDates: getFormattedQualificationsDates(qualifications),
+      sraQualifications: qualifications.filter(e => e.type === 'solicitor').map(e => { return { type: e.type, location: e.location, membershipNumber: e.membershipNumber }; }),
+      bsbQualifications: qualifications.filter(e => e.type === 'barrister' || (e.type && e.type.includes('advocate'))).map(e => { return { type: e.type || '', location: e.location || '', membershipNumber: e.membershipNumber || '' }; }),
       otherMemberships: getFormattedOtherMemberships(exercise, application),
       jcioOffice: helpers.toYesNo(application.feePaidOrSalariedJudge) || null,
       jcioPosts: application.experience ? application.experience.map(e => e.jobTitle).join(', ') : null,
@@ -144,7 +148,27 @@ const reportData = (db, exercise, applications) => {
       gmcNumber: application.generalMedicalCouncilNumber || null,
       riscDate: helpers.formatDate(application.royalInstitutionCharteredSurveyorsDate),
       riscNumber: application.royalInstitutionCharteredSurveyorsNumber || null,
+      applicationId: application.id,
+      applicationReferenceNumber: application.referenceNumber,
+      applicationStatus: application.status,
     };
+
+
+    for (let i = 0; i < data.sraQualifications.length; i++) {
+      const membershipNumber = data.sraQualifications[i].membershipNumber;
+      data[`sraType${i+1}`] = data.sraQualifications[i].type;
+      data[`sraRegion${i+1}`] = data.sraQualifications[i].location;
+      data[`sraRegistrationNumber${i+1}`] = membershipNumber ? `${membershipNumber}` : null;
+    }
+
+    for (let i = 0; i < data.bsbQualifications.length; i++) {
+      const membershipNumber = data.bsbQualifications[i].membershipNumber;
+      data[`bsbType${i+1}`] = data.bsbQualifications[i].type;
+      data[`bsbRegion${i+1}`] = data.bsbQualifications[i].location;
+      data[`bsbRegistrationNumber${i+1}`] = membershipNumber ? `${membershipNumber}` : null;
+    }
+
+    return data;
   });
 
   /**

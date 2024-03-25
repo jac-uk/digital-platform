@@ -9,10 +9,14 @@ module.exports = (auth) => {
    */
   async function checkEnabledUserByEmail({ email }) {
     try {
-      const user = await auth.getUserByEmail(email);
+    const user = await auth.getUserByEmail(email);
       return !user.disabled;
     } catch(e) {
-      return false;
+      if (e.code === 'auth/user-not-found') {
+        return true;
+      } else {
+        return false;
+      }
     }
   }
 };

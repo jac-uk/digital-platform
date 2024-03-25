@@ -36,7 +36,7 @@ module.exports = (config) => {
       date: selectionDay.selectionDayStart,
       endDate: selectionDay.selectionDayEnd,
       dateString: null,
-      taskType: TASK_TYPE.SELECTION,
+      taskType: TASK_TYPE.SELECTION_DAY,
     };
 
     const selectionDayStart = getDateString(selectionDay.selectionDayStart);
@@ -86,7 +86,7 @@ module.exports = (config) => {
         }
       );
     }
-
+  
     if (data.applicationCloseDate) {
       timeline.push(
         {
@@ -96,7 +96,7 @@ module.exports = (config) => {
         }
       );
     }
-
+  
     if (data.shortlistingMethods && data.shortlistingMethods.length > 0) {
       if (data.shortlistingOutcomeDate) {
         timeline.push(
@@ -108,23 +108,23 @@ module.exports = (config) => {
           }
         );
       }
-
+  
       if (data.shortlistingMethods.includes('paper-sift')) {
         timeline.push(
           createShortlistingMethod('Sift', data.siftStartDate, data.siftEndDate, TASK_TYPE.SIFT)
         );
       }
-
+  
       if (data.shortlistingMethods.includes('name-blind-paper-sift')) {
         timeline.push(
           createShortlistingMethod('Name-blind sift', data.nameBlindSiftStartDate, data.nameBlindSiftEndDate, TASK_TYPE.SIFT)
         );
       }
-
+  
       if (data.shortlistingMethods.includes('telephone-assessment')) {
-        timeline.push(createShortlistingMethod('Telephone assessment', data.telephoneAssessmentStartDate, data.telephoneAssessmentEndDate, TASK_TYPE.TELEPHONE_ASSESSMENT));
+        timeline.push(createShortlistingMethod('Telephone assessment', data.telephoneAssessmentStartDate, data.telephoneAssessmentEndDate, TASK_TYPE.TELEPHONE_ASSESSMENT ));
       }
-
+  
       if (data.shortlistingMethods.includes('situational-judgement-qualifying-test')) {
         if (data.situationalJudgementTestDate) {
           timeline.push(
@@ -147,7 +147,7 @@ module.exports = (config) => {
           );
         }
       }
-
+  
       if (data.shortlistingMethods.includes('critical-analysis-qualifying-test')) {
         if (data.criticalAnalysisTestDate) {
           timeline.push(
@@ -170,7 +170,7 @@ module.exports = (config) => {
           );
         }
       }
-
+  
       if (data.shortlistingMethods.includes('scenario-test-qualifying-test')) {
         if (data.scenarioTestDate) {
           timeline.push(
@@ -194,7 +194,7 @@ module.exports = (config) => {
         }
       }
     }
-
+  
     if (!(data.assessmentMethods && data.assessmentMethods.independentAssessments === false)) {
       if (data.contactIndependentAssessors) {
         timeline.push(
@@ -202,11 +202,10 @@ module.exports = (config) => {
             entry: 'JAC Contacts Independent Assessors',
             date: data.contactIndependentAssessors,
             dateString: getDateString(data.contactIndependentAssessors),
-            // TODO make this a task
           }
         );
       }
-
+  
       if (data.independentAssessmentsReturnDate) {
         timeline.push(
           {
@@ -217,7 +216,7 @@ module.exports = (config) => {
         );
       }
     }
-
+  
     if (data.eligibilitySCCDate) {
       timeline.push(
         {
@@ -228,7 +227,28 @@ module.exports = (config) => {
         }
       );
     }
-
+  
+    if (data.preSelectionDayQuestionnaireSendDate) {
+      timeline.push(
+        {
+          entry: 'Selection Day Questionnaire - sent',
+          date: data.preSelectionDayQuestionnaireSendDate,
+          dateString: getDateString(data.preSelectionDayQuestionnaireSendDate),
+          taskType: TASK_TYPE.PRE_SELECTION_DAY_QUESTIONNAIRE,
+        }
+      );
+    }
+  
+    if (data.preSelectionDayQuestionnaireReturnDate) {
+      timeline.push(
+        {
+          entry: 'Selection Day Questionnaire - return',
+          date: data.preSelectionDayQuestionnaireReturnDate,
+          dateString: getDateString(data.preSelectionDayQuestionnaireReturnDate),
+        }
+      );
+    }
+  
     if (data.selectionDays && data.selectionDays.length > 0) {
       for (let i = 0; i < data.selectionDays.length; i++) {
         if (data.selectionDays[i].selectionDayStart) {
@@ -236,28 +256,47 @@ module.exports = (config) => {
         }
       }
     }
-
+  
     if (data.characterChecksDate) {
       timeline.push(
         {
-          entry: 'Character Checks',
+          entry: 'Character Checks - Candidate Consent sent',
           date: data.characterChecksDate,
           dateString: getDateString(data.characterChecksDate),
-          // TODO make this a task
         }
       );
     }
-
+  
     if (data.characterChecksReturnDate) {
       timeline.push(
         {
-          entry: 'Character Checks return',
+          entry: 'Character Checks - Candidate Consent return',
           date: data.characterChecksReturnDate,
           dateString: getDateString(data.characterChecksReturnDate),
         }
       );
     }
-
+  
+    if (data.characterChecksProfessionalDate) {
+      timeline.push(
+        {
+          entry: 'Character Checks - Professional Checks sent',
+          date: data.characterChecksProfessionalDate,
+          dateString: getDateString(data.characterChecksProfessionalDate),
+        }
+      );
+    }
+  
+    if (data.characterChecksProfessionalReturnDate) {
+      timeline.push(
+        {
+          entry: 'Character Checks - Professional Checks return',
+          date: data.characterChecksProfessionalReturnDate,
+          dateString: getDateString(data.characterChecksProfessionalReturnDate),
+        }
+      );
+    }
+  
     if (data.statutoryConsultationDate) {
       timeline.push(
         {
@@ -268,7 +307,7 @@ module.exports = (config) => {
         }
       );
     }
-
+  
     if (data.characterAndSCCDate) {
       timeline.push(
         {
@@ -279,24 +318,24 @@ module.exports = (config) => {
         }
       );
     }
-
+  
     if (data.finalOutcome) {
       timeline.push(
         {
           entry: 'Selection process outcome',
           date: data.finalOutcome,
-          dateString: getDateString(data.finalOutcome),
+          dateString: getDateString(data.finalOutcome, 'month'),
           taskType: TASK_TYPE.SELECTION_OUTCOME,
         }
       );
     }
-
+  
     if (data.equalMeritSecondStageStartDate) {
       timeline.push(
-        createShortlistingMethod('Equal merit second stage', data.equalMeritSecondStageStartDate, data.equalMeritSecondStageEndDate)
+        createShortlistingMethod('Equal merit second stage', data.equalMeritSecondStageStartDate, data.equalMeritSecondStageEndDate, TASK_TYPE.EMP_TIEBREAKER)
       );
     }
-
+  
     if (data.eMPSCCDate) {
       timeline.push(
         {
@@ -306,7 +345,7 @@ module.exports = (config) => {
         }
       );
     }
-
+  
     if (data.eMPOutcomeDate) {
       timeline.push(
         {
@@ -316,7 +355,7 @@ module.exports = (config) => {
         }
       );
     }
-
+  
     return timeline;
   }
 

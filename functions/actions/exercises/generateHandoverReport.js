@@ -2,7 +2,7 @@ const helpers = require('../../shared/converters/helpers');
 const lookup = require('../../shared/converters/lookup');
 const { getDocument, getDocuments, getAllDocuments, removeHtml } = require('../../shared/helpers');
 const applicationConverter = require('../../shared/converters/applicationConverter')();
-const { getLocationPreferences, getJurisdictionPreferences, getAdditionalWorkingPreferences, getWelshData } = applicationConverter;
+const { getAdditionalWorkingPreferences, getWelshData } = applicationConverter;
 
 module.exports = (firebase, db) => {
   return {
@@ -133,10 +133,14 @@ const reportHeaders = (exercise) => {
     );
   }
 
+  // separate additional working preferences
+  if (Array.isArray(exercise.additionalWorkingPreferences)) {
+    exercise.additionalWorkingPreferences.forEach((additionalWorkingPreference, index) => {
+      reportHeaders.push({ title: additionalWorkingPreference.question, ref: `additionalWorkingPreference${index}` });
+    });
+  }
+
   reportHeaders.push(
-    { title: 'Location Preferences', ref: 'locationPreferences' },
-    { title: 'Jurisdiction Preferences', ref: 'jurisdictionPreferences' },
-    { title: 'Additional Preferences', ref: 'additionalPreferences' },
     { title: 'Welsh posts', ref: 'welshPosts' }
   );
 
@@ -160,17 +164,18 @@ const reportData = (db, exercise, applicationRecords, applications) => {
     let qualifications;
     let memberships;
     if (exercise.typeOfExercise === 'legal' || exercise.typeOfExercise === 'leadership') {
-      qualifications = formatLegalData(application);
+      qualifications = formatLegalData(exercise, application);
     } else if (exercise.typeOfExercise === 'non-legal') {
       memberships = formatNonLegalData(application, exercise);
     }
 
-    const locationPreferences = application.locationPreferences && application.locationPreferences.length
-      ? getLocationPreferences(application, exercise).map(x => `${removeHtml(x.label)}\n${removeHtml(x.value)}`).join('\n\n') : '';
-    const jurisdictionPreferences = application.jurisdictionPreferences && application.jurisdictionPreferences.length
-      ? getJurisdictionPreferences(application, exercise).map(x => `${removeHtml(x.label)}\n${removeHtml(x.value)}`).join('\n\n') : '';
-    const additionalPreferences = application.additionalWorkingPreferences && application.additionalWorkingPreferences.length
-      ? getAdditionalWorkingPreferences(application, exercise).map(x => `${removeHtml(x.label)}\n${removeHtml(x.value)}`).join('\n\n') : '';
+    const additionalPreferences = {};
+    if (Array.isArray(application.additionalWorkingPreferences)) {
+      getAdditionalWorkingPreferences(application, exercise).forEach((additionalWorkingPreference, index) => {
+        additionalPreferences[`additionalWorkingPreference${index}`] = removeHtml(additionalWorkingPreference.value).replace('answer:', '').trim() || '';
+      });
+    }
+
     const welshPosts = exercise.welshRequirement
       ? getWelshData(application).map(x => `${removeHtml(x.label)}\n${removeHtml(x.value)}`).join('\n\n') : '';
     const partTimeWorkingPreferences = {
@@ -187,9 +192,7 @@ const reportData = (db, exercise, applicationRecords, applications) => {
       ...qualifications,
       ...memberships,
       ...formatDiversityData(application.equalityAndDiversitySurvey, exercise),
-      locationPreferences,
-      jurisdictionPreferences,
-      additionalPreferences,
+      ...additionalPreferences,
       welshPosts,
       ...partTimeWorkingPreferences,
     };
@@ -215,11 +218,13 @@ const formatPersonalDetails = (personalDetails) => {
 
   let formattedPreviousAddresses;
   if (personalDetails.address && !personalDetails.address.currentMoreThan5Years) {
-    formattedPreviousAddresses = personalDetails.address.previous.map((address) => {
-      const dates = `${helpers.formatDate(address.startDate)} - ${helpers.formatDate(address.endDate)}`;
-      const formattedAddress = formatAddress(address);
-      return `${dates} ${formattedAddress}`;
-    }).join('\n\n');
+    if (personalDetails.address.previous) {
+      formattedPreviousAddresses = personalDetails.address.previous.map((address) => {
+        const dates = `${helpers.formatDate(address.startDate)} - ${helpers.formatDate(address.endDate)}`;
+        const formattedAddress = formatAddress(address);
+        return `${dates} ${formattedAddress}`;
+      }).join('\n\n');  
+    }
   }
 
   let candidate = {
@@ -281,7 +286,7 @@ const formatDiversityData = (survey, exercise) => {
   return formattedDiversityData;
 };
 
-const formatLegalData = (application) => {
+const formatLegalData = (exercise, application) => {
   let qualifications = '';
   if (application.qualifications && Array.isArray(application.qualifications)) {
     qualifications = application.qualifications.map(qualification => {
@@ -294,14 +299,7 @@ const formatLegalData = (application) => {
     }).join('\n');
   }
 
-  let judicialExperience;
-  if (application.feePaidOrSalariedJudge) {
-    judicialExperience = `Fee paid or salaried judge - ${lookup(application.feePaidOrSalariedSittingDaysDetails)} days`;
-  } else if (application.declaredAppointmentInQuasiJudicialBody) {
-    judicialExperience = `Quasi-judicial body - ${lookup(application.quasiJudicialSittingDaysDetails)} days`;
-  } else {
-    judicialExperience = `Acquired skills in other way - ${lookup(application.skillsAquisitionDetails)}`;
-  }
+  const judicialExperience = helpers.getJudicialExperienceString(exercise, application);
 
   return {
     qualifications: qualifications,

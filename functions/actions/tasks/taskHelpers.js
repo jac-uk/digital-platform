@@ -5,6 +5,9 @@ const { convertToDate, calculateMean, calculateStandardDeviation } = require('..
 module.exports = (config) => {
   const exerciseTimeline = require('../../shared/Timeline/exerciseTimeline.TMP')(config);
   const TASK_TYPE = config.TASK_TYPE;
+  const SHORTLISTING_TASK_TYPES = config.SHORTLISTING_TASK_TYPES;
+  const TASK_STATUS = config.TASK_STATUS;
+  const APPLICATION_STATUS = config.APPLICATION.STATUS;
   return {
     scoreSheet,
     getTimelineDate,
@@ -20,6 +23,7 @@ module.exports = (config) => {
     hasQualifyingTest,
     getApplicationPassStatus,
     getApplicationFailStatus,
+    getApplicationDidNotParticipateStatus,
     getApplicationPassStatuses,
     getApplicationFailStatuses,
     includeZScores,
@@ -28,57 +32,65 @@ module.exports = (config) => {
   function taskStatuses(taskType) {
     let availableStatuses = [];
     switch (taskType) {
-      case config.TASK_TYPE.CRITICAL_ANALYSIS:
-      case config.TASK_TYPE.SITUATIONAL_JUDGEMENT:
+      case TASK_TYPE.CRITICAL_ANALYSIS:
+      case TASK_TYPE.SITUATIONAL_JUDGEMENT:
         availableStatuses = [
-          config.TASK_STATUS.TEST_INITIALISED,
-          config.TASK_STATUS.TEST_ACTIVATED,
-          config.TASK_STATUS.FINALISED,
-          config.TASK_STATUS.COMPLETED,
+          TASK_STATUS.TEST_INITIALISED,
+          TASK_STATUS.TEST_ACTIVATED,
+          TASK_STATUS.FINALISED,
+          TASK_STATUS.COMPLETED,
         ];
         break;
-      case config.TASK_TYPE.QUALIFYING_TEST:
+      case TASK_TYPE.QUALIFYING_TEST:
         availableStatuses = [
-          config.TASK_STATUS.FINALISED,
-          config.TASK_STATUS.COMPLETED,
+          TASK_STATUS.FINALISED,
+          TASK_STATUS.COMPLETED,
         ];
         break;
-      case config.TASK_TYPE.SCENARIO:
+      case TASK_TYPE.SCENARIO:
+      case TASK_TYPE.EMP_TIEBREAKER:
         availableStatuses = [
-          config.TASK_STATUS.TEST_INITIALISED,
-          config.TASK_STATUS.TEST_ACTIVATED,
-          // config.TASK_STATUS.PANELS_INITIALISED,
-          // config.TASK_STATUS.PANELS_ACTIVATED,
-          config.TASK_STATUS.DATA_ACTIVATED,
-          config.TASK_STATUS.FINALISED,
-          config.TASK_STATUS.COMPLETED,
+          TASK_STATUS.TEST_INITIALISED,
+          TASK_STATUS.TEST_ACTIVATED,
+          // TASK_STATUS.PANELS_INITIALISED,
+          // TASK_STATUS.PANELS_ACTIVATED,
+          TASK_STATUS.DATA_ACTIVATED,
+          TASK_STATUS.FINALISED,
+          TASK_STATUS.COMPLETED,
         ];
         break;
-      case config.TASK_TYPE.TELEPHONE_ASSESSMENT:
-      case config.TASK_TYPE.ELIGIBILITY_SCC:
-      case config.TASK_TYPE.STATUTORY_CONSULTATION:
-      case config.TASK_TYPE.CHARACTER_AND_SELECTION_SCC:
+      case TASK_TYPE.TELEPHONE_ASSESSMENT:
+      case TASK_TYPE.ELIGIBILITY_SCC:
+      case TASK_TYPE.STATUTORY_CONSULTATION:
+      case TASK_TYPE.CHARACTER_AND_SELECTION_SCC:
           availableStatuses = [
-          config.TASK_STATUS.STATUS_CHANGES,
-          config.TASK_STATUS.COMPLETED,
+          TASK_STATUS.STATUS_CHANGES,
+          TASK_STATUS.COMPLETED,
         ];
         break;
-      case config.TASK_TYPE.SIFT:
-      case config.TASK_TYPE.SELECTION:
+      case TASK_TYPE.PRE_SELECTION_DAY_QUESTIONNAIRE:
         availableStatuses = [
-          config.TASK_STATUS.DATA_INITIALISED,
-          config.TASK_STATUS.DATA_ACTIVATED,
-          // config.TASK_STATUS.PANELS_INITIALISED,
-          // config.TASK_STATUS.PANELS_ACTIVATED,
-          config.TASK_STATUS.FINALISED,
-          config.TASK_STATUS.COMPLETED,
+          TASK_STATUS.CANDIDATE_FORM_CONFIGURE,
+          TASK_STATUS.CANDIDATE_FORM_MONITOR,
+          TASK_STATUS.COMPLETED,
         ];
         break;
-      case config.TASK_TYPE.SHORTLISTING_OUTCOME:
-      case config.TASK_TYPE.SELECTION_OUTCOME:
+      case TASK_TYPE.SIFT:
+      case TASK_TYPE.SELECTION_DAY:
         availableStatuses = [
-          config.TASK_STATUS.STAGE_OUTCOME,
-          config.TASK_STATUS.COMPLETED,
+          TASK_STATUS.DATA_INITIALISED,
+          TASK_STATUS.DATA_ACTIVATED,
+          // TASK_STATUS.PANELS_INITIALISED,
+          // TASK_STATUS.PANELS_ACTIVATED,
+          TASK_STATUS.FINALISED,
+          TASK_STATUS.COMPLETED,
+        ];
+        break;
+      case TASK_TYPE.SHORTLISTING_OUTCOME:
+      case TASK_TYPE.SELECTION_OUTCOME:
+        availableStatuses = [
+          TASK_STATUS.STAGE_OUTCOME,
+          TASK_STATUS.COMPLETED,
         ];
         break;
     }
@@ -123,6 +135,21 @@ module.exports = (config) => {
     }
     // end
     return `${task.type}Passed`;
+  }
+
+  function getApplicationDidNotParticipateStatus(exercise, task) {
+    switch (task.type) {
+    case TASK_TYPE.CRITICAL_ANALYSIS:
+    case TASK_TYPE.SITUATIONAL_JUDGEMENT:
+    case TASK_TYPE.QUALIFYING_TEST:
+      return 'noTestSubmitted';
+    case TASK_TYPE.SCENARIO:
+      return 'noScenarioTestSubmitted';
+    // case TASK_TYPE.PRE_SELECTION_DAY_QUESTIONNAIRE:
+    //   return 'noSelectionDayQuestionnaireSubmitted';
+    default:
+      return null;
+    }
   }
 
   function getApplicationFailStatus(exercise, task) {
@@ -185,7 +212,7 @@ module.exports = (config) => {
       case config.TASK_TYPE.SIFT:
         scoreSheet[type] = exercise.capabilities.reduce((acc, curr) => (acc[curr] = '', acc), {});
         break;
-      case config.TASK_TYPE.SELECTION:
+      case config.TASK_TYPE.SELECTION_DAY:
         exercise.selectionCategories.forEach(category => {
           scoreSheet[category] = exercise.capabilities.reduce((acc, curr) => (acc[curr] = '', acc), {});
         });
@@ -248,7 +275,7 @@ module.exports = (config) => {
       console.log('sift', getExerciseCapabilities(exercise));
       markingScheme.push(createMarkingSchemeGroup(taskType, getExerciseCapabilities(exercise)));
       break;
-    case config.TASK_TYPE.SELECTION:
+    case config.TASK_TYPE.SELECTION_DAY:
       getExerciseSelectionCategories(exercise).forEach(cat => {
         markingScheme.push(createMarkingSchemeGroup(cat, getExerciseCapabilities(exercise)));
       });
@@ -276,7 +303,50 @@ module.exports = (config) => {
 
   function getTimelineTasks(exercise, taskType) {
     const timeline = createTimeline(exerciseTimeline(exercise));
-    const timelineTasks = timeline.filter(item => item.taskType && (!taskType || item.taskType === taskType));
+    let timelineTasks = timeline.filter(item => item.taskType && (!taskType || item.taskType === taskType));
+    let supportedTaskTypes = [];
+    if (exercise._processingVersion >= 2) {
+      supportedTaskTypes = [
+        TASK_TYPE.TELEPHONE_ASSESSMENT,
+        TASK_TYPE.SIFT,
+        TASK_TYPE.CRITICAL_ANALYSIS,
+        TASK_TYPE.SITUATIONAL_JUDGEMENT,
+        TASK_TYPE.QUALIFYING_TEST,
+        TASK_TYPE.SCENARIO,
+        TASK_TYPE.SHORTLISTING_OUTCOME,
+        TASK_TYPE.ELIGIBILITY_SCC,
+        TASK_TYPE.STATUTORY_CONSULTATION,
+        TASK_TYPE.CHARACTER_AND_SELECTION_SCC,
+        TASK_TYPE.EMP_TIEBREAKER,
+        TASK_TYPE.PRE_SELECTION_DAY_QUESTIONNAIRE,
+        TASK_TYPE.SELECTION_DAY,
+      ];
+    } else {
+      supportedTaskTypes = [
+        TASK_TYPE.CRITICAL_ANALYSIS,
+        TASK_TYPE.SITUATIONAL_JUDGEMENT,
+        TASK_TYPE.QUALIFYING_TEST,
+        TASK_TYPE.SCENARIO,
+        TASK_TYPE.EMP_TIEBREAKER,
+      ];
+    }
+    timelineTasks = timelineTasks.filter(task => supportedTaskTypes.indexOf(task.taskType) >= 0);
+    if (timelineTasks.find((item) => item.taskType === TASK_TYPE.SHORTLISTING_OUTCOME)) {  // ensure shortlisting outcome comes after shortlisting methods!
+      let shortlistingOutcomeIndex = -1;
+      let lastShortlistingMethodIndex = -1;
+      timelineTasks.forEach((item, index) => {
+        if (item.taskType === TASK_TYPE.SHORTLISTING_OUTCOME) shortlistingOutcomeIndex = index;
+        if (
+          (SHORTLISTING_TASK_TYPES.indexOf(item.taskType) >= 0)
+          && index > lastShortlistingMethodIndex
+        ) {
+          lastShortlistingMethodIndex = index;
+        }
+      });
+      if (lastShortlistingMethodIndex > shortlistingOutcomeIndex) {
+        timelineTasks.splice(lastShortlistingMethodIndex, 0, timelineTasks.splice(shortlistingOutcomeIndex, 1)[0]);
+      }
+    }
     return timelineTasks;
   }
 
@@ -317,6 +387,7 @@ module.exports = (config) => {
   function taskApplicationsEntryStatus(exercise, type) {
     let status = '';
     if (!exercise) return status;
+    if (type === TASK_TYPE.EMP_TIEBREAKER) return APPLICATION_STATUS.SCC_TO_RECONSIDER;  // TODO: remove this eventually: override entry status for EMP tie-breakers
     const prevTaskType = previousTaskType(exercise, type);
     if (prevTaskType) {
       console.log('previousTaskType', prevTaskType);
@@ -450,6 +521,7 @@ module.exports = (config) => {
   ```
    * @returns Provided `finalScores` array decorated with new `zScore` properties
    * Note: zScore = ((% Score – Mean(All % Scores))/SD(All % Scores))
+   * Note: combined zScore has a weighting of 40% of CAT zScore plus 60% of SJT zScore
    **/
   function includeZScores(finalScores) {
     if (!finalScores) return [];
@@ -466,11 +538,11 @@ module.exports = (config) => {
       const CAstdev = calculateStandardDeviation(CApercents);
       const SJstdev = calculateStandardDeviation(SJpercents);
       finalScores.forEach(item => {
-        item.scoreSheet.qualifyingTest.CA.zScore = (item.scoreSheet.qualifyingTest.CA.percent - CAmean) / CAstdev;
-        item.scoreSheet.qualifyingTest.SJ.zScore = (item.scoreSheet.qualifyingTest.SJ.percent - SJmean) / SJstdev;
+        item.scoreSheet.qualifyingTest.CA.zScore = CAstdev ? (item.scoreSheet.qualifyingTest.CA.percent - CAmean) / CAstdev : 0;
+        item.scoreSheet.qualifyingTest.SJ.zScore = SJstdev ? (item.scoreSheet.qualifyingTest.SJ.percent - SJmean) / SJstdev : 0;
       });
       finalScores.forEach(item => {
-        item.zScore = (item.scoreSheet.qualifyingTest.CA.zScore + item.scoreSheet.qualifyingTest.SJ.zScore) / 2;
+        item.zScore = (0.4 * item.scoreSheet.qualifyingTest.CA.zScore) + (0.6 * item.scoreSheet.qualifyingTest.SJ.zScore);
         item.scoreSheet.qualifyingTest.zScore = item.zScore;
       });
     } catch (e) {

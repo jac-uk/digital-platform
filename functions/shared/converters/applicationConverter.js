@@ -2,7 +2,8 @@
 
 const htmlWriter = require('../htmlWriter');
 const lookup = require('./lookup');
-const {addField, formatDate, toDateString, toYesNo} = require('./helpers');
+const { addField, formatDate, toYesNo } = require('./helpers');
+const helpers = require('../../shared/helpers');
 
 module.exports = () => {
 
@@ -60,12 +61,14 @@ module.exports = () => {
 
       if (exercise.typeOfExercise === 'legal' || exercise.typeOfExercise === 'leadership') {
         html.addHeading('Post-qualification experience');
-        html.addTable(getPostQualificationData(application));
+        html.addTable(getPostQualificationData(application, exercise));
       }
 
       if ((exercise.typeOfExercise === 'legal' || exercise.typeOfExercise === 'leadership') && exercise.previousJudicialExperienceApply) {
-        html.addHeading('Judicial experience');
-        html.addTable(getJudicialExperience(application, exercise));
+        if (exercise._applicationVersion < 3) {
+          html.addHeading('Judicial experience');
+          html.addTable(getJudicialExperience(application, exercise));
+        }
       }
 
       if (exercise.typeOfExercise === 'non-legal' || exercise.typeOfExercise === 'leadership-non-legal') {
@@ -192,17 +195,40 @@ module.exports = () => {
     return data;
   }
 
-  function getPostQualificationData(application) {
+  function getPostQualificationData(application, exercise) {
     const experienceData = application.experience;
     const data = [];
     if (experienceData && experienceData.length) {
       experienceData.forEach((e, idx) => {
+        const dates = [];
+        if (e.startDate) dates.push(helpers.formatDate(e.startDate, 'MMM YYYY'));
+        if (e.isOngoing) dates.push('Ongoing');
+        else if (e.endDate) dates.push(helpers.formatDate(e.endDate, 'MMM YYYY'));
+
         addField(data, 'Job title', e.jobTitle, idx !== 0);
         addField(data, 'Organisation or business', e.orgBusinessName);
-        addField(data, 'Dates worked', `${formatDate(e.startDate)} - ${formatDate(e.endDate) || 'current'}`);
+        addField(data, 'Dates worked', dates.join(' - '));
         addField(data, 'Law related tasks', formatLawRelatedTasks(e));
+
+        // check if application version is 3 or above
+        if (Array.isArray(e.tasks) && e.tasks.includes('judicial-functions') && exercise._applicationVersion >= 3 && e.judicialFunctions) {
+          const { type, duration, isLegalQualificationRequired, details } = e.judicialFunctions;
+          addField(data, 'Is this a judicial or quasi-judicial post?', type ? lookup(type) : '');
+          addField(data, 'How many sitting days have you accumulated in this post?', duration || '');
+          addField(data, 'Is a legal qualification a requisite for appointment?', toYesNo(isLegalQualificationRequired) || '');
+
+          if (type === 'quasi-judicial-post') {
+            addField(data, 'Powers, procedures and main responsibilities', details || '');
+          }
+        }
       });
     }
+
+    // check if application version is 3 or above
+    if (exercise._applicationVersion >= 3) {
+      addField(data, 'Details of how you have acquired the necessary skills', application.experienceDetails);
+    }
+
     return data;
   }
 

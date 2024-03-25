@@ -1,8 +1,8 @@
 'use strict';
 
 const config = require('./shared/config');
-const { app, db } = require('./shared/admin.js');
-const { flagApplicationIssuesForExercise } = require('../functions/actions/applications/flagApplicationIssues')(config, db);
+const { firebase, app, db } = require('./shared/admin.js');
+const { flagApplicationIssuesForExercise } = require('../functions/actions/applications/flagApplicationIssues')(firebase, config, db);
 
 const main = async () => {
   return flagApplicationIssuesForExercise('wdpALbyICL7ZxxN5AQt8');

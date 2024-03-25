@@ -1,6 +1,7 @@
-const { getDocument, getDocuments, isEmpty, applyUpdates, getDate, formatDate } = require('../../shared/helpers');
+const { getDocument, getDocuments, isEmpty, applyUpdates, getDate } = require('../../shared/helpers');
+const lookup = require('../../shared/converters/lookup');
 
-module.exports = (config, db) => {
+module.exports = (firebase, config, db) => {
   return {
     flagApplicationIssues,
     flagApplicationIssuesForExercise,
@@ -68,23 +69,51 @@ module.exports = (config, db) => {
       .where('status', '==', 'applied')
     );
 
+    /**
+     * {
+     *    stage1 : {
+     *        status1: 1,
+     *        status2: 2
+     *    },
+     *    stage2 : {
+     *        status3: 5,
+     *    },
+     * }
+     */
+    // count application stage and status for character issue report
+    const characterIssueStatusCounts = {};
+
     // construct commands
     const commands = [];
     for (let i = 0, len = applications.length; i < len; ++i) {
       const eligibilityIssues = getEligibilityIssues(exercise, applications[i]);
       const characterIssues = getCharacterIssues(exercise, applications[i]);
+      
+      const processing = applications[i]._processing;
+      const stage = processing ? processing.stage : '';
+      const status = processing ? processing.status : '';
 
       const data = {};
       if (eligibilityIssues && eligibilityIssues.length > 0) {
         data['flags.eligibilityIssues'] = true;
+        // check if all eligibility issues are met
+        data['flags.eligibilityIssuesMet'] = eligibilityIssues.every(issue => ['rls', 'pq', 'pqe', 'pje'].includes(issue.type) ? issue.summary.indexOf('Met') === 0 : true);
         data['issues.eligibilityIssues'] = eligibilityIssues;
       } else {
         data['flags.eligibilityIssues'] = false;
+        data['flags.eligibilityIssuesMet'] = false;
         data['issues.eligibilityIssues'] = [];
       }
       if (characterIssues && characterIssues.length > 0) {
         data['flags.characterIssues'] = true;
         data['issues.characterIssues'] = characterIssues;
+
+        if (stage && status) {
+          if (!characterIssueStatusCounts[stage]) characterIssueStatusCounts[stage] = {};
+          if (!characterIssueStatusCounts[stage][status]) characterIssueStatusCounts[stage][status] = 0;
+          characterIssueStatusCounts[stage][status] += 1;
+        }
+
       } else {
         data['flags.characterIssues'] = false;
         data['issues.characterIssues'] = [];
@@ -99,6 +128,34 @@ module.exports = (config, db) => {
       }
     }
 
+    // count application status
+    commands.push({
+      command: 'set',
+      ref: db.collection('exercises').doc(`${exerciseId}`),
+      data: {
+        '_characterIssue': {
+          'statusCounts': characterIssueStatusCounts,
+        },
+      },
+    });
+    // add timestamp for character and eligibility issues reports
+    commands.push(
+      {
+        command: 'set',
+        ref: db.collection('exercises').doc(exerciseId).collection('reports').doc('characterIssues'),
+        data: {
+          createdAt: firebase.firestore.Timestamp.fromDate(new Date()),
+        },
+      },
+      {
+        command: 'set',
+        ref: db.collection('exercises').doc(exerciseId).collection('reports').doc('eligibilityIssues'),
+        data: {
+          createdAt: firebase.firestore.Timestamp.fromDate(new Date()),
+        },
+      }
+    );
+
     // write to db
     const result = await applyUpdates(db, commands);
 
@@ -110,15 +167,6 @@ module.exports = (config, db) => {
 
     const issues = [];
 
-    // citizenship
-    if (application.personalDetails && application.personalDetails.citizenship) {
-      if (['uk', 'republic-of-ireland', 'another-commonwealth-country'].indexOf(application.personalDetails.citizenship) < 0) {
-        issues.push(newIssue('citizenship', 'Not a UK, RoI or Commonwealth citizen'));
-      }
-    } else {
-      issues.push(newIssue('citizenship', 'No citizenship information'));
-    }
-
     // reasonable length of service - calculated from dob, characterAndSCCDate, reasonable length of service and retirement age
     if (application.personalDetails && application.personalDetails.dateOfBirth) {
       const reasonableLengthOfService = parseInt(exercise.reasonableLengthService === 'other' ? exercise.otherLOS : exercise.reasonableLengthService);
@@ -129,20 +177,26 @@ module.exports = (config, db) => {
       const dateOfRetirement = new Date(dateOfBirth.getFullYear() + retirementAge, dateOfBirth.getMonth(), dateOfBirth.getDate());
       const age = new Duration(dateOfBirth, expectedEndDate).toString();
       if (application.canGiveReasonableLOS === false) {
-        issues.push(newIssue('rls', `Self-declared. Candidate will be ${age} old at end of service. DOB: ${formatDate(dateOfBirth)}. Candidate comments: ${application.cantGiveReasonableLOSDetails}`));
+        issues.push(newIssue('rls', `Not Met (${application.cantGiveReasonableLOSDetails})`));
       } else {
         if (expectedEndDate > dateOfRetirement) {
-          issues.push(newIssue('rls', `Candidate will be ${age} old at end of service. DOB: ${formatDate(dateOfBirth)}`));
+          issues.push(newIssue('rls', 'Not Met'));
+        } else {
+          issues.push(newIssue('rls', 'Met'));
         }
       }
     } else {
-      issues.push(newIssue('rls', 'No date of birth provided'));
+      issues.push(newIssue('rls', 'Not Met (No date of birth provided)'));
     }
 
-    // post qualification experience
     if (['legal', 'leadership'].indexOf(exercise.typeOfExercise) >= 0) {
+      // professional qualification
+      const qualificationIssue = getQualificationIssue(exercise, application);
+      if (qualificationIssue) issues.push(qualificationIssue);
+
       const minimumYearsExperience = exercise.postQualificationExperience === 'other' ? exercise.otherYears : exercise.postQualificationExperience;
 
+      // post qualification experience
       if (application.qualifications && application.qualifications.length) {
         application.qualifications = application.qualifications.filter((el) => el.date);
         if (application.qualifications.length) {
@@ -173,6 +227,8 @@ module.exports = (config, db) => {
               // @TODO look for any un-explained gaps > 1 year
               const el = experienceSinceFirstQualification[i];
               const startDate = getDate(el.startDate) < latestValidEndDate ? latestValidEndDate : getDate(el.startDate);
+              // subtract 1 month from the total calculated
+              startDate.setMonth(startDate.getMonth() + 1);
               const endDate = el.endDate ? getDate(el.endDate) : getDate(exercise.characterAndSCCDate);
               if (el.tasks && el.tasks.length > 0) {
                 if (el.tasks.indexOf('other') >= 0) {
@@ -188,26 +244,104 @@ module.exports = (config, db) => {
             if (relevantExperience.years < minimumYearsExperience) {
               if (relevantExperience.hasValue()) {
                 if (otherExperience.hasValue()) {
-                  issues.push(newIssue('pqe', `Candidate has ${relevantExperience.toString()} of relevant experience and ${otherExperience.toString()} to be checked`));
+                  issues.push(newIssue('pqe', `Not Met (Candidate has ${relevantExperience.toString()} of relevant experience and ${otherExperience.toString()} to be checked)`));
                 } else {
-                  issues.push(newIssue('pqe', `Candidate has ${relevantExperience.toString()} of relevant experience`));
+                  issues.push(newIssue('pqe', `Not Met (${relevantExperience.toString()})`));
                 }
               } else {
-                issues.push(newIssue('pqe', 'Candidate has no relevant experience'));
+                issues.push(newIssue('pqe', 'Not Met (Candidate has no relevant experience)'));
               }
+            } else {
+              issues.push(newIssue('pqe', `Met (${relevantExperience.toString()})`));
             }
           } else {
-            issues.push(newIssue('pqe', 'No experience provided'));
+            issues.push(newIssue('pqe', 'Not Met (No experience provided)'));
           }
         } else {
-          issues.push(newIssue('pqe', 'No qualifications provided'));
+          issues.push(newIssue('pqe', 'Not Met (No qualifications provided)'));
         }
       } else {
-        issues.push(newIssue('pqe', 'No qualifications provided'));
+        issues.push(newIssue('pqe', 'Not Met (No qualifications provided)'));
       }
+
+      // previous judicial experience
+      const previousJudicialExperienceIssue = getPreviousJudicialExperienceIssue(exercise, application);
+      if (previousJudicialExperienceIssue) issues.push(previousJudicialExperienceIssue);
+
+    } else if (['non-legal', 'leadership-non-legal'].includes(exercise.typeOfExercise)) {
+      // non-legal exercise
+
+      // professional registration
+      const professionalRegistrationIssue = getProfessionalRegistrationIssue(exercise, application);
+      if (professionalRegistrationIssue) issues.push(professionalRegistrationIssue);
     }
 
     return issues;
+  }
+
+  function getQualificationIssue(exercise, application) {
+    if (!exercise.qualifications || !exercise.qualifications.length) return null;
+    if (!application.qualifications || !application.qualifications.length) return newIssue('pq', 'Not Met');
+
+    let isMet = false;
+    for (let i = 0; i < exercise.qualifications.length; i++) {
+      const qualification = exercise.qualifications[i];
+      if (application.qualifications.find(item => item.type === qualification)) {
+        isMet = true;
+        break;
+      }
+    }
+
+    return newIssue('pq', isMet ? 'Met' : 'Not Met');
+  }
+
+  function getPreviousJudicialExperienceIssue(exercise, application) {
+    if (!exercise.pjeDays) return null;
+
+    // met: the number of sitting days acquired by the candidate (PQE is `judicial` with`the carrying-out of judicial functions of any court or tribunal`) is greater than or equal to what is requested
+    let isMet = false;
+
+    if (exercise._applicationVersion > 2) {
+      if (Array.isArray(application.experience)) {
+        const totalJudicialDays = application.experience.reduce((acc, cur) => {
+          if (Array.isArray(cur.tasks) && cur.tasks.includes('judicial-functions') && cur.judicialFunctions && cur.judicialFunctions.type === 'judicial-post' && cur.judicialFunctions.duration) {
+            acc += cur.judicialFunctions.duration;
+          }
+          return acc;
+        }, 0);
+        if (totalJudicialDays >= exercise.pjeDays) {
+          isMet = true;
+        }
+      }
+    } else {
+      if (application.feePaidOrSalariedSatForThirtyDays) {
+        isMet = true;
+      }
+    }
+
+    return newIssue('pje', isMet ? 'Met' : 'Not Met');
+  }
+
+  function getProfessionalRegistrationIssue(exercise, application) {
+    if (!exercise.memberships || !exercise.memberships.length || exercise.memberships.indexOf('none') > -1) return null;
+
+    const membershipData = [];
+    const membershipList = [
+      { field: 'charteredAssociationBuildingEngineersNumber', value: 'chartered-association-of-building-engineers' },
+      { field: 'charteredInstituteBuildingNumber', value: 'chartered-institute-of-building' },
+      { field: 'charteredInstituteEnvironmentalHealthNumber', value: 'chartered-institute-of-environmental-health' },
+      { field: 'generalMedicalCouncilNumber', value: 'general-medical-council' },
+      { field: 'royalCollegeOfPsychiatristsNumber', value: 'royal-college-of-psychiatrists' },
+      { field: 'royalInstitutionCharteredSurveyorsNumber', value: 'royal-institution-of-chartered-surveyors' },
+      { field: 'royalInstituteBritishArchitectsNumber', value: 'royal-institute-of-british-architects' },
+    ];
+    membershipList.forEach(item => {
+      if (application[item.field]) {
+        membershipData.push(lookup(item.value));
+      }
+    });
+
+    return newIssue('pr', membershipData.join(', '));
   }
 
   function getCharacterIssues(exercise, application) {

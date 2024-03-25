@@ -123,7 +123,65 @@ const attendedUKStateSchool = (equalityAndDiversitySurvey, exercise) => {
 };
 
 const applicationOpenDatePost01042023 = (exercise) => {
+  const usesPre01042023Questions = ['JAC00130', 'JAC00123', 'JAC00164'].includes(exercise.referenceNumber);
+  if (usesPre01042023Questions) {
+    return false;
+  }
   return Object.prototype.hasOwnProperty.call(exercise, 'applicationOpenDate') && exercise.applicationOpenDate.toDate() > new Date('2023-04-01');
+};
+
+/**
+ * Returns the number with its corresponding ordinal suffix.
+ *
+ * @param {number} n - The number for which the ordinal suffix needs to be determined.
+ * @returns {string} - The input number with its corresponding ordinal suffix.
+ *
+ * @example
+ * const result = ordinal(1);
+ * console.log(result); // Output: 1st
+ */
+const ordinal = (n) => {
+  const s = ['th', 'st', 'nd', 'rd'];
+  const v = n % 100;
+  return n + (s[(v - 20) % 10] || s[v] || s[0]);
+};
+
+const getJudicialExperienceString = (exercise, application) => {
+  let judicialExperience = '';
+  if (exercise._applicationVersion >= 3) {
+    let judicialExperiences = [];
+    let quasiJudicialExperiences = [];
+    Array.isArray(application.experience) && application.experience.forEach(experience => {
+      if (experience.jobTitle && experience.judicialFunctions) {
+        if (experience.judicialFunctions.type === 'judicial-post') {
+          judicialExperiences.push(experience.jobTitle);
+        } else if (experience.judicialFunctions.type === 'quasi-judicial-post') {
+          quasiJudicialExperiences.push(experience.jobTitle);
+        }
+      }
+    });
+
+    if (judicialExperiences.length) {
+      judicialExperience += `Judicial - ${judicialExperiences.join(', ')}\n`;
+    }
+    if (quasiJudicialExperiences.length) {
+      judicialExperience += `Quasi-judicial - ${quasiJudicialExperiences.join(', ')}`;
+    }
+
+    if (!judicialExperience) {
+      judicialExperience = `Acquired skills in other way - ${lookup(application.experienceDetails)}`;
+    }
+  } else {
+    if (application.feePaidOrSalariedJudge) {
+      judicialExperience = `Fee paid or salaried judge - ${lookup(application.feePaidOrSalariedSittingDaysDetails)} days`;
+    } else if (application.declaredAppointmentInQuasiJudicialBody) {
+      judicialExperience = `Quasi-judicial body - ${lookup(application.quasiJudicialSittingDaysDetails)} days`;
+    } else {
+      judicialExperience = `Acquired skills in other way - ${lookup(application.skillsAquisitionDetails)}`;
+    }
+  }
+
+  return judicialExperience;
 };
 
 module.exports = {
@@ -137,4 +195,6 @@ module.exports = {
   flattenProfessionalBackground,
   attendedUKStateSchool,
   applicationOpenDatePost01042023,
+  ordinal,
+  getJudicialExperienceString,
 };

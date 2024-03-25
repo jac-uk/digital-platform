@@ -7,22 +7,21 @@ module.exports = (firebase, db) => {
 
   async function generateReasonableAdjustmentsReport(exerciseId) {
 
-    // get submitted applications that have reasonable adjustments
-    const applications = await getDocuments(db.collection('applications')
-      .where('exerciseId', '==', exerciseId)
-      .where('status', '==', 'applied')
-      .where('personalDetails.reasonableAdjustments', '==', true)
+    // get application records that have reasonable adjustments
+    const applicationRecords = await getDocuments(db.collection('applicationRecords')
+      .where('exercise.id', '==', exerciseId)
+      .where('candidate.reasonableAdjustments', '==', true)
     );
 
     // get report headers
     const headers = reportHeaders();
 
     // get report rows
-    const rows = await reportData(firebase, db, applications);
+    const rows = await reportData(firebase, db, applicationRecords, exerciseId);
 
     // construct the report document
     const report = {
-      totalApplications: applications.length,
+      totalApplications: applicationRecords.length,
       createdAt: firebase.firestore.Timestamp.fromDate(new Date()),
       headers,
       rows,
@@ -46,9 +45,12 @@ const reportHeaders = () => {
     { title: 'Name', ref: 'name' },
     { title: 'Email', ref: 'email' },
     { title: 'Phone number', ref: 'phone' },
-    { title: 'Details', ref: 'details' },
-    { title: 'Most recent exercise', ref: 'mostRecentExercise' },
-    { title: 'Most recent details', ref: 'mostRecentDetails' },
+    { title: 'Details provided by candidate', ref: 'details' },
+    { title: 'RA applied to', ref: 'reason' },
+    { title: 'Approval Status', ref: 'status' },
+    { title: 'RA allocated', ref: 'timeAllocation' },
+    { title: 'Describe RA given', ref: 'note' },
+    { title: 'Most Recent Exercise', ref: 'mostRecentExercise' },
   ];
 };
 
@@ -57,42 +59,64 @@ const reportHeaders = () => {
  *
  * @param {firebase} firebase
  * @param {db} db
- * @param {array} applications
+ * @param {array} applicationRecords
+ * @param {string} exerciseId
+ *  
  * @returns {array}
  */
-const reportData = async (firebase, db, applications) => {
+const reportData = async (firebase, db, applicationRecords, exerciseId) => {
   const data = [];
-  for (const application of applications) {
-    // get most recent reasonable adjustments
-    const otherApplications = await getDocuments(db.collection('applications')
-      .where('userId', '==', application.userId)
-      .where('referenceNumber', '!=', application.referenceNumber)
-      .where('personalDetails.reasonableAdjustments', '==', true)
-      .orderBy('referenceNumber', 'desc')
-      .orderBy('appliedAt', 'desc')
-      .limit(1)
-    );
+  // get applications for personal details
+  const applications = await getDocuments(db.collection('applications')
+    .where('exerciseId', '==', exerciseId)
+    .where('personalDetails.reasonableAdjustments', '==', true)
+  );
 
-    let mostRecentApplicationData = {
-      mostRecentExercise: '',
-      mostRecentDetails: '',
-    };
-    if (otherApplications && otherApplications.length) {
-      const mostRecentApplication = otherApplications[0];
-      mostRecentApplicationData = {
-        mostRecentExercise: `${mostRecentApplication.exerciseRef} ${mostRecentApplication.exerciseName}`,
-        mostRecentDetails: mostRecentApplication.personalDetails.reasonableAdjustmentsDetails,
-      };
+  const idToApplication = applications.reduce((acc, cur) => {
+    acc[cur.id] = cur;
+    return acc;
+  }, {});
+
+  for (const applicationRecord of applicationRecords) {
+    // get personal details from application
+    const application = idToApplication[applicationRecord.id] || {};
+    const personalDetails = application.personalDetails || {};
+
+    // get candidate details including RA states from applicationRecords
+    const candidateDetails = applicationRecord.candidate || {};
+    const reasonableAdjustmentsStates = candidateDetails.reasonableAdjustmentsStates || [];
+
+    for (const state of reasonableAdjustmentsStates) {
+      data.push({
+        name: formatName(application),
+        email: personalDetails.email || null,
+        phone: personalDetails.phone || null,
+        details: candidateDetails.reasonableAdjustmentsDetails || null,
+        reason: state.reason || null,
+        status: state.status || null,
+        timeAllocation: state.timeAllocation || null,
+        note: state.note || null,
+        mostRecentExercise: application.exerciseRef,
+      }); 
     }
-    
-    data.push({
-      name: application.personalDetails.fullName || null,
-      email: application.personalDetails.email || null,
-      phone: application.personalDetails.phone || null,
-      details: application.personalDetails.reasonableAdjustmentsDetails || null,
-      ...mostRecentApplicationData,
-    });
   }
 
   return data;
 };
+
+function formatName(application) {
+  let name = null;
+  let firstName = application.personalDetails.firstName || null;
+  let lastName = application.personalDetails.lastName || null;
+  if ((!firstName || !lastName) && application.personalDetails.fullName) {
+    const nameParts = application.personalDetails.fullName.split(' ');
+    if (nameParts.length) {
+      firstName = nameParts[0];
+      lastName = nameParts.slice(1).join(' ');
+    }
+  }
+  if (firstName && lastName){
+    name = `${lastName}, ${firstName}`; 
+  } 
+  return name;
+}
