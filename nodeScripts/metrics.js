@@ -5,11 +5,13 @@ const { app, db } = require('./shared/admin.js');
 
 const main = async () => {
   const stats = {};
-  const applications = await db.collection('applications').select().get();
+  const oneMonthAgo = new Date(new Date().setMonth(new Date().getMonth() - 1));
+  const startDate = oneMonthAgo;
+  const applications = await db.collection('applications').where('startDate', '>=', startDate).select().get();
   stats.applications = applications.docs.length;
-  const candidates = await db.collection('candidates').select().get();
+  const candidates = await db.collection('candidates').where('startDate', '>=', startDate).select().get();
   stats.candidates = candidates.docs.length;
-  const exercises = await db.collection('exercises').select().get();
+  const exercises = await db.collection('exercises').where('startDate', '>=', startDate).select().get();
   stats.exercises = exercises.docs.length;
   return stats;
 };
