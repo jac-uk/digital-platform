@@ -114,27 +114,28 @@ module.exports = () => {
     const additionalWorkingPreferenceData = application.additionalWorkingPreferences;
     const data = [];
     additionalWorkingPreferenceData.forEach((item, index) => {
-      addField(data, lookup(exercise.additionalWorkingPreferences[index].questionType));
       if (exercise.additionalWorkingPreferences[index].questionType === 'single-choice') {
         addField(data, exercise.additionalWorkingPreferences[index].question, item.selection);
-      }
-      if (exercise.additionalWorkingPreferences[index].questionType === 'multiple-choice' && item.selection) {
-        const multipleChoice = [];
-          item.selection.forEach((choice) => {
-            multipleChoice.push(`<br/>${choice}`);
+      } else if (exercise.additionalWorkingPreferences[index].questionType === 'multiple-choice') {
+        if (item.selection) {
+          const multipleChoice = [];
+            item.selection.forEach((choice) => {
+              multipleChoice.push(`<br/>${choice}`);
+            });
+          addField(data, exercise.additionalWorkingPreferences[index].question, `answer: ${multipleChoice}`);
+        } else {
+          addField(data, exercise.additionalWorkingPreferences[index].question, 'answer: <br/> no answer provided');
+        }
+      } else if (exercise.additionalWorkingPreferences[index].questionType === 'ranked-choice') {
+        if (item.selection) {
+          const rankedAnswer = [];
+          item.selection.forEach((choice, index) => {
+            rankedAnswer.push(`<br/>${index + 1}: ${choice}`);
           });
-        addField(data, exercise.additionalWorkingPreferences[index].question, `answer: ${multipleChoice}`);
-      } else {
-        addField(data, exercise.additionalWorkingPreferences[index].question, 'answer: <br/> no answer provided');
-      }
-      if (exercise.additionalWorkingPreferences[index].questionType === 'ranked-choice' && item.selection) {
-        const rankedAnswer = [];
-        item.selection.forEach((choice, index) => {
-          rankedAnswer.push(`<br/>${index + 1}: ${choice}`);
-        });
-        addField(data, exercise.additionalWorkingPreferences[index].question, `answer: ${rankedAnswer}`);
-      } else {
-        addField(data, exercise.additionalWorkingPreferences[index].question, 'answer: <br/> no answer provided');
+          addField(data, exercise.additionalWorkingPreferences[index].question, `answer: ${rankedAnswer}`);
+        } else {
+          addField(data, exercise.additionalWorkingPreferences[index].question, 'answer: <br/> no answer provided');
+        }
       }
     });
     console.log(data);
