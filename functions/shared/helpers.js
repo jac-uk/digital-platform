@@ -10,6 +10,7 @@ module.exports = {
   applyUpdates,
   checkArguments,
   isDate,
+  isValidDate,
   isDateInPast, // @TODO we want one set of date & exercise helpers (see actions/shared/converters)
   formatDate,
   getDate,
@@ -24,6 +25,12 @@ module.exports = {
   normaliseNIN,
   calculateMean,
   calculateStandardDeviation,
+  objectHasNestedProperty,
+  getMissingNestedProperties,
+  replaceCharacters,
+  formatAddress,
+  formatPreviousAddresses,
+  splitFullName,
 };
 
 function calculateMean(numArray) {
@@ -134,6 +141,9 @@ async function applyUpdates(db, commands) {
         const batch = db.batch();
         for (let i = 0, len = commands.length; i < len; ++i) {
           switch (commands[i].command) {
+          case 'delete':
+            batch.delete(commands[i].ref);
+            break;
           case 'set':
               batch.set(commands[i].ref, commands[i].data, { merge: true });
             break;
@@ -202,6 +212,14 @@ function isDate(date) {
   return date instanceof Date;
 }
 
+function isValidDate(dateString) {
+  if (typeof dateString !== 'string') {
+    return false;
+  }
+  const date = new Date(dateString);
+  return !isNaN(date.getTime());
+}
+
 function isDateInPast(date) {
   const dateToCompare = new Date(date);
   const today = new Date();
@@ -238,6 +256,9 @@ function toTimeString(date) {
 function formatDate(value, type) {
   value = convertToDate(value);
   if (value) {
+    const day = value.getDate();
+    const month = value.getMonth() + 1;
+    const year = value.getFullYear();
     const time = value.toLocaleTimeString('en-GB', {
       hour: '2-digit',
       minute:'2-digit',
@@ -251,7 +272,11 @@ function formatDate(value, type) {
         break;
       case 'DD/MM/YYYY':
         // e.g. 30/11/2022 (ref: https://momentjs.com/docs/#/displaying/format/)
-        value = value.toLocaleDateString();
+        value = `${day}/${month}/${year}`; // toLocaleDateString('en-GB') returns 30/11/2022 for some reason
+        break;
+      case 'MMM YYYY':
+        // e.g. NOV 2022
+        value = `${value.toLocaleDateString('en-GB', { month: 'short' }).toUpperCase()} ${value.toLocaleDateString('en-GB', { year: 'numeric' })}`;
         break;
       case 'date-hour-minute':
         // e.g. Wednesday, 30 November, 2022 at 13:00
@@ -332,4 +357,102 @@ function isProduction() {
 
 function removeHtml(str) {
   return str.replace(/(<([^>]+)>)/gi, '');
+}
+
+function objectHasNestedProperty(obj, dotPath) {
+  if (typeof dotPath !== 'string' || dotPath.trim() === '') {
+    return false;
+  }
+  const keys = dotPath.split('.');
+  let currentObj = obj;
+  for (const key of keys) {
+    if (!currentObj || typeof currentObj !== 'object' || !Object.prototype.hasOwnProperty.call(currentObj, key)) {
+      return false;
+    }
+    currentObj = currentObj[key];
+  }
+  return true;
+}
+
+function getMissingNestedProperties(obj, dotPaths) {
+  const missingPaths = [];
+  for (let i = 0; i < dotPaths.length; i++) {
+    if (!objectHasNestedProperty(obj, dotPaths[i])) {
+      missingPaths.push(dotPaths[i]);
+    }
+  }
+  return missingPaths;
+}
+
+/**
+ * Replace characters in a string according to a map
+ * @param String str 
+ * @param String characterMap 
+ * @returns 
+ */
+function replaceCharacters(inputString, characterMap) {
+  // Convert the inputString to an array of characters
+  const inputArray = inputString.split('');
+
+  // Iterate through each character in the array
+  for (let i = 0; i < inputArray.length; i++) {
+    const char = inputArray[i];
+    
+    // Check if the character exists in the charMap
+    if (Object.prototype.hasOwnProperty.call(characterMap, char)) {
+      // Replace the character with its corresponding value from charMap
+      inputArray[i] = characterMap[char];
+    }
+  }
+
+  // Convert the modified array back to a string and return it
+  return inputArray.join('');
+}
+
+/**
+ * Format an address object into a string
+ * 
+ * @param {object} address 
+ * @returns {string}
+ */
+function formatAddress(address) {
+  const result = [];
+  if (address.street) result.push(address.street);
+  if (address.street2) result.push(address.street2);
+  if (address.town) result.push(address.town);
+  if (address.county) result.push(address.county);
+  if (address.postcode) result.push(address.postcode);
+  return result.join(' ');
+}
+
+/**
+ * Format an array of previous addresses into a string
+ * 
+ * @param {array} previousAddresses 
+ * @returns {string}
+ */
+function formatPreviousAddresses(previousAddresses) {
+  if (Array.isArray(previousAddresses) && previousAddresses.length) {
+    return previousAddresses.map((address) => {
+      const dates = `${formatDate(address.startDate)} - ${formatDate(address.endDate)}`;
+      const formattedAddress = formatAddress(address);
+      return `${dates} ${formattedAddress}`;
+    }).join('\n\n');
+  }
+  return '';
+}
+
+function splitFullName(fullName) {
+  const name = fullName.split(' ');
+  let firstName = null;
+  let lastName = null;
+  if (name.length > 1) {
+    firstName = name[0];
+    name.shift();
+    lastName = name.join(' ');
+  } else {
+    firstName = '';
+    lastName = name[0];
+  }
+  return ([firstName, lastName]);
 }

@@ -1,12 +1,15 @@
 const functions = require('firebase-functions');
-const {getDocument} = require('../shared/helpers');
+const { getDocument } = require('../shared/helpers');
 const { firebase, db, auth } = require('../shared/admin.js');
 const { exportApplicationCharacterIssues } = require('../actions/exercises/exportApplicationCharacterIssues')(firebase, db);
 const { logEvent } = require('../actions/logs/logEvent')(firebase, db, auth);
 const { checkFunctionEnabled } = require('../shared/serviceSettings.js')(db);
 const { PERMISSIONS, hasPermissions } = require('../shared/permissions');
 
-module.exports = functions.region('europe-west2').https.onCall(async (data, context) => {
+module.exports = functions.runWith({
+  timeoutSeconds: 180,
+  memory: '512MB',
+}).region('europe-west2').https.onCall(async (data, context) => {
   await checkFunctionEnabled();
 
   // authenticate request

@@ -28,6 +28,10 @@ const PERMISSIONS = {
         label: 'Can create users',
         value: 'u6',
       },
+      canReadUsers: {
+        label: 'Can read users',
+        value: 'u7',
+      },
     },
   },
   exercises: {
@@ -72,6 +76,10 @@ const PERMISSIONS = {
       canSendApplicationReminders: {
         label: 'Can send application reminders',
         value: 'e10',
+      },
+      canConfigureExercise: {
+        label: 'Can configure exercise',
+        value: 'e11',
       },
     },
   },
@@ -142,6 +150,15 @@ const PERMISSIONS = {
       },
     },
   },
+  panellists: {
+    label: 'Panellists',
+    permissions: {
+      canManagePanellists: {
+        label: 'Can manage panellist data',
+        value: 'pa1',
+      },
+    },
+  },  
   panels: {
     label: 'Panels',
     permissions: {
@@ -297,69 +314,6 @@ const PERMISSIONS = {
       },
     },
   },
-  qualifyingTests: {
-    label: 'QualifyingTests',
-    permissions: {
-      canReadQualifyingTests: {
-        label: 'Can read qualifyingTests',
-        value: 'qt1',
-      },
-      canCreateQualifyingTests: {
-        label: 'Can create qualifyingTests',
-        value: 'qt2',
-      },
-      canUpdateQualifyingTests: {
-        label: 'Can update qualifyingTests',
-        value: 'qt3',
-      },
-      canDeleteQualifyingTests: {
-        label: 'Can delete qualifyingTests',
-        value: 'qt4',
-      },
-    },
-  },
-  qualifyingTestResponses: {
-    label: 'QualifyingTestResponses',
-    permissions: {
-      canReadQualifyingTestResponses: {
-        label: 'Can read qualifyingTestResponses',
-        value: 'qtr1',
-      },
-      canCreateQualifyingTestResponses: {
-        label: 'Can create qualifyingTestResponses',
-        value: 'qtr2',
-      },
-      canUpdateQualifyingTestResponses: {
-        label: 'Can update qualifyingTestResponses',
-        value: 'qtr3',
-      },
-      canDeleteQualifyingTestResponses: {
-        label: 'Can delete qualifyingTestResponses',
-        value: 'qtr4',
-      },
-    },
-  },
-  qualifyingTestReports: {
-    label: 'QualifyingTestReports',
-    permissions: {
-      canReadQualifyingTestReports: {
-        label: 'Can read qualifyingTestReports',
-        value: 'qtrp1',
-      },
-      canCreateQualifyingTestReports: {
-        label: 'Can create qualifyingTestReports',
-        value: 'qtrp2',
-      },
-      canUpdateQualifyingTestReports: {
-        label: 'Can update qualifyingTestReports',
-        value: 'qtrp3',
-      },
-      canDeleteQualifyingTestReports: {
-        label: 'Can delete qualifyingTestReports',
-        value: 'qtrp4',
-      },
-    },
-  },
   invitations: {
     label: 'Invitations',
     permissions: {
@@ -402,11 +356,33 @@ const PERMISSIONS = {
       },
     },
   },
+  candidateForms: {
+    label: 'CandidateForms',
+    permissions: {
+      canRead: {
+        label: 'Can read candidate forms',
+        value: 'cf1',
+      },
+      canCreate: {
+        label: 'Can create candidate forms',
+        value: 'cf2',
+      },
+      canUpdate: {
+        label: 'Can update candidate forms',
+        value: 'cf3',
+      },
+      canDelete: {
+        label: 'Can delete candidate forms',
+        value: 'cf4',
+      },
+    },
+  },
 };
 
 module.exports = {
   PERMISSIONS,
   hasPermissions,
+  convertPermissions,
 };
 
 function hasPermissions(rolePermissions, permissions) {
@@ -417,4 +393,25 @@ function hasPermissions(rolePermissions, permissions) {
   if (!valid) {
     throw new functions.https.HttpsError('permission-denied', 'Permission denied');
   }
+}
+
+/*
+ * Convert permissions using values from PERMISSIONS object
+ * @param {Object} role - The role object from the firestore
+ * @returns {Array} - An array of permissions
+ */
+function convertPermissions(role) {
+  const convertedPermissions = [];
+  if (role && role.enabledPermissions && role.enabledPermissions.length > 0) {
+    for (const permission of role.enabledPermissions) {
+      for (const group of Object.keys(PERMISSIONS)) {
+        for (const p of Object.keys(PERMISSIONS[group].permissions)) {
+          if (p === permission) {
+            convertedPermissions.push(PERMISSIONS[group].permissions[p].value);
+          }
+        }
+      }
+    }
+  }
+  return convertedPermissions;
 }

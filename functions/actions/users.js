@@ -1,11 +1,20 @@
-const { getDocument } = require('../shared/helpers');
+const { getDocument, getDocuments } = require('../shared/helpers');
+const { convertPermissions } = require('../shared/permissions');
+const { getSearchMap } = require('../shared/search');
 
 module.exports = (auth, db) => {
   return {
     generateSignInWithEmailLink,
     createUser,
+    updateUser,
     deleteUsers,
     importUsers,
+    onUserCreate,
+    onUserUpdate,
+    updateUserCustomClaims,
+    getUserSearchMap,
+    getUserByGithubUsername,
+    getUser,
   };
 
   async function generateSignInWithEmailLink(ref, email, returnUrl) {
@@ -46,10 +55,25 @@ module.exports = (auth, db) => {
    * @param {object} user
    *
    */
-   async function createUser(user) {
+  async function createUser(user) {
     try {
       const res = await auth.createUser(user);
       return res;
+    } catch(error) {
+      console.log(error);
+      return error;
+    }
+  }
+
+  /**
+   * Update a user
+   * @param {string} userId 
+   * @param {object} data 
+   * @returns 
+   */
+  async function updateUser(userId, data) {
+    try {
+      return await db.collection('users').doc(userId).update(data);
     } catch(error) {
       console.log(error);
       return error;
@@ -86,6 +110,19 @@ module.exports = (auth, db) => {
     return result;
   }
 
+  async function getUserByGithubUsername(githubUsername) {
+    const usersRef = db.collection('users').where('githubUsername', '==', githubUsername);
+    let users = await getDocuments(usersRef);
+    if (users.length === 0) {
+      return null;
+    }
+    return users[0];
+  }
+
+  async function getUser(userId) {
+    return getDocument(db.collection('users').doc(userId));
+  }
+
   /**
    * Import users
    * 
@@ -118,4 +155,105 @@ module.exports = (auth, db) => {
     return result;
   }
 
+  /**
+   * User created event handler
+   * - Add _search for search and sorting
+   */
+  async function onUserCreate(ref, data) {
+    const userData = {
+      _search: getUserSearchMap(data),
+    };
+    await ref.update(userData);
+  }
+
+  /**
+   * User updated event handler
+   * 
+   * @param {string} userId
+   * @param {object} dataBefore
+   * @param {object} dataAfter
+   */
+  async function onUserUpdate(userId, dataBefore, dataAfter) {
+    const fields = ['displayName', 'email', 'disabled'];
+    const data = {};
+    fields.forEach(field => {
+      if (dataBefore[field] !== dataAfter[field]) data[field] = dataAfter[field];
+    });
+    
+    try {
+      if (data.displayName || !dataAfter._search) {
+        console.log('Set _search for search and sorting');
+        Object.assign(data, { _search: getUserSearchMap(dataAfter)});
+      }
+      if (Object.keys(data).length) {
+        console.log('Updating user data:');
+        console.log(JSON.stringify(data));
+        await auth.updateUser(userId, data);
+        await db.collection('users').doc(userId).update(data);
+      }
+
+      // update role permissions in custom claims
+      if (dataBefore.role && dataAfter.role && !dataBefore.role.isChanged && dataAfter.role.isChanged && dataAfter.role.id) {
+        const user = await auth.getUser(userId);
+        const role = await getDocument(db.collection('roles').doc(dataAfter.role.id));
+        if (role) {
+          const convertedPermissions = convertPermissions(role);
+          const customClaims = user.customClaims || {};
+          customClaims.r = dataAfter.role.id;
+          customClaims.rp = convertedPermissions;
+          await auth.setCustomUserClaims(userId, customClaims);
+  
+          // mark role.isChanged as false
+          await db.collection('users').doc(userId).update({
+            'role.isChanged': false,
+          });
+        }
+      }
+
+      return true;
+    } catch(error) {
+      console.log(error);
+      return false;
+    }
+  }
+
+
+  /**
+   * Update user custom claims
+   * 
+   * @param {string} userId
+   */
+  async function updateUserCustomClaims(userId) {
+    try {
+      const userDoc = await getDocument(db.collection('users').doc(userId));
+      // update role permissions in custom claims
+      if (userDoc) {
+        const user = await auth.getUser(userId);
+        const role = await getDocument(db.collection('roles').doc(userDoc.role.id));
+        if (role) {
+          const convertedPermissions = convertPermissions(role);
+          const customClaims = user.customClaims || {};
+          customClaims.r = role.id;
+          customClaims.rp = convertedPermissions;
+          await auth.setCustomUserClaims(userId, customClaims);
+        }
+      }
+      return true;
+    } catch(error) {
+      console.log(error);
+      return false;
+    }
+  }
+
+  /**
+   * 
+   * @param {object} user 
+   * @returns {array}
+   */
+  function getUserSearchMap(user) {
+    return getSearchMap([
+      user.displayName,
+      user.email,
+    ]);
+  }
 };

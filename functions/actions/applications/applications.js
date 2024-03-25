@@ -1,12 +1,21 @@
 const { SSL_OP_NETSCAPE_DEMO_CIPHER_CHANGE_BUG } = require('constants');
 const { getAllDocuments, applyUpdates, getDocument, getDocuments } = require('../../shared/helpers');
+const { getSearchMap } = require('../../shared/search');
 
 const testApplicationsFileName = 'test_applications.json';
 
 module.exports = (config, firebase, db, auth) => {
   const { initialiseApplicationRecords } = require('../../actions/applicationRecords')(config, firebase, db, auth);
   const { refreshApplicationCounts } = require('../../actions/exercises/refreshApplicationCounts')(firebase, db);
-  const { newNotificationApplicationSubmit, newNotificationApplicationReminder, newNotificationApplicationInWelsh, newNotificationCharacterCheckRequest, newNotificationCandidateFlagConfirmation } = require('../../shared/factories')(config);
+  const {
+    newNotificationApplicationSubmit,
+    newNotificationApplicationReminder,
+    newNotificationApplicationInWelsh,
+    newNotificationCharacterCheckRequest,
+    newNotificationCandidateFlagConfirmation,
+    newCandidateFormNotification,
+    newNotificationPublishedFeedbackReport,
+  } = require('../../shared/factories')(config);
   const slack = require('../../shared/slack')(config);
   const { updateCandidate } = require('../candidates/search')(firebase, db);
   return {
@@ -16,12 +25,14 @@ module.exports = (config, firebase, db, auth) => {
     sendApplicationReminders,
     sendApplicationInWelsh,
     sendCharacterCheckRequests,
+    sendCandidateFormNotifications,
     createApplication,
     createApplications,
     loadTestApplications,
     createTestApplications,
     deleteApplications,
     sendCandidateFlagConfirmation,
+    sendPublishedFeedbackReportNotifications,
   };
 
   /**
@@ -73,6 +84,7 @@ module.exports = (config, firebase, db, auth) => {
    * Application created event handler
    * - Posts message to slack
    * - Increment exercise applications count
+   * - Adds search map
    */
   async function onApplicationCreate(ref, data) {
     console.log('application created');
@@ -80,11 +92,19 @@ module.exports = (config, firebase, db, auth) => {
     if (data.userId) { await updateCandidate(data.userId); }
 
     // update application
-    if (data.personalDetails && data.personalDetails.fullName) {
-      await ref.update({
-        '_sort.fullNameUC': data.personalDetails.fullName.toUpperCase(),
-      });
-    }
+    const applicationData = {};
+    applicationData._sort = {};
+
+    applicationData._sort.fullNameUC = data.personalDetails && data.personalDetails.fullName ? data.personalDetails.fullName.toUpperCase() : '';
+
+    // add search map
+    applicationData._search = getSearchMap([
+      data.personalDetails.fullName,
+      data.personalDetails.email,
+      data.personalDetails.nationalInsuranceNumber,
+      data.referenceNumber,
+    ]);
+    await ref.update(applicationData);
 
     // update counts
     console.log(`Update application counts: _applications.${data.status}`);
@@ -290,6 +310,84 @@ module.exports = (config, firebase, db, auth) => {
   }
 
   /**
+  * Send candidate form notification for each application
+  *
+  * @param {*} `params` is an object containing
+  *   `type` (required) task type
+  *   `notificationType` (required) request type (request, reminder, submit)
+  *   `items` (required) IDs of applications
+  */
+  async function sendCandidateFormNotifications(params) {
+    const { 
+      type,
+      notificationType,
+      items: applicationIds,
+      exerciseMailbox,
+      exerciseManagerName,
+      dueDate,
+    } = params;
+
+    // get applications
+    const applicationRefs = applicationIds.map(id => db.collection('applications').doc(id));
+    const applications = await getAllDocuments(db, applicationRefs);
+
+    // create database commands
+    const commands = [];
+    for (let i = 0, len = applications.length; i < len; ++i) {
+      const application = applications[i];
+
+      // create notification
+      const notification = newCandidateFormNotification(firebase, application, notificationType, exerciseMailbox, exerciseManagerName, dueDate);
+      if (notification) {
+        commands.push({
+          command: 'set',
+          ref: db.collection('notifications').doc(),
+          data: notification,
+        });
+      }
+
+      // update applicationRecord
+      if (notificationType === 'request') {
+        const data = {
+          [`${type}.requestedAt`]: firebase.firestore.Timestamp.fromDate(new Date()),
+          [`${type}.status`]: 'requested',
+        };
+        commands.push(
+          {
+            command: 'update',
+            ref: db.collection('applicationRecords').doc(application.id),
+            data,
+          }
+        );
+      } else if (notificationType === 'reminder') {
+        const data = {
+          [`${type}.reminderSentAt`]: firebase.firestore.Timestamp.fromDate(new Date()),
+          [`${type}.status`]: 'requested',
+        };
+        commands.push(
+          {
+            command: 'update',
+            ref: db.collection('applicationRecords').doc(application.id),
+            data,
+          }
+        );
+      } else if (notificationType === 'submit') { // TODO check this works ok
+        commands.push({
+          command: 'update',
+          ref: application.ref,
+          data: {
+            'emailLog.preSelectionDayQuestionnaireSubmitted': firebase.firestore.Timestamp.fromDate(new Date()),
+          },
+        });
+      }
+    }
+
+    // write to db
+    const result = await applyUpdates(db, commands);
+    return result ? applications.length : false;
+  }
+
+  /**
     * load test applications JSON file from cloud storage
     */
   async function loadTestApplications() {
@@ -460,5 +558,41 @@ module.exports = (config, firebase, db, auth) => {
     // write to db
     const result = await applyUpdates(db, commands);
     return result ? true : false;
+  }
+
+  async function sendPublishedFeedbackReportNotifications(exerciseId, taskType) {
+    const validTaskTypes = [
+      config.TASK_TYPE.CRITICAL_ANALYSIS,
+      config.TASK_TYPE.QUALIFYING_TEST,
+      config.TASK_TYPE.SCENARIO,
+      config.TASK_TYPE.SITUATIONAL_JUDGEMENT,
+    ];
+    if (!validTaskTypes.includes(taskType)) {
+      console.log(`sendPublishedFeedbackReportNotifications called with invalid task type: ${taskType}`);
+      return false;
+    }
+    const taskRef = db.collection(`exercises/${exerciseId}/tasks`);
+    const tasks = await getDocuments(taskRef);
+    if (tasks.length > 0) {
+      const matchedTasks = tasks.filter(task => task.type === taskType);
+      if (matchedTasks.length > 0) {
+        const matchedTask = matchedTasks[0];
+        const applications = Object.hasOwnProperty.call(matchedTask, 'applications') ? matchedTask.applications : [];
+        const emails = applications.map(o => o.email);
+        const exercise = await getDocument(db.collection('exercises').doc(exerciseId));
+        const commands = [];
+        for (let i=0; i<emails.length; ++i) {
+          commands.push(
+            {
+              command: 'set',
+              ref: db.collection('notifications').doc(),
+              data: newNotificationPublishedFeedbackReport(firebase, emails[i], exercise.name, taskType),
+            }
+          );
+        }
+        return await applyUpdates(db, commands);
+      }
+    }
+    return true;
   }
 };

@@ -1,4 +1,5 @@
 const { getDocument, getDocuments, getDocumentsFromQueries, applyUpdates } = require('../../shared/helpers');
+const lookup = require('../../shared/converters/lookup');
 
 module.exports = (config, firebase, db) => {
   const {
@@ -12,17 +13,22 @@ module.exports = (config, firebase, db) => {
     scoreSheet2MarkingScheme,
     getApplicationPassStatus,
     getApplicationFailStatus,
+    getApplicationDidNotParticipateStatus,
     getApplicationPassStatuses,
     getApplicationFailStatuses,
     taskApplicationsEntryStatus,
     includeZScores,
   } = require('./taskHelpers')(config);
 
+  const { refreshApplicationCounts } = require('../exercises/refreshApplicationCounts')(firebase, db);
+  const { newCandidateFormResponse } = require('../../shared/factories')(config);
+
   return {
     updateTask,
     initialisePanelTask,
     initialiseTestTask,
     initialiseStatusChangesTask,
+    initialiseCandidateFormTask,
     initialiseDataTask,
     initialiseStageOutcomeTask,
   };
@@ -35,7 +41,6 @@ module.exports = (config, firebase, db) => {
   *   `type` (required) type of task
   */
   async function updateTask(params) {
-
     let result = {
       success: false,
       data: {},
@@ -73,6 +78,12 @@ module.exports = (config, firebase, db) => {
     case config.TASK_STATUS.TEST_ACTIVATED:
       result = await activateTestTask(exercise, task);
       break;
+    case config.TASK_STATUS.CANDIDATE_FORM_CONFIGURE:
+      result = await initialiseCandidateFormTask(exercise, task.type);
+      break;
+    case config.TASK_STATUS.CANDIDATE_FORM_MONITOR:
+      result = await monitorCandidateFormTask(exercise, task);
+      break;
     case config.TASK_STATUS.DATA_INITIALISED:
       result = await initialiseDataTask(exercise, task.type);
       break;
@@ -108,6 +119,9 @@ module.exports = (config, firebase, db) => {
         break;
       case config.TASK_STATUS.STAGE_OUTCOME:
         result = await completeStageOutcomeTask(exercise, task, params.nextStage);
+        break;
+      case config.TASK_STATUS.CANDIDATE_FORM_MONITOR:
+        result = await completeCandidateFormTask(exercise, task);
         break;
       default:
         result = await completeTask(exercise, task);
@@ -352,14 +366,17 @@ module.exports = (config, firebase, db) => {
       success: false,
       data: {},
     };
+    const title = `${lookup(testType)} for ${folderName}`;
+    const QTType = testType === config.TASK_TYPE.EMP_TIEBREAKER ? config.TASK_TYPE.SCENARIO : testType;
     // initialise test on QT Platform
     const qts = require('../../shared/qts')(config);
     const response = await qts.post('qualifying-test', {
       folder: folderName,
       test: {
-        type: testType,
+        type: QTType,
         startDate: startDate,
         endDate: endDate,
+        title: title,
       },
     });
     result.success = true;
@@ -430,6 +447,76 @@ module.exports = (config, firebase, db) => {
     return result;
   }
 
+
+  /**
+   * initialiseCandidateFormTask
+   * Initialises a candidate data task. Currently does nothing!
+   * @param {*} exercise
+   * @param {*} taskType
+   * @returns Result object of the form `{ success: Boolean, data: Object }`. If successful then `data` is to be stored in the `task` document
+   */
+  async function initialiseCandidateFormTask(exercise, taskType) {
+    console.log('initialiseCandidateFormTask', taskType);
+    const result = {
+      success: false,
+      data: {},
+    };
+
+    // create candidateForm
+    const saveData = {
+      exercise: {
+        id: exercise.id,
+      },
+      task: {
+        type: taskType,
+      },
+      openDate: exercise.preSelectionDayQuestionnaireSendDate,
+      closeDate: exercise.preSelectionDayQuestionnaireReturnDate,
+      parts: [],
+      status: config.CANDIDATE_FORM_STATUS.CREATED,
+      statusLog: {},
+      candidateAvailabilityDates: [],
+    };
+
+    exercise.selectionDays.forEach(item => {
+      const location = item.selectionDayLocation;
+      const startDate = item.selectionDayStart;
+      const endDate = item.selectionDayEnd;
+      const dates = excludeWeekends(dateRange(startDate, endDate));
+      dates.forEach(date => saveData.candidateAvailabilityDates.push({ date: date, location: location }));
+    });
+
+    saveData.statusLog[config.CANDIDATE_FORM_STATUS.CREATED] = firebase.firestore.FieldValue.serverTimestamp();
+    const candidateForm = await db.collection('candidateForms').add(saveData);
+
+    result.success = true;
+    result.data.formId = candidateForm.id;
+    return result;
+  }
+
+  /**
+   * Get dates between two dates
+   * Optionally specify a step size (in days)
+   * @param {*} startDate
+   * @param {*} endDate
+   * @param {*} steps
+   * @returns
+   */
+  function dateRange(startDate, endDate, steps = 1) {
+    const dateArray = [];
+    const currentDate = new Date(startDate);
+    while (currentDate <= new Date(endDate)) {
+      dateArray.push(new Date(currentDate));
+      // Use UTC date to prevent problems with time zones and DST
+      currentDate.setUTCDate(currentDate.getUTCDate() + steps);
+    }
+    return dateArray;
+  }
+
+  function excludeWeekends(dates) {
+    return dates.filter(item => item.getDay() > 0 && item.getDay() < 6);
+  }
+
   /**
    * initialiseDataTask
    * Initialises a data task. Currently does nothing!
@@ -476,6 +563,74 @@ module.exports = (config, firebase, db) => {
   }
 
   /**
+   * monitorCandidateFormTask
+   * Starts monitoring candidate forms
+   * @param {*} exercise
+   * @param {*} task
+   * @returns Result object of the form `{ success: Boolean, data: Object }`. If successful then `data` is to be stored in the `task` document
+   */
+  async function monitorCandidateFormTask(exercise, task) {
+    const result = {
+      success: false,
+      data: {},
+    };
+
+    // get candidateForm
+    const candidateForm = await getDocument(db.collection('candidateForms').doc(task.formId));
+    if (!candidateForm) { result.message = 'No candidate form'; return result; }
+
+    // get applications
+    let applicationsRef = db.collection('applications')
+    .where('exerciseId', '==', exercise.id)
+    .where('status', '==', 'applied');
+    if (task.applicationEntryStatus) {
+      applicationsRef = applicationsRef.where('_processing.status', '==', task.applicationEntryStatus);
+    }
+    const applications = await getDocuments(applicationsRef);
+    if (!applications.length) { result.message = 'No applications'; return result; }
+
+    // create candidate form responses and update application records
+    const commands = [];
+    const candidateIds = [];
+    applications.forEach(application => {
+      candidateIds.push(application.userId);
+      const newResponse = newCandidateFormResponse(firebase, candidateForm.id, task.type, application.id);
+      commands.push({
+        command: 'set',
+        ref: db.collection(`candidateForms/${candidateForm.id}/responses`).doc(application.userId),
+        data: newResponse,
+      });
+      const appplicationRecordData = {};
+      appplicationRecordData[task.type] = { status: newResponse.status };
+      // store status both in application and applicationRecord
+      commands.push({
+        command: 'update',
+        ref: db.collection('applications').doc(application.id),
+        data: appplicationRecordData,
+      });
+      commands.push({
+        command: 'update',
+        ref: db.collection('applicationRecords').doc(application.id),
+        data: appplicationRecordData,
+      });
+    });
+
+    // update candidate form
+    commands.push({
+      command: 'update',
+      ref: candidateForm.ref,
+      data: {
+        candidateIds: candidateIds,
+      },
+    });
+
+    await applyUpdates(db, commands);
+    
+    result.success = true;
+    return result;
+  }
+
+  /**
    * activateDataTask
    * Activates a data task. Currently does nothing!
    * @param {*} exercise
@@ -494,7 +649,7 @@ module.exports = (config, firebase, db) => {
 
     // get scoresheet
     let emptyScoreSheet = task.emptyScoreSheet;
-    if (task.type === config.TASK_TYPE.SCENARIO) {
+    if (task.type === config.TASK_TYPE.SCENARIO || task.type === config.TASK_TYPE.EMP_TIEBREAKER) {
       // get test
       const qts = require('../../shared/qts')(config);
       const response = await qts.get('scores', {
@@ -665,6 +820,34 @@ module.exports = (config, firebase, db) => {
     // TODO remove un-necessary fields
     return result;
   }
+  
+  /**
+   * completeCandidateFormTask
+   * Completes a candidate data entry task.
+   * @param {*} exercise
+   * @param {*} task
+   * @returns Result object of the form `{ success: Boolean, data: Object }`. If successful then `data` is to be stored in the `task` document
+   */
+  async function completeCandidateFormTask(exercise, task) {
+    const result = {
+      success: false,
+      data: {},
+    };
+
+    const outcomeStats = {};
+    const passStatus = getApplicationPassStatus(exercise, task);
+    const failStatus = getApplicationFailStatus(exercise, task);
+    outcomeStats[passStatus] = 0;
+    outcomeStats[failStatus] = 0;
+
+    // TODO update application status here, perhaps, or just get stats for completed vs not completed
+
+    result.success = true;
+    result.data['_stats.totalForEachOutcome'] = outcomeStats;
+
+    return result;
+  }
+
 
   /**
    * completeTask
@@ -684,8 +867,10 @@ module.exports = (config, firebase, db) => {
     const outcomeStats = {};
     const passStatus = getApplicationPassStatus(exercise, task);
     const failStatus = getApplicationFailStatus(exercise, task);
+    const didNotParticipateStatus = getApplicationDidNotParticipateStatus(exercise, task);
     outcomeStats[passStatus] = 0;
     outcomeStats[failStatus] = 0;
+    if (didNotParticipateStatus) outcomeStats[didNotParticipateStatus] = 0;
 
     // get applications still relevant to this task
     const applications = await getApplications(exercise, task);
@@ -723,6 +908,23 @@ module.exports = (config, firebase, db) => {
       });
     });
 
+    // update application records where we don't have final scores (if we have a status to set these to)
+    if (didNotParticipateStatus) {
+      const scoredApplicationIdMap = {};
+      task.finalScores.forEach(scoreData => scoredApplicationIdMap[scoreData.id] = true);
+      applications.filter(application => applicationIdMap[application.id]).filter(application => !scoredApplicationIdMap[application.id]).forEach(application => {
+        outcomeStats[didNotParticipateStatus] += 1;
+        const saveData = {};
+        if (!(task.allowStatusUpdates === false)) { saveData.status = didNotParticipateStatus; }  // here we update status unless this has been explicitly denied
+        saveData[`statusLog.${didNotParticipateStatus}`] = firebase.firestore.FieldValue.serverTimestamp(); // we still always log the status change
+        commands.push({
+          command: 'update',
+          ref: db.collection('applicationRecords').doc(application.id),
+          data: saveData,
+        }); 
+      });
+    }
+
     // check for qualifying test follow on task
     if (task.type === config.TASK_TYPE.CRITICAL_ANALYSIS || task.type === config.TASK_TYPE.SITUATIONAL_JUDGEMENT) {
       if (
@@ -746,7 +948,6 @@ module.exports = (config, firebase, db) => {
                   id: scoreData.id,
                   ref: scoreData.ref,
                   score: CAData.score + SJData.score,
-                  percent: (CAData.percent + SJData.percent) / 2,
                   scoreSheet: {
                     qualifyingTest: {
                       CA: {
@@ -758,7 +959,6 @@ module.exports = (config, firebase, db) => {
                         percent: SJData.percent,
                       },
                       score: CAData.score + SJData.score,
-                      percent: (CAData.percent + SJData.percent) / 2,
                     },
                   },
                 });
@@ -766,6 +966,17 @@ module.exports = (config, firebase, db) => {
                 if (application) {
                   applications.push(application);
                 }
+              } else {
+                // update application record status to failed first test
+                outcomeStats[failStatus] += 1;
+                const saveData = {};
+                if (!(task.allowStatusUpdates === false)) { saveData.status = failStatus; }  // here we update status unless this has been explicitly denied
+                saveData[`statusLog.${failStatus}`] = firebase.firestore.FieldValue.serverTimestamp(); // we still always log the status change
+                commands.push({
+                  command: 'update',
+                  ref: db.collection('applicationRecords').doc(application.id),
+                  data: saveData,
+                });         
               }
             }
           });
@@ -867,7 +1078,6 @@ module.exports = (config, firebase, db) => {
    * @returns Result object of the form `{ success: Boolean, data: Object }`. If successful then `data` is to be stored in the `task` document
    */
   async function completeStageOutcomeTask(exercise, task, nextStage) {
-    console.log('complete stage outcome task');
     const result = {
       success: false,
       data: {},
@@ -884,10 +1094,15 @@ module.exports = (config, firebase, db) => {
     // get next status
     const nextApplicationStatus = getApplicationPassStatus(exercise, task);
 
+    const outcomeStats = {};
+    outcomeStats[nextApplicationStatus] = 0;
+    // TODO get stats for other statuses in this stage
+
     // update successfull appplication records
     const commands = [];
     applicationRecords.forEach(applicationRecord => {
       const saveData = {};
+      outcomeStats[nextApplicationStatus] += 1;
       saveData.stage = nextStage;
       saveData[`stageLog.${nextStage}`] = firebase.firestore.FieldValue.serverTimestamp();
       saveData.status = nextApplicationStatus;
@@ -900,8 +1115,11 @@ module.exports = (config, firebase, db) => {
     });
     await applyUpdates(db, commands);
 
+    await refreshApplicationCounts({ exerciseId: exercise.id });
+
     // return data to be saved in `task` document
     result.success = true;
+    result.data['_stats.totalForEachOutcome'] = outcomeStats;
     return result;
   }
 

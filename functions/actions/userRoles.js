@@ -1,4 +1,4 @@
-const { getDocument, getDocuments } = require('../shared/helpers');
+const { getDocument, getDocuments, applyUpdates } = require('../shared/helpers');
 const { PERMISSIONS } = require('../shared/permissions');
 
 module.exports = (db, auth) => {
@@ -6,6 +6,7 @@ module.exports = (db, auth) => {
   //TODO: add logging for all changes to roles
 
   return {
+    onUpdate,
     adminGetUsers,
     adminGetUserRoles,
     adminCreateUserRole,
@@ -16,6 +17,37 @@ module.exports = (db, auth) => {
     disableNewUser,
     adminSyncUserRolePermissions,
   };
+
+  /**
+   * Role event handler for Update
+   * 
+   * @param {string} roleId
+   * @param {object} dataBefore
+   * @param {object} dataAfter
+   */
+  async function onUpdate(roleId, dataBefore, dataAfter) {
+    const commands = [];
+    // check if permissions have changed
+    if (JSON.stringify(dataBefore.enabledPermissions) !== JSON.stringify(dataAfter.enabledPermissions)) {
+      // mark all users with this role as changed
+      const users = await getDocuments(db.collection('users').where('role.id', '==', roleId));
+      users.forEach(user => {
+        if (!user.role.isChanged) {
+          commands.push({
+            command: 'update',
+            ref: user.ref,
+            data: {
+              'role.isChanged': true,
+            },
+          });
+        }
+      });
+    }
+    
+    if (commands.length) {
+      await applyUpdates(db, commands);
+    }
+  }
 
   /**
    * Return all users authenticated with google / microsoft (i.e. users who have attempted authentication with admin)
@@ -52,6 +84,7 @@ module.exports = (db, auth) => {
             isJACEmployee: true, // this field is currently redundant due to change on checking whether is JAC employee
             disabled: user.disabled,
             customClaims: user.customClaims,
+            providerData: user.providerData,
           };
           adminUsers.push(adminUser);
         }
