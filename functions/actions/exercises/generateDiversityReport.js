@@ -77,30 +77,21 @@ module.exports = (firebase, db) => {
 
     // add additional data based on shortlisting methods
     const isProcessingVersion2 = exercise._processingVersion >= 2;
-    const EXERCISE_STAGE = config.EXERCISE_STAGE;
     const APPLICATION_STATUS = config.APPLICATION_STATUS;
     const SHORTLISTING = config.SHORTLISTING;
-    const stage = isProcessingVersion2 ? EXERCISE_STAGE.SHORTLISTING : EXERCISE_STAGE.SHORTLISTED;
+    const statuses = [];
     // qt
     if (exercise.shortlistingMethods.some(method => [
       SHORTLISTING.SITUATIONAL_JUDGEMENT_QUALIFYING_TEST,
       SHORTLISTING.CRITICAL_ANALYSIS_QUALIFYING_TEST,
     ].includes(method))) {
       const status = isProcessingVersion2 ? APPLICATION_STATUS.QUALIFYING_TEST_PASSED : APPLICATION_STATUS.PASSED_FIRST_TEST;
-      const applicationRecordsByStageStatus = applicationRecords.filter(doc => doc.stage === stage && doc.status === status);
-      const applicationIdsByStageStatus = applicationRecordsByStageStatus.map(doc => doc.id);
-      const applicationsByStageStatus = applications.filter(doc => applicationIdsByStageStatus.indexOf(doc.id) >= 0);
-      report[status] = diversityReport(applicationsByStageStatus, applicationRecordsByStageStatus, exercise);
+      statuses.push(status);
     }
     // scenario test
-    if (exercise.shortlistingMethods.some(method => [
-      SHORTLISTING.SCENARIO_TEST_QUALIFYING_TEST,
-    ].includes(method))) {
+    if (exercise.shortlistingMethods.includes(SHORTLISTING.SCENARIO_TEST_QUALIFYING_TEST)) {
       const status = isProcessingVersion2 ? APPLICATION_STATUS.SCENARIO_TEST_PASSED : APPLICATION_STATUS.PASSED_SCENARIO_TEST;
-      const applicationRecordsByStageStatus = applicationRecords.filter(doc => doc.stage === stage && doc.status === status);
-      const applicationIdsByStageStatus = applicationRecordsByStageStatus.map(doc => doc.id);
-      const applicationsByStageStatus = applications.filter(doc => applicationIdsByStageStatus.indexOf(doc.id) >= 0);
-      report[status] = diversityReport(applicationsByStageStatus, applicationRecordsByStageStatus, exercise);
+      statuses.push(status);
     }
     // sift
     if (exercise.shortlistingMethods.some(method => [
@@ -108,17 +99,16 @@ module.exports = (firebase, db) => {
       SHORTLISTING.PAPER_SIFT,
     ].includes(method))) {
       const status = isProcessingVersion2 ? APPLICATION_STATUS.SIFT_PASSED : APPLICATION_STATUS.PASSED_SIFT;
-      const applicationRecordsByStageStatus = applicationRecords.filter(doc => doc.stage === stage && doc.status === status);
-      const applicationIdsByStageStatus = applicationRecordsByStageStatus.map(doc => doc.id);
-      const applicationsByStageStatus = applications.filter(doc => applicationIdsByStageStatus.indexOf(doc.id) >= 0);
-      report[status] = diversityReport(applicationsByStageStatus, applicationRecordsByStageStatus, exercise);
+      statuses.push(status);
     }
 
+    statuses.forEach(status => {
+      const applicationRecordsByStatus = applicationRecords.filter(doc => doc.statusLog[status]);
+      const applicationsByStatus = applications.filter(doc => applicationRecordsByStatus.map(doc => doc.id).includes(doc.id));
+      report[status] = diversityReport(applicationsByStatus, applicationRecordsByStatus, exercise);
+    });
+
     await db.collection('exercises').doc(exerciseId).collection('reports').doc('diversity').set(report);
-
-    console.log('report:');
-    console.log(report);
-
     return report;
   }
 };
