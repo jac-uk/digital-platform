@@ -1,6 +1,7 @@
 const { getDocument, getDocuments } = require('../../shared/helpers');
 const { applicationOpenDatePost01042023 } = require('../../shared/converters/helpers');
 const { availableStages } = require('../../shared/exerciseHelper');
+const config = require('../../shared/config');
 
 /**
  * For the diversity reports:
@@ -73,11 +74,41 @@ module.exports = (firebase, db) => {
         applicationRecordsByPreviousStage = applicationsByStage;
       }
     }
+
+    // add additional data based on shortlisting methods
+    const isProcessingVersion2 = exercise._processingVersion >= 2;
+    const APPLICATION_STATUS = config.APPLICATION_STATUS;
+    const SHORTLISTING = config.SHORTLISTING;
+    const statuses = [];
+    // qt
+    if (exercise.shortlistingMethods.some(method => [
+      SHORTLISTING.SITUATIONAL_JUDGEMENT_QUALIFYING_TEST,
+      SHORTLISTING.CRITICAL_ANALYSIS_QUALIFYING_TEST,
+    ].includes(method))) {
+      const status = isProcessingVersion2 ? APPLICATION_STATUS.QUALIFYING_TEST_PASSED : APPLICATION_STATUS.PASSED_FIRST_TEST;
+      statuses.push(status);
+    }
+    // scenario test
+    if (exercise.shortlistingMethods.includes(SHORTLISTING.SCENARIO_TEST_QUALIFYING_TEST)) {
+      const status = isProcessingVersion2 ? APPLICATION_STATUS.SCENARIO_TEST_PASSED : APPLICATION_STATUS.PASSED_SCENARIO_TEST;
+      statuses.push(status);
+    }
+    // sift
+    if (exercise.shortlistingMethods.some(method => [
+      SHORTLISTING.NAME_BLIND_PAPER_SIFT,
+      SHORTLISTING.PAPER_SIFT,
+    ].includes(method))) {
+      const status = isProcessingVersion2 ? APPLICATION_STATUS.SIFT_PASSED : APPLICATION_STATUS.PASSED_SIFT;
+      statuses.push(status);
+    }
+
+    statuses.forEach(status => {
+      const applicationRecordsByStatus = applicationRecords.filter(doc => doc.statusLog[status]);
+      const applicationsByStatus = applications.filter(doc => applicationRecordsByStatus.map(doc => doc.id).includes(doc.id));
+      report[status] = diversityReport(applicationsByStatus, applicationRecordsByStatus, exercise);
+    });
+
     await db.collection('exercises').doc(exerciseId).collection('reports').doc('diversity').set(report);
-
-    console.log('report:');
-    console.log(report);
-
     return report;
   }
 };
