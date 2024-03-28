@@ -98,12 +98,16 @@ module.exports = (config, firebase, db, auth) => {
     applicationData._sort.fullNameUC = data.personalDetails && data.personalDetails.fullName ? data.personalDetails.fullName.toUpperCase() : '';
 
     // add search map
-    applicationData._search = getSearchMap([
-      data.personalDetails.fullName,
-      data.personalDetails.email,
-      data.personalDetails.nationalInsuranceNumber,
-      data.referenceNumber,
-    ]);
+    const searchMapSources = [];
+    if (data.personalDetails) {
+      const { fullName, email, nationalInsuranceNumber } = data.personalDetails;
+      if (fullName) searchMapSources.push(fullName);
+      if (email) searchMapSources.push(email);
+      if (nationalInsuranceNumber) searchMapSources.push(nationalInsuranceNumber);
+    }
+    if (data.referenceNumber) searchMapSources.push(data.referenceNumber);
+    if (searchMapSources.length) applicationData._search = getSearchMap(searchMapSources);
+
     await ref.update(applicationData);
 
     // update counts
