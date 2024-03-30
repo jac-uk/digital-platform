@@ -30,11 +30,26 @@ module.exports = () => {
         html.addTitle(application.referenceNumber);
       }
 
+//@todo: add location prefs once fixed jurisdiction prefs below as essentially the same i think
+
+//@todo: get jurisdiction prefs
+// - ranked choice and multiple (both display ok and in order)
+//    - modify to display in a vertical list with wrapping
+// - single choice displays ok
+
+      // Jurisdiction Prefs
       if (application.jurisdictionPreferences && application.jurisdictionPreferences.length) {
         html.addHeading('Jurisdiction Preferences');
         html.addTable(getJurisdictionPreferences(application, exercise));
       }
 
+      // Location Prefs
+      if (application.locationPreferences && application.locationPreferences.length) {
+        html.addHeading('Location Preferences');
+        html.addTable(getLocationPreferences(application, exercise));
+      }
+
+      // Additional Working Prefs
       if (application.additionalWorkingPreferences && application.additionalWorkingPreferences.length) {
         html.addHeading('Additional Preferences');
         html.addTable(getAdditionalWorkingPreferences(application, exercise));
@@ -105,7 +120,27 @@ module.exports = () => {
     if (typeof (application.jurisdictionPreferences) === 'string') {
       addField(data, exercise.jurisdictionQuestion, application.jurisdictionPreferences);
     } else {
-      addField(data, exercise.jurisdictionQuestion, application.jurisdictionPreferences.join('\n'));
+      let htmlListStr  = '<ul>';
+      application.jurisdictionPreferences.forEach(item => {
+        htmlListStr += `<li>${item}</li>`;
+      });
+      htmlListStr += '</ul>';
+      addField(data, exercise.jurisdictionQuestion, htmlListStr);
+    }
+    return data;
+  }
+
+  function getLocationPreferences(application, exercise) {
+    const data = [];
+    if (typeof (application.locationPreferences) === 'string') {
+      addField(data, exercise.locationQuestion, application.locationPreferences);
+    } else {
+      let htmlListStr  = '<ul>';
+      application.locationPreferences.forEach(item => {
+        htmlListStr += `<li>${item}</li>`;
+      });
+      htmlListStr += '</ul>';
+      addField(data, exercise.locationQuestion, htmlListStr);
     }
     return data;
   }
@@ -498,15 +533,15 @@ module.exports = () => {
   //   html.addTable(getLocationPreferences(application, exercise));
   // }
 
-  function getLocationPreferences(application, exercise) {
-    const data = [];
-    if (exercise.locationQuestionType === 'single-choice') {
-      addField(data, exercise.locationQuestion, application.locationPreferences);
-    } else {
-      addField(data, exercise.locationQuestion, application.locationPreferences.join('\n'));
-    }
-    return data;
-  }
+  // function getLocationPreferences(application, exercise) {
+  //   const data = [];
+  //   if (exercise.locationQuestionType === 'single-choice') {
+  //     addField(data, exercise.locationQuestion, application.locationPreferences);
+  //   } else {
+  //     addField(data, exercise.locationQuestion, application.locationPreferences.join('\n'));
+  //   }
+  //   return data;
+  // }
 
   function getAssessorsData(application) {
     const firstAssessorFullName = application.firstAssessorFullName;
