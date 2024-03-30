@@ -51,6 +51,7 @@ exports.transferHandoverData = require('./callableFunctions/transferHandoverData
 exports.exportApplicationContactsData = require('./callableFunctions/exportApplicationContactsData');
 exports.exportApplicationEligibilityIssues = require('./callableFunctions/exportApplicationEligibilityIssues');
 exports.generateHandoverReport = require('./callableFunctions/generateHandoverReport');
+exports.generateDeploymentReport = require('./callableFunctions/generateDeploymentReport');
 exports.generateReasonableAdjustmentsReport = require('./callableFunctions/generateReasonableAdjustmentsReport');
 exports.generateAgencyReport = require('./callableFunctions/generateAgencyReport');
 exports.generateStatutoryConsultationReport = require('./callableFunctions/generateStatutoryConsultationReport');
