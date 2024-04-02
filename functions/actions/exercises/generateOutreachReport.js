@@ -1,10 +1,9 @@
 const { getDocument, getDocuments, objectHasNestedProperty } = require('../../shared/helpers');
 const { availableStages } = require('../../shared/exerciseHelper');
-const config = require('../../shared/config');
 
 const ignoreKeys = ['total', 'declaration', 'preferNotToSay', 'noAnswer'];
 
-module.exports = (firebase, db) => {
+module.exports = (config, firebase, db) => {
   return {
     generateOutreachReport,
     attendedOutreachStats,

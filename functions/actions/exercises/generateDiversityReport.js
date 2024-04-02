@@ -1,7 +1,6 @@
 const { getDocument, getDocuments } = require('../../shared/helpers');
 const { applicationOpenDatePost01042023 } = require('../../shared/converters/helpers');
 const { availableStages } = require('../../shared/exerciseHelper');
-const config = require('../../shared/config');
 
 /**
  * For the diversity reports:
@@ -18,11 +17,12 @@ const config = require('../../shared/config');
  *   • 25% said they prefer Applause (2 out of 8)
  *   • Declaration rate was 80% (8 out of 10)
  *
- * @param {*} firebase 
+ * @param {*} config
+ * @param {*} firebase
  * @param {*} db 
  * @returns 
  */
-module.exports = (firebase, db) => {
+module.exports = (config, firebase, db) => {
   return {
     generateDiversityReport,
     genderStats,

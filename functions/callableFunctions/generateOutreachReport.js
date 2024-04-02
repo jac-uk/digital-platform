@@ -1,7 +1,8 @@
 const functions = require('firebase-functions');
+const config = require('../shared/config.js');
 const { firebase, db, auth } = require('../shared/admin.js');
 const { checkArguments } = require('../shared/helpers.js');
-const { generateOutreachReport } = require('../actions/exercises/generateOutreachReport')(firebase, db);
+const { generateOutreachReport } = require('../actions/exercises/generateOutreachReport')(config, firebase, db);
 const { getDocument } = require('../shared/helpers');
 const { logEvent } = require('../actions/logs/logEvent')(firebase, db, auth);
 const { checkFunctionEnabled } = require('../shared/serviceSettings.js')(db);

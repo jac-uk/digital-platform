@@ -1,7 +1,8 @@
 'use strict';
 
+const config = require('./shared/config');
 const { firebase, app, db } = require('./shared/admin.js');
-const { generateDiversityReport } = require('../functions/actions/exercises/generateDiversityReport')(firebase, db);
+const { generateDiversityReport } = require('../functions/actions/exercises/generateDiversityReport')(config, firebase, db);
 
 const main = async () => {
   //return generateDiversityReport('wdpALbyICL7ZxxN5AQt8');
