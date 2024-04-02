@@ -30,13 +30,6 @@ module.exports = () => {
         html.addTitle(application.referenceNumber);
       }
 
-//@todo: add location prefs once fixed jurisdiction prefs below as essentially the same i think
-
-//@todo: get jurisdiction prefs
-// - ranked choice and multiple (both display ok and in order)
-//    - modify to display in a vertical list with wrapping
-// - single choice displays ok
-
       // Jurisdiction Prefs
       if (application.jurisdictionPreferences && application.jurisdictionPreferences.length) {
         html.addHeading('Jurisdiction Preferences');
