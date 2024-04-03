@@ -35,34 +35,35 @@ module.exports = (config, firebase, db) => {
   }
 
   function buildZenhubPayload(data, user) {
+    // line breaks removed as working fix, TODO add them back in 
     let payload = `The following ${data.criticality} issue was raised by ${data.reporter}`;
     if (data.exercise.referenceNumber) {
-      payload += ` for exercise ${data.exercise.referenceNumber}`;
+      payload += ` for exercise ${data.exercise.referenceNumber} `;
     }
     if (data.exercise.candidate) {
-      payload += `\nCandidate: ${data.exercise.candidate}`;
+      payload += `Candidate: ${data.exercise.candidate} `;
     }
-    payload += `.\nCriticality: ${data.criticality}`;
-    payload += `.\nDescription: ${data.issue}`;
-    payload += `.\nExpectation: ${data.expectation}`;
-    payload += `.\nPlatform: ${data.platform}`;
-    payload += `.\nEnvironment: ${data.environment}`;
-    payload += `.\nBrowser: ${data.browser}`;
-    payload += `.\nOS: ${data.os}`;
-    payload += `.\nContact Details: ${data.contactDetails}`;
-    payload += `.\nUrl: ${data.url}`;
-    payload += `.\nCPS Device? ${data.cpsDevice === '0' ? 'No' : 'Yes'}`;
+    payload += `Criticality: ${data.criticality} `;
+    payload += `Description: ${data.issue} `;
+    payload += `Expectation: ${data.expectation} `;
+    payload += `Platform: ${data.platform} `;
+    payload += `Environment: ${data.environment} `;
+    payload += `Browser: ${data.browser} `;
+    payload += `OS: ${data.os} `;
+    payload += `Contact Details: ${data.contactDetails} `;
+    payload += `Url: ${data.url} `;
+    payload += `CPS Device? ${data.cpsDevice === '0' ? 'No' : 'Yes'} `;
     if (data.screenshot) {
-      payload += `.\nScreenshot Link: ${data.screenshot.downloadUrl}`;
-      payload += '.\nScreenshot:';
+      payload += `Screenshot Link: ${data.screenshot.downloadUrl} `;
+      payload += 'Screenshot: ';
 
       // Note:The image src below does not work when using localhost
-      payload += `.\n<img src='${data.screenshot.downloadUrl}' />`;
+      payload += `<img src='${data.screenshot.downloadUrl}' /> `;
     }
-    //payload += '.\n<!-- test = { id: 23, name: \'tester\' } -->';
-    //payload += `.\n<!-- reporter = { email: '${data.contactDetails}' } -->`;
-    //payload += `.\n<!-- { reporter: '${user.slackMemberId}', developer: 'U052NR5U43Z' } -->`;
-   
+    //payload += '<!-- test = { id: 23, name: \'tester\' } -->';
+    //payload += `<!-- reporter = { email: '${data.contactDetails}' } -->`;
+    //payload += `<!-- { reporter: '${user.slackMemberId}', developer: 'U052NR5U43Z' } -->`;
+  
     return payload;
   }
 

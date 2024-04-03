@@ -124,7 +124,7 @@ module.exports = (config) => {
           throw new Error('New issue id was not returned from the API');
         }
       } catch(error) {
-        console.log('Zenhub createIssue errors:');
+        console.log('gitHub createIssue errors:');
         console.log(error);
       }
     }
