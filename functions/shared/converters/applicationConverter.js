@@ -232,6 +232,9 @@ module.exports = () => {
         const dates = [];
         if (e.startDate) dates.push(helpers.formatDate(e.startDate, 'MMM YYYY'));
         if (e.isOngoing) dates.push('Ongoing');
+        else if (!Object.prototype.hasOwnProperty.call(e, 'endDate')) { // No end date so is 'ongoing'
+          dates.push('Ongoing');
+        }
         else if (e.endDate) dates.push(helpers.formatDate(e.endDate, 'MMM YYYY'));
 
         addField(data, 'Job title', e.jobTitle, idx !== 0);
