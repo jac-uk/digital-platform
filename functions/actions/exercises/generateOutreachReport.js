@@ -74,7 +74,7 @@ module.exports = (config, firebase, db) => {
     }
 
     statuses.forEach(status => {
-      const applicationRecordsByStatus = applicationRecords.filter(doc => doc.statusLog[status]);
+      const applicationRecordsByStatus = applicationRecords.filter(doc => doc.statusLog && doc.statusLog[status]);
       const applicationsByStatus = applications.filter(doc => applicationRecordsByStatus.map(doc => doc.id).includes(doc.id));
       report[status] = outreachReport(applicationsByStatus);
     });
