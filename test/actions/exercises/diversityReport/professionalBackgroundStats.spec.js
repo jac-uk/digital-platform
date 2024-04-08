@@ -1,9 +1,10 @@
 const firebase = require('firebase-admin');
 const db = jest.fn();
+const config = require('../../../../nodeScripts/shared/config');
 
 const {
   professionalBackgroundStats,
-} = require('../../../../functions/actions/exercises/generateDiversityReport.js')(firebase, db);
+} = require('../../../../functions/actions/exercises/generateDiversityReport.js')(config, firebase, db);
 
 const applications1 = [
   {

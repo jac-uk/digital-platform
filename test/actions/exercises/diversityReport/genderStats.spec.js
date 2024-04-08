@@ -1,9 +1,10 @@
 const firebase = require('firebase-admin');
 const db = jest.fn();
+const config = require('../../../../nodeScripts/shared/config');
 
 const {
   genderStats,
-} = require('../../../../functions/actions/exercises/generateDiversityReport.js')(firebase, db);
+} = require('../../../../functions/actions/exercises/generateDiversityReport.js')(config, firebase, db);
 
 // List of all possible gender groups
 const genderGroups = ['prefer-not-to-say', 'no-answer', 'male', 'female', 'gender-neutral', 'other-gender'];

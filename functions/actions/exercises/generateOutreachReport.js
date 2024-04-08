@@ -3,7 +3,7 @@ const { availableStages } = require('../../shared/exerciseHelper');
 
 const ignoreKeys = ['total', 'declaration', 'preferNotToSay', 'noAnswer'];
 
-module.exports = (firebase, db) => {
+module.exports = (config, firebase, db) => {
   return {
     generateOutreachReport,
     attendedOutreachStats,
@@ -24,6 +24,9 @@ module.exports = (firebase, db) => {
       .select('additionalInfo', 'equalityAndDiversitySurvey', 'attendedOutreachEvents', 'participatedInJudicialWorkshadowingScheme', 'hasTakenPAJE')
     );
 
+    // get application records
+    const applicationRecords = await getDocuments(db.collection('applicationRecords').where('exercise.id', '==', exerciseId));
+
     const report = {
       totalApplications: applications.length,
       createdAt: firebase.firestore.Timestamp.fromDate(new Date()),
@@ -42,6 +45,41 @@ module.exports = (firebase, db) => {
         report[stage] = outreachReport(applicationsByStage);
       }
     }
+
+    // add additional data based on shortlisting methods
+    const isProcessingVersion2 = exercise._processingVersion >= 2;
+    const APPLICATION_STATUS = config.APPLICATION_STATUS;
+    const SHORTLISTING = config.SHORTLISTING;
+    const statuses = [];
+    // qt
+    if (exercise.shortlistingMethods.some(method => [
+      SHORTLISTING.SITUATIONAL_JUDGEMENT_QUALIFYING_TEST,
+      SHORTLISTING.CRITICAL_ANALYSIS_QUALIFYING_TEST,
+    ].includes(method))) {
+      const status = isProcessingVersion2 ? APPLICATION_STATUS.QUALIFYING_TEST_PASSED : APPLICATION_STATUS.PASSED_FIRST_TEST;
+      statuses.push(status);
+    }
+    // scenario test
+    if (exercise.shortlistingMethods.includes(SHORTLISTING.SCENARIO_TEST_QUALIFYING_TEST)) {
+      const status = isProcessingVersion2 ? APPLICATION_STATUS.SCENARIO_TEST_PASSED : APPLICATION_STATUS.PASSED_SCENARIO_TEST;
+      statuses.push(status);
+    }
+    // sift
+    if (exercise.shortlistingMethods.some(method => [
+      SHORTLISTING.NAME_BLIND_PAPER_SIFT,
+      SHORTLISTING.PAPER_SIFT,
+    ].includes(method))) {
+      const status = isProcessingVersion2 ? APPLICATION_STATUS.SIFT_PASSED : APPLICATION_STATUS.PASSED_SIFT;
+      statuses.push(status);
+    }
+
+    statuses.forEach(status => {
+      // get applications by status in statusLog
+      const applicationRecordsByStatus = applicationRecords.filter(doc => doc.statusLog && doc.statusLog[status]);
+      const applicationsByStatus = applications.filter(doc => applicationRecordsByStatus.map(doc => doc.id).includes(doc.id));
+      report[status] = outreachReport(applicationsByStatus);
+    });
+
     await db.collection('exercises').doc(exerciseId).collection('reports').doc('outreach').set(report);
     return report;
   }
