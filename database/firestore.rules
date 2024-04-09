@@ -43,6 +43,11 @@ service cloud.firestore {
     //  && request.resource.data.keys().hasOnly(all);
   }
 
+
+  function isExternalAdvert(exercise) {
+    return exercise.advertType === 'external';
+  }
+
   function canUpdateApplicationViaCandidateForm(formId) {
     return resource.data.status == request.resource.data.status &&
       resource.data.status in ["draft", "applied"] &&
@@ -60,8 +65,8 @@ service cloud.firestore {
 
     match /exercises/{exerciseId} {
       allow read: if userIsAuthenticated() && userIsJAC() && hasPermission('e1');
-      allow create: if userIsAuthenticated() && userIsJAC() && hasPermission('e2') && verifyFields(['referenceNumber', 'progress', 'state', 'createdBy'], []);
-      allow update: if userIsAuthenticated() && userIsJAC() && hasPermission('e3') && verifyFields(['referenceNumber', 'progress', 'state', 'createdBy'], []);
+      allow create: if userIsAuthenticated() && userIsJAC() && (hasPermission('e2') || isExternalAdvert(resource.data)) && verifyFields(['referenceNumber', 'progress', 'state', 'createdBy'], []);
+      allow update: if userIsAuthenticated() && userIsJAC() && (hasPermission('e3') || isExternalAdvert(resource.data)) && verifyFields(['referenceNumber', 'progress', 'state', 'createdBy'], []);
       allow delete: if userIsAuthenticated() && userIsJAC() && hasPermission('e4') && resource.data.state == "draft";
 
       match /data/{dataId} {
