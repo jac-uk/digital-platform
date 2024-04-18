@@ -9,20 +9,24 @@
 const { app, db } = require('./shared/admin');
 const { applyUpdates, getDocuments, getDocument } = require('../functions/shared/helpers');
 
+let exerciseId = null;
+let dueDate = null;
+let hardLimitDate = null;
+
 // Live
-const exerciseId = 'lB0dht6mY4kSXTQusGqd';
-const dueDate = new Date('2024-04-25');
-const hardLimitDate = new Date('2024-05-01');
+// exerciseId = 'lB0dht6mY4kSXTQusGqd';
+// dueDate = new Date('2024-04-25');
+// hardLimitDate = new Date('2024-05-01');
 
 // Develop
-// const exerciseId = '8CIlAsDbtMfr2vnfjmYh';
-// const dueDate = new Date('2024-11-20');
-// const hardLimitDate = new Date('2024-11-21');
+// exerciseId = '8CIlAsDbtMfr2vnfjmYh';
+// dueDate = new Date('2024-11-20');
+// hardLimitDate = new Date('2024-11-21');
 
 const main = async () => {
 
-  if (!dueDate && !hardLimitDate) {
-    console.log('Please set either the dueDate or the hardLimitDate');
+  if (!exerciseId || (!dueDate && !hardLimitDate)) {
+    console.log('Please set the exercise id and the dueDate and/or the hardLimitDate');
     return true;
   }
 
