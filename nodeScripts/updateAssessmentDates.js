@@ -6,8 +6,7 @@
 
 'use strict';
 
-const config = require('./shared/config');
-const { firebase, app, db } = require('./shared/admin');
+const { app, db } = require('./shared/admin');
 const { applyUpdates, getDocuments, getDocument } = require('../functions/shared/helpers');
 
 // Live
