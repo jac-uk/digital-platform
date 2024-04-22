@@ -15,18 +15,18 @@ let hardLimitDate = null;
 
 // Live
 // exerciseId = 'lB0dht6mY4kSXTQusGqd';
-// dueDate = new Date('2024-04-25');
-// hardLimitDate = new Date('2024-05-01');
+// dueDate = new Date(2024, 3, 24, 13, 0, 0);
+// hardLimitDate = new Date(2024, 4, 1, 13, 0, 0);
 
 // Develop
-// exerciseId = '8CIlAsDbtMfr2vnfjmYh';
-// dueDate = new Date('2024-11-20');
-// hardLimitDate = new Date('2024-11-21');
+//exerciseId = '8CIlAsDbtMfr2vnfjmYh';
+//dueDate = new Date(2024, 3, 24, 13, 0, 0);
+//hardLimitDate = new Date(2024, 4, 1, 13, 0, 0);
 
 const main = async () => {
 
-  if (!exerciseId || (!dueDate && !hardLimitDate)) {
-    console.log('Please set the exercise id and the dueDate and/or the hardLimitDate');
+  if (!exerciseId || (!dueDate && !hardLimitDate) || !(dueDate instanceof Date) || !(hardLimitDate instanceof Date)) {
+    console.log('Please set the exercise id and the dueDate and/or the hardLimitDate must be date objects');
     return true;
   }
 
