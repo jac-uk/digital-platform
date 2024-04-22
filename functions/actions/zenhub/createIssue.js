@@ -31,7 +31,7 @@ module.exports = (config, firebase, db) => {
         zenhubIssueId: zenhubIssueId,
         lastUpdatedAt: firebase.firestore.FieldValue.serverTimestamp(),
       });
-    }
+    }    
   }
 
   function buildZenhubPayload(data, user) {
@@ -43,19 +43,19 @@ module.exports = (config, firebase, db) => {
     if (data.exercise.candidate) {
       payload += `Candidate: ${data.exercise.candidate} `;
     }
-    payload += `Criticality: ${data.criticality} `;
-    payload += `Description: ${data.issue} `;
-    payload += `Expectation: ${data.expectation} `;
-    payload += `Platform: ${data.platform} `;
-    payload += `Environment: ${data.environment} `;
-    payload += `Browser: ${data.browser} `;
-    payload += `OS: ${data.os} `;
-    payload += `Contact Details: ${data.contactDetails} `;
+    payload += `Criticality: ${data.criticality}<br>`;
+    payload += `Description: ${convertNewlineToBr(data.issue)}<br><br>`;
+    payload += `Expectation: ${convertNewlineToBr(data.expectation)}<br><br>`;
+    payload += `Platform: ${data.platform}<br>`;
+    payload += `Environment: ${data.environment}<br>`;
+    payload += `Browser: ${data.browser}<br>`;
+    payload += `OS: ${data.os}<br>`;
+    payload += `Contact Details: ${data.contactDetails}<br>`;
     payload += `Url: ${data.url} `;
-    payload += `CPS Device? ${data.cpsDevice === '0' ? 'No' : 'Yes'} `;
+    payload += `CPS Device? ${data.cpsDevice === '0' ? 'No' : 'Yes'}<br>`;
     if (data.screenshot) {
-      payload += `Screenshot Link: ${data.screenshot.downloadUrl} `;
-      payload += 'Screenshot: ';
+      payload += `Screenshot Link: ${data.screenshot.downloadUrl}<br>`;
+      payload += 'Screenshot:<br>';
 
       // Note:The image src below does not work when using localhost
       payload += `<img src='${data.screenshot.downloadUrl}' /> `;
@@ -65,6 +65,10 @@ module.exports = (config, firebase, db) => {
     //payload += `<!-- { reporter: '${user.slackMemberId}', developer: 'U052NR5U43Z' } -->`;
   
     return payload;
+  }
+
+  function convertNewlineToBr(text) {
+    return text.replace(/\n/g, '<br>');
   }
 
 };
