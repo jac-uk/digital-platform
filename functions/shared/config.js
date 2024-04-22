@@ -36,24 +36,6 @@ const CONSTANTS = {
       SCC_TO_RECONSIDER: 'sccToReconsider',
     },
     CHARACTER_ISSUES: { // this gives a map from issue to corresponding details field TODO improve naming or where we store this
-      criminalOffences: {
-        group: 'Criminal',
-        title: 'Criminal Offences',
-        details: 'criminalOffenceDetails',
-        summary: 'Candidate has been cautioned or convicted of a criminal offence',
-      },
-      declaredBankruptOrIVA: {
-        group: 'Financial',
-        title: 'Declared Bankrupt Or IVA',
-        details: 'declaredBankruptOrIVADetails',
-        summary: 'Candidate has been declared bankrupt or entered into an Individual Voluntary Agreement (IVA)',
-      },
-      diciplinaryActionOrAskedToResign: {
-        group: 'Professional',
-        title: 'Disciplinary Action Or Asked To Resign',
-        details: 'diciplinaryActionOrAskedToResignDetails',
-        summary: 'Candidate has been subject to complaints or disciplinary action, or been asked to resign from a position',
-      },
       drivingDisqualificationDrinkDrugs: {
         group: 'Motoring',
         title: 'Driving Disqualification Drink Drugs',
@@ -66,11 +48,23 @@ const CONSTANTS = {
         details: 'endorsementsOrMotoringFixedPenaltiesDetails',
         summary: 'Candidate has endorsements on their licence, or received any motoring fixed-penalty notices in the last 4 years',
       },
-      involvedInProfessionalMisconduct: {
-        group: 'Professional',
-        title: 'Involved In Professional Misconduct',
-        details: 'involvedInProfessionalMisconductDetails',
-        summary: 'Candidate has been, or is currently, subject to professional misconduct, negligence, wrongful dismissal, discrimination or harassment proceedings',
+      nonMotoringFixedPenaltyNotices: {
+        group: 'Motoring',
+        title: 'Non Motoring Fixed Penalty Notices',
+        details: 'nonMotoringFixedPenaltyNoticesDetails',
+        summary: 'Candidate has received a non-motoring penalty notice in the last 4 years',
+      },
+      criminalOffences: {
+        group: 'Criminal',
+        title: 'Criminal Offences',
+        details: 'criminalOffenceDetails',
+        summary: 'Candidate has been cautioned or convicted of a criminal offence',
+      },
+      declaredBankruptOrIVA: {
+        group: 'Financial',
+        title: 'Declared Bankrupt Or IVA',
+        details: 'declaredBankruptOrIVADetails',
+        summary: 'Candidate has been declared bankrupt or entered into an Individual Voluntary Agreement (IVA)',
       },
       lateTaxReturnOrFined: {
         group: 'Financial',
@@ -78,11 +72,17 @@ const CONSTANTS = {
         details: 'lateTaxReturnOrFinedDetails',
         summary: 'Candidate has filed late tax returns or been fined by HMRC',
       },
-      nonMotoringFixedPenaltyNotices: {
-        group: 'Motoring',
-        title: 'Non Motoring Fixed Penalty Notices',
-        details: 'nonMotoringFixedPenaltyNoticesDetails',
-        summary: 'Candidate has received a non-motoring penalty notice in the last 4 years',
+      diciplinaryActionOrAskedToResign: {
+        group: 'Professional',
+        title: 'Disciplinary Action Or Asked To Resign',
+        details: 'diciplinaryActionOrAskedToResignDetails',
+        summary: 'Candidate has been subject to complaints or disciplinary action, or been asked to resign from a position',
+      },
+      involvedInProfessionalMisconduct: {
+        group: 'Professional',
+        title: 'Involved In Professional Misconduct',
+        details: 'involvedInProfessionalMisconductDetails',
+        summary: 'Candidate has been, or is currently, subject to professional misconduct, negligence, wrongful dismissal, discrimination or harassment proceedings',
       },
       otherCharacterIssues: {
         group: 'Other',
@@ -92,35 +92,17 @@ const CONSTANTS = {
       },
     },
     CHARACTER_ISSUES_V2: { // this gives a map from issue to corresponding details field TODO improve naming or where we store this
-      bankruptcies: {
-        group: 'Financial',
-        title: 'Bankruptcies',
-        details: 'bankruptcyDetails',
-        summary: 'Candidate has filed for bankruptcy',
-      },
-      complaintOrDisciplinaryAction: {
-        group: 'Professional',
-        title: 'Complaint Or Disciplinary Action',
-        details: 'complaintOrDisciplinaryActionDetails',
-        summary: 'Candidate has received a complaint or disciplinary action',
-      },
-      criminalCautions: {
-        group: 'Criminal',
-        title: 'Criminal Cautions',
-        details: 'criminalCautionDetails',
-        summary: 'Candidate has been cautioned for a criminal offence',
-      },
-      criminalConvictions: {
-        group: 'Criminal',
-        title: 'Criminal Convictions',
-        details: 'criminalConvictionDetails',
-        summary: 'Candidate has been convicted of a criminal offence',
-      },
       drivingDisqualifications: {
         group: 'Motoring',
         title: 'Driving Disqualifications',
         details: 'drivingDisqualificationDetails',
         summary: 'Candidate has been disqualified from driving',
+      },
+      recentDrivingConvictions: {
+        group: 'Motoring',
+        title: 'Recent Driving Convictions',
+        details: 'recentDrivingConvictionDetails',
+        summary: 'Candidate has recent driving convictions',
       },
       fixedPenalties: {
         group: 'Motoring',
@@ -128,17 +110,23 @@ const CONSTANTS = {
         details: 'fixedPenaltyDetails',
         summary: 'Candidate has received a fixed-penalty',
       },
-      furtherInformation: {
-        group: 'Other',
-        title: 'Further Information',
-        details: 'furtherInformationDetails',
-        summary: 'Candidate has declare further information',
+      criminalConvictions: {
+        group: 'Criminal',
+        title: 'Criminal Convictions',
+        details: 'criminalConvictionDetails',
+        summary: 'Candidate has been convicted of a criminal offence',
       },
-      hmrcFines: {
+      criminalCautions: {
+        group: 'Criminal',
+        title: 'Criminal Cautions',
+        details: 'criminalCautionDetails',
+        summary: 'Candidate has been cautioned for a criminal offence',
+      },
+      bankruptcies: {
         group: 'Financial',
-        title: 'HMRC Fines',
-        details: 'hmrcFineDetails',
-        summary: 'Candidate has received a fine from HMRC',
+        title: 'Bankruptcies',
+        details: 'bankruptcyDetails',
+        summary: 'Candidate has filed for bankruptcy',
       },
       ivas: {
         group: 'Financial',
@@ -158,17 +146,29 @@ const CONSTANTS = {
         details: 'lateVatReturnDetails',
         summary: 'Candidate has filed late VAT returns',
       },
-      recentDrivingConvictions: {
-        group: 'Motoring',
-        title: 'Recent Driving Convictions',
-        details: 'recentDrivingConvictionDetails',
-        summary: 'Candidate has recent driving convictions',
+      hmrcFines: {
+        group: 'Financial',
+        title: 'HMRC Fines',
+        details: 'hmrcFineDetails',
+        summary: 'Candidate has received a fine from HMRC',
       },
-      requestedToResign: {
+      subjectOfAllegationOrClaimOfProfessionalMisconduct: {
         group: 'Professional',
-        title: 'Requested To Resign',
-        details: 'requestedToResignDetails',
-        summary: 'Candidate has been requested to resign',
+        title: 'Subject Of Allegation Or Claim Of Professional Misconduct',
+        details: 'subjectOfAllegationOrClaimOfProfessionalMisconductDetails',
+        summary: 'Candidate has been the subject of allegation or claim of misconduct',
+      },
+      subjectOfAllegationOrClaimOfNegligence: {
+        group: 'Professional',
+        title: 'Subject Of Allegation Or Claim Of Negligence',
+        details: 'subjectOfAllegationOrClaimOfNegligenceDetails',
+        summary: 'Candidate has been the subject of allegation or claim of negligence',
+      },
+      subjectOfAllegationOrClaimOfWrongfulDismissal: {
+        group: 'Professional',
+        title: 'Subject Of Allegation Or Claim Of Wrongful Dismissal',
+        details: 'subjectOfAllegationOrClaimOfWrongfulDismissalDetails',
+        summary: 'Candidate has been the subject of allegation or claim wrongful dismissal',
       },
       subjectOfAllegationOrClaimOfDiscriminationProceeding: {
         group: 'Professional',
@@ -182,23 +182,23 @@ const CONSTANTS = {
         details: 'subjectOfAllegationOrClaimOfHarassmentProceedingDetails',
         summary: 'Candidate is subject of allegation or claim of harassment proceeding',
       },
-      subjectOfAllegationOrClaimOfNegligence: {
+      complaintOrDisciplinaryAction: {
         group: 'Professional',
-        title: 'Subject Of Allegation Or Claim Of Negligence',
-        details: 'subjectOfAllegationOrClaimOfNegligenceDetails',
-        summary: 'Candidate has been the subject of allegation or claim of negligence',
+        title: 'Complaint Or Disciplinary Action',
+        details: 'complaintOrDisciplinaryActionDetails',
+        summary: 'Candidate has received a complaint or disciplinary action',
       },
-      subjectOfAllegationOrClaimOfProfessionalMisconduct: {
+      requestedToResign: {
         group: 'Professional',
-        title: 'Subject Of Allegation Or Claim Of Professional Misconduct',
-        details: 'subjectOfAllegationOrClaimOfProfessionalMisconductDetails',
-        summary: 'Candidate has been the subject of allegation or claim of misconduct',
+        title: 'Requested To Resign',
+        details: 'requestedToResignDetails',
+        summary: 'Candidate has been requested to resign',
       },
-      subjectOfAllegationOrClaimOfWrongfulDismissal: {
-        group: 'Professional',
-        title: 'Subject Of Allegation Or Claim Of Wrongful Dismissal',
-        details: 'subjectOfAllegationOrClaimOfWrongfulDismissalDetails',
-        summary: 'Candidate has been the subject of allegation or claim wrongful dismissal',
+      furtherInformation: {
+        group: 'Other',
+        title: 'Further Information',
+        details: 'furtherInformationDetails',
+        summary: 'Candidate has declare further information',
       },
     },
     CHARACTER_ISSUE_STATUS: {
