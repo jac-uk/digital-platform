@@ -19,7 +19,8 @@ module.exports = (firebase, db, auth) => {
     if (typeof(user) === 'undefined' && auth.currentUser) {
       user = {
         id: auth.currentUser.uid,
-        name: auth.currentUser.displayName,
+        name: auth.currentUser.displayName || null,
+        email: auth.currentUser.email || null,
       };
     }
 
