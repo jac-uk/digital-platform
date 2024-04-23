@@ -81,8 +81,14 @@ module.exports = (firebase, config, db) => {
 
   function convertStatusToVersion2(status) {
     switch (status) {
+      case APPLICATION_STATUS.CRITICAL_ANALYSIS_PASSED:
+        return APPLICATION_STATUS.CRITICAL_ANALYSIS_PASSED;
+      case APPLICATION_STATUS.SITUATIONAL_JUDGEMENT_PASSED:
+        return APPLICATION_STATUS.SITUATIONAL_JUDGEMENT_PASSED;
       case APPLICATION_STATUS.PASSED_FIRST_TEST:
         return APPLICATION_STATUS.QUALIFYING_TEST_PASSED;
+      case APPLICATION_STATUS.CRITICAL_ANALYSIS_FAILED:
+      case APPLICATION_STATUS.SITUATIONAL_JUDGEMENT_FAILED:
       case APPLICATION_STATUS.FAILED_FIRST_TEST:
         return APPLICATION_STATUS.QUALIFYING_TEST_FAILED;
       case APPLICATION_STATUS.NO_TEST_SUBMITTED:
@@ -185,6 +191,28 @@ module.exports = (firebase, config, db) => {
               payload.statusLog[newStatus] = timestamp;
             }
         });
+
+        if (payload.status === APPLICATION_STATUS.CRITICAL_ANALYSIS_PASSED &&
+          (payload.statusLog[APPLICATION_STATUS.SITUATIONAL_JUDGEMENT_FAILED] || 
+            payload.statusLog[APPLICATION_STATUS.QUALIFYING_TEST_NOT_SUBMITTED] ||
+            payload.statusLog[APPLICATION_STATUS.QUALIFYING_TEST_FAILED])
+        ) {
+          payload.status = APPLICATION_STATUS.QUALIFYING_TEST_FAILED;
+          payload.statusLog[APPLICATION_STATUS.QUALIFYING_TEST_FAILED] = payload.statusLog[APPLICATION_STATUS.CRITICAL_ANALYSIS_PASSED];
+          delete payload.statusLog[APPLICATION_STATUS.CRITICAL_ANALYSIS_PASSED];
+          delete payload.statusLog[APPLICATION_STATUS.SITUATIONAL_JUDGEMENT_FAILED];
+        }
+
+        if (payload.status === APPLICATION_STATUS.SITUATIONAL_JUDGEMENT_PASSED &&
+          (payload.statusLog[APPLICATION_STATUS.CRITICAL_ANALYSIS_FAILED] ||
+            payload.statusLog[APPLICATION_STATUS.QUALIFYING_TEST_NOT_SUBMITTED] ||
+            payload.statusLog[APPLICATION_STATUS.QUALIFYING_TEST_FAILED])
+        ) {
+          payload.status = APPLICATION_STATUS.QUALIFYING_TEST_FAILED;
+          payload.statusLog[APPLICATION_STATUS.QUALIFYING_TEST_FAILED] = payload.statusLog[APPLICATION_STATUS.SITUATIONAL_JUDGEMENT_PASSED];
+          delete payload.statusLog[APPLICATION_STATUS.SITUATIONAL_JUDGEMENT_PASSED];
+          delete payload.statusLog[APPLICATION_STATUS.CRITICAL_ANALYSIS_FAILED];
+        }
       }
     }
 

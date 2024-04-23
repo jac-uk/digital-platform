@@ -5,8 +5,14 @@ const { updateApplicationRecordStageStatus } = require('../actions/applicationRe
 const { checkArguments } = require('../shared/helpers.js');
 const { checkFunctionEnabled } = require('../shared/serviceSettings.js')(db);
 const { PERMISSIONS, hasPermissions } = require('../shared/permissions.js');
+const { generateDiversityReport } = require('../actions/exercises/generateDiversityReport')(config, firebase, db);
+const { generateDiversityData } = require('../actions/exercises/generateDiversityData')(firebase, db);
+const { generateOutreachReport } = require('../actions/exercises/generateOutreachReport')(config, firebase, db);
 
-module.exports = functions.region('europe-west2').https.onCall(async (data, context) => {
+module.exports = functions.runWith({
+  timeoutSeconds: 180,
+  memory: '1GB',
+}).region('europe-west2').https.onCall(async (data, context) => {
   await checkFunctionEnabled();
 
   // authenticate the request
@@ -26,9 +32,16 @@ module.exports = functions.region('europe-west2').https.onCall(async (data, cont
     throw new functions.https.HttpsError('invalid-argument', 'Please provide valid arguments');
   }
 
-  // return the requested data
-  return await updateApplicationRecordStageStatus({
+  const result = await updateApplicationRecordStageStatus({
     exerciseId: data.exerciseId,
     version: data.version,
   });
+
+  // refresh reports
+  await generateDiversityReport(data.exerciseId);
+  await generateDiversityData(data.exerciseId);
+  await generateOutreachReport(data.exerciseId);
+
+  // return the requested data
+  return result;
 });
