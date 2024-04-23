@@ -41,21 +41,21 @@ module.exports = (config, firebase, db) => {
       payload += ` for exercise ${data.exercise.referenceNumber} `;
     }
     if (data.exercise.candidate) {
-      payload += `Candidate: ${data.exercise.candidate} `;
+      payload += `<br>Candidate: ${data.exercise.candidate} `;
     }
-    payload += `Criticality: ${data.criticality}<br>`;
-    payload += `Description: ${convertNewlineToBr(data.issue)}<br><br>`;
-    payload += `Expectation: ${convertNewlineToBr(data.expectation)}<br><br>`;
-    payload += `Platform: ${data.platform}<br>`;
-    payload += `Environment: ${data.environment}<br>`;
-    payload += `Browser: ${data.browser}<br>`;
-    payload += `OS: ${data.os}<br>`;
-    payload += `Contact Details: ${data.contactDetails}<br>`;
-    payload += `Url: ${data.url} `;
-    payload += `CPS Device? ${data.cpsDevice === '0' ? 'No' : 'Yes'}<br>`;
+    payload += `<br><strong>Criticality:</strong> ${data.criticality}`;
+    payload += `<br><strong>Description:</strong> ${convertNewlineToBr(data.issue)}`;
+    payload += `<br><strong>Expectation:</strong> ${convertNewlineToBr(data.expectation)}`;
+    payload += `<br><strong>Platform:</strong> ${data.platform}`;
+    payload += `<br><strong>Environment:</strong> ${data.environment}`;
+    payload += `<br><strong>Browser:</strong> ${data.browser}`;
+    payload += `<br><strong>OS:</strong> ${data.os}`;
+    payload += `<br><strong>Contact Details:</strong> ${data.contactDetails}`;
+    payload += `<br><strong>Url:</strong> ${data.url} `;
+    payload += `<br><strong>CPS Device?</strong> ${data.cpsDevice === '0' ? 'No' : 'Yes'}`;
     if (data.screenshot) {
-      payload += `Screenshot Link: ${data.screenshot.downloadUrl}<br>`;
-      payload += 'Screenshot:<br>';
+      payload += `<br><strong>Screenshot Link:</strong> ${data.screenshot.downloadUrl}`;
+      payload += '<br><strong>Screenshot:</strong>';
 
       // Note:The image src below does not work when using localhost
       payload += `<img src='${data.screenshot.downloadUrl}' /> `;
@@ -68,7 +68,11 @@ module.exports = (config, firebase, db) => {
   }
 
   function convertNewlineToBr(text) {
-    return text.replace(/\n/g, '<br>');
+    // Strip newline chars from the beginning and end of the string
+    const text1 = text.replace(/^[\r\n]+|[\r\n]+$/g, '');
+
+    // Replace newline chars with <br>
+    return text1.replace(/[\r\n]+/g, '<br>');
   }
 
 };
