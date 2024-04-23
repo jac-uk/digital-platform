@@ -31,7 +31,7 @@ module.exports = (config, firebase, db) => {
         zenhubIssueId: zenhubIssueId,
         lastUpdatedAt: firebase.firestore.FieldValue.serverTimestamp(),
       });
-    }
+    }    
   }
 
   function buildZenhubPayload(data, user) {
@@ -41,21 +41,21 @@ module.exports = (config, firebase, db) => {
       payload += ` for exercise ${data.exercise.referenceNumber} `;
     }
     if (data.exercise.candidate) {
-      payload += `Candidate: ${data.exercise.candidate} `;
+      payload += `<br>Candidate: ${data.exercise.candidate} `;
     }
-    payload += `Criticality: ${data.criticality} `;
-    payload += `Description: ${data.issue} `;
-    payload += `Expectation: ${data.expectation} `;
-    payload += `Platform: ${data.platform} `;
-    payload += `Environment: ${data.environment} `;
-    payload += `Browser: ${data.browser} `;
-    payload += `OS: ${data.os} `;
-    payload += `Contact Details: ${data.contactDetails} `;
-    payload += `Url: ${data.url} `;
-    payload += `CPS Device? ${data.cpsDevice === '0' ? 'No' : 'Yes'} `;
+    payload += `<br><strong>Criticality:</strong> ${data.criticality}`;
+    payload += `<br><strong>Description:</strong> ${convertNewlineToBr(data.issue)}`;
+    payload += `<br><strong>Expectation:</strong> ${convertNewlineToBr(data.expectation)}`;
+    payload += `<br><strong>Platform:</strong> ${data.platform}`;
+    payload += `<br><strong>Environment:</strong> ${data.environment}`;
+    payload += `<br><strong>Browser:</strong> ${data.browser}`;
+    payload += `<br><strong>OS:</strong> ${data.os}`;
+    payload += `<br><strong>Contact Details:</strong> ${data.contactDetails}`;
+    payload += `<br><strong>Url:</strong> ${data.url} `;
+    payload += `<br><strong>CPS Device?</strong> ${data.cpsDevice === '0' ? 'No' : 'Yes'}`;
     if (data.screenshot) {
-      payload += `Screenshot Link: ${data.screenshot.downloadUrl} `;
-      payload += 'Screenshot: ';
+      payload += `<br><strong>Screenshot Link:</strong> ${data.screenshot.downloadUrl}`;
+      payload += '<br><strong>Screenshot:</strong>';
 
       // Note:The image src below does not work when using localhost
       payload += `<img src='${data.screenshot.downloadUrl}' /> `;
@@ -65,6 +65,14 @@ module.exports = (config, firebase, db) => {
     //payload += `<!-- { reporter: '${user.slackMemberId}', developer: 'U052NR5U43Z' } -->`;
   
     return payload;
+  }
+
+  function convertNewlineToBr(text) {
+    // Strip newline chars from the beginning and end of the string
+    const text1 = text.replace(/^[\r\n]+|[\r\n]+$/g, '');
+
+    // Replace newline chars with <br>
+    return text1.replace(/[\r\n]+/g, '<br>');
   }
 
 };
