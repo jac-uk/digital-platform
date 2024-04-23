@@ -9,7 +9,10 @@ const { generateDiversityReport } = require('../actions/exercises/generateDivers
 const { generateDiversityData } = require('../actions/exercises/generateDiversityData')(firebase, db);
 const { generateOutreachReport } = require('../actions/exercises/generateOutreachReport')(config, firebase, db);
 
-module.exports = functions.region('europe-west2').https.onCall(async (data, context) => {
+module.exports = functions.runWith({
+  timeoutSeconds: 180,
+  memory: '1GB',
+}).region('europe-west2').https.onCall(async (data, context) => {
   await checkFunctionEnabled();
 
   // authenticate the request
