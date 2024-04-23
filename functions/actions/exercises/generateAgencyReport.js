@@ -203,7 +203,7 @@ const reportData = (db, exercise, applications) => {
    */
   function getFormattedPreviousAddresses(personalDetails) {
     let formattedPreviousAddresses;
-    if (personalDetails.address && !personalDetails.address.currentMoreThan5Years) {
+    if (personalDetails.address && !personalDetails.address.currentMoreThan5Years && Array.isArray(personalDetails.address.previous)) {
       formattedPreviousAddresses = personalDetails.address.previous.map((address) => {
         const dates = `${helpers.formatDate(address.startDate)} - ${helpers.formatDate(address.endDate)}`;
         const formattedAddress = formatAddress(address);
