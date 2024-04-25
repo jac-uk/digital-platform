@@ -360,19 +360,27 @@ module.exports = (firebase, config, db) => {
     const issues = [];
 
     if (questions && answers) {
+      const groups = {};
       Object.keys(questions).forEach(key => {
-        if (answers[key]) {
-          const summary = questions[key].summary;
-          if (answers[questions[key].details]) {
+        if (!groups[questions[key].group]) {
+          groups[questions[key].group] = [key];
+        } else {
+          groups[questions[key].group].push(key);
+        }
+      });
+      Object.keys(groups).forEach(issueType => {
+        const events = [];
+        groups[issueType].forEach(key => {
+          if (answers[key] && answers[questions[key].details]) {
             if (Array.isArray(answers[questions[key].details])) { // if the answer contains more than one issue, create an issue for each
-              issues.push(newIssue(key, summary, answers[questions[key].details]));
+              events.push(...answers[questions[key].details]);
             } else {
-              const ans = answers[questions[key].details]; // else just create one issue for the answer
-              issues.push(newIssue(key, summary, [ans]));
+              events.push(answers[questions[key].details]);
             }
-          } else { // answer has no details
-            issues.push(newIssue(key, summary));
           }
+        });
+        if (events.length) {
+          issues.push(newIssue(issueType, issueType, events));
         }
       });
     } else {
