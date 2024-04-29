@@ -115,6 +115,11 @@ const reportData = (db, exercise, applications) => {
       lastName = names.join(' ');
     }
 
+    // for JCIO report
+    const judicialFunctionExperiences = findJudicialFunctionExperiences(application.experience);
+    const anyJudicialFunctionExperiences = judicialFunctionExperiences.length > 0;
+    const judicialFunctionPosts = judicialFunctionExperiences.map((exp) => exp.jobTitle);
+
     const data = {
       title: personalDetails.title || null,
       fullName: fullName || null,
@@ -141,8 +146,8 @@ const reportData = (db, exercise, applications) => {
       sraQualifications: qualifications.filter(e => e.type === 'solicitor').map(e => { return { type: e.type, location: e.location, membershipNumber: e.membershipNumber }; }),
       bsbQualifications: qualifications.filter(e => e.type === 'barrister' || (e.type && e.type.includes('advocate'))).map(e => { return { type: e.type || '', location: e.location || '', membershipNumber: e.membershipNumber || '' }; }),
       otherMemberships: getFormattedOtherMemberships(exercise, application),
-      jcioOffice: helpers.toYesNo(application.feePaidOrSalariedJudge) || null,
-      jcioPosts: application.experience ? application.experience.map(e => e.jobTitle).join(', ') : null,
+      jcioOffice: helpers.toYesNo(anyJudicialFunctionExperiences) || null,
+      jcioPosts: anyJudicialFunctionExperiences ? judicialFunctionPosts.join(', ') : null,
       hmrcVATNumbers: application.personalDetails.hasVATNumbers ? application.personalDetails.VATNumbers.map(e => e.VATNumber).join(', ') : null,
       gmcDate: helpers.formatDate(application.generalMedicalCouncilDate),
       gmcNumber: application.generalMedicalCouncilNumber || null,
@@ -266,5 +271,26 @@ const reportData = (db, exercise, applications) => {
     }
 
     return otherMemberships.join('\n');
+  }
+
+  /**
+   * 
+   * Check the if any 'The carrying out of judicial functions in any court or tribunal' as a relevant law related task is selected in the post qualification experience
+   * 
+   * @param {array} experiences 
+   * @returns {array}
+   */
+  function findJudicialFunctionExperiences(experiences) {
+    if (!Array.isArray(experiences)) {
+      return [];
+    }
+
+    return experiences.filter((exp) => {
+      const tasks = exp.tasks;
+      if (!Array.isArray(tasks)) {
+        return false;
+      }
+      return tasks.some((t) => t === 'judicial-functions');
+    }); 
   }
 };
