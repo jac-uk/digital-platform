@@ -7,7 +7,7 @@
  *   npm run nodeScript example.js
  *   ```
  */
- 'use strict';
+  'use strict';
 
 const config = require('./shared/config');
 const { firebase, app, db, auth } = require('./shared/admin.js');
