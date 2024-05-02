@@ -236,8 +236,8 @@ function toTimeString(date) {
 }
 
 function formatDate(value, type) {
-  value = convertToDate(value);
   if (value) {
+    value = convertToDate(value);
     const time = value.toLocaleTimeString('en-GB', {
       hour: '2-digit',
       minute:'2-digit',
