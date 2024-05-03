@@ -86,6 +86,7 @@ module.exports = (firebase, config, db) => {
     // construct commands
     const commands = [];
     for (let i = 0, len = applications.length; i < len; ++i) {
+      const applicationRecord = await getDocument(db.collection('applicationRecords').doc(`${applications[i].id}`));
       const eligibilityIssues = getEligibilityIssues(exercise, applications[i]);
       const characterIssues = getCharacterIssues(exercise, applications[i]);
       
@@ -104,19 +105,22 @@ module.exports = (firebase, config, db) => {
         data['flags.eligibilityIssuesMet'] = false;
         data['issues.eligibilityIssues'] = [];
       }
-      if (characterIssues && characterIssues.length > 0) {
-        data['flags.characterIssues'] = true;
-        data['issues.characterIssues'] = characterIssues;
+      // check flag of character issues
+      if (applicationRecord && (!applicationRecord.flags || !applicationRecord.flags.characterIssues)) {
+        if (characterIssues && characterIssues.length > 0) {
+          data['flags.characterIssues'] = true;
+          data['issues.characterIssues'] = characterIssues;
+  
+          if (stage && status) {
+            if (!characterIssueStatusCounts[stage]) characterIssueStatusCounts[stage] = {};
+            if (!characterIssueStatusCounts[stage][status]) characterIssueStatusCounts[stage][status] = 0;
+            characterIssueStatusCounts[stage][status] += 1;
+          }
 
-        if (stage && status) {
-          if (!characterIssueStatusCounts[stage]) characterIssueStatusCounts[stage] = {};
-          if (!characterIssueStatusCounts[stage][status]) characterIssueStatusCounts[stage][status] = 0;
-          characterIssueStatusCounts[stage][status] += 1;
+        } else {
+          data['flags.characterIssues'] = false;
+          data['issues.characterIssues'] = [];
         }
-
-      } else {
-        data['flags.characterIssues'] = false;
-        data['issues.characterIssues'] = [];
       }
 
       if (!isEmpty(data)) {
