@@ -68,7 +68,7 @@
     "firebase-admin": "^9.7.0",
     "firebase-functions": "^3.24.1",
     "firebase-functions-test": "^0.2.3",
-    "firebase-tools": "^11.21.0",
+    "firebase-tools": "^13.6.0",
     "googleapis": "^67.0.0",
     "lodash": "^4.17.21",
     "mammoth": "^1.6.0",
