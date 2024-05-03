@@ -105,22 +105,21 @@ module.exports = (firebase, config, db) => {
         data['flags.eligibilityIssuesMet'] = false;
         data['issues.eligibilityIssues'] = [];
       }
-      // check flag of character issues
-      if (applicationRecord && (!applicationRecord.flags || !applicationRecord.flags.characterIssues)) {
-        if (characterIssues && characterIssues.length > 0) {
-          data['flags.characterIssues'] = true;
+      if (characterIssues && characterIssues.length > 0) {
+        data['flags.characterIssues'] = true;
+        if (applicationRecord && (!applicationRecord.flags || !applicationRecord.flags.characterIssues)) {
           data['issues.characterIssues'] = characterIssues;
-  
-          if (stage && status) {
-            if (!characterIssueStatusCounts[stage]) characterIssueStatusCounts[stage] = {};
-            if (!characterIssueStatusCounts[stage][status]) characterIssueStatusCounts[stage][status] = 0;
-            characterIssueStatusCounts[stage][status] += 1;
-          }
-
-        } else {
-          data['flags.characterIssues'] = false;
-          data['issues.characterIssues'] = [];
         }
+
+        if (stage && status) {
+          if (!characterIssueStatusCounts[stage]) characterIssueStatusCounts[stage] = {};
+          if (!characterIssueStatusCounts[stage][status]) characterIssueStatusCounts[stage][status] = 0;
+          characterIssueStatusCounts[stage][status] += 1;
+        }
+
+      } else {
+        data['flags.characterIssues'] = false;
+        data['issues.characterIssues'] = [];
       }
 
       if (!isEmpty(data)) {
