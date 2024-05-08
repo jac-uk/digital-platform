@@ -86,6 +86,7 @@ module.exports = (firebase, config, db) => {
     // construct commands
     const commands = [];
     for (let i = 0, len = applications.length; i < len; ++i) {
+      const applicationRecord = await getDocument(db.collection('applicationRecords').doc(`${applications[i].id}`));
       const eligibilityIssues = getEligibilityIssues(exercise, applications[i]);
       const characterIssues = getCharacterIssues(exercise, applications[i]);
       
@@ -106,7 +107,9 @@ module.exports = (firebase, config, db) => {
       }
       if (characterIssues && characterIssues.length > 0) {
         data['flags.characterIssues'] = true;
-        data['issues.characterIssues'] = characterIssues;
+        if (applicationRecord && (!applicationRecord.flags || !applicationRecord.flags.characterIssues)) {
+          data['issues.characterIssues'] = characterIssues;
+        }
 
         if (stage && status) {
           if (!characterIssueStatusCounts[stage]) characterIssueStatusCounts[stage] = {};
@@ -360,19 +363,27 @@ module.exports = (firebase, config, db) => {
     const issues = [];
 
     if (questions && answers) {
+      const groups = {};
       Object.keys(questions).forEach(key => {
-        if (answers[key]) {
-          const summary = questions[key].summary;
-          if (answers[questions[key].details]) {
+        if (!groups[questions[key].group]) {
+          groups[questions[key].group] = [key];
+        } else {
+          groups[questions[key].group].push(key);
+        }
+      });
+      Object.keys(groups).forEach(issueType => {
+        const events = [];
+        groups[issueType].forEach(key => {
+          if (answers[key] && answers[questions[key].details]) {
             if (Array.isArray(answers[questions[key].details])) { // if the answer contains more than one issue, create an issue for each
-              issues.push(newIssue(key, summary, answers[questions[key].details]));
+              events.push(...answers[questions[key].details]);
             } else {
-              const ans = answers[questions[key].details]; // else just create one issue for the answer
-              issues.push(newIssue(key, summary, [ans]));
+              events.push(answers[questions[key].details]);
             }
-          } else { // answer has no details
-            issues.push(newIssue(key, summary));
           }
+        });
+        if (events.length) {
+          issues.push(newIssue(issueType, issueType, events));
         }
       });
     } else {
