@@ -18,9 +18,9 @@ service firebase.storage {
   }
 
   function isOkForDownload() {
-    return
-      resource.metadata == null ||
-      !('status' in resource.metadata) ||
+    return 
+      ('metadata' in resource) && 
+      (resource.metadata != null) && 
       ('status' in resource.metadata && resource.metadata.status != 'infected');
   }
 
@@ -31,16 +31,6 @@ service firebase.storage {
         request.resource.size > 0
         && request.resource.size <= 2 * 1024 * 1024
         && request.resource.name.matches('.*\\.(pdf|docx|doc|odt|txt|fodt|xlsx)')
-      );
-  }
-
-    function screenshotIsOkForUpload() {
-    return
-      (request.resource == null) ||
-      (
-        request.resource.size > 0
-        && request.resource.size <= 2 * 1024 * 1024 * 5
-        && request.resource.name.matches('.*\\.(png)')
       );
   }
 
@@ -73,9 +63,8 @@ service firebase.storage {
       allow write: if userIsAuthenticated() && userIsJAC() && isOkForUpload();
     }
 
-    match /bugReport/{bugReportId}/{fileName} {
-      allow read: if userIsAuthenticated() && userIsJAC() && isOkForDownload();
-      allow write: if userIsAuthenticated() && userIsJAC() && screenshotIsOkForUpload();
+    match /exercise/{exerciseId}/qualifying-tests/{qualifyingTestId}/{fileName} {
+      allow write: if userIsAuthenticated() && userIsJAC() && isOkForUpload();
     }
   }
 }
