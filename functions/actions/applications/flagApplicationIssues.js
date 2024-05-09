@@ -386,7 +386,7 @@ module.exports = (firebase, config, db) => {
           }
         });
         if (events.length) {
-          issues.push(newIssue(issueType, issueType, events));
+          issues.push(newCharacterIssue(issueType, issueType, events));
         }
       });
     } else {
