@@ -813,6 +813,20 @@
       "queryScope": "COLLECTION",
       "fields": [
         {
+          "fieldPath": "createdAt",
+          "order": "ASCENDING"
+        },
+        {
+          "fieldPath": "issues.eligibilityIssuesStatus",
+          "order": "ASCENDING"
+        }
+      ]
+    },
+    {
+      "collectionGroup": "applicationRecords",
+      "queryScope": "COLLECTION",
+      "fields": [
+        {
           "fieldPath": "exercise.id",
           "order": "ASCENDING"
         },
@@ -3122,6 +3136,20 @@
         },
         {
           "fieldPath": "referenceNumber",
+          "order": "ASCENDING"
+        }
+      ]
+    },
+    {
+      "collectionGroup": "exercises",
+      "queryScope": "COLLECTION",
+      "fields": [
+        {
+          "fieldPath": "typeOfExercise",
+          "order": "ASCENDING"
+        },
+        {
+          "fieldPath": "createdAt",
           "order": "ASCENDING"
         }
       ]
