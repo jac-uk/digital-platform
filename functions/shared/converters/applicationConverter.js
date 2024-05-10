@@ -1,9 +1,10 @@
-// TODO sort out firestore date formatting
-
 const htmlWriter = require('../htmlWriter');
 const lookup = require('./lookup');
-const { addField, formatDate, toYesNo } = require('./helpers');
+const {addField, formatDate, toYesNo} = require('./helpers');
 const helpers = require('../../shared/helpers');
+
+const { getJurisdictionPreferences, getLocationPreferences, getAdditionalWorkingPreferences } = require('./applicationConverterVersions');
+const has = require('lodash/has');
 
 module.exports = () => {
 
@@ -11,11 +12,7 @@ module.exports = () => {
     getHtmlPanelPack,
     getExperienceData,
     getAdditionalSelectionCriteria,
-    getLocationPreferences,
-    getJurisdictionPreferences,
-    getAdditionalWorkingPreferences,
     getWelshData,
-    // TODO include other converters
   };
 
   function getHtmlPanelPack(application, exercise, params) {
@@ -23,36 +20,41 @@ module.exports = () => {
     let html = new htmlWriter();
 
     if (application && Object.keys(application).length) {
-      // console.log(application);
-      if (params && params.showNames) {
+      if (params && params.showNames && has(application, 'personalDetails.fullName') && has(application, 'referenceNumber')) {
         html.addTitle(`${application.personalDetails.fullName} ${application.referenceNumber}`);
-      } else {
+      }
+      else if (has(application, 'referenceNumber')) {
         html.addTitle(application.referenceNumber);
       }
+      else {
+        // The last resort if no other info is available!
+        html.addTitle('Error - Missing Application Title');
+      }
 
-      // Jurisdiction Prefs
-      if (application.jurisdictionPreferences && application.jurisdictionPreferences.length) {
+      const jurisdictionPrefs = getJurisdictionPreferences(application, exercise);
+      if (jurisdictionPrefs.length) {
         html.addHeading('Jurisdiction Preferences');
-        html.addTable(getJurisdictionPreferences(application, exercise));
+        html.addTable(jurisdictionPrefs);
       }
 
-      // Location Prefs
-      if (application.locationPreferences && application.locationPreferences.length) {
+      const locationPrefs = getLocationPreferences(application, exercise);
+      if (locationPrefs.length) {
         html.addHeading('Location Preferences');
-        html.addTable(getLocationPreferences(application, exercise));
+        html.addTable(locationPrefs);
       }
-
-      // Additional Working Prefs
-      if (application.additionalWorkingPreferences && application.additionalWorkingPreferences.length) {
+      
+      const additionalPrefs = getAdditionalWorkingPreferences(application, exercise);
+      if (additionalPrefs.length) {
         html.addHeading('Additional Preferences');
-        html.addTable(getAdditionalWorkingPreferences(application, exercise));
+        html.addTable(additionalPrefs);
       }
 
       if (application.selectionCriteriaAnswers && application.selectionCriteriaAnswers.length) {
         html.addHeading('Additional selection criteria');
         html.addTable(getAdditionalSelectionCriteria(application, exercise));
       }
-    } else {
+    }
+    else {
       html.addTitle('Error - Missing Application information');
     }
 
@@ -106,68 +108,6 @@ module.exports = () => {
     }
 
     return html.toString();
-  }
-
-  function getJurisdictionPreferences(application, exercise) {
-    const data = [];
-    if (typeof (application.jurisdictionPreferences) === 'string') {
-      addField(data, exercise.jurisdictionQuestion, application.jurisdictionPreferences);
-    } else {
-      let htmlListStr  = '<ul>';
-      application.jurisdictionPreferences.forEach(item => {
-        htmlListStr += `<li>${item}</li>`;
-      });
-      htmlListStr += '</ul>';
-      addField(data, exercise.jurisdictionQuestion, htmlListStr);
-    }
-    return data;
-  }
-
-  function getLocationPreferences(application, exercise) {
-    const data = [];
-    if (typeof (application.locationPreferences) === 'string') {
-      addField(data, exercise.locationQuestion, application.locationPreferences);
-    } else {
-      let htmlListStr  = '<ul>';
-      application.locationPreferences.forEach(item => {
-        htmlListStr += `<li>${item}</li>`;
-      });
-      htmlListStr += '</ul>';
-      addField(data, exercise.locationQuestion, htmlListStr);
-    }
-    return data;
-  }
-
-  function getAdditionalWorkingPreferences(application, exercise) {
-    const additionalWorkingPreferenceData = application.additionalWorkingPreferences;
-    const data = [];
-    additionalWorkingPreferenceData.forEach((item, index) => {
-      if (exercise.additionalWorkingPreferences[index].questionType === 'single-choice') {
-        addField(data, exercise.additionalWorkingPreferences[index].question, item.selection);
-      } else if (exercise.additionalWorkingPreferences[index].questionType === 'multiple-choice') {
-        if (item.selection) {
-          const multipleChoice = [];
-            item.selection.forEach((choice) => {
-              multipleChoice.push(`<br/>${choice}`);
-            });
-          addField(data, exercise.additionalWorkingPreferences[index].question, `answer: ${multipleChoice}`);
-        } else {
-          addField(data, exercise.additionalWorkingPreferences[index].question, 'answer: <br/> no answer provided');
-        }
-      } else if (exercise.additionalWorkingPreferences[index].questionType === 'ranked-choice') {
-        if (item.selection) {
-          const rankedAnswer = [];
-          item.selection.forEach((choice, index) => {
-            rankedAnswer.push(`<br/>${index + 1}: ${choice}`);
-          });
-          addField(data, exercise.additionalWorkingPreferences[index].question, `answer: ${rankedAnswer}`);
-        } else {
-          addField(data, exercise.additionalWorkingPreferences[index].question, 'answer: <br/> no answer provided');
-        }
-      }
-    });
-    console.log(data);
-    return data;
   }
 
   function getQualificationData(exercise, application) {
@@ -520,21 +460,6 @@ module.exports = () => {
     addField(data, exercise.yesSalaryDetails, application.partTimeWorkingPreferencesDetails);
     return data;
   }
-
-  // if (application.locationPreferences && application.locationPreferences.length ) {
-  //   html.addHeading('Location preferences');
-  //   html.addTable(getLocationPreferences(application, exercise));
-  // }
-
-  // function getLocationPreferences(application, exercise) {
-  //   const data = [];
-  //   if (exercise.locationQuestionType === 'single-choice') {
-  //     addField(data, exercise.locationQuestion, application.locationPreferences);
-  //   } else {
-  //     addField(data, exercise.locationQuestion, application.locationPreferences.join('\n'));
-  //   }
-  //   return data;
-  // }
 
   function getAssessorsData(application) {
     const firstAssessorFullName = application.firstAssessorFullName;
