@@ -4,7 +4,7 @@ const { firebase, db } = require('../shared/admin.js');
 const onPanelUpdate = require('../actions/panels/onUpdate')(config, firebase, db);
 
 const runtimeOptions = {
-  timeoutSeconds: 180,
+  timeoutSeconds: 300,
 };
 
 module.exports = functions.runWith(runtimeOptions).region('europe-west2').firestore
