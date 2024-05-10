@@ -130,9 +130,6 @@ class ConverterV2 {
     for (const rank in resultObject) {
       if (Object.prototype.hasOwnProperty.call(resultObject, rank)) {
           const answersArr = resultObject[rank];
-          console.log('rank', rank);
-          console.log('answersArr', answersArr);
-
           // Add rank and answers to the HTML string
           html += `<li>${rank}: ${answersArr.join(', ')}</li>`;
       }
@@ -144,9 +141,7 @@ class ConverterV2 {
     return html;
   }
 
-  getJurisdictionPreferences(application, exercise) {
-    console.log('Version 2 specific method getJurisdictionPreferences');
-    
+  getJurisdictionPreferences(application, exercise) {    
     let questionId = null;
     let answerId = null;
 
@@ -204,8 +199,6 @@ class ConverterV2 {
   }
 
   getGenericPreferences(application, exercise, preferencesType) {
-    console.log(`Version 2 specific method ${preferencesType}`);
-
     let questionId = null;
     let answerId = null;
 

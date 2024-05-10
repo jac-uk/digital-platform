@@ -11,11 +11,13 @@ function getVersion(exercise, prefsType) {
   if (prefsType === 'location') {
     return has(exercise, 'locationPreferences') ? 2 : 1;
   }
-  if (prefsType === 'jurisdiction') {
+  if (prefsType === 'jurisdiction') {    
     return has(exercise, 'jurisdictionPreferences') ? 2 : 1;
   }
-  if (prefsType === 'additional') {
-    return exercise.additionalWorkingPreferences.some((el) => 'groupAnswers' in el) ? 2 : 1;
+  if (prefsType === 'additional') {  
+    return has(exercise, 'additionalWorkingPreferences') && exercise.additionalWorkingPreferences.some((el) => 'groupAnswers' in el)
+      ? 2
+      : 1;
   }
   return null;
 }

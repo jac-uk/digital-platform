@@ -22,28 +22,29 @@ module.exports = () => {
     if (application && Object.keys(application).length) {
       if (params && params.showNames && has(application, 'personalDetails.fullName') && has(application, 'referenceNumber')) {
         html.addTitle(`${application.personalDetails.fullName} ${application.referenceNumber}`);
-      } else if (has(application, 'referenceNumber')) {
+      }
+      else if (has(application, 'referenceNumber')) {
         html.addTitle(application.referenceNumber);
       }
       else {
         // The last resort if no other info is available!
-        html.addTitle(application.id);
+        html.addTitle('Error - Missing Application Title');
       }
 
       const jurisdictionPrefs = getJurisdictionPreferences(application, exercise);
-      if (jurisdictionPrefs) {
+      if (jurisdictionPrefs.length) {
         html.addHeading('Jurisdiction Preferences');
         html.addTable(jurisdictionPrefs);
       }
-      
+
       const locationPrefs = getLocationPreferences(application, exercise);
-      if (locationPrefs) {
+      if (locationPrefs.length) {
         html.addHeading('Location Preferences');
         html.addTable(locationPrefs);
       }
       
       const additionalPrefs = getAdditionalWorkingPreferences(application, exercise);
-      if (additionalPrefs) {
+      if (additionalPrefs.length) {
         html.addHeading('Additional Preferences');
         html.addTable(additionalPrefs);
       }
@@ -52,7 +53,8 @@ module.exports = () => {
         html.addHeading('Additional selection criteria');
         html.addTable(getAdditionalSelectionCriteria(application, exercise));
       }
-    } else {
+    }
+    else {
       html.addTitle('Error - Missing Application information');
     }
 
