@@ -974,7 +974,7 @@ module.exports = (config, firebase, db) => {
                 saveData[`statusLog.${failStatus}`] = firebase.firestore.FieldValue.serverTimestamp(); // we still always log the status change
                 commands.push({
                   command: 'update',
-                  ref: db.collection('applicationRecords').doc(application.id),
+                  ref: db.collection('applicationRecords').doc(scoreData.id),
                   data: saveData,
                 });         
               }
