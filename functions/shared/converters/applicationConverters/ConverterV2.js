@@ -201,13 +201,11 @@ class ConverterV2 {
   getGenericPreferences(application, exercise, preferencesType) {
     let questionId = null;
     let answerId = null;
-
     const data = [];
-
-    for (const [questionId, answerId] of Object.entries(application[preferencesType])) {
-      const questionObj = exercise[preferencesType].find(q => q.id === questionId);
-      if (questionObj) {
-
+    for (const questionObj of exercise[preferencesType]) {
+      const questionId = questionObj.id;
+      const answerId = get(application, [preferencesType, questionId], null);
+      if (answerId) {
         const question = questionObj.question;
         const questionType = questionObj.questionType;
         const groupAnswers = questionObj.groupAnswers;
