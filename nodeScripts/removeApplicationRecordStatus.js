@@ -19,7 +19,7 @@ const main = async () => {
 
   // get applicationRecords with specified status for the exercise
   console.log('-- Fetching applicationRecords...');
-  const ref = db.collection('applicationRecords').where('exercise.id', '==', exerciseId);
+  const ref = db.collection('applicationRecords').where('exercise.id', '==', exerciseId).select('status', 'statusLog');
   const applicationRecords = await getDocuments(ref);
   console.log(`-- Fetched applicationRecords: ${applicationRecords.length}`);
   const commands = [];
