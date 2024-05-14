@@ -1550,58 +1550,99 @@ REPRODUCE THIS TABLE AS APPROPRIATE.<span class="red">&gt;</span></b>
     writer.addRaw(`
 <table style="font-size: 0.75rem;">
   <tbody>
-    <tr><td width="50"><b>No.</b></td><td colspan="2" style="text-align:center;"><b>Details</b></td></tr>
     `);
 
-    Object.values(config.APPLICATION.CHARACTER_ISSUE_OFFENCE_CATEGORY).forEach(offenceCategory => {
-      const filteredApplications = applicationRecords.filter(ar => ar.issues && ar.issues.characterIssuesOffenceCategory === offenceCategory);
+    const statusItems = Object.values(config.APPLICATION.CHARACTER_ISSUE_STATUS).map(status => {
+      const item = { status };
+      switch (status) {
+      case config.APPLICATION.CHARACTER_ISSUE_STATUS.PROCEED:
+        item.background = 'green';
+        break;
+      case config.APPLICATION.CHARACTER_ISSUE_STATUS.REJECT:
+      case config.APPLICATION.CHARACTER_ISSUE_STATUS.REJECT_NON_DECLARATION:
+        item.background = 'red';
+        break;
+      case config.APPLICATION.CHARACTER_ISSUE_STATUS.DISCUSS:
+        item.background = '#FFBF00';
+        break;
+      default:
+        item.background = 'none';
+      }
+      return item;
+    });
 
-      if (filteredApplications.length === 0) return;
+    statusItems.forEach(statusItem => {
+      const { status, background } = statusItem;
+      let ars = applicationRecords.filter(ar => ar.issues && ar.issues.characterIssuesStatus === status);
+      if (ars.length === 0) return;
 
-      writer.addRaw(`<tr><td colspan="3" style="text-align:center; background-color:#68b; padding:5px"><b>${lookup(offenceCategory)}</b></td></tr>`);
+      writer.addRaw(`<tr><td colspan="3" style="text-align:center; background-color:${background}; padding:5px"><b>${lookup(status)}</b></td></tr>`);
+    
+      Object.values(config.APPLICATION.CHARACTER_ISSUE_OFFENCE_CATEGORY).forEach(offenceCategory => {
+        const filteredApplications = ars.filter(ar => ar.issues && ar.issues.characterIssuesOffenceCategory === offenceCategory);
+        if (filteredApplications.length === 0) return;
 
-      filteredApplications.forEach((ar, i) => {
-        candidateCount++;
-        if (i > 0) {
-          writer.addRaw('<tr><td colspan="3" style="background-color:#ddd; padding:0">&nbsp</td></tr>');
-        }
+        writer.addRaw(`<tr><td colspan="3" style="text-align:center; background-color:deepskyblue; padding:5px"><b>${lookup(offenceCategory)}</b></td></tr>`);
 
-        const fullName = splitFullName(ar.candidate.fullName);
-        const firstName = fullName[0] || '';
-        const lastName = fullName[1] || '';
-        const names = [];
-        if (lastName) names.push(lastName);
-        if (firstName) names.push(firstName);
-        const formattedName = names.join(', ');
-
-        const characterIssuesStatus = ar.issues && ar.issues.characterIssuesStatus ? lookup(ar.issues.characterIssuesStatus) : '';
-        const characterIssuesStatusReason = ar.issues && ar.issues.characterIssuesStatusReason ? ar.issues.characterIssuesStatusReason : '';
-        let natureAndDateOfIssue = '';
-        let declaration = '';
-
-        ar.issues.characterIssues.forEach((issue, i) => {
-          const prettyDate = getDate(issue.date).toJSON().slice(0, 10).split('-').reverse().join('/'); // dd/mm/yyyy
-          const prettyType = getCharacterIssuePrettyType(issue);
+        filteredApplications.forEach((ar, i) => {
+          candidateCount++;
           if (i > 0) {
-            natureAndDateOfIssue += '<br>'  ;
-            declaration += '<br>'  ;
+            writer.addRaw('<tr><td colspan="3" style="background-color:#ddd; padding:0">&nbsp</td></tr>');
           }
-          natureAndDateOfIssue += `${prettyType} - ${prettyDate}`;
-          declaration += `
-<p><b>${prettyType}</b></p>
-<p><b>Date:</b> ${prettyDate}</p>
-<p><b>Details:</b> ${issue.details || ''}<br>${issue.title || ''}</p>
-          `;
-        });
+  
+          const fullName = splitFullName(ar.candidate.fullName);
+          const firstName = fullName[0] || '';
+          const lastName = fullName[1] || '';
+          const names = [];
+          if (lastName) names.push(lastName);
+          if (firstName) names.push(firstName);
+          const formattedName = names.join(', ');
+  
+          const characterIssuesStatusReason = ar.issues && ar.issues.characterIssuesStatusReason ? ar.issues.characterIssuesStatusReason : '';
+          const guidanceReference = ar.issues && Array.isArray(ar.issues.characterIssuesGuidanceReferences)
+            ? ar.issues.characterIssuesGuidanceReferences.map(item => lookup(item)).join('<br>')
+            : '';
+          let declaration = '';
+  
+          ar.issues.characterIssues.forEach(issue => {
+            declaration += `<p><b>${issue.summary}</b></p>`;
+            if (Array.isArray(issue.events)) {
+              issue.events.forEach((event, i) => {
+                let result = [];
+                if (event.date) {
+                  const prettyDate = getDate(event.date).toJSON().slice(0, 10).split('-').reverse().join('.'); // dd.mm.yyyy
+                  result.push(prettyDate);
+                }
+                if (event.title) {
+                  result.push(event.title);
+                }
+                if (issue.summary === 'Professional Conduct') {
+                  if (event.investigations !== null && event.investigations !== undefined) {
+                    result.push(`Investigations: ${helpers.toYesNo(event.investigations)}`);
+                  }
+                  if (event.investigationConclusionDate) {
+                    const prettyDate = getDate(event.investigationConclusionDate).toJSON().slice(0, 10).split('-').reverse().join('/'); // dd/mm/yyyy
+                    result.push(`Investigation conclusion date: ${prettyDate}`);
+                  }
+                }
+                if (event.details) {
+                  result.push(event.details);
+                }
 
-        writer.addRaw(`
-<tr><td rowspan="6" width="50"><b>${candidateCount}.</b></td><td width="175"><b>Name</b></td><td>${formattedName}</td></tr>
-<tr><td><b>Nature and date of issue</b></td><td>${natureAndDateOfIssue}</td></tr>
-<tr><td><b>Declaration</b></td><td>${declaration}</td></tr>
-<tr><td><b>Recommendation</b></td><td>${characterIssuesStatus}</td></tr>
-<tr><td><b>Guidance reference</b></td><td></td></tr>
-<tr><td><b>Reason for recommendation</b></td><td>${characterIssuesStatusReason}</td></tr>
-        `);
+                if (result.length) {
+                  declaration += `<p>${result.join('<br>')}</p>`;
+                }
+              });
+            }
+          });
+  
+          writer.addRaw(`
+  <tr><td rowspan="6" width="50"><b>${candidateCount}.</b></td><td width="175"><b>Name</b></td><td>${formattedName}</td></tr>
+  <tr><td><b>Declaration</b></td><td>${declaration}</td></tr>
+  <tr><td><b>Guidance reference</b></td><td>${guidanceReference}</td></tr>
+  <tr><td><b>Reason for recommendation</b></td><td>${characterIssuesStatusReason}</td></tr>
+          `);
+        });
       });
     });
 

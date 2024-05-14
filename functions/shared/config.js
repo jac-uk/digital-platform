@@ -220,6 +220,15 @@ const CONSTANTS = {
       MULTIPLE_OTHER_MATTERS: 'multipleOtherMatters',
       MIXED: 'mixed',
     },
+    GUIDANCE_REFERENCE: {
+      CRIMINAL_OFFENCES: 'criminalOffences',
+      MOTERING_OFFENCES: 'moteringOffences',
+      FIXED_PENALTY_NOTICES: 'fixedPenaltyNotices',
+      FINANCIAL_INSOLVENCY_DEBT: 'financialInsolvencyDebt',
+      FINANCIAL_VAT_TAX: 'financialVatTax',
+      PROFESSIONAL_CONDUCT: 'professionalConduct',
+      FURTHER_DISCLOSURES: 'furtherDisclosures',
+    },
     ELIGIBILITY_ISSUE_STATUS: {
       PROCEED: 'proceed',
       REJECT: 'reject',
