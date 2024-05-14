@@ -1,22 +1,55 @@
 
 /**
- * Example local script
+ * Print html output for the panel pack.
+ * The working preferences questions have v1 and v2 versions which can only be discerned by the structure of their data
+ * and need processing in a separate way.
  *
  * EXAMPLE USAGE:
  *   ```
- *   npm run nodeScript example.js
+ *   npm run applicationConverter.getHtmlPanelPack
  *   ```
  */
+
 'use strict';
 
-// const config = require('./shared/config');
 const { getDocument } = require('../functions/shared/helpers');
 const { app, db } = require('./shared/admin.js');
 const { getHtmlPanelPack } = require('../functions/shared/converters/applicationConverter')();
 
 const main = async () => {
-    const exerciseId = 'zIpZ7DWHfk0b6uLUes4O';
-    const applicationId = 'A4cvknDsHS3GmGXBQANd';
+
+    // Version 2 Questions
+    // Develop
+    const exerciseId = 'AQJcLG2HtXyLkGVLQQjp';
+    //const applicationId = 'fErVaoQBu8AO7lDN4nb3';
+    const applicationId = 'KW9O5qQJSUsKiOnyXQbJ';
+
+    
+    // Version 1 Questions
+    // Develop
+
+    // Single choice
+    // const exerciseId = 'vzReRrA5LPZ3sGvZKWvM';
+    // const applicationId = 'O9skYldYMlGBhheSNzzz';
+
+    // const exerciseId = '11bv7ZTyyKhoqGYAPN7Y';
+    // const applicationId = 'y424cxaFtmLq2IAvr4cL';
+
+    // Multiple choice
+    // const exerciseId = 'NebJYlQl4fxnUXWmrWOa';
+    // const applicationId = 'artTntRl4iY5zmZbk8df';
+    // const exerciseId = '2M7yxJySfXpINFwvhnnW';
+    // const applicationId = 'F7YnJ1BhMGVF88DCqNFi';
+
+    // // Ranked choice
+    // const exerciseId = '9JP3KOJHxrKyj2VLDiTG';
+    // const applicationId = 'gBehZXTxPRxEcwWFcV9a';
+    // const exerciseId = 'lQTFoAw40KrX4vQ6xtG1';
+    // const applicationId = '7jYmkADdcmiJ6VHlWvKB';
+    
+    // All V1 Choices
+    // const exerciseId = 'lQTFoAw40KrX4vQ6xtG1';
+    // const applicationId = '7jYmkADdcmiJ6VHlWvKB';
 
     const exercise = await getDocument(db.collection('exercises').doc(exerciseId));
     if (!exercise) return 'no exercise';
@@ -24,7 +57,9 @@ const main = async () => {
     const application = await getDocument(db.collection('applications').doc(applicationId));
     if (!application) return 'no application';
 
-    await getHtmlPanelPack(application, exercise);
+    //await getHtmlPanelPack(application, exercise);
+    const htmlOutput = await getHtmlPanelPack(application, exercise);
+    console.log(htmlOutput);
 };
 
 main()
