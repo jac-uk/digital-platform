@@ -21,7 +21,7 @@ service firebase.storage {
     return 
       ('metadata' in resource) && 
       (resource.metadata != null) && 
-      ('status' in resource.metadata && resource.metadata.status != 'infected');
+      ('status' in resource.metadata && resource.metadata.status == 'clean');
   }
 
   function isOkForUpload() {
