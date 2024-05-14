@@ -3,7 +3,7 @@ const lookup = require('./lookup');
 const {addField, formatDate, toYesNo} = require('./helpers');
 const helpers = require('../../shared/helpers');
 
-const { getJurisdictionPreferences, getLocationPreferences, getAdditionalWorkingPreferences } = require('./workingPrefsConverterVersions');
+const { getJurisdictionPreferences, getLocationPreferences, getAdditionalWorkingPreferences } = require('./workingPreferencesConverter');
 const has = require('lodash/has');
 
 module.exports = () => {

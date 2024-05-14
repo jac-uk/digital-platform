@@ -1,5 +1,5 @@
-const { ConverterV1 } = require('./applicationConverters/ConverterV1');
-const { ConverterV2 } = require('./applicationConverters/ConverterV2');
+const { ConverterV1 } = require('./workingPreferencesConverters/ConverterV1');
+const { ConverterV2 } = require('./workingPreferencesConverters/ConverterV2');
 const has = require('lodash/has');
 
 /**
