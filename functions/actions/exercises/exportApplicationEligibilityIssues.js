@@ -191,6 +191,7 @@ module.exports = (firebase, db) => {
     writer.addPageBreak();
     addSccEligibilityIssues_PreviousJudicialExperience(writer, applicationRecords, 'reject');
     writer.addPageBreak();
+    addSccEligibilityIssues_ReasonableLengthOfService(writer, exercise, applicationRecords);
 
     return writer.toString();
   }
@@ -654,6 +655,79 @@ module.exports = (firebase, db) => {
           <br>
           <b>JAC Comments (with reference to the ASC Log if appropriate):</b> ${row.jacComments} ${recommendationToReasonsNote[recommendation]}
           </td>
+      </tr>
+      `);
+    }
+
+    writer.addRaw(`
+  </tbody>
+</table>
+    `);
+
+  }
+
+  /**
+   * 
+   * @param {*} writer 
+   * @param {*} applicationRecords 
+   */
+  function addSccEligibilityIssues_ReasonableLengthOfService(writer, exercise, applicationRecords) {
+    // TODO: to number words
+    const serviceYears = parseInt(exercise.reasonableLengthService === 'other' ? exercise.otherLOS : exercise.reasonableLengthService);
+
+    const rows = _.chain(applicationRecords)
+                  .filter((record) => {
+                    const targetIssue = record.issues.eligibilityIssues.find((issue) => issue.type === 'rls');
+                    return targetIssue && targetIssue.summary.search('Not Met') !== -1;
+                  })
+                  .map((record) => {
+                    const [forename, surname] = splitFullName(record.candidate.fullName);        
+                    const targetIssue = record.issues.eligibilityIssues.find((issue) => issue.type === 'rls');
+                    const ageAtSccDate = 'TODO';
+                    const mitigationProvided = targetIssue.candidateComments;
+                    const recommendation = targetIssue.comments;
+                    
+                    return {
+                      forename, 
+                      surname,
+                      ageAtSccDate,
+                      mitigationProvided,
+                      recommendation,
+                    };
+                  })
+                  .sortBy(['surname'])
+                  .value();
+
+
+    addOfficialSensitive(writer);
+    writer.addRaw(`
+<p style="text-align: right;"><a name="annex-c"><b>ANNEX X</b></a></p>
+    `);
+    
+    writer.addHeading(`Candidates who will not be able to provide <b class="red">&lt;${serviceYears}&gt;</b> years reasonable service when recommendations are made to the Lord Chancellor`, 'center');
+    writer.addRaw(`
+<table>
+  <tbody>
+    <tr>
+      <td width="110" style="text-align:center;"><b>Professional Surname</b></td>
+      <td width="100" style="text-align:center;"><b>Forename</b></td>
+      <td width="100" style="text-align:center;">
+        <b>Age at SCC Recommendations</b>
+        <b class="red">&lt;state date of SCC & age (year and month) &gt;</b>
+      </td>
+      <td style="text-align:center;">Mitigation Provided</td>
+      <td style="text-align:center;">Recommendation</td>
+    </tr>
+    `);
+
+    for (const row of rows) {
+      writer.addRaw(`
+      <tr>
+        <td>${row.surname}</td>
+        <td>${row.forename}</td>
+        <td>${row.ageAtSccDate}</td>
+        <td>${row.mitigationProvided}</td>
+        <td>${row.recommendation}</td>
       </tr>
       `);
     }
