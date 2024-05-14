@@ -1584,20 +1584,20 @@ REPRODUCE THIS TABLE AS APPROPRIATE.<span class="red">&gt;</span></b>
 
         writer.addRaw(`<tr><td colspan="3" style="text-align:center; background-color:deepskyblue; padding:5px"><b>${lookup(offenceCategory)}</b></td></tr>`);
 
-        filteredApplications.forEach((ar, i) => {
+        filteredApplications.sort((a, b) => {
+          // sort by last name
+          const aName = getFormattedName(a.candidate.fullName);
+          const bName = getFormattedName(b.candidate.fullName);
+          if (aName < bName) return -1;
+          if (aName > bName) return 1;
+          return 0;
+        }).forEach((ar, i) => {
           candidateCount++;
           if (i > 0) {
             writer.addRaw('<tr><td colspan="3" style="background-color:#ddd; padding:0">&nbsp</td></tr>');
           }
-  
-          const fullName = splitFullName(ar.candidate.fullName);
-          const firstName = fullName[0] || '';
-          const lastName = fullName[1] || '';
-          const names = [];
-          if (lastName) names.push(lastName);
-          if (firstName) names.push(firstName);
-          const formattedName = names.join(', ');
-  
+
+          const formattedName = getFormattedName(ar.candidate.fullName);
           const characterIssuesStatusReason = ar.issues && ar.issues.characterIssuesStatusReason ? ar.issues.characterIssuesStatusReason : '';
           const guidanceReference = ar.issues && Array.isArray(ar.issues.characterIssuesGuidanceReferences)
             ? ar.issues.characterIssuesGuidanceReferences.map(item => lookup(item)).join('<br>')
@@ -1650,5 +1650,19 @@ REPRODUCE THIS TABLE AS APPROPRIATE.<span class="red">&gt;</span></b>
   </tbody>
 </table>
     `);
+  }
+
+  /**
+   * @param  {string} fullName (e.g. "first name, last name")
+   * @return {string} formatted name (e.g. "last name, first name") 
+   */
+  function getFormattedName(fullName) {
+    const names = splitFullName(fullName);
+    const firstName = names[0] || '';
+    const lastName = names[1] || '';
+    const result = [];
+    if (lastName) result.push(lastName);
+    if (firstName) result.push(firstName);
+    return result.join(', ');
   }
 };
