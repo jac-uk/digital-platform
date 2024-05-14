@@ -183,19 +183,14 @@ module.exports = (firebase, db) => {
 
     let writer = new htmlWriter();
 
-    addHtmlEligibilityIssues_FrontPage(writer, exercise);
-    writer.addPageBreak();
-    addHtmlEligibilityIssues_ContentsPage(writer);
-    writer.addPageBreak();
-    addHtmlEligibilityIssues_Proposal(writer, exercise, applicationRecords);
-    writer.addPageBreak();
-    addHtmlEligibilityIssues_AnnexA(writer, exercise);
-    writer.addPageBreak();
     addSccEligibilityIssues_StatutoryNotMet(writer, applicationRecords);
     writer.addPageBreak();
-    addHtmlEligibilityIssues_AnnexB(writer, applicationRecords);
+    addSccEligibilityIssues_PreviousJudicialExperience(writer, applicationRecords, 'proceed');
     writer.addPageBreak();
-    addHtmlEligibilityIssues_AnnexC(writer, applicationRecords);
+    addSccEligibilityIssues_PreviousJudicialExperience(writer, applicationRecords, 'discuss');
+    writer.addPageBreak();
+    addSccEligibilityIssues_PreviousJudicialExperience(writer, applicationRecords, 'reject');
+    writer.addPageBreak();
 
     return writer.toString();
   }
@@ -543,6 +538,7 @@ module.exports = (firebase, db) => {
                         reasons,
                       };
                     })
+                    .sortBy(['surname'])
                     .value();
 
       addOfficialSensitive(writer);
@@ -574,6 +570,99 @@ module.exports = (firebase, db) => {
     </tbody>
   </table>
       `);
+    }
+
+    /**
+     * 
+     * @param {*} writer 
+     * @param {*} applicationRecords 
+     * @param {string} recommendation available options: 'proceed', 'reject', 'discuss' 
+     */
+    function addSccEligibilityIssues_PreviousJudicialExperience(writer, applicationRecords, recommendation) {
+      if (!['proceed', 'reject', 'discuss'].includes(recommendation)) {
+        throw new Error(`recommendation not support: ${recommendation}`);
+      }
+
+      const recommendationToHeading = {
+        'proceed': 'Candidates <u>recommended to proceed</u> and the reasons why they are considered to meet the ASC - Previous Judicial Experience',
+        'discuss': 'Candidates <u>recommended to discuss</u> and the reasons why they are considered to potentially meet the ASC - Previous Judicial Experience, necessary skills in some other significant way',
+        'reject': 'Candidates <u>recommended to reject</u> and the reasons why they are considered to not meet the ASC - Previous Judicial Experience through a quasi-judicial role or showing the skills in some other significant way',
+      };
+
+      const recommendationToReasonsHeading = {
+        'proceed': '<b class="red">&lt;Amend as needed&gt;</b><b>Reasons ASC is demonstrated through experience in a quasi-judicial capacity</b>',
+        'discuss': '<b class="red">&lt;Amend as needed&gt;</b><b>Reasons ASC could potentially be demonstrated through the necessary skills being shown in some other significant way</b>',
+        'reject': '<b class="red">&lt;Amend as needed&gt;</b><b>Reasons ASC is not demonstrated through a role in a quasi-judicial role or through some other significant way</b>',
+      };
+
+      const recommendationToReasonsNote = {
+        'proceed': '<b class="red">&lt;This candidate therefor meets the previous judicial experience criterion through experience in a role equivalent to a judge and is recommend to proceed.&gt;</b>',
+        'discuss': '<b class="red">&lt;This candidate does not meet the ASC through a role which is equivalent to that of a judge. However, the candidate could demonstrate the skills akin to a judge through their work/role as ... Therefore it is recommended to discuss this candidate.&gt;</b>',
+        'reject': '<b class="red">&lt;This candidate does not have a role akin to a judge, nor do they show the necessary skills in some other significant way. Therefore, it is recommended this candidate is removed.&gt;</b>',
+      };
+
+      const rows = _.chain(applicationRecords)
+                    .filter((record) => {
+                      const targetIssue = record.issues.eligibilityIssues.find((issue) => issue.type === 'pje');
+                      return targetIssue && targetIssue.result === recommendation;
+                    })
+                    .map((record) => {
+                      const [forename, surname] = splitFullName(record.candidate.fullName);        
+                      const targetIssue = record.issues.eligibilityIssues.find((issue) => issue.type === 'pje');
+                      const candidateComments = targetIssue.candidateComments;
+                      const jacComments = targetIssue.comments;
+                      
+                      return {
+                        forename, 
+                        surname,
+                        candidateComments,
+                        jacComments,
+                      };
+                    })
+                    .sortBy(['surname'])
+                    .value();
+
+
+      addOfficialSensitive(writer);
+      writer.addRaw(`
+  <p style="text-align: right;"><a name="annex-c"><b>ANNEX X</b></a></p>
+      `);
+      
+      writer.addHeading(recommendationToHeading[recommendation], 'center');
+      writer.addRaw(`
+  <table>
+    <tbody>
+      <tr>
+        <td width="110" style="text-align:center;"><b>Professional Surname</b></td>
+        <td width="100" style="text-align:center;"><b>Forename</b></td>
+        <td style="text-align:center;">
+          ${recommendationToReasonsHeading[recommendation]}
+        </td>
+      </tr>
+      `);
+
+      for (const row of rows) {
+        writer.addRaw(`
+        <tr>
+          <td>${row.surname}</td>
+          <td>${row.forename}</td>
+          <td>
+            <b>Candidate Comments:</b> ${row.candidateComments}
+            <br>
+            <br>
+            <br>
+            <br>
+            <b>JAC Comments (with reference to the ASC Log if appropriate):</b> ${row.jacComments} ${recommendationToReasonsNote[recommendation]}
+            </td>
+        </tr>
+        `);
+      }
+
+      writer.addRaw(`
+    </tbody>
+  </table>
+      `);
+
     }
 
   /**
