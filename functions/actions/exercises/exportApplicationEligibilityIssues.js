@@ -43,6 +43,11 @@ module.exports = (firebase, db) => {
       return exportToGoogleDoc(exercise, applicationRecords);
     }
 
+    // generate the export (to Google Doc)
+    if (format === 'annex') {
+      return exportSccAnnexReport(exercise, applicationRecords);
+    }
+
     // get report rows
     const {
       maxQualificationNum,
@@ -105,6 +110,54 @@ module.exports = (firebase, db) => {
     };
   }
 
+  /**
+ * Exports eligibility issues to a Google Docs file
+ *
+ * @param {*} applicationRecords
+ * @returns
+ */
+  async function exportSccAnnexReport(exercise, applicationRecords) {
+
+    // get drive service
+    await drive.login();
+
+    // get settings and apply them
+    const settings = await getDocument(db.collection('settings').doc('services'));
+    drive.setDriveId(settings.google.driveId);
+
+    // generate a filename for the document we are going to create
+    const now = new Date();
+    const timestamp = new Date(now.getTime() - (now.getTimezoneOffset() * 60000)).toISOString();
+    const filename = exercise.referenceNumber + '_' + timestamp;
+
+    // make sure a destination folder exists to create the file in
+    const folderName = 'Eligibility Export';
+    const folders = await drive.listFolders();
+    let folderId = 0;
+    folders.forEach((v, i) => {
+      if (v.name === folderName) {
+        folderId = v.id;
+      }
+    });
+    if (folderId === 0) { // folder doesn't exist so create it
+      folderId = await drive.createFolder(folderName);
+    }
+
+    // Create eligibility issues document
+    const fileId = await drive.createFile(filename, {
+      folderId: folderId,
+      sourceType: drive.MIME_TYPE.HTML,
+      sourceContent: getHtmlSccAnnexReport(exercise, applicationRecords),
+      destinationType: drive.MIME_TYPE.DOCUMENT,
+    });
+
+    if (fileId) {
+      return await drive.exportFile(fileId, 'application/vnd.openxmlformats-officedocument.wordprocessingml.document');
+    }
+
+    return false;
+  }
+
   function getHtmlEligibilityIssues(exercise, applicationRecords) {
 
     let writer = new htmlWriter();
@@ -118,6 +171,27 @@ module.exports = (firebase, db) => {
     addHtmlEligibilityIssues_AnnexA(writer, exercise);
     writer.addPageBreak();
     addHtmlEligibilityIssues_AnnexX(writer);
+    writer.addPageBreak();
+    addHtmlEligibilityIssues_AnnexB(writer, applicationRecords);
+    writer.addPageBreak();
+    addHtmlEligibilityIssues_AnnexC(writer, applicationRecords);
+
+    return writer.toString();
+  }
+
+  function getHtmlSccAnnexReport(exercise, applicationRecords) {
+
+    let writer = new htmlWriter();
+
+    addHtmlEligibilityIssues_FrontPage(writer, exercise);
+    writer.addPageBreak();
+    addHtmlEligibilityIssues_ContentsPage(writer);
+    writer.addPageBreak();
+    addHtmlEligibilityIssues_Proposal(writer, exercise, applicationRecords);
+    writer.addPageBreak();
+    addHtmlEligibilityIssues_AnnexA(writer, exercise);
+    writer.addPageBreak();
+    addSccEligibilityIssues_StatutoryNotMet(writer, applicationRecords);
     writer.addPageBreak();
     addHtmlEligibilityIssues_AnnexB(writer, applicationRecords);
     writer.addPageBreak();
@@ -444,6 +518,63 @@ module.exports = (firebase, db) => {
 </table>
     `);
   }
+
+    /**
+   * Adds the annex x content of the Eligibility Issues report
+   *
+   * @param {htmlWriter} writer
+   * @returns void
+   */
+    function addSccEligibilityIssues_StatutoryNotMet(writer, applicationRecords) {
+      //'Not met' for Professional qualification and/or Post-qualification experience sorted alphabetically by candidate surname
+      const rows = _.chain(applicationRecords)
+                    .filter((record) => {
+                      const targetIssues = record.issues.eligibilityIssues.filter((issue) => ['pq', 'pqe'].includes(issue.type));
+                      return targetIssues.some((issue) => issue.summary.search('Not Met') !== -1);
+                    })
+                    .map((record) => {
+                      const [forename, surname] = splitFullName(record.candidate.fullName);
+                      // statutory issues share the same comments(reasons), can just use the comments of one of issues
+                      const reasons = record.issues.eligibilityIssues.find((issue) => ['pq', 'pqe'].includes(issue.type)).comments;
+                      
+                      return {
+                        forename, 
+                        surname,
+                        reasons,
+                      };
+                    })
+                    .value();
+
+      addOfficialSensitive(writer);
+      writer.addRaw(`
+  <p style="text-align: right;"><a name="annex-x"><b>ANNEX X</b></a></p>
+      `);
+      writer.addHeading('Candidates who do not meet the Statutory Eligibility Criteria', 'center');
+      writer.addRaw(`
+  <table>
+    <tbody>
+      <tr style="text-align: center; background: #f3f3f3;">
+        <td width="110"><b>Professional Surname</b></td>
+        <td width="100"><b>Forename</b></td>
+        <td><b>Reasons Statutory Eligibility Criteria is not satisfied</b></td>
+      </tr>
+      `);
+
+      for (const row of rows) {
+        writer.addRaw(`
+      <tr>
+        <td>${row.surname}</td>
+        <td>${row.forename}</td>
+        <td>${row.reasons}</td>
+      </tr>
+        `);
+      }
+
+      writer.addRaw(`
+    </tbody>
+  </table>
+      `);
+    }
 
   /**
    * Adds the annex b content of the Eligibility Issues report
