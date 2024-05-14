@@ -514,156 +514,156 @@ module.exports = (firebase, db) => {
     `);
   }
 
-    /**
-   * Adds the annex x content of the Eligibility Issues report
-   *
-   * @param {htmlWriter} writer
-   * @returns void
+  /**
+ * Adds the annex x content of the Eligibility Issues report
+ *
+ * @param {htmlWriter} writer
+ * @returns void
+ */
+  function addSccEligibilityIssues_StatutoryNotMet(writer, applicationRecords) {
+    //'Not met' for Professional qualification and/or Post-qualification experience sorted alphabetically by candidate surname
+    const rows = _.chain(applicationRecords)
+                  .filter((record) => {
+                    const targetIssues = record.issues.eligibilityIssues.filter((issue) => ['pq', 'pqe'].includes(issue.type));
+                    return targetIssues.some((issue) => issue.summary.search('Not Met') !== -1);
+                  })
+                  .map((record) => {
+                    const [forename, surname] = splitFullName(record.candidate.fullName);
+                    // statutory issues share the same comments(reasons), can just use the comments of one of issues
+                    const reasons = record.issues.eligibilityIssues.find((issue) => ['pq', 'pqe'].includes(issue.type)).comments;
+                    
+                    return {
+                      forename, 
+                      surname,
+                      reasons,
+                    };
+                  })
+                  .sortBy(['surname'])
+                  .value();
+
+    addOfficialSensitive(writer);
+    writer.addRaw(`
+<p style="text-align: right;"><a name="annex-x"><b>ANNEX X</b></a></p>
+    `);
+    writer.addHeading('Candidates who do not meet the Statutory Eligibility Criteria', 'center');
+    writer.addRaw(`
+<table>
+  <tbody>
+    <tr style="text-align: center; background: #f3f3f3;">
+      <td width="110"><b>Professional Surname</b></td>
+      <td width="100"><b>Forename</b></td>
+      <td><b>Reasons Statutory Eligibility Criteria is not satisfied</b></td>
+    </tr>
+    `);
+
+    for (const row of rows) {
+      writer.addRaw(`
+    <tr>
+      <td>${row.surname}</td>
+      <td>${row.forename}</td>
+      <td>${row.reasons}</td>
+    </tr>
+      `);
+    }
+
+    writer.addRaw(`
+  </tbody>
+</table>
+    `);
+  }
+
+  /**
+   * 
+   * @param {*} writer 
+   * @param {*} applicationRecords 
+   * @param {string} recommendation available options: 'proceed', 'reject', 'discuss' 
    */
-    function addSccEligibilityIssues_StatutoryNotMet(writer, applicationRecords) {
-      //'Not met' for Professional qualification and/or Post-qualification experience sorted alphabetically by candidate surname
-      const rows = _.chain(applicationRecords)
-                    .filter((record) => {
-                      const targetIssues = record.issues.eligibilityIssues.filter((issue) => ['pq', 'pqe'].includes(issue.type));
-                      return targetIssues.some((issue) => issue.summary.search('Not Met') !== -1);
-                    })
-                    .map((record) => {
-                      const [forename, surname] = splitFullName(record.candidate.fullName);
-                      // statutory issues share the same comments(reasons), can just use the comments of one of issues
-                      const reasons = record.issues.eligibilityIssues.find((issue) => ['pq', 'pqe'].includes(issue.type)).comments;
-                      
-                      return {
-                        forename, 
-                        surname,
-                        reasons,
-                      };
-                    })
-                    .sortBy(['surname'])
-                    .value();
+  function addSccEligibilityIssues_PreviousJudicialExperience(writer, applicationRecords, recommendation) {
+    if (!['proceed', 'reject', 'discuss'].includes(recommendation)) {
+      throw new Error(`recommendation not support: ${recommendation}`);
+    }
 
-      addOfficialSensitive(writer);
-      writer.addRaw(`
-  <p style="text-align: right;"><a name="annex-x"><b>ANNEX X</b></a></p>
-      `);
-      writer.addHeading('Candidates who do not meet the Statutory Eligibility Criteria', 'center');
-      writer.addRaw(`
-  <table>
-    <tbody>
-      <tr style="text-align: center; background: #f3f3f3;">
-        <td width="110"><b>Professional Surname</b></td>
-        <td width="100"><b>Forename</b></td>
-        <td><b>Reasons Statutory Eligibility Criteria is not satisfied</b></td>
-      </tr>
-      `);
+    const recommendationToHeading = {
+      'proceed': 'Candidates <u>recommended to proceed</u> and the reasons why they are considered to meet the ASC - Previous Judicial Experience',
+      'discuss': 'Candidates <u>recommended to discuss</u> and the reasons why they are considered to potentially meet the ASC - Previous Judicial Experience, necessary skills in some other significant way',
+      'reject': 'Candidates <u>recommended to reject</u> and the reasons why they are considered to not meet the ASC - Previous Judicial Experience through a quasi-judicial role or showing the skills in some other significant way',
+    };
 
-      for (const row of rows) {
-        writer.addRaw(`
+    const recommendationToReasonsHeading = {
+      'proceed': '<b class="red">&lt;Amend as needed&gt;</b><b>Reasons ASC is demonstrated through experience in a quasi-judicial capacity</b>',
+      'discuss': '<b class="red">&lt;Amend as needed&gt;</b><b>Reasons ASC could potentially be demonstrated through the necessary skills being shown in some other significant way</b>',
+      'reject': '<b class="red">&lt;Amend as needed&gt;</b><b>Reasons ASC is not demonstrated through a role in a quasi-judicial role or through some other significant way</b>',
+    };
+
+    const recommendationToReasonsNote = {
+      'proceed': '<b class="red">&lt;This candidate therefor meets the previous judicial experience criterion through experience in a role equivalent to a judge and is recommend to proceed.&gt;</b>',
+      'discuss': '<b class="red">&lt;This candidate does not meet the ASC through a role which is equivalent to that of a judge. However, the candidate could demonstrate the skills akin to a judge through their work/role as ... Therefore it is recommended to discuss this candidate.&gt;</b>',
+      'reject': '<b class="red">&lt;This candidate does not have a role akin to a judge, nor do they show the necessary skills in some other significant way. Therefore, it is recommended this candidate is removed.&gt;</b>',
+    };
+
+    const rows = _.chain(applicationRecords)
+                  .filter((record) => {
+                    const targetIssue = record.issues.eligibilityIssues.find((issue) => issue.type === 'pje');
+                    return targetIssue && targetIssue.result === recommendation;
+                  })
+                  .map((record) => {
+                    const [forename, surname] = splitFullName(record.candidate.fullName);        
+                    const targetIssue = record.issues.eligibilityIssues.find((issue) => issue.type === 'pje');
+                    const candidateComments = targetIssue.candidateComments;
+                    const jacComments = targetIssue.comments;
+                    
+                    return {
+                      forename, 
+                      surname,
+                      candidateComments,
+                      jacComments,
+                    };
+                  })
+                  .sortBy(['surname'])
+                  .value();
+
+
+    addOfficialSensitive(writer);
+    writer.addRaw(`
+<p style="text-align: right;"><a name="annex-c"><b>ANNEX X</b></a></p>
+    `);
+    
+    writer.addHeading(recommendationToHeading[recommendation], 'center');
+    writer.addRaw(`
+<table>
+  <tbody>
+    <tr>
+      <td width="110" style="text-align:center;"><b>Professional Surname</b></td>
+      <td width="100" style="text-align:center;"><b>Forename</b></td>
+      <td style="text-align:center;">
+        ${recommendationToReasonsHeading[recommendation]}
+      </td>
+    </tr>
+    `);
+
+    for (const row of rows) {
+      writer.addRaw(`
       <tr>
         <td>${row.surname}</td>
         <td>${row.forename}</td>
-        <td>${row.reasons}</td>
+        <td>
+          <b>Candidate Comments:</b> ${row.candidateComments}
+          <br>
+          <br>
+          <br>
+          <br>
+          <b>JAC Comments (with reference to the ASC Log if appropriate):</b> ${row.jacComments} ${recommendationToReasonsNote[recommendation]}
+          </td>
       </tr>
-        `);
-      }
-
-      writer.addRaw(`
-    </tbody>
-  </table>
       `);
     }
 
-    /**
-     * 
-     * @param {*} writer 
-     * @param {*} applicationRecords 
-     * @param {string} recommendation available options: 'proceed', 'reject', 'discuss' 
-     */
-    function addSccEligibilityIssues_PreviousJudicialExperience(writer, applicationRecords, recommendation) {
-      if (!['proceed', 'reject', 'discuss'].includes(recommendation)) {
-        throw new Error(`recommendation not support: ${recommendation}`);
-      }
+    writer.addRaw(`
+  </tbody>
+</table>
+    `);
 
-      const recommendationToHeading = {
-        'proceed': 'Candidates <u>recommended to proceed</u> and the reasons why they are considered to meet the ASC - Previous Judicial Experience',
-        'discuss': 'Candidates <u>recommended to discuss</u> and the reasons why they are considered to potentially meet the ASC - Previous Judicial Experience, necessary skills in some other significant way',
-        'reject': 'Candidates <u>recommended to reject</u> and the reasons why they are considered to not meet the ASC - Previous Judicial Experience through a quasi-judicial role or showing the skills in some other significant way',
-      };
-
-      const recommendationToReasonsHeading = {
-        'proceed': '<b class="red">&lt;Amend as needed&gt;</b><b>Reasons ASC is demonstrated through experience in a quasi-judicial capacity</b>',
-        'discuss': '<b class="red">&lt;Amend as needed&gt;</b><b>Reasons ASC could potentially be demonstrated through the necessary skills being shown in some other significant way</b>',
-        'reject': '<b class="red">&lt;Amend as needed&gt;</b><b>Reasons ASC is not demonstrated through a role in a quasi-judicial role or through some other significant way</b>',
-      };
-
-      const recommendationToReasonsNote = {
-        'proceed': '<b class="red">&lt;This candidate therefor meets the previous judicial experience criterion through experience in a role equivalent to a judge and is recommend to proceed.&gt;</b>',
-        'discuss': '<b class="red">&lt;This candidate does not meet the ASC through a role which is equivalent to that of a judge. However, the candidate could demonstrate the skills akin to a judge through their work/role as ... Therefore it is recommended to discuss this candidate.&gt;</b>',
-        'reject': '<b class="red">&lt;This candidate does not have a role akin to a judge, nor do they show the necessary skills in some other significant way. Therefore, it is recommended this candidate is removed.&gt;</b>',
-      };
-
-      const rows = _.chain(applicationRecords)
-                    .filter((record) => {
-                      const targetIssue = record.issues.eligibilityIssues.find((issue) => issue.type === 'pje');
-                      return targetIssue && targetIssue.result === recommendation;
-                    })
-                    .map((record) => {
-                      const [forename, surname] = splitFullName(record.candidate.fullName);        
-                      const targetIssue = record.issues.eligibilityIssues.find((issue) => issue.type === 'pje');
-                      const candidateComments = targetIssue.candidateComments;
-                      const jacComments = targetIssue.comments;
-                      
-                      return {
-                        forename, 
-                        surname,
-                        candidateComments,
-                        jacComments,
-                      };
-                    })
-                    .sortBy(['surname'])
-                    .value();
-
-
-      addOfficialSensitive(writer);
-      writer.addRaw(`
-  <p style="text-align: right;"><a name="annex-c"><b>ANNEX X</b></a></p>
-      `);
-      
-      writer.addHeading(recommendationToHeading[recommendation], 'center');
-      writer.addRaw(`
-  <table>
-    <tbody>
-      <tr>
-        <td width="110" style="text-align:center;"><b>Professional Surname</b></td>
-        <td width="100" style="text-align:center;"><b>Forename</b></td>
-        <td style="text-align:center;">
-          ${recommendationToReasonsHeading[recommendation]}
-        </td>
-      </tr>
-      `);
-
-      for (const row of rows) {
-        writer.addRaw(`
-        <tr>
-          <td>${row.surname}</td>
-          <td>${row.forename}</td>
-          <td>
-            <b>Candidate Comments:</b> ${row.candidateComments}
-            <br>
-            <br>
-            <br>
-            <br>
-            <b>JAC Comments (with reference to the ASC Log if appropriate):</b> ${row.jacComments} ${recommendationToReasonsNote[recommendation]}
-            </td>
-        </tr>
-        `);
-      }
-
-      writer.addRaw(`
-    </tbody>
-  </table>
-      `);
-
-    }
+  }
 
   /**
    * Adds the annex b content of the Eligibility Issues report
