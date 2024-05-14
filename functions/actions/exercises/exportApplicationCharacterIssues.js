@@ -1610,7 +1610,7 @@ REPRODUCE THIS TABLE AS APPROPRIATE.<span class="red">&gt;</span></b>
               issue.events.forEach((event, i) => {
                 let result = [];
                 if (event.date) {
-                  const prettyDate = getDate(event.date).toJSON().slice(0, 10).split('-').reverse().join('.'); // dd.mm.yyyy
+                  const prettyDate = getDate(event.date).toJSON().slice(0, 10).split('-').reverse().join('/'); // dd/mm/yyyy
                   result.push(prettyDate);
                 }
                 if (event.title) {
