@@ -704,7 +704,7 @@ module.exports = (firebase, db) => {
 <p style="text-align: right;"><a name="annex-c"><b>ANNEX X</b></a></p>
     `);
     
-    writer.addHeading(`Candidates who will not be able to provide <b class="red">&lt;${serviceYears}&gt;</b> years reasonable service when recommendations are made to the Lord Chancellor`, 'center');
+    writer.addHeading(`Candidates who will not be able to provide <b class="red">${serviceYears}</b> years reasonable service when recommendations are made to the Lord Chancellor`, 'center');
     writer.addRaw(`
 <table>
   <tbody>
