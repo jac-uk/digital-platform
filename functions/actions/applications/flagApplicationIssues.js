@@ -187,16 +187,16 @@ module.exports = (firebase, config, db) => {
       sccAge = new Duration(dateOfBirth, expectedEndDate).setDays(0).toString();
       
       if (application.canGiveReasonableLOS === false) {
-        rlsIssue = newIssue('rls', `Not Met (${application.cantGiveReasonableLOSDetails})`);
+        rlsIssue = newEligibilityIssue('rls', `Not Met (${application.cantGiveReasonableLOSDetails})`);
       } else {
         if (expectedEndDate > dateOfRetirement) {
-          rlsIssue = newIssue('rls', 'Not Met');
+          rlsIssue = newEligibilityIssue('rls', 'Not Met');
         } else {
-          rlsIssue = newIssue('rls', 'Met');
+          rlsIssue = newEligibilityIssue('rls', 'Met');
         }
       }
     } else {
-      rlsIssue = newIssue('rls', 'Not Met (No date of birth provided)');
+      rlsIssue = newEligibilityIssue('rls', 'Not Met (No date of birth provided)');
     }
     rlsIssue.sccAge = sccAge;
     issues.push(rlsIssue);
