@@ -683,7 +683,7 @@ module.exports = (firebase, db) => {
                   .map((record) => {
                     const [forename, surname] = splitFullName(record.candidate.fullName);        
                     const targetIssue = record.issues.eligibilityIssues.find((issue) => issue.type === 'rls');
-                    const ageAtSccDate = 'TODO';
+                    const ageAtSccDate = targetIssue.sccAge;
                     const mitigationProvided = targetIssue.candidateComments;
                     const recommendation = targetIssue.comments;
                     

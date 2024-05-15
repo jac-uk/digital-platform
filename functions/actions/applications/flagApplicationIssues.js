@@ -175,6 +175,8 @@ module.exports = (firebase, config, db) => {
     const isNonLegalExercise = ['non-legal', 'leadership-non-legal'].includes(exercise.typeOfExercise);
 
     // reasonable length of service - calculated from dob, characterAndSCCDate, reasonable length of service and retirement age
+    let rlsIssue = null;
+    let sccAge = null;
     if (application.personalDetails && application.personalDetails.dateOfBirth) {
       const reasonableLengthOfService = parseInt(exercise.reasonableLengthService === 'other' ? exercise.otherLOS : exercise.reasonableLengthService);
       const retirementAge = parseInt(exercise.retirementAge === 'other' ? exercise.otherRetirement : exercise.retirementAge);
@@ -182,20 +184,22 @@ module.exports = (firebase, config, db) => {
       const expectedEndDate = new Date(expectedStartDate.getFullYear() + reasonableLengthOfService, expectedStartDate.getMonth(), expectedStartDate.getDate());
       const dateOfBirth = getDate(application.personalDetails.dateOfBirth);
       const dateOfRetirement = new Date(dateOfBirth.getFullYear() + retirementAge, dateOfBirth.getMonth(), dateOfBirth.getDate());
-      const age = new Duration(dateOfBirth, expectedEndDate).toString();
+      sccAge = new Duration(dateOfBirth, expectedEndDate).setDays(0).toString();
+      
       if (application.canGiveReasonableLOS === false) {
-        const rslSummary = isNonLegalExercise ? `Not Met (${application.cantGiveReasonableLOSDetails})` : 'Not Met';
-        issues.push(newEligibilityIssue('rls', rslSummary, application.cantGiveReasonableLOSDetails));
+        rlsIssue = newIssue('rls', `Not Met (${application.cantGiveReasonableLOSDetails})`);
       } else {
         if (expectedEndDate > dateOfRetirement) {
-          issues.push(newEligibilityIssue('rls', 'Not Met'));
+          rlsIssue = newIssue('rls', 'Not Met');
         } else {
-          issues.push(newEligibilityIssue('rls', 'Met'));
+          rlsIssue = newIssue('rls', 'Met');
         }
       }
     } else {
-      issues.push(newEligibilityIssue('rls', 'Not Met (No date of birth provided)'));
+      rlsIssue = newIssue('rls', 'Not Met (No date of birth provided)');
     }
+    rlsIssue.sccAge = sccAge;
+    issues.push(rlsIssue);
 
     if (isLegalExercise) {
       // professional qualification
@@ -439,6 +443,11 @@ class Duration {
   }
   hasValue() {
     return (this.years || this.months || this.days);
+  }
+
+  setDays(days) {
+    this.days = 0;
+    return this;
   }
   toString() {
     let parts = [];
