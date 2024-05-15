@@ -1546,12 +1546,6 @@ REPRODUCE THIS TABLE AS APPROPRIATE.<span class="red">&gt;</span></b>
    */
   function addHtmlCharacterAnnex_MainBody(writer, exercise, applicationRecords) {
     let candidateCount = 0;
-
-    writer.addRaw(`
-<table style="font-size: 0.75rem;">
-  <tbody>
-    `);
-
     const statusItems = Object.values(config.APPLICATION.CHARACTER_ISSUE_STATUS).map(status => {
       const item = { status };
       switch (status) {
@@ -1571,7 +1565,11 @@ REPRODUCE THIS TABLE AS APPROPRIATE.<span class="red">&gt;</span></b>
       return item;
     });
 
-    statusItems.forEach(statusItem => {
+    statusItems.forEach((statusItem, index) => {
+      writer.addRaw(`
+        <table style="font-size: 0.75rem;">
+          <tbody>
+      `);
       const { status, background } = statusItem;
       let ars = applicationRecords.filter(ar => ar.issues && ar.issues.characterIssuesStatus === status);
       if (ars.length === 0) return;
@@ -1637,19 +1635,19 @@ REPRODUCE THIS TABLE AS APPROPRIATE.<span class="red">&gt;</span></b>
           });
   
           writer.addRaw(`
-  <tr><td rowspan="4" width="50"><b>${candidateCount}.</b></td><td width="175"><b>Name</b></td><td>${formattedName}</td></tr>
-  <tr><td><b>Declaration</b></td><td>${declaration}</td></tr>
-  <tr><td><b>Guidance reference</b></td><td>${guidanceReference}</td></tr>
-  <tr><td><b>Reason for recommendation</b></td><td>${characterIssuesStatusReason}</td></tr>
+            <tr><td rowspan="4" width="50"><b>${candidateCount}.</b></td><td width="175"><b>Name</b></td><td>${formattedName}</td></tr>
+            <tr><td><b>Declaration</b></td><td>${declaration}</td></tr>
+            <tr><td><b>Guidance reference</b></td><td>${guidanceReference}</td></tr>
+            <tr><td><b>Reason for recommendation</b></td><td>${characterIssuesStatusReason}</td></tr>
           `);
         });
       });
-    });
 
-    writer.addRaw(`
-  </tbody>
-</table>
-    `);
+      writer.addRaw(`
+          </tbody>
+        </table>
+      `);
+    });
   }
 
   /**
