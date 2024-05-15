@@ -1637,7 +1637,7 @@ REPRODUCE THIS TABLE AS APPROPRIATE.<span class="red">&gt;</span></b>
           });
   
           writer.addRaw(`
-  <tr><td rowspan="6" width="50"><b>${candidateCount}.</b></td><td width="175"><b>Name</b></td><td>${formattedName}</td></tr>
+  <tr><td rowspan="4" width="50"><b>${candidateCount}.</b></td><td width="175"><b>Name</b></td><td>${formattedName}</td></tr>
   <tr><td><b>Declaration</b></td><td>${declaration}</td></tr>
   <tr><td><b>Guidance reference</b></td><td>${guidanceReference}</td></tr>
   <tr><td><b>Reason for recommendation</b></td><td>${characterIssuesStatusReason}</td></tr>
