@@ -13,7 +13,7 @@ function formatPreference(choiceArray, questionType) {
   return choiceArray;
 }
 
-module.exports = (config, firebase, db, auth) => {
+module.exports = (config, db, auth) => {
 
   return getApplicationData;
 

@@ -1,8 +1,8 @@
 const functions = require('firebase-functions');
 const config = require('../shared/config');
-const { db, firebase } = require('../shared/admin');
+const { db } = require('../shared/admin');
 const { getDocument } = require('../shared/helpers');
-const { processNotifications } = require('../actions/notifications')(config, firebase, db);
+const { processNotifications } = require('../actions/notifications')(config, db);
 
 const SCHEDULE = 'every 1 minutes synchronized';
 

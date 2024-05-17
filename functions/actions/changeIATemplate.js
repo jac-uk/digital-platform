@@ -1,6 +1,6 @@
 const { getDocument, getDocuments, applyUpdates } = require('../shared/helpers');
 
-module.exports = (config, firebase, db) => {
+module.exports = (config, db) => {
   return {
     changeIATemplate,
   };

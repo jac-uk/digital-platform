@@ -8,7 +8,7 @@ const config = require('../../shared/config');
 const drive = require('../../shared/google-drive')();
 const { Timestamp } = require('firebase-admin/firestore');
 
-module.exports = (firebase, db) => {
+module.exports = (db) => {
   return {
     exportApplicationCharacterIssues,
   };

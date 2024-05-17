@@ -1,8 +1,8 @@
 const { getDocument, getDocuments, applyUpdates } = require('../../shared/helpers');
 const { FieldValue } = require('firebase-admin/firestore');
-module.exports = (config, firebase, db) => {
+module.exports = (config, db) => {
   const { getTimelineTasks, taskNextStatus, taskApplicationsEntryStatus } = require('./taskHelpers')(config);
-  const { initialisePanelTask, initialiseTestTask, initialiseStatusChangesTask, initialiseCandidateFormTask, initialiseDataTask, initialiseStageOutcomeTask } = require('./updateTask')(config, firebase, db);
+  const { initialisePanelTask, initialiseTestTask, initialiseStatusChangesTask, initialiseCandidateFormTask, initialiseDataTask, initialiseStageOutcomeTask } = require('./updateTask')(config, db);
 
   return createTask;
 

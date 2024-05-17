@@ -2,7 +2,7 @@ const { getDocuments, getDocument } = require('../../shared/helpers');
 const htmlWriter = require('../../shared/htmlWriter');
 const drive = require('../../shared/google-drive')();
 
-module.exports = (firebase, db) => {
+module.exports = (db) => {
   return {
     exportApplicationCommissionerConflicts,
   };

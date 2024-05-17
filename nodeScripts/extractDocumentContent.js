@@ -1,7 +1,7 @@
 'use strict';
 
 const config = require('./shared/config');
-const { firebase, app } = require('./shared/admin.js');
+const { app } = require('./shared/admin.js');
 const { extractDocumentContent } = require('../functions/shared/file-extraction/extractDocumentContent')(config, firebase);
 
 const main = async () => {

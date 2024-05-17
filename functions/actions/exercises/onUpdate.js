@@ -1,7 +1,7 @@
 const { objectHasNestedProperty } = require('../../shared/helpers');
 
-module.exports = (config, firebase, db, auth) => {
-  const { sendExerciseReadyForApproval } = require('./sendExerciseReadyForApproval')(config, firebase, db, auth);
+module.exports = (config, db, auth) => {
+  const { sendExerciseReadyForApproval } = require('./sendExerciseReadyForApproval')(config, db, auth);
   const { updateVacancy, deleteVacancy } = require('../vacancies')(config, db);
   const { updateExercise } = require('./exercises')(db);
   const { getSearchMap } = require('../../shared/search');

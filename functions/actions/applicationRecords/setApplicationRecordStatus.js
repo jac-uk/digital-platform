@@ -1,6 +1,6 @@
 const { getDocument, getDocuments, applyUpdates, getDocumentsFromQueries } = require('../../shared/helpers');
 const { Timestamp } = require('firebase-admin/firestore');
-module.exports = (config, firebase, db) => {
+module.exports = (config, db) => {
 
   return setApplicationRecordStatus;
 

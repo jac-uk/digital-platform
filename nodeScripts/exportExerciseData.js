@@ -1,8 +1,8 @@
 'use strict';
 
 const config = require('./shared/config');
-const { firebase, app, db } = require('./shared/admin.js');
-const { exportExerciseData } = require('../functions/actions/exercises/exportExerciseData')(config, firebase, db);
+const { app, db } = require('./shared/admin.js');
+const { exportExerciseData } = require('../functions/actions/exercises/exportExerciseData')(config, db);
 
 const main = async () => {
   return exportExerciseData(['FTEkY12izilXtn6sP3cK']);

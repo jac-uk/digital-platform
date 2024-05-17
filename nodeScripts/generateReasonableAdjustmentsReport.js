@@ -1,7 +1,7 @@
 'use strict';
 
-const { firebase, app, db } = require('./shared/admin.js');
-const { generateReasonableAdjustmentsReport } = require('../functions/actions/exercises/generateReasonableAdjustmentsReport')(firebase, db);
+const { app, db } = require('./shared/admin.js');
+const { generateReasonableAdjustmentsReport } = require('../functions/actions/exercises/generateReasonableAdjustmentsReport')(db);
 
 const main = async () => {
   return generateReasonableAdjustmentsReport('ZutEH7OHcjRlUIfXLyqP');

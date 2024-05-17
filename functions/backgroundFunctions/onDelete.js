@@ -1,6 +1,6 @@
 const functions = require('firebase-functions');
-const { firebase, db, auth } = require('../shared/admin');
-const { logEvent } = require('../actions/logs/logEvent')(firebase, db, auth);
+const { db, auth } = require('../shared/admin');
+const { logEvent } = require('../actions/logs/logEvent')(db, auth);
 const { Timestamp } = require('firebase-admin/firestore');
 
 // This function is triggered when records are deleted in firestore.

@@ -10,8 +10,8 @@
 'use strict';
 
 const config = require('./shared/config');
-const { firebase, app, db } = require('./shared/admin.js');
-const { processNotifications } = require('../functions/actions/notifications')(config, firebase, db);
+const { app, db } = require('./shared/admin.js');
+const { processNotifications } = require('../functions/actions/notifications')(config, db);
 
 const main = async () => {
   await processNotifications();

@@ -6,7 +6,7 @@
 'use strict';
 
 const config = require('./shared/config.js');
-const { firebase, app, storage, db } = require('./shared/admin.js');
+const { app, storage, db } = require('./shared/admin.js');
 const { applyUpdates, getDocument } = require('../functions/shared/helpers');
 const { extractDocumentContent } = require('../functions/shared/file-extraction/extractDocumentContent.js')(config, storage);
 const { log } = require('./shared/helpers.js');

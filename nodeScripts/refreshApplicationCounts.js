@@ -1,7 +1,7 @@
 'use strict';
 
-const { firebase, app, db } = require('./shared/admin.js');
-const { refreshApplicationCounts } = require('../functions/actions/exercises/refreshApplicationCounts')(firebase, db);
+const { app, db } = require('./shared/admin.js');
+const { refreshApplicationCounts } = require('../functions/actions/exercises/refreshApplicationCounts')(db);
 
 const main = async () => {
   return refreshApplicationCounts({ exerciseId: 'wdpALbyICL7ZxxN5AQt8' });

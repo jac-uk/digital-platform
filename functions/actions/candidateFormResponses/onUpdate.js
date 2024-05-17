@@ -1,6 +1,6 @@
 const { applyUpdates } = require('../../shared/helpers');
 const { FieldValue } = require('firebase-admin/firestore');
-module.exports = (config, firebase, db, auth) => {
+module.exports = (config, db, auth) => {
 
   return onUpdate;
 

@@ -1,8 +1,8 @@
 'use strict';
 
 const config = require('./shared/config');
-const { firebase, app, db } = require('./shared/admin.js');
-const { generateDeploymentReport } = require('../functions/actions/exercises/generateDeploymentReport.js')(config, firebase, db);
+const { app, db } = require('./shared/admin.js');
+const { generateDeploymentReport } = require('../functions/actions/exercises/generateDeploymentReport.js')(config, db);
 
 const main = async () => {
   return generateDeploymentReport('aDxEqK36807d0Nhpugo3');

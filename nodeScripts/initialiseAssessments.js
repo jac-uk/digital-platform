@@ -5,8 +5,8 @@
  */
 
 const config = require('./shared/config.js');
-const { auth, firebase, app, db } = require('./shared/admin.js');
-const { initialiseAssessments } = require('../functions/actions/assessments.js')(config, firebase, db, auth);
+const { auth, app, db } = require('./shared/admin.js');
+const { initialiseAssessments } = require('../functions/actions/assessments.js')(config, db, auth);
 
 const main = async () => {
   return initialiseAssessments({

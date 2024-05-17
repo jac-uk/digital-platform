@@ -4,7 +4,7 @@ const { Timestamp } = require('firebase-admin/firestore');
 
 const ignoreKeys = ['total', 'declaration', 'preferNotToSay', 'noAnswer'];
 
-module.exports = (config, firebase, db) => {
+module.exports = (config, db) => {
   return {
     generateOutreachReport,
     attendedOutreachStats,

@@ -2,7 +2,7 @@ const { getDocument, getDocuments } = require('../../shared/helpers');
 const { applicationOpenDatePost01042023 } = require('../../shared/converters/helpers');
 // const sizeof = require('firestore-size');
 
-module.exports = (firebase, db) => {
+module.exports = (db) => {
   return {
     generateDiversityData,
   };

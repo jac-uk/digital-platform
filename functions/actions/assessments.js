@@ -1,6 +1,6 @@
 const { getDocument, getDocuments, getAllDocuments, getDocumentsFromQueries, applyUpdates } = require('../shared/helpers');
 const { FieldValue, FieldPath } = require('firebase-admin/firestore');
-module.exports = (config, firebase, db) => {
+module.exports = (config, db) => {
   const { newAssessment, newNotificationAssessmentRequest, newNotificationAssessmentReminder, newNotificationAssessmentSubmit } = require('../shared/factories')(config);
   const { testNotification } = require('./notifications')(config, db);
 
@@ -66,7 +66,7 @@ module.exports = (config, firebase, db) => {
       commands.push({
         command: 'set',
         ref: db.collection('notifications').doc(),
-        data: newNotificationAssessmentSubmit(firebase, assessment, exercise),
+        data: newNotificationAssessmentSubmit(assessment, exercise),
       });
     }
 
@@ -371,13 +371,13 @@ module.exports = (config, firebase, db) => {
         // @TODO update to handle other assessment templates
         switch (params.notificationType) {
           case 'request':
-            result = await testNotification(newNotificationAssessmentRequest(firebase, assessment, exercise), params.email);
+            result = await testNotification(newNotificationAssessmentRequest(assessment, exercise), params.email);
             break;
           case 'reminder':
-            result = await testNotification(newNotificationAssessmentReminder(firebase, assessment, exercise), params.email);
+            result = await testNotification(newNotificationAssessmentReminder(assessment, exercise), params.email);
             break;
           case 'success':
-            result = await testNotification(newNotificationAssessmentRequest(firebase, assessment, exercise), params.email);
+            result = await testNotification(newNotificationAssessmentRequest(assessment, exercise), params.email);
             break;
           default:
             break;
@@ -475,7 +475,7 @@ module.exports = (config, firebase, db) => {
       commands.push({
         command: 'set',
         ref: db.collection('notifications').doc(),
-        data: newNotificationAssessmentRequest(firebase, assessment, exercise),
+        data: newNotificationAssessmentRequest(assessment, exercise),
       });
       // update assessment
       if (assessment.status === 'draft') { countDraft++; }
@@ -550,7 +550,7 @@ module.exports = (config, firebase, db) => {
       commands.push({
         command: 'set',
         ref: db.collection('notifications').doc(),
-        data: newNotificationAssessmentReminder(firebase, assessment, exercise),
+        data: newNotificationAssessmentReminder(assessment, exercise),
       });
     }
 

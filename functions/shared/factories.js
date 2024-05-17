@@ -27,7 +27,7 @@ module.exports = (CONSTANTS) => {
     newNotificationPublishedFeedbackReport,
   };
 
-  function newNotificationExerciseApprovalSubmit(firebase, exerciseId, exercise, email) {
+  function newNotificationExerciseApprovalSubmit(exerciseId, exercise, email) {
     const templateName = 'Exercise ready for approval';
     const templateId = '7ef31d79-d247-4a5e-af0d-d94941fb1151';
     return {
@@ -53,7 +53,7 @@ module.exports = (CONSTANTS) => {
     };
   }
 
-  function newNotificationApplicationSubmit(firebase, applicationId, application, exercise) {
+  function newNotificationApplicationSubmit(applicationId, application, exercise) {
     const templateName = 'Application Submitted';
     const templateId = 'd9c3cf7d-3755-4f96-a508-20909a91b825';
 
@@ -82,7 +82,7 @@ module.exports = (CONSTANTS) => {
     };
   }
 
-  function newNotificationApplicationReminder(firebase, applicationId, application, exercise) {
+  function newNotificationApplicationReminder(applicationId, application, exercise) {
     const templateName = 'Application Submission Reminder';
     const templateId = '32adeb86-20e2-4578-83df-6f37dcf19978';
 
@@ -112,7 +112,7 @@ module.exports = (CONSTANTS) => {
     };
   }
 
-  function newNotificationApplicationInWelsh(firebase, applicationId, application, exercise) {
+  function newNotificationApplicationInWelsh(applicationId, application, exercise) {
     const templateName = 'Application Submitted in Welsh';
     const templateId = '0acf9400-8694-4553-ab4a-23830c7626de';
 
@@ -142,7 +142,7 @@ module.exports = (CONSTANTS) => {
     };
   }
 
-  function newNotificationCandidateFlagConfirmation(firebase, applicationId, application, exercise, toEmail) {
+  function newNotificationCandidateFlagConfirmation(applicationId, application, exercise, toEmail) {
     const templateName = 'Application from flagged candidate';
     const templateId = '618f780e-7a6e-4fd5-b530-548d587cae0b';
 
@@ -170,7 +170,7 @@ module.exports = (CONSTANTS) => {
     };
   }
 
-  function newNotificationCharacterCheckRequest(firebase, application, type, exerciseMailbox, exerciseManagerName, dueDate) {
+  function newNotificationCharacterCheckRequest(application, type, exerciseMailbox, exerciseManagerName, dueDate) {
     let templateId = '';
     let templateName = '';
     if (type === 'request') {
@@ -207,7 +207,7 @@ module.exports = (CONSTANTS) => {
     };
   }
 
-  function newNotificationAssessmentRequest(firebase, assessment, exercise) {
+  function newNotificationAssessmentRequest(assessment, exercise) {
     const link = `${CONSTANTS.ASSESSMENTS_URL}/sign-in?email=${assessment.assessor.email}&ref=assessments/${assessment.id}`;
     let xCompetencyAreasOrXSkillsAndAbilities;
     switch (assessment.type) {
@@ -248,7 +248,7 @@ module.exports = (CONSTANTS) => {
     };
   }
 
-  function newNotificationAssessmentReminder(firebase, assessment, exercise) {
+  function newNotificationAssessmentReminder(assessment, exercise) {
     const link = `${CONSTANTS.ASSESSMENTS_URL}/sign-in?email=${assessment.assessor.email}&ref=assessments/${assessment.id}`;
     let xCompetencyAreasOrXSkillsAndAbilities;
     switch (assessment.type) {
@@ -289,7 +289,7 @@ module.exports = (CONSTANTS) => {
     };
   }
 
-  function newNotificationAssessmentSubmit(firebase, assessment, exercise) {
+  function newNotificationAssessmentSubmit(assessment, exercise) {
     const link = `${CONSTANTS.ASSESSMENTS_URL}/sign-in?email=${assessment.assessor.email}&ref=assessments/${assessment.id}`;
     let xCompetencyAreasOrXSkillsAndAbilities;
     switch (assessment.type) {
@@ -494,7 +494,7 @@ module.exports = (CONSTANTS) => {
     return data;
   }
 
-  function newApplicationRecord(firebase, exercise, application) {
+  function newApplicationRecord(exercise, application) {
     // add search map
     const search = getSearchMap([
       application.personalDetails.fullName,
@@ -660,7 +660,7 @@ module.exports = (CONSTANTS) => {
     return vacancy;
   }
 
-  function newNotificationLateApplicationRequest(firebase, messageId, message, toEmail) {
+  function newNotificationLateApplicationRequest(messageId, message, toEmail) {
     const templateName = 'Late application request';
     const templateId = 'da36cb2a-5774-4e97-82e6-82664c43d87c';
     const msgType = message.type;
@@ -691,7 +691,7 @@ module.exports = (CONSTANTS) => {
     };
   }
 
-  function newNotificationLateApplicationResponse(firebase, messageId, message, toEmail) {
+  function newNotificationLateApplicationResponse(messageId, message, toEmail) {
     const templateName = 'Late application response';
     const templateId = 'e9087c43-de88-4dcd-a868-2299efcbc7a2';
     const msgType = message.type;
@@ -742,7 +742,7 @@ module.exports = (CONSTANTS) => {
     };
   }
 
-  function newCandidateFormResponse(firebase, formId, taskType, applicationId) {
+  function newCandidateFormResponse(formId, taskType, applicationId) {
     return {
       formId,
       taskType,
@@ -755,7 +755,7 @@ module.exports = (CONSTANTS) => {
     };
   }
 
-  function newCandidateFormNotification(firebase, application, type, exerciseMailbox, exerciseManagerName, dueDate) {
+  function newCandidateFormNotification(application, type, exerciseMailbox, exerciseManagerName, dueDate) {
     let templateId = '';
     let templateName = '';
     
@@ -796,7 +796,7 @@ module.exports = (CONSTANTS) => {
     };
   }
 
-  function newNotificationUserInvitation(firebase, userInvitationId, userInvitation) {
+  function newNotificationUserInvitation(userInvitationId, userInvitation) {
     return {
       email: userInvitation.email,
       replyTo: '',
@@ -817,7 +817,7 @@ module.exports = (CONSTANTS) => {
     };
   }
 
-  function newNotificationPublishedFeedbackReport(firebase, email, exerciseName, testType) {
+  function newNotificationPublishedFeedbackReport(email, exerciseName, testType) {
     const templateName = 'Generic Feedback Report Publication';
     const templateId = 'f74f3fda-419a-4c78-ad15-fbe0e33656ee';
     const reportsLink = 'https://judicialappointments.gov.uk/feedback-and-evaluation-reports#OnlineTests';

@@ -1,9 +1,9 @@
 const functions = require('firebase-functions');
-const { firebase, db, auth } = require('../shared/admin.js');
+const { db, auth } = require('../shared/admin.js');
 const { checkArguments } = require('../shared/helpers.js');
-const { generateStatutoryConsultationReport } = require('../actions/exercises/generateStatutoryConsultationReport')(firebase, db);
+const { generateStatutoryConsultationReport } = require('../actions/exercises/generateStatutoryConsultationReport')(db);
 const { getDocument } = require('../shared/helpers');
-const { logEvent } = require('../actions/logs/logEvent')(firebase, db, auth);
+const { logEvent } = require('../actions/logs/logEvent')(db, auth);
 const { checkFunctionEnabled } = require('../shared/serviceSettings.js')(db);
 const { PERMISSIONS, hasPermissions } = require('../shared/permissions');
 

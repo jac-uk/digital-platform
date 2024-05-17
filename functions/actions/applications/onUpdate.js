@@ -2,9 +2,9 @@ const { getDocument, applyUpdates, isDateInPast, formatDate } = require('../../s
 const { getSearchMap } = require('../../shared/search');
 const { Timestamp, FieldValue } = require('firebase-admin/firestore');
 
-module.exports = (config, firebase, db, auth) => {
-  const { updateCandidate } = require('../candidates/search')(firebase, db);
-  const { sendApplicationConfirmation, sendApplicationInWelsh, sendCharacterCheckRequests, sendCandidateFlagConfirmation } = require('./applications')(config, firebase, db, auth);
+module.exports = (config, db, auth) => {
+  const { updateCandidate } = require('../candidates/search')(db);
+  const { sendApplicationConfirmation, sendApplicationInWelsh, sendCharacterCheckRequests, sendCandidateFlagConfirmation } = require('./applications')(config, db, auth);
 
   return onUpdate;
 
@@ -77,7 +77,7 @@ module.exports = (config, firebase, db, auth) => {
       //       commands.push({
       //         command: 'set',
       //         ref: db.collection('applicationRecords').doc(`${dataAfter.id}`),
-      //         data: newApplicationRecord(firebase, exercise, dataAfter),
+      //         data: newApplicationRecord(exercise, dataAfter),
       //       });
       //     }
       //   }

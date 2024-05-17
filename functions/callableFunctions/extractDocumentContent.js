@@ -1,8 +1,8 @@
 const functions = require('firebase-functions');
 const config = require('../shared/config.js');
-const { firebase, db } = require('../shared/admin.js');
+const { db } = require('../shared/admin.js');
 const { extractDocumentContent } = require('../shared/file-extraction/extractDocumentContent')(config, firebase);
-// const { logEvent } = require('../actions/logs/logEvent')(firebase, db, auth);
+// const { logEvent } = require('../actions/logs/logEvent')(db, auth);
 const { checkFunctionEnabled } = require('../shared/serviceSettings.js')(db);
 // const { PERMISSIONS, hasPermissions } = require('../shared/permissions');
 

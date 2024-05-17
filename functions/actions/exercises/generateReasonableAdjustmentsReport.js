@@ -1,6 +1,6 @@
 const { getDocuments } = require('../../shared/helpers');
 const { Timestamp } = require('firebase-admin/firestore');
-module.exports = (firebase, db) => {
+module.exports = (db) => {
   return {
     generateReasonableAdjustmentsReport,
   };
@@ -17,7 +17,7 @@ module.exports = (firebase, db) => {
     const headers = reportHeaders();
 
     // get report rows
-    const rows = await reportData(firebase, db, applicationRecords, exerciseId);
+    const rows = await reportData(db, applicationRecords, exerciseId);
 
     // construct the report document
     const report = {
@@ -64,7 +64,7 @@ const reportHeaders = () => {
  *  
  * @returns {array}
  */
-const reportData = async (firebase, db, applicationRecords, exerciseId) => {
+const reportData = async (db, applicationRecords, exerciseId) => {
   const data = [];
   // get applications for personal details
   const applications = await getDocuments(db.collection('applications')

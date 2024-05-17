@@ -1,5 +1,5 @@
-module.exports = (config, firebase, db) => {
-  const { updateCandidate } = require('../search')(firebase, db);
+module.exports = (config, db) => {
+  const { updateCandidate } = require('../search')(db);
 
   return onCreate;
 

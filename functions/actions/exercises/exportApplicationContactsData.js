@@ -3,7 +3,7 @@ const lookup = require('../../shared/converters/lookup');
 const { getDocuments, getDocument } = require('../../shared/helpers');
 const { applicationOpenDatePost01042023 } = require('../../shared/converters/helpers');
 
-module.exports = (firebase, db) => {
+module.exports = (db) => {
   return {
     exportApplicationContactsData,
   };

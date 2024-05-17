@@ -3,7 +3,7 @@ const lookup = require('../../shared/converters/lookup');
 const { NOT_COMPLETE_PUPILLAGE_REASONS } = require('../../shared/config');
 const helpers = require('../../shared/converters/helpers');
 const { Timestamp } = require('firebase-admin/firestore');
-module.exports = (firebase, db) => {
+module.exports = (db) => {
   return {
     generateStatutoryConsultationReport,
   };

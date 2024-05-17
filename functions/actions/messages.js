@@ -1,5 +1,5 @@
-module.exports = (config, firebase, db, auth) => {
-  const { addLateApplicationRequest, removeLateApplicationRequest } = require('./exercises/updateLateApplicationRequests')(firebase, db);
+module.exports = (config, db, auth) => {
+  const { addLateApplicationRequest, removeLateApplicationRequest } = require('./exercises/updateLateApplicationRequests')(db);
   const { newNotificationLateApplicationRequest, newNotificationLateApplicationResponse } = require('../shared/factories')(config);
   const { applyUpdates } = require('../shared/helpers');
 
@@ -32,7 +32,7 @@ module.exports = (config, firebase, db, auth) => {
           commands.push({
             command: 'set',
             ref: db.collection('notifications').doc(),
-            data: newNotificationLateApplicationRequest(firebase, messageId, message, toEmail),
+            data: newNotificationLateApplicationRequest(messageId, message, toEmail),
           });
         }
       }
@@ -44,7 +44,7 @@ module.exports = (config, firebase, db, auth) => {
           commands.push({
             command: 'set',
             ref: db.collection('notifications').doc(),
-            data: newNotificationLateApplicationResponse(firebase, messageId, message, toEmail),
+            data: newNotificationLateApplicationResponse(messageId, message, toEmail),
           });
         }
       }

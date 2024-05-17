@@ -4,11 +4,11 @@
 
 'use strict';
 
-const { app, db, firebase, auth } = require('./shared/admin');
+const { app, db, auth } = require('./shared/admin');
 const config = require('./shared/config');
 const { applyUpdates } = require('../functions/shared/helpers');
 const { newUser } = require('../functions/shared/factories')(config);
-const { getUserSearchMap } = require('../functions/actions/users')(config, firebase, db, auth);
+const { getUserSearchMap } = require('../functions/actions/users')(config, db, auth);
 const { listAllUsers } = require('./shared/helpers');
 const { log } = require('./shared/helpers.js');
 

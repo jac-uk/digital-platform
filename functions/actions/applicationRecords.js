@@ -1,9 +1,9 @@
 const { getDocument, getDocuments, applyUpdates } = require('../shared/helpers');
 
-module.exports = (config, firebase, db, auth) => {
+module.exports = (config, db, auth) => {
   const { newApplicationRecord } = require('../shared/factories')(config);
-  const { logEvent } = require('./logs/logEvent')(firebase, db, auth);
-  const { refreshApplicationCounts } = require('../actions/exercises/refreshApplicationCounts')(firebase, db);
+  const { logEvent } = require('./logs/logEvent')(db, auth);
+  const { refreshApplicationCounts } = require('../actions/exercises/refreshApplicationCounts')(db);
 
   return {
     initialiseApplicationRecords,  // @TODO this will be removed once we have database triggers turned on *and* existing exercises have been initialised
@@ -90,7 +90,7 @@ module.exports = (config, firebase, db, auth) => {
         commands.push({
           command: 'set',
           ref: db.collection('applicationRecords').doc(`${application.id}`),
-          data: newApplicationRecord(firebase, exercise, application),  // needs firebase in order to insert timestamp @TODO there's a better way to do this
+          data: newApplicationRecord(exercise, application),  // needs firebase in order to insert timestamp @TODO there's a better way to do this
         });
       }
     }
@@ -150,7 +150,7 @@ module.exports = (config, firebase, db, auth) => {
         commands.push({
           command: 'set',
           ref: db.collection('applicationRecords').doc(`${application.id}`),
-          data: newApplicationRecord(firebase, exercise, application),
+          data: newApplicationRecord(exercise, application),
         });
       }
     }

@@ -1,13 +1,13 @@
 const functions = require('firebase-functions');
 const config = require('../shared/config');
-const { firebase, db } = require('../shared/admin.js');
-const { updateApplicationRecordStageStatus } = require('../actions/applicationRecords/updateApplicationRecordStageStatus.js')(firebase, config, db);
+const { db } = require('../shared/admin.js');
+const { updateApplicationRecordStageStatus } = require('../actions/applicationRecords/updateApplicationRecordStageStatus.js')(config, db);
 const { checkArguments } = require('../shared/helpers.js');
 const { checkFunctionEnabled } = require('../shared/serviceSettings.js')(db);
 const { PERMISSIONS, hasPermissions } = require('../shared/permissions.js');
-const { generateDiversityReport } = require('../actions/exercises/generateDiversityReport')(config, firebase, db);
-const { generateDiversityData } = require('../actions/exercises/generateDiversityData')(firebase, db);
-const { generateOutreachReport } = require('../actions/exercises/generateOutreachReport')(config, firebase, db);
+const { generateDiversityReport } = require('../actions/exercises/generateDiversityReport')(config, db);
+const { generateDiversityData } = require('../actions/exercises/generateDiversityData')(db);
+const { generateOutreachReport } = require('../actions/exercises/generateOutreachReport')(config, db);
 
 module.exports = functions.runWith({
   timeoutSeconds: 180,

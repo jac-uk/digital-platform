@@ -1,8 +1,8 @@
 'use strict';
 
 const config = require('./shared/config');
-const { firebase, app, db } = require('./shared/admin.js');
-const { customSearch } = require('../functions/actions/applications')(config, firebase, db);
+const { app, db } = require('./shared/admin.js');
+const { customSearch } = require('../functions/actions/applications')(config, db);
 
 const main = async () => {
   return customSearch();

@@ -2,7 +2,7 @@ const { getDocuments, getAllDocuments, formatDate } = require('../../shared/help
 const lookup = require('../../shared/converters/lookup');
 const applicationHelpers = require('../../shared/converters/helpers');
 
-module.exports = (config, firebase, db) => {
+module.exports = (config, db) => {
 
   return {
     exportExerciseData,

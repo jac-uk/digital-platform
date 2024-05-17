@@ -1,7 +1,7 @@
 const { getDocument, getDocuments, isEmpty, applyUpdates, getDate } = require('../../shared/helpers');
 const lookup = require('../../shared/converters/lookup');
 const { Timestamp } = require('firebase-admin/firestore');
-module.exports = (firebase, config, db) => {
+module.exports = (config, db) => {
   return {
     flagApplicationIssues,
     flagApplicationIssuesForExercise,

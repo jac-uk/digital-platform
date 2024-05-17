@@ -1,6 +1,6 @@
 const { getDocuments, getDocument, applyUpdates } = require('../../../shared/helpers');
 const { FieldValue } = require('firebase-admin/firestore');
-module.exports = (config, firebase, db) => {
+module.exports = (config, db) => {
   const qts = require('../../../shared/qts')(config);
 
   return updateQualifyingTestScores;

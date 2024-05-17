@@ -10,8 +10,8 @@
 'use strict';
 
 const config = require('./shared/config');
-const { firebase, app, db } = require('./shared/admin.js');
-const { initialisePanelExport } = require('../functions/actions/panels/initialisePanelExport')(config, firebase, db);
+const { app, db } = require('./shared/admin.js');
+const { initialisePanelExport } = require('../functions/actions/panels/initialisePanelExport')(config, db);
 
 const main = async () => {
   await initialisePanelExport('ozUWQ7ewwnA0RZOZ8nIP');

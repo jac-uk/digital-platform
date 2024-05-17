@@ -1,7 +1,7 @@
 const functions = require('firebase-functions');
 const config = require('../shared/config');
-const { firebase, db } = require('../shared/admin.js');
-const { onAssessmentCompleted } = require('../actions/assessments')(config, firebase, db);
+const { db } = require('../shared/admin.js');
+const { onAssessmentCompleted } = require('../actions/assessments')(config, db);
 const { getSearchMap } = require('../shared/search');
 
 module.exports = functions.region('europe-west2').firestore

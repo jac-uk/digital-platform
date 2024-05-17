@@ -1,7 +1,7 @@
 const { Timestamp } = require('firebase-admin/firestore');
 const { applyUpdates } = require('../shared/helpers');
 
-module.exports = (config, firebase, db, auth) => {
+module.exports = (config, db, auth) => {
   const { newNotificationUserInvitation } = require('../shared/factories')(config);
   
   return {
@@ -25,7 +25,7 @@ module.exports = (config, firebase, db, auth) => {
         {
           command: 'set',
           ref: db.collection('notifications').doc(),
-          data: newNotificationUserInvitation(firebase, userInvitationId, userInvitation),
+          data: newNotificationUserInvitation(userInvitationId, userInvitation),
         },
         {
           command: 'update',

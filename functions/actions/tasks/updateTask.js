@@ -1,7 +1,7 @@
 const { getDocument, getDocuments, getDocumentsFromQueries, applyUpdates } = require('../../shared/helpers');
 const lookup = require('../../shared/converters/lookup');
 const { FieldValue, FieldPath } = require('firebase-admin/firestore');
-module.exports = (config, firebase, db) => {
+module.exports = (config, db) => {
   const {
     taskStatuses,
     taskNextStatus,
@@ -20,7 +20,7 @@ module.exports = (config, firebase, db) => {
     includeZScores,
   } = require('./taskHelpers')(config);
 
-  const { refreshApplicationCounts } = require('../exercises/refreshApplicationCounts')(firebase, db);
+  const { refreshApplicationCounts } = require('../exercises/refreshApplicationCounts')(db);
   const { newCandidateFormResponse } = require('../../shared/factories')(config);
 
   return {
@@ -594,7 +594,7 @@ module.exports = (config, firebase, db) => {
     const candidateIds = [];
     applications.forEach(application => {
       candidateIds.push(application.userId);
-      const newResponse = newCandidateFormResponse(firebase, candidateForm.id, task.type, application.id);
+      const newResponse = newCandidateFormResponse(candidateForm.id, task.type, application.id);
       commands.push({
         command: 'set',
         ref: db.collection(`candidateForms/${candidateForm.id}/responses`).doc(application.userId),

@@ -2,7 +2,7 @@ const helpers = require('../../shared/converters/helpers');
 const lookup = require('../../shared/converters/lookup');
 const { getDocument, getDocuments } = require('../../shared/helpers');
 const { Timestamp } = require('firebase-admin/firestore');
-module.exports = (firebase, db) => {
+module.exports = (db) => {
   return {
     generateAgencyReport,
   };

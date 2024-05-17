@@ -7,7 +7,7 @@ const htmlWriter = require('../../shared/htmlWriter');
 const config = require('../../shared/config');
 const drive = require('../../shared/google-drive')();
 
-module.exports = (firebase, db) => {
+module.exports = (db) => {
 
   return {
     exportApplicationEligibilityIssues,

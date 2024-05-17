@@ -1,6 +1,6 @@
 const functions = require('firebase-functions');
-const { firebase, db } = require('../shared/admin.js');
-const { exportApplicationCommissionerConflicts } = require('../actions/exercises/exportApplicationCommissionerConflicts')(firebase, db);
+const { db } = require('../shared/admin.js');
+const { exportApplicationCommissionerConflicts } = require('../actions/exercises/exportApplicationCommissionerConflicts')(db);
 const { checkFunctionEnabled } = require('../shared/serviceSettings.js')(db);
 const { PERMISSIONS, hasPermissions } = require('../shared/permissions');
 

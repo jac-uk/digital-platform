@@ -1,5 +1,5 @@
 const { FieldValue } = require('firebase-admin/firestore');
-module.exports = (firebase, db) => {
+module.exports = (db) => {
 
   return {
     addLateApplicationRequest,

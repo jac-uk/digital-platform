@@ -4,7 +4,7 @@ const { getDocument, getDocuments, getAllDocuments, removeHtml } = require('../.
 const applicationConverter = require('../../shared/converters/applicationConverter')();
 const { getAdditionalWorkingPreferences, getWelshData } = applicationConverter;
 const { Timestamp } = require('firebase-admin/firestore');
-module.exports = (firebase, db) => {
+module.exports = (db) => {
   return {
     generateHandoverReport,
   };

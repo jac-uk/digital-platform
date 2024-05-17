@@ -6,9 +6,9 @@ const { getStorage } = require('firebase-admin/storage');
 
 const testApplicationsFileName = 'test_applications.json';
 
-module.exports = (config, firebase, db, auth) => {
-  const { initialiseApplicationRecords } = require('../../actions/applicationRecords')(config, firebase, db, auth);
-  const { refreshApplicationCounts } = require('../../actions/exercises/refreshApplicationCounts')(firebase, db);
+module.exports = (config, db, auth) => {
+  const { initialiseApplicationRecords } = require('../../actions/applicationRecords')(config, db, auth);
+  const { refreshApplicationCounts } = require('../../actions/exercises/refreshApplicationCounts')(db);
   const {
     newNotificationApplicationSubmit,
     newNotificationApplicationReminder,
@@ -19,7 +19,7 @@ module.exports = (config, firebase, db, auth) => {
     newNotificationPublishedFeedbackReport,
   } = require('../../shared/factories')(config);
   const slack = require('../../shared/slack')(config);
-  const { updateCandidate } = require('../candidates/search')(firebase, db);
+  const { updateCandidate } = require('../candidates/search')(db);
   return {
     updateApplication,
     onApplicationCreate,
@@ -145,7 +145,7 @@ module.exports = (config, firebase, db, auth) => {
     commands.push({
       command: 'set',
       ref: db.collection('notifications').doc(),
-      data: newNotificationApplicationSubmit(firebase, applicationId, application, exercise),
+      data: newNotificationApplicationSubmit(applicationId, application, exercise),
     });
     // update application
     commands.push({
@@ -195,7 +195,7 @@ module.exports = (config, firebase, db, auth) => {
       commands.push({
         command: 'set',
         ref: db.collection('notifications').doc(),
-        data: newNotificationApplicationReminder(firebase, application.id, application, exercise),
+        data: newNotificationApplicationReminder(application.id, application, exercise),
       });
 
       // update application
@@ -239,7 +239,7 @@ module.exports = (config, firebase, db, auth) => {
     commands.push({
       command: 'set',
       ref: db.collection('notifications').doc(),
-      data: newNotificationApplicationInWelsh(firebase, applicationId, application, exercise),
+      data: newNotificationApplicationInWelsh(applicationId, application, exercise),
     });
     // update application
     commands.push({
@@ -279,7 +279,7 @@ module.exports = (config, firebase, db, auth) => {
       commands.push({
         command: 'set',
         ref: db.collection('notifications').doc(),
-        data: newNotificationCharacterCheckRequest(firebase, application, type, exerciseMailbox, exerciseManagerName, dueDate),
+        data: newNotificationCharacterCheckRequest(application, type, exerciseMailbox, exerciseManagerName, dueDate),
       });
       // update application
       if (type === 'request') {
@@ -343,7 +343,7 @@ module.exports = (config, firebase, db, auth) => {
       const application = applications[i];
 
       // create notification
-      const notification = newCandidateFormNotification(firebase, application, notificationType, exerciseMailbox, exerciseManagerName, dueDate);
+      const notification = newCandidateFormNotification(application, notificationType, exerciseMailbox, exerciseManagerName, dueDate);
       if (notification) {
         commands.push({
           command: 'set',
@@ -548,7 +548,7 @@ module.exports = (config, firebase, db, auth) => {
       commands.push({
         command: 'set',
         ref: db.collection('notifications').doc(),
-        data: newNotificationCandidateFlagConfirmation(firebase, applicationId, application, exercise, email),
+        data: newNotificationCandidateFlagConfirmation(applicationId, application, exercise, email),
       });
     }
 
@@ -592,7 +592,7 @@ module.exports = (config, firebase, db, auth) => {
             {
               command: 'set',
               ref: db.collection('notifications').doc(),
-              data: newNotificationPublishedFeedbackReport(firebase, emails[i], exercise.name, taskType),
+              data: newNotificationPublishedFeedbackReport(emails[i], exercise.name, taskType),
             }
           );
         }

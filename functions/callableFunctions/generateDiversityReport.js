@@ -1,10 +1,10 @@
 const functions = require('firebase-functions');
 const config = require('../shared/config.js');
-const { firebase, db, auth } = require('../shared/admin.js');
-const { generateDiversityReport } = require('../actions/exercises/generateDiversityReport')(config, firebase, db);
-const { generateDiversityData } = require('../actions/exercises/generateDiversityData')(firebase, db);
+const { db, auth } = require('../shared/admin.js');
+const { generateDiversityReport } = require('../actions/exercises/generateDiversityReport')(config, db);
+const { generateDiversityData } = require('../actions/exercises/generateDiversityData')(db);
 const { getDocument } = require('../shared/helpers');
-const { logEvent } = require('../actions/logs/logEvent')(firebase, db, auth);
+const { logEvent } = require('../actions/logs/logEvent')(db, auth);
 const { checkFunctionEnabled } = require('../shared/serviceSettings.js')(db);
 const { PERMISSIONS, hasPermissions } = require('../shared/permissions');
 

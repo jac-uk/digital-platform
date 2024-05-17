@@ -6,7 +6,7 @@
 const { getDocument, getDocuments, applyUpdates, convertStringToSearchParts, normaliseNIN, objectHasNestedProperty } = require('../../shared/helpers');
 const { getSearchMap } = require('../../shared/search');
 const { FieldValue } = require('firebase-admin/firestore');
-module.exports = (firebase, db) => {
+module.exports = (db) => {
   return {
     updateAllCandidates,
     updateCandidate,

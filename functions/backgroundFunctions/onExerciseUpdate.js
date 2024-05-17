@@ -1,7 +1,7 @@
 const functions = require('firebase-functions');
 const config = require('../shared/config');
-const { firebase, db, auth } = require('../shared/admin');
-const onUpdate = require('../actions/exercises/onUpdate')(config, firebase, db, auth);
+const { db, auth } = require('../shared/admin');
+const onUpdate = require('../actions/exercises/onUpdate')(config, db, auth);
 
 module.exports = functions.region('europe-west2').firestore
   .document('exercises/{exerciseId}')

@@ -23,7 +23,7 @@ const { Timestamp } = require('firebase-admin/firestore');
  * @param {*} db 
  * @returns 
  */
-module.exports = (config, firebase, db) => {
+module.exports = (config, db) => {
   return {
     generateDiversityReport,
     genderStats,

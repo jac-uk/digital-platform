@@ -1,8 +1,8 @@
 const functions = require('firebase-functions');
 const config = require('../../shared/config');
-const { firebase, db } = require('../../shared/admin.js');
+const { db } = require('../../shared/admin.js');
 const { checkArguments } = require('../../shared/helpers.js');
-const { updateTask } = require('../../actions/tasks/updateTask')(config, firebase, db);
+const { updateTask } = require('../../actions/tasks/updateTask')(config, db);
 const { checkFunctionEnabled } = require('../../shared/serviceSettings.js')(db);
 
 module.exports = functions.runWith({
