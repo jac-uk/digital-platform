@@ -1,5 +1,5 @@
 const { getDocument, getDocuments, applyUpdates } = require('../shared/helpers');
-
+const { Timestamp } = require('firebase-admin/firestore');
 module.exports = (config, firebase, db) => {
   const { sendEmail, previewEmail } = require('../shared/notify')(config);
   return {
@@ -52,7 +52,7 @@ module.exports = (config, firebase, db) => {
                 ref: notification.ref,
                 data: {
                   status: 'sent',
-                  sentAt: firebase.firestore.Timestamp.fromDate(new Date()),
+                  sentAt: Timestamp.fromDate(new Date()),
                   sentTo: toEmail,
                 },
               });

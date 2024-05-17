@@ -1,5 +1,6 @@
 const { getDocument, applyUpdates, isDateInPast, formatDate } = require('../../shared/helpers');
 const { getSearchMap } = require('../../shared/search');
+const { Timestamp, FieldValue } = require('firebase-admin/firestore');
 
 module.exports = (config, firebase, db, auth) => {
   const { updateCandidate } = require('../candidates/search')(firebase, db);
@@ -17,14 +18,14 @@ module.exports = (config, firebase, db, auth) => {
     const commands = [];
     if (dataBefore.status !== dataAfter.status) {
       // update stats if status has changed
-      const increment = firebase.firestore.FieldValue.increment(1);
-      const decrement = firebase.firestore.FieldValue.increment(-1);
+      const increment = FieldValue.increment(1);
+      const decrement = FieldValue.increment(-1);
       const exerciseId = dataBefore.exerciseId;
       const data = {};
       console.log(`Update application counts: _applications.${dataBefore.status} decrease; _applications.${dataAfter.status} increase`);
       data[`_applications.${dataBefore.status}`] = decrement;
       data[`_applications.${dataAfter.status}`] = increment;
-      data['_applications._lastUpdated'] = firebase.firestore.FieldValue.serverTimestamp();
+      data['_applications._lastUpdated'] = FieldValue.serverTimestamp();
       commands.push({
         command: 'update',
         ref: db.doc(`exercises/${exerciseId}`),
@@ -106,7 +107,7 @@ module.exports = (config, firebase, db, auth) => {
         try {
           await db.collection('applicationRecords').doc(`${applicationId}`).update({
             'characterChecks.status': 'completed',
-            'characterChecks.completedAt': firebase.firestore.Timestamp.fromDate(new Date()),
+            'characterChecks.completedAt': Timestamp.fromDate(new Date()),
           });
           return true;
         } catch (e) {

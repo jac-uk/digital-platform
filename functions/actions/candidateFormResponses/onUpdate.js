@@ -1,5 +1,5 @@
 const { applyUpdates } = require('../../shared/helpers');
-
+const { FieldValue } = require('firebase-admin/firestore');
 module.exports = (config, firebase, db, auth) => {
 
   return onUpdate;
@@ -12,7 +12,7 @@ module.exports = (config, firebase, db, auth) => {
     if (dataBefore.status !== dataAfter.status && dataAfter.applicationId && dataAfter.taskType) {
       const saveData = {};
       saveData[`${dataAfter.taskType}.status`] = dataAfter.status;
-      saveData[`${dataAfter.taskType}.statusLog.${dataAfter.status}`] = firebase.firestore.FieldValue.serverTimestamp(),
+      saveData[`${dataAfter.taskType}.statusLog.${dataAfter.status}`] = FieldValue.serverTimestamp(),
       commands.push({
         command: 'update',
         ref: db.doc(`applicationRecords/${dataAfter.applicationId}`),

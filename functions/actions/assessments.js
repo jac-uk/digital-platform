@@ -1,5 +1,5 @@
 const { getDocument, getDocuments, getAllDocuments, getDocumentsFromQueries, applyUpdates } = require('../shared/helpers');
-
+const { FieldValue, FieldPath } = require('firebase-admin/firestore');
 module.exports = (config, firebase, db) => {
   const { newAssessment, newNotificationAssessmentRequest, newNotificationAssessmentReminder, newNotificationAssessmentSubmit } = require('../shared/factories')(config);
   const { testNotification } = require('./notifications')(config, db);
@@ -54,7 +54,7 @@ module.exports = (config, firebase, db) => {
       }
       
       // update exercise
-      const increment = firebase.firestore.FieldValue.increment(1);
+      const increment = FieldValue.increment(1);
       commands.push({
         command: 'update',
         ref: db.collection('exercises').doc(assessment.exercise.id),
@@ -223,7 +223,7 @@ module.exports = (config, firebase, db) => {
       const assessmentQueries = params.assessmentIds.map(assessmentId => {
         return db.collection('assessments')
           .where('exercise.id', '==', params.exerciseId)
-          .where(firebase.firestore.FieldPath.documentId(), '==', assessmentId);
+          .where(FieldPath.documentId(), '==', assessmentId);
       });
       assessments = await getDocumentsFromQueries(assessmentQueries);
     }
@@ -287,7 +287,7 @@ module.exports = (config, firebase, db) => {
       const assessmentQueries = params.assessmentIds.map(assessmentId => {
         return db.collection('assessments')
           .where('exercise.id', '==', params.exerciseId)
-          .where(firebase.firestore.FieldPath.documentId(), '==', assessmentId);
+          .where(FieldPath.documentId(), '==', assessmentId);
       });
       assessments = await getDocumentsFromQueries(assessmentQueries);
     }
@@ -441,14 +441,14 @@ module.exports = (config, firebase, db) => {
       const assessmentsRef = db.collection('assessments')
         .where('exercise.id', '==', params.exerciseId)
         .where('status', 'in', status)
-        .where(firebase.firestore.FieldPath.documentId(), '==', params.assessmentId);
+        .where(FieldPath.documentId(), '==', params.assessmentId);
       assessments = await getDocuments(assessmentsRef);
     } else if (params.assessmentIds && params.assessmentIds.length) {
       const assessmentQueries = params.assessmentIds.map(assessmentId => {
         return db.collection('assessments')
           .where('exercise.id', '==', params.exerciseId)
           .where('status', 'in', status)
-          .where(firebase.firestore.FieldPath.documentId(), '==', assessmentId);
+          .where(FieldPath.documentId(), '==', assessmentId);
       });
       assessments = await getDocumentsFromQueries(assessmentQueries);
     } else {
@@ -523,14 +523,14 @@ module.exports = (config, firebase, db) => {
       const assessmentsRef = db.collection('assessments')
         .where('exercise.id', '==', params.exerciseId)
         .where('status', '==', 'pending')
-        .where(firebase.firestore.FieldPath.documentId(), '==', params.assessmentId);
+        .where(FieldPath.documentId(), '==', params.assessmentId);
       assessments = await getDocuments(assessmentsRef);
     } else if (params.assessmentIds && params.assessmentIds.length) {
       const assessmentQueries = params.assessmentIds.map(assessmentId => {
         return db.collection('assessments')
           .where('exercise.id', '==', params.exerciseId)
           .where('status', '==', 'pending')
-          .where(firebase.firestore.FieldPath.documentId(), '==', assessmentId);
+          .where(FieldPath.documentId(), '==', assessmentId);
       });
       assessments = await getDocumentsFromQueries(assessmentQueries);
     }

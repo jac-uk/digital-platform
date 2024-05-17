@@ -1,3 +1,4 @@
+const { Timestamp } = require('firebase-admin/firestore');
 const { applyUpdates } = require('../shared/helpers');
 
 module.exports = (config, firebase, db, auth) => {
@@ -30,7 +31,7 @@ module.exports = (config, firebase, db, auth) => {
           command: 'update',
           ref,
           data: {
-            'emailLog.created': firebase.firestore.Timestamp.fromDate(new Date()),
+            'emailLog.created': Timestamp.fromDate(new Date()),
           },
         }
       );

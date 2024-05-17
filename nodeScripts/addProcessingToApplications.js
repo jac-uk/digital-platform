@@ -7,7 +7,7 @@
 
 const { firebase, app, db } = require('./shared/admin.js');
 const { getDocument, getDocuments, applyUpdates, objectHasNestedProperty } = require('../functions/shared/helpers.js');
-
+const { FieldValue } = require('firebase-admin/firestore');
 async function checkAllApplications() {
   const applications = await getDocuments(db.collection('applications')
     .where('status', 'in', ['applied', 'withdrawn'])
@@ -35,7 +35,7 @@ async function checkAllApplications() {
               stage: stage,
               status: status,
             },
-            lastUpdated: firebase.firestore.FieldValue.serverTimestamp(),
+            lastUpdated: FieldValue.serverTimestamp(),
           },
         });
       }

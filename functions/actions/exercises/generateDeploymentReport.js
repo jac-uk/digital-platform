@@ -1,5 +1,5 @@
 const { getDocument, getDocuments, getAllDocuments } = require('../../shared/helpers');
-
+const { Timestamp } = require('firebase-admin/firestore');
 module.exports = (config, firebase, db) => {
   const { EXERCISE_STAGE, APPLICATION_STATUS } = config;
   const { convertStageToVersion2, convertStatusToVersion2 } = require('../applicationRecords/updateApplicationRecordStageStatus')(firebase, config, db);
@@ -28,7 +28,7 @@ module.exports = (config, firebase, db) => {
 
     const report = {
       totalApplications: applications.length,
-      createdAt: firebase.firestore.Timestamp.fromDate(new Date()),
+      createdAt: Timestamp.fromDate(new Date()),
       headers,
       rows,
     };

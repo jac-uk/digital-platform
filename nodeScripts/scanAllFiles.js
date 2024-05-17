@@ -1,8 +1,10 @@
 'use strict';
 
 const config = require('./shared/config');
-const { firebase, app } = require('./shared/admin.js');
-const { scanAllFiles } = require('../functions/actions/malware-scanning/scanAllFiles')(config, firebase);
+const { app, storage } = require('./shared/admin.js');
+// TODO: KO test
+//const { storage } = require('../functions/shared/admin.js');
+const { scanAllFiles } = require('../functions/actions/malware-scanning/scanAllFiles')(config, app, storage);
 
 const main = async () => {
   return scanAllFiles(true, 500);

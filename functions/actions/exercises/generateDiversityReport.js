@@ -1,6 +1,7 @@
 const { getDocument, getDocuments } = require('../../shared/helpers');
 const { applicationOpenDatePost01042023 } = require('../../shared/converters/helpers');
 const { availableStages } = require('../../shared/exerciseHelper');
+const { Timestamp } = require('firebase-admin/firestore');
 
 /**
  * For the diversity reports:
@@ -54,7 +55,7 @@ module.exports = (config, firebase, db) => {
 
     const report = {
       totalApplications: applications.length,
-      createdAt: firebase.firestore.Timestamp.fromDate(new Date()),
+      createdAt: Timestamp.fromDate(new Date()),
       applied: diversityReport(applications, applicationRecords, exercise),
     };
 

@@ -13,7 +13,7 @@ const { firebase, app, db } = require('../shared/admin.js');
 const { getDocument, getDocuments, applyUpdates } = require('../../functions/shared/helpers.js');
 const { getSearchMap } = require('../../functions/shared/search.js');
 const { objectHasNestedProperty } = require('../../functions/shared/helpers.js');
-
+const { FieldValue } = require('firebase-admin/firestore');
 async function updateAllApplications() {
   const commands = [];
   const applications = await getDocuments(db.collection('applications').select('personalDetails', 'referenceNumber'));
@@ -46,7 +46,7 @@ async function updateAllApplications() {
         ref: application.ref,
         data: {
           _search: getSearchMap(searchables),
-          lastUpdated: firebase.firestore.FieldValue.serverTimestamp(),
+          lastUpdated: FieldValue.serverTimestamp(),
         },
       });
 
@@ -59,7 +59,7 @@ async function updateAllApplications() {
           ref: applicationRecord.ref,
           data: {
             _search: getSearchMap(searchables),
-            lastUpdated: firebase.firestore.FieldValue.serverTimestamp(),
+            lastUpdated: FieldValue.serverTimestamp(),
           },
         });
       }

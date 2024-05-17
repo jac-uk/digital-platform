@@ -1,3 +1,4 @@
+const { FieldValue } = require('firebase-admin/firestore');
 module.exports = (firebase, db) => {
 
   return {
@@ -7,13 +8,13 @@ module.exports = (firebase, db) => {
 
   async function addLateApplicationRequest(exerciseId, candidateId) {
     const saveData = {};
-    saveData['_lateApplicationRequests'] = firebase.firestore.FieldValue.arrayUnion(candidateId);
+    saveData['_lateApplicationRequests'] = FieldValue.arrayUnion(candidateId);
     await db.doc(`exercises/${exerciseId}`).update(saveData);
   }
 
   async function removeLateApplicationRequest(exerciseId, candidateId) {
     const saveData = {};
-    saveData['_lateApplicationRequests'] = firebase.firestore.FieldValue.arrayRemove(candidateId);
+    saveData['_lateApplicationRequests'] = FieldValue.arrayRemove(candidateId);
     await db.doc(`exercises/${exerciseId}`).update(saveData);
   }
 };

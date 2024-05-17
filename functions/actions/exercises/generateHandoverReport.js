@@ -3,7 +3,7 @@ const lookup = require('../../shared/converters/lookup');
 const { getDocument, getDocuments, getAllDocuments, removeHtml } = require('../../shared/helpers');
 const applicationConverter = require('../../shared/converters/applicationConverter')();
 const { getAdditionalWorkingPreferences, getWelshData } = applicationConverter;
-
+const { Timestamp } = require('firebase-admin/firestore');
 module.exports = (firebase, db) => {
   return {
     generateHandoverReport,
@@ -34,7 +34,7 @@ module.exports = (firebase, db) => {
     // construct the report document
     const report = {
       totalApplications: applications.length,
-      createdAt: firebase.firestore.Timestamp.fromDate(new Date()),
+      createdAt: Timestamp.fromDate(new Date()),
       headers,
       rows,
     };

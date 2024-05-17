@@ -1,6 +1,6 @@
 const { getDocument, getDocuments, applyUpdates, getAllDocuments, formatDate } = require('../../shared/helpers');
 const drive = require('../../shared/google-drive')();
-
+const { FieldValue } = require('firebase-admin/firestore');
 module.exports = (config, firebase, db) => {
 
   return {
@@ -77,7 +77,7 @@ module.exports = (config, firebase, db) => {
       },
       applicationsMap: applicationsMap,
       status: 'processing',
-      'statusLog.processing': firebase.firestore.FieldValue.serverTimestamp(),
+      'statusLog.processing': FieldValue.serverTimestamp(),
       processing: {
         current: applicationIds.shift(),   // start processing first application
         queue: applicationIds,

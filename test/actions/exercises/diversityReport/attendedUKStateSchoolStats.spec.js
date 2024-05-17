@@ -1,6 +1,7 @@
 const firebase = require('firebase-admin');
 const db = jest.fn();
 const config = require('../../../../nodeScripts/shared/config');
+const { Timestamp } = require('firebase-admin/firestore');
 
 const {
   attendedUKStateSchoolStats,
@@ -48,7 +49,7 @@ describe('attendedUKStateSchoolStats', () => {
   ];
 
   const exercisePre = {
-    applicationOpenDate: firebase.firestore.Timestamp.fromDate(new Date('2023-03-31')),
+    applicationOpenDate: Timestamp.fromDate(new Date('2023-03-31')),
   };
 
   // Post 01-04-2023 fields
@@ -91,7 +92,7 @@ describe('attendedUKStateSchoolStats', () => {
   ];
 
   const exercisePost = {
-    applicationOpenDate: firebase.firestore.Timestamp.fromDate(new Date('2023-04-02')),
+    applicationOpenDate: Timestamp.fromDate(new Date('2023-04-02')),
   };
 
   it('returns attended UK StateSchool stats pre-01-04-2023', async () => {

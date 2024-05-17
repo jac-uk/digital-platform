@@ -4,9 +4,9 @@
 
 'use strict';
 
-const { firebase, app, db } = require('./shared/admin');
+const { app, db } = require('./shared/admin');
 const { applyUpdates, getDocuments } = require('../functions/shared/helpers');
-
+const { FieldValue } = require('firebase-admin/firestore');
 // whether to make changes in firestore
 const isAction = false;
 const exerciseId = '';
@@ -33,7 +33,7 @@ const main = async () => {
       payload.status = '';
     }
     if (applicationRecord.statusLog && applicationRecord.statusLog[status]) {
-      payload[`statusLog.${status}`] = firebase.firestore.FieldValue.delete();
+      payload[`statusLog.${status}`] = FieldValue.delete();
     }
     console.log(payload);
 

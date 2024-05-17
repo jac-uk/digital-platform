@@ -5,7 +5,7 @@
 
 const { getDocument, getDocuments, applyUpdates, convertStringToSearchParts, normaliseNIN, objectHasNestedProperty } = require('../../shared/helpers');
 const { getSearchMap } = require('../../shared/search');
-
+const { FieldValue } = require('firebase-admin/firestore');
 module.exports = (firebase, db) => {
   return {
     updateAllCandidates,
@@ -110,7 +110,7 @@ module.exports = (firebase, db) => {
             referenceNumbers: candidateData[candidates[i].id].referenceNumbers,
             totalApplications: Object.keys(candidateData[candidates[i].id].applicationsMap).length,
           },
-          lastUpdated: firebase.firestore.FieldValue.serverTimestamp(),
+          lastUpdated: FieldValue.serverTimestamp(),
         },
       });
     }

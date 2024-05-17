@@ -1,5 +1,5 @@
 const { getDocument, getDocuments } = require('../../shared/helpers');
-
+const { FieldValue } = require('firebase-admin/firestore');
 module.exports = (firebase, db) => {
   return {
     refreshApplicationCounts,
@@ -41,16 +41,16 @@ module.exports = (firebase, db) => {
 
     // remove old fields from data
     if (exercise._counts) {
-      data._counts = firebase.firestore.FieldValue.delete();
+      data._counts = FieldValue.delete();
     }
     if (exercise.applicationsCount) {
-      data.applicationsCount = firebase.firestore.FieldValue.delete();
+      data.applicationsCount = FieldValue.delete();
     }
     if (exercise.applications) {
-      data.applications = firebase.firestore.FieldValue.delete();
+      data.applications = FieldValue.delete();
     }
     if (exercise.applicationRecords) {
-      data.applicationRecords = firebase.firestore.FieldValue.delete();
+      data.applicationRecords = FieldValue.delete();
     }
 
     await exerciseRef.update(data);
@@ -60,7 +60,7 @@ module.exports = (firebase, db) => {
   function applicationCounts(applications) {
     const counts = {
       _total: applications.length,
-      _lastUpdated: firebase.firestore.FieldValue.serverTimestamp(),
+      _lastUpdated: FieldValue.serverTimestamp(),
     };
     applications.forEach(application => {
       if (counts[application.status]) {
@@ -75,7 +75,7 @@ module.exports = (firebase, db) => {
   function applicationRecordCounts(applicationRecords) {
     const counts = {
       _total: applicationRecords.length,
-      _lastUpdated: firebase.firestore.FieldValue.serverTimestamp(),
+      _lastUpdated: FieldValue.serverTimestamp(),
     };
     applicationRecords.forEach(applicationRecord => {
       if (counts[applicationRecord.stage]) {

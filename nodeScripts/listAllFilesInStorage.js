@@ -1,5 +1,5 @@
 const config = require('./shared/config');
-const { firebase } = require('./shared/admin.js');
+const { storage } = require('./shared/admin.js');
 
 /**
  * Scans all files for viruses
@@ -7,7 +7,7 @@ const { firebase } = require('./shared/admin.js');
 async function scanAllFiles() {
 
   // open the store bucket
-  const bucket = firebase.storage().bucket(config.STORAGE_URL);
+  const bucket = storage.bucket(config.STORAGE_URL);
 
   // read all files
   const [files] = await bucket.getFiles({

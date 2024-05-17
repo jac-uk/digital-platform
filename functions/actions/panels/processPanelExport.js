@@ -1,8 +1,9 @@
 const { getDocument } = require('../../shared/helpers');
 const applicationConverter = require('../../shared/converters/applicationConverter')();
 const drive = require('../../shared/google-drive')();
+const { FieldValue } = require('firebase-admin/firestore');
 
-module.exports = (config, firebase, db) => {
+module.exports = (config, storage, db) => {
 
   return {
     processPanelExport,
@@ -39,7 +40,7 @@ module.exports = (config, firebase, db) => {
       drive.setDriveId(panel.drive.driveId);
 
       // get storage service
-      const bucket = firebase.storage().bucket(config.STORAGE_URL);
+      const bucket = storage.bucket(config.STORAGE_URL);
       // console.log('bucket', bucket);
 
       // show candidate name
@@ -186,13 +187,13 @@ module.exports = (config, firebase, db) => {
       data[`applicationsMap.${application.id}.fileIds`] = fileIds;
       data[`applicationsMap.${application.id}.errors`] = errorMessages;
       if (errorMessages.length) {
-        data.processing.errors = firebase.firestore.FieldValue.arrayUnion(application.id);
+        data.processing.errors = FieldValue.arrayUnion(application.id);
       }
       if (panel.processing.queue.length > 0) {
         data.processing.current = data.processing.queue.shift();
       } else {
         data.status = 'created';
-        data['statusLog.created'] = firebase.firestore.FieldValue.serverTimestamp();
+        data['statusLog.created'] = FieldValue.serverTimestamp();
         data.processing = null;
       }
       await panel.ref.update(data);

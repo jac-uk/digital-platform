@@ -1,4 +1,4 @@
-
+const { Timestamp } = require('firebase-admin/firestore');
 module.exports = (firebase, db, auth) => {
   return {
     logEvent,
@@ -26,7 +26,7 @@ module.exports = (firebase, db, auth) => {
 
     // construct the event document
     const event = {
-      timestamp: firebase.firestore.Timestamp.now(),
+      timestamp: Timestamp.now(),
       user: user || null,
       description: description,
       details: details,

@@ -5,6 +5,7 @@ const config = require('../../../../nodeScripts/shared/config');
 const {
   parentsNotAttendedUniversityStats,
 } = require('../../../../functions/actions/exercises/generateDiversityReport.js')(config, firebase, db);
+const { Timestamp } = require('firebase-admin/firestore');
 
 describe('parentsNotAttendedUniversityStats', () => {
 
@@ -48,7 +49,7 @@ describe('parentsNotAttendedUniversityStats', () => {
   ];
 
   const exercise = {
-    applicationOpenDate: firebase.firestore.Timestamp.fromDate(new Date('2023-04-02')),
+    applicationOpenDate: Timestamp.fromDate(new Date('2023-04-02')),
   };
 
   it('returns parents did not attend University stats post-01-04-2023', async () => {

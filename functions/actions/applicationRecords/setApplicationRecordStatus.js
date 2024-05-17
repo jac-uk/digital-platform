@@ -1,5 +1,5 @@
 const { getDocument, getDocuments, applyUpdates, getDocumentsFromQueries } = require('../../shared/helpers');
-
+const { Timestamp } = require('firebase-admin/firestore');
 module.exports = (config, firebase, db) => {
 
   return setApplicationRecordStatus;
@@ -37,7 +37,7 @@ module.exports = (config, firebase, db) => {
         ref: applicationRecord.ref,
         data: {
           status: params.newStatus,
-          lastUpdated: firebase.firestore.FieldValue.serverTimestamp(),
+          lastUpdated: FieldValue.serverTimestamp(),
         },
       });
     }

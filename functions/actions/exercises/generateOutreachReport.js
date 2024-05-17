@@ -1,5 +1,6 @@
 const { getDocument, getDocuments, objectHasNestedProperty } = require('../../shared/helpers');
 const { availableStages } = require('../../shared/exerciseHelper');
+const { Timestamp } = require('firebase-admin/firestore');
 
 const ignoreKeys = ['total', 'declaration', 'preferNotToSay', 'noAnswer'];
 
@@ -29,7 +30,7 @@ module.exports = (config, firebase, db) => {
 
     const report = {
       totalApplications: applications.length,
-      createdAt: firebase.firestore.Timestamp.fromDate(new Date()),
+      createdAt: Timestamp.fromDate(new Date()),
       applied: outreachReport(applications),
     };
 

@@ -1,4 +1,5 @@
 const { applyUpdates } = require('../shared/helpers');
+const { FieldValue } = require('firebase-admin/firestore');
 
 module.exports = (firebase, db) => {
   return {
@@ -45,7 +46,7 @@ module.exports = (firebase, db) => {
           formId: candidateFormId,
           status: 'CREATED',  // @TODO: Use constant
           statusLog: {
-            created: firebase.firestore.FieldValue.serverTimestamp(),
+            created: FieldValue.serverTimestamp(),
             requested: null,
             completed: null,
           },

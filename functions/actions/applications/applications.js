@@ -1,6 +1,8 @@
 const { SSL_OP_NETSCAPE_DEMO_CIPHER_CHANGE_BUG } = require('constants');
 const { getAllDocuments, applyUpdates, getDocument, getDocuments } = require('../../shared/helpers');
 const { getSearchMap } = require('../../shared/search');
+const { Timestamp, FieldValue } = require('firebase-admin/firestore');
+const { getStorage } = require('firebase-admin/storage');
 
 const testApplicationsFileName = 'test_applications.json';
 
@@ -113,9 +115,9 @@ module.exports = (config, firebase, db, auth) => {
     // update counts
     console.log(`Update application counts: _applications.${data.status}`);
     const saveData = {};
-    saveData[`_applications.${data.status}`] = firebase.firestore.FieldValue.increment(1);
-    saveData['_applications._total'] = firebase.firestore.FieldValue.increment(1);
-    saveData['_applications._lastUpdated'] = firebase.firestore.FieldValue.serverTimestamp();
+    saveData[`_applications.${data.status}`] = FieldValue.increment(1);
+    saveData['_applications._total'] = FieldValue.increment(1);
+    saveData['_applications._lastUpdated'] = FieldValue.serverTimestamp();
     await db.doc(`exercises/${data.exerciseId}`).update(saveData);
     console.log('success');
   }
@@ -150,7 +152,7 @@ module.exports = (config, firebase, db, auth) => {
       command: 'update',
       ref: applicationRef,
       data: {
-        'emailLog.applicationSubmitted': firebase.firestore.Timestamp.fromDate(new Date()),
+        'emailLog.applicationSubmitted': Timestamp.fromDate(new Date()),
       },
     });
 
@@ -201,7 +203,7 @@ module.exports = (config, firebase, db, auth) => {
         command: 'update',
         ref: application.ref,
         data: {
-          'emailLog.applicationReminder': firebase.firestore.FieldValue.serverTimestamp(),
+          'emailLog.applicationReminder': FieldValue.serverTimestamp(),
         },
       });
     }
@@ -244,7 +246,7 @@ module.exports = (config, firebase, db, auth) => {
       command: 'update',
       ref: applicationRef,
       data: {
-        'emailLog.applicationInWelsh': firebase.firestore.Timestamp.fromDate(new Date()),
+        'emailLog.applicationInWelsh': Timestamp.fromDate(new Date()),
       },
     });
 
@@ -285,7 +287,7 @@ module.exports = (config, firebase, db, auth) => {
           command: 'update',
           ref: application.ref,
           data: {
-            'characterChecks.requestedAt': firebase.firestore.Timestamp.fromDate(new Date()),
+            'characterChecks.requestedAt': Timestamp.fromDate(new Date()),
             'characterChecks.status': 'requested',
           },
         });
@@ -294,7 +296,7 @@ module.exports = (config, firebase, db, auth) => {
           command: 'update',
           ref: application.ref,
           data: {
-            'characterChecks.reminderSentAt': firebase.firestore.Timestamp.fromDate(new Date()),
+            'characterChecks.reminderSentAt': Timestamp.fromDate(new Date()),
           },
         });
       } else if (type === 'submit') {
@@ -302,7 +304,7 @@ module.exports = (config, firebase, db, auth) => {
           command: 'update',
           ref: application.ref,
           data: {
-            'emailLog.characterCheckSubmitted': firebase.firestore.Timestamp.fromDate(new Date()),
+            'emailLog.characterCheckSubmitted': Timestamp.fromDate(new Date()),
           },
         });
       }
@@ -353,7 +355,7 @@ module.exports = (config, firebase, db, auth) => {
       // update applicationRecord
       if (notificationType === 'request') {
         const data = {
-          [`${type}.requestedAt`]: firebase.firestore.Timestamp.fromDate(new Date()),
+          [`${type}.requestedAt`]: Timestamp.fromDate(new Date()),
           [`${type}.status`]: 'requested',
         };
         commands.push(
@@ -365,7 +367,7 @@ module.exports = (config, firebase, db, auth) => {
         );
       } else if (notificationType === 'reminder') {
         const data = {
-          [`${type}.reminderSentAt`]: firebase.firestore.Timestamp.fromDate(new Date()),
+          [`${type}.reminderSentAt`]: Timestamp.fromDate(new Date()),
           [`${type}.status`]: 'requested',
         };
         commands.push(
@@ -380,7 +382,7 @@ module.exports = (config, firebase, db, auth) => {
           command: 'update',
           ref: application.ref,
           data: {
-            'emailLog.preSelectionDayQuestionnaireSubmitted': firebase.firestore.Timestamp.fromDate(new Date()),
+            'emailLog.preSelectionDayQuestionnaireSubmitted': Timestamp.fromDate(new Date()),
           },
         });
       }
@@ -395,7 +397,7 @@ module.exports = (config, firebase, db, auth) => {
     * load test applications JSON file from cloud storage
     */
   async function loadTestApplications() {
-    const bucket = firebase.storage().bucket(config.STORAGE_URL);
+    const bucket = getStorage().bucket(config.STORAGE_URL);
     const file = bucket.file(testApplicationsFileName);
 
     try {
@@ -555,7 +557,7 @@ module.exports = (config, firebase, db, auth) => {
       command: 'update',
       ref: applicationRef,
       data: {
-        'emailLog.flaggedCandidate': firebase.firestore.Timestamp.fromDate(new Date()),
+        'emailLog.flaggedCandidate': Timestamp.fromDate(new Date()),
       },
     });
 

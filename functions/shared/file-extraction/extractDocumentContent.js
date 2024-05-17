@@ -1,4 +1,4 @@
-module.exports = (config, firebase) => {
+module.exports = (config, storage) => {
   
   const mammoth = require('mammoth');
   
@@ -14,7 +14,7 @@ module.exports = (config, firebase) => {
    * @param {array}  questions    - List of questions used to extract the answers from the document
    */
   async function extractDocumentContent(templatePath, documentPath, questions) {
-    const bucket = firebase.storage().bucket(config.STORAGE_URL);
+    const bucket = storage.bucket(config.STORAGE_URL);
   
     try {
       // Download template and document files

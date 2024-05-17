@@ -6,6 +6,7 @@ const _ = require('lodash');
 const htmlWriter = require('../../shared/htmlWriter');
 const config = require('../../shared/config');
 const drive = require('../../shared/google-drive')();
+const { Timestamp } = require('firebase-admin/firestore');
 
 module.exports = (firebase, db) => {
   return {
@@ -91,7 +92,7 @@ module.exports = (firebase, db) => {
     // return data for export (to Excel)
     return {
       total: applicationRecords.length,
-      createdAt: firebase.firestore.Timestamp.fromDate(new Date()),
+      createdAt: Timestamp.fromDate(new Date()),
       headers,
       rows,
     };

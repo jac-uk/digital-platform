@@ -1,6 +1,7 @@
 const functions = require('firebase-functions');
 const { firebase, db, auth } = require('../shared/admin');
 const { logEvent } = require('../actions/logs/logEvent')(firebase, db, auth);
+const { Timestamp } = require('firebase-admin/firestore');
 
 // This function is triggered when records are deleted in firestore.
 // The purpose is to archive, not delete data from the database.
@@ -18,7 +19,7 @@ module.exports = functions.region('europe-west2').firestore
       return false;
     }
 
-    deletedRecord.deletedAt = firebase.firestore.Timestamp.fromDate(new Date());
+    deletedRecord.deletedAt = Timestamp.fromDate(new Date());
 
     const detail = {
       collection: collectionName,

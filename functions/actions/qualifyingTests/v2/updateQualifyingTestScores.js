@@ -1,5 +1,5 @@
 const { getDocuments, getDocument, applyUpdates } = require('../../../shared/helpers');
-
+const { FieldValue } = require('firebase-admin/firestore');
 module.exports = (config, firebase, db) => {
   const qts = require('../../../shared/qts')(config);
 
@@ -72,7 +72,7 @@ module.exports = (config, firebase, db) => {
     if (!nextStatus) return { success: false, message: 'Task type not recognised' };
 
     taskData.status = nextStatus;
-    taskData[`statusLog.${nextStatus}`] = firebase.firestore.FieldValue.serverTimestamp();
+    taskData[`statusLog.${nextStatus}`] = FieldValue.serverTimestamp();
     await taskRef.update(taskData);
 
     // return result

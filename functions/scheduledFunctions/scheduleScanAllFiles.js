@@ -1,7 +1,7 @@
 const functions = require('firebase-functions');
 const config = require('../shared/config');
-const { firebase } = require('../shared/admin');
-const { scanAllFiles } = require('../actions/malware-scanning/scanAllFiles')(config, firebase);
+const { app, storage } = require('../shared/admin');
+const { scanAllFiles } = require('../actions/malware-scanning/scanAllFiles')(config, app, storage);
 
 // const SCHEDULE = 'every day 02:00';
 const SCHEDULE = 'every 1 hours'; // this setting is temporary

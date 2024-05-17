@@ -62,7 +62,6 @@ const main = async () => {
   const exercises = await getDocuments(
     db.collection('exercises')
       .where('applicationCloseDate', '<', new Date())
-      //.where(firebase.firestore.FieldPath.documentId(), 'in', ['6PZQoZ46Wk3GdsqAIzAl'])
       .select('referenceNumber')
   );
   console.log('exercises', exercises.length);

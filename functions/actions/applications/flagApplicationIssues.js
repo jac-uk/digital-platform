@@ -1,6 +1,6 @@
 const { getDocument, getDocuments, isEmpty, applyUpdates, getDate } = require('../../shared/helpers');
 const lookup = require('../../shared/converters/lookup');
-
+const { Timestamp } = require('firebase-admin/firestore');
 module.exports = (firebase, config, db) => {
   return {
     flagApplicationIssues,
@@ -147,14 +147,14 @@ module.exports = (firebase, config, db) => {
         command: 'set',
         ref: db.collection('exercises').doc(exerciseId).collection('reports').doc('characterIssues'),
         data: {
-          createdAt: firebase.firestore.Timestamp.fromDate(new Date()),
+          createdAt: Timestamp.fromDate(new Date()),
         },
       },
       {
         command: 'set',
         ref: db.collection('exercises').doc(exerciseId).collection('reports').doc('eligibilityIssues'),
         data: {
-          createdAt: firebase.firestore.Timestamp.fromDate(new Date()),
+          createdAt: Timestamp.fromDate(new Date()),
         },
       }
     );

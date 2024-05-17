@@ -1,5 +1,5 @@
 const { getDocument, getDocuments, applyUpdates } = require('../../shared/helpers');
-
+const { FieldValue } = require('firebase-admin/firestore');
 module.exports = (config, firebase, db) => {
   const { getTimelineTasks, taskNextStatus, taskApplicationsEntryStatus } = require('./taskHelpers')(config);
   const { initialisePanelTask, initialiseTestTask, initialiseStatusChangesTask, initialiseCandidateFormTask, initialiseDataTask, initialiseStageOutcomeTask } = require('./updateTask')(config, firebase, db);
@@ -86,7 +86,7 @@ module.exports = (config, firebase, db) => {
       taskData.applicationEntryStatus = applicationEntryStatus;
       taskData.status = nextStatus;
       taskData.statusLog = {};
-      taskData.statusLog[nextStatus] = firebase.firestore.FieldValue.serverTimestamp();
+      taskData.statusLog[nextStatus] = FieldValue.serverTimestamp();
       Object.assign(taskData, result.data);
       const commands = [];
       commands.push({

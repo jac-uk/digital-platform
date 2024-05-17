@@ -1,5 +1,5 @@
 const { getDocuments } = require('../../shared/helpers');
-
+const { Timestamp } = require('firebase-admin/firestore');
 module.exports = (firebase, db) => {
   return {
     generateReasonableAdjustmentsReport,
@@ -22,7 +22,7 @@ module.exports = (firebase, db) => {
     // construct the report document
     const report = {
       totalApplications: applicationRecords.length,
-      createdAt: firebase.firestore.Timestamp.fromDate(new Date()),
+      createdAt: Timestamp.fromDate(new Date()),
       headers,
       rows,
     };

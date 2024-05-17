@@ -3,7 +3,7 @@ const { applicationOpenDatePost01042023 } = require('./converters/helpers');
 const { getSearchMap } = require('./search');
 const { objectHasNestedProperty } = require('./helpers');
 const _ = require('lodash');
-
+const { Timestamp, FieldValue } = require('firebase-admin/firestore');
 module.exports = (CONSTANTS) => {
   return {
     newNotificationExerciseApprovalSubmit,
@@ -48,7 +48,7 @@ module.exports = (CONSTANTS) => {
         collection: 'exercises',
         id: exerciseId,
       },
-      createdAt: firebase.firestore.Timestamp.fromDate(new Date()),
+      createdAt: Timestamp.fromDate(new Date()),
       status: 'ready',
     };
   }
@@ -77,7 +77,7 @@ module.exports = (CONSTANTS) => {
         collection: 'applications',
         id: applicationId,
       },
-      createdAt: firebase.firestore.Timestamp.fromDate(new Date()),
+      createdAt: Timestamp.fromDate(new Date()),
       status: 'ready',
     };
   }
@@ -107,7 +107,7 @@ module.exports = (CONSTANTS) => {
         collection: 'applications',
         id: applicationId,
       },
-      createdAt: firebase.firestore.FieldValue.serverTimestamp(),
+      createdAt: FieldValue.serverTimestamp(),
       status: 'ready',
     };
   }
@@ -137,7 +137,7 @@ module.exports = (CONSTANTS) => {
         collection: 'applications',
         id: applicationId,
       },
-      createdAt: firebase.firestore.Timestamp.fromDate(new Date()),
+      createdAt: Timestamp.fromDate(new Date()),
       status: 'ready',
     };
   }
@@ -165,7 +165,7 @@ module.exports = (CONSTANTS) => {
         collection: 'applications',
         id: applicationId,
       },
-      createdAt: firebase.firestore.Timestamp.fromDate(new Date()),
+      createdAt: Timestamp.fromDate(new Date()),
       status: 'ready',
     };
   }
@@ -202,7 +202,7 @@ module.exports = (CONSTANTS) => {
         collection: 'applications',
         id: application.id,
       },
-      createdAt: firebase.firestore.Timestamp.fromDate(new Date()),
+      createdAt: Timestamp.fromDate(new Date()),
       status: 'ready',
     };
   }
@@ -243,7 +243,7 @@ module.exports = (CONSTANTS) => {
         collection: 'assessments',
         id: assessment.id,
       },
-      createdAt: firebase.firestore.Timestamp.fromDate(new Date()),
+      createdAt: Timestamp.fromDate(new Date()),
       status: 'ready',
     };
   }
@@ -284,7 +284,7 @@ module.exports = (CONSTANTS) => {
         collection: 'assessments',
         id: assessment.id,
       },
-      createdAt: firebase.firestore.Timestamp.fromDate(new Date()),
+      createdAt: Timestamp.fromDate(new Date()),
       status: 'ready',
     };
   }
@@ -325,7 +325,7 @@ module.exports = (CONSTANTS) => {
         collection: 'assessments',
         id: assessment.id,
       },
-      createdAt: firebase.firestore.Timestamp.fromDate(new Date()),
+      createdAt: Timestamp.fromDate(new Date()),
       status: 'ready',
     };
   }
@@ -537,7 +537,7 @@ module.exports = (CONSTANTS) => {
       notes: [],
     };
     applicationRecord.stageLog = {};
-    applicationRecord.stageLog[applicationRecord.stage] = firebase.firestore.FieldValue.serverTimestamp();
+    applicationRecord.stageLog[applicationRecord.stage] = FieldValue.serverTimestamp();
     if (application.personalDetails) {
       applicationRecord.candidate.fullName = application.personalDetails.fullName || null;
       applicationRecord.candidate.reasonableAdjustments = application.personalDetails.reasonableAdjustments || null;
@@ -686,7 +686,7 @@ module.exports = (CONSTANTS) => {
         collection: 'messages',
         id: messageId,
       },
-      createdAt: firebase.firestore.Timestamp.fromDate(new Date()),
+      createdAt: Timestamp.fromDate(new Date()),
       status: 'ready',
     };
   }
@@ -723,7 +723,7 @@ module.exports = (CONSTANTS) => {
         collection: 'messages',
         id: messageId,
       },
-      createdAt: firebase.firestore.Timestamp.fromDate(new Date()),
+      createdAt: Timestamp.fromDate(new Date()),
       status: 'ready',
     };
   }
@@ -749,7 +749,7 @@ module.exports = (CONSTANTS) => {
       applicationId,
       status: 'created',  // TODO use constant
       statusLog: {
-        created: firebase.firestore.FieldValue.serverTimestamp(),
+        created: FieldValue.serverTimestamp(),
       },
       progress: {},
     };
@@ -791,7 +791,7 @@ module.exports = (CONSTANTS) => {
         collection: 'applications',
         id: application.id,
       },
-      createdAt: firebase.firestore.Timestamp.fromDate(new Date()),
+      createdAt: Timestamp.fromDate(new Date()),
       status: 'ready',
     };
   }
@@ -812,7 +812,7 @@ module.exports = (CONSTANTS) => {
         collection: 'userInvitations',
         id: userInvitationId,
       },
-      createdAt: firebase.firestore.Timestamp.fromDate(new Date()),
+      createdAt: Timestamp.fromDate(new Date()),
       status: 'ready',
     };
   }
@@ -832,7 +832,7 @@ module.exports = (CONSTANTS) => {
         exerciseName: exerciseName,
         testType: testType,
         reportsLink: reportsLink,
-        createdAt: firebase.firestore.FieldValue.serverTimestamp(),
+        createdAt: FieldValue.serverTimestamp(),
         status: 'ready',
       },
     };

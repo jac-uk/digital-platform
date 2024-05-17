@@ -1,3 +1,4 @@
+const { FieldValue } = require('firebase-admin/firestore');
 module.exports = (config, firebase, db) => {
 
   const zenhub = require('../../shared/zenhub')(config);
@@ -29,7 +30,7 @@ module.exports = (config, firebase, db) => {
     if (zenhubIssueId) {
       await db.doc(`bugReports/${bugReportId}`).update({
         zenhubIssueId: zenhubIssueId,
-        lastUpdatedAt: firebase.firestore.FieldValue.serverTimestamp(),
+        lastUpdatedAt: FieldValue.serverTimestamp(),
       });
     }    
   }

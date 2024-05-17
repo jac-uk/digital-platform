@@ -1,5 +1,5 @@
 const { getDocuments, getDocument } = require('../../../shared/helpers');
-
+const { FieldValue } = require('firebase-admin/firestore');
 module.exports = (config, firebase, db) => {
   const qts = require('../../../shared/qts')(config);
 
@@ -68,7 +68,7 @@ module.exports = (config, firebase, db) => {
     const taskData = {};
     taskData.applications = applicationsData;
     taskData.status = config.TASK_STATUS.TEST_ACTIVATED;
-    taskData[`statusLog.${config.TASK_STATUS.TEST_ACTIVATED}`] = firebase.firestore.FieldValue.serverTimestamp();
+    taskData[`statusLog.${config.TASK_STATUS.TEST_ACTIVATED}`] = FieldValue.serverTimestamp();
     await taskRef.update(taskData);
 
     // return result

@@ -1,5 +1,5 @@
 const { getDocument, getDocuments, applyUpdates } = require('../../shared/helpers');
-
+const { FieldValue } = require('firebase-admin/firestore');
 module.exports = (firebase, config, db) => {
   const { EXERCISE_STAGE, APPLICATION_STATUS } = config;
 
@@ -153,7 +153,7 @@ module.exports = (firebase, config, db) => {
       if (statusLog) payload.statusLog = statusLog;
 
       // remove back up stage and status
-      payload['_backups.processingVersion1'] = firebase.firestore.FieldValue.delete();
+      payload['_backups.processingVersion1'] = FieldValue.delete();
     } else if (version === 2 && (!applicationRecord._backups || !applicationRecord._backups.processingVersion1)) {
       // back up stage and status
       payload['_backups.processingVersion1.stage'] = applicationRecord.stage || '';
@@ -234,7 +234,7 @@ module.exports = (firebase, config, db) => {
         payload._applicationRecords = _applicationRecords;
       }
       // remove back up
-      payload['_backups.processingVersion1'] = firebase.firestore.FieldValue.delete();
+      payload['_backups.processingVersion1'] = FieldValue.delete();
     } else if (version === 2 && (!exercise._backups || !exercise._backups.processingVersion1)) {
       // back up
       payload['_backups.processingVersion1._applicationRecords'] = exercise._applicationRecords || {};
@@ -247,7 +247,7 @@ module.exports = (firebase, config, db) => {
           } else {
             payload[`_applicationRecords.${newStage}`] = value;
           }
-          payload[`_applicationRecords.${key}`] = firebase.firestore.FieldValue.delete();
+          payload[`_applicationRecords.${key}`] = FieldValue.delete();
         }
       });
     }

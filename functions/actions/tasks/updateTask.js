@@ -1,6 +1,6 @@
 const { getDocument, getDocuments, getDocumentsFromQueries, applyUpdates } = require('../../shared/helpers');
 const lookup = require('../../shared/converters/lookup');
-
+const { FieldValue, FieldPath } = require('firebase-admin/firestore');
 module.exports = (config, firebase, db) => {
   const {
     taskStatuses,
@@ -133,7 +133,7 @@ module.exports = (config, firebase, db) => {
     if (result.success) {
       const taskData = {};
       taskData['status'] = nextStatus;
-      taskData[`statusLog.${nextStatus}`] = firebase.firestore.FieldValue.serverTimestamp();
+      taskData[`statusLog.${nextStatus}`] = FieldValue.serverTimestamp();
       Object.assign(taskData, result.data);
       const commands = [];
       commands.push({
@@ -282,7 +282,7 @@ module.exports = (config, firebase, db) => {
       const queries = panellistIds.map(panellistId => {
         return db
           .collection('panellists')
-          .where(firebase.firestore.FieldPath.documentId(), '==', panellistId)
+          .where(FieldPath.documentId(), '==', panellistId)
           .select('fullName');
       });
       panellists = await getDocumentsFromQueries(queries);
@@ -297,7 +297,7 @@ module.exports = (config, firebase, db) => {
         applicationIds.map(applicationId => {
           return db
             .collection('applicationRecords')
-            .where(firebase.firestore.FieldPath.documentId(), '==', applicationId)
+            .where(FieldPath.documentId(), '==', applicationId)
             .select('application');
         })
       );
@@ -319,7 +319,7 @@ module.exports = (config, firebase, db) => {
         data.grades = task.grades;
         data.grade_values = config.GRADE_VALUES;
       }
-      data[`statusLog.${config.PANEL_STATUS.CREATED}`] = firebase.firestore.FieldValue.serverTimestamp();
+      data[`statusLog.${config.PANEL_STATUS.CREATED}`] = FieldValue.serverTimestamp();
 
       const relevantApplicationRecords = applicationRecords.filter(applicationRecord => panel.applicationIds.indexOf(applicationRecord.id) >= 0);
       relevantApplicationRecords.forEach(applicationRecord => {
@@ -486,7 +486,7 @@ module.exports = (config, firebase, db) => {
       dates.forEach(date => saveData.candidateAvailabilityDates.push({ date: date, location: location }));
     });
 
-    saveData.statusLog[config.CANDIDATE_FORM_STATUS.CREATED] = firebase.firestore.FieldValue.serverTimestamp();
+    saveData.statusLog[config.CANDIDATE_FORM_STATUS.CREATED] = FieldValue.serverTimestamp();
     const candidateForm = await db.collection('candidateForms').add(saveData);
 
     result.success = true;
@@ -722,7 +722,7 @@ module.exports = (config, firebase, db) => {
     // get panels
     const panelQueries = task.panelIds.map(panelId => {
       return  db.collection('panels')
-        .where(firebase.firestore.FieldPath.documentId(), '==', panelId)
+        .where(FieldPath.documentId(), '==', panelId)
         .select('scoreSheet', 'applicationIds', 'applications');
     });
     const panels = await getDocumentsFromQueries(panelQueries);
@@ -900,7 +900,7 @@ module.exports = (config, firebase, db) => {
       scoreData.pass = newStatus === passStatus ? true : false;
       const saveData = {};
       if (!(task.allowStatusUpdates === false)) { saveData.status = newStatus; }  // here we update status unless this has been explicitly denied
-      saveData[`statusLog.${newStatus}`] = firebase.firestore.FieldValue.serverTimestamp(); // we still always log the status change
+      saveData[`statusLog.${newStatus}`] = FieldValue.serverTimestamp(); // we still always log the status change
       commands.push({
         command: 'update',
         ref: db.collection('applicationRecords').doc(scoreData.id),
@@ -916,7 +916,7 @@ module.exports = (config, firebase, db) => {
         outcomeStats[didNotParticipateStatus] += 1;
         const saveData = {};
         if (!(task.allowStatusUpdates === false)) { saveData.status = didNotParticipateStatus; }  // here we update status unless this has been explicitly denied
-        saveData[`statusLog.${didNotParticipateStatus}`] = firebase.firestore.FieldValue.serverTimestamp(); // we still always log the status change
+        saveData[`statusLog.${didNotParticipateStatus}`] = FieldValue.serverTimestamp(); // we still always log the status change
         commands.push({
           command: 'update',
           ref: db.collection('applicationRecords').doc(application.id),
@@ -971,7 +971,7 @@ module.exports = (config, firebase, db) => {
                 outcomeStats[failStatus] += 1;
                 const saveData = {};
                 if (!(task.allowStatusUpdates === false)) { saveData.status = failStatus; }  // here we update status unless this has been explicitly denied
-                saveData[`statusLog.${failStatus}`] = firebase.firestore.FieldValue.serverTimestamp(); // we still always log the status change
+                saveData[`statusLog.${failStatus}`] = FieldValue.serverTimestamp(); // we still always log the status change
                 commands.push({
                   command: 'update',
                   ref: db.collection('applicationRecords').doc(scoreData.id),
@@ -1008,7 +1008,7 @@ module.exports = (config, firebase, db) => {
           };
           taskData['status'] = config.TASK_STATUS.FINALISED;
           taskData.statusLog = {};
-          taskData.statusLog[config.TASK_STATUS.FINALISED] = firebase.firestore.FieldValue.serverTimestamp();
+          taskData.statusLog[config.TASK_STATUS.FINALISED] = FieldValue.serverTimestamp();
           commands.push({
             command: 'set',
             ref: db.doc(`exercises/${exercise.id}/tasks/${config.TASK_TYPE.QUALIFYING_TEST}`),
@@ -1055,7 +1055,7 @@ module.exports = (config, firebase, db) => {
       const newStatus = task.outcomeMap[application.id];
       outcomeStats[newStatus] += 1;
       saveData.status = newStatus;
-      saveData[`statusLog.${newStatus}`] = firebase.firestore.FieldValue.serverTimestamp();
+      saveData[`statusLog.${newStatus}`] = FieldValue.serverTimestamp();
       commands.push({
         command: 'update',
         ref: db.collection('applicationRecords').doc(application.id),
@@ -1104,9 +1104,9 @@ module.exports = (config, firebase, db) => {
       const saveData = {};
       outcomeStats[nextApplicationStatus] += 1;
       saveData.stage = nextStage;
-      saveData[`stageLog.${nextStage}`] = firebase.firestore.FieldValue.serverTimestamp();
+      saveData[`stageLog.${nextStage}`] = FieldValue.serverTimestamp();
       saveData.status = nextApplicationStatus;
-      saveData[`stageLog.${nextApplicationStatus}`] = firebase.firestore.FieldValue.serverTimestamp();
+      saveData[`stageLog.${nextApplicationStatus}`] = FieldValue.serverTimestamp();
       commands.push({
         command: 'update',
         ref: db.collection('applicationRecords').doc(applicationRecord.id),

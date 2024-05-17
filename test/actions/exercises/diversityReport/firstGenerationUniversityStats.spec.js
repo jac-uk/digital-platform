@@ -1,6 +1,7 @@
 const firebase = require('firebase-admin');
 const db = jest.fn();
 const config = require('../../../../nodeScripts/shared/config');
+const { Timestamp } = require('firebase-admin/firestore');
 
 const {
   firstGenerationUniversityStats,
@@ -53,7 +54,7 @@ describe('firstGenerationUniversityStats', () => {
   ];
 
   const exercise = {
-    applicationOpenDate: firebase.firestore.Timestamp.fromDate(new Date('2023-03-31')),
+    applicationOpenDate: Timestamp.fromDate(new Date('2023-03-31')),
   };
 
   it('returns candidate is first generation to attend University stats pre-01-04-2023', async () => {

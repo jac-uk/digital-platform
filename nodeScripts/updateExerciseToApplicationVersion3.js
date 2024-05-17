@@ -6,7 +6,7 @@
 
 const { firebase, app, db } = require('./shared/admin.js');
 const { applyUpdates, getDocuments } = require('../functions/shared/helpers.js');
-
+const { FieldValue } = require('firebase-admin/firestore');
 // whether to make changes in `exercises` collection in firestore
 const isAction = false;
 
@@ -29,8 +29,8 @@ const main = async () => {
     };
     if (['legal', 'leadership'].includes(exercise.typeOfExercise)) {
       // for legal exercise remove `judicialExperience` and `employmentGaps` from `progress` field as they are included in `postQualificationWorkExperience`
-      data['progress.judicialExperience'] = firebase.firestore.FieldValue.delete();
-      data['progress.employmentGaps'] = firebase.firestore.FieldValue.delete();
+      data['progress.judicialExperience'] = FieldValue.delete();
+      data['progress.employmentGaps'] = FieldValue.delete();
     }
     commands.push({
       command: 'update',
