@@ -1,5 +1,5 @@
-const firebase = require('firebase-admin');
-const Timestamp = firebase.firestore.Timestamp;
+const { getApp } = require('firebase-admin/app');
+const { Timestamp } = require('firebase-admin/firestore');
 
 module.exports = {
   getDocument,
@@ -351,7 +351,8 @@ function convertStringToSearchParts(value, delimiter) {
 }
 
 function isProduction() {
-  const projectId = firebase.instanceId().app.options.projectId;
+  // TODO: KO test
+  const projectId = getApp().options.projectId;
   return projectId.includes('production');
 }
 

@@ -1,6 +1,6 @@
 const firebase = require('@firebase/rules-unit-testing');
 const fs = require('fs');
-const admin = require('firebase-admin');
+const { Timestamp } = require('firebase-admin/firestore');
 
 const projectId = `rules-spec-${Date.now()}`;
 
@@ -55,7 +55,7 @@ module.exports.setupAdmin = async (db, data) => {
 };
 
 module.exports.getTimeStamp = (date) => {
-  return admin.firestore.Timestamp.fromDate(date);
+  return Timestamp.fromDate(date);
 };
 
 const getRandomInt = (min, max) => {

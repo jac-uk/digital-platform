@@ -1,12 +1,15 @@
 /**
  * Initialises Admin SDK and exports firestore database connection
  */
+const { initializeApp } = require('firebase-admin/app');
+const { getFirestore } = require('firebase-admin/firestore');
+const { getAuth } = require('firebase-admin/auth');
 const admin = require('firebase-admin');
 
-admin.initializeApp();
+const app = initializeApp();
 
-exports.firebase = admin;
-exports.db = admin.firestore();
-// exports.storage = admin.storage();
-exports.app = admin.app();
-exports.auth = admin.auth();
+exports.firebase = admin.firebase;
+exports.db = getFirestore(app);
+exports.app = app;
+exports.auth = getAuth(app);
+

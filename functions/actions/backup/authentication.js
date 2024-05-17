@@ -1,7 +1,7 @@
 /**
  * Backup authentication
  */
-const admin = require('firebase-admin');
+const { getStorage } = require('firebase-admin/storage');
 const firebaseTools = require('firebase-tools');
 const fs = require('fs');
 const os = require('os');
@@ -26,7 +26,8 @@ module.exports = (config) => {
       });
     };
 
-    const bucket = admin.storage().bucket(BACKUP_BUCKET);
+    const storage = getStorage();
+    const bucket = storage.bucket(BACKUP_BUCKET);
 
     // Upload local file to the backup Cloud Storage bucket
     const uploadToStorageBucket = async (localPath, fileName) => {
