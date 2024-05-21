@@ -643,16 +643,26 @@ module.exports = (firebase, db) => {
     `);
 
     for (const row of rows) {
+      // start tr
       writer.addRaw(`
       <tr>
         <td>${row.surname}</td>
         <td>${row.forename}</td>
         <td>
-          <b>Candidate Comments:</b> ${row.candidateComments}
-          <br>
-          <br>
-          <br>
-          <br>
+      `);
+
+      if (row.candidateComments) {
+        writer.addRaw(`
+            <b>Candidate Comments:</b> ${row.candidateComments}
+            <br>
+            <br>
+            <br>
+            <br>
+        `);
+      }
+
+      // end tr
+      writer.addRaw(`
           <b>JAC Comments (with reference to the ASC Log if appropriate):</b> ${row.jacComments} ${recommendationToReasonsNote[recommendation]}
           </td>
       </tr>
@@ -685,7 +695,7 @@ module.exports = (firebase, db) => {
                     const targetIssue = record.issues.eligibilityIssues.find((issue) => issue.type === 'rls');
                     const ageAtSccDate = targetIssue.sccAge;
                     const mitigationProvided = targetIssue.candidateComments;
-                    const recommendation = targetIssue.comments;
+                    const recommendation = `${_.capitalize(targetIssue.result)}<br>${targetIssue.comments}`;
                     
                     return {
                       forename, 
