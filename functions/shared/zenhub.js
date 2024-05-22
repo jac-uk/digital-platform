@@ -1,7 +1,6 @@
 const axios = require('axios');
 const crypto = require('crypto');
 const { objectHasNestedProperty } = require('./helpers');
-const { Octokit } = await import('@octokit/core');
 
 /**
  * Zenhub GraphQL API calls
@@ -152,7 +151,7 @@ module.exports = (config) => {
   }
 
   /**
-   * Use Octokit to query Github to get the data on the latest release for a list of repositories
+   * Use Curl to query Github to get the data on the latest release for a list of repositories
    * For the personal access token see: https://github.com/settings/tokens
    * @returns {Array<Object>} Array of release objects.
    */
@@ -161,15 +160,18 @@ module.exports = (config) => {
       'admin', 'apply', 'jac-kit', 'assessments', 'digital-platform', 'qt', 'panellists',
     ];
 
-    const octokit = new Octokit({ auth: githubPersonalAccesToken });
     const org = 'jac-uk';
     const data = [];
 
     for (const repo of repositories) {
       try {
-        const response = await octokit.request(`GET /repos/${org}/${repo}/releases/latest`, {
-          org: 'octokit',
-          type: 'private',
+        const url = `https://api.github.com/repos/${org}/${repo}/releases/latest`;
+        const response = await axios.get(url, {
+          headers: {
+            'Accept': 'application/vnd.github+json',
+            'Authorization': `Bearer ${githubPersonalAccesToken}`,
+            'X-GitHub-Api-Version': '2022-11-28',
+          },
         });
 
         data.push({
@@ -181,9 +183,23 @@ module.exports = (config) => {
           created_at: response.data.created_at,
           published_at: response.data.published_at,
           body: response.data.body,
+          error: null,
         });
       } catch (error) {
-        console.error(`Failed to fetch latest release for repository ${repo}:`, error);
+
+        data.push({
+          title: repo, 
+          url: '',
+          id: '',
+          author: '',
+          tag_name: '',
+          created_at: '',
+          published_at: '',
+          body: '',
+          error: error.message,
+        });
+
+        console.error(`Failed to fetch latest release for repository ${repo}:`, error.message);
       }
     }
 
