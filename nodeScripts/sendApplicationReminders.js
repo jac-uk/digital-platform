@@ -1,8 +1,8 @@
 'use strict';
 
 const config = require('./shared/config');
-const { firebase, app, db, auth } = require('./shared/admin.js');
-const { sendApplicationReminders } = require('../functions/actions/applications/applications')(config, firebase, db, auth);
+const { app, db, auth } = require('./shared/admin.js');
+const { sendApplicationReminders } = require('../functions/actions/applications/applications')(config, db, auth);
 
 const main = async () => {
   return sendApplicationReminders({

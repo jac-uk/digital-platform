@@ -4,7 +4,7 @@ const config = require('../../../../nodeScripts/shared/config');
 
 const {
   outreachStats,
-} = require('../../../../functions/actions/exercises/generateOutreachReport.js')(config, firebase, db);
+} = require('../../../../functions/actions/exercises/generateOutreachReport.js')(config, db);
 
 const applications = [
   {

@@ -57,7 +57,6 @@ const reportHeaders = () => {
 /**
  * Get the report data
  *
- * @param {firebase} firebase
  * @param {db} db
  * @param {array} applicationRecords
  * @param {string} exerciseId

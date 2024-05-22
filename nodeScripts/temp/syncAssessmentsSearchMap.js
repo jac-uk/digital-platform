@@ -8,7 +8,7 @@
  * Run with: > npm run local:nodeScript temp/syncAssessmentsSearchMap.js
  */
 
-const { firebase, app, db } = require('../shared/admin.js');
+const { app, db } = require('../shared/admin.js');
 const { getDocuments, applyUpdates } = require('../../functions/shared/helpers.js');
 const { getSearchMap } = require('../../functions/shared/search.js');
 const { objectHasNestedProperty } = require('../../functions/shared/helpers.js');

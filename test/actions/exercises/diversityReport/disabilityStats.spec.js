@@ -4,7 +4,7 @@ const config = require('../../../../nodeScripts/shared/config');
 
 const {
   disabilityStats,
-} = require('../../../../functions/actions/exercises/generateDiversityReport.js')(config, firebase, db);
+} = require('../../../../functions/actions/exercises/generateDiversityReport.js')(config, db);
 
 // List of all possible ethnic groups
 const disabilityGroups = ['prefer-not-to-say', true, false];

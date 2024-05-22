@@ -19,7 +19,6 @@ const { Timestamp } = require('firebase-admin/firestore');
  *   • Declaration rate was 80% (8 out of 10)
  *
  * @param {*} config
- * @param {*} firebase
  * @param {*} db 
  * @returns 
  */

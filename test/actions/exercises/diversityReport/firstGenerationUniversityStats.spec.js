@@ -5,7 +5,7 @@ const { Timestamp } = require('firebase-admin/firestore');
 
 const {
   firstGenerationUniversityStats,
-} = require('../../../../functions/actions/exercises/generateDiversityReport.js')(config, firebase, db);
+} = require('../../../../functions/actions/exercises/generateDiversityReport.js')(config, db);
 
 describe('firstGenerationUniversityStats', () => {
 

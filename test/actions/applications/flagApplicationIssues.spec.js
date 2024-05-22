@@ -45,7 +45,7 @@ const mockApplication = (id) => {
   };
 }; 
 
-const flagApplicationIssues = require('../../../functions/actions/applications/flagApplicationIssues.js')(firebase, mockDb, mockSlack);
+const flagApplicationIssues = require('../../../functions/actions/applications/flagApplicationIssues.js')(mockDb, mockSlack);
 
 xdescribe('getEligibilityIssues()', () => {
 

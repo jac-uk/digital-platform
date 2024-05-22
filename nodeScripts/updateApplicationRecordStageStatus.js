@@ -5,9 +5,9 @@
 'use strict';
 
 const config = require('./shared/config');
-const { firebase, app, db } = require('./shared/admin');
+const { app, db } = require('./shared/admin');
 const { applyUpdates, getDocuments, getDocument } = require('../functions/shared/helpers');
-const { getApplicationRecordStageStatus, getExerciseApplicationRecords } = require('../functions/actions/applicationRecords/updateApplicationRecordStageStatus')(firebase, config, db);
+const { getApplicationRecordStageStatus, getExerciseApplicationRecords } = require('../functions/actions/applicationRecords/updateApplicationRecordStageStatus')(config, db);
 
 // whether to make changes in firestore
 const isAction = false;

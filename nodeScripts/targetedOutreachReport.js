@@ -1,7 +1,7 @@
 'use strict';
 
-const { firebase, app, db } = require('./shared/admin.js');
-const { targetedOutreachReport } = require('../functions/actions/exercises/targetedOutreachReport')(firebase, db);
+const { app, db } = require('./shared/admin.js');
+const { targetedOutreachReport } = require('../functions/actions/exercises/targetedOutreachReport')(db);
 
 const main = async () => {
 

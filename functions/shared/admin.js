@@ -9,7 +9,6 @@ const admin = require('firebase-admin');
 
 const app = initializeApp();
 
-exports.firebase = admin.firebase;
 exports.app = app;
 exports.db = getFirestore(app);
 exports.auth = getAuth(app);

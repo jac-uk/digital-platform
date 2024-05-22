@@ -4,7 +4,7 @@ const config = require('../../../../nodeScripts/shared/config');
 
 const {
   empStats,
-} = require('../../../../functions/actions/exercises/generateDiversityReport.js')(config, firebase, db);
+} = require('../../../../functions/actions/exercises/generateDiversityReport.js')(config, db);
 
 // List of all possible emp groups
 const empGroups = [true, false, 'gender', 'ethnicity'];

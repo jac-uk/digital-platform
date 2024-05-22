@@ -1,6 +1,6 @@
 const functions = require('firebase-functions');
 const config = require('../shared/config');
-const { db, firebase } = require('../shared/admin');
+const { db } = require('../shared/admin');
 const { processNotifications } = require('../actions/notifications')(config, db);
 const { checkFunctionEnabled } = require('../shared/serviceSettings.js')(db);
 

@@ -4,7 +4,7 @@ const config = require('../../../../nodeScripts/shared/config');
 
 const {
   genderStats,
-} = require('../../../../functions/actions/exercises/generateDiversityReport.js')(config, firebase, db);
+} = require('../../../../functions/actions/exercises/generateDiversityReport.js')(config, db);
 
 // List of all possible gender groups
 const genderGroups = ['prefer-not-to-say', 'no-answer', 'male', 'female', 'gender-neutral', 'other-gender'];

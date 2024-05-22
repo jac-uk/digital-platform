@@ -8,9 +8,10 @@
  * Run with: > npm run local:nodeScript temp/syncExercisesSearchMap.js
  */
 
-const { firebase, app, db } = require('../shared/admin.js');
+const { app, db } = require('../shared/admin.js');
 const { getDocuments, applyUpdates } = require('../../functions/shared/helpers.js');
 const { getSearchMap } = require('../../functions/shared/search');
+const { FieldValue } = require('firebase-admin/firestore');
 
 async function updateAllExercises() {
   const commands = [];
@@ -25,7 +26,7 @@ async function updateAllExercises() {
       ref: exercise.ref,
       data: {
         _search: getSearchMap([exercise.name, exercise.referenceNumber]),
-        lastUpdated: firebase.firestore.FieldValue.serverTimestamp(),
+        lastUpdated: FieldValue.serverTimestamp(),
       },
     });  
   }

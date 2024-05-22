@@ -4,7 +4,7 @@ const config = require('../../../../nodeScripts/shared/config');
 
 const {
   parentsNotAttendedUniversityStats,
-} = require('../../../../functions/actions/exercises/generateDiversityReport.js')(config, firebase, db);
+} = require('../../../../functions/actions/exercises/generateDiversityReport.js')(config, db);
 const { Timestamp } = require('firebase-admin/firestore');
 
 describe('parentsNotAttendedUniversityStats', () => {

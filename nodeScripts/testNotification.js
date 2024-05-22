@@ -1,8 +1,8 @@
 'use strict';
 
 const config = require('./shared/config');
-const { firebase, app, db } = require('./shared/admin.js');
-const { testNotification } = require('../functions/actions/notifications')(config, firebase, db);
+const { app, db } = require('./shared/admin.js');
+const { testNotification } = require('../functions/actions/notifications')(config, db);
 const { newNotificationCharacterCheckRequest } = require('../functions/shared/factories')(config);
 const { getDocument } = require('../functions/shared/helpers');
 
@@ -15,7 +15,7 @@ const main = async () => {
   const email = 'email';
 
   const application = await getDocument(db.collection('applications').doc(applicationId));
-  const notification = newNotificationCharacterCheckRequest(firebase, application, type, exerciseMailbox, exerciseManagerName, dueDate);
+  const notification = newNotificationCharacterCheckRequest(application, type, exerciseMailbox, exerciseManagerName, dueDate);
   return testNotification(notification, email);
 };
 

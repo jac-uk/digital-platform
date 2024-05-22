@@ -8,8 +8,8 @@
  * Run with: > npm run local:nodeScript temp/syncCandidatesSearchMap.js
  */
 
-const { firebase, app, db } = require('../shared/admin.js');
-const search = require('../../functions/actions/candidates/search')(firebase, db);
+const { app, db } = require('../shared/admin.js');
+const search = require('../../functions/actions/candidates/search')(db);
 
 const main = async () => {
   return search.updateAllCandidates();

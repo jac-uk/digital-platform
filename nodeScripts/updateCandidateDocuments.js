@@ -1,7 +1,7 @@
 'use strict';
 
-const { firebase, app, db } = require('./shared/admin.js');
-const search = require('../functions/actions/candidates/search')(firebase, db);
+const { app, db } = require('./shared/admin.js');
+const search = require('../functions/actions/candidates/search')(db);
 
 const main = async () => {
   // return search.updateCandidate('05eaMEUNA0NfA6uhhd4kxYzU2of2');
