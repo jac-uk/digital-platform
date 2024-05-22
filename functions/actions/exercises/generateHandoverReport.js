@@ -88,7 +88,7 @@ const reportHeaders = (exercise) => {
         { title: 'Professional Background', ref: 'professionalBackground' },
         { title: 'Previous roles', ref: 'formattedFeePaidJudicialRole' },
         { title: 'School type', ref: 'stateOrFeeSchool16' },
-        { title: 'Attended university', ref: 'parentsAttendedUniversity' },
+        { title: 'Parents attended university', ref: 'parentsAttendedUniversity' },
         { title: 'Ethnicity', ref: 'ethnicGroup' },
         { title: 'Gender', ref: 'gender' },
         { title: 'Sexual orientation', ref: 'sexualOrientation' },
@@ -108,7 +108,7 @@ const reportHeaders = (exercise) => {
     headers.diversity.common = [
       { title: 'Previous roles', ref: 'formattedFeePaidJudicialRole' },
       { title: 'School type', ref: 'stateOrFeeSchool' },
-      { title: 'Attended university', ref: 'firstGenerationStudent' },
+      { title: 'Parents attended university', ref: 'firstGenerationStudent' },
       { title: 'Ethnicity', ref: 'ethnicGroup' },
       { title: 'Gender', ref: 'gender' },
       { title: 'Sexual orientation', ref: 'sexualOrientation' },
