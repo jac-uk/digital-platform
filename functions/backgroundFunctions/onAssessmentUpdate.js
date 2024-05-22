@@ -9,26 +9,30 @@ module.exports = functions.region('europe-west2').firestore
   .onUpdate(async (change, context) => {
     const after = change.after.data();
     const before = change.before.data();
+    // const applicationId = context.params.applicationId;
 
-    const updateSearchMap = (before.application.referenceNumber !== after.application.referenceNumber) || 
-      (before.assessor.email !== after.assessor.email) ||
-      (before.assessor.fullName !== after.assessor.fullName) || 
-      (before.candidate.fullName !== after.candidate.fullName);
+    // if (before.application) {
+      const updateSearchMap = ( 
+        (before.assessor.email !== after.assessor.email) ||
+        (before.assessor.fullName !== after.assessor.fullName) || 
+        (before.candidate.fullName !== after.candidate.fullName)
+      );
 
-    if (updateSearchMap) {
-      // add search map
-      await db.doc(`assessments/${context.params.assessmentId}`).update({
-        _search: getSearchMap([
-          after.assessor.fullName,
-          after.assessor.email,
-          after.application.referenceNumber,
-          after.candidate.fullName,
-        ]),
-      });
-    }
+      if (updateSearchMap) {
+        // add search map
+        await db.doc(`assessments/${context.params.assessmentId}`).update({
+          _search: getSearchMap([
+            after.assessor.fullName,
+            after.assessor.email,
+            after.application.referenceNumber,
+            after.candidate.fullName,
+          ]),
+        });
+      }
 
-    if (after.status !== before.status && after.status === 'completed') {
-      onAssessmentCompleted(context.params.assessmentId, after);
-    }
+      if (after.status !== before.status && after.status === 'completed') {
+        onAssessmentCompleted(context.params.assessmentId, after);
+      }
+    // }
     return true;
   });

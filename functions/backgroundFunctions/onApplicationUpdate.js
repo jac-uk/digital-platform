@@ -7,6 +7,7 @@ const { logEvent } = require('../actions/logs/logEvent')(firebase, db, auth);
 module.exports = functions.region('europe-west2').firestore
   .document('applications/{applicationId}')
   .onUpdate((change, context) => {
+    console.log('££££');
     const dataBefore = change.before.data();
     const dataAfter = change.after.data();
     const applicationId = context.params.applicationId;
