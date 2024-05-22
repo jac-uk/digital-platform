@@ -1,6 +1,7 @@
 const axios = require('axios');
 const crypto = require('crypto');
 const { objectHasNestedProperty } = require('./helpers');
+const { Octokit } = await import('@octokit/core');
 
 /**
  * Zenhub GraphQL API calls
@@ -12,6 +13,8 @@ const { objectHasNestedProperty } = require('./helpers');
 module.exports = (config) => {
   const baseApiUrl = config.ZENHUB_GRAPH_QL_URL;
   const apiKey = config.ZENHUB_GRAPH_QL_API_KEY;
+  const githubPersonalAccesToken = config.GITHUB_PAT;
+
   const axiosHeaders = {
     Authorization: `Bearer ${apiKey}`,
     'Content-Type': 'application/json',
@@ -21,6 +24,7 @@ module.exports = (config) => {
     createZenhubIssue,
     createGithubIssue,
     validateWebhookRequest,
+    getLatestReleaseForRepositories,
   };
 
   /**
@@ -146,4 +150,44 @@ module.exports = (config) => {
     const calculatedSigHex = hmac.update(payloadString).digest('hex');
     return calculatedSigHex === sigHex;
   }
+
+  /**
+   * Use Octokit to query Github to get the data on the latest release for a list of repositories
+   * For the personal access token see: https://github.com/settings/tokens
+   * @returns {Array<Object>} Array of release objects.
+   */
+  async function getLatestReleaseForRepositories() {
+    const repositories = [
+      'admin', 'apply', 'jac-kit', 'assessments', 'digital-platform', 'qt', 'panellists',
+    ];
+
+    const octokit = new Octokit({ auth: githubPersonalAccesToken });
+    const org = 'jac-uk';
+    const data = [];
+
+    for (const repo of repositories) {
+      try {
+        const response = await octokit.request(`GET /repos/${org}/${repo}/releases/latest`, {
+          org: 'octokit',
+          type: 'private',
+        });
+
+        data.push({
+          title: repo, 
+          url: response.data.html_url,
+          id: response.data.id,
+          author: response.data.author.login,
+          tag_name: response.data.tag_name,
+          created_at: response.data.created_at,
+          published_at: response.data.published_at,
+          body: response.data.body,
+        });
+      } catch (error) {
+        console.error(`Failed to fetch latest release for repository ${repo}:`, error);
+      }
+    }
+
+    return data;
+  }
+
 };
