@@ -8,6 +8,7 @@ const CONSTANTS = {
   ZENHUB_GRAPH_QL_API_KEY: process.env.ZENHUB_GRAPH_QL_API_KEY, // graphQL personal api key
   ZENHUB_ISSUES_WORKSPACE_ID: process.env.ZENHUB_ISSUES_WORKSPACE_ID,
   SLACK_TICKETING_APP_BOT_TOKEN: process.env.SLACK_TICKETING_APP_BOT_TOKEN,
+  GITHUB_PAT: process.env.GITHUB_PAT, // personal access token
   APPLICATION: {
     STATUS: {
       QUALIFYING_TEST_PASSED: 'qualifyingTestPassed',
