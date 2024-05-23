@@ -184,7 +184,7 @@ module.exports = (firebase, config, db) => {
       const expectedEndDate = new Date(expectedStartDate.getFullYear() + reasonableLengthOfService, expectedStartDate.getMonth(), expectedStartDate.getDate());
       const dateOfBirth = getDate(application.personalDetails.dateOfBirth);
       const dateOfRetirement = new Date(dateOfBirth.getFullYear() + retirementAge, dateOfBirth.getMonth(), dateOfBirth.getDate());
-      sccAge = new Duration(dateOfBirth, expectedEndDate).setDays(0).toString();
+      sccAge = new Duration(dateOfBirth, getDate(exercise.characterAndSCCDate)).setDays(0).toString();
       
       if (application.canGiveReasonableLOS === false) {
         const rslSummary = isNonLegalExercise ? `Not Met (${application.cantGiveReasonableLOSDetails})` : 'Not Met';

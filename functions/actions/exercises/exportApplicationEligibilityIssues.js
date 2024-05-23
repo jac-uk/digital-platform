@@ -125,10 +125,10 @@ module.exports = (firebase, db) => {
     const settings = await getDocument(db.collection('settings').doc('services'));
     drive.setDriveId(settings.google.driveId);
 
-    // generate a filename for the document we are going to create
+    // generate a filename for the document we are going to create ex. JAC00787_SCC Eligibility Annexes
     const now = new Date();
-    const timestamp = new Date(now.getTime() - (now.getTimezoneOffset() * 60000)).toISOString();
-    const filename = exercise.referenceNumber + '_' + timestamp;
+    // const timestamp = new Date(now.getTime() - (now.getTimezoneOffset() * 60000)).toISOString();
+    const filename = `${exercise.referenceNumber}_SCC Eligibility Annexes` ;
 
     // make sure a destination folder exists to create the file in
     const folderName = 'Eligibility Export';
@@ -591,9 +591,9 @@ module.exports = (firebase, db) => {
     };
 
     const recommendationToReasonsHeading = {
-      'proceed': '<b class="red">&lt;Amend as needed&gt;</b><b>Reasons ASC is demonstrated through experience in a quasi-judicial capacity</b>',
-      'discuss': '<b class="red">&lt;Amend as needed&gt;</b><b>Reasons ASC could potentially be demonstrated through the necessary skills being shown in some other significant way</b>',
-      'reject': '<b class="red">&lt;Amend as needed&gt;</b><b>Reasons ASC is not demonstrated through a role in a quasi-judicial role or through some other significant way</b>',
+      'proceed': '<b>Reasons ASC is demonstrated through experience in a quasi-judicial capacity</b>',
+      'discuss': '<b>Reasons ASC could potentially be demonstrated through the necessary skills being shown in some other significant way</b>',
+      'reject': '<b>Reasons ASC is not demonstrated through a role in a quasi-judicial role or through some other significant way</b>',
     };
 
     const recommendationToReasonsNote = {
@@ -693,8 +693,8 @@ module.exports = (firebase, db) => {
                   .map((record) => {
                     const [forename, surname] = splitFullName(record.candidate.fullName);        
                     const targetIssue = record.issues.eligibilityIssues.find((issue) => issue.type === 'rls');
-                    const ageAtSccDate = targetIssue.sccAge;
-                    const mitigationProvided = targetIssue.candidateComments;
+                    const ageAtSccDate = targetIssue.sccAge || '';
+                    const mitigationProvided = targetIssue.candidateComments || '';
                     const recommendation = `${_.capitalize(targetIssue.result)}<br>${targetIssue.comments}`;
                     
                     return {
@@ -723,7 +723,6 @@ module.exports = (firebase, db) => {
       <td width="100" style="text-align:center;"><b>Forename</b></td>
       <td width="100" style="text-align:center;">
         <b>Age at SCC Recommendations</b>
-        <b class="red">&lt;state date of SCC & age (year and month) &gt;</b>
       </td>
       <td style="text-align:center;">Mitigation Provided</td>
       <td style="text-align:center;">Recommendation</td>
