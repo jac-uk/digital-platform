@@ -61,7 +61,6 @@
   },
   "dependencies": {
     "@google-cloud/storage": "^5.7.2",
-    "@octokit/core": "^6.1.2",
     "axios": "^0.28.0",
     "bottleneck": "^2.19.5",
     "crypto": "^1.0.1",
