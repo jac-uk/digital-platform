@@ -596,12 +596,6 @@ module.exports = (firebase, db) => {
       'reject': '<b>Reasons ASC is not demonstrated through a role in a quasi-judicial role or through some other significant way</b>',
     };
 
-    const recommendationToReasonsNote = {
-      'proceed': '<b class="red">&lt;This candidate therefor meets the previous judicial experience criterion through experience in a role equivalent to a judge and is recommend to proceed.&gt;</b>',
-      'discuss': '<b class="red">&lt;This candidate does not meet the ASC through a role which is equivalent to that of a judge. However, the candidate could demonstrate the skills akin to a judge through their work/role as ... Therefore it is recommended to discuss this candidate.&gt;</b>',
-      'reject': '<b class="red">&lt;This candidate does not have a role akin to a judge, nor do they show the necessary skills in some other significant way. Therefore, it is recommended this candidate is removed.&gt;</b>',
-    };
-
     const rows = _.chain(applicationRecords)
                   .filter((record) => {
                     const targetIssue = record.issues.eligibilityIssues.find((issue) => issue.type === 'pje');
@@ -663,7 +657,7 @@ module.exports = (firebase, db) => {
 
       // end tr
       writer.addRaw(`
-          <b>JAC Comments (with reference to the ASC Log if appropriate):</b> ${row.jacComments} ${recommendationToReasonsNote[recommendation]}
+          <b>JAC Comments (with reference to the ASC Log if appropriate):</b> ${row.jacComments}
           </td>
       </tr>
       `);
