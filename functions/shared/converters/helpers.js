@@ -127,7 +127,7 @@ const applicationOpenDatePost01042023 = (exercise) => {
   if (usesPre01042023Questions) {
     return false;
   }
-  return Object.prototype.hasOwnProperty.call(exercise, 'applicationOpenDate') && exercise.applicationOpenDate.toDate() > new Date('2023-04-01');
+  return Object.prototype.hasOwnProperty.call(exercise, 'applicationOpenDate') && exercise.applicationOpenDate && exercise.applicationOpenDate.toDate() > new Date('2023-04-01');
 };
 
 /**
