@@ -100,9 +100,7 @@ module.exports = (firebase, config, db) => {
         data['flags.eligibilityIssues'] = true;
         // check if all eligibility issues are met
         data['flags.eligibilityIssuesMet'] = eligibilityIssues.every(issue => ['rls', 'pq', 'pqe', 'pje'].includes(issue.type) ? issue.summary.indexOf('Met') === 0 : true);
-        if (applicationRecord && (!applicationRecord.flags || !applicationRecord.flags.eligibilityIssues)) {
-          data['issues.eligibilityIssues'] = eligibilityIssues;
-        }
+        data['issues.eligibilityIssues'] = eligibilityIssues;
       } else {
         data['flags.eligibilityIssues'] = false;
         data['flags.eligibilityIssuesMet'] = false;
@@ -463,6 +461,7 @@ class Duration {
     this.days = 0;
     return this;
   }
+
   toString() {
     let parts = [];
     if (this.years) {
