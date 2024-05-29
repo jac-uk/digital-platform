@@ -36,7 +36,8 @@ module.exports = (firebase, config, db) => {
     const exercise = await getExercise(application.exerciseId);
 
     // check for eligibility issues and update document
-    const eligibilityIssues = getEligibilityIssues(exercise, application);
+    const applicationRecord = await getDocument(db.collection('applicationRecords').doc(applicationId));
+    const eligibilityIssues = getEligibilityIssues(exercise, application, applicationRecord);
     const characterIssues = getCharacterIssues(exercise, application);
     const data = {};
     data['processing.flags.eligibilityIssues'] = eligibilityIssues && eligibilityIssues.length > 0;
@@ -87,7 +88,7 @@ module.exports = (firebase, config, db) => {
     const commands = [];
     for (let i = 0, len = applications.length; i < len; ++i) {
       const applicationRecord = await getDocument(db.collection('applicationRecords').doc(`${applications[i].id}`));
-      const eligibilityIssues = getEligibilityIssues(exercise, applications[i]);
+      const eligibilityIssues = getEligibilityIssues(exercise, applications[i], applicationRecord);
       const characterIssues = getCharacterIssues(exercise, applications[i]);
       
       const processing = applications[i]._processing;
@@ -168,7 +169,7 @@ module.exports = (firebase, config, db) => {
     return result ? commands.length : false;
   }
 
-  function getEligibilityIssues(exercise, application) {
+  function getEligibilityIssues(exercise, application, applicationRecord) {
 
     const issues = [];
     const isLegalExercise = ['legal', 'leadership'].indexOf(exercise.typeOfExercise) >= 0;
@@ -287,6 +288,18 @@ module.exports = (firebase, config, db) => {
       // professional registration
       const professionalRegistrationIssue = getProfessionalRegistrationIssue(exercise, application);
       if (professionalRegistrationIssue) issues.push(professionalRegistrationIssue);
+    }
+
+    // get data from previous eligibility issues
+    if (applicationRecord && applicationRecord.issues && Array.isArray(applicationRecord.issues.eligibilityIssues)) {
+      for (let i = 0; i < issues.length; i++) {
+        const issue = issues[i];
+        const previousIssue = applicationRecord.issues.eligibilityIssues.find(i => i.type === issue.type);
+        if (previousIssue) {
+          issue.result = previousIssue.result;
+          issue.comments = previousIssue.comments;
+        }
+      }
     }
 
     return issues;
