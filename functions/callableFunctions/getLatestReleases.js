@@ -11,7 +11,7 @@ module.exports = functions.region('europe-west2').https.onCall(async (data, cont
     throw new functions.https.HttpsError('failed-precondition', 'The function must be called while authenticated.');
   }
   hasPermissions(context.auth.token.rp, [
-    PERMISSIONS.applications.permissions.canReadReleases.value,
+    PERMISSIONS.releases.permissions.canReadReleases.value,
   ]);
 
   return await zenhub.getLatestReleaseForRepositories();
