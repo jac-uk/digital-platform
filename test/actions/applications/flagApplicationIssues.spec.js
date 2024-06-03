@@ -1,4 +1,3 @@
-const firebase = require('firebase-admin');
 const mockDb = jest.fn();
 const mockSlack = jest.fn();
 

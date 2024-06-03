@@ -1,4 +1,3 @@
-const mockFirebase = require('firebase-admin');
 const mockDB = jest.fn();
 const config = require('../../../nodeScripts/shared/config');
 

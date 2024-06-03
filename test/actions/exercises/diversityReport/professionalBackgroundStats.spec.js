@@ -1,4 +1,3 @@
-const firebase = require('firebase-admin');
 const db = jest.fn();
 const config = require('../../../../nodeScripts/shared/config');
 
