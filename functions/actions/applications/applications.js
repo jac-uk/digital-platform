@@ -2,11 +2,10 @@ const { SSL_OP_NETSCAPE_DEMO_CIPHER_CHANGE_BUG } = require('constants');
 const { getAllDocuments, applyUpdates, getDocument, getDocuments } = require('../../shared/helpers');
 const { getSearchMap } = require('../../shared/search');
 const { Timestamp, FieldValue } = require('firebase-admin/firestore');
-const { getStorage } = require('firebase-admin/storage');
 
 const testApplicationsFileName = 'test_applications.json';
 
-module.exports = (config, db, auth) => {
+module.exports = (config, db, auth, storage) => {
   const { initialiseApplicationRecords } = require('../../actions/applicationRecords')(config, db, auth);
   const { refreshApplicationCounts } = require('../../actions/exercises/refreshApplicationCounts')(db);
   const {
@@ -397,7 +396,7 @@ module.exports = (config, db, auth) => {
     * load test applications JSON file from cloud storage
     */
   async function loadTestApplications() {
-    const bucket = getStorage().bucket(config.STORAGE_URL);
+    const bucket = storage.bucket(config.STORAGE_URL);
     const file = bucket.file(testApplicationsFileName);
 
     try {

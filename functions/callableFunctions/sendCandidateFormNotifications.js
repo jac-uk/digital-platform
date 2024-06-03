@@ -1,8 +1,8 @@
 const functions = require('firebase-functions');
 const config = require('../shared/config.js');
-const { db, auth } = require('../shared/admin.js');
+const { db, auth, storage } = require('../shared/admin.js');
 const { checkArguments } = require('../shared/helpers.js');
-const { sendCandidateFormNotifications } = require('../actions/applications/applications.js')(config, db, auth);
+const { sendCandidateFormNotifications } = require('../actions/applications/applications.js')(config, db, auth, storage);
 const { checkFunctionEnabled } = require('../shared/serviceSettings.js')(db);
 const { PERMISSIONS, hasPermissions } = require('../shared/permissions.js');
 

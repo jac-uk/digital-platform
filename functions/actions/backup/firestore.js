@@ -3,9 +3,8 @@
  */
 const firestore = require('@google-cloud/firestore');
 const client = new firestore.v1.FirestoreAdminClient();
-const { getStorage } = require('firebase-admin/storage');
 
-module.exports = (config) => {
+module.exports = (config, storage) => {
   const slack = require('../../shared/slack')(config);
   return {
     backupFirestore,
@@ -35,7 +34,6 @@ module.exports = (config) => {
       const thirtyDaysAgo = new Date();
       thirtyDaysAgo.setDate(thirtyDaysAgo.getDate() - 30);
       const dateThirtyDaysAgo = thirtyDaysAgo.toISOString().split('T')[0];
-      const storage = getStorage();
       const bucket = storage.bucket(BACKUPBUCKET);
       // delete files in the firestore directory that start with the date 30 days ago
       await bucket.deleteFiles({

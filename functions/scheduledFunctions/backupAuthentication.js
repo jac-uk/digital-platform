@@ -1,6 +1,7 @@
 const config = require('../shared/config');
 const functions = require('firebase-functions');
-const { backupAuthentication } = require('../actions/backup/authentication')(config);
+const { storage } = require('./shared/admin.js');
+const { backupAuthentication } = require('../actions/backup/authentication')(config, storage);
 
 const SCHEDULE = 'every day 23:00';
 
