@@ -1,5 +1,6 @@
 const { getApp } = require('firebase-admin/app');
 const { Timestamp } = require('firebase-admin/firestore');
+const get = require('lodash/get');
 
 module.exports = {
   getDocument,
@@ -31,6 +32,7 @@ module.exports = {
   formatAddress,
   formatPreviousAddresses,
   splitFullName,
+  isDifferentPropsByPath,
 };
 
 function calculateMean(numArray) {
@@ -456,4 +458,13 @@ function splitFullName(fullName) {
     lastName = name[0];
   }
   return ([firstName, lastName]);
+}
+
+/**
+ * Compare two object properties by string path so compatible with lodash _get and _has
+ */
+function isDifferentPropsByPath(object1, object2, pathInObject) {
+  const val1 = get(object1, pathInObject, null);
+  const val2 = get(object2, pathInObject, null);
+  return val1 !== val2;
 }

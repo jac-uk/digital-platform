@@ -8,6 +8,7 @@ const CONSTANTS = {
   ZENHUB_GRAPH_QL_API_KEY: process.env.ZENHUB_GRAPH_QL_API_KEY, // graphQL personal api key
   ZENHUB_ISSUES_WORKSPACE_ID: process.env.ZENHUB_ISSUES_WORKSPACE_ID,
   SLACK_TICKETING_APP_BOT_TOKEN: process.env.SLACK_TICKETING_APP_BOT_TOKEN,
+  GITHUB_PAT: process.env.GITHUB_PAT, // personal access token
   APPLICATION: {
     STATUS: {
       QUALIFYING_TEST_PASSED: 'qualifyingTestPassed',
@@ -195,6 +196,36 @@ const CONSTANTS = {
         details: 'furtherInformationDetails',
         summary: 'Candidate has declare further information',
       },
+    },
+    CHARACTER_ISSUE_STATUS: {
+      PROCEED: 'proceed',
+      REJECT: 'reject',
+      REJECT_NON_DECLARATION: 'reject-non-declaration',
+      DISCUSS: 'discuss',
+    },
+    CHARACTER_ISSUE_OFFENCE_CATEGORY: {
+      SINGLE_MOTORING_OFFENCE: 'singleMotoringOffence',
+      MULTIPLE_MOTORING_OFFENCES: 'multipleMotoringOffences',
+      SINGLE_PENALTY_NOTICE: 'singlePenaltyNotice',
+      MULTIPLE_PENALTY_NOTICES: 'multiplePenaltyNotices',
+      SINGLE_CRIMINAL_OFFENCE: 'singleCriminalOffence',
+      MULTIPLE_CRIMINAL_OFFENCES: 'multipleCriminalOffences',
+      SINGLE_FINANCIAL_OFFENCE: 'singleFinancialOffence',
+      MULTIPLE_FINANCIAL_OFFENCES: 'multipleFinancialOffences',
+      SINGLE_PROFESSIONAL_CONDUCT: 'singleProfessionalConduct',
+      MULTIPLE_PROFESSIONAL_CONDUCTS: 'multipleProfessionalConducts',
+      SINGLE_OTHER_MATTER: 'singleOtherMatter',
+      MULTIPLE_OTHER_MATTERS: 'multipleOtherMatters',
+      MIXED: 'mixed',
+    },
+    GUIDANCE_REFERENCE: {
+      CRIMINAL_OFFENCES: 'criminalOffences',
+      MOTERING_OFFENCES: 'moteringOffences',
+      FIXED_PENALTY_NOTICES: 'fixedPenaltyNotices',
+      FINANCIAL_INSOLVENCY_DEBT: 'financialInsolvencyDebt',
+      FINANCIAL_VAT_TAX: 'financialVatTax',
+      PROFESSIONAL_CONDUCT: 'professionalConduct',
+      FURTHER_DISCLOSURES: 'furtherDisclosures',
     },
   },
   ASSESSMENTS_URL: process.env.ASSESSMENTS_URL,

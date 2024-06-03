@@ -377,6 +377,15 @@ const PERMISSIONS = {
       },
     },
   },
+  releases: {
+    label: 'Releases',
+    permissions: {
+      canReadReleases: {
+        label: 'Can read releases',
+        value: 'r1',
+      },
+    },
+  },
 };
 
 module.exports = {

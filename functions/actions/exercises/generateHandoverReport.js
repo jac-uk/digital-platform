@@ -87,10 +87,8 @@ const reportHeaders = (exercise) => {
         { title: 'Agreed to share Diversity', ref: 'shareData' },
         { title: 'Professional Background', ref: 'professionalBackground' },
         { title: 'Previous roles', ref: 'formattedFeePaidJudicialRole' },
-        { title: 'School type', ref: 'stateOrFeeSchool' },
-        { title: 'Attended university', ref: 'firstGenerationStudent' },
         { title: 'School type', ref: 'stateOrFeeSchool16' },
-        { title: 'Attended university', ref: 'parentsAttendedUniversity' },
+        { title: 'Parents attended university', ref: 'parentsAttendedUniversity' },
         { title: 'Ethnicity', ref: 'ethnicGroup' },
         { title: 'Gender', ref: 'gender' },
         { title: 'Sexual orientation', ref: 'sexualOrientation' },
@@ -104,6 +102,20 @@ const reportHeaders = (exercise) => {
       ],
     },
   };
+
+  // old version equality and diversity info 
+  if (!isApplicationOpenDatePost01042023(exercise)) {
+    headers.diversity.common = [
+      { title: 'Previous roles', ref: 'formattedFeePaidJudicialRole' },
+      { title: 'School type', ref: 'stateOrFeeSchool' },
+      { title: 'Parents attended university', ref: 'firstGenerationStudent' },
+      { title: 'Ethnicity', ref: 'ethnicGroup' },
+      { title: 'Gender', ref: 'gender' },
+      { title: 'Sexual orientation', ref: 'sexualOrientation' },
+      { title: 'Disability', ref: 'disability' },
+      { title: 'Religion or belief', ref: 'religionFaith' },
+    ];
+  }
 
   const reportHeaders = [
     { title: 'Application ID', ref: 'applicationId' },
@@ -342,3 +354,11 @@ const formatNonLegalData = (application, exercise) => {
     };
   }
 };
+
+function isApplicationOpenDatePost01042023(exercise) {
+  const usesPre01042023Questions = ['JAC00130', 'JAC00123', 'JAC00164'].includes(exercise.referenceNumber);
+  if (usesPre01042023Questions) {
+    return false;
+  }
+  return Object.prototype.hasOwnProperty.call(exercise, 'applicationOpenDate') && exercise.applicationOpenDate.toDate() > new Date('2023-04-01');
+}
