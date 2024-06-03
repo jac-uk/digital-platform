@@ -1,8 +1,8 @@
 'use strict';
 
 const config = require('./shared/config');
-const { app } = require('./shared/admin.js');
-const { extractDocumentContent } = require('../functions/shared/file-extraction/extractDocumentContent')(config, firebase);
+const { app, storage } = require('./shared/admin.js');
+const { extractDocumentContent } = require('../functions/shared/file-extraction/extractDocumentContent')(config, storage);
 
 const main = async () => {
   return extractDocumentContent('exercise/0CgDWjU5Iap9wxBqECZD/candidate-assessement-forms_0.docx','exercise/0CgDWjU5Iap9wxBqECZD/candidate-assessement-forms_filled.docx');
