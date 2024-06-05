@@ -1,4 +1,4 @@
-const { setup, teardown, setupAdmin, getValidExerciseData } = require('./helpers');
+const { setup, teardown, getValidExerciseData } = require('./helpers');
 const { assertFails, assertSucceeds } = require('@firebase/rules-unit-testing');
 const { PERMISSIONS } = require('../../functions/shared/permissions');
 
@@ -98,8 +98,7 @@ describe('Exercises', () => {
 
   context('Update', () => {
     it('prevent un-authenticated user from updating an exercise', async () => {
-      const db = await setup();
-      await setupAdmin(db, { 'exercises/ex1': { } });
+      const db = await setup(null, { 'exercises/ex1': { } });
       await assertFails(db.collection('exercises').doc('ex1').update(getValidExerciseData()));
     });
 

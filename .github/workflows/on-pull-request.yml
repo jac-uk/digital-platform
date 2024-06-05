@@ -27,8 +27,7 @@ jobs:
         run: echo "//npm.pkg.github.com/:_authToken=${{ secrets.GITHUB_TOKEN }}" > ~/.npmrc && npm ci       
       - name: Lint
         run: npm run lint
-      - run: echo "Test rules"
-        # run: npm run test:rules
+      - run: npm run ci:test:rules
       - run: echo "Test functions"
         # run: npm run test:functions
       - run: npm run test:actions

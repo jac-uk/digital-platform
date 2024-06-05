@@ -1,4 +1,4 @@
-const { setup, teardown, setupAdmin, getValidMessageData } = require('./helpers');
+const { setup, teardown, getValidMessageData } = require('./helpers');
 const { assertFails, assertSucceeds } = require('@firebase/rules-unit-testing');
 const { PERMISSIONS } = require('../../functions/shared/permissions');
 
@@ -103,8 +103,7 @@ describe('Messages', () => {
 
   context('Update', () => {
     it('prevent un-authenticated user from updating a message', async () => {
-      const db = await setup();
-      await setupAdmin(db, { 'messages/m1': { } });
+      const db = await setup(null,  { 'messages/m1': { } });
       await assertFails(db.collection('messages').doc('m1').update(getValidMessageData()));
     });
 
