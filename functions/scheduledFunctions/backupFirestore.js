@@ -1,6 +1,6 @@
 const config = require('../shared/config');
 const functions = require('firebase-functions');
-const { storage } = require('./shared/admin.js');
+const { storage } = require('../shared/admin.js');
 const { backupFirestore } = require('../actions/backup/firestore')(config, storage);
 
 const SCHEDULE = 'every day 23:01';
