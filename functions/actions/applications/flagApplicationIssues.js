@@ -36,7 +36,8 @@ module.exports = (firebase, config, db) => {
     const exercise = await getExercise(application.exerciseId);
 
     // check for eligibility issues and update document
-    const eligibilityIssues = getEligibilityIssues(exercise, application);
+    const applicationRecord = await getDocument(db.collection('applicationRecords').doc(applicationId));
+    const eligibilityIssues = getEligibilityIssues(exercise, application, applicationRecord);
     const characterIssues = getCharacterIssues(exercise, application);
     const data = {};
     data['processing.flags.eligibilityIssues'] = eligibilityIssues && eligibilityIssues.length > 0;
@@ -87,7 +88,7 @@ module.exports = (firebase, config, db) => {
     const commands = [];
     for (let i = 0, len = applications.length; i < len; ++i) {
       const applicationRecord = await getDocument(db.collection('applicationRecords').doc(`${applications[i].id}`));
-      const eligibilityIssues = getEligibilityIssues(exercise, applications[i]);
+      const eligibilityIssues = getEligibilityIssues(exercise, applications[i], applicationRecord);
       const characterIssues = getCharacterIssues(exercise, applications[i]);
       
       const processing = applications[i]._processing;
@@ -166,11 +167,15 @@ module.exports = (firebase, config, db) => {
     return result ? commands.length : false;
   }
 
-  function getEligibilityIssues(exercise, application) {
+  function getEligibilityIssues(exercise, application, applicationRecord) {
 
     const issues = [];
+    const isLegalExercise = ['legal', 'leadership'].indexOf(exercise.typeOfExercise) >= 0;
+    const isNonLegalExercise = ['non-legal', 'leadership-non-legal'].includes(exercise.typeOfExercise);
 
     // reasonable length of service - calculated from dob, characterAndSCCDate, reasonable length of service and retirement age
+    let rlsIssue = null;
+    let sccAge = null;
     if (application.personalDetails && application.personalDetails.dateOfBirth) {
       const reasonableLengthOfService = parseInt(exercise.reasonableLengthService === 'other' ? exercise.otherLOS : exercise.reasonableLengthService);
       const retirementAge = parseInt(exercise.retirementAge === 'other' ? exercise.otherRetirement : exercise.retirementAge);
@@ -178,21 +183,25 @@ module.exports = (firebase, config, db) => {
       const expectedEndDate = new Date(expectedStartDate.getFullYear() + reasonableLengthOfService, expectedStartDate.getMonth(), expectedStartDate.getDate());
       const dateOfBirth = getDate(application.personalDetails.dateOfBirth);
       const dateOfRetirement = new Date(dateOfBirth.getFullYear() + retirementAge, dateOfBirth.getMonth(), dateOfBirth.getDate());
-      const age = new Duration(dateOfBirth, expectedEndDate).toString();
+      sccAge = new Duration(dateOfBirth, getDate(exercise.characterAndSCCDate)).setDays(0).toString();
+      
       if (application.canGiveReasonableLOS === false) {
-        issues.push(newIssue('rls', `Not Met (${application.cantGiveReasonableLOSDetails})`));
+        const rslSummary = isNonLegalExercise ? `Not Met (${application.cantGiveReasonableLOSDetails})` : 'Not Met';
+        rlsIssue = newEligibilityIssue('rls', rslSummary, application.cantGiveReasonableLOSDetails);
       } else {
         if (expectedEndDate > dateOfRetirement) {
-          issues.push(newIssue('rls', 'Not Met'));
+          rlsIssue = newEligibilityIssue('rls', 'Not Met');
         } else {
-          issues.push(newIssue('rls', 'Met'));
+          rlsIssue = newEligibilityIssue('rls', 'Met');
         }
       }
     } else {
-      issues.push(newIssue('rls', 'Not Met (No date of birth provided)'));
+      rlsIssue = newEligibilityIssue('rls', 'Not Met (No date of birth provided)');
     }
+    rlsIssue.sccAge = sccAge;
+    issues.push(rlsIssue);
 
-    if (['legal', 'leadership'].indexOf(exercise.typeOfExercise) >= 0) {
+    if (isLegalExercise) {
       // professional qualification
       const qualificationIssue = getQualificationIssue(exercise, application);
       if (qualificationIssue) issues.push(qualificationIssue);
@@ -247,31 +256,31 @@ module.exports = (firebase, config, db) => {
             if (relevantExperience.years < minimumYearsExperience) {
               if (relevantExperience.hasValue()) {
                 if (otherExperience.hasValue()) {
-                  issues.push(newIssue('pqe', `Not Met (Candidate has ${relevantExperience.toString()} of relevant experience and ${otherExperience.toString()} to be checked)`));
+                  issues.push(newEligibilityIssue('pqe', `Not Met (Candidate has ${relevantExperience.toString()} of relevant experience and ${otherExperience.toString()} to be checked)`));
                 } else {
-                  issues.push(newIssue('pqe', `Not Met (${relevantExperience.toString()})`));
+                  issues.push(newEligibilityIssue('pqe', `Not Met (${relevantExperience.toString()})`));
                 }
               } else {
-                issues.push(newIssue('pqe', 'Not Met (Candidate has no relevant experience)'));
+                issues.push(newEligibilityIssue('pqe', 'Not Met (Candidate has no relevant experience)'));
               }
             } else {
-              issues.push(newIssue('pqe', `Met (${relevantExperience.toString()})`));
+              issues.push(newEligibilityIssue('pqe', `Met (${relevantExperience.toString()})`));
             }
           } else {
-            issues.push(newIssue('pqe', 'Not Met (No experience provided)'));
+            issues.push(newEligibilityIssue('pqe', 'Not Met (No experience provided)'));
           }
         } else {
-          issues.push(newIssue('pqe', 'Not Met (No qualifications provided)'));
+          issues.push(newEligibilityIssue('pqe', 'Not Met (No qualifications provided)'));
         }
       } else {
-        issues.push(newIssue('pqe', 'Not Met (No qualifications provided)'));
+        issues.push(newEligibilityIssue('pqe', 'Not Met (No qualifications provided)'));
       }
 
       // previous judicial experience
       const previousJudicialExperienceIssue = getPreviousJudicialExperienceIssue(exercise, application);
       if (previousJudicialExperienceIssue) issues.push(previousJudicialExperienceIssue);
 
-    } else if (['non-legal', 'leadership-non-legal'].includes(exercise.typeOfExercise)) {
+    } else if (isNonLegalExercise) {
       // non-legal exercise
 
       // professional registration
@@ -279,12 +288,24 @@ module.exports = (firebase, config, db) => {
       if (professionalRegistrationIssue) issues.push(professionalRegistrationIssue);
     }
 
+    // get data from previous eligibility issues
+    if (applicationRecord && applicationRecord.issues && Array.isArray(applicationRecord.issues.eligibilityIssues)) {
+      for (let i = 0; i < issues.length; i++) {
+        const issue = issues[i];
+        const previousIssue = applicationRecord.issues.eligibilityIssues.find(i => i.type === issue.type);
+        if (previousIssue) {
+          issue.result = previousIssue.result;
+          issue.comments = previousIssue.comments;
+        }
+      }
+    }
+
     return issues;
   }
 
   function getQualificationIssue(exercise, application) {
     if (!exercise.qualifications || !exercise.qualifications.length) return null;
-    if (!application.qualifications || !application.qualifications.length) return newIssue('pq', 'Not Met');
+    if (!application.qualifications || !application.qualifications.length) return newEligibilityIssue('pq', 'Not Met');
 
     let isMet = false;
     for (let i = 0; i < exercise.qualifications.length; i++) {
@@ -295,7 +316,7 @@ module.exports = (firebase, config, db) => {
       }
     }
 
-    return newIssue('pq', isMet ? 'Met' : 'Not Met');
+    return newEligibilityIssue('pq', isMet ? 'Met' : 'Not Met');
   }
 
   function getPreviousJudicialExperienceIssue(exercise, application) {
@@ -322,7 +343,7 @@ module.exports = (firebase, config, db) => {
       }
     }
 
-    return newIssue('pje', isMet ? 'Met' : 'Not Met');
+    return newEligibilityIssue('pje', isMet ? 'Met' : 'Not Met', application.experienceDetails);
   }
 
   function getProfessionalRegistrationIssue(exercise, application) {
@@ -344,7 +365,7 @@ module.exports = (firebase, config, db) => {
       }
     });
 
-    return newIssue('pr', membershipData.join(', '));
+    return newEligibilityIssue('pr', membershipData.join(', '));
   }
 
   function getCharacterIssues(exercise, application) {
@@ -383,15 +404,16 @@ module.exports = (firebase, config, db) => {
           }
         });
         if (events.length) {
-          issues.push(newIssue(issueType, issueType, events));
+          issues.push(newCharacterIssue(issueType, issueType, events));
         }
       });
     } else {
-      issues.push(newIssue('character', 'No character information'));
+      issues.push(newCharacterIssue('character', 'No character information'));
     }
 
     return issues;
   }
+
 
 };
 
@@ -434,6 +456,12 @@ class Duration {
   hasValue() {
     return (this.years || this.months || this.days);
   }
+
+  setDays(days) {
+    this.days = 0;
+    return this;
+  }
+
   toString() {
     let parts = [];
     if (this.years) {
@@ -473,11 +501,20 @@ class Duration {
   }
 }
 
-const newIssue = (type, summary, events) => {
+const newCharacterIssue = (type, summary, events) => {
   return {
     type: type,
     summary: summary ? summary : '',
     events: events ? events : '',
+    result: '',
+    comments: '',
+  };
+};
+const newEligibilityIssue = (type, summary, candidateComments) => {
+  return {
+    type: type,
+    summary: summary ? summary : '',
+    candidateComments: candidateComments ? candidateComments : '',
     result: '',
     comments: '',
   };

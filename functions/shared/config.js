@@ -10,6 +10,7 @@ const CONSTANTS = {
   ZENHUB_GRAPH_QL_API_KEY: functions.config().zenhub.graph_ql_api_key, // graphQL personal api key
   ZENHUB_ISSUES_WORKSPACE_ID: functions.config().zenhub.workspace_id,
   GITHUB_WEBHOOK_SECRET: functions.config().github.webhook_secret,
+  GITHUB_PAT: functions.config().github.pat, // personal access token
   SLACK_TICKETING_APP_BOT_TOKEN: functions.config().slack.ticketing_app_bot_token,
   SLACK_TICKETING_APP_CHANNEL_ID: functions.config().slack.ticketing_app_channel_id,
   APPLICATION: {
@@ -208,10 +209,12 @@ const CONSTANTS = {
       DISCUSS: 'discuss',
     },
     CHARACTER_ISSUE_OFFENCE_CATEGORY: {
-      SINGLE_CRIMINAL_OFFENCE: 'singleCriminalOffence',
-      MULTIPLE_CRIMINAL_OFFENCES: 'multipleCriminalOffences',
       SINGLE_MOTORING_OFFENCE: 'singleMotoringOffence',
       MULTIPLE_MOTORING_OFFENCES: 'multipleMotoringOffences',
+      SINGLE_PENALTY_NOTICE: 'singlePenaltyNotice',
+      MULTIPLE_PENALTY_NOTICES: 'multiplePenaltyNotices',
+      SINGLE_CRIMINAL_OFFENCE: 'singleCriminalOffence',
+      MULTIPLE_CRIMINAL_OFFENCES: 'multipleCriminalOffences',
       SINGLE_FINANCIAL_OFFENCE: 'singleFinancialOffence',
       MULTIPLE_FINANCIAL_OFFENCES: 'multipleFinancialOffences',
       SINGLE_PROFESSIONAL_CONDUCT: 'singleProfessionalConduct',
@@ -219,6 +222,15 @@ const CONSTANTS = {
       SINGLE_OTHER_MATTER: 'singleOtherMatter',
       MULTIPLE_OTHER_MATTERS: 'multipleOtherMatters',
       MIXED: 'mixed',
+    },
+    GUIDANCE_REFERENCE: {
+      CRIMINAL_OFFENCES: 'criminalOffences',
+      MOTERING_OFFENCES: 'moteringOffences',
+      FIXED_PENALTY_NOTICES: 'fixedPenaltyNotices',
+      FINANCIAL_INSOLVENCY_DEBT: 'financialInsolvencyDebt',
+      FINANCIAL_VAT_TAX: 'financialVatTax',
+      PROFESSIONAL_CONDUCT: 'professionalConduct',
+      FURTHER_DISCLOSURES: 'furtherDisclosures',
     },
     ELIGIBILITY_ISSUE_STATUS: {
       PROCEED: 'proceed',
