@@ -12,7 +12,6 @@ module.exports = functions.region('europe-west2').firestore
   .onUpdate(async (change, context) => {
     const after = change.after.data();
     const before = change.before.data();
-    const applicationId = context.params.applicationId;
 
     const updateSearchMap = isDifferentPropsByPath(before, after, 'application.referenceNumber') ||
       isDifferentPropsByPath(before, after, 'assessor.email') ||
