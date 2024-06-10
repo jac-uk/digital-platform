@@ -16,9 +16,9 @@
   "dependencies": {
     "axios": "^0.28.0",
     "bottleneck": "^2.19.5",
-    "firebase-admin": "^9.7.0",
+    "firebase-admin": "^12.1.1",
     "firebase-functions": "^3.13.2",
-    "firebase-tools": "^9.11.0",
+    "firebase-tools": "^13.11.2",
     "googleapis": "^49.0.0",
     "mammoth": "^1.6.0",
     "notifications-node-client": "^4.8.0"
