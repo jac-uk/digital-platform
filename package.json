@@ -65,7 +65,7 @@
     "bottleneck": "^2.19.5",
     "crypto": "^1.0.1",
     "firebase": "^8.4.3",
-    "firebase-admin": "^9.7.0",
+    "firebase-admin": "^12.1.1",
     "firebase-functions": "^3.24.1",
     "firebase-functions-test": "^0.2.3",
     "firebase-tools": "^11.21.0",
@@ -76,7 +76,7 @@
   },
   "devDependencies": {
     "@faker-js/faker": "^6.0.0-alpha.5",
-    "@firebase/rules-unit-testing": "^1.1.9",
+    "@firebase/rules-unit-testing": "^3.0.3",
     "@firebase/util": "^1.1.0",
     "csv-writer": "^1.6.0",
     "dotenv": "^8.2.0",
