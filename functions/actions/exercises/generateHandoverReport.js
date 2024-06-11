@@ -4,7 +4,10 @@ const { getDocument, getDocuments, getAllDocuments, removeHtml } = require('../.
 const applicationConverter = require('../../shared/converters/applicationConverter')();
 const { getAdditionalWorkingPreferences, getWelshData } = applicationConverter;
 
-module.exports = (firebase, db) => {
+module.exports = (firebase, config, db) => {
+  const { EXERCISE_STAGE, APPLICATION_STATUS } = config;
+  const { convertStageToVersion2, convertStatusToVersion2 } = require('../applicationRecords/updateApplicationRecordStageStatus')(firebase, config, db);
+  
   return {
     generateHandoverReport,
   };
@@ -17,7 +20,8 @@ module.exports = (firebase, db) => {
     // get submitted application records (which are at the handover stage)
     const applicationRecords = await getDocuments(db.collection('applicationRecords')
       .where('exercise.id', '==', exerciseId)
-      .where('stage', '==', 'handover')
+      .where('stage', '==', exercise._processingVersion >= 2 ? convertStageToVersion2(EXERCISE_STAGE.HANDOVER) : EXERCISE_STAGE.HANDOVER)
+      .where('status', '==', exercise._processingVersion >= 2 ?  convertStatusToVersion2(APPLICATION_STATUS.APPROVED_FOR_IMMEDIATE_APPOINTMENT) : APPLICATION_STATUS.APPROVED_FOR_IMMEDIATE_APPOINTMENT)
     );
 
     // get the parent application records for the above

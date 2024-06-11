@@ -114,7 +114,9 @@ const getWorkingPreferenceHeaders = (type, questionAnswers) => {
     case 'multiple-choice':
     case 'ranked-choice':
       questionAnswers.forEach((questionAnswer) => {
-        headers.push({ title: questionAnswer.answer, ref: questionAnswer.answer });
+        if (questionAnswer.answer !== undefined) {
+          headers.push({ title: questionAnswer.answer, ref: questionAnswer.answer });
+        }
       });
       break;
     default:
