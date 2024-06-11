@@ -19,10 +19,15 @@ module.exports = (firebase, config, db) => {
     const exercise = await getDocument(db.collection('exercises').doc(exerciseId));
 
     // get submitted application records (which are at the handover stage)
+    const stage = exercise._processingVersion >= 2 ? convertStageToVersion2(EXERCISE_STAGE.HANDOVER) : EXERCISE_STAGE.HANDOVER;
+    const statuses = [
+      APPLICATION_STATUS.RECOMMENDED_IMMEDIATE,
+      exercise._processingVersion >= 2 ?  convertStatusToVersion2(APPLICATION_STATUS.APPROVED_FOR_IMMEDIATE_APPOINTMENT) : APPLICATION_STATUS.APPROVED_FOR_IMMEDIATE_APPOINTMENT,
+    ];
     const applicationRecords = await getDocuments(db.collection('applicationRecords')
       .where('exercise.id', '==', exerciseId)
-      .where('stage', '==', exercise._processingVersion >= 2 ? convertStageToVersion2(EXERCISE_STAGE.HANDOVER) : EXERCISE_STAGE.HANDOVER)
-      .where('status', '==', exercise._processingVersion >= 2 ?  convertStatusToVersion2(APPLICATION_STATUS.APPROVED_FOR_IMMEDIATE_APPOINTMENT) : APPLICATION_STATUS.APPROVED_FOR_IMMEDIATE_APPOINTMENT)
+      .where('stage', '==', stage)
+      .where('status', 'in', statuses)
     );
 
     // get the parent application records for the above
@@ -269,6 +274,8 @@ const formatPersonalDetails = (personalDetails) => {
 };
 
 const formatDiversityData = (survey, exercise) => {
+  if (!survey) return {};
+
   const share = (value) => survey.shareData ? value : null;
 
   let formattedFeePaidJudicialRole;
