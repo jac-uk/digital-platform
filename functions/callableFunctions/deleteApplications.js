@@ -1,7 +1,7 @@
 const functions = require('firebase-functions');
-const { db, auth } = require('../shared/admin.js');
+const { db, auth, storage } = require('../shared/admin.js');
 const config = require('../shared/config');
-const { deleteApplications } = require('../actions/applications/applications')(config, db, auth);
+const { deleteApplications } = require('../actions/applications/applications')(config, db, auth, storage);
 const { isProduction } = require('../shared/helpers');
 const { PERMISSIONS, hasPermissions } = require('../shared/permissions');
 

@@ -2,7 +2,7 @@ const { getDocuments } = require('../../shared/helpers');
 
 const _ = require('lodash');
 
-module.exports = (config, db, auth) => {
+module.exports = (db) => {
 
   return {
     customReport,

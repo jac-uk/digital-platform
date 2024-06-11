@@ -3,7 +3,7 @@ const applicationConverter = require('../../shared/converters/applicationConvert
 const drive = require('../../shared/google-drive')();
 const { FieldValue } = require('firebase-admin/firestore');
 
-module.exports = (config, storage, db) => {
+module.exports = (config, db, storage) => {
 
   return {
     processPanelExport,

@@ -1,8 +1,8 @@
 'use strict';
 
 const config = require('./shared/config');
-const { app, db, auth } = require('./shared/admin.js');
-const { sendCharacterCheckRequests } = require('../functions/actions/applications/applications')(config, db, auth);
+const { app, db, auth, storage } = require('./shared/admin.js');
+const { sendCharacterCheckRequests } = require('../functions/actions/applications/applications')(config, db, auth, storage);
 
 const main = async () => {
   return sendCharacterCheckRequests({

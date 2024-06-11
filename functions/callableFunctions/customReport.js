@@ -1,8 +1,6 @@
 const functions = require('firebase-functions');
-const { auth } = require('../shared/admin.js');
-const config = require('../shared/config');
 const { db } = require('../shared/admin.js');
-const { customReport } = require('../actions/exercises/customReport')(config, db, auth);
+const { customReport } = require('../actions/exercises/customReport')(db);
 const { checkFunctionEnabled } = require('../shared/serviceSettings.js')(db);
 
 module.exports = functions.region('europe-west2').https.onCall(async (data, context) => {

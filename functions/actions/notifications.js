@@ -1,5 +1,6 @@
 const { getDocument, getDocuments, applyUpdates } = require('../shared/helpers');
 const { Timestamp } = require('firebase-admin/firestore');
+
 module.exports = (config, db) => {
   const { sendEmail, previewEmail } = require('../shared/notify')(config);
   return {

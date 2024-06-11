@@ -10,8 +10,8 @@
  'use strict';
 
 const config = require('./shared/config');
-const { app, db, auth } = require('./shared/admin.js');
-const action = require('../functions/actions/applications/applications')(config, db, auth);
+const { app, db, auth, storage } = require('./shared/admin.js');
+const action = require('../functions/actions/applications/applications')(config, db, auth, storage);
 const {getDocument, getDocuments, applyUpdates} = require('../functions/shared/helpers');
 const { faker } = require('@faker-js/faker');
 

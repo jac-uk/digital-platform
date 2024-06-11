@@ -2,9 +2,9 @@ const { getDocument, applyUpdates, isDateInPast, formatDate } = require('../../s
 const { getSearchMap } = require('../../shared/search');
 const { Timestamp, FieldValue } = require('firebase-admin/firestore');
 
-module.exports = (config, db, auth) => {
+module.exports = (config, db, auth, storage) => {
   const { updateCandidate } = require('../candidates/search')(db);
-  const { sendApplicationConfirmation, sendApplicationInWelsh, sendCharacterCheckRequests, sendCandidateFlagConfirmation } = require('./applications')(config, db, auth);
+  const { sendApplicationConfirmation, sendApplicationInWelsh, sendCharacterCheckRequests, sendCandidateFlagConfirmation } = require('./applications')(config, db, auth, storage);
 
   return onUpdate;
 

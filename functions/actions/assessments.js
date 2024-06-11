@@ -1,5 +1,6 @@
 const { getDocument, getDocuments, getAllDocuments, getDocumentsFromQueries, applyUpdates } = require('../shared/helpers');
 const { FieldValue, FieldPath } = require('firebase-admin/firestore');
+
 module.exports = (config, db) => {
   const { newAssessment, newNotificationAssessmentRequest, newNotificationAssessmentReminder, newNotificationAssessmentSubmit } = require('../shared/factories')(config);
   const { testNotification } = require('./notifications')(config, db);

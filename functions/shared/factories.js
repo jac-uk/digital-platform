@@ -4,6 +4,7 @@ const { getSearchMap } = require('./search');
 const { objectHasNestedProperty } = require('./helpers');
 const _ = require('lodash');
 const { Timestamp, FieldValue } = require('firebase-admin/firestore');
+
 module.exports = (CONSTANTS) => {
   return {
     newNotificationExerciseApprovalSubmit,

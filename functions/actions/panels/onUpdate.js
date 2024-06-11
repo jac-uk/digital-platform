@@ -1,7 +1,7 @@
-module.exports = (config, storage, db) => {
+module.exports = (config, db, storage) => {
 
   const { initialisePanelExport } = require('./initialisePanelExport')(config, db);
-  const { processPanelExport } = require('./processPanelExport')(config, storage, db);
+  const { processPanelExport } = require('./processPanelExport')(config, db, storage);
 
   return onUpdate;
 

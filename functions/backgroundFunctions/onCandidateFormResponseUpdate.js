@@ -1,7 +1,7 @@
 const functions = require('firebase-functions');
 const config = require('../shared/config');
-const { db, auth } = require('../shared/admin');
-const onCandidateFormResponseUpdate = require('../actions/candidateFormResponses/onUpdate')(config, db, auth);
+const { db } = require('../shared/admin');
+const onCandidateFormResponseUpdate = require('../actions/candidateFormResponses/onUpdate')(db);
 
 module.exports = functions.region('europe-west2').firestore
   .document('candidateForms/{formId}/responses/{responseId}')

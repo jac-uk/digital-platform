@@ -1,7 +1,6 @@
 
-const config = require('./shared/config');
 const { app, db } = require('./shared/admin.js');
-const { customReport } = require('../functions/actions/exercises/customReport')(config, db);
+const { customReport } = require('../functions/actions/exercises/customReport')(db);
 
 const main = async (params) => {
   await customReport({

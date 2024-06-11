@@ -1,7 +1,7 @@
 const functions = require('firebase-functions');
 const config = require('../shared/config');
-const { storage, db } = require('../shared/admin.js');
-const onPanelUpdate = require('../actions/panels/onUpdate')(config, storage, db);
+const { db, storage } = require('../shared/admin.js');
+const onPanelUpdate = require('../actions/panels/onUpdate')(config, db, storage);
 
 const runtimeOptions = {
   timeoutSeconds: 300,

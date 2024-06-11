@@ -1,5 +1,6 @@
 const { getDocument, getDocuments, getAllDocuments } = require('../../shared/helpers');
 const { Timestamp } = require('firebase-admin/firestore');
+
 module.exports = (config, db) => {
   const { EXERCISE_STAGE, APPLICATION_STATUS } = config;
   const { convertStageToVersion2, convertStatusToVersion2 } = require('../applicationRecords/updateApplicationRecordStageStatus')(config, db);
