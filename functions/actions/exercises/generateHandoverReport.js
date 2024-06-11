@@ -1,8 +1,9 @@
 const helpers = require('../../shared/converters/helpers');
 const lookup = require('../../shared/converters/lookup');
 const { getDocument, getDocuments, getAllDocuments, removeHtml } = require('../../shared/helpers');
+const { getAdditionalWorkingPreferences } = require('../../shared/converters/workingPreferencesConverter');
 const applicationConverter = require('../../shared/converters/applicationConverter')();
-const { getAdditionalWorkingPreferences, getWelshData } = applicationConverter;
+const { getWelshData } = applicationConverter;
 
 module.exports = (firebase, config, db) => {
   const { EXERCISE_STAGE, APPLICATION_STATUS } = config;
@@ -18,10 +19,15 @@ module.exports = (firebase, config, db) => {
     const exercise = await getDocument(db.collection('exercises').doc(exerciseId));
 
     // get submitted application records (which are at the handover stage)
+    const stage = exercise._processingVersion >= 2 ? convertStageToVersion2(EXERCISE_STAGE.HANDOVER) : EXERCISE_STAGE.HANDOVER;
+    const statuses = [
+      APPLICATION_STATUS.RECOMMENDED_IMMEDIATE,
+      exercise._processingVersion >= 2 ?  convertStatusToVersion2(APPLICATION_STATUS.APPROVED_FOR_IMMEDIATE_APPOINTMENT) : APPLICATION_STATUS.APPROVED_FOR_IMMEDIATE_APPOINTMENT,
+    ];
     const applicationRecords = await getDocuments(db.collection('applicationRecords')
       .where('exercise.id', '==', exerciseId)
-      .where('stage', '==', exercise._processingVersion >= 2 ? convertStageToVersion2(EXERCISE_STAGE.HANDOVER) : EXERCISE_STAGE.HANDOVER)
-      .where('status', '==', exercise._processingVersion >= 2 ?  convertStatusToVersion2(APPLICATION_STATUS.APPROVED_FOR_IMMEDIATE_APPOINTMENT) : APPLICATION_STATUS.APPROVED_FOR_IMMEDIATE_APPOINTMENT)
+      .where('stage', '==', stage)
+      .where('status', 'in', statuses)
     );
 
     // get the parent application records for the above
@@ -268,6 +274,8 @@ const formatPersonalDetails = (personalDetails) => {
 };
 
 const formatDiversityData = (survey, exercise) => {
+  if (!survey) return {};
+
   const share = (value) => survey.shareData ? value : null;
 
   let formattedFeePaidJudicialRole;
