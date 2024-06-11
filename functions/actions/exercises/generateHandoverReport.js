@@ -1,8 +1,9 @@
 const helpers = require('../../shared/converters/helpers');
 const lookup = require('../../shared/converters/lookup');
 const { getDocument, getDocuments, getAllDocuments, removeHtml } = require('../../shared/helpers');
+const { getAdditionalWorkingPreferences } = require('../../shared/converters/workingPreferencesConverter');
 const applicationConverter = require('../../shared/converters/applicationConverter')();
-const { getAdditionalWorkingPreferences, getWelshData } = applicationConverter;
+const { getWelshData } = applicationConverter;
 
 module.exports = (firebase, config, db) => {
   const { EXERCISE_STAGE, APPLICATION_STATUS } = config;
