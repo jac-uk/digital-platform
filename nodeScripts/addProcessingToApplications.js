@@ -8,6 +8,7 @@
 const { app, db } = require('./shared/admin.js');
 const { getDocument, getDocuments, applyUpdates, objectHasNestedProperty } = require('../functions/shared/helpers.js');
 const { FieldValue } = require('firebase-admin/firestore');
+
 async function checkAllApplications() {
   const applications = await getDocuments(db.collection('applications')
     .where('status', 'in', ['applied', 'withdrawn'])

@@ -2,8 +2,6 @@
 
 const config = require('./shared/config');
 const { app, storage } = require('./shared/admin.js');
-// TODO: KO test
-//const { storage } = require('../functions/shared/admin.js');
 const { scanAllFiles } = require('../functions/actions/malware-scanning/scanAllFiles')(config, app, storage);
 
 const main = async () => {

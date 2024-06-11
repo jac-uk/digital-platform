@@ -13,6 +13,7 @@ const { getDocuments, applyUpdates } = require('../../functions/shared/helpers.j
 const { getSearchMap } = require('../../functions/shared/search.js');
 const { objectHasNestedProperty } = require('../../functions/shared/helpers.js');
 const { FieldValue } = require('firebase-admin/firestore');
+
 async function updateAllAssessments() {
   const commands = [];
   const assessments = await getDocuments(db.collection('assessments').select('assessor', 'candidate', 'application'));

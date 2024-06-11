@@ -7,6 +7,7 @@
 const { app, db } = require('./shared/admin');
 const { applyUpdates, getDocuments } = require('../functions/shared/helpers');
 const { FieldValue } = require('firebase-admin/firestore');
+
 // whether to make changes in firestore
 const isAction = false;
 const exerciseId = '';

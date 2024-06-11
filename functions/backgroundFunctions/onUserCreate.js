@@ -1,7 +1,6 @@
 const functions = require('firebase-functions');
-const config = require('../shared/config');
 const { db, auth } = require('../shared/admin');
-const { onUserCreate } = require('../actions/users')(config, db, auth);
+const { onUserCreate } = require('../actions/users')(auth, db);
 const { logEvent } = require('../actions/logs/logEvent')(db, auth);
 
 module.exports = functions.region('europe-west2').firestore

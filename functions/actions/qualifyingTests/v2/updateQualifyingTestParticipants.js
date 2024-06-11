@@ -1,5 +1,6 @@
 const { getDocuments, getDocument } = require('../../../shared/helpers');
 const { FieldValue } = require('firebase-admin/firestore');
+
 module.exports = (config, db) => {
   const qts = require('../../../shared/qts')(config);
 

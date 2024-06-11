@@ -2,6 +2,7 @@
 
 const { app, db } = require('./shared/admin.js');
 const { exportApplicationContactsData } = require('../functions/actions/exercises/exportApplicationContactsData.js')(db);
+
 const main = async () => {
   return exportApplicationContactsData({
     exerciseId: 'nJrIBstsDNMDs6VAxDUf',

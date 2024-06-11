@@ -1,4 +1,5 @@
 const { FieldValue } = require('firebase-admin/firestore');
+
 module.exports = (config, db) => {
 
   const zenhub = require('../../shared/zenhub')(config);

@@ -14,6 +14,7 @@ const { getDocument, getDocuments, applyUpdates } = require('../../functions/sha
 const { getSearchMap } = require('../../functions/shared/search.js');
 const { objectHasNestedProperty } = require('../../functions/shared/helpers.js');
 const { FieldValue } = require('firebase-admin/firestore');
+
 async function updateAllApplications() {
   const commands = [];
   const applications = await getDocuments(db.collection('applications').select('personalDetails', 'referenceNumber'));

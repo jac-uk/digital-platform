@@ -1,5 +1,6 @@
 const { getDocument, getDocuments } = require('../../shared/helpers');
 const { FieldValue } = require('firebase-admin/firestore');
+
 module.exports = (db) => {
   return {
     refreshApplicationCounts,

@@ -1,4 +1,5 @@
 const { Timestamp } = require('firebase-admin/firestore');
+
 module.exports = (db, auth) => {
   return {
     logEvent,

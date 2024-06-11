@@ -1,6 +1,7 @@
 const { getDocument, getDocuments, getDocumentsFromQueries, applyUpdates } = require('../../shared/helpers');
 const lookup = require('../../shared/converters/lookup');
 const { FieldValue, FieldPath } = require('firebase-admin/firestore');
+
 module.exports = (config, db) => {
   const {
     taskStatuses,
