@@ -1,5 +1,6 @@
 const { getDocument, getDocuments, applyUpdates } = require('../../shared/helpers');
 const { FieldValue } = require('firebase-admin/firestore');
+
 module.exports = (config, db) => {
   const { EXERCISE_STAGE, APPLICATION_STATUS } = config;
 

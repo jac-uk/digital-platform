@@ -1,6 +1,7 @@
 const functions = require('firebase-functions');
+const config = require('../shared/config.js');
 const { db, auth } = require('../shared/admin.js');
-const { generateHandoverReport } = require('../actions/exercises/generateHandoverReport')(db);
+const { generateHandoverReport } = require('../actions/exercises/generateHandoverReport')(config, db);
 const { getDocument } = require('../shared/helpers');
 const { logEvent } = require('../actions/logs/logEvent')(db, auth);
 const { checkFunctionEnabled } = require('../shared/serviceSettings.js')(db);

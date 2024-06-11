@@ -1,7 +1,8 @@
 'use strict';
 
+const config = require('./shared/config');
 const { app, db } = require('./shared/admin.js');
-const { generateHandoverReport } = require('../functions/actions/exercises/generateHandoverReport')(db);
+const { generateHandoverReport } = require('../functions/actions/exercises/generateHandoverReport')(config, db);
 
 const main = async () => {
   return generateHandoverReport('ofWyUMtAGBGj6AVck2tH');

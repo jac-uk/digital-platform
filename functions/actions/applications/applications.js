@@ -179,9 +179,8 @@ module.exports = (config, db, auth, storage) => {
       .where('exerciseId', '==', exerciseId)
       .where('status', '==', 'draft');
     let applications = await getDocuments(applicationsRef);
-    // send reminder email if it has not been sent before
     applications = applications.filter(application => {
-      if (application.emailLog && application.emailLog.applicationReminder) return false;
+      //if (application.emailLog && application.emailLog.applicationReminder) return false;
 
       return application.personalDetails && application.personalDetails.fullName && application.personalDetails.email;
     });
