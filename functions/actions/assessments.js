@@ -80,7 +80,7 @@ module.exports = (config, firebase, db) => {
   * Creates assessment requests for each assessor of each application
   * @param {*} `params` is an object containing
   *   `exerciseId` (required) ID of exercise
-  *   `stage` (optional) exercise stage to send out to
+  *   `status` (required) exercise status to send out to
   *   `applicationId` (optional) ID of a specific application to initialise
   */
   async function initialiseAssessments(params) {
@@ -101,7 +101,7 @@ module.exports = (config, firebase, db) => {
       // get applications
       let applicationRecordsSnap = await db.collection('applicationRecords')
         .where('exercise.id', '==', params.exerciseId)
-        .where('stage', '==', params.stage)
+        .where('status', '==', params.status)
         .select() // this is interesting. it allows us to retrieve part or none of the document data (in admin sdk)
         .get();
       const applicationRefs = applicationRecordsSnap.docs.map(item => db.collection('applications').doc(item.id));

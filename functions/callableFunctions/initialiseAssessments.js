@@ -22,7 +22,7 @@ module.exports = functions.region('europe-west2').https.onCall(async (data, cont
 
   if (!checkArguments({
     exerciseId: { required: true },
-    stage: { required: true },
+    status: { required: true },
   }, data)) {
     throw new functions.https.HttpsError('invalid-argument', 'Please provide valid arguments');
   }
