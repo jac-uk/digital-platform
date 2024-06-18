@@ -1,13 +1,12 @@
 /**
  * Backup authentication
  */
-const admin = require('firebase-admin');
 const firebaseTools = require('firebase-tools');
 const fs = require('fs');
 const os = require('os');
 const path = require('path');
 
-module.exports = (config) => {
+module.exports = (config, storage) => {
   const BACKUP_BUCKET = `${config.PROJECT_ID}-backups`;
   const BACKUP_PATH = 'authentication';
   const PROJECT_ID = config.PROJECT_ID;
@@ -26,7 +25,7 @@ module.exports = (config) => {
       });
     };
 
-    const bucket = admin.storage().bucket(BACKUP_BUCKET);
+    const bucket = storage.bucket(BACKUP_BUCKET);
 
     // Upload local file to the backup Cloud Storage bucket
     const uploadToStorageBucket = async (localPath, fileName) => {
