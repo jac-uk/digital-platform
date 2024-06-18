@@ -17,4 +17,3 @@ exports.firebase = {
 exports.db = getFirestore(app);
 exports.app = app;
 exports.auth = getAuth(app);
-exports.storage = getStorage(app);

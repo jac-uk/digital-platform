@@ -6,7 +6,7 @@ const fs = require('fs');
 const os = require('os');
 const path = require('path');
 
-module.exports = (config, storage) => {
+module.exports = (config, firebase) => {
   const BACKUP_BUCKET = `${config.PROJECT_ID}-backups`;
   const BACKUP_PATH = 'authentication';
   const PROJECT_ID = config.PROJECT_ID;
@@ -25,7 +25,7 @@ module.exports = (config, storage) => {
       });
     };
 
-    const bucket = storage.bucket(BACKUP_BUCKET);
+    const bucket = firebase.storage().bucket(BACKUP_BUCKET);
 
     // Upload local file to the backup Cloud Storage bucket
     const uploadToStorageBucket = async (localPath, fileName) => {

@@ -1,8 +1,8 @@
 'use strict';
 
 const config = require('./shared/config');
-const { app, storage } = require('./shared/admin.js');
-const { backupFirestore } = require('../functions/actions/backup/firestore')(config, storage);
+const { app, firebase } = require('./shared/admin.js');
+const { backupFirestore } = require('../functions/actions/backup/firestore')(config, firebase);
 
 const main = async () => {
   return backupFirestore();
