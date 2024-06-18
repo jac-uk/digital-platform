@@ -105,7 +105,11 @@ module.exports = (config, firebase, db) => {
         ref = ref.where('stage', '==', params.stage);
       }
       if (params.status) {
-        ref = ref.where('status', '==', params.status);
+        if (params.status === 'blank') {
+          ref = ref.where('status', '==', '');
+        } else {
+          ref = ref.where('status', '==', params.status);
+        }
       }
       ref = ref.select(); // this is interesting. it allows us to retrieve part or none of the document data (in admin sdk)
       let applicationRecordsSnap = await ref.get();
