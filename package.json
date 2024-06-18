@@ -6,7 +6,8 @@
   "license": "MIT",
   "readme": "README.md",
   "engines": {
-    "node": "18"
+    "node": "18.20.3",
+    "npm": "10.7.0"
   },
   "scripts": {
     "lint": "eslint .",
