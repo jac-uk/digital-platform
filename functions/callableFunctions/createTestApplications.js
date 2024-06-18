@@ -27,7 +27,7 @@ module.exports = functions.runWith(runtimeOptions).region('europe-west2').https.
 
   const testApplications = await loadTestApplications();
   if (!testApplications) {
-    throw new functions.https.HttpsError('failed-precondition', `Failed to load test applications from cloud storage (${fileName}).`);
+    throw new functions.https.HttpsError('failed-precondition', 'Failed to load test applications from cloud storage.');
   }
 
   const maxNoOfTestApplications = testApplications.length;
