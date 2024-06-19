@@ -11,8 +11,7 @@
     "logs": "firebase functions:log"
   },
   "engines": {
-    "node": "18.20.3",
-    "npm": "10.7.0"
+    "node": "18"
   },
   "dependencies": {
     "axios": "^0.28.0",
