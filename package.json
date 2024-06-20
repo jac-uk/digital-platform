@@ -71,7 +71,8 @@
     "firebase-tools": "^13.11.2",
     "googleapis": "^67.0.0",
     "lodash": "^4.17.21",
-    "mammoth": "^1.6.0"
+    "mammoth": "^1.6.0",
+    "notifications-node-client": "^8.1.0"
   },
   "devDependencies": {
     "@faker-js/faker": "^6.0.0-alpha.5",
