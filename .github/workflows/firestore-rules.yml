@@ -19,7 +19,7 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       ## Install and test
-      - uses: actions/checkout@v2
+      - uses: actions/checkout@v4
         with:
           token: ${{ secrets.DEPLOY_TOKEN }}
       - uses: actions/setup-node@master
@@ -42,7 +42,7 @@ jobs:
       - name: Get package version (for pushes)
         if: github.event_name == 'push' && success()
         id: package_version
-        run: echo "::set-output name=current_version::$(node -p "require('./package.json').version")"
+        run: echo "name=current_version::$(node -p "require('./package.json').version")" >> $GITHUB_OUTPUT
       - name: Bump package version (for pushes)
         if: github.event_name == 'push' && success() &&
           steps.package_version.outputs.current_version != steps.release_drafter.outputs.tag_name
