@@ -1,9 +1,9 @@
-const firebase = require('firebase-admin');
 const { applicationOpenDatePost01042023, ordinal } = require('../../../functions/shared/converters/helpers');
+const { Timestamp } = require('firebase-admin/firestore');
 
-const pre010423Date = firebase.firestore.Timestamp.fromDate(new Date('2023-03-31'));
-const on010423Date = firebase.firestore.Timestamp.fromDate(new Date('2023-04-01'));
-const post010423Date = firebase.firestore.Timestamp.fromDate(new Date('2023-04-02'));
+const pre010423Date = Timestamp.fromDate(new Date('2023-03-31'));
+const on010423Date = Timestamp.fromDate(new Date('2023-04-01'));
+const post010423Date = Timestamp.fromDate(new Date('2023-04-02'));
 
 describe('applicationOpenDatePost01042023()', () => {
 

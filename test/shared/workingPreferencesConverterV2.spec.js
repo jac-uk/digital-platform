@@ -489,7 +489,7 @@ describe('applicationConverter', () => {
       // assertions
       expect(jurisdictionPreferencesHeading.innerHTML).toBe('Jurisdiction Preferences');
       expect(jurisdictionPreferencesTable.innerHTML).toContain(mockExercise.jurisdictionPreferences[0].question);
-      expect(jurisdictionPreferencesTable.innerHTML).toContain(mockApplication.jurisdictionPreferences.chk);
+      expect(jurisdictionPreferencesTable.innerHTML).toContain(mockApplication.jurisdictionPreferences.chk[0]);
     });
   });
 

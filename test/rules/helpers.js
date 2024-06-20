@@ -1,61 +1,53 @@
-const firebase = require('@firebase/rules-unit-testing');
+const { initializeTestEnvironment } = require('@firebase/rules-unit-testing');
+const { Timestamp, setLogLevel } = require('firebase/firestore');
 const fs = require('fs');
-const admin = require('firebase-admin');
 
 const projectId = `rules-spec-${Date.now()}`;
+const rules = fs.readFileSync('database/firestore.rules', 'utf8');
+
+let testEnv;
 
 // Returns database instance used in your tests
 module.exports.setup = async (auth, data) => {
-
-  const rules = fs.readFileSync('database/firestore.rules', 'utf8');
-
-  const app = await firebase.initializeTestApp({
+  setLogLevel('error');
+  testEnv = await initializeTestEnvironment({
     projectId,
-    auth,
+    firestore: {
+      rules,
+    },
   });
 
-  const db = app.firestore();
-
-  if (data) {
-    const adminApp = await firebase.initializeAdminApp({
-      projectId: projectId,
-    });
-    const adminDb = adminApp.firestore();
-    for (const key in data) {
-      const ref = adminDb.doc(key);
-      await ref.set(data[key]);
-    }
+  let db;
+  if (auth && auth.uid) {
+    const options = JSON.parse(JSON.stringify(auth));
+    delete options.uid;
+    db = testEnv.authenticatedContext(auth.uid, options).firestore();
+  } else {
+    db = testEnv.unauthenticatedContext().firestore();
   }
 
-  await firebase.loadFirestoreRules({
-    projectId,
-    rules: rules,
-  });
+  if (data) {
+    // Add data bypassing security rules
+    await testEnv.withSecurityRulesDisabled(async (context) => {
+      const db = context.firestore();
+      for (const key in data) {
+        console.log(key, data[key]);
+        await db.doc(key).set(data[key]);
+      }
+    });
+  }
 
   return db;
 };
 
 module.exports.teardown = async () => {
-  await Promise.all(firebase.apps().map(app => app.delete()));
-};
-
-// Add data bypassing security rules
-module.exports.setupAdmin = async (db, data) => {
-  const app = await firebase.initializeAdminApp({
-    projectId: db.app.options.projectId,
-  });
-  const adminDb = app.firestore();
-  if (data) {
-    for (const key in data) {
-      const ref = adminDb.doc(key);
-      await ref.set(data[key]);
-    }
+  if (testEnv) {
+    await testEnv.cleanup();
   }
-  return adminDb;
 };
 
 module.exports.getTimeStamp = (date) => {
-  return admin.firestore.Timestamp.fromDate(date);
+  return Timestamp.fromDate(date);
 };
 
 const getRandomInt = (min, max) => {

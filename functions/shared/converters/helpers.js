@@ -1,7 +1,5 @@
 const lookup = require('./lookup');
-
-const firebase = require('firebase-admin');
-const Timestamp = firebase.firestore.Timestamp;
+const { Timestamp } = require('firebase-admin/firestore');
 
 const addField = (array, label, value, lineBreak = false) => {
   if (value === undefined || value === null || value === '') {

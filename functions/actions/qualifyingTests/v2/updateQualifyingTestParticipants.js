@@ -1,4 +1,3 @@
-const { app } = require('firebase-admin');
 const { getDocuments, getDocument } = require('../../../shared/helpers');
 
 module.exports = (config, firebase, db) => {
