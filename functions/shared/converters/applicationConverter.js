@@ -49,7 +49,7 @@ module.exports = () => {
         html.addTable(additionalPrefs);
       }
       
-      if (application.uploadedSelfAssessment && exercise.selfAssessmentWordLimits) {
+      if (application.uploadedSelfAssessment) {
         const selfAssessment = getSelfAssessment(application, exercise);
         if (selfAssessment.length) {
           html.addHeading('Self Assessment');
@@ -121,7 +121,7 @@ module.exports = () => {
   function getSelfAssessment(application, exercise) {
     const selfAssessmentData = application.uploadedSelfAssessmentContent;
     const data = [];
-    if (!selfAssessmentData) return data;
+    if (!selfAssessmentData || !exercise.selfAssessmentWordLimits) return data;
     selfAssessmentData.forEach((q, i) => {
       addField(data, exercise.selfAssessmentWordLimits[i].question, q);
     });
