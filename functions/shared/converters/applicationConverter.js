@@ -48,6 +48,14 @@ module.exports = () => {
         html.addHeading('Additional Preferences');
         html.addTable(additionalPrefs);
       }
+      
+      if (application.uploadedSelfAssessment) {
+        const selfAssessment = getSelfAssessment(application, exercise);
+        if (selfAssessment.length) {
+          html.addHeading('Self Assessment');
+          html.addTable(selfAssessment);
+        }
+      }
 
       if (application.selectionCriteriaAnswers && application.selectionCriteriaAnswers.length) {
         html.addHeading('Additional selection criteria');
@@ -108,6 +116,16 @@ module.exports = () => {
     }
 
     return html.toString();
+  }
+
+  function getSelfAssessment(application, exercise) {
+    const selfAssessmentData = application.uploadedSelfAssessmentContent;
+    const data = [];
+    if (!selfAssessmentData || !exercise.selfAssessmentWordLimits) return data;
+    selfAssessmentData.forEach((q, i) => {
+      addField(data, exercise.selfAssessmentWordLimits[i].question, q);
+    });
+    return data;
   }
 
   function getQualificationData(exercise, application) {
