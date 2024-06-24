@@ -93,7 +93,7 @@ module.exports = (firebase, config, db) => {
       
       const processing = applications[i]._processing;
       const stage = processing ? processing.stage : '';
-      const status = processing ? processing.status : '';
+      const status = processing ? processing.status || 'blank' : '';
 
       const data = {};
       if (eligibilityIssues && eligibilityIssues.length > 0) {
@@ -134,7 +134,7 @@ module.exports = (firebase, config, db) => {
 
     // count application status
     commands.push({
-      command: 'set',
+      command: 'update',
       ref: db.collection('exercises').doc(`${exerciseId}`),
       data: {
         '_characterIssue': {
