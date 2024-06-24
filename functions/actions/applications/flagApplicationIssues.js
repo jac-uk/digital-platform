@@ -19,7 +19,7 @@ module.exports = (firebase, config, db) => {
 
   /**
    * flagApplicationIssues
-   * Works through an application and marks it with any issues.
+   * Works through an application and marks it with any issues including eligibility, character issues.
    * The application document is always updated, therefore resetting previous issue data.
    * @param {*} applicationId
    *
@@ -53,7 +53,7 @@ module.exports = (firebase, config, db) => {
 
   /**
    * flagApplicationIssuesForExercise
-   * Iterates through all applications for an exercise flagging any that have issues
+   * Iterates through all applications for an exercise flagging any that have issues including eligibility, character issues.
    * @param {*} exerciseId
    */
   async function flagApplicationIssuesForExercise(exerciseId) {
@@ -170,7 +170,7 @@ module.exports = (firebase, config, db) => {
   function getEligibilityIssues(exercise, application, applicationRecord) {
 
     const issues = [];
-    const isLegalExercise = ['legal', 'leadership'].indexOf(exercise.typeOfExercise) >= 0;
+    const isLegalExercise = ['legal', 'leadership'].includes(exercise.typeOfExercise);
     const isNonLegalExercise = ['non-legal', 'leadership-non-legal'].includes(exercise.typeOfExercise);
 
     // reasonable length of service - calculated from dob, characterAndSCCDate, reasonable length of service and retirement age
@@ -243,7 +243,7 @@ module.exports = (firebase, config, db) => {
               startDate.setMonth(startDate.getMonth() + 1);
               const endDate = el.endDate ? getDate(el.endDate) : getDate(exercise.characterAndSCCDate);
               if (el.tasks && el.tasks.length > 0) {
-                if (el.tasks.indexOf('other') >= 0) {
+                if (el.tasks.includes('other')) {
                   otherExperience.add(new Duration(startDate, endDate));
                 } else {
                   if (latestValidEndDate < endDate) {
@@ -347,7 +347,7 @@ module.exports = (firebase, config, db) => {
   }
 
   function getProfessionalRegistrationIssue(exercise, application) {
-    if (!exercise.memberships || !exercise.memberships.length || exercise.memberships.indexOf('none') > -1) return null;
+    if (!exercise.memberships || !exercise.memberships.length || exercise.memberships.includes('none')) return null;
 
     const membershipData = [];
     const membershipList = [
