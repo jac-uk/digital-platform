@@ -56,7 +56,7 @@ module.exports = (firebase, db) => {
       firestoreRef = firestoreRef.where('stage', '==', stage);
     }
     if (status !== 'all') {
-      firestoreRef = firestoreRef.where('status', '==', status);
+      firestoreRef = firestoreRef.where('status', '==', status === 'blank' ? '' : status);
     } else {
       firestoreRef = firestoreRef.where('status', '!=', 'withdrewApplication');
     }
