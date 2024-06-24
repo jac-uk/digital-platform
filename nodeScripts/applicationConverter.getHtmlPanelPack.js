@@ -18,11 +18,16 @@ const { getHtmlPanelPack } = require('../functions/shared/converters/application
 
 const main = async () => {
 
+    // Self Assessment Questions
+    // Develop
+    const exerciseId = 'IUSNh8uyhmM3u4x7F8eC';
+    const applicationId = 'tomtom111';
+
     // Version 2 Questions
     // Develop
-    const exerciseId = 'AQJcLG2HtXyLkGVLQQjp';
+    // const exerciseId = 'AQJcLG2HtXyLkGVLQQjp';
     //const applicationId = 'fErVaoQBu8AO7lDN4nb3';
-    const applicationId = 'KW9O5qQJSUsKiOnyXQbJ';
+    // const applicationId = 'KW9O5qQJSUsKiOnyXQbJ';
 
     
     // Version 1 Questions
