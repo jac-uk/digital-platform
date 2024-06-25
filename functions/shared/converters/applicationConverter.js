@@ -153,7 +153,7 @@ module.exports = () => {
 
     if (exercise.schedule2Apply) {
       if (exercise.appliedSchedule === 'schedule-2-3') {
-        addField(data, 'Are you applying under Schedule 2(3)?', toYesNo(application.applyingForSchedule2Three));
+        addField(data, 'Are you applying under Schedule 3(d)?', toYesNo(application.applyingForSchedule2Three));
       }
       if (exercise.appliedSchedule === 'schedule-2-d') {
         addField(data, 'Are you applying under Schedule 2(d)?', toYesNo(application.applyingUnderSchedule2d));
