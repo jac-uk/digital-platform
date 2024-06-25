@@ -21,7 +21,7 @@ module.exports = functions.region('europe-west2').https.onCall(async (data, cont
   if (!(typeof data.exerciseId === 'string') || data.exerciseId.length === 0) {
     throw new functions.https.HttpsError('invalid-argument', 'Please specify an "exerciseId"');
   }
-  const result = await flagApplicationIssues.flagApplicationIssuesForExercise(data.exerciseId);
+  const result = await flagApplicationIssues.flagApplicationIssuesForExercise(data.exerciseId, data.force);
   return {
     result: result,
   };
