@@ -42,7 +42,7 @@ jobs:
       - name: Get package version (for pushes)
         if: github.event_name == 'push' && success()
         id: package_version
-        run: echo "name=current_version::$(node -p "require('./package.json').version")" >> $GITHUB_OUTPUT
+        run: echo "current_version=$(node -p "require('./package.json').version")" >> $GITHUB_OUTPUT
       - name: Bump package version (for pushes)
         if: github.event_name == 'push' && success() &&
           steps.package_version.outputs.current_version != steps.release_drafter.outputs.tag_name
