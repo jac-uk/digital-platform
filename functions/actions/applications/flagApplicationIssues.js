@@ -53,7 +53,7 @@ module.exports = (firebase, config, db) => {
 
   /**
    * flagApplicationIssuesForExercise
-   * Iterates through all applications for an exercise flagging any that have issues
+   * Iterates through all applications for an exercise flagging any that have issues including eligibility, character issues.
    * @param {string}  exerciseId
    * @param {boolean} reset If true, issues are repopulated even if they already exist
    */
