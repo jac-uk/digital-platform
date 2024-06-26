@@ -54,9 +54,10 @@ module.exports = (firebase, config, db) => {
   /**
    * flagApplicationIssuesForExercise
    * Iterates through all applications for an exercise flagging any that have issues including eligibility, character issues.
-   * @param {*} exerciseId
+   * @param {string}  exerciseId
+   * @param {boolean} reset If true, issues are repopulated even if they already exist
    */
-  async function flagApplicationIssuesForExercise(exerciseId) {
+  async function flagApplicationIssuesForExercise(exerciseId, reset = false) {
 
     // get exercise data
     const exercise = await getExercise(exerciseId);
@@ -108,7 +109,7 @@ module.exports = (firebase, config, db) => {
       }
       if (characterIssues && characterIssues.length > 0) {
         data['flags.characterIssues'] = true;
-        if (applicationRecord && (!applicationRecord.flags || !applicationRecord.flags.characterIssues)) {
+        if (applicationRecord && (reset || (!applicationRecord.flags || !applicationRecord.flags.characterIssues))) {
           data['issues.characterIssues'] = characterIssues;
         }
 
