@@ -81,6 +81,10 @@ const PERMISSIONS = {
         label: 'Can configure exercise',
         value: 'e11',
       },
+      canResetCharacterIssuesReport: {
+        label: 'Can reset character issues report',
+        value: 'e12',
+      },
     },
   },
   candidates: {
