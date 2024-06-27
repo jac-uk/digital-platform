@@ -18,16 +18,22 @@ module.exports = (firebase, db) => {
    * Generates an export of all applications in the selected exercise with eligibility issues
    * @param {*} `exerciseId` (required) ID of exercise to include in the export
    */
-  async function exportApplicationEligibilityIssues(exerciseId, format) {
+  async function exportApplicationEligibilityIssues(exerciseId, format, status = null) {
 
     // get the exercise
     const exercise = await getDocument(
       db.collection('exercises').doc(exerciseId)
     );
 
-    const applicationRecords = await getDocuments(db.collection('applicationRecords')
-      .where('exercise.id', '==', exerciseId)
-      .where('flags.eligibilityIssues', '==', true));
+    let applicationRecordsRef = db.collection('applicationRecords')
+    .where('exercise.id', '==', exerciseId)
+    .where('flags.eligibilityIssues', '==', true);
+
+    if (status) {
+      applicationRecordsRef = applicationRecordsRef.where('status', '==', status);
+    }
+
+    const applicationRecords = await getDocuments(applicationRecordsRef);
 
     for (let i = 0, len = applicationRecords.length; i < len; i++) {
       const applicationRecord = applicationRecords[i];
