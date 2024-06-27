@@ -92,9 +92,8 @@ module.exports = (firebase, config, db) => {
       const eligibilityIssues = getEligibilityIssues(exercise, applications[i], applicationRecord);
       const characterIssues = getCharacterIssues(exercise, applications[i]);
       
-      const processing = applications[i]._processing;
-      const stage = processing ? processing.stage : '';
-      const status = processing ? processing.status || 'blank' : '';
+      const stage = applicationRecord ? applicationRecord.stage : '';
+      const status = applicationRecord ? applicationRecord.status || 'blank' : '';
 
       const data = {};
       if (eligibilityIssues && eligibilityIssues.length > 0) {
