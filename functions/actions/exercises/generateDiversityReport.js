@@ -1,6 +1,5 @@
 const { getDocument, getDocuments } = require('../../shared/helpers');
 const { applicationOpenDatePost01042023 } = require('../../shared/converters/helpers');
-const { availableStages } = require('../../shared/exerciseHelper');
 
 /**
  * For the diversity reports:
@@ -23,6 +22,8 @@ const { availableStages } = require('../../shared/exerciseHelper');
  * @returns 
  */
 module.exports = (config, firebase, db) => {
+  const { availableStages } = require('../../shared/exerciseHelper')(config);
+
   return {
     generateDiversityReport,
     genderStats,
@@ -80,26 +81,29 @@ module.exports = (config, firebase, db) => {
     const APPLICATION_STATUS = config.APPLICATION_STATUS;
     const SHORTLISTING = config.SHORTLISTING;
     const statuses = [];
-    // qt
-    if (exercise.shortlistingMethods.some(method => [
-      SHORTLISTING.SITUATIONAL_JUDGEMENT_QUALIFYING_TEST,
-      SHORTLISTING.CRITICAL_ANALYSIS_QUALIFYING_TEST,
-    ].includes(method))) {
-      const status = isProcessingVersion2 ? APPLICATION_STATUS.QUALIFYING_TEST_PASSED : APPLICATION_STATUS.PASSED_FIRST_TEST;
-      statuses.push(status);
-    }
-    // scenario test
-    if (exercise.shortlistingMethods.includes(SHORTLISTING.SCENARIO_TEST_QUALIFYING_TEST)) {
-      const status = isProcessingVersion2 ? APPLICATION_STATUS.SCENARIO_TEST_PASSED : APPLICATION_STATUS.PASSED_SCENARIO_TEST;
-      statuses.push(status);
-    }
-    // sift
-    if (exercise.shortlistingMethods.some(method => [
-      SHORTLISTING.NAME_BLIND_PAPER_SIFT,
-      SHORTLISTING.PAPER_SIFT,
-    ].includes(method))) {
-      const status = isProcessingVersion2 ? APPLICATION_STATUS.SIFT_PASSED : APPLICATION_STATUS.PASSED_SIFT;
-      statuses.push(status);
+
+    if (exercise.shortlistingMethods) {
+      // qt
+      if (exercise.shortlistingMethods.some(method => [
+        SHORTLISTING.SITUATIONAL_JUDGEMENT_QUALIFYING_TEST,
+        SHORTLISTING.CRITICAL_ANALYSIS_QUALIFYING_TEST,
+      ].includes(method))) {
+        const status = isProcessingVersion2 ? APPLICATION_STATUS.QUALIFYING_TEST_PASSED : APPLICATION_STATUS.PASSED_FIRST_TEST;
+        statuses.push(status);
+      }
+      // scenario test
+      if (exercise.shortlistingMethods.includes(SHORTLISTING.SCENARIO_TEST_QUALIFYING_TEST)) {
+        const status = isProcessingVersion2 ? APPLICATION_STATUS.SCENARIO_TEST_PASSED : APPLICATION_STATUS.PASSED_SCENARIO_TEST;
+        statuses.push(status);
+      }
+      // sift
+      if (exercise.shortlistingMethods.some(method => [
+        SHORTLISTING.NAME_BLIND_PAPER_SIFT,
+        SHORTLISTING.PAPER_SIFT,
+      ].includes(method))) {
+        const status = isProcessingVersion2 ? APPLICATION_STATUS.SIFT_PASSED : APPLICATION_STATUS.PASSED_SIFT;
+        statuses.push(status);
+      }
     }
 
     statuses.forEach(status => {

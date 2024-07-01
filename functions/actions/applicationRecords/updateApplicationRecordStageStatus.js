@@ -239,17 +239,19 @@ module.exports = (firebase, config, db) => {
       // back up
       payload['_backups.processingVersion1._applicationRecords'] = exercise._applicationRecords || {};
 
-      Object.entries(exercise._applicationRecords).forEach(([key, value]) => {
-        const newStage = convertStageToVersion2(key);
-        if (newStage) {
-          if (payload[`_applicationRecords.${newStage}`]) {
-            payload[`_applicationRecords.${newStage}`] += value;
-          } else {
-            payload[`_applicationRecords.${newStage}`] = value;
+      if (exercise._applicationRecords) {
+        Object.entries(exercise._applicationRecords).forEach(([key, value]) => {
+          const newStage = convertStageToVersion2(key);
+          if (newStage) {
+            if (payload[`_applicationRecords.${newStage}`]) {
+              payload[`_applicationRecords.${newStage}`] += value;
+            } else {
+              payload[`_applicationRecords.${newStage}`] = value;
+            }
+            payload[`_applicationRecords.${key}`] = firebase.firestore.FieldValue.delete();
           }
-          payload[`_applicationRecords.${key}`] = firebase.firestore.FieldValue.delete();
-        }
-      });
+        });  
+      }
     }
 
     return payload;
