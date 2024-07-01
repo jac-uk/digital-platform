@@ -129,7 +129,7 @@ const lookup = (value) => {
       'salaried-court-judge': 'Salaried court judge',
       'salaried-tribunal-judge': 'Salaried tribunal judge',
       'scenario-test-qualifying-test': 'Scenario test qualifying test (QT)',
-      'schedule-23': 'Schedule 2(3)',
+      'schedule-23': 'Schedule 3(d)',
       'schedule-2d': 'Schedule 2(d)',
       'scotland': 'Scotland',
       'scottish-ministers': 'Scottish ministers',
@@ -173,7 +173,7 @@ const lookup = (value) => {
       'white-black-caribbean': 'White and Black Caribbean',
       'write': 'Write',
       'schedule-2-d': 'Schedule 2(d)',
-      'schedule-2-3': 'Schedule 2(3)',
+      'schedule-2-3': 'Schedule 3(d)',
       /* Exercise stages: start */
       'review': 'Review',
       'shortlisted': 'Shortlisted',
