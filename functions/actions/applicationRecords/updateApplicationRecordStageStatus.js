@@ -22,6 +22,9 @@ module.exports = (firebase, config, db) => {
   async function updateApplicationRecordStageStatus(params) {
     const { exerciseId, version } = params;
     const exercise = await getDocument(db.collection('exercises').doc(exerciseId));
+
+    if (exercise._processingVersion >= 3) return false; // do not update status for version 3+
+
     // get application records from reference numbers
     const ref = db.collection('applicationRecords')
       .where('exercise.id', '==', exerciseId)

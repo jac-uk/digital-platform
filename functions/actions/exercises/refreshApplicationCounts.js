@@ -85,7 +85,7 @@ module.exports = (firebase, db) => {
         counts[applicationRecord.stage] = 1;
       }
 
-      const status = applicationRecord.status || 'blank';
+      const status = applicationRecord.status || 'blank';   // TODO not sure about this
       if (counts.status[status]) {
         counts.status[status]++;
       } else {
