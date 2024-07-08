@@ -19,7 +19,7 @@ const { app, db } = require('../shared/admin.js');
 const {applyUpdates, getDocuments} = require('../../functions/shared/helpers.js');
 
 // DEV EXERCISE
-//const exerciseId = 'wdpALbyICL7ZxxN5AQt8';
+const exerciseId = 'wdpALbyICL7ZxxN5AQt8';
 
 const main = async () => {
 
