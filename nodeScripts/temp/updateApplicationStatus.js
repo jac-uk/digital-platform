@@ -1,5 +1,8 @@
 
 /**
+ * NOTE: After running this nodescript it's important to run 'refreshApplicationCounts.js' to ensure the counts are updated in the
+ * exercise!
+ * 
  * For all applications in a specific exercise with status = 'shortlistingOutcomePassed' do the following:
  * 1) Remove 'shortlistingOutcomePassed' item from the statusLogs
  * 2) For all records with 'withdrawn' in the statusLogs, set the status to 'withdrawn' otherwise set the status to empty
@@ -15,27 +18,14 @@ const { APPLICATION_STATUS } = config;
 const { app, db } = require('../shared/admin.js');
 const {applyUpdates, getDocuments} = require('../../functions/shared/helpers.js');
 
-// const config = require('./shared/config');
-// const { firebase, app, db } = require('./shared/admin');
-// const { applyUpdates, getDocuments, getDocument } = require('../functions/shared/helpers');
-// const { getApplicationRecordStageStatus, getExerciseApplicationRecords } = require('../functions/actions/applicationRecords/updateApplicationRecordStageStatus')(firebase, config, db);
-
-// LIVE EXERCISE
-//const exerciseId = 'IiaXjmpDQd7BQx7ovlv0';
-
 // DEV EXERCISE
-const exerciseId = 'wdpALbyICL7ZxxN5AQt8';
-
-// applicationRecrdsIds we're using for testing:
-// 0rOoh2nWZkghTluPr5Nx
-// KMjcryiCE3Fr9eYpKbcz
-// KtPwJAreAOaBZWP1Pcp9
+//const exerciseId = 'wdpALbyICL7ZxxN5AQt8';
 
 const main = async () => {
 
   // Get all applicationRecords for the exercise where status = 'shortlistingOutcomePassed'
   console.log('-- Fetching applicationRecords...');
-  const applicationRecords = await getDocuments(db.collection('applicationRecords').where('exercise.id', '==', exerciseId).where('status', '==', 'shortlistingOutcomePassed'));
+  const applicationRecords = await getDocuments(db.collection('applicationRecords').where('exercise.id', '==', exerciseId).where('status', '==', 'shortlistingOutcomePassed').select('status', 'statusLog'));
   console.log(`-- Fetched applicationRecords: ${applicationRecords.length}`);
   const commands = [];
 
