@@ -6,7 +6,7 @@ const projectConfig = {
 
 console.log(process.env.FIREBASE_PROJECT_ID);
 
-const firebaseFunctionsTest = require('firebase-ftunctions-test')(projectConfig, './service-account.json');
+const firebaseFunctionsTest = require('firebase-functions-test')(projectConfig, './service-account.json');
 
 function generateMockContext(params = {}) {
   return {
