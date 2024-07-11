@@ -29,8 +29,7 @@ jobs:
       - name: Run lint
         run: npm run lint
       - name: Test functions
-        run: echo "Under construction"
-        # run: npm run test:functions
+        run: npm run test:functions
       - name: Test actions
         run: npm run test:actions
       - name: Test shared

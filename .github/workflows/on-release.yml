@@ -17,8 +17,7 @@ jobs:
           node-version: '18.20.3'
       - run: npm ci
       - run: npm run ci:test:rules
-      - run: echo "Test functions"
-        # run: npm run test:functions
+      - run: npm run test:functions
       - run: npm run test:actions
       - run: npm run test:shared
 
