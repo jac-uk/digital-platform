@@ -4,8 +4,6 @@ const projectConfig = {
   projectId: process.env.FIREBASE_PROJECT_ID,
 };
 
-console.log(process.env.FIREBASE_PROJECT_ID);
-
 const firebaseFunctionsTest = require('firebase-functions-test')(projectConfig, './service-account.json');
 
 function generateMockContext(params = {}) {
