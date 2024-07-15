@@ -67,7 +67,6 @@ jobs:
 
       # Authenticate to Google Cloud using Workload Identity Federation
       - name: Authenticate to Google Cloud
-          echo "HERE"
         id: auth
         uses: google-github-actions/auth@v1
         with:

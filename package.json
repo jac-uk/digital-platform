@@ -67,28 +67,28 @@
   },
   "dependencies": {
     "@google-cloud/storage": "^5.7.2",
-    "axios": "^0.21.2",
+    "axios": "^1.7.2",
     "bottleneck": "^2.19.5",
     "firebase": "^8.4.3",
-    "firebase-admin": "^9.7.0",
+    "firebase-admin": "^12.2.0",
     "firebase-functions": "^3.14.1",
     "firebase-functions-test": "^0.2.3",
-    "firebase-tools": "^11.21.0",
+    "firebase-tools": "^13.13.2",
     "googleapis": "^67.0.0",
     "lodash": "^4.17.21",
-    "notifications-node-client": "^4.9.0"
+    "notifications-node-client": "^8.2.0"
   },
   "devDependencies": {
     "@faker-js/faker": "^6.0.0-alpha.5",
-    "@firebase/rules-unit-testing": "^1.1.9",
+    "@firebase/rules-unit-testing": "^3.0.3",
     "@firebase/util": "^1.1.0",
     "csv-writer": "^1.6.0",
     "dotenv": "^8.2.0",
     "eslint": "^7.18.0",
     "eslint-plugin-promise": "^4.2.1",
-    "firebase-mock": "^2.2.10",
-    "jest": "^25.2.1",
-    "mocha": "^6.2.3"
+    "firebase-mock": "^2.2.4",
+    "jest": "^29.7.0",
+    "mocha": "^10.6.0"
   },
   "private": true
 }
