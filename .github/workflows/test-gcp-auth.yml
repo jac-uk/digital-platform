@@ -3,7 +3,7 @@ name: Test GCP Authentication
 on:
   push:
     branches:
-      - '**'
+      - '**'  # Trigger on push to any branch
 
 jobs:
   auth:
@@ -15,6 +15,13 @@ jobs:
 
     steps:
       - uses: actions/checkout@v4
+
+      - name: Verify Secrets
+        run: |
+          if [ -z "${{ secrets.GCP_PROJECT_NUMBER }}" ]; then echo "GCP_PROJECT_NUMBER is not set"; exit 1; else echo "GCP_PROJECT_NUMBER is set"; fi
+          if [ -z "${{ secrets.GCP_POOL_ID }}" ]; then echo "GCP_POOL_ID is not set"; exit 1; else echo "GCP_POOL_ID is set"; fi
+          if [ -z "${{ secrets.OIDC_PROVIDER_ID }}" ]; then echo "OIDC_PROVIDER_ID is not set"; exit 1; else echo "OIDC_PROVIDER_ID is set"; fi
+          if [ -z "${{ secrets.GCP_OIDC_SERVICE_ACCOUNT_EMAIL }}" ]; then echo "GCP_OIDC_SERVICE_ACCOUNT_EMAIL is not set"; exit 1; else echo "GCP_OIDC_SERVICE_ACCOUNT_EMAIL is set"; fi
 
       - name: Authenticate to Google Cloud
         id: auth
