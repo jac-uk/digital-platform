@@ -19,30 +19,27 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       ## Install and test
-      - uses: actions/checkout@v2
+      - uses: actions/checkout@v4
         with:
           token: ${{ secrets.DEPLOY_TOKEN }}
       - uses: actions/setup-node@master
         with:
-          node-version: '16.15.1'
+          node-version: '18.20.3'
       - run: npm ci
       - name: Run lint
         run: npm run lint
       - name: Test functions
-        run: echo "Under construction"
-        # run: npm run test:functions
+        run: npm run test:functions
       - name: Test actions
-        run: echo "Under construction"
-        # run: npm run test:actions
+        run: npm run test:actions
       - name: Test shared
-        run: echo "Under construction"
-        # run: npm run test:shared
+        run: npm run test:shared
 
       ## Update release notes and bump version (for pushes)
       - name: Update release notes (for pushes)
         if: github.event_name == 'push' && success()
         id: release_drafter
-        uses: release-drafter/release-drafter@v5
+        uses: release-drafter/release-drafter@v6
         with:
           config-name: release-drafter.yml
           disable-autolabeler: true
@@ -51,7 +48,7 @@ jobs:
       - name: Get package version (for pushes)
         if: github.event_name == 'push' && success()
         id: package_version
-        run: echo "::set-output name=current_version::$(node -p "require('./package.json').version")"
+        run: echo "current_version=$(node -p "require('./package.json').version")" >> $GITHUB_OUTPUT
       - name: Bump package version (for pushes)
         if: github.event_name == 'push' && success() &&
           steps.package_version.outputs.current_version != steps.release_drafter.outputs.tag_name

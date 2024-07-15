@@ -1,0 +1,81 @@
+name: On pull request
+
+on:
+  pull_request:
+    types: [opened, reopened, synchronize, edited]
+
+jobs:
+  lint:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      # Cache node modules to speed up workflows
+      - name: Cache node modules
+        uses: actions/cache@v4
+        env:
+          cache-name: cache-node-modules
+        with:
+          path: ~/.npm
+          key: ${{ runner.os }}-build-${{ env.cache-name }}-${{ hashFiles('**/package-lock.json') }}
+          restore-keys: |
+            ${{ runner.os }}-build-${{ env.cache-name }}-
+            ${{ runner.os }}-build-
+            ${{ runner.os }}-
+
+      # Setup Node.js environment
+      - uses: actions/setup-node@v2
+        with:
+          node-version: '14'  # Adjust Node.js version as per your project's requirement
+
+      # Install project dependencies
+      - name: Installing project dependencies
+        run: |
+          echo "//npm.pkg.github.com/:_authToken=${{ secrets.GITHUB_TOKEN }}" > ~/.npmrc
+          npm ci
+
+      # Run dependency vulnerability check
+      - name: Dependency Check
+        run: npm audit --omit=dev
+
+      # Run linting
+      - name: Lint
+        run: npm run lint
+
+      # Run tests related to Firebase rules
+      - name: Test Firebase Rules
+        run: npm run ci:test:rules
+
+      # Run Firebase functions tests
+      - name: Test Firebase Functions
+        run: npm run test:functions
+
+      # Run other shared tests or actions as needed
+      - name: Test Shared Components
+        run: |
+          npm run test:actions
+          npm run test:shared
+
+  auth:
+    runs-on: ubuntu-latest
+
+    permissions:
+      id-token: write
+      contents: read
+
+    steps:
+      - uses: actions/checkout@v4
+
+      # Authenticate to Google Cloud using Workload Identity Federation
+      - name: Authenticate to Google Cloud
+          echo "HERE"
+        id: auth
+        uses: google-github-actions/auth@v1
+        with:
+          workload_identity_provider: "projects/${{ secrets.GCP_PROJECT_NUMBER }}/locations/global/workloadIdentityPools/${{ secrets.GCP_POOL_ID }}/providers/${{ secrets.OIDC_PROVIDER_ID }}"
+          service_account: "${{ secrets.GCP_OIDC_SERVICE_ACCOUNT_EMAIL }}"
+
+      # Test authentication
+      - name: Test authentication
+        run: |
+          gcloud auth list
+          gcloud projects list
