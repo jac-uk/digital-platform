@@ -3,7 +3,7 @@ name: Test GCP Authentication
 on:
   push:
     branches:
-      - main
+      - '**'
 
 jobs:
   auth:
