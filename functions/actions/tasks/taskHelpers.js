@@ -305,7 +305,7 @@ module.exports = (config) => {
     const timeline = createTimeline(exerciseTimeline(exercise));
     let timelineTasks = timeline.filter(item => item.taskType && (!taskType || item.taskType === taskType));
     let supportedTaskTypes = [];
-    if (exercise._processingVersion >= 2) {
+    if (exercise._processingVersion >= 3) {
       supportedTaskTypes = [
         TASK_TYPE.TELEPHONE_ASSESSMENT,
         TASK_TYPE.SIFT,
@@ -313,12 +313,12 @@ module.exports = (config) => {
         TASK_TYPE.SITUATIONAL_JUDGEMENT,
         TASK_TYPE.QUALIFYING_TEST,
         TASK_TYPE.SCENARIO,
-        TASK_TYPE.SHORTLISTING_OUTCOME,
-        TASK_TYPE.ELIGIBILITY_SCC,
-        TASK_TYPE.STATUTORY_CONSULTATION,
-        TASK_TYPE.CHARACTER_AND_SELECTION_SCC,
+        // TASK_TYPE.SHORTLISTING_OUTCOME,
+        // TASK_TYPE.ELIGIBILITY_SCC,
+        // TASK_TYPE.STATUTORY_CONSULTATION,
+        // TASK_TYPE.CHARACTER_AND_SELECTION_SCC,
         TASK_TYPE.EMP_TIEBREAKER,
-        TASK_TYPE.PRE_SELECTION_DAY_QUESTIONNAIRE,
+        // TASK_TYPE.PRE_SELECTION_DAY_QUESTIONNAIRE,
         TASK_TYPE.SELECTION_DAY,
       ];
     } else {
@@ -392,11 +392,13 @@ module.exports = (config) => {
     if (prevTaskType) {
       console.log('previousTaskType', prevTaskType);
       switch (prevTaskType) {
+      case TASK_TYPE.CRITICAL_ANALYSIS:
+      case TASK_TYPE.SITUATIONAL_JUDGEMENT:
       case TASK_TYPE.QUALIFYING_TEST:
-        status = 'passedFirstTest';
+        status = APPLICATION_STATUS.QUALIFYING_TEST_PASSED;
         break;
       case TASK_TYPE.SCENARIO:
-        status = 'passedScenarioTest';
+        status = APPLICATION_STATUS.SCENARIO_TEST_PASSED;
         break;
       default:
         status = `${prevTaskType}Passed`;
@@ -406,8 +408,8 @@ module.exports = (config) => {
   }
 
   function finaliseScoreSheet(markingScheme, scoreSheet) {
+    if (!scoreSheet) return {};
     if (!markingScheme) return scoreSheet;
-    if (!scoreSheet) return scoreSheet;
     delete scoreSheet.flagForModeration;  //  removing `flagForModeration` flag in order to reduce object size
     markingScheme.forEach(item => {
       if (item.type === config.MARKING_TYPE.GROUP) {
