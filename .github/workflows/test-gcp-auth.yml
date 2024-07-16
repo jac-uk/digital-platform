@@ -3,7 +3,7 @@ name: Test GCP Authentication
 on:
   push:
     branches:
-      - '**'  # Trigger on push to any branch
+      - '**'
 
 jobs:
   auth:
@@ -16,23 +16,14 @@ jobs:
     steps:
     - uses: actions/checkout@v4
 
-    - name: Verify Secrets
+    - name: Authenticate to Google Cloud
+      id: auth
+      uses: google-github-actions/auth@v1
+      with:
+        workload_identity_provider: "projects/${{ secrets.GCP_PROJECT_NUMBER }}/locations/global/workloadIdentityPools/${{ secrets.GCP_POOL_ID }}/providers/${{ secrets.OIDC_PROVIDER_ID }}"
+        service_account: "${{ secrets.GCP_OIDC_SERVICE_ACCOUNT_EMAIL }}"
+
+    - name: Test authentication
       run: |
-        echo "env level ${{ secrets.TEST_VAL }}"
-        echo "org level ${{ secrets.TEST_ACTIONS_SECRET }}"
-        # if [ -z "${{ secrets.GCP_PROJECT_NUMBER }}" ]; then echo "GCP_PROJECT_NUMBER is not set"; exit 1; else echo "GCP_PROJECT_NUMBER is set"; fi
-        # if [ -z "${{ secrets.GCP_POOL_ID }}" ]; then echo "GCP_POOL_ID is not set"; exit 1; else echo "GCP_POOL_ID is set"; fi
-        # if [ -z "${{ secrets.OIDC_PROVIDER_ID }}" ]; then echo "OIDC_PROVIDER_ID is not set"; exit 1; else echo "OIDC_PROVIDER_ID is set"; fi
-        # if [ -z "${{ secrets.GCP_OIDC_SERVICE_ACCOUNT_EMAIL }}" ]; then echo "GCP_OIDC_SERVICE_ACCOUNT_EMAIL is not set"; exit 1; else echo "GCP_OIDC_SERVICE_ACCOUNT_EMAIL is set"; fi
-
-    # - name: Authenticate to Google Cloud
-    #   id: auth
-    #   uses: google-github-actions/auth@v1
-    #   with:
-    #     workload_identity_provider: "projects/${{ secrets.GCP_PROJECT_NUMBER }}/locations/global/workloadIdentityPools/${{ secrets.GCP_POOL_ID }}/providers/${{ secrets.OIDC_PROVIDER_ID }}"
-    #     service_account: "${{ secrets.GCP_OIDC_SERVICE_ACCOUNT_EMAIL }}"
-
-    # - name: Test authentication
-    #   run: |
-    #     gcloud auth list
-    #     gcloud projects list
+        gcloud auth list
+        gcloud projects list
