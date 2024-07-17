@@ -3,7 +3,7 @@ name: wif-ci
 on:
   push:
     branches:
-      - 'main'
+      - '**'
 
 jobs:
   build:
