@@ -30,4 +30,4 @@ jobs:
         service_account: ${{secrets.SERVICE_ACCOUNT}}
 
     - name: Run tests
-      run: npm test
+      run: npm run test:functions
