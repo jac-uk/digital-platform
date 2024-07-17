@@ -64,8 +64,8 @@ jobs:
           project_id: digital-platform-develop
 
       # Step 9: Deploy to Firebase on push events
-      - name: Deploy to Firebase (for pushes)
-        if: github.event_name == 'push' && success()
-        run: npm run deploy:functions
-        env:
-          FIREBASE_TOKEN: ${{ secrets.FIREBASE_CLI_TOKEN }}
+      # - name: Deploy to Firebase (for pushes)
+      #   if: github.event_name == 'push' && success()
+      #   run: npm run deploy:functions
+      #   env:
+      #     FIREBASE_TOKEN: ${{ secrets.FIREBASE_CLI_TOKEN }}
