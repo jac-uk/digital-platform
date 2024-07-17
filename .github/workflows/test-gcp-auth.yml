@@ -1,31 +1,34 @@
-name: Test GitHub Actions with Google Cloud
+name: Cloud Workflow
 
 on:
-  push:
+  pull_request:
     branches:
       - "**"
 
 jobs:
-  test_gcloud:
+  build-and-deploy:
     runs-on: ubuntu-latest
-    environment: develop
-
     steps:
-      - name: Checkout code
-        uses: actions/checkout@v2
-      
-      - name: Set up gcloud SDK
-        uses: google-github-actions/setup-gcloud@v0.3.0
+      # Checkout the repository
+      - uses: actions/checkout@v2
+
+      # Authenticate with Google Cloud using WIF
+      - name: Authenticate with Google Cloud
+        uses: google-github-actions/auth@v0.4.0
         with:
+          workload_identity_pool: github-wif-pool 
+          workload_identity_provider: githubwif
           service_account_email: ${{ secrets.SERVICE_ACCOUNT }}
-          service_account_key: ${{ secrets.SERVICE_ACCOUNT }}
-          project_id: digital-platform-develop
-      
-      - name: Authenticate with Workload Identity
+
+      # Additional steps for build and deploy actions
+      - name: Run Google Cloud CLI command
         run: |
-          gcloud auth login
-          gcloud auth activate-service-account --key-file=${{ secrets.SERVICE_ACCOUNT }}
-          gcloud config set auth/impersonate_service_account ${{ secrets.WORKLOAD_IDENTITY_PROVIDER_ID }}
-      
-      - name: List Google Cloud Storage buckets
-        run: gcloud storage buckets list
+          gcloud compute instances list
+
+      # Example of using authenticated commands with Google Cloud SDK
+      - name: Deploy to Cloud Run
+        run: |
+          gcloud run deploy my-service --image=gcr.io/my-project/my-image
+
+      # Any other steps needed for your workflow
+
