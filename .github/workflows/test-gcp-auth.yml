@@ -3,13 +3,13 @@ name: Test GitHub Actions with Google Cloud
 on:
   push:
     branches:
-      - main
+      - "**"
 
 jobs:
   test_gcloud:
     runs-on: ubuntu-latest
     environment: develop
-    
+
     steps:
       - name: Checkout code
         uses: actions/checkout@v2
