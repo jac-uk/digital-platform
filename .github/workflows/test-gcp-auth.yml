@@ -3,11 +3,19 @@ name: Cloud Workflow
 on:
   pull_request:
     branches:
-      - "**"
+      - develop
+    paths:
+      - 'functions/**'
+  push:
+    branches:
+      - develop
+    paths:
+      - 'functions/**'
 
 jobs:
   build-and-deploy:
     runs-on: ubuntu-latest
+    environment: develop
     steps:
       # Checkout the repository
       - uses: actions/checkout@v2
