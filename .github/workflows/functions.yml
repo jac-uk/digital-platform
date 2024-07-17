@@ -4,13 +4,14 @@ on:
   pull_request:
     branches:
       - develop
-    paths:
-      - 'functions/**'
+      - '**'
+    # paths:
+    #   - 'functions/**'
   push:
     branches:
       - develop
-    paths:
-      - 'functions/**'
+    # paths:
+    #   - 'functions/**'
 
 concurrency: one_at_a_time
 
