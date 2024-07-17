@@ -1,87 +1,71 @@
 name: Cloud Functions for Firebase
 
 on:
-  push:
-    branches:
-      # - develop
-      - '**'
-    # paths:
-    #   - 'functions/**'
-  # push:
+  # pull_request:
   #   branches:
   #     - develop
-    # paths:
-    #   - 'functions/**'
+  #   paths:
+  #     - 'functions/**'
+  push:
+    branches:
+  #     - develop
+      - "**"
+  #   paths:
+  #     - 'functions/**'
 
-concurrency: one_at_a_time
+concurrency:
+  group: test_and_deploy
+  cancel-in-progress: true
 
 jobs:
   test_and_deploy:
     runs-on: ubuntu-latest
+
     steps:
-      - uses: actions/checkout@v2
+      # Step 1: Checkout the code
+      - name: Checkout code
+        uses: actions/checkout@v2
         with:
           token: ${{ secrets.DEPLOY_TOKEN }}
 
-      - uses: google-github-actions/setup-gcloud@v0.4.0
-        with:
-          project_id: digital-platform-develop
-          service_account: ${{ secrets.SERVICE_ACCOUNT }}
-          workload_identity_provider: ${{ secrets.WORKLOAD_IDENTITY_PROVIDER_ID }}
-
-      - name: Authenticate with Google Cloud
-        uses: google-github-actions/auth@v0.5.1
-
+      # Step 2: Set up Node.js
       - name: Set up Node.js
         uses: actions/setup-node@v2
         with:
           node-version: '16'
 
-      - run: npm ci
+      # Step 3: Install dependencies
+      - name: Install dependencies
+        run: npm ci
 
+      # Step 4: Run linting
       - name: Run lint
         run: npm run lint
 
-      # Add more test steps as needed
+      # Step 5: Test functions
       - name: Test functions
         run: echo "Under construction"
         # run: npm run test:functions
 
+      # Step 6: Test actions
       - name: Test actions
         run: echo "Under construction"
         # run: npm run test:actions
 
+      # Step 7: Test shared
       - name: Test shared
         run: echo "Under construction"
         # run: npm run test:shared
 
-      # Deployment and versioning steps for pushes only
-      - name: Update release notes (for pushes)
-        if: github.event_name == 'push' && success()
-        id: release_drafter
-        uses: release-drafter/release-drafter@v5
+      # Step 8: Authenticate with Google Cloud using Workload Identity Federation (WIF)
+      - name: Authenticate with Google Cloud
+        uses: google-github-actions/setup-gcloud@v0.4.0
         with:
-          config-name: release-drafter.yml
-          disable-autolabeler: true
-        env:
-          GITHUB_TOKEN: ${{ secrets.DEPLOY_TOKEN }}
+          project_id: digital-platform-develop
+          service_account: ${{ secrets.SERVICE_ACCOUNT }}
+          workload_identity_provider: ${{ secrets.WORKLOAD_IDENTITY_PROVIDER_ID }}
 
-      - name: Get package version (for pushes)
-        if: github.event_name == 'push' && success()
-        id: package_version
-        run: echo "::set-output name=current_version::$(node -p "require('./package.json').version")"
-
-      - name: Bump package version (for pushes)
-        if: github.event_name == 'push' && success() &&
-          steps.package_version.outputs.current_version != steps.release_drafter.outputs.tag_name
-        run: |
-          echo "Bump package version from ${{ steps.package_version.outputs.current_version }} to ${{ steps.release_drafter.outputs.tag_name }}"
-          git config --local user.email "$(git log --format='%ae' HEAD^!)"
-          git config --local user.name "$(git log --format='%an' HEAD^!)"
-          npm version ${{ steps.release_drafter.outputs.tag_name }} -m "Bump version number to %s"
-          git push
-
-      # Deployment to Firebase (for pushes)
+      # Step 9: Deploy to Firebase on push events
       - name: Deploy to Firebase (for pushes)
         if: github.event_name == 'push' && success()
         run: npm run deploy:functions
