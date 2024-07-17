@@ -1,29 +1,31 @@
-# name: Test GCP Authentication
+name: Test GitHub Actions with Google Cloud
 
-# on:
-#   push:
-#     branches:
-#       - '**'
+on:
+  push:
+    branches:
+      - main
 
-# jobs:
-#   auth:
-#     runs-on: ubuntu-latest
-#     environment: develop
-#     permissions:
-#       id-token: write
-#       contents: read
-
-#     steps:
-#     - uses: actions/checkout@v4
-
-#     - name: Authenticate to Google Cloud
-#       id: auth
-#       uses: google-github-actions/auth@v1
-#       with:
-#         workload_identity_provider: "projects/${{ secrets.GCP_PROJECT_NUMBER }}/locations/global/workloadIdentityPools/${{ secrets.GCP_POOL_ID }}/providers/${{ secrets.OIDC_PROVIDER_ID }}"
-#         service_account: "${{ secrets.GCP_OIDC_SERVICE_ACCOUNT_EMAIL }}"
-
-#     - name: Test authentication
-#       run: |
-#         gcloud auth list
-#         gcloud projects list
+jobs:
+  test_gcloud:
+    runs-on: ubuntu-latest
+    environment: develop
+    
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v2
+      
+      - name: Set up gcloud SDK
+        uses: google-github-actions/setup-gcloud@v0.3.0
+        with:
+          service_account_email: ${{ secrets.SERVICE_ACCOUNT }}
+          service_account_key: ${{ secrets.SERVICE_ACCOUNT }}
+          project_id: digital-platform-develop
+      
+      - name: Authenticate with Workload Identity
+        run: |
+          gcloud auth login
+          gcloud auth activate-service-account --key-file=${{ secrets.SERVICE_ACCOUNT }}
+          gcloud config set auth/impersonate_service_account ${{ secrets.WORKLOAD_IDENTITY_PROVIDER_ID }}
+      
+      - name: List Google Cloud Storage buckets
+        run: gcloud storage buckets list
