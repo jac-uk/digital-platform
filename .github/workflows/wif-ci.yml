@@ -9,6 +9,7 @@ jobs:
   build:
     name: "Test WIF"
     runs-on: ubuntu-latest
+    environment: develop
     timeout-minutes: 90
     permissions:
       contents: 'read'
@@ -21,13 +22,12 @@ jobs:
         with:
           token_format: "access_token"
           create_credentials_file: true
-          activate_credentials_file: true
           workload_identity_provider: ${{ secrets.WORKLOAD_IDENTITY_PROVIDER_ID }}
           service_account: ${{ secrets.SERVICE_ACCOUNT }}
           access_token_lifetime: '100s'
       - name: Set up Cloud SDK
         uses: google-github-actions/setup-gcloud@v0.3.0
       - name: Authenticate with credentials file
-        run: gcloud auth login --cred-file=${{ steps.auth.outputs.credentials_file_path }}
+        run: gcloud auth activate-service-account --key-file=${{ steps.auth.outputs.credentials_file_path }}
       - name: Run gcloud command
         run: gcloud compute instances list --zones us-east4-c
