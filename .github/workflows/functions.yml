@@ -1,75 +1,88 @@
-# name: Cloud functions for firebase
+name: Cloud Functions for Firebase
 
-# on:
-#   pull_request:
-#     branches:
-#       - develop
-#     paths:
-#       - 'functions/**'
-#   push:
-#     branches:
-#       - develop
-#     paths:
-#       - 'functions/**'
+on:
+  pull_request:
+    branches:
+      - develop
+    paths:
+      - 'functions/**'
+  push:
+    branches:
+      - develop
+    paths:
+      - 'functions/**'
 
-# concurrency: one_at_a_time
+concurrency: one_at_a_time
 
-# jobs:
-#   test_and_deploy:
-#     runs-on: ubuntu-latest
-#     steps:
-#       ## Install and test
-#       - uses: actions/checkout@v2
-#         with:
-#           token: ${{ secrets.DEPLOY_TOKEN }}
-#       - uses: actions/setup-node@master
-#         with:
-#           node-version: '16.15.1'
-#       - run: npm ci
-#       - name: Run lint
-#         run: npm run lint
-#       - name: Test functions
-#         run: echo "Under construction"
-#         # run: npm run test:functions
-#       - name: Test actions
-#         run: echo "Under construction"
-#         # run: npm run test:actions
-#       - name: Test shared
-#         run: echo "Under construction"
-#         # run: npm run test:shared
+jobs:
+  test_and_deploy:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v2
+        with:
+          token: ${{ secrets.DEPLOY_TOKEN }}
 
-#       ## Update release notes and bump version (for pushes)
-#       - name: Update release notes (for pushes)
-#         if: github.event_name == 'push' && success()
-#         id: release_drafter
-#         uses: release-drafter/release-drafter@v5
-#         with:
-#           config-name: release-drafter.yml
-#           disable-autolabeler: true
-#         env:
-#           GITHUB_TOKEN: ${{ secrets.DEPLOY_TOKEN }}
-#       - name: Get package version (for pushes)
-#         if: github.event_name == 'push' && success()
-#         id: package_version
-#         run: echo "::set-output name=current_version::$(node -p "require('./package.json').version")"
-#       - name: Bump package version (for pushes)
-#         if: github.event_name == 'push' && success() &&
-#           steps.package_version.outputs.current_version != steps.release_drafter.outputs.tag_name
-#         run: |
-#           echo "Bump package version from ${{ steps.package_version.outputs.current_version }} to ${{ steps.release_drafter.outputs.tag_name }}"
-#           git config --local user.email "$(git log --format='%ae' HEAD^!)"
-#           git config --local user.name "$(git log --format='%an' HEAD^!)"
-#           npm version ${{ steps.release_drafter.outputs.tag_name }} -m "Bump version number to %s"
-#           git push
+      - uses: google-github-actions/setup-gcloud@v0.4.0
+        with:
+          project_id: digital-platform-develop
+          service_account: ${{ secrets.SERVICE_ACCOUNT }}
+          workload_identity_provider: ${{ secrets.WORKLOAD_IDENTITY_PROVIDER_ID }}
 
-#       ## Deploy to develop and staging (for pushes)
-#       - name: Deploy to develop (for pushes)
-#         if: ${{ github.event_name == 'push' && success() }}
-#         run: npm run deploy:functions
-#         env:
-#           FIREBASE_TOKEN: ${{ secrets.FIREBASE_CLI_TOKEN }}
-#       - name: Deploy to staging (for pushes)
-#         if: ${{ github.event_name == 'push' && success() }}
-#         run: npm run staging:deploy:functions
-#         env:
-#           FIREBASE_TOKEN: ${{ secrets.FIREBASE_CLI_TOKEN }}
+      - name: Authenticate with Google Cloud
+        uses: google-github-actions/auth@v0.5.1
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v2
+        with:
+          node-version: '16'
+
+      - run: npm ci
+
+      - name: Run lint
+        run: npm run lint
+
+      # Add more test steps as needed
+      - name: Test functions
+        run: echo "Under construction"
+        # run: npm run test:functions
+
+      - name: Test actions
+        run: echo "Under construction"
+        # run: npm run test:actions
+
+      - name: Test shared
+        run: echo "Under construction"
+        # run: npm run test:shared
+
+      # Deployment and versioning steps for pushes only
+      - name: Update release notes (for pushes)
+        if: github.event_name == 'push' && success()
+        id: release_drafter
+        uses: release-drafter/release-drafter@v5
+        with:
+          config-name: release-drafter.yml
+          disable-autolabeler: true
+        env:
+          GITHUB_TOKEN: ${{ secrets.DEPLOY_TOKEN }}
+
+      - name: Get package version (for pushes)
+        if: github.event_name == 'push' && success()
+        id: package_version
+        run: echo "::set-output name=current_version::$(node -p "require('./package.json').version")"
+
+      - name: Bump package version (for pushes)
+        if: github.event_name == 'push' && success() &&
+          steps.package_version.outputs.current_version != steps.release_drafter.outputs.tag_name
+        run: |
+          echo "Bump package version from ${{ steps.package_version.outputs.current_version }} to ${{ steps.release_drafter.outputs.tag_name }}"
+          git config --local user.email "$(git log --format='%ae' HEAD^!)"
+          git config --local user.name "$(git log --format='%an' HEAD^!)"
+          npm version ${{ steps.release_drafter.outputs.tag_name }} -m "Bump version number to %s"
+          git push
+
+      # Deployment to Firebase (for pushes)
+      - name: Deploy to Firebase (for pushes)
+        if: github.event_name == 'push' && success()
+        run: npm run deploy:functions
+        env:
+          FIREBASE_TOKEN: ${{ secrets.FIREBASE_CLI_TOKEN }}
