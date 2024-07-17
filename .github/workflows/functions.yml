@@ -3,13 +3,13 @@ name: Cloud Functions for Firebase
 on:
   pull_request:
     branches:
-      - develop
+      # - develop
       - '**'
     # paths:
     #   - 'functions/**'
-  push:
-    branches:
-      - develop
+  # push:
+  #   branches:
+  #     - develop
     # paths:
     #   - 'functions/**'
 
