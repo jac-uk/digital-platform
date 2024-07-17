@@ -4,14 +4,15 @@ on:
   pull_request:
     branches:
       - develop
-    paths:
-      - 'functions/**'
+      - "**"
+    # paths:
+    #   - 'functions/**'
   push:
     branches:
       - develop
       - "**"
-    paths:
-      - 'functions/**'
+    # paths:
+    #   - 'functions/**'
 
 concurrency:
   group: test_and_deploy
