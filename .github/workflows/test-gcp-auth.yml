@@ -3,14 +3,10 @@ name: Cloud Workflow
 on:
   pull_request:
     branches:
-      - develop
-    paths:
-      - 'functions/**'
+      - "**"
   push:
     branches:
-      - develop
-    paths:
-      - 'functions/**'
+      - "**"
 
 jobs:
   build-and-deploy:
