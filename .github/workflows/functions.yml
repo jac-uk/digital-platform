@@ -1,7 +1,7 @@
 name: Cloud Functions for Firebase
 
 on:
-  pull_request:
+  push:
     branches:
       # - develop
       - '**'
