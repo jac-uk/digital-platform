@@ -33,10 +33,10 @@ const main = async () => {
   console.log('-- Generating commands to copy NINO from candidate to application...');
   for (let i = 0; i < applications.length; i++) {
     const application = applications[i];
-    if (!application.userId) return;
+    if (!application.userId) continue;
 
     const candidate = await getDocument(db.doc(`candidates/${application.userId}/documents/personalDetails`));
-    if (!candidate || !candidate.nationalInsuranceNumber) return;
+    if (!candidate || !candidate.nationalInsuranceNumber) continue;
 
     commands.push({
       command: 'update',
