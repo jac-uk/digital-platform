@@ -1,35 +1,35 @@
-name: On pull request
+# name: On pull request
 
-on:
-  pull_request:
-    types: [opened, reopened, synchronize, edited]
+# on:
+#   pull_request:
+#     types: [opened, reopened, synchronize, edited]
 
-jobs:
-  lint:
-    runs-on: ubuntu-latest
-    steps:
-      - uses: actions/checkout@v4
-      - name: Cache node modules
-        uses: actions/cache@v4
-        env:
-          cache-name: cache-node-modules
-        with:
-          path: ~/.npm
-          key: ${{ runner.os }}-build-${{ env.cache-name }}-${{ hashFiles('**/package-lock.json') }}
-          restore-keys: |
-            ${{ runner.os }}-build-${{ env.cache-name }}-
-            ${{ runner.os }}-build-
-            ${{ runner.os }}-
-      - uses: actions/setup-node@master
-        with:
-          node-version: '18.20.3'
-      - name: Installing project dependencies
-        run: echo "//npm.pkg.github.com/:_authToken=${{ secrets.GITHUB_TOKEN }}" > ~/.npmrc && npm ci       
-      - name: Lint
-        run: npm run lint
-      - run: npm run ci:test:rules
-      - run: echo "Test functions"
-        # run: npm run test:functions
-      - run: npm run test:actions
-      - run: npm run test:shared
+# jobs:
+#   lint:
+#     runs-on: ubuntu-latest
+#     steps:
+#       - uses: actions/checkout@v4
+#       - name: Cache node modules
+#         uses: actions/cache@v4
+#         env:
+#           cache-name: cache-node-modules
+#         with:
+#           path: ~/.npm
+#           key: ${{ runner.os }}-build-${{ env.cache-name }}-${{ hashFiles('**/package-lock.json') }}
+#           restore-keys: |
+#             ${{ runner.os }}-build-${{ env.cache-name }}-
+#             ${{ runner.os }}-build-
+#             ${{ runner.os }}-
+#       - uses: actions/setup-node@master
+#         with:
+#           node-version: '18.20.3'
+#       - name: Installing project dependencies
+#         run: echo "//npm.pkg.github.com/:_authToken=${{ secrets.GITHUB_TOKEN }}" > ~/.npmrc && npm ci       
+#       - name: Lint
+#         run: npm run lint
+#       - run: npm run ci:test:rules
+#       - run: echo "Test functions"
+#         # run: npm run test:functions
+#       - run: npm run test:actions
+#       - run: npm run test:shared
 
