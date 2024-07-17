@@ -43,7 +43,6 @@ jobs:
 
       # Step 5: Test functions
       - name: Test functions
-        run: echo "Under construction"
         run: npm run test:functions
 
       # Step 6: Test actions
