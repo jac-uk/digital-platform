@@ -1,8 +1,8 @@
 'use strict';
 
 const config = require('./shared/config');
-const { firebase, app } = require('./shared/admin.js');
-const { runScannerTest } = require('../functions/actions/malware-scanning/runScannerTest')(config, firebase);
+const { db, app, firebase } = require('./shared/admin.js');
+const { runScannerTest } = require('../functions/actions/malware-scanning/runScannerTest')(config, firebase, db);
 
 const main = async () => {
   return runScannerTest();
