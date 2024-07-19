@@ -13,6 +13,7 @@ const CONSTANTS = {
   GITHUB_PAT: functions.config().github.pat, // personal access token
   SLACK_TICKETING_APP_BOT_TOKEN: functions.config().slack.ticketing_app_bot_token,
   SLACK_TICKETING_APP_CHANNEL_ID: functions.config().slack.ticketing_app_channel_id,
+  SCANNER_TEST_SCHEDULE: functions.config().scan_service.test_schedule,
   APPLICATION: {
     STATUS: {
       QUALIFYING_TEST_PASSED: 'qualifyingTestPassed',
