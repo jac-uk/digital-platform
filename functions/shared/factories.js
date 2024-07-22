@@ -556,6 +556,7 @@ module.exports = (CONSTANTS) => {
     const vacancyModel = {
       _applicationContent: null,
       _applicationVersion: null,
+      _processingVersion: null,
       aboutTheRole: null,
       aboutTheRoleWelsh: null,
       additionalWorkingPreferences: null,
