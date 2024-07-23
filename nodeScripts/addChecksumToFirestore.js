@@ -1,9 +1,11 @@
 'use strict';
-const { app, db, firebase} = require('./shared/admin.js');
-const { addChecksumToFirestore } = require('../functions/actions/malware-scanning/addChecksumToFirestore.js')(firebase, db);
+import { app, db, firebase } from './shared/admin.js';
+import { addChecksumToFirestore } from '../functions/actions/malware-scanning/addChecksumToFirestore.js';
+
+const addChecksum = addChecksumToFirestore(firebase, db);
 
 const main = async () => {
-  return addChecksumToFirestore('blank.docx', 'ed2dfa9b93adbdd11e3a6c3b77bb22d6d8a6dea8c66b90ce54ec8cfc6cdb1425');
+  return addChecksum('blank.docx', 'ed2dfa9b93adbdd11e3a6c3b77bb22d6d8a6dea8c66b90ce54ec8cfc6cdb1425');
 };
 
 main()
