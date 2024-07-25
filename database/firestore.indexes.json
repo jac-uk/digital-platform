@@ -2137,6 +2137,20 @@
       ]
     },
     {
+      "collectionGroup": "exercise",
+      "queryScope": "COLLECTION",
+      "fields": [
+        {
+          "fieldPath": "typeOfExercise",
+          "order": "ASCENDING"
+        },
+        {
+          "fieldPath": "createdAt",
+          "order": "ASCENDING"
+        }
+      ]
+    },
+    {
       "collectionGroup": "exercises",
       "queryScope": "COLLECTION",
       "fields": [
@@ -2783,6 +2797,130 @@
       "queryScope": "COLLECTION",
       "fields": [
         {
+          "fieldPath": "selectionExerciseManager",
+          "order": "ASCENDING"
+        },
+        {
+          "fieldPath": "state",
+          "order": "ASCENDING"
+        },
+        {
+          "fieldPath": "typeOfExercise",
+          "order": "ASCENDING"
+        },
+        {
+          "fieldPath": "applicationOpenDate",
+          "order": "ASCENDING"
+        }
+      ]
+    },
+    {
+      "collectionGroup": "exercises",
+      "queryScope": "COLLECTION",
+      "fields": [
+        {
+          "fieldPath": "selectionExerciseManager",
+          "order": "ASCENDING"
+        },
+        {
+          "fieldPath": "typeOfExercise",
+          "order": "ASCENDING"
+        },
+        {
+          "fieldPath": "state",
+          "order": "ASCENDING"
+        }
+      ]
+    },
+    {
+      "collectionGroup": "exercises",
+      "queryScope": "COLLECTION",
+      "fields": [
+        {
+          "fieldPath": "selectionExerciseManager",
+          "order": "ASCENDING"
+        },
+        {
+          "fieldPath": "typeOfExercise",
+          "order": "ASCENDING"
+        },
+        {
+          "fieldPath": "state",
+          "order": "ASCENDING"
+        },
+        {
+          "fieldPath": "applicationOpenDate",
+          "order": "ASCENDING"
+        }
+      ]
+    },
+    {
+      "collectionGroup": "exercises",
+      "queryScope": "COLLECTION",
+      "fields": [
+        {
+          "fieldPath": "seniorSelectionExerciseManager",
+          "order": "ASCENDING"
+        },
+        {
+          "fieldPath": "state",
+          "order": "ASCENDING"
+        },
+        {
+          "fieldPath": "typeOfExercise",
+          "order": "ASCENDING"
+        },
+        {
+          "fieldPath": "applicationOpenDate",
+          "order": "ASCENDING"
+        }
+      ]
+    },
+    {
+      "collectionGroup": "exercises",
+      "queryScope": "COLLECTION",
+      "fields": [
+        {
+          "fieldPath": "seniorSelectionExerciseManager",
+          "order": "ASCENDING"
+        },
+        {
+          "fieldPath": "typeOfExercise",
+          "order": "ASCENDING"
+        },
+        {
+          "fieldPath": "state",
+          "order": "ASCENDING"
+        }
+      ]
+    },
+    {
+      "collectionGroup": "exercises",
+      "queryScope": "COLLECTION",
+      "fields": [
+        {
+          "fieldPath": "seniorSelectionExerciseManager",
+          "order": "ASCENDING"
+        },
+        {
+          "fieldPath": "typeOfExercise",
+          "order": "ASCENDING"
+        },
+        {
+          "fieldPath": "state",
+          "order": "ASCENDING"
+        },
+        {
+          "fieldPath": "applicationOpenDate",
+          "order": "ASCENDING"
+        }
+      ]
+    },
+    {
+      "collectionGroup": "exercises",
+      "queryScope": "COLLECTION",
+      "fields": [
+        {
           "fieldPath": "state",
           "order": "ASCENDING"
         },
@@ -3123,6 +3261,24 @@
         {
           "fieldPath": "referenceNumber",
           "order": "DESCENDING"
+        }
+      ]
+    },
+    {
+      "collectionGroup": "exercises",
+      "queryScope": "COLLECTION",
+      "fields": [
+        {
+          "fieldPath": "state",
+          "order": "ASCENDING"
+        },
+        {
+          "fieldPath": "typeOfExercise",
+          "order": "ASCENDING"
+        },
+        {
+          "fieldPath": "applicationOpenDate",
+          "order": "ASCENDING"
         }
       ]
     },
@@ -3150,6 +3306,38 @@
         },
         {
           "fieldPath": "createdAt",
+          "order": "ASCENDING"
+        }
+      ]
+    },
+    {
+      "collectionGroup": "exercises",
+      "queryScope": "COLLECTION",
+      "fields": [
+        {
+          "fieldPath": "typeOfExercise",
+          "order": "ASCENDING"
+        },
+        {
+          "fieldPath": "state",
+          "order": "ASCENDING"
+        }
+      ]
+    },
+    {
+      "collectionGroup": "exercises",
+      "queryScope": "COLLECTION",
+      "fields": [
+        {
+          "fieldPath": "typeOfExercise",
+          "order": "ASCENDING"
+        },
+        {
+          "fieldPath": "state",
+          "order": "ASCENDING"
+        },
+        {
+          "fieldPath": "applicationOpenDate",
           "order": "ASCENDING"
         }
       ]
