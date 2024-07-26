@@ -4,7 +4,10 @@ const { firebase, app, db } = require('./shared/admin.js');
 const { refreshApplicationCounts } = require('../functions/actions/exercises/refreshApplicationCounts')(firebase, db);
 
 const main = async () => {
-  return refreshApplicationCounts({ exerciseId: 'wdpALbyICL7ZxxN5AQt8' });
+
+  // Exercise on DEVELOP
+  const exerciseId = 'wdpALbyICL7ZxxN5AQt8';
+  return refreshApplicationCounts({ exerciseId: exerciseId });
 };
 
 main()

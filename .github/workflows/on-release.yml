@@ -9,12 +9,12 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       ## Install and test
-      - uses: actions/checkout@v2
+      - uses: actions/checkout@v4
         with:
           token: ${{ secrets.DEPLOY_TOKEN }}
       - uses: actions/setup-node@master
         with:
-          node-version: '16.15.1'
+          node-version: '18.20.3'
       - run: npm ci
       - run: npm run ci:test:rules
       - run: echo "Test functions"

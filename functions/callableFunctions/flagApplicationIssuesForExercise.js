@@ -1,7 +1,7 @@
 const functions = require('firebase-functions');
 const config = require('../shared/config.js');
-const { db } = require('../shared/admin.js');
-const flagApplicationIssues = require('../actions/applications/flagApplicationIssues')(config, db);
+const { firebase, db } = require('../shared/admin.js');
+const flagApplicationIssues = require('../actions/applications/flagApplicationIssues')(firebase, config, db);
 const { checkFunctionEnabled } = require('../shared/serviceSettings.js')(db);
 const { PERMISSIONS, hasPermissions } = require('../shared/permissions');
 
@@ -21,7 +21,7 @@ module.exports = functions.region('europe-west2').https.onCall(async (data, cont
   if (!(typeof data.exerciseId === 'string') || data.exerciseId.length === 0) {
     throw new functions.https.HttpsError('invalid-argument', 'Please specify an "exerciseId"');
   }
-  const result = await flagApplicationIssues.flagApplicationIssuesForExercise(data.exerciseId);
+  const result = await flagApplicationIssues.flagApplicationIssuesForExercise(data.exerciseId, data.reset);
   return {
     result: result,
   };

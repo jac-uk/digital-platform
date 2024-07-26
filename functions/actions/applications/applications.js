@@ -14,6 +14,7 @@ module.exports = (config, firebase, db, auth) => {
     newNotificationCharacterCheckRequest,
     newNotificationCandidateFlagConfirmation,
     newCandidateFormNotification,
+    newNotificationPublishedFeedbackReport,
   } = require('../../shared/factories')(config);
   const slack = require('../../shared/slack')(config);
   const { updateCandidate } = require('../candidates/search')(firebase, db);
@@ -31,6 +32,7 @@ module.exports = (config, firebase, db, auth) => {
     createTestApplications,
     deleteApplications,
     sendCandidateFlagConfirmation,
+    sendPublishedFeedbackReportNotifications,
   };
 
   /**
@@ -96,12 +98,16 @@ module.exports = (config, firebase, db, auth) => {
     applicationData._sort.fullNameUC = data.personalDetails && data.personalDetails.fullName ? data.personalDetails.fullName.toUpperCase() : '';
 
     // add search map
-    applicationData._search = getSearchMap([
-      data.personalDetails.fullName,
-      data.personalDetails.email,
-      data.personalDetails.nationalInsuranceNumber,
-      data.referenceNumber,
-    ]);
+    const searchMapSources = [];
+    if (data.personalDetails) {
+      const { fullName, email, nationalInsuranceNumber } = data.personalDetails;
+      if (fullName) searchMapSources.push(fullName);
+      if (email) searchMapSources.push(email);
+      if (nationalInsuranceNumber) searchMapSources.push(nationalInsuranceNumber);
+    }
+    if (data.referenceNumber) searchMapSources.push(data.referenceNumber);
+    if (searchMapSources.length) applicationData._search = getSearchMap(searchMapSources);
+
     await ref.update(applicationData);
 
     // update counts
@@ -172,9 +178,8 @@ module.exports = (config, firebase, db, auth) => {
       .where('exerciseId', '==', exerciseId)
       .where('status', '==', 'draft');
     let applications = await getDocuments(applicationsRef);
-    // send reminder email if it has not been sent before
     applications = applications.filter(application => {
-      if (application.emailLog && application.emailLog.applicationReminder) return false;
+      //if (application.emailLog && application.emailLog.applicationReminder) return false;
 
       return application.personalDetails && application.personalDetails.fullName && application.personalDetails.email;
     });
@@ -556,5 +561,41 @@ module.exports = (config, firebase, db, auth) => {
     // write to db
     const result = await applyUpdates(db, commands);
     return result ? true : false;
+  }
+
+  async function sendPublishedFeedbackReportNotifications(exerciseId, taskType) {
+    const validTaskTypes = [
+      config.TASK_TYPE.CRITICAL_ANALYSIS,
+      config.TASK_TYPE.QUALIFYING_TEST,
+      config.TASK_TYPE.SCENARIO,
+      config.TASK_TYPE.SITUATIONAL_JUDGEMENT,
+    ];
+    if (!validTaskTypes.includes(taskType)) {
+      console.log(`sendPublishedFeedbackReportNotifications called with invalid task type: ${taskType}`);
+      return false;
+    }
+    const taskRef = db.collection(`exercises/${exerciseId}/tasks`);
+    const tasks = await getDocuments(taskRef);
+    if (tasks.length > 0) {
+      const matchedTasks = tasks.filter(task => task.type === taskType);
+      if (matchedTasks.length > 0) {
+        const matchedTask = matchedTasks[0];
+        const applications = Object.hasOwnProperty.call(matchedTask, 'applications') ? matchedTask.applications : [];
+        const emails = applications.map(o => o.email);
+        const exercise = await getDocument(db.collection('exercises').doc(exerciseId));
+        const commands = [];
+        for (let i=0; i<emails.length; ++i) {
+          commands.push(
+            {
+              command: 'set',
+              ref: db.collection('notifications').doc(),
+              data: newNotificationPublishedFeedbackReport(firebase, emails[i], exercise.name, taskType),
+            }
+          );
+        }
+        return await applyUpdates(db, commands);
+      }
+    }
+    return true;
   }
 };

@@ -29,7 +29,8 @@ module.exports = functions.region('europe-west2').https.onCall(async (data, cont
 
   let user = {
     id: context.auth.token.user_id,
-    name: context.auth.token.name,
+    name: context.auth.token.name || null, // name might not be set
+    email: context.auth.token.email || null,
   };
 
   // generate the report

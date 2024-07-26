@@ -14,7 +14,7 @@ module.exports = (firebase, db) => {
     // get submitted application with invited to selection day
     const applicationRecords = await getDocuments(db.collection('applicationRecords')
       .where('exercise.id', '==', exerciseId)
-      .where('status', '==', 'invitedToSelectionDay')
+      .where('status', 'in', ['invitedToSelectionDay', 'shortlistingOutcomePassed'])
     );
     const applicationIds = applicationRecords.map(item => item.id);
     const applicationRefs = applicationIds.map(id => db.collection('applications').doc(id));
@@ -58,8 +58,12 @@ const reportHeaders = (exercise, maxQualificationNum, maxJudicialExperienceNum, 
     ...getQualificationHeaders(maxQualificationNum),
     ...getJudicialExperienceHeaders(exercise, maxJudicialExperienceNum),
     ...getNonJudicialExperienceHeaders(maxNonJudicialExperienceNum),
-    ...getFeePaidOrSalariedHeaders(),
   ];
+
+  if (exercise._applicationVersion < 3) {
+    // only show these fields for application version 2 and below
+    headers.push(...getFeePaidOrSalariedHeaders());
+  }
 
   return headers;
 };
@@ -95,15 +99,21 @@ const reportData = (exercise, applications) => {
     maxJudicialExperienceNum = judicialExperiences.length > maxJudicialExperienceNum ? judicialExperiences.length : maxJudicialExperienceNum;
     maxNonJudicialExperienceNum = nonJudicialExperiences.length > maxNonJudicialExperienceNum ? nonJudicialExperiences.length : maxNonJudicialExperienceNum;
 
-    return {
+    let res = {
       firstName: personalDetails.firstName || null,
       lastName: personalDetails.lastName || null,
       suffix: personalDetails.suffix || null,
       ...getQualificationData(qualifications),
       ...getJudicialExperienceData(exercise, application, judicialExperiences),
       ...getNonJudicialExperienceData(nonJudicialExperiences),
-      ...getFeePaidOrSalariedData(application),
     };
+
+    if (exercise._applicationVersion < 3) {
+      // only show these fields for application version 2 and below
+      res = { ...res, ...getFeePaidOrSalariedData(application) };
+    }
+
+    return res;
   });
 
   return {

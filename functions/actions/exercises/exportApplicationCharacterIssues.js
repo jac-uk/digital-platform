@@ -1,7 +1,7 @@
 const lookup = require('../../shared/converters/lookup');
 const helpers = require('../../shared/converters/helpers');
-const { getDocuments, getDocument, formatDate, getDate } = require('../../shared/helpers');
-const { applicationOpenDatePost01042023, ordinal } = require('../../shared/converters/helpers');
+const { getDocuments, getDocument, formatDate, getDate, splitFullName } = require('../../shared/helpers');
+const { applicationOpenDatePost01042023, ordinal, getJudicialExperienceString } = require('../../shared/converters/helpers');
 const _ = require('lodash');
 const htmlWriter = require('../../shared/htmlWriter');
 const config = require('../../shared/config');
@@ -11,6 +11,35 @@ module.exports = (firebase, db) => {
   return {
     exportApplicationCharacterIssues,
   };
+
+  /**
+   * Initialise the Google Drive service and return the folder ID for the specified folder
+   * 
+   * @param   {string} folderName 
+   * @returns {string} The folder ID
+   */
+  async function initialiseGoogleDriveFolder(folderName = 'Character Export') {
+    // get drive service
+    await drive.login();
+
+    // get settings and apply them
+    const settings = await getDocument(db.collection('settings').doc('services'));
+    drive.setDriveId(settings.google.driveId);
+
+    // make sure a destination folder exists to create the file in
+    const folders = await drive.listFolders();
+    let folderId = 0;
+    folders.forEach((v, i) => {
+      if (v.name === folderName) {
+        folderId = v.id;
+      }
+    });
+    if (folderId === 0) { // folder doesn't exist so create it
+      folderId = await drive.createFolder(folderName);
+    }
+
+    return folderId;
+  }
 
   async function exportApplicationCharacterIssues(exerciseId, stage, status, format) {
 
@@ -27,7 +56,7 @@ module.exports = (firebase, db) => {
       firestoreRef = firestoreRef.where('stage', '==', stage);
     }
     if (status !== 'all') {
-      firestoreRef = firestoreRef.where('status', '==', status);
+      firestoreRef = firestoreRef.where('status', '==', status === 'blank' ? '' : status);
     } else {
       firestoreRef = firestoreRef.where('status', '!=', 'withdrewApplication');
     }
@@ -44,6 +73,8 @@ module.exports = (firebase, db) => {
     // generate the export (to Google Doc)
     if (format === 'googledoc') {
       return exportToGoogleDoc(exercise, applicationRecords);
+    } else if (format === 'annex') {
+      return await exportCharacterAnnexReport(exercise, applicationRecords);
     }
 
     // get report rows
@@ -53,7 +84,7 @@ module.exports = (firebase, db) => {
       maxQualificationNum,
       maxPostQualificationExperienceNum,
       data: rows,
-    } = getRows(applicationRecords);
+    } = getRows(exercise, applicationRecords);
     // get report headers
     const headers = getHeaders(exercise, maxCharacterInformationNum, maxProfessionalBackgroundNum, maxQualificationNum, maxPostQualificationExperienceNum);
 
@@ -74,34 +105,16 @@ module.exports = (firebase, db) => {
    * @returns
    */
   async function exportToGoogleDoc(exercise, applicationRecords) {
-
-    // get drive service
-    await drive.login();
-
-    // get settings and apply them
-    const settings = await getDocument(db.collection('settings').doc('services'));
-    drive.setDriveId(settings.google.driveId);
-
     // generate a filename for the document we are going to create
     const timestamp = (new Date()).toISOString();
     const filename = exercise.referenceNumber + '_' + timestamp;
 
-    // make sure a destination folder exists to create the file in
-    const folderName = 'Character Export';
-    const folders = await drive.listFolders();
-    let folderId = 0;
-    folders.forEach((v, i) => {
-      if (v.name === folderName) {
-        folderId = v.id;
-      }
-    });
-    if (folderId === 0) { // folder doesn't exist so create it
-      folderId = await drive.createFolder(folderName);
-    }
+    // initialise the Google Drive folder
+    const folderId = await initialiseGoogleDriveFolder('Character Export');
 
     // Create character issues document
     await drive.createFile(filename, {
-      folderId: folderId,
+      folderId,
       sourceType: drive.MIME_TYPE.HTML,
       sourceContent: getHtmlCharacterIssues(exercise, applicationRecords),
       destinationType: drive.MIME_TYPE.DOCUMENT,
@@ -112,6 +125,35 @@ module.exports = (firebase, db) => {
       path: folderName + '/' + filename,
     };
 
+  }
+
+  /**
+   * Export character annex report to a Google Docs file and return the base64 encoded file
+   *
+   * @param   {object} exercise
+   * @param   {object} applicationRecords
+   * @returns {string} base64 encoded file
+   */
+  async function exportCharacterAnnexReport(exercise, applicationRecords) {
+    // generate a filename for the document we are going to create
+    const timestamp = (new Date()).toISOString();
+    const filename = exercise.referenceNumber + '_Character Annex Report_' + timestamp;
+
+    // initialise the Google Drive folder
+    const folderId = await initialiseGoogleDriveFolder('Character Export');
+
+    // Create character annex report document
+    const fileId = await drive.createFile(filename, {
+      folderId,
+      sourceType: drive.MIME_TYPE.HTML,
+      sourceContent: getHtmlCharacterAnnexReport(exercise, applicationRecords),
+      destinationType: drive.MIME_TYPE.DOCUMENT,
+    });
+
+    if (fileId) {
+      return await drive.exportFile(fileId, 'application/vnd.openxmlformats-officedocument.wordprocessingml.document');
+    }
+    return false;
   }
 
   function getHeaders(exercise, maxCharacterInformationNum, maxProfessionalBackgroundNum, maxQualificationNum, maxPostQualificationExperienceNum) {
@@ -166,7 +208,7 @@ module.exports = (firebase, db) => {
     return headers;
   }
 
-  function getRows(applicationRecords) {
+  function getRows(exercise, applicationRecords) {
     let maxCharacterInformationNum = 0;
     let maxProfessionalBackgroundNum = 0;
     let maxQualificationNum = 0;
@@ -218,7 +260,7 @@ module.exports = (firebase, db) => {
         jurisdictionPreferences: getJurisdictionPreferencesString(application),
         ...getQualifications(qualifications),
         ...getPostQualificationExperiences(postQualificationExperiences),
-        judicialExperience: getJudicialExperienceString(application),
+        judicialExperience: getJudicialExperienceString(exercise, application),
       };
     });
 
@@ -402,18 +444,6 @@ module.exports = (firebase, db) => {
     }
     return data;
   }
-
-  function getJudicialExperienceString(application)
-  {
-    if (application.feePaidOrSalariedJudge) {
-      return `Fee paid or salaried judge\n${lookup(application.feePaidOrSalariedSittingDaysDetails)}`;
-    } else if (application.declaredAppointmentInQuasiJudicialBody) {
-      return `Quasi-judicial body\n${lookup(application.quasiJudicialSittingDaysDetails)}`;
-    } else {
-      return `Acquired skills in other way\n${lookup(application.skillsAquisitionDetails)}`;
-    }
-  }
-
 
   /**
    * Generates the Character Issues report, in HTML format
@@ -1494,4 +1524,149 @@ REPRODUCE THIS TABLE AS APPROPRIATE.<span class="red">&gt;</span></b>
     `);
   }
 
+  /**
+   * Generate the Character Annex report, in HTML format
+   *
+   * @param {*} exercise
+   * @param {*} applicationRecords
+   * @returns
+   */
+  function getHtmlCharacterAnnexReport(exercise, applicationRecords) {
+    let writer = new htmlWriter();
+    addHtmlCharacterAnnex_MainBody(writer, exercise, applicationRecords);
+    return writer.toString();
+  }
+
+  /**
+   * Add the main body content of the Character Issues report
+   *
+   * @param {htmlWriter} writer
+   * @param {*} exercise
+   * @param {*} applicationRecords
+   */
+  function addHtmlCharacterAnnex_MainBody(writer, exercise, applicationRecords) {
+    let candidateCount = 0;
+    const statusItems = Object.values(config.APPLICATION.CHARACTER_ISSUE_STATUS).map(status => {
+      const item = { status };
+      switch (status) {
+      case config.APPLICATION.CHARACTER_ISSUE_STATUS.PROCEED:
+        item.background = 'green';
+        break;
+      case config.APPLICATION.CHARACTER_ISSUE_STATUS.REJECT:
+      case config.APPLICATION.CHARACTER_ISSUE_STATUS.REJECT_NON_DECLARATION:
+        item.background = 'red';
+        break;
+      case config.APPLICATION.CHARACTER_ISSUE_STATUS.DISCUSS:
+        item.background = '#FFBF00';
+        break;
+      default:
+        item.background = 'none';
+      }
+      return item;
+    });
+
+    const lastIndex = statusItems.length - 1;
+    statusItems.forEach((statusItem, index) => {
+      writer.addRaw(`
+        <table style="font-size: 0.75rem;">
+          <tbody>
+      `);
+      const { status, background } = statusItem;
+      let ars = applicationRecords.filter(ar => ar.issues && ar.issues.characterIssuesStatus === status);
+      if (ars.length === 0) return;
+
+      writer.addRaw(`<tr><td colspan="3" style="text-align:center; background-color:${background}; padding:5px"><b>${lookup(status)}</b></td></tr>`);
+    
+      Object.values(config.APPLICATION.CHARACTER_ISSUE_OFFENCE_CATEGORY).forEach(offenceCategory => {
+        const filteredApplications = ars.filter(ar => ar.issues && ar.issues.characterIssuesOffenceCategory === offenceCategory);
+        if (filteredApplications.length === 0) return;
+
+        writer.addRaw(`<tr><td colspan="3" style="text-align:center; background-color:deepskyblue; padding:5px"><b>${lookup(offenceCategory)}</b></td></tr>`);
+
+        filteredApplications.sort((a, b) => {
+          // sort by last name
+          const aName = getFormattedName(a.candidate.fullName);
+          const bName = getFormattedName(b.candidate.fullName);
+          if (aName < bName) return -1;
+          if (aName > bName) return 1;
+          return 0;
+        }).forEach((ar, i) => {
+          candidateCount++;
+          if (i > 0) {
+            writer.addRaw('<tr><td colspan="3" style="background-color:#ddd; padding:0">&nbsp</td></tr>');
+          }
+
+          const formattedName = getFormattedName(ar.candidate.fullName);
+          const characterIssuesStatusReason = ar.issues && ar.issues.characterIssuesStatusReason ? ar.issues.characterIssuesStatusReason : '';
+          const guidanceReference = ar.issues && Array.isArray(ar.issues.characterIssuesGuidanceReferences)
+            ? ar.issues.characterIssuesGuidanceReferences.map(item => lookup(item)).join('<br>')
+            : '';
+          let declaration = '';
+  
+          ar.issues.characterIssues.forEach(issue => {
+            declaration += `<p><b>${issue.summary}</b></p>`;
+            if (Array.isArray(issue.events)) {
+              issue.events.forEach((event, i) => {
+                let result = [];
+                if (event.date) {
+                  const prettyDate = getDate(event.date).toJSON().slice(0, 10).split('-').reverse().join('/'); // dd/mm/yyyy
+                  result.push(prettyDate);
+                }
+                if (event.title) {
+                  result.push(event.title);
+                }
+                if (issue.summary === 'Professional Conduct') {
+                  if (event.investigations !== null && event.investigations !== undefined) {
+                    result.push(`Investigations: ${helpers.toYesNo(event.investigations)}`);
+                  }
+                  if (event.investigationConclusionDate) {
+                    const prettyDate = getDate(event.investigationConclusionDate).toJSON().slice(0, 10).split('-').reverse().join('/'); // dd/mm/yyyy
+                    result.push(`Investigation conclusion date: ${prettyDate}`);
+                  }
+                }
+                if (event.details) {
+                  result.push(event.details);
+                }
+
+                if (result.length) {
+                  declaration += `<p>${result.join('<br>')}</p>`;
+                }
+              });
+            }
+          });
+  
+          writer.addRaw(`
+            <tr><td rowspan="4" width="50"><b>${candidateCount}.</b></td><td width="175"><b>Name</b></td><td>${formattedName}</td></tr>
+            <tr><td><b>Declaration</b></td><td>${declaration}</td></tr>
+            <tr><td><b>Guidance reference</b></td><td>${guidanceReference}</td></tr>
+            <tr><td><b>Reason for ${lookup(status)} recommendation</b></td><td>${characterIssuesStatusReason}</td></tr>
+          `);
+        });
+      });
+
+      writer.addRaw(`
+          </tbody>
+        </table>
+      `);
+
+      if (index < lastIndex) {
+        writer.addPageBreak();
+      }
+
+    });
+  }
+
+  /**
+   * @param  {string} fullName (e.g. "first name, last name")
+   * @return {string} formatted name (e.g. "last name, first name") 
+   */
+  function getFormattedName(fullName) {
+    const names = splitFullName(fullName);
+    const firstName = names[0] || '';
+    const lastName = names[1] || '';
+    const result = [];
+    if (lastName) result.push(lastName);
+    if (firstName) result.push(firstName);
+    return result.join(', ');
+  }
 };

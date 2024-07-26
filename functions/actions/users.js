@@ -1,4 +1,4 @@
-const { getDocument } = require('../shared/helpers');
+const { getDocument, getDocuments } = require('../shared/helpers');
 const { convertPermissions } = require('../shared/permissions');
 const { getSearchMap } = require('../shared/search');
 
@@ -6,12 +6,15 @@ module.exports = (auth, db) => {
   return {
     generateSignInWithEmailLink,
     createUser,
+    updateUser,
     deleteUsers,
     importUsers,
     onUserCreate,
     onUserUpdate,
     updateUserCustomClaims,
     getUserSearchMap,
+    getUserByGithubUsername,
+    getUser,
   };
 
   async function generateSignInWithEmailLink(ref, email, returnUrl) {
@@ -63,6 +66,21 @@ module.exports = (auth, db) => {
   }
 
   /**
+   * Update a user
+   * @param {string} userId 
+   * @param {object} data 
+   * @returns 
+   */
+  async function updateUser(userId, data) {
+    try {
+      return await db.collection('users').doc(userId).update(data);
+    } catch(error) {
+      console.log(error);
+      return error;
+    }
+  }
+
+  /**
    * Delete multiple users
    * 
    * @param {array} uids
@@ -90,6 +108,19 @@ module.exports = (auth, db) => {
     }
 
     return result;
+  }
+
+  async function getUserByGithubUsername(githubUsername) {
+    const usersRef = db.collection('users').where('githubUsername', '==', githubUsername);
+    let users = await getDocuments(usersRef);
+    if (users.length === 0) {
+      return null;
+    }
+    return users[0];
+  }
+
+  async function getUser(userId) {
+    return getDocument(db.collection('users').doc(userId));
   }
 
   /**

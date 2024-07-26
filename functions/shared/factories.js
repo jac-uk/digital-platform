@@ -24,6 +24,7 @@ module.exports = (CONSTANTS) => {
     newNotificationUserInvitation,
     newCandidateFormResponse,
     newCandidateFormNotification,
+    newNotificationPublishedFeedbackReport,
   };
 
   function newNotificationExerciseApprovalSubmit(firebase, exerciseId, exercise, email) {
@@ -520,7 +521,7 @@ module.exports = (CONSTANTS) => {
         status: 'not requested',
       },
       active: true,
-      stage: exercise._processingVersion >= 2 ? 'applied' : 'review',
+      stage: exercise._processingVersion >= 2 ? CONSTANTS.EXERCISE_STAGE.SHORTLISTING : CONSTANTS.EXERCISE_STAGE.REVIEW,
       status: '',
       flags: {
         characterIssues: false,
@@ -555,6 +556,7 @@ module.exports = (CONSTANTS) => {
     const vacancyModel = {
       _applicationContent: null,
       _applicationVersion: null,
+      _processingVersion: null,
       aboutTheRole: null,
       aboutTheRoleWelsh: null,
       additionalWorkingPreferences: null,
@@ -594,6 +596,7 @@ module.exports = (CONSTANTS) => {
       locationQuestion: null,
       locationQuestionAnswers: null,
       locationQuestionType: null,
+      locationWelsh: null,
       memberships: null,
       name: null,
       noSalaryDetails: null,
@@ -812,6 +815,27 @@ module.exports = (CONSTANTS) => {
       },
       createdAt: firebase.firestore.Timestamp.fromDate(new Date()),
       status: 'ready',
+    };
+  }
+
+  function newNotificationPublishedFeedbackReport(firebase, email, exerciseName, testType) {
+    const templateName = 'Generic Feedback Report Publication';
+    const templateId = 'f74f3fda-419a-4c78-ad15-fbe0e33656ee';
+    const reportsLink = 'https://judicialappointments.gov.uk/feedback-and-evaluation-reports#OnlineTests';
+    return {
+      email: email,
+      replyTo: '',
+      template: {
+        name: templateName,
+        id: templateId,
+      },
+      personalisation: {
+        exerciseName: exerciseName,
+        testType: testType,
+        reportsLink: reportsLink,
+        createdAt: firebase.firestore.FieldValue.serverTimestamp(),
+        status: 'ready',
+      },
     };
   }
 };

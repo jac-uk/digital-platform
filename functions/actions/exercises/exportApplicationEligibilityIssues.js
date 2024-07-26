@@ -1,6 +1,6 @@
 const helpers = require('../../shared/converters/helpers');
 const lookup = require('../../shared/converters/lookup');
-const { getDocuments, getDocument, formatDate } = require('../../shared/helpers');
+const { getDocuments, getDocument, formatDate, splitFullName } = require('../../shared/helpers');
 const _ = require('lodash');
 const { ordinal } = require('../../shared/converters/helpers');
 const htmlWriter = require('../../shared/htmlWriter');
@@ -18,16 +18,22 @@ module.exports = (firebase, db) => {
    * Generates an export of all applications in the selected exercise with eligibility issues
    * @param {*} `exerciseId` (required) ID of exercise to include in the export
    */
-  async function exportApplicationEligibilityIssues(exerciseId, format) {
+  async function exportApplicationEligibilityIssues(exerciseId, format, status = null) {
 
     // get the exercise
     const exercise = await getDocument(
       db.collection('exercises').doc(exerciseId)
     );
 
-    const applicationRecords = await getDocuments(db.collection('applicationRecords')
-      .where('exercise.id', '==', exerciseId)
-      .where('flags.eligibilityIssues', '==', true));
+    let applicationRecordsRef = db.collection('applicationRecords')
+    .where('exercise.id', '==', exerciseId)
+    .where('flags.eligibilityIssues', '==', true);
+
+    if (status) {
+      applicationRecordsRef = applicationRecordsRef.where('status', '==', status);
+    }
+
+    const applicationRecords = await getDocuments(applicationRecordsRef);
 
     for (let i = 0, len = applicationRecords.length; i < len; i++) {
       const applicationRecord = applicationRecords[i];
@@ -41,6 +47,11 @@ module.exports = (firebase, db) => {
     // generate the export (to Google Doc)
     if (format === 'googledoc') {
       return exportToGoogleDoc(exercise, applicationRecords);
+    }
+
+    // generate the export (to Google Doc)
+    if (format === 'annex') {
+      return exportSccAnnexReport(exercise, applicationRecords);
     }
 
     // get report rows
@@ -105,6 +116,54 @@ module.exports = (firebase, db) => {
     };
   }
 
+  /**
+ * Exports eligibility issues to a Google Docs file
+ *
+ * @param {*} applicationRecords
+ * @returns
+ */
+  async function exportSccAnnexReport(exercise, applicationRecords) {
+
+    // get drive service
+    await drive.login();
+
+    // get settings and apply them
+    const settings = await getDocument(db.collection('settings').doc('services'));
+    drive.setDriveId(settings.google.driveId);
+
+    // generate a filename for the document we are going to create ex. JAC00787_SCC Eligibility Annexes
+    const now = new Date();
+    // const timestamp = new Date(now.getTime() - (now.getTimezoneOffset() * 60000)).toISOString();
+    const filename = `${exercise.referenceNumber}_SCC Eligibility Annexes` ;
+
+    // make sure a destination folder exists to create the file in
+    const folderName = 'Eligibility Export';
+    const folders = await drive.listFolders();
+    let folderId = 0;
+    folders.forEach((v, i) => {
+      if (v.name === folderName) {
+        folderId = v.id;
+      }
+    });
+    if (folderId === 0) { // folder doesn't exist so create it
+      folderId = await drive.createFolder(folderName);
+    }
+
+    // Create eligibility issues document
+    const fileId = await drive.createFile(filename, {
+      folderId: folderId,
+      sourceType: drive.MIME_TYPE.HTML,
+      sourceContent: getHtmlSccAnnexReport(exercise, applicationRecords),
+      destinationType: drive.MIME_TYPE.DOCUMENT,
+    });
+
+    if (fileId) {
+      return await drive.exportFile(fileId, 'application/vnd.openxmlformats-officedocument.wordprocessingml.document');
+    }
+
+    return false;
+  }
+
   function getHtmlEligibilityIssues(exercise, applicationRecords) {
 
     let writer = new htmlWriter();
@@ -122,6 +181,23 @@ module.exports = (firebase, db) => {
     addHtmlEligibilityIssues_AnnexB(writer, applicationRecords);
     writer.addPageBreak();
     addHtmlEligibilityIssues_AnnexC(writer, applicationRecords);
+
+    return writer.toString();
+  }
+
+  function getHtmlSccAnnexReport(exercise, applicationRecords) {
+
+    let writer = new htmlWriter();
+
+    addSccEligibilityIssues_StatutoryNotMet(writer, applicationRecords);
+    writer.addPageBreak();
+    addSccEligibilityIssues_PreviousJudicialExperience(writer, applicationRecords, 'proceed');
+    writer.addPageBreak();
+    addSccEligibilityIssues_PreviousJudicialExperience(writer, applicationRecords, 'discuss');
+    writer.addPageBreak();
+    addSccEligibilityIssues_PreviousJudicialExperience(writer, applicationRecords, 'reject');
+    writer.addPageBreak();
+    addSccEligibilityIssues_ReasonableLengthOfService(writer, exercise, applicationRecords);
 
     return writer.toString();
   }
@@ -446,6 +522,233 @@ module.exports = (firebase, db) => {
   }
 
   /**
+ * Adds the annex x content of the Eligibility Issues report
+ *
+ * @param {htmlWriter} writer
+ * @returns void
+ */
+  function addSccEligibilityIssues_StatutoryNotMet(writer, applicationRecords) {
+    //'Not met' for Professional qualification and/or Post-qualification experience sorted alphabetically by candidate surname
+    const rows = _.chain(applicationRecords)
+                  .filter((record) => {
+                    const targetIssues = record.issues.eligibilityIssues.filter((issue) => ['pq', 'pqe'].includes(issue.type));
+                    return targetIssues.some((issue) => issue.summary.search('Not Met') !== -1);
+                  })
+                  .map((record) => {
+                    const [forename, surname] = splitFullName(record.candidate.fullName);
+                    // statutory issues share the same comments(reasons), can just use the comments of one of issues
+                    const reasons = record.issues.eligibilityIssues.find((issue) => ['pq', 'pqe'].includes(issue.type)).comments;
+                    
+                    return {
+                      forename, 
+                      surname,
+                      reasons,
+                    };
+                  })
+                  .sortBy(['surname'])
+                  .value();
+
+    addOfficialSensitive(writer);
+    writer.addRaw(`
+<p style="text-align: right;"><a name="annex-x"><b>ANNEX X</b></a></p>
+    `);
+    writer.addHeading('Candidates who do not meet the Statutory Eligibility Criteria', 'center');
+    writer.addRaw(`
+<table>
+  <tbody>
+    <tr style="text-align: center; background: #f3f3f3;">
+      <td width="110"><b>Professional Surname</b></td>
+      <td width="100"><b>Forename</b></td>
+      <td><b>Reasons Statutory Eligibility Criteria is not satisfied</b></td>
+    </tr>
+    `);
+
+    for (const row of rows) {
+      writer.addRaw(`
+    <tr>
+      <td>${row.surname}</td>
+      <td>${row.forename}</td>
+      <td>${row.reasons}</td>
+    </tr>
+      `);
+    }
+
+    writer.addRaw(`
+  </tbody>
+</table>
+    `);
+  }
+
+  /**
+   * 
+   * @param {*} writer 
+   * @param {*} applicationRecords 
+   * @param {string} recommendation available options: 'proceed', 'reject', 'discuss' 
+   */
+  function addSccEligibilityIssues_PreviousJudicialExperience(writer, applicationRecords, recommendation) {
+    if (!['proceed', 'reject', 'discuss'].includes(recommendation)) {
+      throw new Error(`recommendation not support: ${recommendation}`);
+    }
+
+    const recommendationToHeading = {
+      'proceed': 'Candidates <u>recommended to proceed</u> and the reasons why they are considered to meet the ASC - Previous Judicial Experience',
+      'discuss': 'Candidates <u>recommended to discuss</u> and the reasons why they are considered to potentially meet the ASC - Previous Judicial Experience, necessary skills in some other significant way',
+      'reject': 'Candidates <u>recommended to reject</u> and the reasons why they are considered to not meet the ASC - Previous Judicial Experience through a quasi-judicial role or showing the skills in some other significant way',
+    };
+
+    const recommendationToReasonsHeading = {
+      'proceed': '<b>Reasons ASC is demonstrated through experience in a quasi-judicial capacity</b>',
+      'discuss': '<b>Reasons ASC could potentially be demonstrated through the necessary skills being shown in some other significant way</b>',
+      'reject': '<b>Reasons ASC is not demonstrated through a role in a quasi-judicial role or through some other significant way</b>',
+    };
+
+    const rows = _.chain(applicationRecords)
+                  .filter((record) => {
+                    const targetIssue = record.issues.eligibilityIssues.find((issue) => issue.type === 'pje');
+                    return targetIssue && targetIssue.result === recommendation;
+                  })
+                  .map((record) => {
+                    const [forename, surname] = splitFullName(record.candidate.fullName);        
+                    const targetIssue = record.issues.eligibilityIssues.find((issue) => issue.type === 'pje');
+                    const candidateComments = targetIssue.candidateComments;
+                    const jacComments = targetIssue.comments;
+                    
+                    return {
+                      forename, 
+                      surname,
+                      candidateComments,
+                      jacComments,
+                    };
+                  })
+                  .sortBy(['surname'])
+                  .value();
+
+
+    addOfficialSensitive(writer);
+    writer.addRaw(`
+<p style="text-align: right;"><a name="annex-c"><b>ANNEX X</b></a></p>
+    `);
+    
+    writer.addHeading(recommendationToHeading[recommendation], 'center');
+    writer.addRaw(`
+<table>
+  <tbody>
+    <tr>
+      <td width="110" style="text-align:center;"><b>Professional Surname</b></td>
+      <td width="100" style="text-align:center;"><b>Forename</b></td>
+      <td style="text-align:center;">
+        ${recommendationToReasonsHeading[recommendation]}
+      </td>
+    </tr>
+    `);
+
+    for (const row of rows) {
+      // start tr
+      writer.addRaw(`
+      <tr>
+        <td>${row.surname}</td>
+        <td>${row.forename}</td>
+        <td>
+      `);
+
+      if (row.candidateComments) {
+        writer.addRaw(`
+            <b>Candidate Comments:</b> ${row.candidateComments}
+            <br>
+            <br>
+            <br>
+            <br>
+        `);
+      }
+
+      // end tr
+      writer.addRaw(`
+          <b>JAC Comments (with reference to the ASC Log if appropriate):</b> ${row.jacComments}
+          </td>
+      </tr>
+      `);
+    }
+
+    writer.addRaw(`
+  </tbody>
+</table>
+    `);
+
+  }
+
+  /**
+   * 
+   * @param {*} writer 
+   * @param {*} applicationRecords 
+   */
+  function addSccEligibilityIssues_ReasonableLengthOfService(writer, exercise, applicationRecords) {
+    // TODO: to number words
+    const serviceYears = parseInt(exercise.reasonableLengthService === 'other' ? exercise.otherLOS : exercise.reasonableLengthService);
+
+    const rows = _.chain(applicationRecords)
+                  .filter((record) => {
+                    const targetIssue = record.issues.eligibilityIssues.find((issue) => issue.type === 'rls');
+                    return targetIssue && targetIssue.summary.search('Not Met') !== -1;
+                  })
+                  .map((record) => {
+                    const [forename, surname] = splitFullName(record.candidate.fullName);        
+                    const targetIssue = record.issues.eligibilityIssues.find((issue) => issue.type === 'rls');
+                    const ageAtSccDate = targetIssue.sccAge || '';
+                    const mitigationProvided = targetIssue.candidateComments || '';
+                    const recommendation = `${_.capitalize(targetIssue.result)}<br>${targetIssue.comments}`;
+                    
+                    return {
+                      forename, 
+                      surname,
+                      ageAtSccDate,
+                      mitigationProvided,
+                      recommendation,
+                    };
+                  })
+                  .sortBy(['surname'])
+                  .value();
+
+
+    addOfficialSensitive(writer);
+    writer.addRaw(`
+<p style="text-align: right;"><a name="annex-c"><b>ANNEX X</b></a></p>
+    `);
+    
+    writer.addHeading(`Candidates who will not be able to provide ${serviceYears} years reasonable service when recommendations are made to the Lord Chancellor`, 'center');
+    writer.addRaw(`
+<table>
+  <tbody>
+    <tr>
+      <td width="110" style="text-align:center;"><b>Professional Surname</b></td>
+      <td width="100" style="text-align:center;"><b>Forename</b></td>
+      <td width="100" style="text-align:center;">
+        <b>Age at SCC Recommendations</b>
+      </td>
+      <td style="text-align:center;">Mitigation Provided</td>
+      <td style="text-align:center;">Recommendation</td>
+    </tr>
+    `);
+
+    for (const row of rows) {
+      writer.addRaw(`
+      <tr>
+        <td>${row.surname}</td>
+        <td>${row.forename}</td>
+        <td>${row.ageAtSccDate}</td>
+        <td>${row.mitigationProvided}</td>
+        <td>${row.recommendation}</td>
+      </tr>
+      `);
+    }
+
+    writer.addRaw(`
+  </tbody>
+</table>
+    `);
+
+  }
+
+  /**
    * Adds the annex b content of the Eligibility Issues report
    *
    * @param {htmlWriter} writer
@@ -633,21 +936,6 @@ module.exports = (firebase, db) => {
     });
 
     console.log('*** Dump - END ***');
-  }
-
-  function splitFullName(fullName) {
-    const name = fullName.split(' ');
-    let firstName = null;
-    let lastName = null;
-    if (name.length > 1) {
-      firstName = name[0];
-      name.shift();
-      lastName = name.join(' ');
-    } else {
-      firstName = '';
-      lastName = name[0];
-    }
-    return ([firstName, lastName]);
   }
 };
 

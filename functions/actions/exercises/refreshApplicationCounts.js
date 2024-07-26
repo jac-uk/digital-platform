@@ -76,6 +76,7 @@ module.exports = (firebase, db) => {
     const counts = {
       _total: applicationRecords.length,
       _lastUpdated: firebase.firestore.FieldValue.serverTimestamp(),
+      status: {},
     };
     applicationRecords.forEach(applicationRecord => {
       if (counts[applicationRecord.stage]) {
@@ -83,6 +84,14 @@ module.exports = (firebase, db) => {
       } else {
         counts[applicationRecord.stage] = 1;
       }
+
+      const status = applicationRecord.status || 'blank';   // TODO not sure about this
+      if (counts.status[status]) {
+        counts.status[status]++;
+      } else {
+        counts.status[status] = 1;
+      }
+
       // EMP counts
       if (applicationRecord.flags && applicationRecord.flags.empApplied) {
         const countName = `${applicationRecord.stage}EMP`;

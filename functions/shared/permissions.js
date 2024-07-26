@@ -77,6 +77,14 @@ const PERMISSIONS = {
         label: 'Can send application reminders',
         value: 'e10',
       },
+      canConfigureExercise: {
+        label: 'Can configure exercise',
+        value: 'e11',
+      },
+      canResetCharacterIssuesReport: {
+        label: 'Can reset character issues report',
+        value: 'e12',
+      },
     },
   },
   candidates: {
@@ -370,6 +378,15 @@ const PERMISSIONS = {
       canDelete: {
         label: 'Can delete candidate forms',
         value: 'cf4',
+      },
+    },
+  },
+  releases: {
+    label: 'Releases',
+    permissions: {
+      canReadReleases: {
+        label: 'Can read releases',
+        value: 'r1',
       },
     },
   },

@@ -51,6 +51,7 @@ exports.transferHandoverData = require('./callableFunctions/transferHandoverData
 exports.exportApplicationContactsData = require('./callableFunctions/exportApplicationContactsData');
 exports.exportApplicationEligibilityIssues = require('./callableFunctions/exportApplicationEligibilityIssues');
 exports.generateHandoverReport = require('./callableFunctions/generateHandoverReport');
+exports.generateDeploymentReport = require('./callableFunctions/generateDeploymentReport');
 exports.generateReasonableAdjustmentsReport = require('./callableFunctions/generateReasonableAdjustmentsReport');
 exports.generateAgencyReport = require('./callableFunctions/generateAgencyReport');
 exports.generateStatutoryConsultationReport = require('./callableFunctions/generateStatutoryConsultationReport');
@@ -88,9 +89,15 @@ exports.extractDocumentContent = require('./callableFunctions/extractDocumentCon
 exports.updateUserCustomClaims = require('./callableFunctions/updateUserCustomClaims');
 exports.createZenhubIssue = require('./callableFunctions/createZenhubIssue');
 exports.exportApplicationCommissionerConflicts = require('./callableFunctions/exportApplicationCommissionerConflicts');
+exports.verifySlackUser = require('./callableFunctions/verifySlackUser');
+exports.sendPublishedFeedbackReportNotifications = require('./callableFunctions/sendPublishedFeedbackReportNotifications');
+exports.updateApplicationRecordStageStatus = require('./callableFunctions/updateApplicationRecordStageStatus');
+exports.getLatestReleases = require('./callableFunctions/getLatestReleases');
 
 // Callable - QTs v2
 exports.listQualifyingTests = require('./callableFunctions/qualifyingTests/v2/listQualifyingTests');
 exports.updateQualifyingTestParticipants = require('./callableFunctions/qualifyingTests/v2/updateQualifyingTestParticipants');
 exports.updateQualifyingTestScores = require('./callableFunctions/qualifyingTests/v2/updateQualifyingTestScores');
 
+// HTTP
+exports.ticketingGithubWebhook = require('./httpFunctions/ticketingGithubWebhook');

@@ -73,7 +73,7 @@ module.exports = (config, firebase, db) => {
         );
 
         // Transfer Self Assessment
-        if (application.uploadedSelfAssessment) {
+        if (application.uploadedSelfAssessment && !application.uploadedSelfAssessmentContent) {
           promises.push(
             transferFileFromStorage({
               storageBucket: bucket,

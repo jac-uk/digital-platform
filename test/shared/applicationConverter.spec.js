@@ -613,6 +613,11 @@ describe('applicationConverter', () => {
         mockApplication = {
           jurisdictionPreferences: 'jurisdiction A',
         };
+
+        mockExercise = {
+          jurisdictionQuestion: 'Test question A',
+        };
+
         // set up
         htmlNode = document.createElement('div');
         htmlNode.innerHTML = converter.getHtmlPanelPack(mockApplication, mockExercise);

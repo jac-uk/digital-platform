@@ -1,4 +1,5 @@
 const { getDocument, getDocuments, getDocumentsFromQueries, applyUpdates } = require('../../shared/helpers');
+const lookup = require('../../shared/converters/lookup');
 
 module.exports = (config, firebase, db) => {
   const {
@@ -365,6 +366,7 @@ module.exports = (config, firebase, db) => {
       success: false,
       data: {},
     };
+    const title = `${lookup(testType)} for ${folderName}`;
     const QTType = testType === config.TASK_TYPE.EMP_TIEBREAKER ? config.TASK_TYPE.SCENARIO : testType;
     // initialise test on QT Platform
     const qts = require('../../shared/qts')(config);
@@ -374,6 +376,7 @@ module.exports = (config, firebase, db) => {
         type: QTType,
         startDate: startDate,
         endDate: endDate,
+        title: title,
       },
     });
     result.success = true;
@@ -971,7 +974,7 @@ module.exports = (config, firebase, db) => {
                 saveData[`statusLog.${failStatus}`] = firebase.firestore.FieldValue.serverTimestamp(); // we still always log the status change
                 commands.push({
                   command: 'update',
-                  ref: db.collection('applicationRecords').doc(application.id),
+                  ref: db.collection('applicationRecords').doc(scoreData.id),
                   data: saveData,
                 });         
               }

@@ -1,10 +1,14 @@
 const helpers = require('../../shared/converters/helpers');
 const lookup = require('../../shared/converters/lookup');
 const { getDocument, getDocuments, getAllDocuments, removeHtml } = require('../../shared/helpers');
+const { getAdditionalWorkingPreferences } = require('../../shared/converters/workingPreferencesConverter');
 const applicationConverter = require('../../shared/converters/applicationConverter')();
-const { getLocationPreferences, getJurisdictionPreferences, getAdditionalWorkingPreferences, getWelshData } = applicationConverter;
+const { getWelshData } = applicationConverter;
 
-module.exports = (firebase, db) => {
+module.exports = (firebase, config, db) => {
+  const { EXERCISE_STAGE, APPLICATION_STATUS } = config;
+  const { convertStageToVersion2, convertStatusToVersion2 } = require('../applicationRecords/updateApplicationRecordStageStatus')(firebase, config, db);
+  
   return {
     generateHandoverReport,
   };
@@ -15,9 +19,15 @@ module.exports = (firebase, db) => {
     const exercise = await getDocument(db.collection('exercises').doc(exerciseId));
 
     // get submitted application records (which are at the handover stage)
+    const stage = exercise._processingVersion >= 2 ? convertStageToVersion2(EXERCISE_STAGE.HANDOVER) : EXERCISE_STAGE.HANDOVER;
+    const statuses = [
+      APPLICATION_STATUS.RECOMMENDED_IMMEDIATE,
+      exercise._processingVersion >= 2 ?  convertStatusToVersion2(APPLICATION_STATUS.APPROVED_FOR_IMMEDIATE_APPOINTMENT) : APPLICATION_STATUS.APPROVED_FOR_IMMEDIATE_APPOINTMENT,
+    ];
     const applicationRecords = await getDocuments(db.collection('applicationRecords')
       .where('exercise.id', '==', exerciseId)
-      .where('stage', '==', 'handover')
+      .where('stage', '==', stage)
+      .where('status', 'in', statuses)
     );
 
     // get the parent application records for the above
@@ -87,10 +97,8 @@ const reportHeaders = (exercise) => {
         { title: 'Agreed to share Diversity', ref: 'shareData' },
         { title: 'Professional Background', ref: 'professionalBackground' },
         { title: 'Previous roles', ref: 'formattedFeePaidJudicialRole' },
-        { title: 'School type', ref: 'stateOrFeeSchool' },
-        { title: 'Attended university', ref: 'firstGenerationStudent' },
         { title: 'School type', ref: 'stateOrFeeSchool16' },
-        { title: 'Attended university', ref: 'parentsAttendedUniversity' },
+        { title: 'Parents attended university', ref: 'parentsAttendedUniversity' },
         { title: 'Ethnicity', ref: 'ethnicGroup' },
         { title: 'Gender', ref: 'gender' },
         { title: 'Sexual orientation', ref: 'sexualOrientation' },
@@ -104,6 +112,20 @@ const reportHeaders = (exercise) => {
       ],
     },
   };
+
+  // old version equality and diversity info 
+  if (!isApplicationOpenDatePost01042023(exercise)) {
+    headers.diversity.common = [
+      { title: 'Previous roles', ref: 'formattedFeePaidJudicialRole' },
+      { title: 'School type', ref: 'stateOrFeeSchool' },
+      { title: 'Parents attended university', ref: 'firstGenerationStudent' },
+      { title: 'Ethnicity', ref: 'ethnicGroup' },
+      { title: 'Gender', ref: 'gender' },
+      { title: 'Sexual orientation', ref: 'sexualOrientation' },
+      { title: 'Disability', ref: 'disability' },
+      { title: 'Religion or belief', ref: 'religionFaith' },
+    ];
+  }
 
   const reportHeaders = [
     { title: 'Application ID', ref: 'applicationId' },
@@ -133,10 +155,14 @@ const reportHeaders = (exercise) => {
     );
   }
 
+  // separate additional working preferences
+  if (Array.isArray(exercise.additionalWorkingPreferences)) {
+    exercise.additionalWorkingPreferences.forEach((additionalWorkingPreference, index) => {
+      reportHeaders.push({ title: additionalWorkingPreference.question, ref: `additionalWorkingPreference${index}` });
+    });
+  }
+
   reportHeaders.push(
-    { title: 'Location Preferences', ref: 'locationPreferences' },
-    { title: 'Jurisdiction Preferences', ref: 'jurisdictionPreferences' },
-    { title: 'Additional Preferences', ref: 'additionalPreferences' },
     { title: 'Welsh posts', ref: 'welshPosts' }
   );
 
@@ -165,12 +191,13 @@ const reportData = (db, exercise, applicationRecords, applications) => {
       memberships = formatNonLegalData(application, exercise);
     }
 
-    const locationPreferences = application.locationPreferences && application.locationPreferences.length
-      ? getLocationPreferences(application, exercise).map(x => `${removeHtml(x.label)}\n${removeHtml(x.value)}`).join('\n\n') : '';
-    const jurisdictionPreferences = application.jurisdictionPreferences && application.jurisdictionPreferences.length
-      ? getJurisdictionPreferences(application, exercise).map(x => `${removeHtml(x.label)}\n${removeHtml(x.value)}`).join('\n\n') : '';
-    const additionalPreferences = application.additionalWorkingPreferences && application.additionalWorkingPreferences.length
-      ? getAdditionalWorkingPreferences(application, exercise).map(x => `${removeHtml(x.label)}\n${removeHtml(x.value)}`).join('\n\n') : '';
+    const additionalPreferences = {};
+    if (Array.isArray(application.additionalWorkingPreferences)) {
+      getAdditionalWorkingPreferences(application, exercise).forEach((additionalWorkingPreference, index) => {
+        additionalPreferences[`additionalWorkingPreference${index}`] = removeHtml(additionalWorkingPreference.value).replace('answer:', '').trim() || '';
+      });
+    }
+
     const welshPosts = exercise.welshRequirement
       ? getWelshData(application).map(x => `${removeHtml(x.label)}\n${removeHtml(x.value)}`).join('\n\n') : '';
     const partTimeWorkingPreferences = {
@@ -187,9 +214,7 @@ const reportData = (db, exercise, applicationRecords, applications) => {
       ...qualifications,
       ...memberships,
       ...formatDiversityData(application.equalityAndDiversitySurvey, exercise),
-      locationPreferences,
-      jurisdictionPreferences,
-      additionalPreferences,
+      ...additionalPreferences,
       welshPosts,
       ...partTimeWorkingPreferences,
     };
@@ -249,6 +274,8 @@ const formatPersonalDetails = (personalDetails) => {
 };
 
 const formatDiversityData = (survey, exercise) => {
+  if (!survey) return {};
+
   const share = (value) => survey.shareData ? value : null;
 
   let formattedFeePaidJudicialRole;
@@ -296,39 +323,7 @@ const formatLegalData = (exercise, application) => {
     }).join('\n');
   }
 
-  let judicialExperience = '';
-  if (exercise._applicationVersion >= 3) {
-    let judicialExperiences = [];
-    let quasiJudicialExperiences = [];
-    Array.isArray(application.experience) && application.experience.forEach(experience => {
-      if (experience.jobTitle && experience.judicialFunctions) {
-        if (experience.judicialFunctions.type === 'judicial-post') {
-          judicialExperiences.push(experience.jobTitle);
-        } else if (experience.judicialFunctions.type === 'quasi-judicial-post') {
-          quasiJudicialExperiences.push(experience.jobTitle);
-        }
-      }
-    });
-
-    if (judicialExperiences.length) {
-      judicialExperience += `Judicial - ${judicialExperiences.join(', ')}\n`;
-    }
-    if (quasiJudicialExperiences.length) {
-      judicialExperience += `Quasi-judicial - ${quasiJudicialExperiences.join(', ')}`;
-    }
-
-    if (!judicialExperience) {
-      judicialExperience = `Acquired skills in other way - ${lookup(application.experienceDetails)}`;
-    }
-  } else {
-    if (application.feePaidOrSalariedJudge) {
-      judicialExperience = `Fee paid or salaried judge - ${lookup(application.feePaidOrSalariedSittingDaysDetails)} days`;
-    } else if (application.declaredAppointmentInQuasiJudicialBody) {
-      judicialExperience = `Quasi-judicial body - ${lookup(application.quasiJudicialSittingDaysDetails)} days`;
-    } else {
-      judicialExperience = `Acquired skills in other way - ${lookup(application.skillsAquisitionDetails)}`;
-    }
-  }
+  const judicialExperience = helpers.getJudicialExperienceString(exercise, application);
 
   return {
     qualifications: qualifications,
@@ -371,3 +366,11 @@ const formatNonLegalData = (application, exercise) => {
     };
   }
 };
+
+function isApplicationOpenDatePost01042023(exercise) {
+  const usesPre01042023Questions = ['JAC00130', 'JAC00123', 'JAC00164'].includes(exercise.referenceNumber);
+  if (usesPre01042023Questions) {
+    return false;
+  }
+  return Object.prototype.hasOwnProperty.call(exercise, 'applicationOpenDate') && exercise.applicationOpenDate.toDate() > new Date('2023-04-01');
+}

@@ -1,9 +1,10 @@
-// TODO sort out firestore date formatting
-
 const htmlWriter = require('../htmlWriter');
 const lookup = require('./lookup');
-const { addField, formatDate, toYesNo } = require('./helpers');
+const {addField, formatDate, toYesNo} = require('./helpers');
 const helpers = require('../../shared/helpers');
+
+const { getJurisdictionPreferences, getLocationPreferences, getAdditionalWorkingPreferences } = require('./workingPreferencesConverter');
+const has = require('lodash/has');
 
 module.exports = () => {
 
@@ -11,11 +12,7 @@ module.exports = () => {
     getHtmlPanelPack,
     getExperienceData,
     getAdditionalSelectionCriteria,
-    getLocationPreferences,
-    getJurisdictionPreferences,
-    getAdditionalWorkingPreferences,
     getWelshData,
-    // TODO include other converters
   };
 
   function getHtmlPanelPack(application, exercise, params) {
@@ -23,28 +20,49 @@ module.exports = () => {
     let html = new htmlWriter();
 
     if (application && Object.keys(application).length) {
-      // console.log(application);
-      if (params && params.showNames) {
+      if (params && params.showNames && has(application, 'personalDetails.fullName') && has(application, 'referenceNumber')) {
         html.addTitle(`${application.personalDetails.fullName} ${application.referenceNumber}`);
-      } else {
+      }
+      else if (has(application, 'referenceNumber')) {
         html.addTitle(application.referenceNumber);
       }
-
-      if (application.jurisdictionPreferences && application.jurisdictionPreferences.length) {
-        html.addHeading('Jurisdiction Preferences');
-        html.addTable(getJurisdictionPreferences(application, exercise));
+      else {
+        // The last resort if no other info is available!
+        html.addTitle('Error - Missing Application Title');
       }
 
-      if (application.additionalWorkingPreferences && application.additionalWorkingPreferences.length) {
+      const jurisdictionPrefs = getJurisdictionPreferences(application, exercise);
+      if (jurisdictionPrefs.length) {
+        html.addHeading('Jurisdiction Preferences');
+        html.addTable(jurisdictionPrefs);
+      }
+
+      const locationPrefs = getLocationPreferences(application, exercise);
+      if (locationPrefs.length) {
+        html.addHeading('Location Preferences');
+        html.addTable(locationPrefs);
+      }
+      
+      const additionalPrefs = getAdditionalWorkingPreferences(application, exercise);
+      if (additionalPrefs.length) {
         html.addHeading('Additional Preferences');
-        html.addTable(getAdditionalWorkingPreferences(application, exercise));
+        html.addTable(additionalPrefs);
+      }
+      
+      if (application.uploadedSelfAssessment) {
+        const selfAssessment = getSelfAssessment(application, exercise);
+        if (selfAssessment.length) {
+          html.addHeading('Self Assessment');
+          html.addTable(selfAssessment);
+        }
       }
 
       if (application.selectionCriteriaAnswers && application.selectionCriteriaAnswers.length) {
         html.addHeading('Additional selection criteria');
         html.addTable(getAdditionalSelectionCriteria(application, exercise));
       }
-    } else {
+    }
+    else {
       html.addTitle('Error - Missing Application information');
     }
 
@@ -100,44 +118,13 @@ module.exports = () => {
     return html.toString();
   }
 
-  function getJurisdictionPreferences(application, exercise) {
+  function getSelfAssessment(application, exercise) {
+    const selfAssessmentData = application.uploadedSelfAssessmentContent;
     const data = [];
-    if (typeof (application.jurisdictionPreferences) === 'string') {
-      addField(data, exercise.jurisdictionQuestion, application.jurisdictionPreferences);
-    } else {
-      addField(data, exercise.jurisdictionQuestion, application.jurisdictionPreferences.join('\n'));
-    }
-    return data;
-  }
-
-  function getAdditionalWorkingPreferences(application, exercise) {
-    const additionalWorkingPreferenceData = application.additionalWorkingPreferences;
-    const data = [];
-    additionalWorkingPreferenceData.forEach((item, index) => {
-      addField(data, lookup(exercise.additionalWorkingPreferences[index].questionType));
-      if (exercise.additionalWorkingPreferences[index].questionType === 'single-choice') {
-        addField(data, exercise.additionalWorkingPreferences[index].question, item.selection);
-      }
-      if (exercise.additionalWorkingPreferences[index].questionType === 'multiple-choice' && item.selection) {
-        const multipleChoice = [];
-          item.selection.forEach((choice) => {
-            multipleChoice.push(`<br/>${choice}`);
-          });
-        addField(data, exercise.additionalWorkingPreferences[index].question, `answer: ${multipleChoice}`);
-      } else {
-        addField(data, exercise.additionalWorkingPreferences[index].question, 'answer: <br/> no answer provided');
-      }
-      if (exercise.additionalWorkingPreferences[index].questionType === 'ranked-choice' && item.selection) {
-        const rankedAnswer = [];
-        item.selection.forEach((choice, index) => {
-          rankedAnswer.push(`<br/>${index + 1}: ${choice}`);
-        });
-        addField(data, exercise.additionalWorkingPreferences[index].question, `answer: ${rankedAnswer}`);
-      } else {
-        addField(data, exercise.additionalWorkingPreferences[index].question, 'answer: <br/> no answer provided');
-      }
+    if (!selfAssessmentData || !exercise.selfAssessmentWordLimits) return data;
+    selfAssessmentData.forEach((q, i) => {
+      addField(data, exercise.selfAssessmentWordLimits[i].question, q);
     });
-    console.log(data);
     return data;
   }
 
@@ -166,7 +153,7 @@ module.exports = () => {
 
     if (exercise.schedule2Apply) {
       if (exercise.appliedSchedule === 'schedule-2-3') {
-        addField(data, 'Are you applying under Schedule 2(3)?', toYesNo(application.applyingForSchedule2Three));
+        addField(data, 'Are you applying under Schedule 3(d)?', toYesNo(application.applyingForSchedule2Three));
       }
       if (exercise.appliedSchedule === 'schedule-2-d') {
         addField(data, 'Are you applying under Schedule 2(d)?', toYesNo(application.applyingUnderSchedule2d));
@@ -202,7 +189,7 @@ module.exports = () => {
       experienceData.forEach((e, idx) => {
         const dates = [];
         if (e.startDate) dates.push(helpers.formatDate(e.startDate, 'MMM YYYY'));
-        if (e.isOngoing) dates.push('Ongoing');
+        if (e.isOngoing || !Object.prototype.hasOwnProperty.call(e, 'endDate')) dates.push('Ongoing');   // Support new/old applications
         else if (e.endDate) dates.push(helpers.formatDate(e.endDate, 'MMM YYYY'));
 
         addField(data, 'Job title', e.jobTitle, idx !== 0);
@@ -489,21 +476,6 @@ module.exports = () => {
   function getPartTimeWorkingPreferences(application, exercise) {
     const data = [];
     addField(data, exercise.yesSalaryDetails, application.partTimeWorkingPreferencesDetails);
-    return data;
-  }
-
-  // if (application.locationPreferences && application.locationPreferences.length ) {
-  //   html.addHeading('Location preferences');
-  //   html.addTable(getLocationPreferences(application, exercise));
-  // }
-
-  function getLocationPreferences(application, exercise) {
-    const data = [];
-    if (exercise.locationQuestionType === 'single-choice') {
-      addField(data, exercise.locationQuestion, application.locationPreferences);
-    } else {
-      addField(data, exercise.locationQuestion, application.locationPreferences.join('\n'));
-    }
     return data;
   }
 

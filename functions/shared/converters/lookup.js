@@ -129,7 +129,7 @@ const lookup = (value) => {
       'salaried-court-judge': 'Salaried court judge',
       'salaried-tribunal-judge': 'Salaried tribunal judge',
       'scenario-test-qualifying-test': 'Scenario test qualifying test (QT)',
-      'schedule-23': 'Schedule 2(3)',
+      'schedule-23': 'Schedule 3(d)',
       'schedule-2d': 'Schedule 2(d)',
       'scotland': 'Scotland',
       'scottish-ministers': 'Scottish ministers',
@@ -173,11 +173,12 @@ const lookup = (value) => {
       'white-black-caribbean': 'White and Black Caribbean',
       'write': 'Write',
       'schedule-2-d': 'Schedule 2(d)',
-      'schedule-2-3': 'Schedule 2(3)',
+      'schedule-2-3': 'Schedule 3(d)',
       /* Exercise stages: start */
       'review': 'Review',
       'shortlisted': 'Shortlisted',
       'selected': 'Selected',
+      'selectable': 'Selectable',
       'recommended': 'Recommended',
       'handover': 'Handover',
       /* Exercise stages: end */
@@ -216,6 +217,42 @@ const lookup = (value) => {
       'voluntary': 'Voluntary',
       'judicial-post': 'Judicial',
       'quasi-judicial-post': 'Quasi-judicial',
+
+      // Qualifying Tests
+      'scenarioTest': 'Scenario Test',
+      'criticalAnalysis': 'Critical Analysis Test',
+      'situationalJudgement': 'Situational Judgement Test',
+      'empTiebreaker': 'EMP Tie-breaker',
+
+      // character issues status
+      'proceed': 'Proceed',
+      'reject': 'Reject',
+      'reject-non-declaration': 'Reject Non-Declaration',
+      'discuss': 'Discuss',
+
+      // character issues offence category
+      'singleMotoringOffence': 'Single motoring offence',
+      'multipleMotoringOffences': 'Multiple motoring offences',
+      'singlePenaltyNotice': 'Single Fixed Penalty Notices & Penalty Charge Notices',
+      'multiplePenaltyNotices': 'Multiple Fixed Penalty Notices & Penalty Charge Notices',
+      'singleCriminalOffence': 'Single criminal offence',
+      'multipleCriminalOffences': 'Multiple criminal offences',
+      'singleFinancialOffence': 'Single financial issue',
+      'multipleFinancialOffences': 'Multiple financial issues',
+      'singleProfessionalConduct': 'Single professional conduct matter',
+      'multipleProfessionalConducts': 'Multiple professional conduct matters',
+      'singleOtherMatter': 'Single other matter',
+      'multipleOtherMatters': 'Multiple other matters',
+      'mixed': 'Mixed',
+
+      // character issues guidance reference
+      'criminalOffences': 'Criminal offences: paras 21-24',
+      'moteringOffences': 'Motoring offences: paras 25-30',
+      'fixedPenaltyNotices': 'Fixed penalty notices: paras 31-34',
+      'financialInsolvencyDebt': 'Financial insolvency and debt: paras 35-38',
+      'financialVatTax': 'Financial VAT and Tax: paras 39-43',
+      'professionalConduct': 'Professional conduct: paras 44-57',
+      'furtherDisclosures': 'Further disclosures: paras 58-65',
     };
 
     return lookup[value] || value;

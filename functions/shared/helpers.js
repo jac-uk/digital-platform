@@ -1,5 +1,6 @@
-const firebase = require('firebase-admin');
-const Timestamp = firebase.firestore.Timestamp;
+const { getApp } = require('firebase-admin/app');
+const { Timestamp } = require('firebase-admin/firestore');
+const get = require('lodash/get');
 
 module.exports = {
   getDocument,
@@ -26,9 +27,12 @@ module.exports = {
   calculateMean,
   calculateStandardDeviation,
   objectHasNestedProperty,
+  getMissingNestedProperties,
   replaceCharacters,
   formatAddress,
   formatPreviousAddresses,
+  splitFullName,
+  isDifferentPropsByPath,
 };
 
 function calculateMean(numArray) {
@@ -349,7 +353,7 @@ function convertStringToSearchParts(value, delimiter) {
 }
 
 function isProduction() {
-  const projectId = firebase.instanceId().app.options.projectId;
+  const projectId = getApp().options.projectId;
   return projectId.includes('production');
 }
 
@@ -370,6 +374,16 @@ function objectHasNestedProperty(obj, dotPath) {
     currentObj = currentObj[key];
   }
   return true;
+}
+
+function getMissingNestedProperties(obj, dotPaths) {
+  const missingPaths = [];
+  for (let i = 0; i < dotPaths.length; i++) {
+    if (!objectHasNestedProperty(obj, dotPaths[i])) {
+      missingPaths.push(dotPaths[i]);
+    }
+  }
+  return missingPaths;
 }
 
 /**
@@ -428,4 +442,28 @@ function formatPreviousAddresses(previousAddresses) {
     }).join('\n\n');
   }
   return '';
+}
+
+function splitFullName(fullName) {
+  const name = fullName.split(' ');
+  let firstName = null;
+  let lastName = null;
+  if (name.length > 1) {
+    firstName = name[0];
+    name.shift();
+    lastName = name.join(' ');
+  } else {
+    firstName = '';
+    lastName = name[0];
+  }
+  return ([firstName, lastName]);
+}
+
+/**
+ * Compare two object properties by string path so compatible with lodash _get and _has
+ */
+function isDifferentPropsByPath(object1, object2, pathInObject) {
+  const val1 = get(object1, pathInObject, null);
+  const val2 = get(object2, pathInObject, null);
+  return val1 !== val2;
 }

@@ -16,11 +16,14 @@ const { applicationOpenDatePost01042023 } = require('../../shared/converters/hel
  *   • 25% said they prefer Applause (2 out of 8)
  *   • Declaration rate was 80% (8 out of 10)
  *
- * @param {*} firebase 
+ * @param {*} config
+ * @param {*} firebase
  * @param {*} db 
  * @returns 
  */
-module.exports = (firebase, db) => {
+module.exports = (config, firebase, db) => {
+  const { availableStages } = require('../../shared/exerciseHelper')(config);
+
   return {
     generateDiversityReport,
     genderStats,
@@ -56,34 +59,61 @@ module.exports = (firebase, db) => {
       applied: diversityReport(applications, applicationRecords, exercise),
     };
 
-
-    if (applicationRecords.length) {
-      const handoverApplicationRecords = applicationRecords.filter(doc => doc.stage === 'handover');
-      const handoverIds = handoverApplicationRecords.map(doc => doc.id);
-      const handoverApplications = applications.filter(doc => handoverIds.indexOf(doc.id) >= 0);
-
-      const recommendedApplicationRecords = applicationRecords.filter(doc => doc.stage === 'recommended');
-      const recommendedIds = recommendedApplicationRecords.map(doc => doc.id);
-      const recommendedApplications = handoverApplications.concat(applications.filter(doc => recommendedIds.indexOf(doc.id) >= 0));
-
-      const selectedApplicationRecords = applicationRecords.filter(doc => doc.stage === 'selected');
-      const selectedIds = selectedApplicationRecords.map(doc => doc.id);
-      const selectedApplications = recommendedApplications.concat(applications.filter(doc => selectedIds.indexOf(doc.id) >= 0));
-
-      const shortlistedApplicationRecords = applicationRecords.filter(doc => doc.stage === 'shortlisted');
-      const shortlistedIds = shortlistedApplicationRecords.map(doc => doc.id);
-      const shortlistedApplications = selectedApplications.concat(applications.filter(doc => shortlistedIds.indexOf(doc.id) >= 0));
-
-      report.handover = diversityReport(handoverApplications, handoverApplicationRecords, exercise);
-      report.recommended = diversityReport(recommendedApplications, recommendedApplicationRecords, exercise);
-      report.selected = diversityReport(selectedApplications, selectedApplicationRecords, exercise);
-      report.shortlisted = diversityReport(shortlistedApplications, shortlistedApplicationRecords, exercise);
+    const stages = availableStages(exercise);
+    let applicationRecordsByPreviousStage = [];
+    if (stages.length && applicationRecords.length) {
+      for (let i = stages.length - 1; i >= 0; --i) {
+        const stage = stages[i];
+        const applicationRecordsByStage = applicationRecords.filter(doc => doc.stage === stage);
+        const applicationIdsByStage = applicationRecordsByStage.map(doc => doc.id);
+        let applicationsByStage = applications.filter(doc => applicationIdsByStage.indexOf(doc.id) >= 0);
+        if (applicationRecordsByPreviousStage.length) {
+          applicationsByStage = applicationsByStage.concat(applicationRecordsByPreviousStage);
+        }
+        report[stage] = diversityReport(applicationsByStage, applicationRecordsByStage, exercise);
+        // store for next iteration
+        applicationRecordsByPreviousStage = applicationsByStage;
+      }
     }
+
+    // add additional data based on shortlisting methods
+    const isProcessingVersion2 = exercise._processingVersion >= 2;
+    const APPLICATION_STATUS = config.APPLICATION_STATUS;
+    const SHORTLISTING = config.SHORTLISTING;
+    const statuses = [];
+
+    if (exercise.shortlistingMethods) {
+      // qt
+      if (exercise.shortlistingMethods.some(method => [
+        SHORTLISTING.SITUATIONAL_JUDGEMENT_QUALIFYING_TEST,
+        SHORTLISTING.CRITICAL_ANALYSIS_QUALIFYING_TEST,
+      ].includes(method))) {
+        const status = isProcessingVersion2 ? APPLICATION_STATUS.QUALIFYING_TEST_PASSED : APPLICATION_STATUS.PASSED_FIRST_TEST;
+        statuses.push(status);
+      }
+      // scenario test
+      if (exercise.shortlistingMethods.includes(SHORTLISTING.SCENARIO_TEST_QUALIFYING_TEST)) {
+        const status = isProcessingVersion2 ? APPLICATION_STATUS.SCENARIO_TEST_PASSED : APPLICATION_STATUS.PASSED_SCENARIO_TEST;
+        statuses.push(status);
+      }
+      // sift
+      if (exercise.shortlistingMethods.some(method => [
+        SHORTLISTING.NAME_BLIND_PAPER_SIFT,
+        SHORTLISTING.PAPER_SIFT,
+      ].includes(method))) {
+        const status = isProcessingVersion2 ? APPLICATION_STATUS.SIFT_PASSED : APPLICATION_STATUS.PASSED_SIFT;
+        statuses.push(status);
+      }
+    }
+
+    statuses.forEach(status => {
+      // get applications by status in statusLog
+      const applicationRecordsByStatus = applicationRecords.filter(doc => doc.statusLog && doc.statusLog[status]);
+      const applicationsByStatus = applications.filter(doc => applicationRecordsByStatus.map(doc => doc.id).includes(doc.id));
+      report[status] = diversityReport(applicationsByStatus, applicationRecordsByStatus, exercise);
+    });
+
     await db.collection('exercises').doc(exerciseId).collection('reports').doc('diversity').set(report);
-
-    console.log('report:');
-    console.log(report);
-
     return report;
   }
 };
@@ -269,6 +299,7 @@ const ethnicityStats = (applications) => {
         case 'irish':
         case 'gypsy-irish-traveller':
         case 'other-white':
+        case 'roma':
           stats.white.total += 1;
           stats.declaration.total += 1;
           break;

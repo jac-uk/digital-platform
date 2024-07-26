@@ -1,11 +1,14 @@
 const CONSTANTS = {
   PROJECT_ID: process.env.PROJECT_ID,
+  IS_LOCAL: process.env.IS_LOCAL,
   APPLY_URL: process.env.APPLY_URL,
   // QT_URL: 'http://localhost:5001/jac-qualifying-tests-develop/europe-west2/api/v1',
   QT_URL: process.env.QT_PLATFORM_URL,
   QT_KEY: process.env.QT_PLATFORM_KEY,
   ZENHUB_GRAPH_QL_API_KEY: process.env.ZENHUB_GRAPH_QL_API_KEY, // graphQL personal api key
   ZENHUB_ISSUES_WORKSPACE_ID: process.env.ZENHUB_ISSUES_WORKSPACE_ID,
+  SLACK_TICKETING_APP_BOT_TOKEN: process.env.SLACK_TICKETING_APP_BOT_TOKEN,
+  GITHUB_PAT: process.env.GITHUB_PAT, // personal access token
   APPLICATION: {
     STATUS: {
       QUALIFYING_TEST_PASSED: 'qualifyingTestPassed',
@@ -29,143 +32,200 @@ const CONSTANTS = {
       SECOND_STAGE_INVITED: 'secondStageInvited',
     },
     CHARACTER_ISSUES: { // this gives a map from issue to corresponding details field TODO improve naming or where we store this
-      criminalOffences: {
-        title: 'Criminal Offences',
-        details: 'criminalOffenceDetails',
-        summary: 'Candidate has been cautioned or convicted of a criminal offence',
-      },
-      declaredBankruptOrIVA: {
-        title: 'Declared Bankrupt Or IVA',
-        details: 'declaredBankruptOrIVADetails',
-        summary: 'Candidate has been declared bankrupt or entered into an Individual Voluntary Agreement (IVA)',
-      },
-      diciplinaryActionOrAskedToResign: {
-        title: 'Disciplinary Action Or Asked To Resign',
-        details: 'diciplinaryActionOrAskedToResignDetails',
-        summary: 'Candidate has been subject to complaints or disciplinary action, or been asked to resign from a position',
-      },
       drivingDisqualificationDrinkDrugs: {
+        group: 'Motoring Offences',
         title: 'Driving Disqualification Drink Drugs',
         details: 'drivingDisqualificationDrinkDrugsDetails',
         summary: 'Candidate has been disqualified from driving, or convicted for driving under the influence of drink or drugs',
       },
       endorsementsOrMotoringFixedPenalties: {
+        group: 'Motoring Offences',
         title: 'Endorsements Or Motoring Fixed Penalties',
         details: 'endorsementsOrMotoringFixedPenaltiesDetails',
         summary: 'Candidate has endorsements on their licence, or received any motoring fixed-penalty notices in the last 4 years',
       },
-      involvedInProfessionalMisconduct: {
-        title: 'Involved In Professional Misconduct',
-        details: 'involvedInProfessionalMisconductDetails',
-        summary: 'Candidate has been, or is currently, subject to professional misconduct, negligence, wrongful dismissal, discrimination or harassment proceedings',
-      },
-      lateTaxReturnOrFined: {
-        title: 'Late Tax Return Or Fined',
-        details: 'lateTaxReturnOrFinedDetails',
-        summary: 'Candidate has filed late tax returns or been fined by HMRC',
-      },
       nonMotoringFixedPenaltyNotices: {
+        group: 'Motoring Offences',
         title: 'Non Motoring Fixed Penalty Notices',
         details: 'nonMotoringFixedPenaltyNoticesDetails',
         summary: 'Candidate has received a non-motoring penalty notice in the last 4 years',
       },
+      criminalOffences: {
+        group: 'Criminal Offences',
+        title: 'Criminal Offences',
+        details: 'criminalOffenceDetails',
+        summary: 'Candidate has been cautioned or convicted of a criminal offence',
+      },
+      declaredBankruptOrIVA: {
+        group: 'Financial Matters',
+        title: 'Declared Bankrupt Or IVA',
+        details: 'declaredBankruptOrIVADetails',
+        summary: 'Candidate has been declared bankrupt or entered into an Individual Voluntary Agreement (IVA)',
+      },
+      lateTaxReturnOrFined: {
+        group: 'Financial Matters',
+        title: 'Late Tax Return Or Fined',
+        details: 'lateTaxReturnOrFinedDetails',
+        summary: 'Candidate has filed late tax returns or been fined by HMRC',
+      },
+      diciplinaryActionOrAskedToResign: {
+        group: 'Professional Conduct',
+        title: 'Disciplinary Action Or Asked To Resign',
+        details: 'diciplinaryActionOrAskedToResignDetails',
+        summary: 'Candidate has been subject to complaints or disciplinary action, or been asked to resign from a position',
+      },
+      involvedInProfessionalMisconduct: {
+        group: 'Professional Conduct',
+        title: 'Involved In Professional Misconduct',
+        details: 'involvedInProfessionalMisconductDetails',
+        summary: 'Candidate has been, or is currently, subject to professional misconduct, negligence, wrongful dismissal, discrimination or harassment proceedings',
+      },
       otherCharacterIssues: {
+        group: 'Further Information to be disclosed',
         title: 'Other Character Issues',
         details: 'otherCharacterIssuesDetails',
         summary: 'Candidate has declared other issues we should know about',
       },
     },
     CHARACTER_ISSUES_V2: { // this gives a map from issue to corresponding details field TODO improve naming or where we store this
-      bankruptcies: {
-        title: 'Bankruptcies',
-        details: 'bankruptcyDetails',
-        summary: 'Candidate has filed for bankruptcy',
-      },
-      complaintOrDisciplinaryAction: {
-        title: 'Complaint Or Disciplinary Action',
-        details: 'complaintOrDisciplinaryActionDetails',
-        summary: 'Candidate has received a complaint or disciplinary action',
-      },
-      criminalCautions: {
-        title: 'Criminal Cautions',
-        details: 'criminalCautionDetails',
-        summary: 'Candidate has been cautioned for a criminal offence',
-      },
-      criminalConvictions: {
-        title: 'Criminal Convictions',
-        details: 'criminalConvictionDetails',
-        summary: 'Candidate has been convicted of a criminal offence',
-      },
       drivingDisqualifications: {
+        group: 'Motoring Offences',
         title: 'Driving Disqualifications',
         details: 'drivingDisqualificationDetails',
         summary: 'Candidate has been disqualified from driving',
       },
+      recentDrivingConvictions: {
+        group: 'Motoring Offences',
+        title: 'Recent Driving Convictions',
+        details: 'recentDrivingConvictionDetails',
+        summary: 'Candidate has recent driving convictions',
+      },
       fixedPenalties: {
+        group: 'Fixed Penalty Notices',
         title: 'Fixed Penalties',
         details: 'fixedPenaltyDetails',
         summary: 'Candidate has received a fixed-penalty',
       },
-      furtherInformation: {
-        title: 'Further Information',
-        details: 'furtherInformationDetails',
-        summary: 'Candidate has declare further information',
+      criminalConvictions: {
+        group: 'Criminal Offences',
+        title: 'Criminal Convictions',
+        details: 'criminalConvictionDetails',
+        summary: 'Candidate has been convicted of a criminal offence',
       },
-      hmrcFines: {
-        title: 'HMRC Fines',
-        details: 'hmrcFineDetails',
-        summary: 'Candidate has received a fine from HMRC',
+      criminalCautions: {
+        group: 'Criminal Offences',
+        title: 'Criminal Cautions',
+        details: 'criminalCautionDetails',
+        summary: 'Candidate has been cautioned for a criminal offence',
+      },
+      bankruptcies: {
+        group: 'Financial Matters',
+        title: 'Bankruptcies',
+        details: 'bankruptcyDetails',
+        summary: 'Candidate has filed for bankruptcy',
       },
       ivas: {
+        group: 'Financial Matters',
         title: 'IVAs',
         details: 'ivaDetails',
         summary: 'Candidate has been entered into an Individual Voluntary Agreement (IVA)',
       },
       lateTaxReturns: {
+        group: 'Financial Matters',
         title: 'Late Tax Returns',
         details: 'lateTaxReturnDetails',
         summary: 'Candidate has filed late tax returns',
       },
       lateVatReturns: {
+        group: 'Financial Matters',
         title: 'Late VAT Returns',
         details: 'lateVatReturnDetails',
         summary: 'Candidate has filed late VAT returns',
       },
-      recentDrivingConvictions: {
-        title: 'Recent Driving Convictions',
-        details: 'recentDrivingConvictionDetails',
-        summary: 'Candidate has recent driving convictions',
+      hmrcFines: {
+        group: 'Financial Matters',
+        title: 'HMRC Fines',
+        details: 'hmrcFineDetails',
+        summary: 'Candidate has received a fine from HMRC',
       },
-      requestedToResign: {
-        title: 'Requested To Resign',
-        details: 'requestedToResignDetails',
-        summary: 'Candidate has been requested to resign',
+      subjectOfAllegationOrClaimOfProfessionalMisconduct: {
+        group: 'Professional Conduct',
+        title: 'Subject Of Allegation Or Claim Of Professional Misconduct',
+        details: 'subjectOfAllegationOrClaimOfProfessionalMisconductDetails',
+        summary: 'Candidate has been the subject of allegation or claim of misconduct',
+      },
+      subjectOfAllegationOrClaimOfNegligence: {
+        group: 'Professional Conduct',
+        title: 'Subject Of Allegation Or Claim Of Negligence',
+        details: 'subjectOfAllegationOrClaimOfNegligenceDetails',
+        summary: 'Candidate has been the subject of allegation or claim of negligence',
+      },
+      subjectOfAllegationOrClaimOfWrongfulDismissal: {
+        group: 'Professional Conduct',
+        title: 'Subject Of Allegation Or Claim Of Wrongful Dismissal',
+        details: 'subjectOfAllegationOrClaimOfWrongfulDismissalDetails',
+        summary: 'Candidate has been the subject of allegation or claim wrongful dismissal',
       },
       subjectOfAllegationOrClaimOfDiscriminationProceeding: {
+        group: 'Professional Conduct',
         title: 'Subject Of Allegation Or Claim Of Discrimination Proceeding',
         details: 'subjectOfAllegationOrClaimOfDiscriminationProceedingDetails',
         summary: 'Candidate subject of allegation or claim of discrimination proceeding',
       },
       subjectOfAllegationOrClaimOfHarassmentProceeding: {
+        group: 'Professional Conduct',
         title: 'Subject Of Allegation Or Claim Of Harassment Proceeding',
         details: 'subjectOfAllegationOrClaimOfHarassmentProceedingDetails',
         summary: 'Candidate is subject of allegation or claim of harassment proceeding',
       },
-      subjectOfAllegationOrClaimOfNegligence: {
-        title: 'Subject Of Allegation Or Claim Of Negligence',
-        details: 'subjectOfAllegationOrClaimOfNegligenceDetails',
-        summary: 'Candidate has been the subject of allegation or claim of negligence',
+      complaintOrDisciplinaryAction: {
+        group: 'Professional Conduct',
+        title: 'Complaint Or Disciplinary Action',
+        details: 'complaintOrDisciplinaryActionDetails',
+        summary: 'Candidate has received a complaint or disciplinary action',
       },
-      subjectOfAllegationOrClaimOfProfessionalMisconduct: {
-        title: 'Subject Of Allegation Or Claim Of Professional Misconduct',
-        details: 'subjectOfAllegationOrClaimOfProfessionalMisconductDetails',
-        summary: 'Candidate has been the subject of allegation or claim of misconduct',
+      requestedToResign: {
+        group: 'Professional Conduct',
+        title: 'Requested To Resign',
+        details: 'requestedToResignDetails',
+        summary: 'Candidate has been requested to resign',
       },
-      subjectOfAllegationOrClaimOfWrongfulDismissal: {
-        title: 'Subject Of Allegation Or Claim Of Wrongful Dismissal',
-        details: 'subjectOfAllegationOrClaimOfWrongfulDismissalDetails',
-        summary: 'Candidate has been the subject of allegation or claim wrongful dismissal',
+      furtherInformation: {
+        group: 'Further Information to be disclosed',
+        title: 'Further Information',
+        details: 'furtherInformationDetails',
+        summary: 'Candidate has declare further information',
       },
+    },
+    CHARACTER_ISSUE_STATUS: {
+      PROCEED: 'proceed',
+      REJECT: 'reject',
+      REJECT_NON_DECLARATION: 'reject-non-declaration',
+      DISCUSS: 'discuss',
+    },
+    CHARACTER_ISSUE_OFFENCE_CATEGORY: {
+      SINGLE_MOTORING_OFFENCE: 'singleMotoringOffence',
+      MULTIPLE_MOTORING_OFFENCES: 'multipleMotoringOffences',
+      SINGLE_PENALTY_NOTICE: 'singlePenaltyNotice',
+      MULTIPLE_PENALTY_NOTICES: 'multiplePenaltyNotices',
+      SINGLE_CRIMINAL_OFFENCE: 'singleCriminalOffence',
+      MULTIPLE_CRIMINAL_OFFENCES: 'multipleCriminalOffences',
+      SINGLE_FINANCIAL_OFFENCE: 'singleFinancialOffence',
+      MULTIPLE_FINANCIAL_OFFENCES: 'multipleFinancialOffences',
+      SINGLE_PROFESSIONAL_CONDUCT: 'singleProfessionalConduct',
+      MULTIPLE_PROFESSIONAL_CONDUCTS: 'multipleProfessionalConducts',
+      SINGLE_OTHER_MATTER: 'singleOtherMatter',
+      MULTIPLE_OTHER_MATTERS: 'multipleOtherMatters',
+      MIXED: 'mixed',
+    },
+    GUIDANCE_REFERENCE: {
+      CRIMINAL_OFFENCES: 'criminalOffences',
+      MOTERING_OFFENCES: 'moteringOffences',
+      FIXED_PENALTY_NOTICES: 'fixedPenaltyNotices',
+      FINANCIAL_INSOLVENCY_DEBT: 'financialInsolvencyDebt',
+      FINANCIAL_VAT_TAX: 'financialVatTax',
+      PROFESSIONAL_CONDUCT: 'professionalConduct',
+      FURTHER_DISCLOSURES: 'furtherDisclosures',
     },
   },
   ASSESSMENTS_URL: process.env.ASSESSMENTS_URL,
@@ -245,6 +305,7 @@ const CONSTANTS = {
   SELECTION_CATEGORIES: ['leadership', 'roleplay', 'situational', 'interview', 'overall'],
   NOTIFY_KEY: process.env.NOTIFY_LIMITED_KEY,
   SLACK_URL: process.env.SLACK_URL,
+  SLACK_API_STUB: process.env.SLACK_API_STUB,
   STORAGE_URL: process.env.PROJECT_ID + '.appspot.com',
   ZENHUB_GRAPH_QL_URL: process.env.ZENHUB_GRAPH_QL_URL,
 };
@@ -306,6 +367,100 @@ const CANDIDATE_FORM_RESPONSE_STATUS = {
   COMPLETED: 'completed',
 };
 
+const EXERCISE_STAGE = {
+  // v2
+  SHORTLISTING: 'shortlisting',
+  SELECTION: 'selection',
+  SCC: 'scc',
+  RECOMMENDATION: 'recommendation',
+
+  // v2 proposed but then removed
+  APPLIED: 'applied', // to be removed
+  SELECTABLE: 'selectable', // to be removed
+
+  // v1
+  REVIEW: 'review', // to be replaced with shortlisting
+  SHORTLISTED: 'shortlisted', // to be replaced with selection
+  SELECTED: 'selected', // to be replaced with recommendation
+  RECOMMENDED: 'recommended', // to be replaced with recommendation
+  HANDOVER: 'handover', // to be removed/replaced with recommendation
+};
+
+const APPLICATION_STATUS = {
+  // v2
+  CRITICAL_ANALYSIS_PASSED: 'criticalAnalysisPassed',
+  CRITICAL_ANALYSIS_FAILED: 'criticalAnalysisFailed',
+  SITUATIONAL_JUDGEMENT_PASSED: 'situationalJudgementPassed',
+  SITUATIONAL_JUDGEMENT_FAILED: 'situationalJudgementFailed',
+  QUALIFYING_TEST_PASSED: 'qualifyingTestPassed',
+  QUALIFYING_TEST_FAILED: 'qualifyingTestFailed',
+  QUALIFYING_TEST_NOT_SUBMITTED: 'noTestSubmitted',
+  SCENARIO_TEST_PASSED: 'scenarioTestPassed',
+  SCENARIO_TEST_FAILED: 'scenarioTestFailed',
+  SCENARIO_TEST_NOT_SUBMITTED: 'noScenarioTestSubmitted',
+  SIFT_PASSED: 'siftPassed',
+  SIFT_FAILED: 'siftFailed',
+  TELEPHONE_ASSESSMENT_PASSED: 'telephoneAssessmentPassed',
+  TELEPHONE_ASSESSMENT_FAILED: 'telephoneAssessmentFailed',
+  SHORTLISTING_PASSED: 'shortlistingOutcomePassed',
+  SHORTLISTING_FAILED: 'shortlistingOutcomeFailed',
+  FULL_APPLICATION_NOT_SUBMITTED: 'fullApplicationNotSubmitted',
+  ELIGIBILITY_SCC_PASSED: 'eligibilitySCCPassed',
+  ELIGIBILITY_SCC_FAILED: 'eligibilitySCCFailed',
+  CHARACTER_AND_SELECTION_SCC_PASSED: 'characterAndSelectionSCCPassed',
+  CHARACTER_AND_SELECTION_SCC_FAILED: 'characterAndSelectionSCCFailed',
+  STATUTORY_CONSULTATION_PASSED: 'statutoryConsultationPassed',
+  STATUTORY_CONSULTATION_FAILED: 'statutoryConsultationFailed',
+  SELECTION_INVITED: 'selectionInvited',
+  REJECTED_INELIGIBLE_STATUTORY: 'rejectedIneligibleStatutory',
+  REJECTED_INELIGIBLE_ADDITIONAL: 'rejectedIneligibleAdditional',
+  REJECTED_CHARACTER: 'rejectedCharacter',
+  SELECTION_DAY_PASSED: 'selectionDayPassed',
+  SELECTION_DAY_FAILED: 'selectionDayFailed',
+  SELECTION_PASSED: 'selectionOutcomePassed',
+  SELECTION_FAILED: 'selectionOutcomeFailed',
+  SELECTION_OUTCOME_PASSED: 'selectionOutcomePassed',
+  SELECTION_OUTCOME_FAILED: 'selectionOutcomeFailed',
+  PASSED_RECOMMENDED: 'passedRecommended',
+  PASSED_NOT_RECOMMENDED: 'passedNotRecommended',
+  RECOMMENDED_IMMEDIATE: 'recommendedImmediate',
+  RECOMMENDED_FUTURE: 'recommendedFuture',
+  RECONSIDER: 'reconsider',
+  SECOND_STAGE_INVITED: 'secondStageInvited',
+  SECOND_STAGE_PASSED: 'empTiebreakerPassed',
+  SECOND_STAGE_FAILED: 'empTiebreakerFailed',
+  APPROVED_IMMEDIATE: 'approvedImmediate',
+  APPROVED_FUTURE: 'approvedFuture',
+  WITHDRAWN: 'withdrawn',
+
+  // v1 REVIEW
+  PASSED_SIFT: 'passedSift',
+  FAILED_SIFT: 'failedSift',
+  SUBMITTED_FIRST_TEST: 'submittedFirstTest',
+  FAILED_FIRST_TEST: 'failedFirstTest',
+  SUBMITTED_SCENARIO_TEST: 'submittedScenarioTest',
+  PASSED_FIRST_TEST: 'passedFirstTest',
+  FAILED_SCENARIO_TEST: 'failedScenarioTest',
+  PASSED_SCENARIO_TEST: 'passedScenarioTest',
+  FAILED_TELEPHONE_ASSESSMENT: 'failedTelephoneAssessment',
+  PASSED_TELEPHONE_ASSESSMENT: 'passedTelephoneAssessment',
+  NO_TEST_SUBMITTED: 'noTestSubmitted',
+  TEST_SUBMITTED_OVER_TIME: 'testSubmittedOverTime',
+  WITHDREW_APPLICATION: 'withdrewApplication',
+  REJECTED_AS_INELIGIBLE: 'rejectedAsIneligible',
+  // v1 SHORTLISTED
+  INVITED_TO_SELECTION_DAY: 'invitedToSelectionDay',
+  // v1 SELECTED
+  PASSED_SELECTION: 'passedSelection',
+  FAILED_SELECTION: 'failedSelection',
+  PASSED_BUT_NOT_RECOMMENDED: 'passedButNotRecommended',
+  // v1 RECOMMENDED
+  REJECTED_BY_CHARACTER: 'rejectedByCharacter',
+  APPROVED_FOR_IMMEDIATE_APPOINTMENT: 'approvedForImmediateAppointment',
+  APPROVED_FOR_FUTURE_APPOINTMENT: 'approvedForFutureAppointment',
+  SCC_TO_RECONSIDER: 'sccToReconsider',
+};
+
 module.exports = {
   ...CONSTANTS,
   TASK_TYPE,
@@ -313,4 +468,6 @@ module.exports = {
   TASK_STATUS,
   CANDIDATE_FORM_STATUS,
   CANDIDATE_FORM_RESPONSE_STATUS,
+  EXERCISE_STAGE,
+  APPLICATION_STATUS,
 };
