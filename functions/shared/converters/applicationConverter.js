@@ -2,6 +2,7 @@ const htmlWriter = require('../htmlWriter');
 const lookup = require('./lookup');
 const {addField, formatDate, toYesNo} = require('./helpers');
 const helpers = require('../../shared/helpers');
+const { objectHasNestedProperty } = require('../helpers.js');
 
 const { getJurisdictionPreferences, getLocationPreferences, getAdditionalWorkingPreferences } = require('./workingPreferencesConverter');
 const has = require('lodash/has');
@@ -99,7 +100,7 @@ module.exports = () => {
         html.addTable(additionalPrefs);
       }
       
-      if (application.uploadedSelfAssessment) {
+      if (objectHasNestedProperty(application, 'uploadedSelfAssessment') && application.uploadedSelfAssessment) {
         const selfAssessment = getSelfAssessment(application, exercise);
         if (selfAssessment.length) {
           html.addHeading('Self Assessment');
@@ -107,7 +108,7 @@ module.exports = () => {
         }
       }
 
-      if (application.selectionCriteriaAnswers && application.selectionCriteriaAnswers.length) {
+      if (objectHasNestedProperty(application, 'selectionCriteriaAnswers') && application.selectionCriteriaAnswers && application.selectionCriteriaAnswers.length) {
         html.addHeading('Additional selection criteria');
         html.addTable(getAdditionalSelectionCriteria(application, exercise));
       }
