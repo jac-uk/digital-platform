@@ -205,7 +205,7 @@ class ConverterV2 {
     let answerId = null;
     const data = [];
 
-    if ('preferencesType' in exercise && isObject(exercise[preferencesType])) {
+    if (preferencesType in exercise && isObject(exercise[preferencesType])) {
       for (const questionObj of exercise[preferencesType]) {
         const questionId = questionObj.id;
         const answerId = get(application, [preferencesType, questionId], null);

@@ -1,12 +1,11 @@
 const { addField } = require('../helpers');
-const isObject = require('lodash/isObject');
 const { objectHasNestedProperty } = require('../../helpers.js');
 
 class ConverterV1 {
   
   getJurisdictionPreferences(application, exercise) {
     const data = [];
-    if (objectHasNestedProperty(application, 'jurisdictionPreferences') && isObject(application.jurisdictionPreferences)) {
+    if (objectHasNestedProperty(application, 'jurisdictionPreferences')) {
       if (typeof (application.jurisdictionPreferences) === 'string') {
         addField(data, exercise.jurisdictionQuestion, application.jurisdictionPreferences);
       } else if (Array.isArray(application.jurisdictionPreferences)) {
@@ -23,7 +22,7 @@ class ConverterV1 {
 
   getLocationPreferences(application, exercise) {
     const data = [];
-    if (objectHasNestedProperty(application, 'locationPreferences') && isObject(application.locationPreferences)) {
+    if (objectHasNestedProperty(application, 'locationPreferences')) {
       if (typeof (application.locationPreferences) === 'string') {
         addField(data, exercise.locationQuestion, application.locationPreferences);
       } else if (Array.isArray(application.locationPreferences)) {
@@ -41,7 +40,7 @@ class ConverterV1 {
   getAdditionalWorkingPreferences(application, exercise) {
     const data = [];
 
-    if (objectHasNestedProperty(application, 'additionalWorkingPreferences') && isObject(application.additionalWorkingPreferences)) {
+    if (objectHasNestedProperty(application, 'additionalWorkingPreferences')) {
       const additionalWorkingPreferenceData = application.additionalWorkingPreferences;
       if (Array.isArray(additionalWorkingPreferenceData)) {
         additionalWorkingPreferenceData.forEach((item, index) => {
