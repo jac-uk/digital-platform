@@ -2,6 +2,7 @@ const htmlWriter = require('../htmlWriter');
 const lookup = require('./lookup');
 const {addField, formatDate, toYesNo} = require('./helpers');
 const helpers = require('../../shared/helpers');
+const { objectHasNestedProperty } = require('../helpers.js');
 
 const { getJurisdictionPreferences, getLocationPreferences, getAdditionalWorkingPreferences } = require('./workingPreferencesConverter');
 const has = require('lodash/has');
@@ -29,37 +30,6 @@ module.exports = () => {
       else {
         // The last resort if no other info is available!
         html.addTitle('Error - Missing Application Title');
-      }
-
-      const jurisdictionPrefs = getJurisdictionPreferences(application, exercise);
-      if (jurisdictionPrefs.length) {
-        html.addHeading('Jurisdiction Preferences');
-        html.addTable(jurisdictionPrefs);
-      }
-
-      const locationPrefs = getLocationPreferences(application, exercise);
-      if (locationPrefs.length) {
-        html.addHeading('Location Preferences');
-        html.addTable(locationPrefs);
-      }
-      
-      const additionalPrefs = getAdditionalWorkingPreferences(application, exercise);
-      if (additionalPrefs.length) {
-        html.addHeading('Additional Preferences');
-        html.addTable(additionalPrefs);
-      }
-      
-      if (application.uploadedSelfAssessment) {
-        const selfAssessment = getSelfAssessment(application, exercise);
-        if (selfAssessment.length) {
-          html.addHeading('Self Assessment');
-          html.addTable(selfAssessment);
-        }
-      }
-
-      if (application.selectionCriteriaAnswers && application.selectionCriteriaAnswers.length) {
-        html.addHeading('Additional selection criteria');
-        html.addTable(getAdditionalSelectionCriteria(application, exercise));
       }
     }
     else {
@@ -111,6 +81,38 @@ module.exports = () => {
           html.addTable(data);
         }
       }
+
+      const jurisdictionPrefs = getJurisdictionPreferences(application, exercise);
+      if (jurisdictionPrefs.length) {
+        html.addHeading('Jurisdiction Preferences');
+        html.addTable(jurisdictionPrefs);
+      }
+
+      const locationPrefs = getLocationPreferences(application, exercise);
+      if (locationPrefs.length) {
+        html.addHeading('Location Preferences');
+        html.addTable(locationPrefs);
+      }
+      
+      const additionalPrefs = getAdditionalWorkingPreferences(application, exercise);
+      if (additionalPrefs.length) {
+        html.addHeading('Additional Preferences');
+        html.addTable(additionalPrefs);
+      }
+      
+      if (objectHasNestedProperty(application, 'uploadedSelfAssessment') && application.uploadedSelfAssessment) {
+        const selfAssessment = getSelfAssessment(application, exercise);
+        if (selfAssessment.length) {
+          html.addHeading('Self Assessment');
+          html.addTable(selfAssessment);
+        }
+      }
+
+      if (objectHasNestedProperty(application, 'selectionCriteriaAnswers') && application.selectionCriteriaAnswers && application.selectionCriteriaAnswers.length) {
+        html.addHeading('Additional selection criteria');
+        html.addTable(getAdditionalSelectionCriteria(application, exercise));
+      }
+
     } else {
       html.addTitle('Error - Missing Exercise information');
     }
