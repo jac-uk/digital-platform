@@ -1,5 +1,6 @@
 const { getDocument, getDocuments, isEmpty, applyUpdates, getDate } = require('../../shared/helpers');
 const lookup = require('../../shared/converters/lookup');
+const _ = require('lodash');
 
 module.exports = (firebase, config, db) => {
   return {
@@ -58,18 +59,73 @@ module.exports = (firebase, config, db) => {
    * @param {boolean} reset If true, issues are repopulated even if they already exist
    */
   async function flagApplicationIssuesForExercise(exerciseId, reset = false) {
-
     // get exercise data
     const exercise = await getExercise(exerciseId);
     if (!exercise) {
       return false;
     }
 
-    // get submitted applications
-    const applications = await getDocuments(db.collection('applications')
-      .where('exerciseId', '==', exerciseId)
-      .where('status', '==', 'applied')
-    );
+    // batched process applications
+    const batchSize = 100;
+    let applicationCount = 0;
+    let applications = [];
+    let lastApplicationDoc = null;
+    let lastApplication = null;
+
+    do {
+      // get submitted applications
+      let query = db
+        .collection('applications')
+        .where('exerciseId', '==', exerciseId)
+        .where('status', '==', 'applied')
+        .orderBy('createdAt');
+
+      if (lastApplicationDoc) {
+        query = query.startAfter(lastApplicationDoc);
+      }
+
+      query = query.limit(batchSize);
+
+      const applicationSnapshot = await query.get();
+      applications = [];
+      // eslint-disable-next-line no-loop-func
+      applicationSnapshot.forEach((doc) => {
+        const document = doc.data();
+        document.id = doc.id;
+        document.ref = doc.ref;
+        applications.push(document);
+      });
+
+      // end the loop if no more applications
+      if (!applications.length) {
+        break;
+      }
+
+      // update cursor & total
+      lastApplicationDoc = _.last(applicationSnapshot.docs);
+      lastApplication = _.last(applications);
+      applicationCount += applications.length;
+
+      // process application
+      const result = await updateApplicationIssues(exercise, applications, reset);
+
+      if (!result) {
+        console.log(`Fail to update Application Issues, start after application: ${lastApplication.id}`);
+        return false;
+      }
+
+      console.log(`Issues of ${applications.length} applications processed, start after application: ${lastApplication.id}`);
+    } while (applications.length);
+
+    console.log(`Flag Application Issues completed, ${applicationCount} applications processed`);
+
+    // return
+    return applicationCount;
+  }
+
+  async function updateApplicationIssues(exercise, applications, reset) {
+    
+    const exerciseId = exercise.id;
 
     /**
      * {
