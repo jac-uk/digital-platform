@@ -5,7 +5,12 @@ const flagApplicationIssues = require('../actions/applications/flagApplicationIs
 const { checkFunctionEnabled } = require('../shared/serviceSettings.js')(db);
 const { PERMISSIONS, hasPermissions } = require('../shared/permissions');
 
-module.exports = functions.region('europe-west2').https.onCall(async (data, context) => {
+const runtimeOptions = {
+  timeoutSeconds: 300,
+  memory: '512MB',
+};
+
+module.exports = functions.region('europe-west2').runWith(runtimeOptions).https.onCall(async (data, context) => {
   await checkFunctionEnabled();
   // @TODO check auth.token for correct role, when we have implemented roles
   if (!context.auth) {
