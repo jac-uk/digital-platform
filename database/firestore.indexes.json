@@ -2713,6 +2713,20 @@
           "arrayConfig": "CONTAINS"
         },
         {
+          "fieldPath": "createdAt",
+          "order": "ASCENDING"
+        }
+      ]
+    },
+    {
+      "collectionGroup": "exercises",
+      "queryScope": "COLLECTION",
+      "fields": [
+        {
+          "fieldPath": "favouriteOf",
+          "arrayConfig": "CONTAINS"
+        },
+        {
           "fieldPath": "name",
           "order": "ASCENDING"
         }
