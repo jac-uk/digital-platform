@@ -20,6 +20,8 @@ module.exports = (config, firebase, db) => {
     includeZScores,
   } = require('./taskHelpers')(config);
 
+  const { getOverride } = require('./meritListHelper');
+
   const { refreshApplicationCounts } = require('../exercises/refreshApplicationCounts')(firebase, db);
   const { newCandidateFormResponse } = require('../../shared/factories')(config);
 
@@ -60,6 +62,7 @@ module.exports = (config, firebase, db) => {
     if (possibleStatuses.indexOf(task.status) < 0) return result;
 
     // get next status
+    console.log('status', task.status);
     let nextStatus = taskNextStatus(params.type, task.status);
     console.log('nextStatus', nextStatus);
 
@@ -857,6 +860,7 @@ module.exports = (config, firebase, db) => {
    * @returns Result object of the form `{ success: Boolean, data: Object }`. If successful then `data` is to be stored in the `task` document
    */
   async function completeTask(exercise, task) {
+
     const result = {
       success: false,
       data: {},
@@ -881,16 +885,11 @@ module.exports = (config, firebase, db) => {
     const commands = [];
     task.finalScores.filter(scoreData => applicationIdMap[scoreData.id]).forEach(scoreData => {
       let newStatus;
-      if (scoreData[scoreType] > task.passMark) {
-        newStatus = passStatus;
-      } else if (scoreData[scoreType] === task.passMark) {
-        if (task.overrides && task.overrides.fail && task.overrides.fail.length && task.overrides.fail.indexOf(scoreData.id) >= 0) {
-          newStatus = failStatus;
-        } else {
-          newStatus = passStatus;
-        }
-      } else if (scoreData[scoreType] < task.passMark) {
-        if (task.overrides && task.overrides.pass && task.overrides.pass.length && task.overrides.pass.indexOf(scoreData.id) >= 0) {
+      if (scoreData[scoreType] >= task.passMark) {
+        newStatus = passStatus; // TODO double-check we don't want to allow overrides from PASS->FAIL
+      } else {
+        const override = getOverride(task, scoreData.id);
+        if (override) {
           newStatus = passStatus;
         } else {
           newStatus = failStatus;
@@ -1021,7 +1020,7 @@ module.exports = (config, firebase, db) => {
     await applyUpdates(db, commands);
     result.success = true;
     result.data['_stats.totalForEachOutcome'] = outcomeStats;
-    result.data.finalScores = task.finalScores;
+    result.data.finalScores = task.finalScores; // includes `pass: Boolean` for each entry in `finalScores`
 
     return result;
   }
