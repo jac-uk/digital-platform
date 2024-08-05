@@ -9,8 +9,6 @@ module.exports = functions.region('europe-west2').https.onCall(async (data, cont
   try {
     const result = await verifyChecksum(filePath);
 
-    console.log(result);
-    
     // Ensure that the result is what the frontend expects
     return {
       valid: result.valid,
