@@ -2,7 +2,7 @@
 
 const config = require('./shared/config');
 const { app, firebase, db } = require('./shared/admin.js');
-const { verifyChecksum } = require('../functions/actions/malware-scanning/verifyFileChecksum')(config, firebase, db);
+const verifyChecksum = require('../functions/actions/malware-scanning/verifyFileChecksum')(config, firebase, db);
 
 const fileURL = 'blank.docx';
 
