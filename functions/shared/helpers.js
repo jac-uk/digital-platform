@@ -1,8 +1,8 @@
-const { getApp } = require('firebase-admin/app');
-const { Timestamp } = require('firebase-admin/firestore');
-const get = require('lodash/get');
+import { getApp } from 'firebase-admin/app';
+import { Timestamp } from 'firebase-admin/firestore';
+import get from 'lodash/get.js';
 
-module.exports = {
+export {
   getDocument,
   getDocuments,
   getDocumentsFromQueries,
@@ -32,7 +32,7 @@ module.exports = {
   formatAddress,
   formatPreviousAddresses,
   splitFullName,
-  isDifferentPropsByPath,
+  isDifferentPropsByPath
 };
 
 function calculateMean(numArray) {

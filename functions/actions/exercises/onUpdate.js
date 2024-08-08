@@ -1,10 +1,13 @@
-const { objectHasNestedProperty } = require('../../shared/helpers');
+import { objectHasNestedProperty } from '../../shared/helpers.js';
+import initSendExerciseReadyForApproval from './sendExerciseReadyForApproval.js';
+import initVacancies from '../vacancies.js';
+import initExercises from './exercises.js';
+import { getSearchMap } from '../../shared/search.js';
 
-module.exports = (config, firebase, db, auth) => {
-  const { sendExerciseReadyForApproval } = require('./sendExerciseReadyForApproval')(config, firebase, db, auth);
-  const { updateVacancy, deleteVacancy } = require('../vacancies')(config, db);
-  const { updateExercise } = require('./exercises')(db);
-  const { getSearchMap } = require('../../shared/search');
+export default (config, firebase, db, auth) => {
+  const { sendExerciseReadyForApproval } = initSendExerciseReadyForApproval(config, firebase, db, auth);
+  const { updateVacancy, deleteVacancy } = initVacancies(config, db);
+  const { updateExercise } = initExercises(db);
 
   return onUpdate;
 

@@ -1,6 +1,7 @@
+import initFactories from '../shared/factories.js';
 
-module.exports = (config, db) => {
-  const { newVacancy } = require('../shared/factories')(config);
+export default (config, db) => {
+  const { newVacancy } = initFactories(config);
 
   return {
     deleteVacancy,

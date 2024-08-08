@@ -1,6 +1,8 @@
 {
   "name": "functions",
   "description": "Cloud Functions for Firebase",
+  "main": "index.js",
+  "type": "module",
   "scripts": {
     "lint": "eslint .",
     "lint:fix": "eslint . --fix",
@@ -26,6 +28,7 @@
   },
   "devDependencies": {
     "eslint": "^7.15.0",
+    "eslint-plugin-import": "^2.29.1",
     "firebase-functions-test": "^3.2.0"
   },
   "private": true,

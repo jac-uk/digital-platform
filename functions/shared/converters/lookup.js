@@ -264,4 +264,4 @@ const lookup = (value) => {
   return value;
 };
 
-module.exports = lookup;
+export default lookup;

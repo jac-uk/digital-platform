@@ -1,10 +1,9 @@
-const { formatDate } = require('./helpers');
-const { applicationOpenDatePost01042023 } = require('./converters/helpers');
-const { getSearchMap } = require('./search');
-const { objectHasNestedProperty } = require('./helpers');
-const _ = require('lodash');
+import { formatDate, objectHasNestedProperty } from './helpers.js';
+import { applicationOpenDatePost01042023 } from './converters/helpers.js';
+import { getSearchMap } from './search.js';
+import _ from 'lodash';
 
-module.exports = (CONSTANTS) => {
+export default (CONSTANTS) => {
   return {
     newNotificationExerciseApprovalSubmit,
     newNotificationApplicationSubmit,

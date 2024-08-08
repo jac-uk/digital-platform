@@ -1,7 +1,8 @@
-const { getDocument, getDocuments, applyUpdates } = require('../shared/helpers');
+import { getDocument, getDocuments, applyUpdates } from '../shared/helpers.js';
+import initNotify from '../shared/notify.js';
 
-module.exports = (config, firebase, db) => {
-  const { sendEmail, previewEmail } = require('../shared/notify')(config);
+export default (config, firebase, db) => {
+  const { sendEmail, previewEmail } = initNotify(config);
   return {
     processNotifications,
     previewNotification,
