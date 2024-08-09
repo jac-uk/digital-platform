@@ -15,8 +15,5 @@
     "express": "^4.17.1",
     "express-rate-limit": "^5.3.0",
     "nodemon": "^2.0.19"
-  },
-  "devDependencies": {
-    "eslint-plugin-import": "^2.29.1"
   }
 }
