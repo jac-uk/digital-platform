@@ -1,13 +1,16 @@
-const helpers = require('../../shared/converters/helpers');
-const lookup = require('../../shared/converters/lookup');
-const { getDocument, getDocuments, getAllDocuments, removeHtml } = require('../../shared/helpers');
-const { getAdditionalWorkingPreferences } = require('../../shared/converters/workingPreferencesConverter');
-const applicationConverter = require('../../shared/converters/applicationConverter')();
+import * as helpers from '../../shared/converters/helpers.js';
+import lookup from '../../shared/converters/lookup.js';
+import { getDocument, getDocuments, getAllDocuments, removeHtml } from '../../shared/helpers.js';
+import { getAdditionalWorkingPreferences } from '../../shared/converters/workingPreferencesConverter.js';
+import initApplicationConverter from '../../shared/converters/applicationConverter.js';
+import initUpdateApplicationRecordStageStatus from '../applicationRecords/updateApplicationRecordStageStatus.js';
+
+const applicationConverter = initApplicationConverter();
 const { getWelshData } = applicationConverter;
 
-module.exports = (firebase, config, db) => {
+export default (firebase, config, db) => {
   const { EXERCISE_STAGE, APPLICATION_STATUS } = config;
-  const { convertStageToVersion2, convertStatusToVersion2 } = require('../applicationRecords/updateApplicationRecordStageStatus')(firebase, config, db);
+  const { convertStageToVersion2, convertStatusToVersion2 } = initUpdateApplicationRecordStageStatus(firebase, config, db);
   
   return {
     generateHandoverReport,

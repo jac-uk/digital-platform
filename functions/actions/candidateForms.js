@@ -1,6 +1,6 @@
-const { applyUpdates } = require('../shared/helpers');
+import { applyUpdates } from '../shared/helpers.js';
 
-module.exports = (firebase, db) => {
+export default (firebase, db) => {
   return {
     onCandidateFormCreate,
   };

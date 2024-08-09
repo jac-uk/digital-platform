@@ -1,8 +1,8 @@
-const { getDocument, getDocuments } = require('../shared/helpers');
-const { convertPermissions } = require('../shared/permissions');
-const { getSearchMap } = require('../shared/search');
+import { getDocument, getDocuments } from '../shared/helpers.js';
+import { convertPermissions } from '../shared/permissions.js';
+import { getSearchMap } from '../shared/search.js';
 
-module.exports = (auth, db) => {
+export default (auth, db) => {
   return {
     generateSignInWithEmailLink,
     createUser,

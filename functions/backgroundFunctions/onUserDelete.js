@@ -1,8 +1,10 @@
-const functions = require('firebase-functions');
-const { db, auth } = require('../shared/admin');
-const { deleteUsers } = require('../actions/users')(auth, db);
+import functions from 'firebase-functions';
+import { db, auth } from '../shared/admin.js';
+import initUsers from '../actions/users.js';
 
-module.exports = functions.region('europe-west2').firestore
+const { deleteUsers } = initUsers(auth, db);
+
+export default functions.region('europe-west2').firestore
   .document('users/{userId}')
   .onDelete((snap, context) => {
     const user = snap.data();

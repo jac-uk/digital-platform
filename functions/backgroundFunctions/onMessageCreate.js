@@ -1,9 +1,11 @@
-const functions = require('firebase-functions');
-const config = require('../shared/config');
-const { firebase, db, auth } = require('../shared/admin');
-const { onMessageCreate } = require('../actions/messages')(config, firebase, db, auth);
+import functions from 'firebase-functions';
+import config from '../shared/config.js';
+import { firebase, db, auth } from '../shared/admin.js';
+import initMessages from '../actions/messages.js';
 
-module.exports = functions.region('europe-west2').firestore
+const { onMessageCreate } = initMessages(config, firebase, db, auth);
+
+export default functions.region('europe-west2').firestore
   .document('messages/{messageId}')
   .onCreate((snap, context) => {
     const messageId = context.params.messageId;

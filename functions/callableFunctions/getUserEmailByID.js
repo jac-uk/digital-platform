@@ -1,10 +1,13 @@
-const functions = require('firebase-functions');
-const { auth, db } = require('../shared/admin.js');
-const { checkArguments } = require('../shared/helpers.js');
-const  getUserEmailByID  = require('../actions/candidates/getUserEmailByID')(auth);
-const { checkFunctionEnabled } = require('../shared/serviceSettings.js')(db);
+import functions from 'firebase-functions';
+import { auth, db } from '../shared/admin.js';
+import { checkArguments } from '../shared/helpers.js';
+import initGetUserEmailByID from '../actions/candidates/getUserEmailByID.js';
+import initServiceSettings from '../shared/serviceSettings.js';
 
-module.exports = functions.region('europe-west2').https.onCall(async (data, context) => {
+const  getUserEmailByID  = initGetUserEmailByID(auth);
+const { checkFunctionEnabled } = initServiceSettings(db);
+
+export default functions.region('europe-west2').https.onCall(async (data, context) => {
   await checkFunctionEnabled();
   console.log('getUserByID called');
   if (!context.auth) {

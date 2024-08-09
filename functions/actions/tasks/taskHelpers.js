@@ -1,9 +1,10 @@
 
-const createTimeline = require('../../shared/Timeline/createTimeline');
-const { convertToDate, calculateMean, calculateStandardDeviation } = require('../../shared/helpers');
+import createTimeline from '../../shared/Timeline/createTimeline.js';
+import { convertToDate, calculateMean, calculateStandardDeviation } from '../../shared/helpers.js';
+import initExerciseTimeline from '../../shared/Timeline/exerciseTimeline.TMP.js';
 
-module.exports = (config) => {
-  const exerciseTimeline = require('../../shared/Timeline/exerciseTimeline.TMP')(config);
+export default (config) => {
+  const exerciseTimeline = initExerciseTimeline(config);
   const TASK_TYPE = config.TASK_TYPE;
   const SHORTLISTING_TASK_TYPES = config.SHORTLISTING_TASK_TYPES;
   const TASK_STATUS = config.TASK_STATUS;

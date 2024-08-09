@@ -1,7 +1,11 @@
-const { getDocument, getDocuments, getDocumentsFromQueries, applyUpdates } = require('../../shared/helpers');
-const lookup = require('../../shared/converters/lookup');
+import { getDocument, getDocuments, getDocumentsFromQueries, applyUpdates } from '../../shared/helpers.js';
+import lookup from '../../shared/converters/lookup.js';
+import initTaskHelpers from './taskHelpers.js';
+import initRefreshApplicationCounts from '../exercises/refreshApplicationCounts.js';
+import initFactories from '../../shared/factories.js';
+import initQts from '../../shared/qts.js';
 
-module.exports = (config, firebase, db) => {
+export default (config, firebase, db) => {
   const {
     taskStatuses,
     taskNextStatus,
@@ -18,10 +22,10 @@ module.exports = (config, firebase, db) => {
     getApplicationFailStatuses,
     taskApplicationsEntryStatus,
     includeZScores,
-  } = require('./taskHelpers')(config);
+  } = initTaskHelpers(config);
 
-  const { refreshApplicationCounts } = require('../exercises/refreshApplicationCounts')(firebase, db);
-  const { newCandidateFormResponse } = require('../../shared/factories')(config);
+  const { refreshApplicationCounts } = initRefreshApplicationCounts(firebase, db);
+  const { newCandidateFormResponse } = initFactories(config);
 
   return {
     updateTask,
@@ -223,7 +227,7 @@ module.exports = (config, firebase, db) => {
     };
 
     // get test
-    const qts = require('../../shared/qts')(config);
+    const qts = initQts(config);
     const response = await qts.get('scores', {
       testId: task.test.id,
     });
@@ -369,7 +373,7 @@ module.exports = (config, firebase, db) => {
     const title = `${lookup(testType)} for ${folderName}`;
     const QTType = testType === config.TASK_TYPE.EMP_TIEBREAKER ? config.TASK_TYPE.SCENARIO : testType;
     // initialise test on QT Platform
-    const qts = require('../../shared/qts')(config);
+    const qts = initQts(config);
     const response = await qts.post('qualifying-test', {
       folder: folderName,
       test: {
@@ -416,7 +420,7 @@ module.exports = (config, firebase, db) => {
     });
 
     // send participants to QT Platform
-    const qts = require('../../shared/qts')(config);
+    const qts = initQts(config);
     await qts.post('participants', {
       testId: task.test.id,
       participants: participants,
@@ -651,7 +655,7 @@ module.exports = (config, firebase, db) => {
     let emptyScoreSheet = task.emptyScoreSheet;
     if (task.type === config.TASK_TYPE.SCENARIO || task.type === config.TASK_TYPE.EMP_TIEBREAKER) {
       // get test
-      const qts = require('../../shared/qts')(config);
+      const qts = initQts(config);
       const response = await qts.get('scores', {
         testId: task.test.id,
       });
@@ -763,7 +767,7 @@ module.exports = (config, firebase, db) => {
     };
 
     // get results from QT Platform
-    const qts = require('../../shared/qts')(config);
+    const qts = initQts(config);
     const response = await qts.get('scores', {
       testId: task.test.id,
     });

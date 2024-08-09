@@ -1,7 +1,7 @@
 import { applyUpdates } from '../../shared/helpers.js';
 import initFactories from '../../shared/factories.js';
 
-module.exports = (config, firebase, db, auth) => {
+export default (config, firebase, db, auth) => {
   const { newNotificationExerciseApprovalSubmit } = initFactories(config);
   return {
     sendExerciseReadyForApproval,

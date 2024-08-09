@@ -1,13 +1,13 @@
-const htmlWriter = require('../htmlWriter');
-const lookup = require('./lookup');
-const {addField, formatDate, toYesNo} = require('./helpers');
-const helpers = require('../../shared/helpers');
-const { objectHasNestedProperty } = require('../helpers.js');
+import htmlWriter from '../htmlWriter.js';
+import lookup from './lookup.js';
+import { addField, formatDate, toYesNo } from './helpers.js';
+import * as helpers from '../../shared/helpers.js';
+import { objectHasNestedProperty } from '../helpers.js';
 
-const { getJurisdictionPreferences, getLocationPreferences, getAdditionalWorkingPreferences } = require('./workingPreferencesConverter');
-const has = require('lodash/has');
+import { getJurisdictionPreferences, getLocationPreferences, getAdditionalWorkingPreferences } from './workingPreferencesConverter.js';
+import has from 'lodash/has.js';
 
-module.exports = () => {
+export default () => {
 
   return {
     getHtmlPanelPack,

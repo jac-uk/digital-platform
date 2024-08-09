@@ -1,9 +1,9 @@
 
 // TODO: THIS IS COPIED FROM ADMIN `helpersTMP` folder. It should be moved to JAC Kit, plus streamlined
 
-const { isDate, formatDate } = require('../helpers');
+import { isDate, formatDate } from '../helpers.js';
 
-module.exports = (config) => {
+export default (config) => {
   const TASK_TYPE = config.TASK_TYPE;
   return exerciseTimeline;
 
