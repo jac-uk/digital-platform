@@ -1,14 +1,23 @@
 const lookup = require('./lookup');
 const { Timestamp } = require('firebase-admin/firestore');
 
-const addField = (array, label, value, lineBreak = false) => {
+/**
+ * 
+ * @param {*} array 
+ * @param {*} label 
+ * @param {*} value 
+ * @param {*} lineBreak 
+ * @param {*} dataOnSeparateRow Display heading and value in separate rows
+ * @returns 
+ */
+const addField = (array, label, value, lineBreak = false, dataOnSeparateRow = false) => {
   if (value === undefined || value === null || value === '') {
     return;
   }
   if (typeof (value) === 'boolean') {
     value = toYesNo(value);
   }
-  array.push({ value: value, label: label, lineBreak: lineBreak });
+  array.push({ value: value, label: label, lineBreak: lineBreak, dataOnSeparateRow: dataOnSeparateRow });
 };
 
 const toYesNo = (value) => {
