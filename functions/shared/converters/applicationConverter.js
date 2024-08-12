@@ -262,10 +262,10 @@ module.exports = () => {
   function getAdditionalSelectionCriteria(application, exercise) {
     const additionalSelectionCriteria = application.selectionCriteriaAnswers;
     const data = [];
-    const answer = sC.answerDetails || 'Does not meet this requirement';
     additionalSelectionCriteria.forEach((sC, index) => {
+      const answer = sC.answerDetails || 'Does not meet this requirement';
       // The last argument below tells addField that the heading and data should go in separate rows
-      addField(data, exercise.selectionCriteria[index].title, answer, true);
+      addField(data, exercise.selectionCriteria[index].title, answer, false, true);
     });
     return data;
   }
