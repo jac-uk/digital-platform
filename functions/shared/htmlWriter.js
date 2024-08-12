@@ -112,9 +112,13 @@ class htmlWriter {
     data.forEach(each => {
       const heading = each.label;
       let value = each.value;
-
       let html = each.lineBreak ? rowStartSectionStart : rowStart;
-      html += headingStart + heading + headingEnd + dataStart + value + dataEnd + rowEnd;
+      if (each.dataOnSeparateRow) { // Put heading and value in separate rows
+        html += headingStart + heading + headingEnd  + rowEnd + rowStart + dataStart + value + dataEnd + rowEnd;
+      }
+      else { // Put heading and value in same row
+        html += headingStart + heading + headingEnd + dataStart + value + dataEnd + rowEnd;
+      }
       rowHtml.push(html);
     });
     rowHtml.unshift(tableStart);

@@ -125,7 +125,8 @@ module.exports = () => {
     const data = [];
     if (!selfAssessmentData || !exercise.selfAssessmentWordLimits) return data;
     selfAssessmentData.forEach((q, i) => {
-      addField(data, exercise.selfAssessmentWordLimits[i].question, q);
+      // The last argument below tells addField that the heading and data should go in separate rows
+      addField(data, exercise.selfAssessmentWordLimits[i].question, q, false, true);
     });
     return data;
   }
@@ -262,7 +263,9 @@ module.exports = () => {
     const additionalSelectionCriteria = application.selectionCriteriaAnswers;
     const data = [];
     additionalSelectionCriteria.forEach((sC, index) => {
-      addField(data, exercise.selectionCriteria[index].title, sC.answerDetails || 'Does not meet this requirement');
+      const answer = sC.answerDetails || 'Does not meet this requirement';
+      // The last argument below tells addField that the heading and data should go in separate rows
+      addField(data, exercise.selectionCriteria[index].title, answer, false, true);
     });
     return data;
   }
