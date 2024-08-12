@@ -5,6 +5,7 @@
   "repository": "https://github.com/jac-uk/digital-platform",
   "license": "MIT",
   "readme": "README.md",
+  "type": "module",
   "engines": {
     "node": "18"
   },

@@ -1,7 +1,9 @@
 'use strict';
 
-const { app, auth } = require('./shared/admin.js');
-const getUserEmailByID = require('../functions/actions/candidates/getUserEmailByID')(auth);
+import { app, auth } from './shared/admin.js';
+import initGetUserEmailByID from '../functions/actions/candidates/getUserEmailByID.js';
+
+const getUserEmailByID = initGetUserEmailByID(auth);
 
 const main = async () => {
   return getUserEmailByID({

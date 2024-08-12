@@ -461,7 +461,7 @@ const APPLICATION_STATUS = {
   SCC_TO_RECONSIDER: 'sccToReconsider',
 };
 
-module.exports = {
+export default {
   ...CONSTANTS,
   TASK_TYPE,
   SHORTLISTING_TASK_TYPES,

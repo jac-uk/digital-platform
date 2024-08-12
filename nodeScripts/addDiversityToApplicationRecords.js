@@ -1,9 +1,8 @@
 'use strict';
 
-// const config = require('./shared/config.js');
-const { app, db } = require('./shared/admin.js');
-const { applyUpdates, getDocuments, getDocument } = require('../functions/shared/helpers');
-const { applicationOpenDatePost01042023 } = require('./shared/helpers');
+import { app, db } from './shared/admin.js';
+import { applyUpdates, getDocuments, getDocument } from '../functions/shared/helpers.js';
+import { applicationOpenDatePost01042023 } from './shared/helpers.js';
 
 const main = async () => {
 

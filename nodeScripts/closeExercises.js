@@ -1,7 +1,9 @@
 'use strict';
 
-const { app, db } = require('./shared/admin.js');
-const { closeExercises } = require('../functions/actions/exercises/closeExercises')(db);
+import { app, db } from './shared/admin.js';
+import initCcloseExercises from '../functions/actions/exercises/closeExercises.js';
+
+const { closeExercises } = initCcloseExercises(db);
 
 const main = async () => {
   return closeExercises();

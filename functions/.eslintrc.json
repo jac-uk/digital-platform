@@ -4,10 +4,7 @@
     "ecmaVersion": 2018,
     "sourceType": "module"
   },
-  "plugins": [
-    "promise",
-    "import"
-  ],
+  "plugins": ["promise"],
   "extends": "eslint:recommended",
   "rules": {
     // Removed rule "disallow the use of console" from recommended eslint rules
@@ -122,7 +119,10 @@
     // Warn against nested then() or catch() statements
     "promise/no-nesting": 1,
 
-    "import/no-unresolved": 2,
+    "import/no-unresolved": [
+      2,
+      { "ignore": ["^firebase-admin/.+"] }
+    ],
     "import/no-commonjs": 2,
     "import/extensions": [2, "ignorePackages"]
   }

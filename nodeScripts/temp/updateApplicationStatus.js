@@ -13,10 +13,10 @@
  */
  'use strict';
 
-const config = require('../shared/config.js');
+import config from '../shared/config.js';
 const { APPLICATION_STATUS } = config;
-const { app, db } = require('../shared/admin.js');
-const {applyUpdates, getDocuments} = require('../../functions/shared/helpers.js');
+import { app, db } from '../shared/admin.js';
+import { applyUpdates, getDocuments } from '../../functions/shared/helpers.js';
 
 // DEV EXERCISE
 const exerciseId = 'wdpALbyICL7ZxxN5AQt8';

@@ -1,8 +1,10 @@
 'use strict';
 
-const config = require('./shared/config.js');
-const { app } = require('./shared/admin.js');
-const qts = require('../functions/shared/qts')(config);
+import config from './shared/config.js';
+import { app } from './shared/admin.js';
+import initQts from '../functions/shared/qts.js';
+
+const qts = initQts(config);
 
 const main = async () => {
 

@@ -1,7 +1,7 @@
 'use strict';
 
-const { app, db } = require('./shared/admin.js');
-const { applyUpdates } = require('../functions/shared/helpers');
+import { app, db } from './shared/admin.js';
+import { applyUpdates } from '../functions/shared/helpers.js';
 
 const main = async () => {
   const applicationId = 'SGlHaffdfKLmzXlLT9eq';

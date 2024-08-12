@@ -8,9 +8,9 @@
  * Run with: > npm run local:nodeScript temp/syncExercisesSearchMap.js
  */
 
-const { firebase, app, db } = require('../shared/admin.js');
-const { getDocuments, applyUpdates } = require('../../functions/shared/helpers.js');
-const { getSearchMap } = require('../../functions/shared/search');
+import { firebase, app, db } from '../shared/admin.js';
+import { getDocuments, applyUpdates } from '../../functions/shared/helpers.js';
+import { getSearchMap } from '../../functions/shared/search.js';
 
 async function updateAllExercises() {
   const commands = [];
