@@ -1,4 +1,6 @@
-npm_modules
+node_modules
 sampleoutput.txt
 app.yaml
 run.sh
+Dockerfile
+.dockerignore

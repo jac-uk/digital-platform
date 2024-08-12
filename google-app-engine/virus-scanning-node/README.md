@@ -8,7 +8,7 @@ such a pipeline. This service is invoked from a background function that
 responds to a GCS event i.e. when a document is uploaded to a predetermined GCS
 bucket. This service downloads a copy of the document into the Docker container
 running in App Engine Flex and requests a ClamAV scan. Upon completion, the
-service moves the scanned document apprpropriately based on the outcome i.e.
+service moves the scanned document appropriately based on the outcome i.e.
 clean vs infected. It also deletes the local copy of the document.
 
 ## How to use this example
@@ -57,7 +57,7 @@ specific language governing permissions and limitations under the License.
 # gcloud CLI setup
 
 - Download and install the gcloud SDK from here https://cloud.google.com/sdk/docs/install
-- Inititilise the SDK by running `gcloud init`
+- Initialise the SDK by running `gcloud init`
 - In the CLI, navigate to the `\google-app-engine\virus-scanning-node` folder
 - Now create gcloud configs for each environment:
     - Develop:
@@ -107,12 +107,12 @@ To deploy:
 
 You can view the App Engine instances here: https://console.cloud.google.com/appengine?serviceId=default&versionId=20210428t161124&folder=true&organizationId=376574071228&project=digital-platform-develop
 
-SNAG - After depoyment the ClaAV service is not running...
+SNAG - After deployment the ClamAV service is not running...
 
 Solution: Manually restart the ClamAV service within the Docker container by doing the following:
 
 - Connect to the App Engine VM via SSH
-- List all docker containiners
+- List all docker containers
   - `docker container ls`
 - Launch a terminal in the docker container for the App Engine
   - `docker exec -it gaeapp /bin/bash`
@@ -131,7 +131,7 @@ Solution: Manually restart the ClamAV service within the Docker container by doi
 
 Can view `console.log()` output for the malware scanner service here:
 
-https://console.cloud.google.com/logs/query;query=resource.type%3D%22gae_app%22%0Aresource.labels.project_id%3D%22digital-platform-develop%22%0Aresource.labels.module_id%3D%22malware-scanner%22;cursorTimestamp=2021-04-28T17:10:14.144Z?project=digital-platform-develop&folder=true&organizationId=376574071228&query=%0A
+https://console.cloud.google.com/logs/query;query=resource.type%3D%22gae_app%22%0Aresource.labels.project_id%3D%22digital-platform-develop%22%0Aresource.labels.module_id%3D%22malware-scanner%22;cursorTimestamp=2021-04-28T17:10:14.144Z?project=digital-platform-develop&folder=true&organizationId=376574071228&query=%0A&authuser=3
 
 ...or by running this command:
 

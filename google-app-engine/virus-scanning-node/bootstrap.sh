@@ -14,12 +14,53 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-# Get latest definitions
-freshclam
+CMD="$(basename $0)"
 
-# Reload Services
-service clamav-daemon force-reload
-service clamav-freshclam force-reload
+# Log function to standardize log output
+function Log {
+    local SEVERITY="$1"
+    local MESSAGE="$2"
+    echo "{\"severity\": \"${SEVERITY}\", \"message\": \"${CMD}: ${MESSAGE}\"}"
+}
+
+# Error handling function
+function trapError {
+    local EXIT_CODE="$?"
+    local LINE="$1"
+    Log "ERROR" "Script exited with error at line ${LINE}, exit code: ${EXIT_CODE}"
+    exit "${EXIT_CODE}"
+}
+trap 'trapError $LINENO' ERR
+
+# Log the start of the script
+Log "INFO" "Starting ClamAV update and reload process"
+
+# Get latest definitions
+Log "INFO" "Updating ClamAV virus definitions with freshclam"
+if ! freshclam; then
+    Log "ERROR" "Failed to update ClamAV virus definitions"
+    exit 1
+fi
+
+# Reload ClamAV daemon service
+Log "INFO" "Reloading clamav-daemon service"
+if ! service clamav-daemon force-reload; then
+    Log "ERROR" "Failed to reload clamav-daemon service"
+    exit 1
+fi
+
+# Reload freshclam service
+Log "INFO" "Reloading clamav-freshclam service"
+if ! service clamav-freshclam force-reload; then
+    Log "ERROR" "Failed to reload clamav-freshclam service"
+    exit 1
+fi
 
 # Run node process
-npm start
+Log "INFO" "Starting Node.js application"
+if ! npm start; then
+    Log "ERROR" "Failed to start Node.js application"
+    exit 1
+fi
+
+Log "INFO" "Script completed successfully"

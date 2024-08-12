@@ -1,12 +1,9 @@
 /*
 * Copyright 2019 Google LLC
-
 * Licensed under the Apache License, Version 2.0 (the "License");
 * you may not use this file except in compliance with the License.
 * You may obtain a copy of the License at
-
 *     https://www.apache.org/licenses/LICENSE-2.0
-
 * Unless required by applicable law or agreed to in writing, software
 * distributed under the License is distributed on an "AS IS" BASIS,
 * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -14,25 +11,21 @@
 * limitations under the License.
 */
 
-const clamd = require('clamdjs');
 const express = require('express');
-const {Storage} = require('@google-cloud/storage');
+const { Storage } = require('@google-cloud/storage');
+const axios = require('axios');
 const fs = require('fs');
+const path = require('path');
+
+const CLAMAV_URL = 'https://<your-cloud-run-url>/scan'; // Update this URL
+const CLEAN_BUCKET = 'cleanBucket';
+const QUARANTINE_BUCKET = 'quarantineBucket';
 
 const app = express();
 const PORT = process.env.PORT || 8080;
-const scanner = clamd.createScanner('127.0.0.1', 3310);
-
-app.use(express.json());
-app.use(express.urlencoded({
-  extended: true,
-}));
 
 // Setup a rate limiter
 const expressRateLimit = require('express-rate-limit');
-// Enable if you're behind a reverse proxy (Heroku, Bluemix, AWS ELB, Nginx, etc)
-// see https://expressjs.com/en/guide/behind-proxies.html
-// app.set('trust proxy', 1);
 const limiter = expressRateLimit({
   windowMs: 1 * 60 * 1000, // 1 minute
   max: 100, // limit each IP to X requests per windowMs
@@ -42,110 +35,165 @@ app.use(limiter);
 // Creates a client
 const storage = new Storage();
 
-// start the app server
+// Start the app server
 const run = () => app.listen(PORT, () => {
   console.log(`Server started on port ${PORT}`);
 });
 
 /**
- * Route that is invoked by a Cloud Function when a malware scan is requested
- * for a document uploaded to GCS.
- *
- * @param {object} req The request payload
- * @param {object} res The HTTP response object
+ * Cloud Event handler invoked by Eventarc when a file is uploaded
+ * to the Cloud Storage bucket.
  */
-app.post('/scan', async (req, res) => {
-  console.log('Request body', JSON.stringify(req.body));
-
-  let tempPath;
+app.post('/', async (req, res) => {
+  console.log('Received Cloud Event', JSON.stringify(req.body));
 
   try {
-    // get inputs
-    console.log(' - Getting inputs...');
-    const filename = req.body.filename;
-    const projectId = req.body.projectId || process.env.PROJECT_ID;
-    console.log(` - - filename = ${filename}`);
-    console.log(` - - projectId = ${projectId}`);
-
-    // validate inputs
-    console.log(' - Validating inputs...');
-    // get the bucket based on projectId
-    const STORAGE_URL = projectId + '.appspot.com';
-    console.log(`STORAGE_URL = ${STORAGE_URL}`);
-    const bucket = storage.bucket(STORAGE_URL);
-    const bucketExists = await bucket.exists();
-    if (!bucketExists) {
-      throw 'Storage bucket not found';
-    }
-    const file = bucket.file(filename);
-    const fileExists = (await file.exists())[0]; // the file.exists() function returns an array with a single boolean element in it
-    if (!fileExists) {
-      throw 'File not found in bucket';
-    }
-    console.log(' - - Done');
-
-    // download the file so it can be scanned locally
-    tempPath = `/unscanned_files/${Date.now()}`;
-    console.log(` - Downloading file to local temp path: ${tempPath}...`);
-    await bucket.file(filename).download({ destination: tempPath });
-    console.log(' - - Done');
-
-    // scan the file
-    console.log(' - Starting malware scan...');
-    const result = await scanner.scanFile(tempPath);
-    const status = result.indexOf('OK') > -1 ? 'clean' : 'infected';
-    console.log(' - - Done');
-    console.log(` - - File status: ${status}`);
-
-    // add metadata with scan result
-    console.log(' - Adding metadata to file...');
-    addMetadata(bucket, filename, status);
-    console.log(' - - Done');
-
-    // respond to HTTP client
-    console.log(' - Returning HTTP respnose...');
-    res.json({ message: result, status: status });
-    console.log(' - - Done');
-
-  } catch(e) {
+    const { bucket, name: filename } = req.body;
+    await processFile(bucket, filename);
+    res.status(200).send('File processed successfully');
+  } catch (e) {
     console.error('*** ERROR ***', JSON.stringify(e));
-    res.status(500).json({
-      message: e.toString(),
-      status: 'error',
-    });
-  } finally {
-    if (tempPath) {
-      console.log(' - Deleting temp file...');
-      fs.unlink(tempPath, (err) => {
-        if (err) {
-          console.error('*** ERROR ***', JSON.stringify(err));
-        } else {
-          console.log(' - - Done');
-        }
-      });
-    }
+    res.status(500).json({ message: e.toString(), status: 'error' });
   }
 });
 
 /**
- * Add metadata to a file, to indicate the outcome of the virus scan
- *
- * @param {bucket} bucket
- * @param {string} filename
- * @param {string} status
+ * Manually triggered scan via the /scan endpoint.
  */
-const addMetadata = (bucket, filename, status) => {
+app.post('/scan', async (req, res) => {
+  console.log('Scan request', JSON.stringify(req.body));
+
+  try {
+    const { bucket, filename } = req.body;
+    await processFile(bucket, filename);
+    res.status(200).send('File scanned successfully');
+  } catch (e) {
+    console.error('*** ERROR ***', JSON.stringify(e));
+    res.status(500).json({ message: e.toString(), status: 'error' });
+  }
+});
+
+/**
+ * Processes the file by triggering a scan via Cloud Run and then moving it
+ * to the appropriate bucket based on the scan results.
+ * 
+ * @param {string} bucket - The name of the bucket where the file is stored
+ * @param {string} filename - The name of the file to be processed
+ */
+async function processFile(bucket, filename) {
+  let tempPath;
+
+  try {
+    console.log(`Processing file ${filename} in bucket ${bucket}...`);
+
+    // Validate bucket and file existence
+    const storageBucket = storage.bucket(bucket);
+    const file = storageBucket.file(filename);
+    const fileExists = (await file.exists())[0];
+    if (!fileExists) {
+      throw 'File not found in bucket';
+    }
+
+    // Clear existing metadata to prevent abuse or manipulation
+    await clearMetadata(storageBucket, filename);
+    console.log(`Cleared metadata for ${filename}`);
+
+    // Download the file for local processing
+    tempPath = path.join('/tmp', filename);
+    console.log(`Downloading file to local temp path: ${tempPath}...`);
+    await file.download({ destination: tempPath });
+
+    // Scan the file using the Cloud Run service
+    console.log('Starting malware scan via Cloud Run...');
+    const result = await scanFileInCloudRun(tempPath);
+    const status = result.status === 'clean' ? 'clean' : 'infected';
+    console.log(`File status: ${status}`);
+
+    // Move file based on scan result
+    let destinationBucket;
+    if (status === 'clean') {
+      destinationBucket = storage.bucket(CLEAN_BUCKET);
+    } else {
+      destinationBucket = storage.bucket(QUARANTINE_BUCKET);
+    }
+
+    await file.move(destinationBucket.file(filename));
+    console.log(`File moved to ${destinationBucket.name}`);
+
+    // Add metadata to the file based on the scan result
+    await addMetadata(destinationBucket, filename, status);
+    console.log(`Added metadata to ${filename}`);
+  } finally {
+    if (tempPath && fs.existsSync(tempPath)) {
+      console.log('Deleting temp file...');
+      fs.unlink(tempPath, (err) => {
+        if (err) {
+          console.error('*** ERROR ***', JSON.stringify(err));
+        } else {
+          console.log('Temp file deleted');
+        }
+      });
+    }
+  }
+}
+
+/**
+ * Function to call the Cloud Run ClamAV service to scan the file.
+ * 
+ * @param {string} filePath - The local path to the file to be scanned
+ * @returns {Object} - The result of the scan
+ */
+async function scanFileInCloudRun(filePath) {
+  try {
+    const response = await axios.post(CLAMAV_URL, { filePath: filePath });
+    return response.data;
+  } catch (error) {
+    console.error('Error scanning file in Cloud Run:', error);
+    throw new Error('Error scanning file');
+  }
+}
+
+/**
+ * Clears specific metadata fields from a file.
+ * 
+ * @param {Object} bucket - The storage bucket containing the file
+ * @param {string} filename - The name of the file to clear metadata for
+ */
+async function clearMetadata(bucket, filename) {
+  const metadata = {
+    metadata: {
+      'scanned': null,
+      'status': null,
+    },
+  };
+  try {
+    await bucket.file(filename).setMetadata(metadata);
+    console.log(`Metadata cleared for ${filename}`);
+  } catch (error) {
+    console.error('Error clearing metadata:', error);
+  }
+}
+
+/**
+ * Add metadata to a file, to indicate the outcome of the virus scan.
+ *
+ * @param {Object} bucket - The storage bucket containing the file
+ * @param {string} filename - The name of the file to add metadata to
+ * @param {string} status - The status of the file (clean/infected)
+ */
+async function addMetadata(bucket, filename, status) {
   const metadata = {
     metadata: {
       'scanned': Date.now().toString(),
       'status': status,
     },
   };
-  bucket.file(filename).setMetadata(metadata).then((returned) => {
-    return returned;
-  }).catch(() => {
-    return false;
-  });
-};
+  try {
+    await bucket.file(filename).setMetadata(metadata);
+    console.log(`Metadata added to ${filename}`);
+  } catch (error) {
+    console.error('Error adding metadata:', error);
+  }
+}
 
 run();
