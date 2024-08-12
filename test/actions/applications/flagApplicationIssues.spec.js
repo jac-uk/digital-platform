@@ -1,4 +1,6 @@
-const firebase = require('firebase-admin');
+import firebase from 'firebase-admin';
+import initFlagApplicationIssues from '../../../functions/actions/applications/flagApplicationIssues.js';
+
 const mockDb = jest.fn();
 const mockSlack = jest.fn();
 
@@ -45,7 +47,7 @@ const mockApplication = (id) => {
   };
 }; 
 
-const flagApplicationIssues = require('../../../functions/actions/applications/flagApplicationIssues.js')(firebase, mockDb, mockSlack);
+const flagApplicationIssues = initFlagApplicationIssues(firebase, mockDb, mockSlack);
 
 xdescribe('getEligibilityIssues()', () => {
 

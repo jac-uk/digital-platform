@@ -1,10 +1,11 @@
-const firebase = require('firebase-admin');
+import firebase from 'firebase-admin';
 const db = jest.fn();
-const config = require('../../../../nodeScripts/shared/config');
+import config from '../../../../nodeScripts/shared/config.js';
+import initGenerateOutreachReport from '../../../../functions/actions/exercises/generateOutreachReport.js';
 
 const {
   hasTakenPAJEStats,
-} = require('../../../../functions/actions/exercises/generateOutreachReport.js')(config, firebase, db);
+} = initGenerateOutreachReport(config, firebase, db);
 
 const applications = [
   {

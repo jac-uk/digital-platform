@@ -46,7 +46,8 @@ const mockSlack = jest.fn();
 //   };
 // };
 
-const assessments = require('../../functions/actions/assessments.js')(mockDb, mockSlack);
+import initAssessments from '../../functions/actions/assessments.js';
+const assessments = initAssessments(mockDb, mockSlack);
 
 describe('initialiseAssessments()', () => {
 

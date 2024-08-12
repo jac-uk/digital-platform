@@ -1,10 +1,11 @@
-const firebase = require('firebase-admin');
+import firebase from 'firebase-admin';
 const db = jest.fn();
-const config = require('../../../../nodeScripts/shared/config');
+import config from '../../../../nodeScripts/shared/config.js';
+import initGenerateDiversityReport from '../../../../functions/actions/exercises/generateDiversityReport.js';
 
 const {
   parentsNotAttendedUniversityStats,
-} = require('../../../../functions/actions/exercises/generateDiversityReport.js')(config, firebase, db);
+} = initGenerateDiversityReport(config, firebase, db);
 
 describe('parentsNotAttendedUniversityStats', () => {
 

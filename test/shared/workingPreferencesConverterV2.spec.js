@@ -3,7 +3,9 @@
  */
 /* eslint-env browser */
 
-const converter = require('../../functions/shared/converters/applicationConverter')();
+import initConverter from '../../functions/shared/converters/applicationConverter.js';
+
+const converter = initConverter();
 
 describe('applicationConverter', () => {
   let htmlNode;
