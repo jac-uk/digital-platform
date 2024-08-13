@@ -1,4 +1,4 @@
-const {Storage} = require('@google-cloud/storage');
+const { Storage } = require('@google-cloud/storage');
 const pkgJson = require('./package.json');
 
 /**
@@ -24,7 +24,6 @@ const BucketTypes = Object.freeze({
  *    comments?: string
  *  }} Config
  */
-const Config = null;
 
 const storage = new Storage({
   userAgent: `cloud-solutions/${pkgJson.name}-usage-v${pkgJson.version}`,
@@ -39,7 +38,6 @@ const storage = new Storage({
  * @return {Promise<Config>}
  */
 async function readAndVerifyConfig(configFile) {
-
   /** @type {Config} */
   let config;
 
@@ -47,48 +45,38 @@ async function readAndVerifyConfig(configFile) {
     config = require(configFile);
     delete config.comments;
   } catch (e) {
-    throw new Error(`Invalid configuration ${configFile}`);
+    throw new Error(`Invalid configuration ${configFile}: ${e.message}`);
   }
 
   if (!config.buckets || config.buckets.length === 0) {
-    throw new Error('No buckets configured');
+    throw new Error('Configuration must include at least one bucket definition.');
   }
 
-
-  // Check buckets are specified and exist.
   let success = true;
-  for (let x = 0; x < config.buckets.length; x++) {
-    const bucketDefs = config.buckets[x];
+  for (const bucketDefs of config.buckets) {
     for (const bucketType in BucketTypes) {
-      if (
-        !(await checkBucketExists(
-          bucketDefs[bucketType],
-          `config.buckets[${x}].${bucketType}`
-        ))
-      ) {
+      const bucketName = bucketDefs[bucketType];
+      if (!bucketName || !(await checkBucketExists(bucketName))) {
         success = false;
+        throw new Error(`Bucket ${bucketName} for type ${bucketType} does not exist or is not accessible.`);
       }
     }
+
     if (
       bucketDefs.unscanned === bucketDefs.clean ||
       bucketDefs.unscanned === bucketDefs.quarantined ||
       bucketDefs.clean === bucketDefs.quarantined
     ) {
       success = false;
+      throw new Error('Bucket configuration contains conflicting or duplicate bucket names.');
     }
   }
-  if (
-    !(await checkBucketExists(
-      config.ClamCvdMirrorBucket,
-      'ClamCvdMirrorBucket'
-    ))
-  ) {
-    success = false;
-  }
 
-  if (!success) {
-    throw new Error('Invalid configuration');
+  if (!(await checkBucketExists(config.ClamCvdMirrorBucket))) {
+    throw new Error(`CVD mirror bucket ${config.ClamCvdMirrorBucket} does not exist or is not accessible.`);
   }
+  
+  console.log( success ? 'Config Successs: Buckets found' : 'config issue: Error finding Buckets');
   return config;
 }
 
@@ -96,24 +84,19 @@ async function readAndVerifyConfig(configFile) {
  * Check that given bucket exists. Returns true on success
  *
  * @param {string} bucketName
- * @param {string} configName
  * @return {Promise<boolean>}
  */
-async function checkBucketExists(bucketName, configName) {
+async function checkBucketExists(bucketName) {
   if (!bucketName) {
     return false;
   }
   try {
     const [files] = await storage.bucket(bucketName).getFiles({ maxResults: 1, autoPaginate: false });
-    if (files.length === 0) {
-      return false;
-    }
-    return true;
+    return files.length > 0;
   } catch (e) {
-    console.log(e);
-    return false 
+    console.error(`Error checking bucket existence: ${e.message}`);
+    return false;
   }
 }
 
-exports.Config = Config;
 exports.readAndVerifyConfig = readAndVerifyConfig;

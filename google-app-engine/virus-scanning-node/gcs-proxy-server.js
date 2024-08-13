@@ -52,20 +52,21 @@ async function accessTokenRefresh() {
   }
 
   const client = await googleAuth.getClient();
-  if (
-    !client.credentials?.expiry_date ||
+  if  (
+    !client.credentials ||
+    !client.credentials.expiry_date ||
     client.credentials.expiry_date <=
-      new Date().getTime() + TOKEN_REFRESH_THRESHOLD_MILLIS
+    new Date().getTime() + TOKEN_REFRESH_THRESHOLD_MILLIS
   ) {
     accessToken = await googleAuth.getAccessToken();
   }
   const nextCheckDate = new Date(
     /** @type {number} */ (client.credentials.expiry_date) -
-      TOKEN_REFRESH_THRESHOLD_MILLIS,
+      TOKEN_REFRESH_THRESHOLD_MILLIS
   );
   accessTokenRefreshTimeout = setTimeout(
     accessTokenRefresh,
-    nextCheckDate.getTime() - new Date().getTime(),
+    nextCheckDate.getTime() - new Date().getTime()
   );
 }
 
@@ -82,12 +83,12 @@ function handleProxyError(
   req,
   res,
   // eslint-disable-next-line no-unused-vars
-  _target,
+  _target
 ) {
   /**@type {ServerResponse} */ (res).writeHead(500, {
     'Content-Type': 'text/plain',
   });
-  res.end(`Failed to proxy to GCS: internal error\n`);
+  res.end('Failed to proxy to GCS: internal error\n');
 }
 
 /**
@@ -153,5 +154,6 @@ async function run() {
 
 // Start the service, exiting on error.
 run().catch((e) => {
+  console.log(e);
   process.exit(1);
 });
