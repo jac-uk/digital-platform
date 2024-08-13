@@ -1,0 +1,10 @@
+{
+  "buckets": [
+    {
+      "unscanned": "your-unscanned-bucket-name",
+      "clean": "your-clean-bucket-name",
+      "quarantined": "your-quarantined-bucket-name"
+    }
+  ],
+  "ClamCvdMirrorBucket": "your-cvd-mirror-bucket-name"
+}
