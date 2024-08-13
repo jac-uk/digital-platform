@@ -193,7 +193,7 @@ function checkArguments(definitions, data) {
 
   // check data contains required definitions
   const requiredKeys = [];
-  for (key in definitions) {
+  for (const key in definitions) {
     if (definitions[key].required) { requiredKeys.push(key); }
   }
   for (let i = 0, len = requiredKeys.length; i < len; ++i) {
