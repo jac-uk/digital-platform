@@ -1,7 +1,9 @@
 import firebase from 'firebase-admin';
-const db = jest.fn();
+import { jest } from '@jest/globals';
 import config from '../../../../nodeScripts/shared/config.js';
 import initGenerateOutreachReport from '../../../../functions/actions/exercises/generateOutreachReport.js';
+
+const db = jest.fn();
 
 const {
   workshadowingStats,

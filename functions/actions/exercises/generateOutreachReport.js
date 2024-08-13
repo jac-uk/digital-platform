@@ -1,7 +1,7 @@
 import { getDocument, getDocuments, objectHasNestedProperty } from '../../shared/helpers.js';
 import initExerciseHelper from '../../shared/exerciseHelper.js';
 
-const ignoreKeys = ['total', 'declaration', 'preferNotToSay', 'noAnswer'];
+const ignoreKeys = ['totalApplications', 'total', 'declaration', 'preferNotToSay', 'noAnswer'];
 
 export default (config, firebase, db) => {
   const { availableStages } = initExerciseHelper(config);

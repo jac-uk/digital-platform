@@ -1,4 +1,5 @@
 // @TODO makes sense to use emulator to test these
+import { jest } from '@jest/globals';
 
 const mockDb = jest.fn();
 const mockSlack = jest.fn();

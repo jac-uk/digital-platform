@@ -1,4 +1,5 @@
 import firebase from 'firebase-admin';
+import { jest } from '@jest/globals';
 import initFlagApplicationIssues from '../../../functions/actions/applications/flagApplicationIssues.js';
 
 const mockDb = jest.fn();
