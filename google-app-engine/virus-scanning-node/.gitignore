@@ -1,0 +1,8 @@
+node_modules
+.DS_Store
+.bin
+.idea
+cvds
+pyenv
+config.json
+.vscode
