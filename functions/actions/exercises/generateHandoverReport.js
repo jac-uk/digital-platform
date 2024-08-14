@@ -188,7 +188,9 @@ const reportData = (db, exercise, applicationRecords, applications) => {
     if (exercise.typeOfExercise === 'legal' || exercise.typeOfExercise === 'leadership') {
       qualifications = formatLegalData(exercise, application);
     } else if (exercise.typeOfExercise === 'non-legal') {
-      memberships = formatNonLegalData(application, exercise);
+      memberships = {
+        professionalMemberships: helpers.formatMemberships(application, exercise),
+      };
     }
 
     const additionalPreferences = {};
@@ -329,42 +331,6 @@ const formatLegalData = (exercise, application) => {
     qualifications: qualifications,
     judicialExperience: judicialExperience,
   };
-};
-
-const formatNonLegalData = (application, exercise) => {
-  const organisations = {
-    'chartered-association-of-building-engineers': 'charteredAssociationBuildingEngineers',
-    'chartered-institute-of-building': 'charteredInstituteBuilding',
-    'chartered-institute-of-environmental-health': 'charteredInstituteEnvironmentalHealth',
-    'general-medical-council': 'generalMedicalCouncilDate',
-    'royal-college-of-psychiatrists': 'royalCollegeOfPsychiatrist',
-    'royal-institution-of-chartered-surveyors': 'royalInstitutionCharteredSurveyors',
-    'royal-institute-of-british-architects': 'royalInstituteBritishArchitects',
-    'other': 'otherProfessionalMemberships',
-  };
-
-  if (application.professionalMemberships) {
-    const professionalMemberships = application.professionalMemberships.map(membership => {
-      let formattedMembership;
-      if (organisations[membership]) {
-        const fieldName = organisations[membership];
-        formattedMembership = `${lookup(membership)}, ${helpers.formatDate(application[`${fieldName}Date`])}, ${application[`${fieldName}Number`]} `;
-      }
-      if (application.memberships[membership]) {
-        const otherMembershipLabel = exercise.otherMemberships.find(m => m.value === membership).label;
-        formattedMembership = `${lookup(otherMembershipLabel)}, ${helpers.formatDate(application.memberships[membership].date)}, ${application.memberships[membership].number}`;
-      }
-      return formattedMembership;
-    }).join('\n');
-
-    return {
-      professionalMemberships: professionalMemberships,
-    };
-  } else {
-    return {
-      professionalMemberships: null,
-    };
-  }
 };
 
 function isApplicationOpenDatePost01042023(exercise) {
