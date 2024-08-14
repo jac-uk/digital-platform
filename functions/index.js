@@ -92,6 +92,7 @@ import verifySlackUser from './callableFunctions/verifySlackUser.js';
 import sendPublishedFeedbackReportNotifications from './callableFunctions/sendPublishedFeedbackReportNotifications.js';
 import updateApplicationRecordStageStatus from './callableFunctions/updateApplicationRecordStageStatus.js';
 import getLatestReleases from './callableFunctions/getLatestReleases.js';
+import verifyFileChecksum from './callableFunctions/verifyFileChecksum.js';
 
 // Callable - QTs v2
 import listQualifyingTests from './callableFunctions/qualifyingTests/v2/listQualifyingTests.js';
@@ -196,6 +197,7 @@ export {
   sendPublishedFeedbackReportNotifications,
   updateApplicationRecordStageStatus,
   getLatestReleases,
+  verifyFileChecksum,
 
   // Callable - QTs v2
   listQualifyingTests,
