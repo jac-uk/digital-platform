@@ -191,6 +191,38 @@ const getJudicialExperienceString = (exercise, application) => {
   return judicialExperience;
 };
 
+const formatMemberships = (application, exercise) => {
+  const organisations = {
+    'chartered-association-of-building-engineers': 'charteredAssociationBuildingEngineers',
+    'chartered-institute-of-building': 'charteredInstituteBuilding',
+    'chartered-institute-of-environmental-health': 'charteredInstituteEnvironmentalHealth',
+    'general-medical-council': 'generalMedicalCouncilDate',
+    'royal-college-of-psychiatrists': 'royalCollegeOfPsychiatrist',
+    'royal-institution-of-chartered-surveyors': 'royalInstitutionCharteredSurveyors',
+    'royal-institute-of-british-architects': 'royalInstituteBritishArchitects',
+    'other': 'otherProfessionalMemberships',
+  };
+
+  if (application.professionalMemberships) {
+    const professionalMemberships = application.professionalMemberships.map(membership => {
+      let formattedMembership;
+      if (organisations[membership]) {
+        const fieldName = organisations[membership];
+        formattedMembership = `${lookup(membership)}, ${formatDate(application[`${fieldName}Date`])}, ${application[`${fieldName}Number`]} `;
+      }
+      if (application.memberships[membership]) {
+        const otherMembershipLabel = exercise.otherMemberships.find(m => m.value === membership).label;
+        formattedMembership = `${lookup(otherMembershipLabel)}, ${formatDate(application.memberships[membership].date)}, ${application.memberships[membership].number}`;
+      }
+      return formattedMembership;
+    }).join('\n');
+
+    return professionalMemberships;
+  } else {
+    return null;
+  }
+};
+
 module.exports = {
   addField,
   toYesNo,
@@ -204,4 +236,5 @@ module.exports = {
   applicationOpenDatePost01042023,
   ordinal,
   getJudicialExperienceString,
+  formatMemberships,
 };

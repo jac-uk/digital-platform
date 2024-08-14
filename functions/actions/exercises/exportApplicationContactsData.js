@@ -78,7 +78,11 @@ module.exports = (firebase, db) => {
       delete headers['First Generation Student'];
     } else {
       delete headers['Parents Attended University'];
-    }    
+    }
+
+    if (exercise.typeOfExercise === 'non-legal') {
+      headers['professionalMemberships'] = 'Professional Memberships';
+    }
 
     const report = {
       headers: headers,
@@ -144,7 +148,11 @@ const contactsExport = (applications, exercise) => {
       delete returnObj['firstGenerationStudent'];
     } else {
       delete returnObj['parentsAttendedUniversity'];
-    }    
+    }
+
+    if (exercise.typeOfExercise === 'non-legal') {
+      returnObj.professionalMemberships = helpers.formatMemberships(application, exercise);
+    }
 
     return returnObj;
   });
