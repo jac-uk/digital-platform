@@ -93,6 +93,7 @@ exports.verifySlackUser = require('./callableFunctions/verifySlackUser');
 exports.sendPublishedFeedbackReportNotifications = require('./callableFunctions/sendPublishedFeedbackReportNotifications');
 exports.updateApplicationRecordStageStatus = require('./callableFunctions/updateApplicationRecordStageStatus');
 exports.getLatestReleases = require('./callableFunctions/getLatestReleases');
+exports.verifyFileChecksum = require('./callableFunctions/verifyFileChecksum');
 
 // Callable - QTs v2
 exports.listQualifyingTests = require('./callableFunctions/qualifyingTests/v2/listQualifyingTests');
