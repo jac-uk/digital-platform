@@ -22,7 +22,7 @@
     "googleapis": "^49.0.0",
     "mammoth": "^1.6.0",
     "notifications-node-client": "^8.1.0",
-    "request-promise": "^0.0.1"
+    "request-promise": "^4.2.6"
   },
   "devDependencies": {
     "eslint": "^7.15.0",
