@@ -17,7 +17,7 @@ function generateMockContext(params = {}) {
   };
 }
 
-export default {
+export {
   firebaseFunctionsTest,
   generateMockContext,
 };
