@@ -19,5 +19,5 @@ function generateMockContext(params = {}) {
 
 export {
   firebaseFunctionsTest,
-  generateMockContext,
+  generateMockContext
 };

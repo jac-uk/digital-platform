@@ -236,5 +236,5 @@ export {
   applicationOpenDatePost01042023,
   ordinal,
   getJudicialExperienceString,
-  formatMemberships,
+  formatMemberships
 };
