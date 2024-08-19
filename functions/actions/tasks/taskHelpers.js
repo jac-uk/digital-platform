@@ -544,8 +544,11 @@ module.exports = (config) => {
         item.scoreSheet.qualifyingTest.SJ.zScore = SJstdev ? (item.scoreSheet.qualifyingTest.SJ.percent - SJmean) / SJstdev : 0;
       });
       finalScores.forEach(item => {
-        item.zScore = (0.4 * item.scoreSheet.qualifyingTest.CA.zScore) + (0.6 * item.scoreSheet.qualifyingTest.SJ.zScore);
-        item.scoreSheet.qualifyingTest.zScore = item.zScore;
+        let zScore = (0.4 * item.scoreSheet.qualifyingTest.CA.zScore) + (0.6 * item.scoreSheet.qualifyingTest.SJ.zScore);
+        zScore = parseFloat(zScore.toFixed(2));
+        if (zScore === 0) zScore = 0;
+        item.zScore = zScore;
+        item.scoreSheet.qualifyingTest.zScore = zScore;
       });
     } catch (e) {
       return finalScores;
