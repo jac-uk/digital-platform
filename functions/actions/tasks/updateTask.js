@@ -72,7 +72,7 @@ module.exports = (config, firebase, db) => {
       if (task.type === config.TASK_TYPE.SCENARIO) {
         result = await initialisePanelTaskForScenario(exercise, task);
       } else {
-        result = await initialisePanelTask(exercise, task.type, task.applications);
+        result = await initialisePanelTask(exercise, { task: task });
       }
       break;
     case config.TASK_STATUS.PANELS_ACTIVATED:
@@ -185,38 +185,55 @@ module.exports = (config, firebase, db) => {
   /**
    * Initialises a panel task by updating application records with placeholder for panelId
    * @param {*} exercise
-   * @param {*} taskType
-   * @param {*} applicationRecords
+   * @param {*} params  object with the following optional properties: `task`, `type`, `applicationRecords`
    * @returns Result object of the form `{ success: Boolean, data: Object }`. If successful then `data` is to be stored in the `task` document
    */
-  async function initialisePanelTask(exercise, taskType, applicationRecords) {
+  async function initialisePanelTask(exercise, params) {
     const result = {
       success: false,
       data: {},
     };
+    let task;
+    let taskType;
+    let applicationRecords;
+    if (params.task) { 
+      task = params.task; 
+      taskType = task.type; 
+      applicationRecords = task.applications || params.applicationRecords; 
+      if (!applicationRecords) applicationRecords = await getApplications(exercise, task);
+    }
+    if (params.taskType) taskType = params.taskType;
+    if (params.applicationRecords) applicationRecords = params.applicationRecords;
+
     // update application records with placeholder for panelId
-    const commands = [];
-    applicationRecords.forEach(applicationRecord => {
-      const data = {};
-      data[`${taskType}.panelId`] = null;
-      commands.push({
-        command: 'update',
-        ref: db.collection('applicationRecords').doc(applicationRecord.id),
-        data: data,
+    if (applicationRecords) {
+      const commands = [];
+      applicationRecords.forEach(applicationRecord => {
+        const data = {};
+        data[`${taskType}.panelId`] = null;
+        commands.push({
+          command: 'update',
+          ref: db.collection('applicationRecords').doc(applicationRecord.id),
+          data: data,
+        });
       });
-    });
-    await applyUpdates(db, commands);
+      await applyUpdates(db, commands);  
+    }
+
     result.success = true;
     result.data.grades = config.GRADES;
-    result.data.markingScheme = createMarkingScheme(exercise, taskType);
-    result.data.emptyScoreSheet = scoreSheet({ type: taskType, exercise: exercise });
+    if (task && applicationRecords) result.data['_stats.totalApplications'] = applicationRecords.length;
+    if (!task || (task && !task.markingScheme)) {
+      result.data.markingScheme = createMarkingScheme(exercise, taskType);
+      result.data.emptyScoreSheet = scoreSheet({ type: taskType, exercise: exercise });
+    }
     return result;
   }
 
   /**
    * Initialises a panel task following scenario test
    * @param {*} exercise
-   * @param {*} taskType
+   * @param {*} task
    * @returns Result object of the form `{ success: Boolean, data: Object }`. If successful then `data` is to be stored in the `task` document
    */
   async function initialisePanelTaskForScenario(exercise, task) {
