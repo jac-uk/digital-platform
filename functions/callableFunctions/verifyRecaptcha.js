@@ -1,11 +1,14 @@
-const functions = require('firebase-functions');
-const config = require('../shared/config');
-const { db } = require('../shared/admin.js');
-const { checkArguments } = require('../shared/helpers.js');
-const verifyRecaptcha = require('../actions/verifyRecaptcha')(config);
-const { checkFunctionEnabled } = require('../shared/serviceSettings.js')(db);
+import functions from 'firebase-functions';
+import config from '../shared/config.js';
+import { db } from '../shared/admin.js';
+import { checkArguments } from '../shared/helpers.js';
+import initVerifyRecaptcha from '../actions/verifyRecaptcha.js';
+import initServiceSettings from '../shared/serviceSettings.js';
 
-module.exports = functions.region('europe-west2').https.onCall(async (data, context) => {
+const verifyRecaptcha = initVerifyRecaptcha(config);
+const { checkFunctionEnabled } = initServiceSettings(db);
+
+export default functions.region('europe-west2').https.onCall(async (data, context) => {
   await checkFunctionEnabled();
   if (!checkArguments({
     token: { required: true },

@@ -1,6 +1,6 @@
-const { getDocument, getDocuments, applyUpdates } = require('../../shared/helpers');
+import { getDocument, getDocuments, applyUpdates } from '../../shared/helpers.js';
 
-module.exports = (firebase, config, db) => {
+export default (firebase, config, db) => {
   const { EXERCISE_STAGE, APPLICATION_STATUS } = config;
 
   return {

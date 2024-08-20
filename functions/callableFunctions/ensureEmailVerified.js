@@ -1,7 +1,7 @@
-const functions = require('firebase-functions');
-const { auth } = require('../shared/admin');
+import functions from 'firebase-functions';
+import { auth } from '../shared/admin.js';
 
-module.exports = functions.region('europe-west2').https.onCall(async (data, context) => {
+export default functions.region('europe-west2').https.onCall(async (data, context) => {
   if (!context.auth) {
     throw new functions.https.HttpsError('failed-precondition', 'The function must be called while authenticated.');
   }

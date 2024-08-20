@@ -1,6 +1,9 @@
-module.exports = (auth, config, db) => {
-  const slackWebApi = require('../shared/slackWebApi.js')(config);
-  const { updateUser } = require('./users.js')(auth, db);
+import initSlackWebApi from '../shared/slackWebApi.js';
+import initUsers from './users.js';
+
+export default (auth, config, db) => {
+  const slackWebApi = initSlackWebApi(config);
+  const { updateUser } = initUsers(auth, db);
 
   return {
     lookupSlackUser,

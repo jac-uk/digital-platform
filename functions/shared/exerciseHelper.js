@@ -1,4 +1,4 @@
-module.exports = (config) => {
+export default (config) => {
   const EXERCISE_STAGE = config.EXERCISE_STAGE;
   return {
     availableStages,

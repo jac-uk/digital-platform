@@ -1,9 +1,11 @@
-const { getDocument, getDocuments, getAllDocuments, getDocumentsFromQueries, applyUpdates } = require('../shared/helpers');
-const _ = require('lodash');
+import { getDocument, getDocuments, getAllDocuments, getDocumentsFromQueries, applyUpdates } from '../shared/helpers.js';
+import initFactories from '../shared/factories.js';
+import initNotifications from './notifications.js';
+import _ from 'lodash';
 
-module.exports = (config, firebase, db) => {
-  const { newAssessment, newNotificationAssessmentRequest, newNotificationAssessmentReminder, newNotificationAssessmentSubmit } = require('../shared/factories')(config);
-  const { testNotification } = require('./notifications')(config, db);
+export default (config, firebase, db) => {
+  const { newAssessment, newNotificationAssessmentRequest, newNotificationAssessmentReminder, newNotificationAssessmentSubmit } = initFactories(config);
+  const { testNotification } = initNotifications(config, db);
 
   return {
     initialiseAssessments,

@@ -1,7 +1,7 @@
-const { applyUpdates } = require('../../../shared/helpers');
+import initSearch from '../search.js';
 
-module.exports = (config, firebase, db) => {
-  const { updateCandidate } = require('../search')(firebase, db);
+export default (config, firebase, db) => {
+  const { updateCandidate } = initSearch(firebase, db);
 
   return onUpdate;
 

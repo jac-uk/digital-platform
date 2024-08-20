@@ -1,8 +1,8 @@
-const { getDocuments } = require('../../shared/helpers');
+import { getDocuments } from '../../shared/helpers.js';
 
-const _ = require('lodash');
+import _ from 'lodash';
 
-module.exports = (config, firebase, db, auth) => {
+export default (config, firebase, db, auth) => {
 
   return {
     customReport,

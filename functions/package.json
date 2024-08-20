@@ -1,6 +1,11 @@
 {
   "name": "functions",
   "description": "Cloud Functions for Firebase",
+  "main": "index.js",
+  "type": "module",
+  "engines": {
+    "node": "18"
+  },
   "scripts": {
     "lint": "eslint .",
     "lint:fix": "eslint . --fix",
@@ -9,9 +14,6 @@
     "start": "npm run shell",
     "deploy": "firebase deploy --only functions:generateDiversityReport",
     "logs": "firebase functions:log"
-  },
-  "engines": {
-    "node": "18"
   },
   "dependencies": {
     "axios": "^0.28.0",
@@ -26,6 +28,7 @@
   },
   "devDependencies": {
     "eslint": "^7.15.0",
+    "eslint-plugin-import": "^2.29.1",
     "firebase-functions-test": "^3.2.0"
   },
   "private": true,

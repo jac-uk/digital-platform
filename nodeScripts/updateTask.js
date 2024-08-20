@@ -1,8 +1,10 @@
 'use strict';
 
-const config = require('./shared/config');
-const { firebase, app, db } = require('./shared/admin.js');
-const { updateTask } = require('../functions/actions/tasks/updateTask')(config, firebase, db);
+import config from './shared/config.js';
+import { firebase, app, db } from './shared/admin.js';
+import initUpdateTask from '../functions/actions/tasks/updateTask.js';
+
+const { updateTask } = initUpdateTask(config, firebase, db);
 
 const main = async () => {
   return updateTask({

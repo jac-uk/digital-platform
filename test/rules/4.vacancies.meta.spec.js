@@ -1,5 +1,5 @@
-const { setup, teardown } = require('./helpers');
-const { assertFails, assertSucceeds } = require('@firebase/rules-unit-testing');
+import { setup, teardown } from './helpers.js';
+import { assertFails, assertSucceeds } from '@firebase/rules-unit-testing';
 
 describe('Meta', () => {
   afterEach(async () => {

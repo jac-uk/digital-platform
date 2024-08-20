@@ -1,6 +1,6 @@
 'use strict';
 
-const { app, db } = require('../../functions/shared/admin.js');
+import { app, db } from '../functions/shared/admin.js';
 
 const main = async () => {
   const documentId = 'JypoxJYQCvV5MEU3T5u3';

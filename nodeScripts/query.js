@@ -1,8 +1,8 @@
 'use strict';
 
-const config = require('./shared/config.js');
-const { app, db } = require('./shared/admin.js');
-const { getDocuments, getAllDocuments, formatDate } = require('../functions/shared/helpers');
+import config from './shared/config.js';
+import { app, db } from './shared/admin.js';
+import { getDocuments, getAllDocuments, formatDate } from '../functions/shared/helpers.js';
 
 // function flattenArrayProperty(data, prop, formatter) {
 //   if (!data) {

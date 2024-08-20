@@ -1,7 +1,8 @@
-const { getDocuments, getDocument } = require('../../../shared/helpers');
+import { getDocuments, getDocument } from '../../../shared/helpers.js';
+import initQts from '../../../shared/qts.js';
 
-module.exports = (config, firebase, db) => {
-  const qts = require('../../../shared/qts')(config);
+export default (config, firebase, db) => {
+  const qts = initQts(config);
 
   return updateQualifyingTestParticipants;
 

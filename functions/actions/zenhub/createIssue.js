@@ -1,7 +1,9 @@
-module.exports = (config, firebase, db) => {
+import initZenhub from '../../shared/zenhub.js';
+import { getDocument } from '../../shared/helpers.js';
 
-  const zenhub = require('../../shared/zenhub')(config);
-  const { getDocument } = require('../../shared/helpers');
+export default (config, firebase, db) => {
+
+  const zenhub = initZenhub(config);
 
   return {
     createIssue,

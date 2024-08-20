@@ -1,4 +1,4 @@
-const functions = require('firebase-functions');
+import functions from 'firebase-functions';
 
 const PERMISSIONS = {
   users: {
@@ -392,10 +392,10 @@ const PERMISSIONS = {
   },
 };
 
-module.exports = {
+export {
   PERMISSIONS,
   hasPermissions,
-  convertPermissions,
+  convertPermissions
 };
 
 function hasPermissions(rolePermissions, permissions) {

@@ -1,7 +1,7 @@
-const assert = require('assert');
-const { firebaseFunctionsTest, generateMockContext } = require('./helpers');
-const { PERMISSIONS } = require('../../functions/shared/permissions');
-const refreshApplicationCounts = require('../../functions/callableFunctions/refreshApplicationCounts');
+import assert from 'assert';
+import { firebaseFunctionsTest, generateMockContext } from './helpers.js';
+import { PERMISSIONS } from '../../functions/shared/permissions.js';
+import refreshApplicationCounts from '../../functions/callableFunctions/refreshApplicationCounts.js';
 
 const { wrap } = firebaseFunctionsTest;
 

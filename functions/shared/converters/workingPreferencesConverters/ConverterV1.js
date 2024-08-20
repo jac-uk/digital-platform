@@ -1,5 +1,5 @@
-const { addField } = require('../helpers');
-const { objectHasNestedProperty } = require('../../helpers.js');
+import { addField } from '../helpers.js';
+import { objectHasNestedProperty } from '../../helpers.js';
 
 class ConverterV1 {
   
@@ -73,4 +73,4 @@ class ConverterV1 {
   }
 }
 
-module.exports = { ConverterV1 };
+export { ConverterV1 };

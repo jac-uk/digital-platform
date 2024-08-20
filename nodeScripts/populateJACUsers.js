@@ -4,13 +4,16 @@
 
 'use strict';
 
-const { app, db, firebase, auth } = require('./shared/admin');
-const config = require('./shared/config');
-const { applyUpdates } = require('../functions/shared/helpers');
-const { newUser } = require('../functions/shared/factories')(config);
-const { getUserSearchMap } = require('../functions/actions/users')(config, firebase, db, auth);
-const { listAllUsers } = require('./shared/helpers');
-const { log } = require('./shared/helpers.js');
+import { app, db, firebase, auth } from './shared/admin.js';
+import config from './shared/config.js';
+import { applyUpdates } from '../functions/shared/helpers.js';
+import initFactories from '../functions/shared/factories.js';
+import initUsers from '../functions/actions/users.js';
+import { listAllUsers } from './shared/helpers.js';
+import { log } from './shared/helpers.js';
+
+const { newUser } = initFactories(config);
+const { getUserSearchMap } = initUsers(config, firebase, db, auth);
 
 // whether to make changes in `users` collection in firestore
 const isAction = false;

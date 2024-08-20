@@ -1,10 +1,13 @@
-const functions = require('firebase-functions');
-const { auth, db } = require('../shared/admin.js');
-const { checkArguments } = require('../shared/helpers.js');
-const updateEmailAddress = require('../actions/candidates/updateEmailAddress')(auth);
-const { checkFunctionEnabled } = require('../shared/serviceSettings.js')(db);
+import functions from 'firebase-functions';
+import { auth, db } from '../shared/admin.js';
+import { checkArguments } from '../shared/helpers.js';
+import initUpdateEmailAddress from '../actions/candidates/updateEmailAddress.js';
+import initServiceSettings from '../shared/serviceSettings.js';
 
-module.exports = functions.region('europe-west2').https.onCall(async (data, context) => {
+const updateEmailAddress = initUpdateEmailAddress(auth);
+const { checkFunctionEnabled } = initServiceSettings(db);
+
+export default functions.region('europe-west2').https.onCall(async (data, context) => {
   await checkFunctionEnabled();
   if (!context.auth) {
     throw new functions.https.HttpsError('failed-precondition', 'The function must be called while authenticated.');

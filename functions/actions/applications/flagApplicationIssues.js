@@ -1,8 +1,8 @@
-const { getDocument, getDocuments, isEmpty, applyUpdates, getDate } = require('../../shared/helpers');
-const lookup = require('../../shared/converters/lookup');
-const _ = require('lodash');
+import { getDocument, isEmpty, applyUpdates, getDate } from '../../shared/helpers.js';
+import lookup from '../../shared/converters/lookup.js';
+import _ from 'lodash';
 
-module.exports = (firebase, config, db) => {
+export default (firebase, config, db) => {
   return {
     flagApplicationIssues,
     flagApplicationIssuesForExercise,

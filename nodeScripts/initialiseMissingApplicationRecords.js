@@ -1,8 +1,10 @@
 'use strict';
 
-const config = require('./shared/config');
-const { firebase, app, db, auth } = require('./shared/admin.js');
-const { initialiseMissingApplicationRecords } = require('../functions/actions/applicationRecords')(config, firebase, db, auth);
+import config from './shared/config.js';
+import { firebase, app, db, auth } from './shared/admin.js';
+import initApplicationRecords from '../functions/actions/applicationRecords.js';
+
+const { initialiseMissingApplicationRecords } = initApplicationRecords(config, firebase, db, auth);
 
 const main = async () => {
   return initialiseMissingApplicationRecords({

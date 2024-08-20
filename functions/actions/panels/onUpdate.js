@@ -1,7 +1,10 @@
-module.exports = (config, firebase, db) => {
+import initInitialisePanelExport from './initialisePanelExport.js';
+import initProcessPanelExport from './processPanelExport.js';
 
-  const { initialisePanelExport } = require('./initialisePanelExport')(config, firebase, db);
-  const { processPanelExport } = require('./processPanelExport')(config, firebase, db);
+export default (config, firebase, db) => {
+
+  const { initialisePanelExport } = initInitialisePanelExport(config, firebase, db);
+  const { processPanelExport } = initProcessPanelExport(config, firebase, db);
 
   return onUpdate;
 

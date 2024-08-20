@@ -1,5 +1,5 @@
-const config = require('./shared/config');
-const { firebase } = require('./shared/admin.js');
+import config from './shared/config.js';
+import { firebase } from './shared/admin.js';
 
 /**
  * Scans all files for viruses

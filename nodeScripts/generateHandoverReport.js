@@ -1,8 +1,10 @@
 'use strict';
 
-const config = require('./shared/config');
-const { firebase, app, db } = require('./shared/admin.js');
-const { generateHandoverReport } = require('../functions/actions/exercises/generateHandoverReport')(firebase, config, db);
+import config from './shared/config.js';
+import { firebase, app, db } from './shared/admin.js';
+import initGenerateHandoverReport from '../functions/actions/exercises/generateHandoverReport.js';
+
+const { generateHandoverReport } = initGenerateHandoverReport(firebase, config, db);
 
 const main = async () => {
   return generateHandoverReport('ofWyUMtAGBGj6AVck2tH');

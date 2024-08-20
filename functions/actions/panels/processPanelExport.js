@@ -1,8 +1,11 @@
-const { getDocument } = require('../../shared/helpers');
-const applicationConverter = require('../../shared/converters/applicationConverter')();
-const drive = require('../../shared/google-drive')();
+import { getDocument } from '../../shared/helpers.js';
+import initApplicationConverter from '../../shared/converters/applicationConverter.js';
+import initDrive from '../../shared/google-drive.js';
 
-module.exports = (config, firebase, db) => {
+const applicationConverter = initApplicationConverter();
+const drive = initDrive();
+
+export default (config, firebase, db) => {
 
   return {
     processPanelExport,

@@ -4,8 +4,8 @@
 
 'use strict';
 
-const { firebase, app, db } = require('./shared/admin');
-const { applyUpdates, getDocuments } = require('../functions/shared/helpers');
+import { firebase, app, db } from './shared/admin.js';
+import { applyUpdates, getDocuments } from '../functions/shared/helpers.js';
 
 // whether to make changes in firestore
 const isAction = false;

@@ -1,7 +1,10 @@
 'use strict';
 
-const { firebase, app, db } = require('./shared/admin.js');
-const { exportApplicationContactsData } = require('../functions/actions/exercises/exportApplicationContactsData.js')(firebase, db);
+import { firebase, app, db } from './shared/admin.js';
+import initExportApplicationContactsData from '../functions/actions/exercises/exportApplicationContactsData.js';
+
+const { exportApplicationContactsData } = initExportApplicationContactsData(firebase, db);
+
 const main = async () => {
   return exportApplicationContactsData({
     exerciseId: 'nJrIBstsDNMDs6VAxDUf',

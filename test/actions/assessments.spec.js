@@ -1,4 +1,5 @@
 // @TODO makes sense to use emulator to test these
+import { jest } from '@jest/globals';
 
 const mockDb = jest.fn();
 const mockSlack = jest.fn();
@@ -46,7 +47,8 @@ const mockSlack = jest.fn();
 //   };
 // };
 
-const assessments = require('../../functions/actions/assessments.js')(mockDb, mockSlack);
+import initAssessments from '../../functions/actions/assessments.js';
+const assessments = initAssessments(mockDb, mockSlack);
 
 describe('initialiseAssessments()', () => {
 

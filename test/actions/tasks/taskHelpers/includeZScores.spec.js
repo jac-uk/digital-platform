@@ -4,7 +4,8 @@ const mockConfig = {
   },
 };
 
-const { includeZScores } = require('../../../../functions/actions/tasks/taskHelpers.js')(mockConfig);
+import initTaskHelpers from '../../../../functions/actions/tasks/taskHelpers.js';
+const { includeZScores } = initTaskHelpers(mockConfig);
 
 describe('includeZScores(finalScores)', () => {
 

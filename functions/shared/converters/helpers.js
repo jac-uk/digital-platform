@@ -1,5 +1,5 @@
-const lookup = require('./lookup');
-const { Timestamp } = require('firebase-admin/firestore');
+import lookup from './lookup.js';
+import { Timestamp } from 'firebase-admin/firestore';
 
 /**
  * 
@@ -223,7 +223,7 @@ const formatMemberships = (application, exercise) => {
   }
 };
 
-module.exports = {
+export {
   addField,
   toYesNo,
   formatDate,
@@ -236,5 +236,5 @@ module.exports = {
   applicationOpenDatePost01042023,
   ordinal,
   getJudicialExperienceString,
-  formatMemberships,
+  formatMemberships
 };

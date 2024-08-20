@@ -1,6 +1,6 @@
-const assert = require('assert');
-const { firebaseFunctionsTest, generateMockContext } = require('./helpers');
-const scanFile = require('../../functions/callableFunctions/scanFile');
+import assert from 'assert';
+import { firebaseFunctionsTest, generateMockContext } from './helpers.js';
+import scanFile from '../../functions/callableFunctions/scanFile.js';
 
 const { wrap } = firebaseFunctionsTest;
 

@@ -4,8 +4,8 @@
 
 'use strict';
 
-const { app, db } = require('./shared/admin.js');
-const { applyUpdates, getDocuments } = require('../functions/shared/helpers.js');
+import { app, db } from './shared/admin.js';
+import { applyUpdates, getDocuments } from '../functions/shared/helpers.js';
 
 // whether to make changes in `exercises` collection in firestore
 const isAction = false;

@@ -1,13 +1,15 @@
-const helpers = require('../../shared/converters/helpers');
-const lookup = require('../../shared/converters/lookup');
-const { getDocuments, getDocument, formatDate, splitFullName } = require('../../shared/helpers');
-const _ = require('lodash');
-const { ordinal } = require('../../shared/converters/helpers');
-const htmlWriter = require('../../shared/htmlWriter');
-const config = require('../../shared/config');
-const drive = require('../../shared/google-drive')();
+import * as helpers from '../../shared/converters/helpers.js';
+import lookup from '../../shared/converters/lookup.js';
+import { getDocuments, getDocument, formatDate, splitFullName } from '../../shared/helpers.js';
+import _ from 'lodash';
+import { ordinal } from '../../shared/converters/helpers.js';
+import htmlWriter from '../../shared/htmlWriter.js';
+import config from '../../shared/config.js';
+import initDrive from '../../shared/google-drive.js';
 
-module.exports = (firebase, db) => {
+const drive = initDrive();
+
+export default (firebase, db) => {
 
   return {
     exportApplicationEligibilityIssues,

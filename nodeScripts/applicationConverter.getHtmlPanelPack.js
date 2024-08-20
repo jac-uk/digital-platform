@@ -12,9 +12,11 @@
 
 'use strict';
 
-const { getDocument } = require('../functions/shared/helpers');
-const { app, db } = require('./shared/admin.js');
-const { getHtmlPanelPack } = require('../functions/shared/converters/applicationConverter')();
+import { getDocument } from '../functions/shared/helpers.js';
+import { app, db } from './shared/admin.js';
+import initApplicationConverter from '../functions/shared/converters/applicationConverter.js';
+
+const { getHtmlPanelPack } = initApplicationConverter();
 
 const main = async () => {
 

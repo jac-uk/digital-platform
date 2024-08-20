@@ -1,7 +1,9 @@
 'use strict';
 
-const { firebase, app, db } = require('./shared/admin.js');
-const { targetedOutreachReport } = require('../functions/actions/exercises/targetedOutreachReport')(firebase, db);
+import { firebase, app, db } from './shared/admin.js';
+import initTargetedOutreachReport from '../functions/actions/exercises/targetedOutreachReport.js';
+
+const { targetedOutreachReport } = initTargetedOutreachReport(firebase, db);
 
 const main = async () => {
 

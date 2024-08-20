@@ -1,9 +1,9 @@
-const helpers = require('../../shared/converters/helpers');
-const lookup = require('../../shared/converters/lookup');
-const { getDocuments, getDocument } = require('../../shared/helpers');
-const { applicationOpenDatePost01042023 } = require('../../shared/converters/helpers');
+import * as helpers from '../../shared/converters/helpers.js';
+import lookup from '../../shared/converters/lookup.js';
+import { getDocuments, getDocument } from '../../shared/helpers.js';
+import { applicationOpenDatePost01042023 } from'../../shared/converters/helpers.js';
 
-module.exports = (firebase, db) => {
+export default (firebase, db) => {
   return {
     exportApplicationContactsData,
   };

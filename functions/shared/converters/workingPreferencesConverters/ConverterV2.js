@@ -1,7 +1,7 @@
-const { addField } = require('../helpers');
-const isObject = require('lodash/isObject');
-const orderBy = require('lodash/orderBy');
-const get = require('lodash/get');
+import { addField } from '../helpers.js';
+import isObject from 'lodash/isObject.js';
+import orderBy from 'lodash/orderBy.js';
+import get from 'lodash/get.js';
 
 class ConverterV2 {
   logError(msg, questionId, application, exercise) {
@@ -299,4 +299,4 @@ class ConverterV2 {
 
 }
 
-module.exports = { ConverterV2 };
+export { ConverterV2 };

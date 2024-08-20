@@ -1,11 +1,14 @@
-const functions = require('firebase-functions');
-const config = require('../../../shared/config');
-const { firebase, db } = require('../../../shared/admin.js');
-const { checkArguments } = require('../../../shared/helpers.js');
-const updateQualifyingTestScores = require('../../../actions/qualifyingTests/v2/updateQualifyingTestScores')(config, firebase, db);
-const { checkFunctionEnabled } = require('../../../shared/serviceSettings.js')(db);
+import functions from 'firebase-functions';
+import config from '../../../shared/config.js';
+import { firebase, db } from '../../../shared/admin.js';
+import { checkArguments } from '../../../shared/helpers.js';
+import initUpdateQualifyingTestScores from '../../../actions/qualifyingTests/v2/updateQualifyingTestScores.js';
+import initServiceSettings from  '../../../shared/serviceSettings.js';
 
-module.exports = functions.region('europe-west2').https.onCall(async (data, context) => {
+const updateQualifyingTestScores = initUpdateQualifyingTestScores(config, firebase, db);
+const { checkFunctionEnabled } = initServiceSettings(db);
+
+export default functions.region('europe-west2').https.onCall(async (data, context) => {
   if (!checkArguments({
     exerciseId: { required: true },
     type: { required: true },

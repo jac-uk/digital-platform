@@ -1,9 +1,11 @@
-const { getDocument, applyUpdates, isDateInPast, formatDate } = require('../../shared/helpers');
-const { getSearchMap } = require('../../shared/search');
+import { getDocument, applyUpdates, isDateInPast, formatDate } from '../../shared/helpers.js';
+import { getSearchMap } from '../../shared/search.js';
+import initCandidatesSearch from '../candidates/search.js';
+import initApplications from './applications.js';
 
-module.exports = (config, firebase, db, auth) => {
-  const { updateCandidate } = require('../candidates/search')(firebase, db);
-  const { sendApplicationConfirmation, sendApplicationInWelsh, sendCharacterCheckRequests, sendCandidateFlagConfirmation } = require('./applications')(config, firebase, db, auth);
+export default (config, firebase, db, auth) => {
+  const { updateCandidate } = initCandidatesSearch(firebase, db);
+  const { sendApplicationConfirmation, sendApplicationInWelsh, sendCharacterCheckRequests, sendCandidateFlagConfirmation } = initApplications(config, firebase, db, auth);
 
   return onUpdate;
 
