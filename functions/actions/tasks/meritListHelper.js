@@ -69,6 +69,7 @@ function isPassingScore(task, score) {
   if (task && task.passMark && task.passMark <= score) {
     return true;
   }
+  return false;
 }
 
 function isPass(task, applicationId, score) {
