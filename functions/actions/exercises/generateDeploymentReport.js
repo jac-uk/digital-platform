@@ -1,8 +1,9 @@
-const { getDocument, getDocuments, getAllDocuments } = require('../../shared/helpers');
+import { getDocument, getDocuments, getAllDocuments } from '../../shared/helpers.js';
+import initUpdateApplicationRecordStageStatus from '../applicationRecords/updateApplicationRecordStageStatus.js';
 
-module.exports = (config, firebase, db) => {
+export default (config, firebase, db) => {
   const { EXERCISE_STAGE, APPLICATION_STATUS } = config;
-  const { convertStageToVersion2, convertStatusToVersion2 } = require('../applicationRecords/updateApplicationRecordStageStatus')(firebase, config, db);
+  const { convertStageToVersion2, convertStatusToVersion2 } = initUpdateApplicationRecordStageStatus(firebase, config, db);
 
   return {
     generateDeploymentReport,

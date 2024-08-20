@@ -6,8 +6,8 @@
  * Run with: > npm run local:nodeScript temp/syncApplicationsNINO.js
  */
 
-const { app, db } = require('../shared/admin.js');
-const { getDocument, getDocuments, applyUpdates } = require('../../functions/shared/helpers.js');
+import { app, db } from '../shared/admin.js';
+import { getDocument, getDocuments, applyUpdates } from '../../functions/shared/helpers.js';
 
 const exerciseId = '';
 const isAction = false;

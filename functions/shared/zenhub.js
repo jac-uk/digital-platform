@@ -1,6 +1,6 @@
-const axios = require('axios');
-const crypto = require('crypto');
-const { objectHasNestedProperty } = require('./helpers');
+import axios from 'axios';
+import crypto from 'crypto';
+import { objectHasNestedProperty } from './helpers.js';
 
 /**
  * Zenhub GraphQL API calls
@@ -9,7 +9,7 @@ const { objectHasNestedProperty } = require('./helpers');
  * @param {*} config 
  * @returns issue id | false
  */
-module.exports = (config) => {
+export default (config) => {
   const baseApiUrl = config.ZENHUB_GRAPH_QL_URL;
   const apiKey = config.ZENHUB_GRAPH_QL_API_KEY;
   const githubPersonalAccesToken = config.GITHUB_PAT;

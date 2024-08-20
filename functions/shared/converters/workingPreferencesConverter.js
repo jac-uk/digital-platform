@@ -1,6 +1,6 @@
-const { ConverterV1 } = require('./workingPreferencesConverters/ConverterV1');
-const { ConverterV2 } = require('./workingPreferencesConverters/ConverterV2');
-const has = require('lodash/has');
+import { ConverterV1 } from './workingPreferencesConverters/ConverterV1.js';
+import { ConverterV2 } from './workingPreferencesConverters/ConverterV2.js';
+import has from 'lodash/has.js';
 
 /**
  * Work out what the version of the working prefs questions are
@@ -53,4 +53,4 @@ function getAdditionalWorkingPreferences(application, exercise) {
   return converter ? converter.getAdditionalWorkingPreferences(application, exercise) : '';
 }
 
-module.exports = { getJurisdictionPreferences, getLocationPreferences, getAdditionalWorkingPreferences };
+export { getJurisdictionPreferences, getLocationPreferences, getAdditionalWorkingPreferences };

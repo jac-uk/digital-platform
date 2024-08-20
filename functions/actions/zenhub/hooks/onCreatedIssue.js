@@ -1,7 +1,10 @@
-module.exports = (config, db, auth) => {
+import initSlack from '../../../shared/slack.js';
+import initUsers from '../../users.js';
 
-  const slack = require('../../../shared/slack')(config);
-  const { getUser } = require('../../users')(auth, db);
+export default (config, db, auth) => {
+
+  const slack = initSlack(config);
+  const { getUser } = initUsers(auth, db);
 
   return {
     onCreatedIssue,

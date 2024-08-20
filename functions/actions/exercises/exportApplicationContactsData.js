@@ -1,9 +1,9 @@
-const helpers = require('../../shared/converters/helpers');
-const lookup = require('../../shared/converters/lookup');
-const { getDocuments, getDocument } = require('../../shared/helpers');
-const { applicationOpenDatePost01042023 } = require('../../shared/converters/helpers');
+import * as helpers from '../../shared/converters/helpers.js';
+import lookup from '../../shared/converters/lookup.js';
+import { getDocuments, getDocument } from '../../shared/helpers.js';
+import { applicationOpenDatePost01042023 } from'../../shared/converters/helpers.js';
 
-module.exports = (firebase, db) => {
+export default (firebase, db) => {
   return {
     exportApplicationContactsData,
   };
@@ -78,7 +78,11 @@ module.exports = (firebase, db) => {
       delete headers['First Generation Student'];
     } else {
       delete headers['Parents Attended University'];
-    }    
+    }
+
+    if (exercise.typeOfExercise === 'non-legal') {
+      headers['professionalMemberships'] = 'Professional Memberships';
+    }
 
     const report = {
       headers: headers,
@@ -144,7 +148,11 @@ const contactsExport = (applications, exercise) => {
       delete returnObj['firstGenerationStudent'];
     } else {
       delete returnObj['parentsAttendedUniversity'];
-    }    
+    }
+
+    if (exercise.typeOfExercise === 'non-legal') {
+      returnObj.professionalMemberships = helpers.formatMemberships(application, exercise);
+    }
 
     return returnObj;
   });

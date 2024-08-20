@@ -1,13 +1,15 @@
-const lookup = require('../../shared/converters/lookup');
-const helpers = require('../../shared/converters/helpers');
-const { getDocuments, getDocument, formatDate, getDate, splitFullName } = require('../../shared/helpers');
-const { applicationOpenDatePost01042023, ordinal, getJudicialExperienceString } = require('../../shared/converters/helpers');
-const _ = require('lodash');
-const htmlWriter = require('../../shared/htmlWriter');
-const config = require('../../shared/config');
-const drive = require('../../shared/google-drive')();
+import lookup from '../../shared/converters/lookup.js';
+import * as helpers from '../../shared/converters/helpers.js';
+import { getDocuments, getDocument, formatDate, getDate, splitFullName } from '../../shared/helpers.js';
+import { applicationOpenDatePost01042023, ordinal, getJudicialExperienceString } from '../../shared/converters/helpers.js';
+import _ from 'lodash';
+import htmlWriter from '../../shared/htmlWriter.js';
+import config from '../../shared/config.js';
+import initDrive from '../../shared/google-drive.js';
 
-module.exports = (firebase, db) => {
+const drive = initDrive();
+
+export default (firebase, db) => {
   return {
     exportApplicationCharacterIssues,
   };

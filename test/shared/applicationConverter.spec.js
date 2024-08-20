@@ -3,7 +3,9 @@
  */
 /* eslint-env browser */
 
-const converter = require('../../functions/shared/converters/applicationConverter')();
+import initConverter from '../../functions/shared/converters/applicationConverter.js';
+
+const converter = initConverter();
 
 describe('applicationConverter', () => {
   let htmlNode;
@@ -680,16 +682,19 @@ describe('applicationConverter', () => {
             label: 'Sc1',
             'lineBreak': false,
             'value': 'title1',
+            'dataOnSeparateRow': true,
           },
           {
             label: 'sc2',
             'lineBreak': false,
             'value': 'title2',
+            'dataOnSeparateRow': true,
           },
           {
             label: 'SC3',
             'lineBreak': false,
             'value': 'title3',
+            'dataOnSeparateRow': true,
           },
         ]);
     });
@@ -726,16 +731,19 @@ describe('applicationConverter', () => {
           label: 'Organisation or business',
           lineBreak: false,
           value: 'name',
+          dataOnSeparateRow: false,
         },
         {
           label: 'Job title',
           lineBreak: false,
           value: 'title',
+          dataOnSeparateRow: false,
         },
         {
           label: 'Date qualified',
           lineBreak: false,
           value: '01/08/2022 - 02/08/2022',
+          dataOnSeparateRow: false,
         },
       ]);
     });

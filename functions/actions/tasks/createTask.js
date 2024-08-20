@@ -1,8 +1,10 @@
-const { getDocument, getDocuments, applyUpdates } = require('../../shared/helpers');
+import { getDocument, getDocuments, applyUpdates } from '../../shared/helpers.js';
+import initTaskHelpers from './taskHelpers.js';
+import initUpdateTask from './updateTask.js';
 
-module.exports = (config, firebase, db) => {
-  const { getTimelineTasks, taskNextStatus, taskApplicationsEntryStatus } = require('./taskHelpers')(config);
-  const { initialisePanelTask, initialiseTestTask, initialiseStatusChangesTask, initialiseCandidateFormTask, initialiseDataTask, initialiseStageOutcomeTask } = require('./updateTask')(config, firebase, db);
+export default (config, firebase, db) => {
+  const { getTimelineTasks, taskNextStatus, taskApplicationsEntryStatus } = initTaskHelpers(config);
+  const { initialisePanelTask, initialiseTestTask, initialiseStatusChangesTask, initialiseCandidateFormTask, initialiseDataTask, initialiseStageOutcomeTask } = initUpdateTask(config, firebase, db);
 
   return createTask;
 

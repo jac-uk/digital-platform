@@ -1,6 +1,6 @@
-const NotifyClient = require('notifications-node-client').NotifyClient;
+import { NotifyClient} from 'notifications-node-client';
 
-module.exports = (config) => {
+export default (config) => {
 
   return {
     sendEmail,

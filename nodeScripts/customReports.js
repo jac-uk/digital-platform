@@ -1,7 +1,9 @@
 
-const config = require('./shared/config');
-const { firebase, app, db } = require('./shared/admin.js');
-const { customReport } = require('../actions/exercises/customReport')(config, firebase, db);
+import config from './shared/config.js';
+import { firebase, app, db } from './shared/admin.js';
+import initCustomReport from '../functions/actions/exercises/customReport.js';
+
+const { customReport } = initCustomReport(config, firebase, db);
 
 const main = async (params) => {
   await customReport({

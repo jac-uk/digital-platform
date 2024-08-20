@@ -1,12 +1,12 @@
 /*eslint func-style: ["error", "declaration"]*/
 
-module.exports = {
+export {
   // OUTCOME,
   // OVERRIDE_REASON,
   // getOverrideReasons,
   // isPass,
   // isPassingScore,
-  getOverride,
+  getOverride
   // getDefaultOutcome,
   // getCurrentOutcome,
   // getNewOutcome,

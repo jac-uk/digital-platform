@@ -1,6 +1,6 @@
-const { setup, teardown, getValidExerciseData } = require('./helpers');
-const { assertFails, assertSucceeds } = require('@firebase/rules-unit-testing');
-const { PERMISSIONS } = require('../../functions/shared/permissions');
+import { setup, teardown, getValidExerciseData } from './helpers.js';
+import { assertFails, assertSucceeds } from '@firebase/rules-unit-testing';
+import { PERMISSIONS } from '../../functions/shared/permissions.js';
 
 describe('Exercises', () => {
   afterEach(async () => {

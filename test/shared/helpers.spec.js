@@ -1,4 +1,4 @@
-const {
+import {
   checkArguments,
   applyUpdates,
   convertStringToSearchParts,
@@ -11,8 +11,8 @@ const {
   replaceCharacters,
   formatAddress,
   formatPreviousAddresses,
-  isValidDate,
-} = require('../../functions/shared/helpers');
+  isValidDate
+} from '../../functions/shared/helpers.js';
 
 describe('checkArguments()', () => {
 

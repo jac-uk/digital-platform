@@ -1,7 +1,6 @@
-module.exports = (config, firebase) => {
-  
-  const mammoth = require('mammoth');
-  
+import mammoth from 'mammoth';
+
+export default (config, firebase) => {
   return {
     extractDocumentContent,
   };

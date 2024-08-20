@@ -1,7 +1,9 @@
 'use strict';
 
-const { firebase, app, db } = require('./shared/admin.js');
-const { generateDiversityData } = require('../functions/actions/exercises/generateDiversityData')(firebase, db);
+import { firebase, app, db } from './shared/admin.js';
+import initGenerateDiversityData from '../functions/actions/exercises/generateDiversityData.js';
+
+const { generateDiversityData } = initGenerateDiversityData(firebase, db);
 
 const main = async () => {
   return generateDiversityData('1qef6rsaSLvvsZHrJuw7');

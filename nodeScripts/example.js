@@ -9,13 +9,12 @@
  */
 'use strict';
 
-const { app, db, auth } = require('./shared/firebase.js');
-const action = require('../functions/actions/testApplicationSubmission')(auth, db);
+import { app, auth } from './shared/firebase.js';
 
 const main = async () => {
   // login as test user
   await auth.signInWithEmailAndPassword(process.env.AUTHENTICATED_USER_EMAIL, process.env.AUTHENTICATED_USER_PASSWORD);
-  return action();
+  return true;
 };
 
 main()

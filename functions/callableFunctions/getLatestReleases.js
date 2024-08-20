@@ -1,11 +1,14 @@
-const functions = require('firebase-functions');
-const config = require('../shared/config.js');
-const { db, auth } = require('../shared/admin.js');
-const { checkFunctionEnabled } = require('../shared/serviceSettings.js')(db);
-const { PERMISSIONS, hasPermissions } = require('../shared/permissions.js');
-const zenhub = require('../shared/zenhub')(config);
+import functions from 'firebase-functions';
+import config from '../shared/config.js';
+import { db } from '../shared/admin.js';
+import initServiceSettings from '../shared/serviceSettings.js';
+const { checkFunctionEnabled } = initServiceSettings(db);
+import { PERMISSIONS, hasPermissions } from '../shared/permissions.js';
+import initZenhub from '../shared/zenhub.js';
 
-module.exports = functions.region('europe-west2').https.onCall(async (data, context) => {
+const zenhub = initZenhub(config);
+
+export default functions.region('europe-west2').https.onCall(async (data, context) => {
   await checkFunctionEnabled();
   if (!context.auth) {
     throw new functions.https.HttpsError('failed-precondition', 'The function must be called while authenticated.');

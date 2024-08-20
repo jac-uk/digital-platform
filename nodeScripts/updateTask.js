@@ -1,13 +1,16 @@
 'use strict';
 
 import config from './shared/config.js';
-import { app, firebase } from './shared/admin.js';
-import initBackupFirestore from '../functions/actions/backup/firestore.js';
+import { firebase, app, db } from './shared/admin.js';
+import initUpdateTask from '../functions/actions/tasks/updateTask.js';
 
-const { backupFirestore } = initBackupFirestore(config, firebase);
+const { updateTask } = initUpdateTask(config, firebase, db);
 
 const main = async () => {
-  return backupFirestore();
+  return updateTask({
+    exerciseId: '',
+    type: 'criticalAnalysis',
+  });
 };
 
 main()
@@ -20,3 +23,4 @@ main()
     console.error(error);
     process.exit();
   });
+ 

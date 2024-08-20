@@ -2,7 +2,7 @@
  * @jest-environment jsdom
  */
 
-const htmlWriter = require('../../functions/shared/htmlWriter');
+import htmlWriter from '../../functions/shared/htmlWriter.js';
 
 describe('htmlWriter', () => {
 

@@ -1,12 +1,16 @@
-const { SSL_OP_NETSCAPE_DEMO_CIPHER_CHANGE_BUG } = require('constants');
-const { getAllDocuments, applyUpdates, getDocument, getDocuments } = require('../../shared/helpers');
-const { getSearchMap } = require('../../shared/search');
+import { getAllDocuments, applyUpdates, getDocument, getDocuments } from '../../shared/helpers.js';
+import { getSearchMap } from '../../shared/search.js';
+import initApplicationRecords from '../../actions/applicationRecords.js';
+import initRefreshApplicationCounts from '../../actions/exercises/refreshApplicationCounts.js';
+import initFactories from '../../shared/factories.js';
+import initSlack from '../../shared/slack.js';
+import initCandidatesSearch from '../candidates/search.js';
 
 const testApplicationsFileName = 'test_applications.json';
 
-module.exports = (config, firebase, db, auth) => {
-  const { initialiseApplicationRecords } = require('../../actions/applicationRecords')(config, firebase, db, auth);
-  const { refreshApplicationCounts } = require('../../actions/exercises/refreshApplicationCounts')(firebase, db);
+export default (config, firebase, db, auth) => {
+  const { initialiseApplicationRecords } = initApplicationRecords(config, firebase, db, auth);
+  const { refreshApplicationCounts } = initRefreshApplicationCounts(firebase, db);
   const {
     newNotificationApplicationSubmit,
     newNotificationApplicationReminder,
@@ -15,9 +19,9 @@ module.exports = (config, firebase, db, auth) => {
     newNotificationCandidateFlagConfirmation,
     newCandidateFormNotification,
     newNotificationPublishedFeedbackReport,
-  } = require('../../shared/factories')(config);
-  const slack = require('../../shared/slack')(config);
-  const { updateCandidate } = require('../candidates/search')(firebase, db);
+  } = initFactories(config);
+  const slack = initSlack(config);
+  const { updateCandidate } = initCandidatesSearch(firebase, db);
   return {
     updateApplication,
     onApplicationCreate,

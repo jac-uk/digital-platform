@@ -1,7 +1,9 @@
 'use strict';
 
-const { firebase, app, db } = require('./shared/admin.js');
-const { exportApplicationEligibilityIssues } = require('../functions/actions/exercises/exportApplicationEligibilityIssues')(firebase, db);
+import { firebase, app, db } from './shared/admin.js';
+import initExportApplicationEligibilityIssues from '../functions/actions/exercises/exportApplicationEligibilityIssues.js';
+
+const { exportApplicationEligibilityIssues } = initExportApplicationEligibilityIssues(firebase, db);
 
 const main = async () => {
   return exportApplicationEligibilityIssues('aRrY8ad5TwiznZZhBqee', 'googledoc');

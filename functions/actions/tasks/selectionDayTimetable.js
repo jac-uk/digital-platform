@@ -127,4 +127,4 @@ function selectionDayTimetable(panelData, candidateInfo, reasonableAdjustments, 
   return result;
 }
 
-module.exports = selectionDayTimetable;
+export default selectionDayTimetable;

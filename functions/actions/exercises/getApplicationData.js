@@ -1,6 +1,5 @@
-const { getDocument, getDocuments, formatDate, formatAddress, formatPreviousAddresses, isValidDate } = require('../../shared/helpers');
-
-const _ = require('lodash');
+import { getDocument, getDocuments, formatDate, formatAddress, formatPreviousAddresses, isValidDate } from '../../shared/helpers.js';
+import _ from 'lodash';
 
 function formatPreference(choiceArray, questionType) {
   if(questionType === 'multiple-choice') {
@@ -13,7 +12,7 @@ function formatPreference(choiceArray, questionType) {
   return choiceArray;
 }
 
-module.exports = (config, firebase, db, auth) => {
+export default (config, firebase, db, auth) => {
 
   return getApplicationData;
 

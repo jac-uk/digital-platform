@@ -1,8 +1,10 @@
 'use strict';
 
-const config = require('./shared/config');
-const { firebase, app, db } = require('./shared/admin.js');
-const { generateDiversityReport } = require('../functions/actions/exercises/generateDiversityReport')(config, firebase, db);
+import config from './shared/config.js';
+import { firebase, app, db } from './shared/admin.js';
+import initGenerateDiversityReport from '../functions/actions/exercises/generateDiversityReport.js';
+
+const { generateDiversityReport } = initGenerateDiversityReport(config, firebase, db);
 
 const main = async () => {
   //return generateDiversityReport('wdpALbyICL7ZxxN5AQt8');

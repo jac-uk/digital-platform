@@ -1,5 +1,6 @@
-const { getDocument, getDocuments } = require('../../shared/helpers');
-const { applicationOpenDatePost01042023 } = require('../../shared/converters/helpers');
+import { getDocument, getDocuments } from '../../shared/helpers.js';
+import { applicationOpenDatePost01042023 } from '../../shared/converters/helpers.js';
+import initExerciseHelper from '../../shared/exerciseHelper.js';
 
 /**
  * For the diversity reports:
@@ -21,8 +22,8 @@ const { applicationOpenDatePost01042023 } = require('../../shared/converters/hel
  * @param {*} db 
  * @returns 
  */
-module.exports = (config, firebase, db) => {
-  const { availableStages } = require('../../shared/exerciseHelper')(config);
+export default (config, firebase, db) => {
+  const { availableStages } = initExerciseHelper(config);
 
   return {
     generateDiversityReport,

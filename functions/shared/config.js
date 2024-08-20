@@ -1,4 +1,4 @@
-const functions = require('firebase-functions');
+import functions from 'firebase-functions';
 
 const CONSTANTS = {
   PROJECT_ID: functions.config().project.id,
@@ -481,7 +481,7 @@ const APPLICATION_STATUS = {
   SCC_TO_RECONSIDER: 'sccToReconsider',
 };
 
-module.exports = {
+export default {
   ...CONSTANTS,
   TASK_TYPE,
   SHORTLISTING_TASK_TYPES,

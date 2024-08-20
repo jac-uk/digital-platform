@@ -1,10 +1,12 @@
-const functions = require('firebase-functions');
-const { db, auth } = require('../shared/admin.js');
-const { checkArguments } = require('../shared/helpers.js');
-const { createUser } = require('../actions/users')(auth, db);
-const { PERMISSIONS, hasPermissions } = require('../shared/permissions');
+import functions from 'firebase-functions';
+import { db, auth } from '../shared/admin.js';
+import { checkArguments } from '../shared/helpers.js';
+import initUsers from '../actions/users.js';
+import { PERMISSIONS, hasPermissions } from '../shared/permissions.js';
 
-module.exports = functions.region('europe-west2').https.onCall(async (data, context) => {
+const { createUser } = initUsers(auth, db);
+
+export default functions.region('europe-west2').https.onCall(async (data, context) => {
   if (!context.auth) {
     throw new functions.https.HttpsError('failed-precondition', 'The function must be called while authenticated.');
   }

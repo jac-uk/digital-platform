@@ -1,7 +1,9 @@
-const { getDocument, getDocuments, applyUpdates, getAllDocuments, formatDate } = require('../../shared/helpers');
-const drive = require('../../shared/google-drive')();
+import { getDocument, getDocuments, applyUpdates, getAllDocuments, formatDate } from '../../shared/helpers.js';
+import initDrive from '../../shared/google-drive.js';
 
-module.exports = (config, firebase, db) => {
+const drive = initDrive();
+
+export default (config, firebase, db) => {
 
   return {
     initialisePanelExport,

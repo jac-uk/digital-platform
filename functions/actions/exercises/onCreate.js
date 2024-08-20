@@ -1,9 +1,9 @@
-//const { getDocument, applyUpdates, isDateInPast, formatDate } = require('../../shared/helpers');
-const { getSearchMap } = require('../../shared/search');
+import { getSearchMap } from '../../shared/search.js';
+import initExercises from './exercises.js';
 
-module.exports = (db) => {
+export default (db) => {
 
-  const { updateExercise } = require('./exercises')(db);
+  const { updateExercise } = initExercises(db);
 
   return onCreate;
 

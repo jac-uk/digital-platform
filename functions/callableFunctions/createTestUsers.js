@@ -1,9 +1,12 @@
-const functions = require('firebase-functions');
-const { firebase, db, auth } = require('../shared/admin.js');
-const config = require('../shared/config');
-const { loadTestApplications } = require('../actions/applications/applications')(config, firebase, db, auth);
-const { importUsers } = require('../actions/users')(auth, db);
-const { isProduction } = require('../shared/helpers');
+import functions from 'firebase-functions';
+import { firebase, db, auth } from '../shared/admin.js';
+import config from '../shared/config.js';
+import initApplications from '../actions/applications/applications.js';
+import initUsers from '../actions/users.js';
+import { isProduction } from '../shared/helpers.js';
+
+const { loadTestApplications } = initApplications(config, firebase, db, auth);
+const { importUsers } = initUsers(auth, db);
 
 const runtimeOptions = {
   memory: '512MB',
@@ -11,7 +14,7 @@ const runtimeOptions = {
 // default hashed password
 const defaultPasswordBcryptHash = '$2a$12$y/eoSrLp1c147c4VjCT/l.f/hxxraGhQYIYKYycZVdqh61pvPXjOW';
 
-module.exports = functions.runWith(runtimeOptions).region('europe-west2').https.onCall(async (data, context) => {
+export default functions.runWith(runtimeOptions).region('europe-west2').https.onCall(async (data, context) => {
   // do not use this function on production
   if (isProduction()) {
     throw new functions.https.HttpsError('failed-precondition', 'The function must not be called on production.');

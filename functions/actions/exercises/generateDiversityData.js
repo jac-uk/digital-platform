@@ -1,8 +1,8 @@
-const { getDocument, getDocuments } = require('../../shared/helpers');
-const { applicationOpenDatePost01042023 } = require('../../shared/converters/helpers');
-// const sizeof = require('firestore-size');
+import { getDocument, getDocuments } from '../../shared/helpers.js';
+import { applicationOpenDatePost01042023 } from '../../shared/converters/helpers.js';
+// import sizeof from 'firestore-size';
 
-module.exports = (firebase, db) => {
+export default (firebase, db) => {
   return {
     generateDiversityData,
   };

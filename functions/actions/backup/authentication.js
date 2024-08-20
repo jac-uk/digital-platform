@@ -1,16 +1,17 @@
 /**
  * Backup authentication
  */
-const firebaseTools = require('firebase-tools');
-const fs = require('fs');
-const os = require('os');
-const path = require('path');
+import firebaseTools from 'firebase-tools';
+import fs from 'fs';
+import os from 'os';
+import path from 'path';
+import initSlack from '../../shared/slack.js';
 
-module.exports = (config, firebase) => {
+export default (config, firebase) => {
   const BACKUP_BUCKET = `${config.PROJECT_ID}-backups`;
   const BACKUP_PATH = 'authentication';
   const PROJECT_ID = config.PROJECT_ID;
-  const slack = require('../../shared/slack')(config);
+  const slack = initSlack(config);
   return {
     backupAuthentication,
   };

@@ -1,10 +1,13 @@
-const functions = require('firebase-functions');
-const { firebase, db } = require('../shared/admin.js');
-const { exportApplicationCommissionerConflicts } = require('../actions/exercises/exportApplicationCommissionerConflicts')(firebase, db);
-const { checkFunctionEnabled } = require('../shared/serviceSettings.js')(db);
-const { PERMISSIONS, hasPermissions } = require('../shared/permissions');
+import functions from 'firebase-functions';
+import { firebase, db } from '../shared/admin.js';
+import initExportApplicationCommissionerConflicts from '../actions/exercises/exportApplicationCommissionerConflicts.js';
+import initServiceSettings from '../shared/serviceSettings.js';
+import { PERMISSIONS, hasPermissions } from '../shared/permissions.js';
 
-module.exports = functions.region('europe-west2').https.onCall(async (data, context) => {
+const { exportApplicationCommissionerConflicts } = initExportApplicationCommissionerConflicts(firebase, db);
+const { checkFunctionEnabled } = initServiceSettings(db);
+
+export default functions.region('europe-west2').https.onCall(async (data, context) => {
   await checkFunctionEnabled();
 
   // authenticate request

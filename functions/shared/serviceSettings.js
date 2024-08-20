@@ -1,7 +1,7 @@
-const functions = require('firebase-functions');
-const { getDocument } = require('./helpers');
+import functions from 'firebase-functions';
+import { getDocument } from './helpers.js';
 
-module.exports = (db) => {
+export default (db) => {
   return {
     serviceSettings,
     checkFunctionEnabled,

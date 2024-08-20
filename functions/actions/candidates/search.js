@@ -3,10 +3,10 @@
  * A set of methods to help keep candidate search & relationships data up to date
  */
 
-const { getDocument, getDocuments, applyUpdates, convertStringToSearchParts, normaliseNIN, objectHasNestedProperty } = require('../../shared/helpers');
-const { getSearchMap } = require('../../shared/search');
+import { getDocument, getDocuments, applyUpdates, normaliseNIN } from '../../shared/helpers.js';
+import { getSearchMap } from '../../shared/search.js';
 
-module.exports = (firebase, db) => {
+export default (firebase, db) => {
   return {
     updateAllCandidates,
     updateCandidate,
