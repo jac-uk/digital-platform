@@ -1,27 +1,41 @@
 
 /**
- *
+ * A test file to use whilst building some functionality. It can be deleted once built.
+ * It does the following:
+ * 
+ * Creates a spreadsheet for grading sheets with dropdowns in cells to limit the type of data that can be specified
+ * Saves the spreadsheet locally
+ * Creates a folder on Google Drive
+ * Copies the spreadsheet to Google Drive
+ * Deletes the local file
+ * 
  * EXAMPLE USAGE:
  *   ```
- *   npm run testCopyExcelToGoogleDrive
+ *   npm run testCreateGradingSheet
  *   ```
  */
 
 'use strict';
 
-const { app, db } = require('./shared/admin.js');
-const fs = require('fs');
-const fs_promise = require('fs').promises;
+import { app, db } from './shared/admin.js';
+import path from 'path';
+import ExcelJS from 'exceljs';
+import { getDocument } from '../functions/shared/helpers.js';
+import initDrive from '../functions/shared/google-drive.js';
+const drive = initDrive();
 
-const path = require('path');
-const ExcelJS = require('exceljs');
+import fs from 'fs';
+const fs_promise = fs.promises;
 
-const drive = require('../functions/shared/google-drive.js')();
-const { getDocument } = require('../functions/shared/helpers.js');
+import { dirname } from 'path';
+import { fileURLToPath } from 'url';
+
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = dirname(__filename);
 
 const main = async () => {
 
-  const filename = 'GENERATED-SPREADSHEET-11.xlsx';
+  const filename = 'GENERATED-SPREADSHEET-12.xlsx';
   const localFilePath = path.join(__dirname, filename);
   const googleDriveFolderName = 'TEST EXPORT GRADING SHEET';
   const columns = [
