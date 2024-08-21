@@ -35,7 +35,8 @@ const __dirname = dirname(__filename);
 
 const main = async () => {
 
-  const filename = 'GENERATED-SPREADSHEET-12.xlsx';
+  const filename = 'GENERATED-SPREADSHEET-14.xlsx';
+
   const localFilePath = path.join(__dirname, filename);
   const googleDriveFolderName = 'TEST EXPORT GRADING SHEET';
   const columns = [
@@ -50,6 +51,20 @@ const main = async () => {
     passfail: ['Pass', 'Fail'],
     level: [' None', 'Basic', 'Medium', 'High'],
   };
+  const applications = [
+    {
+      personalDetails: {
+        fullName: 'Jane Smith'
+      },
+      referenceNumber: 'JAC00374-lku0229',
+    },
+    {
+      personalDetails: {
+        fullName: 'Jim Brown'
+      },
+      referenceNumber: 'JAC00374-nos0859',
+    },
+  ];
 
   try {
 
@@ -128,8 +143,30 @@ const createLocalWorksheetFile = async (columns, typeOptions, filePath) => {
       };
     });
 
+    // Apply styles to the header row (first row)
+    worksheet.getRow(1).eachCell((cell) => {
+      // Set the font to bold
+      cell.font = { bold: true };
+
+      // Set the fill (background color)
+      cell.fill = {
+        type: 'pattern',
+        pattern: 'solid',
+        fgColor: { argb: 'FFD3D3D3' }, // Light grey background
+      };
+
+      // Set the alignment
+      cell.alignment = { vertical: 'middle', horizontal: 'center' };
+    });
+
+    // Freeze the first row (header row)
+    worksheet.views = [
+      { state: 'frozen', ySplit: 1 }  // ySplit: 1 means the first row is frozen
+    ];
+
+
     // ADD VALIDATION TO COLUMNS
-    worksheet = addValidationColumnsToWorksheet(worksheet, columns, typeOptions);
+    worksheet = addValidationColumnsToWorksheet(worksheet, columns, typeOptions, applications);
 
     // WRITE CONTENT TO FILE
     const data = await workbook.xlsx.writeBuffer();
@@ -151,7 +188,7 @@ const createLocalWorksheetFile = async (columns, typeOptions, filePath) => {
  * @param {*} typeOptions 
  * @returns 
  */
-const addValidationColumnsToWorksheet = (worksheet, columns, typeOptions) => {
+const addValidationColumnsToWorksheet = (worksheet, columns, typeOptions, applications) => {
   for (let i=0; i<columns.length; ++i) {
     const columnLetter = String.fromCharCode(i + 65);
     const column = columns[i];
