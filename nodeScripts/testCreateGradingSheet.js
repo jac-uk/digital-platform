@@ -1,22 +1,3 @@
-
-/**
- * A test file to use whilst building some functionality. It can be deleted once built.
- * It does the following:
- * 
- * Creates a spreadsheet for grading sheets with dropdowns in cells to limit the type of data that can be specified
- * Saves the spreadsheet locally
- * Creates a folder on Google Drive
- * Copies the spreadsheet to Google Drive
- * Deletes the local file
- * 
- * EXAMPLE USAGE:
- *   ```
- *   npm run testCreateGradingSheet
- *   ```
- */
-
-'use strict';
-
 import { app, db } from './shared/admin.js';
 import path from 'path';
 import ExcelJS from 'exceljs';
@@ -35,7 +16,7 @@ const __dirname = dirname(__filename);
 
 const main = async () => {
 
-  const filename = 'GENERATED-SPREADSHEET-14.xlsx';
+  const filename = 'GENERATED-SPREADSHEET-15.xlsx';
 
   const localFilePath = path.join(__dirname, filename);
   const googleDriveFolderName = 'TEST EXPORT GRADING SHEET';
@@ -46,35 +27,25 @@ const main = async () => {
     { ref: 'PF types', type: 'passfail' },
   ];
   const typeOptions = {
-    grade: ['A','B','C','D'],
+    grade: ['A', 'B', 'C', 'D'],
     yesno: ['Yes', 'No'],
     passfail: ['Pass', 'Fail'],
     level: [' None', 'Basic', 'Medium', 'High'],
   };
-  const applications = [
-    {
-      personalDetails: {
-        fullName: 'Jane Smith'
-      },
-      referenceNumber: 'JAC00374-lku0229',
-    },
-    {
-      personalDetails: {
-        fullName: 'Jim Brown'
-      },
-      referenceNumber: 'JAC00374-nos0859',
-    },
+  const apps = [
+    { applicationRef: 'abc123', candidate: 'Jane Smith' },
+    { applicationRef: 'abc456', candidate: 'John Doe' }
   ];
 
   try {
 
     // Create the worksheet with columns and validation and store it in a local file
-    createLocalWorksheetFile(columns, typeOptions, localFilePath);
+    await createLocalWorksheetFile(columns, typeOptions, localFilePath, apps);
 
-    // Intialise google drive folder
+    // Initialize Google Drive folder
     const folderId = await initialiseGoogleDriveFolder(googleDriveFolderName);
 
-    // Copy local file into google drive folder
+    // Copy local file into Google Drive folder
     await drive.createFile(filename, {
       folderId,
       sourceType: 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet',
@@ -95,112 +66,93 @@ const main = async () => {
   }
 };
 
-/**
-   * Initialise the Google Drive service and return the folder ID for the specified folder
-   * 
-   * @param   {string} folderName 
-   * @returns {string} The folder ID
-   */
-const initialiseGoogleDriveFolder = async(folderName = 'Test Grading Sheet') => {
-  // get drive service
+const initialiseGoogleDriveFolder = async (folderName = 'Test Grading Sheet') => {
   await drive.login();
-
-  // get settings and apply them
   const settings = await getDocument(db.collection('settings').doc('services'));
   drive.setDriveId(settings.google.driveId);
 
-  // make sure a destination folder exists to create the file in
   const folders = await drive.listFolders();
   let folderId = 0;
-  folders.forEach((v, i) => {
+  folders.forEach((v) => {
     if (v.name === folderName) {
       folderId = v.id;
     }
   });
-  if (folderId === 0) { // folder doesn't exist so create it
+
+  if (folderId === 0) { 
     folderId = await drive.createFolder(folderName);
   }
 
   return folderId;
 };
 
-/**
- * Create the spreadsheet and save it locally
- * @param {*} filename 
- */
-const createLocalWorksheetFile = async (columns, typeOptions, filePath) => {
+const createLocalWorksheetFile = async (columns, typeOptions, filePath, apps) => {
   try {
-    // INITIALISE WORKBOOK AND WORKSHEET
-    const workbook = new ExcelJS.Workbook();
+    // INITIALIZE WORKBOOK AND WORKSHEET
+    let workbook = new ExcelJS.Workbook();
     let worksheet = workbook.addWorksheet('Sheet1');
-    
-    // ADD HEADER COLUMNS TO WORKSHEET
-    worksheet.columns = columns.map(item => {
-      return {
-        // Can optionally specify a 'key' and 'width' below, eg width: 32
+
+    // Define the columns, including the first two columns for Application Ref and Candidate
+    worksheet.columns = [
+      { header: 'Application Ref', key: 'applicationRef', width: 20 },
+      { header: 'Candidate', key: 'candidate', width: 30 },
+      ...columns.map(item => ({
         header: item.ref,
         width: 16,
-      };
-    });
+      }))
+    ];
 
-    // Apply styles to the header row (first row)
+    // Apply styles to the header row
     worksheet.getRow(1).eachCell((cell) => {
-      // Set the font to bold
       cell.font = { bold: true };
-
-      // Set the fill (background color)
       cell.fill = {
         type: 'pattern',
         pattern: 'solid',
-        fgColor: { argb: 'FFD3D3D3' }, // Light grey background
+        fgColor: { argb: 'FFD3D3D3' },
       };
-
-      // Set the alignment
       cell.alignment = { vertical: 'middle', horizontal: 'center' };
     });
 
-    // Freeze the first row (header row)
-    worksheet.views = [
-      { state: 'frozen', ySplit: 1 }  // ySplit: 1 means the first row is frozen
-    ];
+    // Freeze the first row
+    worksheet.views = [{ state: 'frozen', ySplit: 1 }];
 
+    // Populate the Application Ref and Candidate columns
+    apps.forEach((app) => {
+      worksheet.addRow({
+        applicationRef: app.applicationRef,
+        candidate: app.candidate
+      });
+    });
 
-    // ADD VALIDATION TO COLUMNS
-    worksheet = addValidationColumnsToWorksheet(worksheet, columns, typeOptions, applications);
+    // Add validation to the other columns, only for rows that were added from `apps`
+    worksheet = addValidationColumnsToWorksheet(worksheet, columns, typeOptions, apps);
 
     // WRITE CONTENT TO FILE
     const data = await workbook.xlsx.writeBuffer();
     await fs_promise.writeFile(filePath, data);
     console.log(`Excel worksheet created and file saved locally at ${filePath}`);
-
-  }
-  catch (err) {
+  } catch (err) {
     console.log('ERROR:');
     console.log(`Unable to create excel worksheet locally at ${filePath}`);
     console.log(err);
   }
 };
 
-/**
- * Add Validation columns to the worksheet
- * @param {*} worksheet 
- * @param {*} columns 
- * @param {*} typeOptions 
- * @returns 
- */
-const addValidationColumnsToWorksheet = (worksheet, columns, typeOptions, applications) => {
-  for (let i=0; i<columns.length; ++i) {
+const addValidationColumnsToWorksheet = (worksheet, columns, typeOptions, apps) => {
+  const rowCount = apps.length + 1; // number of rows to apply validation to (including header)
+  for (let i = 2; i < columns.length + 2; i++) {
     const columnLetter = String.fromCharCode(i + 65);
-    const column = columns[i];
+    const column = columns[i - 2];
     const columnType = column.type;
     const columnTypeOptions = typeOptions[columnType];
     const strOptions = columnTypeOptions.join(',');
-    for (let i = 2; i < 1000; i++) {
-      const cellStr = `${columnLetter}${i}`;
+
+    for (let j = 2; j <= rowCount; j++) { // only apply validation to existing rows
+      const cellStr = `${columnLetter}${j}`;
       worksheet.getCell(cellStr).dataValidation = {
         type: 'list',
         allowBlank: true,
-        formulae: ['"'+strOptions+'"'],
+        formulae: ['"' + strOptions + '"'],
       };
     }
   }
