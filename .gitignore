@@ -109,3 +109,6 @@ out/
 data/
 data.*
 backup.*
+
+# virus scanner config
+/google-app-engine/virus-scanning-node/config.json 
