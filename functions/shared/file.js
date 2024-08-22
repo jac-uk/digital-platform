@@ -7,7 +7,7 @@ export {
   writeToLocalFile,
   deleteLocalFile,
   uploadToStorageBucket,
-  getTempLocalFilePath,
+  getTempLocalFilePath
 };
 
 /**

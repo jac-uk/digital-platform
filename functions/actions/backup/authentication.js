@@ -6,7 +6,7 @@ import os from 'os';
 import path from 'path';
 import initSlack from '../../shared/slack.js';
 
-import { deleteLocalFile, uploadToStorageBucket } from '../../shared/file.js'
+import { deleteLocalFile, uploadToStorageBucket } from '../../shared/file.js';
 
 export default (config, firebase) => {
   const BACKUP_BUCKET = `${config.PROJECT_ID}-backups`;

@@ -79,7 +79,7 @@ export default () => {
       ...columns.map(item => ({
         header: item.ref,
         width: 16,
-      }))
+      })),
     ];
 
     // Apply styles to the header row
@@ -99,7 +99,7 @@ export default () => {
     // Populate the Application ID column
     applicationIds.forEach((applicationId) => {
       worksheet.addRow({
-        applicationId: applicationId
+        applicationId: applicationId,
       });
     });
 
