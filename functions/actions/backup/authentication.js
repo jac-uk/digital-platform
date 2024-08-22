@@ -2,10 +2,11 @@
  * Backup authentication
  */
 import firebaseTools from 'firebase-tools';
-import fs from 'fs';
 import os from 'os';
 import path from 'path';
 import initSlack from '../../shared/slack.js';
+
+import { deleteLocalFile, uploadToStorageBucket } from '../../shared/file.js'
 
 export default (config, firebase) => {
   const BACKUP_BUCKET = `${config.PROJECT_ID}-backups`;
@@ -28,19 +29,6 @@ export default (config, firebase) => {
 
     const bucket = firebase.storage().bucket(BACKUP_BUCKET);
 
-    // Upload local file to the backup Cloud Storage bucket
-    const uploadToStorageBucket = async (localPath, fileName) => {
-      console.log('Uploading ' + fileName + '...');
-      await bucket.upload(localPath, {
-        destination: BACKUP_PATH + '/' + fileName,
-      });
-    };
-
-    // Delete a file from the local filesystem
-    const deleteLocalFile = (filePath) => {
-      return fs.unlinkSync(filePath);
-    };
-
     // Delete all backup files more than 30 days old
     const purgeBackupHistory = async () => {
       console.log('Purging backup history...');
@@ -60,10 +48,11 @@ export default (config, firebase) => {
     const timestamp = (new Date()).toISOString();
     const fileName = timestamp + '.json';
     const tempFilePath = path.join(os.tmpdir(), fileName);
+    const destinationFilePath = BACKUP_PATH + '/' + fileName;
 
     try {
       await downloadAuthExport(tempFilePath);
-      await uploadToStorageBucket(tempFilePath, fileName);
+      await uploadToStorageBucket(bucket, tempFilePath, destinationFilePath);
       deleteLocalFile(tempFilePath);
       await purgeBackupHistory();
     } catch (err) {
