@@ -257,7 +257,7 @@ export default (firebase, db) => {
         reasonableAdjustments: _.get(applicationRecord, 'application.personalDetails.reasonableAdjustmentsDetails', ''),
         ...getCharacterInformation(characterIssues),
         ...getProfessionalBackgrounds(application.equalityAndDiversitySurvey),
-        ...getEqualityAndDiversityData(application),
+        ...getEqualityAndDiversityData(exercise, application),
         locationPreferences: getLocationPreferencesString(application),
         jurisdictionPreferences: getJurisdictionPreferencesString(application),
         ...getQualifications(qualifications),
@@ -315,7 +315,7 @@ export default (firebase, db) => {
     return headers;
   }
 
-  function getEqualityAndDiversityData (application) {
+  function getEqualityAndDiversityData (exercise, application) {
     const survey = application.equalityAndDiversitySurvey;
     if (!survey) return {};
 
@@ -347,7 +347,7 @@ export default (firebase, db) => {
       hasTakenPAJE : 'No', // default (see below)
     };
 
-    if (this.exerciseType === 'legal' || this.exerciseType === 'leadership') {
+    if (exercise.typeOfExercise === 'legal' || exercise.typeOfExercise === 'leadership') {
       formattedDiversityData.participatedInJudicialWorkshadowingScheme = helpers.toYesNo(lookup(survey.participatedInJudicialWorkshadowingScheme));
       formattedDiversityData.hasTakenPAJE = helpers.toYesNo(lookup(survey.hasTakenPAJE));
     }
@@ -381,8 +381,9 @@ export default (firebase, db) => {
     const data = {};
     for (let i = 0; i < qualifications.length; i++) {
       const qualification = qualifications[i];
+
       const index = i + 1;
-      if (typeof qualification.type === 'undefined' || typeof qualification.date === 'undefined') {
+      if ((typeof qualification.type === 'undefined' || qualification.type === null)  || typeof qualification.date === 'undefined') {
         continue;
       }
       let description = `${qualification.type.toUpperCase()} - ${formatDate(qualification.date, 'DD/MM/YYYY')} \r\n`;
