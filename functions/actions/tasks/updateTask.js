@@ -335,6 +335,7 @@ export default (config, firebase, db) => {
         applications: {},
         panellists: {},
         markingScheme: task.markingScheme,
+        hasModeration: panelIds.length > 1,
         scoreSheet: {},
         status: config.PANEL_STATUS.CREATED,
       };
