@@ -4,8 +4,8 @@ const mockConfig = {
   },
 };
 
-import initTaskHelpers from '../../../../functions/actions/tasks/taskHelpers.js';
-const { includeZScores } = initTaskHelpers(mockConfig);
+import inittaskHelper from '@jac-uk/jac-kit/helpers/taskHelper.js';
+const { includeZScores } = inittaskHelper(mockConfig);
 
 describe('includeZScores(finalScores)', () => {
 

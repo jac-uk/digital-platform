@@ -1,6 +1,6 @@
 import { getDocument, getDocuments } from '../../shared/helpers.js';
 import { applicationOpenDatePost01042023 } from '../../shared/converters/helpers.js';
-import initExerciseHelper from '../../shared/exerciseHelper.js';
+import initExerciseHelper from '@jac-uk/jac-kit/helpers/exerciseHelper.js';
 
 /**
  * For the diversity reports:

@@ -1,5 +1,7 @@
 import { getDocument, getDocuments } from '../../shared/helpers.js';
 import { applicationOpenDatePost01042023 } from '../../shared/converters/helpers.js';
+import { DIVERSITY_CHARACTERISTICS } from '@jac-uk/jac-kit/helpers/constants.js';
+
 // import sizeof from 'firestore-size';
 
 export default (firebase, db) => {
@@ -36,29 +38,6 @@ export default (firebase, db) => {
     await db.collection('exercises').doc(exerciseId).collection('data').doc('diversity').set(data);
     return data;
   }
-};
-
-const DIVERSITY_CHARACTERISTICS = {
-  DISABILITY_DISABLED: 'd',
-  DISABILITY_NOT_SAY: 'dx',
-  ETHNICITY_WHITE: 'w',
-  ETHNICITY_BAME: 'b',
-  ETHNICITY_OTHER: 'eo',
-  ETHNICITY_NOT_SAY: 'ex',
-  GENDER_MALE: 'm',
-  GENDER_FEMALE: 'f',
-  GENDER_NEUTRAL: 'gn',
-  GENDER_OTHER: 'go',
-  GENDER_NOT_SAY: 'gx',
-  PARENTS_ATTENDED_UNIVERSITY: 'pau',
-  PROFESSION_BARRISTER: 'pb',
-  PROFESSION_CILEX: 'pc',
-  PROFESSION_SOLICITOR: 'ps',
-  PROFESSION_OTHER: 'po',
-  PROFESSION_NOT_SAY: 'px',
-  UK_STATE_SCHOOL: 'ss',
-  UK_STATE_SCHOOL_16: 'ss16',
-  FIRST_GENERATION_UNIVERSITY: 'u1',
 };
 
 const getDiversityFlags = (application, exercise) => {

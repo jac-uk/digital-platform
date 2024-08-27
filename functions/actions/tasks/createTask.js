@@ -1,9 +1,9 @@
 import { getDocument, getDocuments, applyUpdates } from '../../shared/helpers.js';
-import initTaskHelpers from './taskHelpers.js';
+import inittaskHelper from '@jac-uk/jac-kit/helpers/taskHelper.js';
 import initUpdateTask from './updateTask.js';
 
 export default (config, firebase, db) => {
-  const { getTimelineTasks, taskNextStatus, taskApplicationsEntryStatus } = initTaskHelpers(config);
+  const { getTimelineTasks, taskNextStatus, taskApplicationsEntryStatus } = inittaskHelper(config);
   const { initialisePanelTask, initialiseTestTask, initialiseStatusChangesTask, initialiseCandidateFormTask, initialiseDataTask, initialiseStageOutcomeTask } = initUpdateTask(config, firebase, db);
 
   return createTask;
