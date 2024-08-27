@@ -30,7 +30,7 @@ export default (config) => {
     includeZScores,
   };
 
-  function taskStatuses(taskType) {
+  function taskStatuses(taskType) { // also in Admin
     let availableStatuses = [];
     switch (taskType) {
       case TASK_TYPE.CRITICAL_ANALYSIS:
@@ -77,12 +77,20 @@ export default (config) => {
         ];
         break;
       case TASK_TYPE.SIFT:
+        availableStatuses = [
+          TASK_STATUS.DATA_INITIALISED,
+          TASK_STATUS.PANELS_INITIALISED,
+          TASK_STATUS.PANELS_ACTIVATED,
+          TASK_STATUS.FINALISED,
+          TASK_STATUS.COMPLETED,
+        ];
+        break;
       case TASK_TYPE.SELECTION_DAY:
         availableStatuses = [
           TASK_STATUS.DATA_INITIALISED,
-          TASK_STATUS.DATA_ACTIVATED,
-          // TASK_STATUS.PANELS_INITIALISED,
-          // TASK_STATUS.PANELS_ACTIVATED,
+          // TASK_STATUS.DATA_ACTIVATED,
+          TASK_STATUS.PANELS_INITIALISED,
+          TASK_STATUS.PANELS_ACTIVATED,        
           TASK_STATUS.FINALISED,
           TASK_STATUS.COMPLETED,
         ];
@@ -115,7 +123,6 @@ export default (config) => {
   }
 
   function getApplicationPassStatus(exercise, task) {
-    // TODO the following overrides can be removed when we move to new stages & statuses
     if (
       [
         TASK_TYPE.CRITICAL_ANALYSIS,
@@ -124,17 +131,28 @@ export default (config) => {
         TASK_TYPE.SCENARIO,
       ].indexOf(task.type) >= 0
     ) {
-      if ([TASK_TYPE.CRITICAL_ANALYSIS, TASK_TYPE.SITUATIONAL_JUDGEMENT].indexOf(task.type) >= 0) {
-        if (!hasQualifyingTest(exercise, task)) return 'passedFirstTest';
-      }
-      if (task.type === TASK_TYPE.QUALIFYING_TEST) {
-        return 'passedFirstTest';
-      }
-      if (task.type === TASK_TYPE.SCENARIO) {
-        return 'passedScenarioTest';
+      if (exercise._processingVersion >= 2) {
+        if ([TASK_TYPE.CRITICAL_ANALYSIS, TASK_TYPE.SITUATIONAL_JUDGEMENT].indexOf(task.type) >= 0) {
+          if (!hasQualifyingTest(exercise, task)) return APPLICATION_STATUS.QUALIFYING_TEST_PASSED;
+        }
+        if (task.type === TASK_TYPE.QUALIFYING_TEST) {
+          return APPLICATION_STATUS.QUALIFYING_TEST_PASSED;
+        }
+        if (task.type === TASK_TYPE.SCENARIO) {
+          return APPLICATION_STATUS.SCENARIO_TEST_PASSED;
+        }
+      } else {
+        if ([TASK_TYPE.CRITICAL_ANALYSIS, TASK_TYPE.SITUATIONAL_JUDGEMENT].indexOf(task.type) >= 0) {
+          if (!hasQualifyingTest(exercise, task)) return 'passedFirstTest';
+        }
+        if (task.type === TASK_TYPE.QUALIFYING_TEST) {
+          return 'passedFirstTest';
+        }
+        if (task.type === TASK_TYPE.SCENARIO) {
+          return 'passedScenarioTest';
+        }
       }
     }
-    // end
     return `${task.type}Passed`;
   }
 
@@ -143,9 +161,9 @@ export default (config) => {
     case TASK_TYPE.CRITICAL_ANALYSIS:
     case TASK_TYPE.SITUATIONAL_JUDGEMENT:
     case TASK_TYPE.QUALIFYING_TEST:
-      return 'noTestSubmitted';
+      return APPLICATION_STATUS.QUALIFYING_TEST_NOT_SUBMITTED;
     case TASK_TYPE.SCENARIO:
-      return 'noScenarioTestSubmitted';
+      return APPLICATION_STATUS.SCENARIO_TEST_NOT_SUBMITTED;
     // case TASK_TYPE.PRE_SELECTION_DAY_QUESTIONNAIRE:
     //   return 'noSelectionDayQuestionnaireSubmitted';
     default:
@@ -163,14 +181,26 @@ export default (config) => {
         TASK_TYPE.SCENARIO,
       ].indexOf(task.type) >= 0
     ) {
-      if ([TASK_TYPE.CRITICAL_ANALYSIS, TASK_TYPE.SITUATIONAL_JUDGEMENT].indexOf(task.type) >= 0) {
-        if (!hasQualifyingTest(exercise, task)) return 'failedFirstTest';
-      }
-      if (task.type === TASK_TYPE.QUALIFYING_TEST) {
-        return 'failedFirstTest';
-      }
-      if (task.type === TASK_TYPE.SCENARIO) {
-        return 'failedScenarioTest';
+      if (exercise._processingVersion >= 2) {
+        if ([TASK_TYPE.CRITICAL_ANALYSIS, TASK_TYPE.SITUATIONAL_JUDGEMENT].indexOf(task.type) >= 0) {
+          if (!hasQualifyingTest(exercise, task)) return APPLICATION_STATUS.QUALIFYING_TEST_FAILED;
+        }
+        if (task.type === TASK_TYPE.QUALIFYING_TEST) {
+          return APPLICATION_STATUS.QUALIFYING_TEST_FAILED;
+        }
+        if (task.type === TASK_TYPE.SCENARIO) {
+          return APPLICATION_STATUS.SCENARIO_TEST_FAILED;
+        }  
+      } else {
+        if ([TASK_TYPE.CRITICAL_ANALYSIS, TASK_TYPE.SITUATIONAL_JUDGEMENT].indexOf(task.type) >= 0) {
+          if (!hasQualifyingTest(exercise, task)) return 'failedFirstTest';
+        }
+        if (task.type === TASK_TYPE.QUALIFYING_TEST) {
+          return 'failedFirstTest';
+        }
+        if (task.type === TASK_TYPE.SCENARIO) {
+          return 'failedScenarioTest';
+        }  
       }
     }
     // end
