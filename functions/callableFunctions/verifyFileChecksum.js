@@ -1,9 +1,10 @@
-const functions = require('firebase-functions');
-const config = require('../shared/config');
-const { firebase, db } = require('../shared/admin.js');
-const verifyChecksum = require('../actions/malware-scanning/verifyFileChecksum')(config, firebase, db);
+import functions from 'firebase-functions';
+import config from '../shared/config.js';
+import { firebase, db } from '../shared/admin.js';
+import verifyChecksumFile from '../actions/malware-scanning/verifyFileChecksum.js';
+const verifyChecksum = verifyChecksumFile(config, firebase, db);
 
-module.exports = functions.region('europe-west2').https.onCall(async (data, context) => {
+export default functions.region('europe-west2').https.onCall(async (data, context) => {
   const { filePath } = data;
 
   try {

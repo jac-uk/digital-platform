@@ -1,8 +1,9 @@
 'use strict';
 
-const config = require('./shared/config');
-const { app, firebase, db } = require('./shared/admin.js');
-const verifyChecksum = require('../functions/actions/malware-scanning/verifyFileChecksum')(config, firebase, db);
+import config from './shared/config.js';
+import { app, firebase, db } from './shared/admin.js';
+import verifyChecksumFile from '../functions/actions/malware-scanning/verifyFileChecksum.js';
+const verifyChecksum = verifyChecksumFile(config, firebase, db);
 
 const fileURL = 'blank.docx';
 
