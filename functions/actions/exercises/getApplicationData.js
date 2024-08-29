@@ -117,9 +117,16 @@ export default (config, firebase, db, auth) => {
           }
         }
         else if (column === 'personalDetails.dateOfBirth') {
+
+          console.log('record[column] BEFORE:');
+          console.log(record[column]);
+
           if (record[column] !== DEFAULT_VALUE) {
             record[column] = formatDate(record[column], 'DD/MM/YYYY');
           }
+
+          console.log('record[column] AFTER:');
+          console.log(record[column]);
         }
 
         // Handle time values
