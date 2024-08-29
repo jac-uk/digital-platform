@@ -1,7 +1,7 @@
 import functions from 'firebase-functions';
 import config from '../../../shared/config.js';
 import { firebase, db } from '../../../shared/admin.js';
-import { checkArguments } from '../../../shared/helpers.js';
+import { checkArguments } from '@jac-uk/jac-kit/helpers/helpers.js';
 import initUpdateQualifyingTestScores from '../../../actions/qualifyingTests/v2/updateQualifyingTestScores.js';
 import initServiceSettings from  '../../../shared/serviceSettings.js';
 

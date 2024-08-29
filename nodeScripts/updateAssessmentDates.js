@@ -7,7 +7,7 @@
 'use strict';
 
 import { app, db } from './shared/admin.js';
-import { applyUpdates, getDocuments, getDocument } from '../functions/shared/helpers.js';
+import { applyUpdates, getDocuments, getDocument } from '@jac-uk/jac-kit/helpers/helpers.js';
 
 let exerciseId = null;
 let dueDate = null;

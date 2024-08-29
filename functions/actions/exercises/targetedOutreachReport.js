@@ -1,4 +1,4 @@
-import { getDocuments, normaliseNINs } from '../../shared/helpers.js';
+import { getDocuments, normaliseNINs } from '@jac-uk/jac-kit/helpers/helpers.js';
 
 export default (firebase, db) => {
 

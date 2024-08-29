@@ -10,9 +10,9 @@
  */
 
 import { firebase, app, db } from '../shared/admin.js';
-import { getDocument, getDocuments, applyUpdates } from '../../functions/shared/helpers.js';
+import { getDocument, getDocuments, applyUpdates } from '@jac-uk/jac-kit/helpers/helpers.js';
 import { getSearchMap } from '../../functions/shared/search.js';
-import { objectHasNestedProperty } from '../../functions/shared/helpers.js';
+import { objectHasNestedProperty } from '@jac-uk/jac-kit/helpers/helpers.js';
 
 async function updateAllApplications() {
   const commands = [];

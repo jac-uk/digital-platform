@@ -1,4 +1,4 @@
-import { getDocument, getDocuments, getAllDocuments } from '../../shared/helpers.js';
+import { getDocument, getDocuments, getAllDocuments } from '@jac-uk/jac-kit/helpers/helpers.js';
 import initUpdateApplicationRecordStageStatus from '../applicationRecords/updateApplicationRecordStageStatus.js';
 
 export default (config, firebase, db) => {

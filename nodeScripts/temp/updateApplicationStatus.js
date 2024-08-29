@@ -16,7 +16,7 @@
 import config from '../shared/config.js';
 const { APPLICATION_STATUS } = config;
 import { app, db } from '../shared/admin.js';
-import { applyUpdates, getDocuments } from '../../functions/shared/helpers.js';
+import { applyUpdates, getDocuments } from '@jac-uk/jac-kit/helpers/helpers.js';
 
 // DEV EXERCISE
 const exerciseId = 'wdpALbyICL7ZxxN5AQt8';

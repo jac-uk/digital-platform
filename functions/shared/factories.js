@@ -1,4 +1,4 @@
-import { formatDate, objectHasNestedProperty } from './helpers.js';
+import { formatDate, objectHasNestedProperty } from '@jac-uk/jac-kit/helpers/helpers.js';
 import { applicationOpenDatePost01042023 } from './converters/helpers.js';
 import { getSearchMap } from './search.js';
 import _ from 'lodash';

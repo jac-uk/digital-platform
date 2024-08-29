@@ -1,4 +1,4 @@
-import { getDocument, getDocuments, objectHasNestedProperty } from '../../shared/helpers.js';
+import { getDocument, getDocuments, objectHasNestedProperty } from '@jac-uk/jac-kit/helpers/helpers.js';
 import initExerciseHelper from '@jac-uk/jac-kit/helpers/exerciseHelper.js';
 
 const ignoreKeys = ['totalApplications', 'total', 'declaration', 'preferNotToSay', 'noAnswer'];

@@ -1,7 +1,7 @@
 import functions from 'firebase-functions';
 import { firebase, db, auth } from '../shared/admin.js';
 import initExportApplicationContactsData from '../actions/exercises/exportApplicationContactsData.js';
-import { getDocument, checkArguments } from '../shared/helpers.js';
+import { getDocument, checkArguments } from '@jac-uk/jac-kit/helpers/helpers.js';
 import initLogEvent from '../actions/logs/logEvent.js';
 import initServiceSettings from '../shared/serviceSettings.js';
 import { PERMISSIONS, hasPermissions } from '../shared/permissions.js';

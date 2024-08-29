@@ -1,6 +1,6 @@
 import * as helpers from '../../shared/converters/helpers.js';
 import lookup from '../../shared/converters/lookup.js';
-import { getDocument, getDocuments } from '../../shared/helpers.js';
+import { getDocument, getDocuments } from '@jac-uk/jac-kit/helpers/helpers.js';
 
 export default (firebase, db) => {
   return {

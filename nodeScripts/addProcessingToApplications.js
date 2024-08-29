@@ -6,7 +6,7 @@
  */
 
 import { firebase, app, db } from './shared/admin.js';
-import { getDocument, getDocuments, applyUpdates, objectHasNestedProperty } from '../functions/shared/helpers.js';
+import { getDocument, getDocuments, applyUpdates, objectHasNestedProperty } from '@jac-uk/jac-kit/helpers/helpers.js';
 
 async function checkAllApplications() {
   const applications = await getDocuments(db.collection('applications')

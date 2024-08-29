@@ -1,6 +1,6 @@
 import lookup from '../../shared/converters/lookup.js';
 import * as helpers from '../../shared/converters/helpers.js';
-import { getDocuments, getDocument, formatDate, getDate, splitFullName } from '../../shared/helpers.js';
+import { getDocuments, getDocument, formatDate, getDate, splitFullName } from '@jac-uk/jac-kit/helpers/helpers.js';
 import { applicationOpenDatePost01042023, ordinal, getJudicialExperienceString } from '../../shared/converters/helpers.js';
 import _ from 'lodash';
 import htmlWriter from '../../shared/htmlWriter.js';

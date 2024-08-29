@@ -1,4 +1,4 @@
-import { getDocument, applyUpdates } from '../../../shared/helpers.js';
+import { getDocument, applyUpdates } from '@jac-uk/jac-kit/helpers/helpers.js';
 import initQts from '../../../shared/qts.js';
 
 export default (config, firebase, db) => {

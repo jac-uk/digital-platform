@@ -1,5 +1,5 @@
 import initZenhub from '../../shared/zenhub.js';
-import { getDocument } from '../../shared/helpers.js';
+import { getDocument } from '@jac-uk/jac-kit/helpers/helpers.js';
 
 export default (config, firebase, db) => {
 

@@ -1,9 +1,9 @@
 import functions from 'firebase-functions';
 import config from '../shared/config.js';
 import { firebase, db, auth } from '../shared/admin.js';
-import { checkArguments } from '../shared/helpers.js';
+import { checkArguments } from '@jac-uk/jac-kit/helpers/helpers.js';
 import initGenerateOutreachReport from '../actions/exercises/generateOutreachReport.js';
-import { getDocument } from '../shared/helpers.js';
+import { getDocument } from '@jac-uk/jac-kit/helpers/helpers.js';
 import initLogEvent from '../actions/logs/logEvent.js';
 import initServiceSettings from '../shared/serviceSettings.js';
 import { PERMISSIONS, hasPermissions } from '../shared/permissions.js';

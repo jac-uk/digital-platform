@@ -1,4 +1,4 @@
-import { getDocument, getDocuments, applyUpdates } from '../../shared/helpers.js';
+import { getDocument, getDocuments, applyUpdates } from '@jac-uk/jac-kit/helpers/helpers.js';
 import inittaskHelper from '@jac-uk/jac-kit/helpers/taskHelper.js';
 import initUpdateTask from './updateTask.js';
 

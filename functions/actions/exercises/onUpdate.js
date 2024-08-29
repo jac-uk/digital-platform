@@ -1,4 +1,4 @@
-import { objectHasNestedProperty } from '../../shared/helpers.js';
+import { objectHasNestedProperty } from '@jac-uk/jac-kit/helpers/helpers.js';
 import initSendExerciseReadyForApproval from './sendExerciseReadyForApproval.js';
 import initVacancies from '../vacancies.js';
 import initExercises from './exercises.js';

@@ -1,6 +1,6 @@
 import axios from 'axios';
 import crypto from 'crypto';
-import { objectHasNestedProperty } from './helpers.js';
+import { objectHasNestedProperty } from '@jac-uk/jac-kit/helpers/helpers.js';
 
 /**
  * Zenhub GraphQL API calls

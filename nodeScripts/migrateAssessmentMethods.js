@@ -3,8 +3,7 @@
 import _ from 'lodash';
 import { app, db } from './shared/admin.js';
 import { ASSESSMENT_METHOD } from './shared/config.js';
-import { applyUpdates, getDocuments, getDocument } from '../functions/shared/helpers.js';
-
+import { applyUpdates, getDocuments, getDocument } from '@jac-uk/jac-kit/helpers/helpers.js';
 // whether to make changes in `exercises` collection in firestore
 // true:  make changes in `exercises` collection
 // false: create a temporary collection `exercises_temp` and verify the changes is as expected

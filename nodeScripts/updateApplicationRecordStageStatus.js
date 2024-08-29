@@ -6,7 +6,7 @@
 
 import config from './shared/config.js';
 import { firebase, app, db } from './shared/admin.js';
-import { applyUpdates, getDocuments, getDocument } from '../functions/shared/helpers.js';
+import { applyUpdates, getDocuments, getDocument } from '@jac-uk/jac-kit/helpers/helpers.js';
 import initUpdateApplicationRecordStageStatus from '../functions/actions/applicationRecords/updateApplicationRecordStageStatus.js';
 
 const { getApplicationRecordStageStatus, getExerciseApplicationRecords } = initUpdateApplicationRecordStageStatus(firebase, config, db);

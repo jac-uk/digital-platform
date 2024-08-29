@@ -5,7 +5,7 @@
 'use strict';
 
 import { app, db } from './shared/admin.js';
-import { applyUpdates, getDocuments } from '../functions/shared/helpers.js';
+import { applyUpdates, getDocuments } from '@jac-uk/jac-kit/helpers/helpers.js';
 
 // whether to make changes in `exercises` collection in firestore
 const isAction = false;

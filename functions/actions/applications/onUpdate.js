@@ -1,4 +1,4 @@
-import { getDocument, applyUpdates, isDateInPast, formatDate } from '../../shared/helpers.js';
+import { getDocument, applyUpdates, isDateInPast, formatDate } from '@jac-uk/jac-kit/helpers/helpers.js';
 import { getSearchMap } from '../../shared/search.js';
 import initCandidatesSearch from '../candidates/search.js';
 import initApplications from './applications.js';

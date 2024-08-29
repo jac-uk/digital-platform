@@ -1,6 +1,6 @@
 import * as helpers from '../../shared/converters/helpers.js';
 import lookup from '../../shared/converters/lookup.js';
-import { getDocuments, getDocument, formatDate, splitFullName } from '../../shared/helpers.js';
+import { getDocuments, getDocument, formatDate, splitFullName } from '@jac-uk/jac-kit/helpers/helpers.js';
 import _ from 'lodash';
 import { ordinal } from '../../shared/converters/helpers.js';
 import htmlWriter from '../../shared/htmlWriter.js';

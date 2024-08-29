@@ -7,7 +7,7 @@
 
 import config from './shared/config.js';
 import { firebase, app, db } from './shared/admin.js';
-import { applyUpdates, getDocument } from '../functions/shared/helpers.js';
+import { applyUpdates, getDocument } from '@jac-uk/jac-kit/helpers/helpers.js';
 import initExtractDocumentContent from '../functions/shared/file-extraction/extractDocumentContent.js';
 import { log } from './shared/helpers.js';
 

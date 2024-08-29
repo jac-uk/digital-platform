@@ -1,4 +1,4 @@
-import { applyUpdates, convertToDate, getDocuments, getLatestDate, timeDifference } from '../../shared/helpers.js';
+import { applyUpdates, convertToDate, getDocuments, getLatestDate, timeDifference } from '@jac-uk/jac-kit/helpers/helpers.js';
 
 const closeDiffMS = 15768000000; // six months
 

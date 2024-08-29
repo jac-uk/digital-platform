@@ -1,4 +1,4 @@
-import { getDocument, getDocuments, getDocumentsFromQueries, applyUpdates } from '../../shared/helpers.js';
+import { getDocument, getDocuments, getDocumentsFromQueries, applyUpdates } from '@jac-uk/jac-kit/helpers/helpers.js';
 import lookup from '../../shared/converters/lookup.js';
 import inittaskHelper from '@jac-uk/jac-kit/helpers/taskHelper.js';
 import initRefreshApplicationCounts from '../exercises/refreshApplicationCounts.js';

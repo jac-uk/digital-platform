@@ -1,8 +1,7 @@
 import htmlWriter from '../htmlWriter.js';
 import lookup from './lookup.js';
 import { addField, formatDate, toYesNo } from './helpers.js';
-import * as helpers from '../../shared/helpers.js';
-import { objectHasNestedProperty } from '../helpers.js';
+import * as helpers from '@jac-uk/jac-kit/helpers/helpers.js';
 
 import { getJurisdictionPreferences, getLocationPreferences, getAdditionalWorkingPreferences } from './workingPreferencesConverter.js';
 import has from 'lodash/has.js';
@@ -100,7 +99,7 @@ export default () => {
         html.addTable(additionalPrefs);
       }
       
-      if (objectHasNestedProperty(application, 'uploadedSelfAssessment') && application.uploadedSelfAssessment) {
+      if (helpers.objectHasNestedProperty(application, 'uploadedSelfAssessment') && application.uploadedSelfAssessment) {
         const selfAssessment = getSelfAssessment(application, exercise);
         if (selfAssessment.length) {
           html.addHeading('Self Assessment');
@@ -108,7 +107,7 @@ export default () => {
         }
       }
 
-      if (objectHasNestedProperty(application, 'selectionCriteriaAnswers') && application.selectionCriteriaAnswers && application.selectionCriteriaAnswers.length) {
+      if (helpers.objectHasNestedProperty(application, 'selectionCriteriaAnswers') && application.selectionCriteriaAnswers && application.selectionCriteriaAnswers.length) {
         html.addHeading('Additional selection criteria');
         html.addTable(getAdditionalSelectionCriteria(application, exercise));
       }

@@ -6,7 +6,7 @@
 
 import config from '../shared/config.js';
 import { firebase, app, db } from '../shared/admin.js';
-import { getDocuments } from '../../functions/shared/helpers.js';
+import { getDocuments } from '@jac-uk/jac-kit/helpers/helpers.js';
 import initUpdateApplicationRecordStageStatus from '../../functions/actions/applicationRecords/updateApplicationRecordStageStatus.js';
 import initGenerateDiversityReport from '../../functions/actions/exercises/generateDiversityReport.js';
 import initGenerateDiversityData from '../../functions/actions/exercises/generateDiversityData.js';

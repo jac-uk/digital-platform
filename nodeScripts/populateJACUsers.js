@@ -6,7 +6,7 @@
 
 import { app, db, firebase, auth } from './shared/admin.js';
 import config from './shared/config.js';
-import { applyUpdates } from '../functions/shared/helpers.js';
+import { applyUpdates } from '@jac-uk/jac-kit/helpers/helpers.js';
 import initFactories from '../functions/shared/factories.js';
 import initUsers from '../functions/actions/users.js';
 import { listAllUsers } from './shared/helpers.js';

@@ -2,7 +2,7 @@ import functions from 'firebase-functions';
 import { firebase, db, auth } from '../shared/admin.js';
 import config from '../shared/config.js';
 import initApplications from '../actions/applications/applications.js';
-import { isProduction } from '../shared/helpers.js';
+import { isProduction } from '@jac-uk/jac-kit/helpers/digitalPlatformHelpers.js';
 
 const { loadTestApplications, createTestApplications } = initApplications(config, firebase, db, auth);
 

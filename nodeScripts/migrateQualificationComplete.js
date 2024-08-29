@@ -2,7 +2,7 @@
 
 import _ from 'lodash';
 import { app, db } from './shared/admin.js';
-import { applyUpdates, getDocuments, getDocument } from '../functions/shared/helpers.js';
+import { applyUpdates, getDocuments, getDocument } from '@jac-uk/jac-kit/helpers/helpers.js';
 
 // whether to make changes in `applications` collection in firestore
 // true:  make changes in `applications` collection

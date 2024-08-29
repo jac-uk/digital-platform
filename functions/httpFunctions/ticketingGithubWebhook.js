@@ -1,7 +1,7 @@
 import functions from 'firebase-functions';
 import config from '../shared/config.js';
 import { db, auth } from '../shared/admin.js';
-import { getMissingNestedProperties, objectHasNestedProperty } from '../shared/helpers.js';
+import { getMissingNestedProperties, objectHasNestedProperty } from '@jac-uk/jac-kit/helpers/helpers.js';
 import initUsers from '../actions/users.js';
 import initBugReports from '../actions/bugReports.js';
 import initOnAssignedIssue from '../actions/zenhub/hooks/onAssignedIssue.js';

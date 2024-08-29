@@ -1,7 +1,7 @@
 'use strict';
 
 import { app, db } from './shared/admin.js';
-import { applyUpdates } from '../functions/shared/helpers.js';
+import { applyUpdates } from '@jac-uk/jac-kit/helpers/helpers.js';
 
 const main = async () => {
   const applicationId = 'SGlHaffdfKLmzXlLT9eq';

@@ -1,4 +1,4 @@
-import { getAllDocuments, applyUpdates, getDocument, getDocuments } from '../../shared/helpers.js';
+import { getAllDocuments, applyUpdates, getDocument, getDocuments } from '@jac-uk/jac-kit/helpers/helpers.js';
 import { getSearchMap } from '../../shared/search.js';
 import initApplicationRecords from '../../actions/applicationRecords.js';
 import initRefreshApplicationCounts from '../../actions/exercises/refreshApplicationCounts.js';

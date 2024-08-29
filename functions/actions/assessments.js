@@ -1,4 +1,4 @@
-import { getDocument, getDocuments, getAllDocuments, getDocumentsFromQueries, applyUpdates } from '../shared/helpers.js';
+import { getDocument, getDocuments, getAllDocuments, getDocumentsFromQueries, applyUpdates } from '@jac-uk/jac-kit/helpers/helpers.js';
 import initFactories from '../shared/factories.js';
 import initNotifications from './notifications.js';
 import _ from 'lodash';

@@ -1,6 +1,6 @@
 import * as helpers from '../../shared/converters/helpers.js';
 import lookup from '../../shared/converters/lookup.js';
-import { getDocument, getDocuments, getAllDocuments, removeHtml } from '../../shared/helpers.js';
+import { getDocument, getDocuments, getAllDocuments, removeHtml } from '@jac-uk/jac-kit/helpers/helpers.js';
 import { getAdditionalWorkingPreferences } from '../../shared/converters/workingPreferencesConverter.js';
 import initApplicationConverter from '../../shared/converters/applicationConverter.js';
 import initUpdateApplicationRecordStageStatus from '../applicationRecords/updateApplicationRecordStageStatus.js';

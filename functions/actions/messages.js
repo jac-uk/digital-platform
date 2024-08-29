@@ -1,4 +1,4 @@
-import { applyUpdates } from '../shared/helpers.js';
+import { applyUpdates } from '@jac-uk/jac-kit/helpers/helpers.js';
 import initUpdateLateApplicationRequests from './exercises/updateLateApplicationRequests.js';
 import initFactories from '../shared/factories.js';
 

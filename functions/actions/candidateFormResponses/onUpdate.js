@@ -1,4 +1,4 @@
-import { applyUpdates } from '../../shared/helpers.js';
+import { applyUpdates } from '@jac-uk/jac-kit/helpers/helpers.js';
 
 export default (config, firebase, db, auth) => {
 

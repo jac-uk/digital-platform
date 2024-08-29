@@ -12,7 +12,7 @@ import {
   formatAddress,
   formatPreviousAddresses,
   isValidDate
-} from '../../functions/shared/helpers.js';
+} from '@jac-uk/jac-kit/helpers/helpers.js';
 
 describe('checkArguments()', () => {
 

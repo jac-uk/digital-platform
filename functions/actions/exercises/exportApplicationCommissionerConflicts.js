@@ -1,4 +1,4 @@
-import { getDocuments, getDocument } from '../../shared/helpers.js';
+import { getDocuments, getDocument } from '@jac-uk/jac-kit/helpers/helpers.js';
 import htmlWriter from '../../shared/htmlWriter.js';
 import initDrive from '../../shared/google-drive.js';
 

@@ -7,7 +7,7 @@
  */
 
 import { app, db } from '../shared/admin.js';
-import { getDocument, getDocuments, applyUpdates } from '../../functions/shared/helpers.js';
+import { getDocument, getDocuments, applyUpdates } from '@jac-uk/jac-kit/helpers/helpers.js';
 
 const exerciseId = '';
 const isAction = false;

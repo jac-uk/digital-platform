@@ -1,4 +1,4 @@
-import { getDocument, getDocuments } from '../../shared/helpers.js';
+import { getDocument, getDocuments } from '@jac-uk/jac-kit/helpers/helpers.js';
 
 export default (firebase, db) => {
   return {

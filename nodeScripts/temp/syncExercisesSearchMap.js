@@ -9,7 +9,7 @@
  */
 
 import { firebase, app, db } from '../shared/admin.js';
-import { getDocuments, applyUpdates } from '../../functions/shared/helpers.js';
+import { getDocuments, applyUpdates } from '@jac-uk/jac-kit/helpers/helpers.js';
 import { getSearchMap } from '../../functions/shared/search.js';
 
 async function updateAllExercises() {

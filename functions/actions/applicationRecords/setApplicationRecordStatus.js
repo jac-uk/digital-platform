@@ -1,4 +1,4 @@
-import { applyUpdates, getDocumentsFromQueries } from '../../shared/helpers.js';
+import { applyUpdates, getDocumentsFromQueries } from '@jac-uk/jac-kit/helpers/helpers.js';
 
 export default (config, firebase, db) => {
 

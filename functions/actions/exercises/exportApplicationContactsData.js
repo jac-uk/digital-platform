@@ -1,6 +1,6 @@
 import * as helpers from '../../shared/converters/helpers.js';
 import lookup from '../../shared/converters/lookup.js';
-import { getDocuments, getDocument } from '../../shared/helpers.js';
+import { getDocuments, getDocument } from '@jac-uk/jac-kit/helpers/helpers.js';
 import { applicationOpenDatePost01042023 } from'../../shared/converters/helpers.js';
 
 export default (firebase, db) => {

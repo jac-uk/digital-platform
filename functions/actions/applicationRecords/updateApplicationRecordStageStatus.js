@@ -1,4 +1,4 @@
-import { getDocument, getDocuments, applyUpdates } from '../../shared/helpers.js';
+import { getDocument, getDocuments, applyUpdates } from '@jac-uk/jac-kit/helpers/helpers.js';
 
 export default (firebase, config, db) => {
   const { EXERCISE_STAGE, APPLICATION_STATUS } = config;

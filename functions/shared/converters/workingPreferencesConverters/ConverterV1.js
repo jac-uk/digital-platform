@@ -1,5 +1,5 @@
 import { addField } from '../helpers.js';
-import { objectHasNestedProperty } from '../../helpers.js';
+import { objectHasNestedProperty } from '@jac-uk/jac-kit/helpers/helpers.js';
 
 class ConverterV1 {
   
