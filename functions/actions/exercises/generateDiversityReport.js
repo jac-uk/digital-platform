@@ -1,5 +1,6 @@
-import { getDocument, getDocuments } from '@jac-uk/jac-kit/helpers/helpers.js';
-import { applicationOpenDatePost01042023 } from '../../shared/converters/helpers.js';
+import getDocument from '@jac-uk/jac-kit/helpers/helpers.js';
+import getDocuments from '@jac-uk/jac-kit/helpers/helpers.js';
+import applicationOpenDatePost01042023 from '@jac-uk/jac-kit/helpers/digitalPlatformHelpers.js';
 import initExerciseHelper from '@jac-uk/jac-kit/helpers/exerciseHelper.js';
 
 /**

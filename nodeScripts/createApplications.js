@@ -12,7 +12,9 @@
 import config from './shared/config.js';
 import { firebase, app, db, auth } from './shared/admin.js';
 import initApplications from '../functions/actions/applications/applications.js';
-import { getDocument, getDocuments, applyUpdates } from '@jac-uk/jac-kit/helpers/helpers.js';
+import getDocument from '@jac-uk/jac-kit/helpers/helpers.js';
+import getDocuments from '@jac-uk/jac-kit/helpers/helpers.js';
+import applyUpdates from '@jac-uk/jac-kit/helpers/helpers.js';
 import { faker } from '@faker-js/faker';
 
 const action = initApplications(config, firebase, db, auth);

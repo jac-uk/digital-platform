@@ -1,6 +1,6 @@
 import functions from 'firebase-functions';
 import { firebase, db } from '../shared/admin.js';
-import { checkArguments } from '@jac-uk/jac-kit/helpers/helpers.js';
+import checkArguments from '@jac-uk/jac-kit/helpers/helpers.js';
 import initTargetedOutreachReport from '../actions/exercises/targetedOutreachReport.js';
 import initServiceSettings from '../shared/serviceSettings.js';
 

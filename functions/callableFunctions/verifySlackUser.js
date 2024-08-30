@@ -1,8 +1,8 @@
 import functions from 'firebase-functions';
 import config from '../shared/config.js';
 import { db, auth } from '../shared/admin.js';
-import { objectHasNestedProperty } from '@jac-uk/jac-kit/helpers/helpers.js';
-import { checkArguments } from '@jac-uk/jac-kit/helpers/helpers.js';
+import objectHasNestedProperty from '@jac-uk/jac-kit/helpers/helpers.js';
+import checkArguments from '@jac-uk/jac-kit/helpers/helpers.js';
 import initServiceSettings from '../shared/serviceSettings.js';
 import initSlack from '../actions/slack.js';
 

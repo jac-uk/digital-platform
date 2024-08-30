@@ -1,5 +1,5 @@
 import functions from 'firebase-functions';
-import { getDocument } from '@jac-uk/jac-kit/helpers/helpers.js';
+import getDocument from '@jac-uk/jac-kit/helpers/helpers.js';
 import { firebase, db, auth } from '../shared/admin.js';
 import initExportApplicationCharacterIssues from '../actions/exercises/exportApplicationCharacterIssues.js';
 import initLogEvent from '../actions/logs/logEvent.js';

@@ -1,6 +1,6 @@
 import functions from 'firebase-functions';
 import { auth, db } from '../shared/admin.js';
-import { checkArguments } from '@jac-uk/jac-kit/helpers/helpers.js';
+import checkArguments from '@jac-uk/jac-kit/helpers/helpers.js';
 import initUsers from '../actions/users.js';
 import initServiceSettings from '../shared/serviceSettings.js';
 

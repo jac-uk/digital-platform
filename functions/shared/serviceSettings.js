@@ -1,5 +1,5 @@
 import functions from 'firebase-functions';
-import { getDocument } from '@jac-uk/jac-kit/helpers/helpers.js';
+import getDocument from '@jac-uk/jac-kit/helpers/helpers.js';
 
 export default (db) => {
   return {

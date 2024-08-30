@@ -1,8 +1,12 @@
-import * as helpers from '../../shared/converters/helpers.js';
+import * as helpers from '@jac-uk/jac-kit/helpers/digitalPlatformHelpers.js';
 import lookup from '../../shared/converters/lookup.js';
-import { getDocuments, getDocument, formatDate, splitFullName } from '@jac-uk/jac-kit/helpers/helpers.js';
+import getDocuments from '@jac-uk/jac-kit/helpers/helpers.js';
+import getDocument from '@jac-uk/jac-kit/helpers/helpers.js';
+import formatDate from '@jac-uk/jac-kit/helpers/helpers.js';
+import splitFullName from '@jac-uk/jac-kit/helpers/helpers.js';
+
 import _ from 'lodash';
-import { ordinal } from '../../shared/converters/helpers.js';
+const { ordinal } = helpers;
 import htmlWriter from '../../shared/htmlWriter.js';
 import config from '../../shared/config.js';
 import initDrive from '../../shared/google-drive.js';

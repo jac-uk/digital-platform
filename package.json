@@ -61,8 +61,8 @@
     "production:service-online": "npm run production:deploy:rules; npm run production:deploy:storage-rules"
   },
   "dependencies": {
-    "@jac-uk/jac-kit": "4.1.26",
     "@google-cloud/storage": "^5.7.2",
+    "@jac-uk/jac-kit": "4.1.29-moving-helpers.21",
     "axios": "^0.28.0",
     "bottleneck": "^2.19.5",
     "crypto": "^1.0.1",
@@ -75,6 +75,7 @@
     "lodash": "^4.17.21",
     "mammoth": "^1.6.0",
     "notifications-node-client": "^8.1.0",
+    "request": "^2.88.2",
     "request-promise": "^4.2.6"
   },
   "devDependencies": {

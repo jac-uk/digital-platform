@@ -2,7 +2,9 @@
 
 import config from './shared/config.js';
 import { app, db } from './shared/admin.js';
-import { getDocuments, getAllDocuments, formatDate } from '@jac-uk/jac-kit/helpers/helpers.js';
+import getDocuments from '@jac-uk/jac-kit/helpers/helpers.js';
+import getAllDocuments from '@jac-uk/jac-kit/helpers/helpers.js';
+import formatDate from '@jac-uk/jac-kit/helpers/helpers.js';
 
 // function flattenArrayProperty(data, prop, formatter) {
 //   if (!data) {

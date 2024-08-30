@@ -1,6 +1,6 @@
 import htmlWriter from '../htmlWriter.js';
 import lookup from './lookup.js';
-import { addField, formatDate, toYesNo } from './helpers.js';
+import { addField, formatDate, toYesNo } from '@jac-uk/jac-kit/helpers/digitalPlatformHelpers.js';
 import * as helpers from '@jac-uk/jac-kit/helpers/helpers.js';
 
 import { getJurisdictionPreferences, getLocationPreferences, getAdditionalWorkingPreferences } from './workingPreferencesConverter.js';

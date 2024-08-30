@@ -1,4 +1,6 @@
-import { getDocument, getDocuments, applyUpdates } from '@jac-uk/jac-kit/helpers/helpers.js';
+import getDocument from '@jac-uk/jac-kit/helpers/helpers.js';
+import getDocuments from '@jac-uk/jac-kit/helpers/helpers.js';
+import applyUpdates from '@jac-uk/jac-kit/helpers/helpers.js';
 import initFactories from '../shared/factories.js';
 import initLogEvent from './logs/logEvent.js';
 import initRefreshApplicationCounts from '../actions/exercises/refreshApplicationCounts.js';

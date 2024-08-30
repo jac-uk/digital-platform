@@ -4,7 +4,7 @@ import config from './shared/config.js';
 import { firebase, app, db } from './shared/admin.js';
 import initNotifications from '../functions/actions/notifications.js';
 import initFactories from '../functions/shared/factories.js';
-import { getDocument } from '@jac-uk/jac-kit/helpers/helpers.js';
+import getDocument from '@jac-uk/jac-kit/helpers/helpers.js';
 
 const { testNotification } = initNotifications(config, firebase, db);
 const { newNotificationCharacterCheckRequest } = initFactories(config);

@@ -1,4 +1,4 @@
-import { addField } from '../helpers.js';
+import { addField } from '@jac-uk/jac-kit/helpers/digitalPlatformHelpers.js';
 import isObject from 'lodash/isObject.js';
 import orderBy from 'lodash/orderBy.js';
 import get from 'lodash/get.js';

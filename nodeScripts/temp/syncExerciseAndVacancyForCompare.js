@@ -12,7 +12,7 @@
 
 import { app, db } from '../shared/admin.js';
 import { getDocuments, getDocument, applyUpdates } from '@jac-uk/jac-kit/helpers/helpers.js';
-import { objectHasNestedProperty } from '@jac-uk/jac-kit/helpers/helpers.js';
+import objectHasNestedProperty from '@jac-uk/jac-kit/helpers/helpers.js';
 
 async function updateVacancies() {
   const commands = [];

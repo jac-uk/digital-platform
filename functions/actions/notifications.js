@@ -1,4 +1,4 @@
-import { getDocument, getDocuments, applyUpdates } from '@jac-uk/jac-kit/helpers/helpers.js';
+import { getDocument, getDocuments, applyUpdates } from '@jac-uk/jac-kit/helpers/digitalPlatformHelpers.js';
 import initNotify from '../shared/notify.js';
 
 export default (config, firebase, db) => {

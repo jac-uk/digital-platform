@@ -1,4 +1,5 @@
-import { getDocument, getDocuments } from '@jac-uk/jac-kit/helpers/helpers.js';
+import getDocument from '@jac-uk/jac-kit/helpers/helpers.js';
+import getDocuments from '@jac-uk/jac-kit/helpers/helpers.js';
 import { convertPermissions } from '../shared/permissions.js';
 import { getSearchMap } from '../shared/search.js';
 

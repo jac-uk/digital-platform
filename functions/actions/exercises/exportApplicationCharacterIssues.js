@@ -1,7 +1,13 @@
 import lookup from '../../shared/converters/lookup.js';
-import * as helpers from '../../shared/converters/helpers.js';
-import { getDocuments, getDocument, formatDate, getDate, splitFullName } from '@jac-uk/jac-kit/helpers/helpers.js';
-import { applicationOpenDatePost01042023, ordinal, getJudicialExperienceString } from '../../shared/converters/helpers.js';
+import getDocuments from '@jac-uk/jac-kit/helpers/helpers.js';
+import getDocument from '@jac-uk/jac-kit/helpers/helpers.js';
+import formatDate from '@jac-uk/jac-kit/helpers/helpers.js';
+import getDate from '@jac-uk/jac-kit/helpers/helpers.js';
+import splitFullName from '@jac-uk/jac-kit/helpers/helpers.js';
+import * as helpers from '@jac-uk/jac-kit/helpers/digitalPlatformHelpers.js';
+
+const { applicationOpenDatePost01042023, ordinal, getJudicialExperienceString } = helpers;
+
 import _ from 'lodash';
 import htmlWriter from '../../shared/htmlWriter.js';
 import config from '../../shared/config.js';

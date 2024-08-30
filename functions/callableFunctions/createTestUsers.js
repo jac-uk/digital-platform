@@ -3,7 +3,7 @@ import { firebase, db, auth } from '../shared/admin.js';
 import config from '../shared/config.js';
 import initApplications from '../actions/applications/applications.js';
 import initUsers from '../actions/users.js';
-import { isProduction } from '@jac-uk/jac-kit/helpers/helpers.js';
+import isProduction from '@jac-uk/jac-kit/helpers/helpers.js';
 
 const { loadTestApplications } = initApplications(config, firebase, db, auth);
 const { importUsers } = initUsers(auth, db);
