@@ -13,7 +13,12 @@ const { generateDiversityData } = initGenerateDiversityData(firebase, db);
 const { logEvent } = initLogEvent(firebase, db, auth);
 const { checkFunctionEnabled } = initServiceSettings(db);
 
-export default functions.region('europe-west2').https.onCall(async (data, context) => {
+const runtimeOptions = {
+  timeoutSeconds: 120,
+  memory: '512MB',
+};
+
+export default functions.runWith(runtimeOptions).region('europe-west2').https.onCall(async (data, context) => {
   await checkFunctionEnabled();
 
   // authenticate the request
