@@ -1,8 +1,4 @@
-import getDocument from '@jac-uk/jac-kit/helpers/helpers.js';
-import getDocuments from '@jac-uk/jac-kit/helpers/helpers.js';
-// import applyUpdates from '@jac-uk/jac-kit/helpers/helpers.js';
-// import getAllDocuments from '@jac-uk/jac-kit/helpers/helpers.js';
-// import formatDate from '@jac-uk/jac-kit/helpers/helpers.js';
+import {getDocument, getDocuments} from '@jac-uk/jac-kit/helpers/digitalPlatformHelpers.js';
 
 import initDrive from '../../shared/google-drive.js';
 

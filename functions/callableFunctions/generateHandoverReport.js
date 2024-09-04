@@ -2,7 +2,7 @@ import functions from 'firebase-functions';
 import config from '../shared/config.js';
 import { firebase, db, auth } from '../shared/admin.js';
 import initGenerateHandoverReport from '../actions/exercises/generateHandoverReport.js';
-import getDocument from '@jac-uk/jac-kit/helpers/helpers.js';
+import { getDocument } from '@jac-uk/jac-kit/helpers/digitalPlatformHelpers.js';
 import initLogEvent from '../actions/logs/logEvent.js';
 import initServiceSettings from '../shared/serviceSettings.js';
 import { PERMISSIONS, hasPermissions } from '../shared/permissions.js';

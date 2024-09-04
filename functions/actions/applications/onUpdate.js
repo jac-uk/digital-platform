@@ -1,7 +1,5 @@
 // import isDateInPast from '@jac-uk/jac-kit/helpers/helpers.js';
-import getDocument from '@jac-uk/jac-kit/helpers/helpers.js';
-import formatDate from '@jac-uk/jac-kit/helpers/helpers.js';
-import applyUpdates from '@jac-uk/jac-kit/helpers/helpers.js';
+import { getDocument, formatDate, applyUpdates } from '@jac-uk/jac-kit/helpers/digitalPlatformHelpers.js';
 
 import { getSearchMap } from '../../shared/search.js';
 import initCandidatesSearch from '../candidates/search.js';

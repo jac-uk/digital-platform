@@ -1,7 +1,7 @@
 'use strict';
 
 import { app, db } from './shared/admin.js';
-import getDocuments from '@jac-uk/jac-kit/helpers/helpers.js';
+import { getDocuments } from '@jac-uk/jac-kit/helpers/digitalPlatformHelpers.js';
 
 async function getExerciseStats(exerciseId) {
 

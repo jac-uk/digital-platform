@@ -13,7 +13,7 @@ import config from './shared/config.js';
 import { firebase, app, db, auth } from './shared/admin.js';
 import initApplications from '../functions/actions/applications/applications.js';
 import getDocument from '@jac-uk/jac-kit/helpers/helpers.js';
-import getDocuments from '@jac-uk/jac-kit/helpers/helpers.js';
+import { getDocuments } from '@jac-uk/jac-kit/helpers/digitalPlatformHelpers.js';
 import applyUpdates from '@jac-uk/jac-kit/helpers/helpers.js';
 import { faker } from '@faker-js/faker';
 

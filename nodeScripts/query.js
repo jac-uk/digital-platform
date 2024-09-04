@@ -2,7 +2,7 @@
 
 import config from './shared/config.js';
 import { app, db } from './shared/admin.js';
-import getDocuments from '@jac-uk/jac-kit/helpers/helpers.js';
+import { getDocuments } from '@jac-uk/jac-kit/helpers/digitalPlatformHelpers.js';
 import getAllDocuments from '@jac-uk/jac-kit/helpers/helpers.js';
 import formatDate from '@jac-uk/jac-kit/helpers/helpers.js';
 

@@ -7,7 +7,7 @@ import { getSearchMap } from '../shared/search.js';
 const { onAssessmentCompleted } = initAssessments(config, firebase, db);
 
 import has from 'lodash/has.js';
-import isDifferentPropsByPath from '@jac-uk/jac-kit/helpers/helpers.js';
+import { isDifferentPropsByPath } from '@jac-uk/jac-kit/helpers/helpers.js';
 
 export default functions.region('europe-west2').firestore
   .document('assessments/{assessmentId}')

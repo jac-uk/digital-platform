@@ -3,10 +3,8 @@
  * A set of methods to help keep candidate search & relationships data up to date
  */
 
-import applyUpdates from '@jac-uk/jac-kit/helpers/helpers.js';
-import getDocuments from '@jac-uk/jac-kit/helpers/helpers.js';
-import getDocument from '@jac-uk/jac-kit/helpers/helpers.js';
-import normaliseNIN from '@jac-uk/jac-kit/helpers/helpers.js';
+import { applyUpdates, getDocuments, getDocument } from '@jac-uk/jac-kit/helpers/digitalPlatformHelpers.js';
+import { normaliseNIN } from '@jac-uk/jac-kit/helpers/helpers.js';
 import { getSearchMap } from '../../shared/search.js';
 
 export default (firebase, db) => {

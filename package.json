@@ -62,7 +62,7 @@
   },
   "dependencies": {
     "@google-cloud/storage": "^5.7.2",
-    "@jac-uk/jac-kit": "4.1.29-moving-helpers.21",
+    "@jac-uk/jac-kit": "4.1.35-moving-helpers.0",
     "axios": "^0.28.0",
     "bottleneck": "^2.19.5",
     "crypto": "^1.0.1",

@@ -1,4 +1,4 @@
-import replaceCharacters from '@jac-uk/jac-kit/helpers/helpers.js';
+import { replaceCharacters } from '@jac-uk/jac-kit/helpers/helpers.js';
 
 export {
   getSearchMap,

@@ -1,7 +1,7 @@
 import functions from 'firebase-functions';
 import config from '../shared/config.js';
 import { firebase, db, auth } from '../shared/admin.js';
-import checkArguments from '@jac-uk/jac-kit/helpers/helpers.js';
+import { checkArguments } from '@jac-uk/jac-kit/helpers/helpers.js';
 import initApplicationRecords from '../actions/applicationRecords.js';
 import initGenerateDiversityReport from '../actions/exercises/generateDiversityReport.js';
 import initServiceSettings from '../shared/serviceSettings.js';

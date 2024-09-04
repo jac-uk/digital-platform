@@ -1,9 +1,9 @@
 import functions from 'firebase-functions';
-import checkArguments from '@jac-uk/jac-kit/helpers/helpers.js';
+import { checkArguments } from '@jac-uk/jac-kit/helpers/helpers.js';
 import config from '../shared/config.js';
 import { firebase, db, auth } from '../shared/admin.js';
 import initExportExerciseData from '../actions/exercises/exportExerciseData.js';
-import getAllDocuments from '@jac-uk/jac-kit/helpers/helpers.js';
+import { getAllDocuments } from '@jac-uk/jac-kit/helpers/digitalPlatformHelpers.js';
 import initLogEvent from '../actions/logs/logEvent.js';
 import initServiceSettings from '../shared/serviceSettings.js';
 import { PERMISSIONS, hasPermissions } from '../shared/permissions.js';

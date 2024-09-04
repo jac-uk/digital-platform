@@ -1,7 +1,4 @@
-import getDocument from '@jac-uk/jac-kit/helpers/helpers.js';
-import getDocuments from '@jac-uk/jac-kit/helpers/helpers.js';
-import applyUpdates from '@jac-uk/jac-kit/helpers/helpers.js';
-
+import { getDocument, getDocuments, applyUpdates }  from '@jac-uk/jac-kit/helpers/digitalPlatformHelpers.js';
 import { PERMISSIONS } from '../shared/permissions.js';
 
 export default (db, auth) => {

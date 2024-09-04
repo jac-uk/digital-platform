@@ -1,7 +1,5 @@
-import getDocument from '@jac-uk/jac-kit/helpers/helpers.js';
-import getDocuments from '@jac-uk/jac-kit/helpers/helpers.js';
-import applicationOpenDatePost01042023 from '@jac-uk/jac-kit/helpers/digitalPlatformHelpers.js';
-import initExerciseHelper from '@jac-uk/jac-kit/helpers/exerciseHelper.js';
+import { getDocument, getDocuments,applicationOpenDatePost01042023  } from '@jac-uk/jac-kit/helpers/digitalPlatformHelpers.js';
+import { availableStages } from '@jac-uk/jac-kit/helpers/exerciseHelper.js';
 
 /**
  * For the diversity reports:
@@ -24,8 +22,6 @@ import initExerciseHelper from '@jac-uk/jac-kit/helpers/exerciseHelper.js';
  * @returns 
  */
 export default (config, firebase, db) => {
-  const { availableStages } = initExerciseHelper(config);
-
   return {
     generateDiversityReport,
     genderStats,

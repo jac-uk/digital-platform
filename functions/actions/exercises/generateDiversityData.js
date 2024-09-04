@@ -1,7 +1,5 @@
-import getDocument from '@jac-uk/jac-kit/helpers/helpers.js';
-import getDocuments from '@jac-uk/jac-kit/helpers/helpers.js';
-import applicationOpenDatePost01042023 from '@jac-uk/jac-kit/helpers/digitalPlatformHelpers.js';
-import DIVERSITY_CHARACTERISTICS from '@jac-uk/jac-kit/helpers/constants.js';
+import { getDocument, getDocuments, applicationOpenDatePost01042023 } from '@jac-uk/jac-kit/helpers/digitalPlatformHelpers.js';
+import { DIVERSITY_CHARACTERISTICS } from '@jac-uk/jac-kit/helpers/constants.js';
 
 // import sizeof from 'firestore-size';
 

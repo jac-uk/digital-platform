@@ -1,6 +1,6 @@
 import functions from 'firebase-functions';
 import { auth, db } from '../shared/admin.js';
-import checkArguments from '@jac-uk/jac-kit/helpers/helpers.js';
+import { checkArguments } from '@jac-uk/jac-kit/helpers/helpers.js';
 import initGetUserByEmail from '../actions/candidates/getUserByEmail.js';
 const  getUserByEmail  = initGetUserByEmail(auth);
 import initServiceSettings from '../shared/serviceSettings.js';

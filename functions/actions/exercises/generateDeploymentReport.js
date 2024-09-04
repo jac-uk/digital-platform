@@ -1,6 +1,4 @@
-import getDocument from '@jac-uk/jac-kit/helpers/helpers.js';
-import getDocuments from '@jac-uk/jac-kit/helpers/helpers.js';
-import getAllDocuments from '@jac-uk/jac-kit/helpers/helpers.js';
+import { getDocument, getDocuments, getAllDocuments } from '@jac-uk/jac-kit/helpers/digitalPlatformHelpers.js';
 import initUpdateApplicationRecordStageStatus from '../applicationRecords/updateApplicationRecordStageStatus.js';
 
 export default (config, firebase, db) => {

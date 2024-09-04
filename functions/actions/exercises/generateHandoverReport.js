@@ -1,9 +1,6 @@
 import * as helpers from '@jac-uk/jac-kit/helpers/digitalPlatformHelpers.js';
 import lookup from '../../shared/converters/lookup.js';
-import getDocument from '@jac-uk/jac-kit/helpers/helpers.js';
-import getDocuments from '@jac-uk/jac-kit/helpers/helpers.js';
-import getAllDocuments from '@jac-uk/jac-kit/helpers/helpers.js';
-import removeHtml from '@jac-uk/jac-kit/helpers/helpers.js';
+import { getDocument, getDocuments, getAllDocuments, removeHtml } from '@jac-uk/jac-kit/helpers/digitalPlatformHelpers.js';
 import { getAdditionalWorkingPreferences } from '../../shared/converters/workingPreferencesConverter.js';
 import initApplicationConverter from '../../shared/converters/applicationConverter.js';
 import initUpdateApplicationRecordStageStatus from '../applicationRecords/updateApplicationRecordStageStatus.js';

@@ -1,6 +1,4 @@
-import getDocuments from '@jac-uk/jac-kit/helpers/helpers.js';
-import getAllDocuments from '@jac-uk/jac-kit/helpers/helpers.js';
-import formatDate from '@jac-uk/jac-kit/helpers/helpers.js';
+import { getDocuments, getAllDocuments, formatDate } from '@jac-uk/jac-kit/helpers/digitalPlatformHelpers.js';
 import lookup from '../../shared/converters/lookup.js';
 import * as applicationHelpers from '@jac-uk/jac-kit/helpers/digitalPlatformHelpers.js';
 

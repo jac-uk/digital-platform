@@ -1,9 +1,5 @@
-import getDocument from '@jac-uk/jac-kit/helpers/helpers.js';
-import getDocuments from '@jac-uk/jac-kit/helpers/helpers.js';
-import formatDate from '@jac-uk/jac-kit/helpers/helpers.js';
-import formatAddress from '@jac-uk/jac-kit/helpers/helpers.js';
-import formatPreviousAddresses from '@jac-uk/jac-kit/helpers/helpers.js';
-import isValidDate from '@jac-uk/jac-kit/helpers/helpers.js';
+import { getDocument, getDocuments } from '@jac-uk/jac-kit/helpers/digitalPlatformHelpers.js';
+import { formatDate, formatAddress, formatPreviousAddresses, isValidDate } from '@jac-uk/jac-kit/helpers/helpers.js';
 import _ from 'lodash';
 
 function formatPreference(choiceArray, questionType) {

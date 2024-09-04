@@ -1,4 +1,4 @@
-import applyUpdates from '@jac-uk/jac-kit/helpers/helpers.js';
+import { applyUpdates } from '@jac-uk/jac-kit/helpers/digitalPlatformHelpers.js';
 import initFactories from '../shared/factories.js';
 
 export default (config, firebase, db, auth) => {

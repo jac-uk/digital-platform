@@ -1,9 +1,11 @@
 import lookup from '../../shared/converters/lookup.js';
-import getDocuments from '@jac-uk/jac-kit/helpers/helpers.js';
-import getDocument from '@jac-uk/jac-kit/helpers/helpers.js';
-import formatDate from '@jac-uk/jac-kit/helpers/helpers.js';
-import getDate from '@jac-uk/jac-kit/helpers/helpers.js';
-import splitFullName from '@jac-uk/jac-kit/helpers/helpers.js';
+import {
+  getDocuments,
+  getDocument,
+  formatDate,
+  getDate
+} from '@jac-uk/jac-kit/helpers/digitalPlatformHelpers.js';
+import { splitFullName } from '@jac-uk/jac-kit/helpers/helpers.js';
 import * as helpers from '@jac-uk/jac-kit/helpers/digitalPlatformHelpers.js';
 
 const { applicationOpenDatePost01042023, ordinal, getJudicialExperienceString } = helpers;

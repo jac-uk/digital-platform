@@ -1,7 +1,9 @@
-import getDocument from '@jac-uk/jac-kit/helpers/helpers.js';
-import getDocuments from '@jac-uk/jac-kit/helpers/helpers.js';
-import getDocumentsFromQueries from '@jac-uk/jac-kit/helpers/helpers.js';
-import applyUpdates from '@jac-uk/jac-kit/helpers/helpers.js';
+import { 
+  getDocument,
+  getDocuments,
+  getDocumentsFromQueries,
+  applyUpdates,
+} from '@jac-uk/jac-kit/helpers/digitalPlatformHelpers.js';
 
 import lookup from '../../shared/converters/lookup.js';
 import inittaskHelper from '@jac-uk/jac-kit/helpers/taskHelper.js';

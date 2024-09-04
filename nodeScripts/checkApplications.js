@@ -1,7 +1,7 @@
 'use strict';
 
 import { app, db } from './shared/admin.js';
-import getDocuments from '@jac-uk/jac-kit/helpers/helpers.js';
+import { getDocuments } from '@jac-uk/jac-kit/helpers/digitalPlatformHelpers.js';
 
 const main = async () => {
   const exerciseId = ''; // enter exercise id

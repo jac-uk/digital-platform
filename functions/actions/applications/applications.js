@@ -1,7 +1,4 @@
-import getAllDocuments from '@jac-uk/jac-kit/helpers/helpers.js';
-import getDocument from '@jac-uk/jac-kit/helpers/helpers.js';
-import getDocuments from '@jac-uk/jac-kit/helpers/helpers.js';
-import applyUpdates from '@jac-uk/jac-kit/helpers/helpers.js';
+import {getAllDocuments, getDocument, getDocuments, applyUpdates} from '@jac-uk/jac-kit/helpers/digitalPlatformHelpers.js';
 
 import { getSearchMap } from '../../shared/search.js';
 import initApplicationRecords from '../../actions/applicationRecords.js';

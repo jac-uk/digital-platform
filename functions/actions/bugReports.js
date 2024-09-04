@@ -1,4 +1,4 @@
-import getDocuments from '@jac-uk/jac-kit/helpers/helpers.js';
+import { getDocuments } from '@jac-uk/jac-kit/helpers/digitalPlatformHelpers.js';
 
 export default (db) => {
   return {

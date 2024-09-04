@@ -1,12 +1,10 @@
-import getDocument from '@jac-uk/jac-kit/helpers/helpers.js';
-import getDocuments from '@jac-uk/jac-kit/helpers/helpers.js';
-import objectHasNestedProperty from '@jac-uk/jac-kit/helpers/helpers.js';
-import initExerciseHelper from '@jac-uk/jac-kit/helpers/exerciseHelper.js';
+import { getDocument, getDocuments } from '@jac-uk/jac-kit/helpers/digitalPlatformHelpers.js';
+import { objectHasNestedProperty } from '@jac-uk/jac-kit/helpers/helpers.js';
+import { availableStages } from '@jac-uk/jac-kit/helpers/exerciseHelper.js';
 
 const ignoreKeys = ['totalApplications', 'total', 'declaration', 'preferNotToSay', 'noAnswer'];
 
 export default (config, firebase, db) => {
-  const { availableStages } = initExerciseHelper(config);
   return {
     generateOutreachReport,
     attendedOutreachStats,
