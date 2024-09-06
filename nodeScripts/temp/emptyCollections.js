@@ -15,7 +15,7 @@ import readline from 'readline';
 import chalk from 'chalk';
 import { projectId, environment, isProduction, db } from '../shared/admin.js';
 
-const batchSize = 500
+const batchSize = 500;
 const collections = [];
 
 // Use this list for cleaning all collections except from deleted collection
@@ -78,11 +78,11 @@ async function cleanCollection(collectionPath, batchSize) {
         batch.delete(doc.ref);
       });
       await batch.commit();
-      count += snapshot.size
+      count += snapshot.size;
 
   } while (snapshot.size >= batchSize);
 
-  return count
+  return count;
 }
 
 /**
@@ -95,11 +95,11 @@ async function listCollections() {
   return collectionRefs.map(c => c.id);
 }
 const main = async () => {
-  console.log(chalk.green(`* Project Id: ${projectId}`))
-  console.log(chalk.green(`* Environment: ${environment}`))
-  console.log(chalk.green(`* Is Production: ${isProduction}`))
-  const collectionList = collections.map((c) => `\n    - ${c}`).join()
-  console.log(chalk.green(`* Collections:${collectionList}`))
+  console.log(chalk.green(`* Project Id: ${projectId}`));
+  console.log(chalk.green(`* Environment: ${environment}`));
+  console.log(chalk.green(`* Is Production: ${isProduction}`));
+  const collectionList = collections.map((c) => `\n    - ${c}`).join();
+  console.log(chalk.green(`* Collections:${collectionList}`));
 
   // Not execute in production
   if (isProduction) {
@@ -107,7 +107,7 @@ const main = async () => {
     process.exit(0); // Exit the script
   }
 
-  const question = `You are cleaning the data on the ${environment}, Are you sure you want to continue? (yes/no): `
+  const question = `You are cleaning the data on the ${environment}, Are you sure you want to continue? (yes/no): `;
   // Ask for confirmation
   const confirmed = await askConfirmation(question);
   rl.close();
