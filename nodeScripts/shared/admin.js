@@ -50,5 +50,5 @@ function whichEnvironment(projectId) {
     }
   }
   
-  return 'production';
+  return '';
 }
