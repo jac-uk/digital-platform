@@ -62,7 +62,7 @@
   },
   "dependencies": {
     "@google-cloud/storage": "^5.7.2",
-    "@jac-uk/jac-kit": "4.1.35-moving-helpers.0",
+    "@jac-uk/jac-kit": "../jac-kit/src/packages",
     "axios": "^0.28.0",
     "bottleneck": "^2.19.5",
     "crypto": "^1.0.1",
@@ -91,6 +91,9 @@
     "jest": "^28.0.0",
     "jest-environment-jsdom": "^29.7.0",
     "mocha": "^10.4.0"
+  },
+  "peerDependencies": {
+    "firebase-admin": "^12.1.1"
   },
   "overrides": {
     "semver": "^7.5.3"
