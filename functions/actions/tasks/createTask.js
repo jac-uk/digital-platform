@@ -1,6 +1,4 @@
-import getDocument from '@jac-uk/jac-kit/helpers/helpers.js';
-import { getDocuments } from '@jac-uk/jac-kit/helpers/digitalPlatformHelpers.js';
-import applyUpdates from '@jac-uk/jac-kit/helpers/helpers.js';
+import { getDocuments, getDocument, applyUpdates } from '@jac-uk/jac-kit/helpers/digitalPlatformHelpers.js';
 import inittaskHelper from '@jac-uk/jac-kit/helpers/taskHelper.js';
 import initUpdateTask from './updateTask.js';
 
