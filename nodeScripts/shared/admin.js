@@ -16,3 +16,39 @@ export const firebase = {
 };
 export const db = getFirestore(app);
 export const auth = getAuth(app);
+
+export const projectId = app.options.credential.projectId;
+export const environment = whichEnvironment(projectId);
+export const isProduction = environment === 'production';
+
+/**
+ * Check current firebase project is which environment
+ * 
+ * @param {string} projectId 
+ * @returns {string} one of environment literal: ['production', 'staging', 'develop'] 
+ */
+function whichEnvironment(projectId) {
+  const lowercaseProjectId = projectId.toLowerCase();
+  const environmentMarks = {
+    production: [
+      'production',
+      'prod',
+      'live',
+    ],
+    staging: [
+      'staging',
+    ],
+    develop: [
+      'develop',
+      'dev',
+    ],
+  };
+
+  for (const [environment, marks] of Object.entries(environmentMarks)) {
+    for (const mark of marks) {
+      if (lowercaseProjectId.includes(mark)) return environment;
+    }
+  }
+  
+  return '';
+}

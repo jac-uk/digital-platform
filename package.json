@@ -1,6 +1,6 @@
 {
   "name": "jac-digital-platform",
-  "version": "1.111.0",
+  "version": "1.112.0",
   "description": "Firebase/GCP configuration and components for the JAC digital platform",
   "repository": "https://github.com/jac-uk/digital-platform",
   "license": "MIT",
@@ -64,6 +64,7 @@
     "@google-cloud/storage": "^5.7.2",
     "axios": "^0.28.0",
     "bottleneck": "^2.19.5",
+    "chalk": "^5.3.0",
     "crypto": "^1.0.1",
     "exceljs": "^4.4.0",
     "firebase": "^9.7.0",

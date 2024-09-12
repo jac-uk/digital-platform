@@ -260,6 +260,8 @@ export default () => {
   }
 
   function getAdditionalSelectionCriteria(application, exercise) {
+    if (!exercise.selectionCriteria) return [];
+    if (!application.selectionCriteriaAnswers) return [];
     const additionalSelectionCriteria = application.selectionCriteriaAnswers;
     const data = [];
     additionalSelectionCriteria.forEach((sC, index) => {
