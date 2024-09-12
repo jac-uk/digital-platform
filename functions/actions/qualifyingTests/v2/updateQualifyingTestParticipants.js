@@ -1,5 +1,4 @@
-import { getDocuments } from '@jac-uk/jac-kit/helpers/digitalPlatformHelpers.js';
-import getDocument from '@jac-uk/jac-kit/helpers/helpers.js';
+import { getDocuments, getDocument } from '@jac-uk/jac-kit/helpers/digitalPlatformHelpers.js';
 import initQts from '../../../shared/qts.js';
 
 export default (config, firebase, db) => {

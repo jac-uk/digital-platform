@@ -1,7 +1,7 @@
 /**
  * Initialises Firebase SDK and exports firestore database connection
  */
-import firebaseApp from 'firebase/app';
+import firebaseApp from 'firebase-admin/app';
 
 const config = {
   apiKey: process.env.FIREBASE_API_KEY,

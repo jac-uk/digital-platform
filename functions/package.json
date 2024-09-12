@@ -16,6 +16,7 @@
     "logs": "firebase functions:log"
   },
   "dependencies": {
+    "@jac-uk/jac-kit": "../../jac-kit/src/packages",
     "axios": "^0.28.0",
     "bottleneck": "^2.19.5",
     "firebase-admin": "^12.1.1",

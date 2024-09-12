@@ -1,5 +1,5 @@
 import axios from 'axios';
-import objectHasNestedProperty from '@jac-uk/jac-kit/helpers/helpers.js';
+import { objectHasNestedProperty } from '@jac-uk/jac-kit/helpers/helpers.js';
 
 /**
  * Calls to the Slack Web API

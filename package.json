@@ -76,7 +76,8 @@
     "mammoth": "^1.6.0",
     "notifications-node-client": "^8.1.0",
     "request": "^2.88.2",
-    "request-promise": "^4.2.6"
+    "request-promise": "^4.2.6",
+    "xlsx-populate": "^1.21.0"
   },
   "devDependencies": {
     "@faker-js/faker": "^6.0.0-alpha.5",
@@ -91,9 +92,6 @@
     "jest": "^28.0.0",
     "jest-environment-jsdom": "^29.7.0",
     "mocha": "^10.4.0"
-  },
-  "peerDependencies": {
-    "firebase-admin": "^12.1.1"
   },
   "overrides": {
     "semver": "^7.5.3"

@@ -2,11 +2,11 @@ import {
   getDocument,
   getDocuments,
   getDocumentsFromQueries,
-  applyUpdates,
+  applyUpdates
 } from '@jac-uk/jac-kit/helpers/digitalPlatformHelpers.js';
 
 import lookup from '../../shared/converters/lookup.js';
-import inittaskHelper from '@jac-uk/jac-kit/helpers/taskHelper.js';
+import initTaskHelper from '@jac-uk/jac-kit/helpers/taskHelper.js';
 import initRefreshApplicationCounts from '../exercises/refreshApplicationCounts.js';
 import initFactories from '../../shared/factories.js';
 import initQts from '../../shared/qts.js';
@@ -28,7 +28,7 @@ export default (config, firebase, db) => {
     getApplicationFailStatuses,
     taskApplicationsEntryStatus,
     includeZScores,
-  } = inittaskHelper(config);
+  } = initTaskHelper(config);
 
   const { refreshApplicationCounts } = initRefreshApplicationCounts(firebase, db);
   const { newCandidateFormResponse } = initFactories(config);

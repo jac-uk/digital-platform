@@ -7,7 +7,8 @@ const { backupFirestore } = initBackupFirestore(config, firebase);
 
 const SCHEDULE = 'every day 23:01';
 
-export default functions.region('europe-west2')
+export default functions
+  .region('europe-west2')
   .pubsub
   .schedule(SCHEDULE)
   .timeZone('Europe/London')
