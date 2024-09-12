@@ -171,10 +171,10 @@ export default (config, firebase, db) => {
       try {
         const responses = await Promise.all(promises);
         responses.forEach(response => {
-          if (response.indexOf('Error') > 0) {
-            errorMessages.push(response);
-          } else if (response) {
+          if (response) {
             fileIds.push(response);
+          } else if (response !== false && response.indexOf('Error') > 0) {
+            errorMessages.push(response);
           }
         });
       } catch(e) {
@@ -209,7 +209,7 @@ export default (config, firebase, db) => {
   async function transferFileFromStorage({ storageBucket, fileUrl, destinationFolderId, destinationFileName }) {
     if (fileUrl) {
       const file = storageBucket.file(fileUrl);
-      const exists = await file.exists();
+      const [exists] = await file.exists();
       if (exists) {
         const fileId = await drive.createFile(destinationFileName, {
           folderId: destinationFolderId,
