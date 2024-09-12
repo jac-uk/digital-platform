@@ -1,7 +1,8 @@
 import { getDocument } from '../../shared/helpers.js';
 import initApplicationConverter from '../../shared/converters/applicationConverter.js';
 import initDrive from '../../shared/google-drive.js';
-
+import initExportGradingSheet from './exportGradingSheet.js';
+const { exportGradingSheet } = initExportGradingSheet();
 const applicationConverter = initApplicationConverter();
 const drive = initDrive();
 
@@ -65,6 +66,12 @@ export default (config, firebase, db) => {
       const promises = [];
 
       if (panel.type === 'selection' || panel.type === 'sift') {
+        
+        // Create grading spreadsheet 
+        promises.push(
+          exportGradingSheet(drive, folderId, panel).catch(e => 'Error: Grading Sheet')
+        );
+
         // Create application data document
         promises.push(
           drive.createFile('Application Data', {
