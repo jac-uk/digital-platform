@@ -1,4 +1,4 @@
-import ExcelJS from 'exceljs';
+import exceljs from 'exceljs';
 import fs from 'fs';
 import { getTempLocalFilePath, writeToLocalFile, deleteLocalFile } from '../../shared/file.js';
 import initDrive from '../../shared/google-drive.js';
@@ -70,7 +70,7 @@ export default () => {
    */
   async function createWorkbook(columns, typeOptions, applicationIds) {
     // Initialise workbook and worksheet
-    let workbook = new ExcelJS.Workbook();
+    let workbook = new exceljs.Workbook();
     let worksheet = workbook.addWorksheet('Sheet1');
 
     // Define the columns, including the first column for Application ID
