@@ -1,10 +1,10 @@
 'use strict';
 
 import config from './shared/config.js';
-import { firebase, app } from './shared/admin.js';
+import { firebase, app, db } from './shared/admin.js';
 import initScanAllFiles from '../functions/actions/malware-scanning/scanAllFiles.js';
 
-const { scanAllFiles } = initScanAllFiles(config, firebase);
+const { scanAllFiles } = initScanAllFiles(config, firebase, db);
 
 const main = async () => {
   return scanAllFiles(true, 500);

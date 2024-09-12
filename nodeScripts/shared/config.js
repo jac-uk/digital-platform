@@ -9,7 +9,7 @@ const CONSTANTS = {
   ZENHUB_ISSUES_WORKSPACE_ID: process.env.ZENHUB_ISSUES_WORKSPACE_ID,
   SLACK_TICKETING_APP_BOT_TOKEN: process.env.SLACK_TICKETING_APP_BOT_TOKEN,
   GITHUB_PAT: process.env.GITHUB_PAT, // personal access token
-  SCAN_SERVICE_URL: 'paste url here',
+  SCAN_SERVICE_URL: 'https://malware-scanner-dot-platform-production-9207d.appspot.com/scan',
   APPLICATION: {
     STATUS: {
       QUALIFYING_TEST_PASSED: 'qualifyingTestPassed',

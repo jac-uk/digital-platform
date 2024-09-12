@@ -5,7 +5,7 @@ import { app, firebase, db } from './shared/admin.js';
 import verifyChecksumFile from '../functions/actions/malware-scanning/verifyFileChecksum.js';
 const verifyChecksum = verifyChecksumFile(config, firebase, db);
 
-const fileURL = 'blank.docx';
+const fileURL = 'test/nothing.txt';
 
 const main = async () => {
   const result = await verifyChecksum(fileURL);
