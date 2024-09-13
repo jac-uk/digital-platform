@@ -2,8 +2,7 @@
 
 import config from './shared/config.js';
 import { firebase, app } from './shared/admin.js';
-import { createChecksumFile } from '../functions/actions/malware-scanning/createChecksum.js';
-const createChecksum = createChecksumFile(config, firebase);
+import createChecksum from '../functions/actions/malware-scanning/createChecksum.js';
 
 const fileURL = 'blank.docx';
 

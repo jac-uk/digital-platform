@@ -2,8 +2,8 @@
 
 import config from './shared/config.js';
 import { db, app, firebase } from './shared/admin.js';
-import { runScannerTestFile } from '../functions/actions/malware-scanning/runScannerTest.js';
-const runScannerTest = runScannerTestFile(config, firebase, db);
+import runScannerTestInit from '../functions/actions/malware-scanning/runScannerTest.js';
+const runScannerTest = runScannerTestInit(config, firebase, db);
 
 const main = async () => {
   return runScannerTest();

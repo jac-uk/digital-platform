@@ -2,8 +2,8 @@
 
 import config from './shared/config.js';
 import { app, firebase, db } from './shared/admin.js';
-import verifyChecksumFile from '../functions/actions/malware-scanning/verifyFileChecksum.js';
-const verifyChecksum = verifyChecksumFile(config, firebase, db);
+import verifyChecksumInit from '../functions/actions/malware-scanning/verifyFileChecksum.js';
+const verifyChecksum = verifyChecksumInit(config, firebase, db);
 
 const fileURL = 'test/nothing.txt';
 

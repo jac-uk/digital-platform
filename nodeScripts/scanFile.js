@@ -1,9 +1,9 @@
 'use strict';
 import config from './shared/config.js';
 import { firebase, app } from './shared/admin.js';
-import { scanFile } from '../functions/actions/malware-scanning/scanFile.js';
+import scanFileInit from '../functions/actions/malware-scanning/scanFile.js';
 
-const scan = scanFile(config, firebase);
+const scan = scanFileInit(config, firebase);
 
 const main = async () => {
   return scan('blank.docx');
@@ -11,7 +11,7 @@ const main = async () => {
 
 main()
   .then((result) => {
-    console.log(result);
+    console.log(result.statusText);
     app.delete();
     return process.exit();
   })

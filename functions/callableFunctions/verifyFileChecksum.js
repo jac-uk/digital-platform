@@ -1,10 +1,14 @@
 import functions from 'firebase-functions';
 import config from '../shared/config.js';
 import { firebase, db } from '../shared/admin.js';
-import verifyChecksumFile from '../actions/malware-scanning/verifyFileChecksum.js';
-const verifyChecksum = verifyChecksumFile(config, firebase, db);
+import verifyChecksumInit from '../actions/malware-scanning/verifyFileChecksum.js';
 
-export default functions.region('europe-west2').https.onCall(async (data, context) => {
+const verifyChecksum = verifyChecksumInit(config, firebase, db);
+
+export default functions
+  .region('europe-west2')
+  .https
+  .onCall(async (data, context) => {
   const { filePath } = data;
 
   try {
