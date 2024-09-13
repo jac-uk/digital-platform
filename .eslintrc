@@ -23,7 +23,7 @@
     "no-unused-vars": "warn",
 
     "import/no-unresolved": [
-      1,
+      2,
       { "ignore": ["^firebase-admin/.+"] }
     ],
     "import/no-commonjs": 2,
