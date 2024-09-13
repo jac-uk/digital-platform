@@ -120,7 +120,7 @@
     "promise/no-nesting": 1,
 
     "import/no-unresolved": [
-      2,
+      1,
       { "ignore": ["^firebase-admin/.+"] }
     ],
     "import/no-commonjs": 2,
