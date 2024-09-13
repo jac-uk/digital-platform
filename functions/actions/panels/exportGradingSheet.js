@@ -1,4 +1,4 @@
-import ExcelJS from 'ExcelJS';
+import ExcelJS from 'exceljs';
 import fs from 'fs';
 import { getTempLocalFilePath, writeToLocalFile, deleteLocalFile } from '../../shared/file.js';
 
