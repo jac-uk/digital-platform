@@ -1,7 +1,6 @@
 import exceljs from 'exceljs';
 import fs from 'fs';
 import { getTempLocalFilePath, writeToLocalFile, deleteLocalFile } from '../../shared/file.js';
-import initDrive from '../../shared/google-drive.js';
 
 export default () => {
 
