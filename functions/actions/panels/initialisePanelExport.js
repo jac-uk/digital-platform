@@ -1,5 +1,7 @@
 import { getDocument, getDocuments, applyUpdates, getAllDocuments, formatDate } from '../../shared/helpers.js';
 import initDrive from '../../shared/google-drive.js';
+import initExportGradingSheet from './exportGradingSheet.js';
+const { exportGradingSheet } = initExportGradingSheet();
 
 const drive = initDrive();
 
@@ -69,6 +71,9 @@ export default (config, firebase, db) => {
     const panelFolderId = await drive.createFolder(folderName, {
       parentId: settings.google.rootFolderId,
     });
+
+    // Create grading spreadsheet 
+    await exportGradingSheet(drive, panelFolderId, { applicationsMap }).catch(e => 'Error: Grading Sheet');
 
     // update panel and start processing
     const applicationIds = Object.keys(applicationsMap);
