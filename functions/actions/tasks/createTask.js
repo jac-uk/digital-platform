@@ -58,7 +58,7 @@ export default (config, firebase, db) => {
     // construct task document, based on next status
     switch (nextStatus) {
     case config.TASK_STATUS.PANELS_INITIALISED:
-      result = await initialisePanelTask(exercise, params.type, applicationRecords);
+      result = await initialisePanelTask(exercise, { taskType: params.type, applicationRecords: applicationRecords });
       break;
     case config.TASK_STATUS.TEST_INITIALISED:
       result = await initialiseTestTask(exercise.referenceNumber, params.type, timelineTask.date, timelineTask.endDate);
