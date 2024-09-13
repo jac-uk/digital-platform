@@ -1,4 +1,4 @@
-import exceljs from 'exceljs';
+import ExcelJS from 'ExcelJS';
 import fs from 'fs';
 import { getTempLocalFilePath, writeToLocalFile, deleteLocalFile } from '../../shared/file.js';
 
@@ -69,7 +69,7 @@ export default () => {
    */
   async function createWorkbook(columns, typeOptions, applicationIds) {
     // Initialise workbook and worksheet
-    let workbook = new exceljs.Workbook();
+    let workbook = new ExcelJS.Workbook();
     let worksheet = workbook.addWorksheet('Sheet1');
 
     // Define the columns, including the first column for Application ID
