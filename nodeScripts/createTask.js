@@ -2,12 +2,12 @@
 
 import config from './shared/config.js';
 import { firebase, app, db } from './shared/admin.js';
-import initUpdateTask from '../functions/actions/tasks/updateTask.js';
+import initCreateTask from '../functions/actions/tasks/createTask.js';
 
-const { updateTask } = initUpdateTask(config, firebase, db);
+const createTask = initCreateTask(config, firebase, db);
 
 const main = async () => {
-  return updateTask({
+  return createTask({
     exerciseId: 'R5mu47EVqEPf1WbXsLfZ',
     type: 'selectionDay',
   });
