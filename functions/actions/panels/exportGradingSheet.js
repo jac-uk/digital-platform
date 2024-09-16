@@ -4,7 +4,7 @@ import { getTempLocalFilePath, writeToLocalFile, deleteLocalFile } from '../../s
 import { MARKING_TYPE, markingScheme2Columns, markingTypeHasOptions, markingTypeGetOptions } from '../../shared/scoreSheetHelper.js';
 
 export {
-  exportGradingSheet,
+  exportGradingSheet
 };
 
 /**

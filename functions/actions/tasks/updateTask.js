@@ -5,7 +5,7 @@ import initRefreshApplicationCounts from '../exercises/refreshApplicationCounts.
 import initFactories from '../../shared/factories.js';
 import initQts from '../../shared/qts.js';
 import { getOverride } from './meritListHelper.js';
-import { markingScheme2ScoreSheet } from '../../shared/scoreSheetHelper.js'
+import { markingScheme2ScoreSheet } from '../../shared/scoreSheetHelper.js';
 
 export default (config, firebase, db) => {
   const {

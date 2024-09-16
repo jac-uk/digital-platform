@@ -25,7 +25,7 @@ export default (config, firebase, db) => {
     }
 
     // get exercise
-    const exerciseId = panel.exercise ? panel.exercise.id : panel.exerciseId
+    const exerciseId = panel.exercise ? panel.exercise.id : panel.exerciseId;
     const exercise = await getDocument(db.collection('exercises').doc(exerciseId));
 
     // get application to process
