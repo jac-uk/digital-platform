@@ -1,8 +1,8 @@
 const DEFAULT_STYLESHEET = `
   <style>
     body {
-      font-family: Khula, HelveticaNeue, Arial, Helvetica, sans-serif;
-      font-size: 1.1875rem;
+      font-family: Arial, Helvetica, sans-serif;
+      font-size: 11pt;
     }
     th {
       color: #0B0C14;
@@ -11,6 +11,7 @@ const DEFAULT_STYLESHEET = `
       border-bottom: solid 1px #0B0C14;
       padding: 4px 8px;
       vertical-align: top;
+      background-color: pink;
     }
     td {
       color: #0B0C14;
@@ -60,6 +61,9 @@ const DEFAULT_STYLESHEET = `
 
 class htmlWriter {
   constructor() {
+
+    console.log('html writer!');
+
     this.html = '';
     this.stylesheet = '';
   }
@@ -73,6 +77,9 @@ class htmlWriter {
     return this.html;
   }
   pageHeader() {
+
+    console.log(`this.stylesheet: ${this.stylesheet}`);
+
     if (this.stylesheet === '') {
       return `<html><head>${DEFAULT_STYLESHEET}</head><body>`;
     } else {
@@ -83,6 +90,9 @@ class htmlWriter {
     return '</body></html>';
   }
   setStylesheet(data) {
+
+    console.log('setStylesheet!!');
+
     this.stylesheet = data;
   }
   addTitle(data, textAlign = 'left') {
