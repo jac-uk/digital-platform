@@ -237,7 +237,7 @@ function markingScheme2Columns(markingScheme, editable = false) {
     if (item.type === 'group') {
       item.children.forEach(child => {
         const title = (numGroups > 1) ? `${item.ref}.${child.ref}` : child.ref;
-        columns.push({ parent: item.ref, ...child, title: title, editable: editable })
+        columns.push({ parent: item.ref, ...child, title: title, editable: editable });
       });
     } else {
       columns.push({ ...item, title: item.ref, editable: editable });
