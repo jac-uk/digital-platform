@@ -94,6 +94,9 @@ async function listCollections() {
   const collectionRefs = await db.listCollections();
   return collectionRefs.map(c => c.id);
 }
+
+listCollections;
+
 const main = async () => {
   console.log(chalk.green(`* Project Id: ${projectId}`));
   console.log(chalk.green(`* Environment: ${environment}`));
@@ -116,7 +119,7 @@ const main = async () => {
     console.log('Script execution cancelled.');
     process.exit(0); // Exit the script
   }
- 
+
   // Clean collections
   for (const collection of collections) {
     console.log(`Cleaning collection: "${collection}" ...`);
