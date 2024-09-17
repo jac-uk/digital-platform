@@ -22,7 +22,7 @@ const drive = initDrive();
 import { exportGradingSheet } from '../functions/actions/panels/exportGradingSheet.js';
 
 // Panel with applications on develop
-const panelId = 'W1F8ZMNjlxYGbceV7w0b';
+const panelId = 'U9Qrw1eMpXtMBw1k02lb';
 // exerciseId = 'wdpALbyICL7ZxxN5AQt8';
 // applicationIds: ['9dQV6YKbgibVF6zlcGqe', 'AzQNMOymDcUs0LjM7mlB'];
 

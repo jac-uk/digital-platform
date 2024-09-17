@@ -51,8 +51,8 @@ const MARKING_TYPE = {
     value: 'yesNo',
     label: 'Yes / No',
     options: [
-      { value: 'TRUE', label: 'Yes' },
-      { value: 'FALSE', label: 'No' },
+      { value: 'Yes', label: 'Yes' },
+      { value: 'No', label: 'No' },
     ],
     excludeFromScore: true,
   },
@@ -60,8 +60,8 @@ const MARKING_TYPE = {
     value: 'passFail',
     label: 'Pass / Fail',
     options: [
-      { value: 'TRUE', label: 'Pass' },
-      { value: 'FALSE', label: 'Fail' },
+      { value: 'Pass', label: 'Pass' },
+      { value: 'Fail', label: 'Fail' },
     ],
     excludeFromScore: true,
   },
@@ -232,9 +232,13 @@ function isScoreSheetComplete(markingScheme, scoreSheet) {
 function markingScheme2Columns(markingScheme, editable = false) {
   const columns = [];
   if (!markingScheme) return columns;
+  let numGroups = markingScheme.filter(item => item.type === 'group').length;
   markingScheme.forEach(item => {
     if (item.type === 'group') {
-      item.children.forEach(child => columns.push({ parent: item.ref, ...child, title: `${item.ref}.${child.ref}`, editable: editable }));
+      item.children.forEach(child => {
+        const title = (numGroups > 1) ? `${item.ref}.${child.ref}` : child.ref;
+        columns.push({ parent: item.ref, ...child, title: title, editable: editable })
+      });
     } else {
       columns.push({ ...item, title: item.ref, editable: editable });
     }
