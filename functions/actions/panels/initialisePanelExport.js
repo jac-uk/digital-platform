@@ -1,7 +1,6 @@
 import { getDocument, getDocuments, applyUpdates, getAllDocuments, formatDate } from '../../shared/helpers.js';
 import initDrive from '../../shared/google-drive.js';
-import initExportGradingSheet from './exportGradingSheet.js';
-const { exportGradingSheet } = initExportGradingSheet();
+import { exportGradingSheet } from './exportGradingSheet.js';
 
 const drive = initDrive();
 
@@ -26,10 +25,6 @@ export default (config, firebase, db) => {
     if (panel.status !== 'approved') {
       return false;
     }
-
-    // get exercise
-    // TODO store `panel.exercise.referenceNumber` instead of getting exercise
-    const exercise = await getDocument(db.collection('exercises').doc(panel.exerciseId));
 
     // get application ids
     let applicationRecords = await getDocuments(
@@ -62,7 +57,7 @@ export default (config, firebase, db) => {
 
     // get exercise ref number and make a folder name
     const folderName =
-      (exercise.referenceNumber).slice(3) + ' ' + panel.name;
+      (panel.exercise.referenceNumber).slice(3) + ' ' + panel.name;
 
     // login to google drive and create panel folder
     await drive.login();
@@ -73,7 +68,7 @@ export default (config, firebase, db) => {
     });
 
     // Create grading spreadsheet 
-    await exportGradingSheet(drive, panelFolderId, { applicationsMap }).catch(e => 'Error: Grading Sheet');
+    await exportGradingSheet(drive, panelFolderId, folderName, panel).catch(e => 'Error: Grading Sheet');
 
     // update panel and start processing
     const applicationIds = Object.keys(applicationsMap);

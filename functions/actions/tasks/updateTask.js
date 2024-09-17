@@ -5,6 +5,7 @@ import initRefreshApplicationCounts from '../exercises/refreshApplicationCounts.
 import initFactories from '../../shared/factories.js';
 import initQts from '../../shared/qts.js';
 import { getOverride } from './meritListHelper.js';
+import { markingScheme2ScoreSheet } from '../../shared/scoreSheetHelper.js';
 
 export default (config, firebase, db) => {
   const {
@@ -228,7 +229,7 @@ export default (config, firebase, db) => {
     if (task && applicationRecords) result.data['_stats.totalApplications'] = applicationRecords.length;
     if (!task || (task && !task.markingScheme)) {
       result.data.markingScheme = createMarkingScheme(exercise, taskType);
-      result.data.emptyScoreSheet = scoreSheet({ type: taskType, exercise: exercise });
+      result.data.emptyScoreSheet = markingScheme2ScoreSheet(result.data.markingScheme); // scoreSheet({ type: taskType, exercise: exercise });
     }
     return result;
   }
@@ -543,7 +544,7 @@ export default (config, firebase, db) => {
 
   /**
    * initialiseDataTask
-   * Initialises a data task. Currently does nothing!
+   * Initialises a data task.
    * @param {*} exercise
    * @param {*} taskType
    * @returns Result object of the form `{ success: Boolean, data: Object }`. If successful then `data` is to be stored in the `task` document
@@ -557,7 +558,7 @@ export default (config, firebase, db) => {
     result.success = true;
     result.data.grades = config.GRADES;
     result.data.markingScheme = createMarkingScheme(exercise, taskType);
-    result.data.emptyScoreSheet = scoreSheet({ type: taskType, exercise: exercise });
+    result.data.emptyScoreSheet = markingScheme2ScoreSheet(result.data.markingScheme);  // scoreSheet({ type: taskType, exercise: exercise });
     return result;
   }
 
@@ -656,7 +657,7 @@ export default (config, firebase, db) => {
 
   /**
    * activateDataTask
-   * Activates a data task. Currently does nothing!
+   * Activates a data task.
    * @param {*} exercise
    * @param {*} task
    * @returns Result object of the form `{ success: Boolean, data: Object }`. If successful then `data` is to be stored in the `task` document

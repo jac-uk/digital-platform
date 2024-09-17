@@ -302,15 +302,22 @@ export default (config) => {
     // console.log('createMarkingScheme', exercise, taskType);
     const markingScheme = [];
     switch (taskType) {
-    case config.TASK_TYPE.SIFT:
-      console.log('sift', getExerciseCapabilities(exercise));
-      markingScheme.push(createMarkingSchemeGroup(taskType, getExerciseCapabilities(exercise)));
+    case config.TASK_TYPE.SIFT: {
+      const capabilities = getExerciseCapabilities(exercise);
+      capabilities.push('OVERALL');
+      markingScheme.push(createMarkingSchemeGroup(taskType, capabilities));
       break;
-    case config.TASK_TYPE.SELECTION_DAY:
-      getExerciseSelectionCategories(exercise).forEach(cat => {
-        markingScheme.push(createMarkingSchemeGroup(cat, getExerciseCapabilities(exercise)));
+    }
+    case config.TASK_TYPE.SELECTION_DAY: {
+      const categories = getExerciseSelectionCategories(exercise);
+      categories.push('overall');
+      const capabilities = getExerciseCapabilities(exercise);
+      capabilities.push('OVERALL');
+      categories.forEach(cat => {
+        markingScheme.push(createMarkingSchemeGroup(cat, capabilities));
       });
       break;
+    }
     default:
       markingScheme.push(createMarkingSchemeGroup(taskType, []));
     }
