@@ -1,13 +1,13 @@
 'use strict';
-
 import config from './shared/config.js';
 import { firebase, app, db } from './shared/admin.js';
-import initScanAllFiles from '../functions/actions/malware-scanning/scanAllFiles.js';
+import scanFileAndCreateChecksumInit from '../functions/actions/malware-scanning/scanFileAndCreateChecksum.js';
 
-const { scanAllFiles } = initScanAllFiles(config, firebase, db);
+const scanFileAndCreateChecksum = scanFileAndCreateChecksumInit(config, firebase, db);
 
 const main = async () => {
-  return scanAllFiles(true, 500);
+  let result = await scanFileAndCreateChecksum('blank.docx');
+  return result;
 };
 
 main()
