@@ -194,7 +194,7 @@ const CONSTANTS = {
         group: 'Further Information to be disclosed',
         title: 'Further Information',
         details: 'furtherInformationDetails',
-        summary: 'Has any other character issues',
+        summary: 'Candidate has declared further information',
       },
     },
     CHARACTER_ISSUE_STATUS: {
