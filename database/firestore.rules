@@ -155,7 +155,7 @@ service cloud.firestore {
 
       match /documents/{documentId} {
         allow get, create, update: if request.auth.uid == candidateId &&
-          documentId in ['personalDetails', 'characterInformation', 'equalityAndDiversitySurvey'];
+          documentId in ['personalDetails', 'characterInformation', 'equalityAndDiversitySurvey', 'qualifications', 'postQualificationExperience'];
         allow read: if userIsAuthenticated() && userIsJAC() && hasPermission('c1');
         allow create: if userIsAuthenticated() && userIsJAC() && hasPermission('c2');
         allow update: if userIsAuthenticated() && userIsJAC() && hasPermission('c3');
