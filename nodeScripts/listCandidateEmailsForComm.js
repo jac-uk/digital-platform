@@ -1,11 +1,23 @@
+/**
+ * This script will list candidate emails for communication in a candidate_emails_for_comm.csv .
+ * The candidates will meet a least one of following criteria:
+ *  - Applied on or after 1 September 2023, can specify date with appliedAfter variable.
+ *  - Register on Apply site in 6 months (from today). 
+ * 
+ * EXAMPLE USAGE:
+ *   ```
+ *   npm run nodeScript listCandidateEmailsForComm
+ *   ```
+ */
+
 'use strict';
 
-import { firebase, app, db } from './shared/admin.js';
-import { getDocuments } from '../functions/shared/helpers.js'
+import { db } from './shared/admin.js';
 import _ from 'lodash'
 import { createRequire } from 'module';
 const require = createRequire(import.meta.url);
 
+const appliedAfter = new Date('09-01-2023')
 
 async function listEmailsAppliedAfter(date) {
   const batchSize = 100
@@ -91,7 +103,7 @@ async function listCandidateEmailsRegisteredInLastSixMonths() {
 
 const main = async () => {
 
-  const emails1 = await listEmailsAppliedAfter(new Date('09-01-2023'))
+  const emails1 = await listEmailsAppliedAfter(appliedAfter)
   const emails2 = await listCandidateEmailsRegisteredInLastSixMonths()
   const allEmails = _.union(emails1, emails2)
  
