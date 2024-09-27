@@ -14,8 +14,7 @@
 
 import { db } from './shared/admin.js';
 import _ from 'lodash'
-import { createRequire } from 'module';
-const require = createRequire(import.meta.url);
+import { createObjectCsvWriter as createCsvWriter } from 'csv-writer';
 
 const appliedAfter = new Date('09-01-2023')
 
@@ -107,7 +106,6 @@ const main = async () => {
   const emails2 = await listCandidateEmailsRegisteredInLastSixMonths()
   const allEmails = _.union(emails1, emails2)
  
- const createCsvWriter = require('csv-writer').createObjectCsvWriter;
  const headers = [
    { id: 'email', title: 'email' },
  ];
