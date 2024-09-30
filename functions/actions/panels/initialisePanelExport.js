@@ -55,9 +55,13 @@ export default (config, firebase, db) => {
     // get settings
     const settings = await getDocument(db.collection('settings').doc('services'));
 
+    // get exercise
+    const exerciseId = panel.exercise ? panel.exercise.id : panel.exerciseId;
+    const exercise = await getDocument(db.collection('exercises').doc(exerciseId));
+
     // get exercise ref number and make a folder name
     const folderName =
-      (panel.exercise.referenceNumber).slice(3) + ' ' + panel.name;
+      (exercise.referenceNumber).slice(3) + ' ' + panel.name;
 
     // login to google drive and create panel folder
     await drive.login();
