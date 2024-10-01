@@ -23,7 +23,14 @@ export default (auth) => {
             // eslint-disable-next-line no-empty
         }
 
+        console.log(`Check for email: ${newEmailAddress}`);
+        console.log('newEmailUser:');
+        console.log(newEmailUser);
+
         if (newEmailUser) {
+
+          console.log('RETURNING ERROR AS EMAIL ALREADY EXISTS!');
+
           return {
             status: 'error',
             data: {
@@ -33,6 +40,8 @@ export default (auth) => {
           };
         }
         
+        console.log('EMAIL UNIQUE SO UPDATING USER');
+
         // Update user
         const updatedUser = await auth.updateUser(currentUser.uid, {email: newEmailAddress});
 
