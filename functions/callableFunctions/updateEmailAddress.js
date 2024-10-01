@@ -18,6 +18,9 @@ export default functions.region('europe-west2').https.onCall(async (data, contex
   }, data)) {
     throw new functions.https.HttpsError('invalid-argument', 'Please provide valid arguments');
   }
+
+  console.log('Calling updateEmailAddress ...');
+
   return await updateEmailAddress(data);
 
 });

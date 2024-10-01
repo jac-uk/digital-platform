@@ -9,10 +9,17 @@ export default (auth) => {
     const currentEmailAddress = data.currentEmailAddress;
     const newEmailAddress = data.newEmailAddress;
 
+    console.log('In updateEmailAddress ...');
+
     try {
       const emailRegEx = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
 
+      console.log('Validating');
+
       if (emailRegEx.test(currentEmailAddress) === true && (emailRegEx.test(newEmailAddress) === true)) {
+
+        console.log('Valid email');
+
         const currentUser = await auth.getUserByEmail(currentEmailAddress);
 
         // Check if the new email already exists (throws an error if the user is NOT found, which we need to catch)
@@ -50,6 +57,9 @@ export default (auth) => {
           data: updatedUser,
         };
       } else {
+
+        console.log('Invalid email');
+
         return {
           status: 'error',
           data: {
