@@ -19,7 +19,9 @@ export default (auth) => {
         let newEmailUser = null;
         try {
           newEmailUser = await auth.getUserByEmail(newEmailAddress);
-        } catch (e1) {}
+        } catch (e1) {
+            // eslint-disable-next-line no-empty
+        }
 
         if (newEmailUser) {
           return {
@@ -28,7 +30,7 @@ export default (auth) => {
               code: 'auth/email-already-exists',
               message: 'Unable to update email at this time. Please contact the admin if the problem persists.',
             },
-          }
+          };
         }
         
         // Update user
