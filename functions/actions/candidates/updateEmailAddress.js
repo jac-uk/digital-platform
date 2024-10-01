@@ -13,8 +13,29 @@ export default (auth) => {
       const emailRegEx = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
 
       if (emailRegEx.test(currentEmailAddress) === true && (emailRegEx.test(newEmailAddress) === true)) {
-        const user = await auth.getUserByEmail(currentEmailAddress);
-        const updatedUser = await auth.updateUser(user.uid, {email: newEmailAddress});
+        const currentUser = await auth.getUserByEmail(currentEmailAddress);
+
+        // Check if the new email already exists (throws an error if the user is NOT found, which we need to catch)
+        let newEmailUser = null;
+        try {
+          newEmailUser = await auth.getUserByEmail(newEmailAddress);
+        } catch (e1) {
+            // eslint-disable-next-line no-empty
+        }
+
+        if (newEmailUser) {
+          return {
+            status: 'error',
+            data: {
+              code: 'auth/email-already-exists',
+              message: 'Unable to update email at this time. Please contact the admin if the problem persists.',
+            },
+          };
+        }
+        
+        // Update user
+        const updatedUser = await auth.updateUser(currentUser.uid, {email: newEmailAddress});
+
         return {
           status: 'success',
           data: updatedUser,
