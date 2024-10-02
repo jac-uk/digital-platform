@@ -50,7 +50,13 @@ export default (auth) => {
         console.log('EMAIL UNIQUE SO UPDATING USER');
 
         // Update user
-        const updatedUser = await auth.updateUser(currentUser.uid, {email: newEmailAddress});
+        const updatedUser = await auth.updateUser(
+          currentUser.uid,
+          {
+            email: newEmailAddress,
+            emailVerified: false,   // Ensure the user must verify the email
+          }
+        );
 
         return {
           status: 'success',
