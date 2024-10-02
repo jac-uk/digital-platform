@@ -58,6 +58,21 @@ export default (auth) => {
           }
         );
 
+
+        console.log(`Email updated successfully for UID: ${currentUser.uid}`);
+
+        // Generate email verification link
+        const verificationLink = await auth.generateEmailVerificationLink(newEmailAddress);
+        console.log(`Verification email link generated: ${verificationLink}`);
+    
+
+
+        // @TODO: USE A TEMPLATE TO SEND THE EMAIL!!
+
+
+        
+
+
         return {
           status: 'success',
           data: updatedUser,
