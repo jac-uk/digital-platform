@@ -431,7 +431,7 @@ export default (firebase, config, db) => {
 
     if (exercise._applicationVersion >= 2) {
       questions = config.APPLICATION.CHARACTER_ISSUES_V2;
-      answers = application.characterInformationV2;
+      answers = application.characterInformationV3 ? application.characterInformationV3 : application.characterInformationV2;
     } else if (application.characterInformation) {
       questions = config.APPLICATION.CHARACTER_ISSUES;
       answers = application.characterInformation;
