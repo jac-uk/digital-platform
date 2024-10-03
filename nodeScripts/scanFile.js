@@ -6,7 +6,7 @@ import scanFileInit from '../functions/actions/malware-scanning/scanFile.js';
 const scan = scanFileInit(config, firebase);
 
 const main = async () => {
-  return scan('blank.docx');
+  return scan('exercise/1j25Hmhx4y1M1tF523FH/independent-assessors - 202491614128.docx');
 };
 
 main()
