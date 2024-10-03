@@ -3,6 +3,7 @@ import backupFirestore from './scheduledFunctions/backupFirestore.js';
 import backupAuthentication from './scheduledFunctions/backupAuthentication.js';
 import processNotifications from './scheduledFunctions/processNotifications.js';
 import scheduleScanAllFiles from './scheduledFunctions/scheduleScanAllFiles.js';
+import runScannerTest from './scheduledFunctions/runScannerTest.js';
 
 // Background
 import onDelete from './backgroundFunctions/onDelete.js';
@@ -108,6 +109,7 @@ export {
   backupAuthentication,
   processNotifications,
   scheduleScanAllFiles,
+  runScannerTest,
 
   // Background
   onDelete,
