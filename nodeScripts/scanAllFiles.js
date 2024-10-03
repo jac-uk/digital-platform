@@ -7,7 +7,7 @@ import initScanAllFiles from '../functions/actions/malware-scanning/scanAllFiles
 const { scanAllFiles } = initScanAllFiles(config, firebase, db);
 
 const main = async () => {
-  return scanAllFiles(false, 1000);
+  return scanAllFiles(false, 500);
 };
 
 main()
