@@ -42,9 +42,9 @@ function flattenCharacterInformation(application) {
   let questions;
   let answers;
 
-  if (application.characterInformationV2) {
+  if (application.characterInformationV2 || application.characterInformationV3) {
     questions = config.APPLICATION.CHARACTER_ISSUES_V2;
-    answers = application.characterInformationV2;
+    answers = application.characterInformationV3 ? application.characterInformationV3 : application.characterInformationV2;
   } else if (application.characterInformation) {
     questions = config.APPLICATION.CHARACTER_ISSUES;
     answers = application.characterInformation;
