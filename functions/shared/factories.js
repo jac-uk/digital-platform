@@ -24,6 +24,7 @@ export default (CONSTANTS) => {
     newCandidateFormResponse,
     newCandidateFormNotification,
     newNotificationPublishedFeedbackReport,
+    newNotificationEmailVerificationLink,
   };
 
   function newNotificationExerciseApprovalSubmit(firebase, exerciseId, exercise, email) {
@@ -832,9 +833,35 @@ export default (CONSTANTS) => {
         exerciseName: exerciseName,
         testType: testType,
         reportsLink: reportsLink,
-        createdAt: firebase.firestore.FieldValue.serverTimestamp(),
-        status: 'ready',
       },
+      createdAt: firebase.firestore.FieldValue.serverTimestamp(),
+      status: 'ready',
+    };
+  }
+
+  /**
+   * Send email verification link ** on change of email address **
+   * (Note that this is not used for sending the verification link on sign up)
+   * 
+   * @param {*} email 
+   * @param {*} verificationLink 
+   * @returns 
+   */
+  function newNotificationEmailVerificationLink(firebase, email, verificationLink) {
+    const templateName = 'Change Email Address Verification Link';
+    const templateId = 'e61ecb33-511e-403e-b633-652f94a19e43';
+    return {
+      email: email,
+      replyTo: '',
+      template: {
+        name: templateName,
+        id: templateId,
+      },
+      personalisation: {
+        verificationLink: verificationLink,
+      },
+      createdAt: firebase.firestore.Timestamp.fromDate(new Date()),
+      status: 'ready',
     };
   }
 };
