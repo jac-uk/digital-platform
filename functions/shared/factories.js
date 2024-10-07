@@ -610,6 +610,7 @@ export default (CONSTANTS) => {
       pjeDays: null,
       postQualificationExperience: null,
       previousJudicialExperienceApply: null,
+      published: null,
       qualifications: null,
       reasonableLengthService: null,
       referenceNumber: null,
