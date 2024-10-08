@@ -333,7 +333,6 @@ export default (config) => {
           ref: childRef,
           type: 'grade',
         };
-        if (childRef === 'OVERALL') item.excludeFromScore = true;
         return item;
       }),
     };
@@ -477,7 +476,7 @@ export default (config) => {
   }
 
   function getScoreSheetItemTotal(item, scoreSheet) {
-    if (!item.excludeFromScore) {
+    if (item.includeInScore) {
       switch (item.type) {
       case config.MARKING_TYPE.GRADE:
         if (scoreSheet[item.ref] && config.GRADE_VALUES[scoreSheet[item.ref]]) {
