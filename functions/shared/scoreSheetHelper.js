@@ -4,10 +4,14 @@ import clone from 'clone';
 import { DIVERSITY_CHARACTERISTICS, hasDiversityCharacteristic } from './diversityCharacteristics.js';
 
 export {
+  SCORESHEET_TOOLS,
   MARKING_TYPE,
+  ADDITIONAL_COLUMNS,
   GRADES,
   GRADE_VALUES,
   getMarkingType,
+  getAdditionalColumns,
+  getAdditionalColumn,
   getCompleteScoreSheet,
   getScoreSheetTotal,
   markingScheme2ScoreSheet,
@@ -17,24 +21,33 @@ export {
   markingScheme2Columns,
   markingScheme2ColumnHeaders,
   markingTypeHasOptions,
-  markingTypeGetOptions
+  markingTypeGetOptions,
+  getScoreSheetItemTotal
+};
+
+const SCORESHEET_TOOLS = {
+  FIND: 'find',
+  COPY: 'copy',
+  PASTE: 'paste',
+  SCORE: 'score',
+  DIVERSITY: 'diversity',
 };
 
 const MARKING_TYPE = {
   GROUP: {
     value: 'group',
     label: 'Group',
-    excludeFromScore: true,
+    includeInScore: false,
   },
   SCORE: {
     value: 'score',
     label: 'Score',
-    excludeFromScore: true,
+    includeInScore: true,
   },
   NUMBER: {
     value: 'number',
     label: 'Number',
-    excludeFromScore: false,
+    includeInScore: false,
   },
   GRADE: {
     value: 'grade',
@@ -45,25 +58,25 @@ const MARKING_TYPE = {
       { value: 'C', label: 'C', score: 2 },
       { value: 'D', label: 'D', score: 1 },
     ],
-    excludeFromScore: false,
+    includeInScore: true,
   },
   YES_NO: {
     value: 'yesNo',
     label: 'Yes / No',
     options: [
-      { value: 'Yes', label: 'Yes' },
-      { value: 'No', label: 'No' },
+      { value: 'TRUE', label: 'Yes' },
+      { value: 'FALSE', label: 'No' },
     ],
-    excludeFromScore: true,
+    includeInScore: false,
   },
   PASS_FAIL: {
     value: 'passFail',
     label: 'Pass / Fail',
     options: [
-      { value: 'Pass', label: 'Pass' },
-      { value: 'Fail', label: 'Fail' },
+      { value: 'TRUE', label: 'Pass' },
+      { value: 'FALSE', label: 'Fail' },
     ],
-    excludeFromScore: true,
+    includeInScore: false,
   },
   LEVEL: {
     value: 'level',
@@ -74,7 +87,25 @@ const MARKING_TYPE = {
       { value: 'Medium', label: 'Medium' },
       { value: 'High', label: 'High' },
     ],
-    excludeFromScore: true,
+    includeInScore: false,
+  },
+};
+
+const ADDITIONAL_COLUMNS = {
+  WELSH_ADMIN: {
+    value: 'welsh-admin',
+    label: 'Welsh Administration Questions',
+    config: { ref: 'welsh-admin', type: MARKING_TYPE.LEVEL.value, includeInScore: false },
+  },
+  WELSH_LANGUAGE: {
+    value: 'welsh-language',
+    label: 'Welsh Language',
+    config: { ref: 'welsh-language', type: MARKING_TYPE.PASS_FAIL.value, includeInScore: false },
+  },
+  ASC_MET: {
+    value: 'asc-met',
+    label: 'ASC Met',
+    config: { ref: 'asc-met', type: MARKING_TYPE.YES_NO.value, includeInScore: false },
   },
 };
 
@@ -90,6 +121,16 @@ function getMarkingType(type) {
   const markingType = Object.values(MARKING_TYPE).find(item => item.value === type);
   if (markingType) return markingType;
   return { value: null, label: null };
+}
+
+function getAdditionalColumns() {
+  return Object.values(ADDITIONAL_COLUMNS);
+}
+
+function getAdditionalColumn(ref) {
+  const column = Object.values(ADDITIONAL_COLUMNS).find(item => item.value === ref);
+  if (column) return column;
+  return { value: null, label: null, config: null };
 }
 
 function markingTypeHasOptions(type) {
@@ -128,7 +169,7 @@ function getScoreSheetTotal(markingScheme, scoreSheet) {
 }
 
 function getScoreSheetItemTotal(item, scoreSheet) {
-  if (!item.excludeFromScore) {
+  if (item.includeInScore) {
     switch (item.type) {
     case MARKING_TYPE.GRADE.value:
       if (scoreSheet[item.ref] && GRADE_VALUES[scoreSheet[item.ref]]) {
@@ -264,6 +305,7 @@ function markingScheme2ColumnHeaders(markingScheme) {
         colspan: item.children.length,
       });
     } else {
+      // TODO: confirm if different type need to add header as well
       columns += 1;
     }
   });
