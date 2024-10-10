@@ -228,6 +228,16 @@ const CONSTANTS = {
       PROFESSIONAL_CONDUCT: 'professionalConduct',
       FURTHER_DISCLOSURES: 'furtherDisclosures',
     },
+    GUIDANCE_REFERENCE_V2: {
+      CRIMINAL_OFFENCES: 'criminalOffencesV2',
+      MOTERING_OFFENCES: 'moteringOffencesV2',
+      FIXED_PENALTY_NOTICES: 'fixedPenaltyNoticesV2',
+      FINANCIAL_INSOLVENCY_DEBT: 'financialInsolvencyDebtV2',
+      FINANCIAL_VAT_TAX: 'financialVatTaxV2',
+      PROFESSIONAL_CONDUCT: 'professionalConductV2',
+      CIVIL_PROCEEDINGS: 'civilProceedingsV2',
+      FURTHER_DISCLOSURES: 'furtherDisclosuresV2',
+    },
   },
   ASSESSMENTS_URL: process.env.ASSESSMENTS_URL,
   ASSESSMENT_METHOD: {

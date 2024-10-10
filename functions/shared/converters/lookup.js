@@ -245,7 +245,7 @@ const lookup = (value) => {
       'multipleOtherMatters': 'Multiple other matters',
       'mixed': 'Mixed',
 
-      // character issues guidance reference
+      // character issues guidance reference V1
       'criminalOffences': 'Criminal offences: paras 21-24',
       'moteringOffences': 'Motoring offences: paras 25-30',
       'fixedPenaltyNotices': 'Fixed penalty notices: paras 31-34',
@@ -253,6 +253,15 @@ const lookup = (value) => {
       'financialVatTax': 'Financial VAT and Tax: paras 39-43',
       'professionalConduct': 'Professional conduct: paras 44-57',
       'furtherDisclosures': 'Further disclosures: paras 58-65',
+      // character issues guidance reference V2
+      'criminalOffencesV2': 'Criminal offences: paras 15-17',
+      'moteringOffencesV2': 'Motoring offences: paras 18-23',
+      'fixedPenaltyNoticesV2': 'Fixed penalty notices: paras 24-26',
+      'financialInsolvencyDebtV2': 'Financial insolvency and debt: paras 28-32',
+      'financialVatTaxV2': 'Financial VAT and Tax: paras 33-38',
+      'professionalConductV2': 'Professional conduct: paras 39-51',
+      'civilProceedingsV2': 'Civil proceedings: paras 52-53',
+      'furtherDisclosuresV2': 'Further disclosures: paras 56-60',
     };
 
     return lookup[value] || value;
