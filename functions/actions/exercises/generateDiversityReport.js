@@ -107,6 +107,12 @@ export default (config, firebase, db) => {
       }
     }
 
+    if (isProcessingVersion2) {
+      statuses.push(APPLICATION_STATUS.SELECTION_DAY_PASSED);
+    } else {
+      statuses.push(APPLICATION_STATUS.PASSED_SELECTION);
+    }
+
     statuses.forEach(status => {
       // get applications by status in statusLog
       const applicationRecordsByStatus = applicationRecords.filter(doc => doc.statusLog && doc.statusLog[status]);
