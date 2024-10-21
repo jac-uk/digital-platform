@@ -5,6 +5,7 @@ export default (config) => {
   return {
     sendEmail,
     previewEmail,
+    sendSMS,
   };
 
   function sendEmail(email, templateId, personalisation) {
@@ -42,4 +43,21 @@ export default (config) => {
       .catch((err) => console.error(err));
   }
 
+  function sendSMS(intlMobileNumber, templateId, personalisation) {
+    const client = new NotifyClient(config.NOTIFY_KEY);
+    return client
+      .sendSms(templateId, intlMobileNumber, {
+        personalisation: personalisation,
+        reference: null,
+        smsSenderId: 'GOVUK',
+      })
+      .then(response => {
+        console.info(response);
+        return true;
+      })
+      .catch(err => {
+        console.error('Error Sending SMS:', JSON.stringify(err));
+        return false;
+      });
+  }
 };

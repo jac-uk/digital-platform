@@ -2,7 +2,7 @@ import { getDocument, getDocuments, applyUpdates } from '../shared/helpers.js';
 import initNotify from '../shared/notify.js';
 
 export default (config, firebase, db) => {
-  const { sendEmail, previewEmail } = initNotify(config);
+  const { sendEmail, previewEmail, sendSMS } = initNotify(config);
   return {
     processNotifications,
     previewNotification,
@@ -34,41 +34,20 @@ export default (config, firebase, db) => {
       );
 
       // send to Notify
-      const sendToRecipient = services.notifications.sendToRecipient;
       const promises = [];
       const commands = [];
       for (let i = 0, len = notifications.length; i < len; ++i) {
         const notification = notifications[i];
-        let toEmail = sendToRecipient ? notification.email : notification.replyTo;
-        if (!toEmail) { toEmail = services.notifications.defaultMailbox; }
-        promises.push(
-          sendEmail(
-            toEmail,
-            notification.template.id,
-            notification.personalisation
-          ).then((result) => {
-            if (result === true) {
-              commands.push({
-                command: 'update',
-                ref: notification.ref,
-                data: {
-                  status: 'sent',
-                  sentAt: firebase.firestore.Timestamp.fromDate(new Date()),
-                  sentTo: toEmail,
-                },
-              });
-            } else {
-              commands.push({
-                command: 'update',
-                ref: notification.ref,
-                data: {
-                  status: 'failed',
-                },
-              });
-            }
-            return result;
-          })
-        );
+
+        let promise = null;
+        if (Object.hasOwn(notification, 'messageType') && notification.messageType === 'sms') {
+          promise = processSMS(notification);
+        }
+        else {
+          const sendToRecipient = services.notifications.sendToRecipient;
+          const defaultMailbox = services.notifications.defaultMailbox;
+          promise = processEmail(notification, sendToRecipient, defaultMailbox);
+        }
       }
       await Promise.all(promises);
 
@@ -105,4 +84,67 @@ export default (config, firebase, db) => {
     return notifications.length;
   }
 
+  function processSMS(notification) {
+    return sendSMS(
+      notification.mobile,
+      notification.template.id,
+      notification.personalisation
+    ).then((result) => {
+      if (result === true) {
+        commands.push({
+          command: 'update',
+          ref: notification.ref,
+          data: {
+            status: 'sent',
+            sentAt: firebase.firestore.Timestamp.fromDate(new Date()),
+            sentTo: notification.intlMobileNumber,
+          },
+        });
+      } else {
+        commands.push({
+          command: 'update',
+          ref: notification.ref,
+          data: {
+            status: 'failed',
+          },
+        });
+      }
+      return result;
+    })
+    .catch(err => {
+      console.log('PROCESS SMS ERROR');
+      console.log(err);
+    });
+  }
+
+  function processEmail(notification, sendToRecipient, defaultMailbox) {
+    let toEmail = sendToRecipient ? notification.email : notification.replyTo;
+    if (!toEmail) { toEmail = defaultMailbox; }
+    return sendEmail(
+      toEmail,
+      notification.template.id,
+      notification.personalisation
+    ).then((result) => {
+      if (result === true) {
+        commands.push({
+          command: 'update',
+          ref: notification.ref,
+          data: {
+            status: 'sent',
+            sentAt: firebase.firestore.Timestamp.fromDate(new Date()),
+            sentTo: toEmail,
+          },
+        });
+      } else {
+        commands.push({
+          command: 'update',
+          ref: notification.ref,
+          data: {
+            status: 'failed',
+          },
+        });
+      }
+      return result;
+    });
+  }
 };
