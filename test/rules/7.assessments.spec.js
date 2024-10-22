@@ -108,7 +108,7 @@ describe('Assessments', () => {
     it('allow authenticated user to update own assessment data', async () => {
       const db = await setup(
         { uid: 'user1', email: 'user1@user1.user1', email_verified: true },
-        { 'assessments/assessment1': { assessor: { email: 'user1@user1.user1' }, status: 'pending', hardLimitDate: getTimeStamp(tomorrow) } }
+        { 'assessments/assessment1': { assessor: { email: 'user1@user1.user1' }, status: 'pending', dueDate: getTimeStamp(tomorrow) } }
       );
       await assertSucceeds(db.collection('assessments').doc('assessment1').update({ status: 'completed', 'assessor.id': 'user1' }));
     });
