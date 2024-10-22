@@ -268,7 +268,7 @@ service cloud.firestore {
         resource.data.assessor.email == request.resource.data.assessor.email &&
         resource.data.status == 'pending' &&
         (request.resource.data.status == 'completed' || request.resource.data.status == 'declined') &&
-        request.time <= resource.data.hardLimitDate;
+        request.time <= resource.data.dueDate;
         // TODO allow uploads after the due date but before the hard limit resource.data.dueDate >= request.time;
     }
 
