@@ -25,6 +25,7 @@ export default (CONSTANTS) => {
     newCandidateFormNotification,
     newNotificationPublishedFeedbackReport,
     newNotificationEmailVerificationLink,
+    newSmsNotificationLoginVerificationNumber,
   };
 
   function newNotificationExerciseApprovalSubmit(firebase, exerciseId, exercise, email) {
@@ -860,6 +861,31 @@ export default (CONSTANTS) => {
       },
       personalisation: {
         verificationLink: verificationLink,
+      },
+      createdAt: firebase.firestore.Timestamp.fromDate(new Date()),
+      status: 'ready',
+    };
+  }
+
+  /**
+   * Send sms notification for login device confirmation
+   * @param {*} firebase 
+   * @param {*} intlMobileNumber 
+   * @param {*} verificationNumber 
+   * @returns 
+   */
+  function newSmsNotificationLoginVerificationNumber(firebase, intlMobileNumber, verificationNumber) {
+    const templateName = 'Login Verification Number';
+    const templateId = '18407df7-f669-4b72-9cab-3115bb66563d';
+    return {
+      messageType: 'sms',
+      mobile: intlMobileNumber,
+      template: {
+        name: templateName,
+        id: templateId,
+      },
+      personalisation: {
+        verificationNumber: verificationNumber,
       },
       createdAt: firebase.firestore.Timestamp.fromDate(new Date()),
       status: 'ready',
