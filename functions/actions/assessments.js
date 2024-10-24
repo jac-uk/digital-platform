@@ -356,7 +356,7 @@ export default (config, firebase, db) => {
     }
 
     // write to db
-    result = await applyUpdates(db, commands);
+    const result = await applyUpdates(db, commands);
     return result ? assessments.length : false;
   }
 
