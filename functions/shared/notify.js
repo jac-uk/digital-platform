@@ -49,14 +49,13 @@ export default (config) => {
       .sendSms(templateId, intlMobileNumber, {
         personalisation: personalisation,
         reference: null,
-        smsSenderId: 'GOVUK',
       })
       .then(response => {
         console.info(response);
         return true;
       })
       .catch(err => {
-        console.error('Error Sending SMS:', JSON.stringify(err));
+        console.error('Error Sending SMS:', JSON.stringify(err.response.data));
         return false;
       });
   }
