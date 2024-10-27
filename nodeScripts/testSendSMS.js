@@ -8,16 +8,16 @@ import initNotify from '../functions/shared/notify.js';
 const { sendSMS } = initNotify(config);
 const { newSmsNotificationLoginVerificationNumber } = initFactories(config);
 
-const mobileNumber = '';
-const verificationNumber = '12345';
+const mobile = '';
+const verificationCode = '12345';
 
 const main = async () => {
-  if (!mobileNumber || !verificationNumber) {
+  if (!mobile || !verificationCode) {
     throw new Error('Please provide a mobile number and verification number.');
   }
 
   try {
-    const notification = newSmsNotificationLoginVerificationNumber(firebase, mobileNumber, verificationNumber);
+    const notification = newSmsNotificationLoginVerificationNumber(firebase, mobile, verificationCode);
     return await sendSMS(notification.mobile, notification.template.id, notification.personalisation);
   } catch (error) {
     console.error(error);

@@ -94,6 +94,8 @@ import sendPublishedFeedbackReportNotifications from './callableFunctions/sendPu
 import updateApplicationRecordStageStatus from './callableFunctions/updateApplicationRecordStageStatus.js';
 import getLatestReleases from './callableFunctions/getLatestReleases.js';
 import verifyFileChecksum from './callableFunctions/verifyFileChecksum.js';
+import sendSmsVerificationCode from './callableFunctions/sendSmsVerificationCode.js';
+import verifySmsVerificationCode from './callableFunctions/verifySmsVerificationCode.js';
 
 // Callable - QTs v2
 import listQualifyingTests from './callableFunctions/qualifyingTests/v2/listQualifyingTests.js';
@@ -200,6 +202,8 @@ export {
   updateApplicationRecordStageStatus,
   getLatestReleases,
   verifyFileChecksum,
+  sendSmsVerificationCode,
+  verifySmsVerificationCode,
 
   // Callable - QTs v2
   listQualifyingTests,
