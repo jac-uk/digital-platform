@@ -49,7 +49,7 @@ export default (config, firebase, db) => {
   async function verifySmsCode({ uid, code }) {
     // 1. Check if verification code is valid and not expired
     const candidate = await getDocument(db.collection('candidates').doc(uid));
-    if (!candidate || !candidate.verification || candidate.verification.code.toString() !== code) {
+    if (!candidate || !candidate.verification || candidate.verification.code !== code) {
       console.log('Invalid verification code');
       return false;
     }
@@ -75,11 +75,13 @@ export default (config, firebase, db) => {
   /**
    * Generate verification code of n digits
    * 
-   * @param {number} n Number of digits
+   * @param   {number} n Number of digits
+   * @returns {string}   Verification code
    */
   function generateVerificationCode(n) {
     const min = Math.pow(10, n - 1);
     const max = Math.pow(10, n) - 1;
-    return Math.floor(Math.random() * (max - min + 1)) + min;
+    const code = Math.floor(Math.random() * (max - min + 1)) + min;
+    return code.toString();
   }
 };
