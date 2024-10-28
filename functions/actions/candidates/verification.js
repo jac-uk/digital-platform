@@ -54,7 +54,7 @@ export default (config, firebase, db) => {
       return false;
     }
 
-    // 2. Update candidate's verification status
+    // 2. Reset verification code
     const commands = [];
     commands.push({
       command: 'update',
