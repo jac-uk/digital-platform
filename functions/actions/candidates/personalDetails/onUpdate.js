@@ -11,8 +11,8 @@ export default (config, firebase, db) => {
    */
   async function onUpdate(candidateId, dataBefore, dataAfter) {
     try {
-        // If mobile number has changed then reset the mobileVerifiedAt so it forces re-verification
-        if (dataBefore.mobile !== dataAfter.mobile) {
+        // If mobile number exists and has changed then reset the mobileVerifiedAt so it forces re-verification
+        if (dataBefore.mobile && dataBefore.mobile !== dataAfter.mobile) {
           const personalDetails = db.collection('candidates').doc(candidateId).collection('documents').doc('personalDetails');
           const commands = [];
           commands.push({
