@@ -13,26 +13,11 @@ export default (config, auth, firebase, db) => {
    * Update candidate login email address
    */
   async function updateEmailAddress(data) {
-
-    console.log('Send email ...');
-
-    console.log('AUTH:');
-    console.log(auth);
-
     const currentEmailAddress = data.currentEmailAddress;
     const newEmailAddress = data.newEmailAddress;
-
-    console.log('In updateEmailAddress ...');
-
     try {
       const emailRegEx = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-
-      console.log('Validating');
-
       if (emailRegEx.test(currentEmailAddress) === true && (emailRegEx.test(newEmailAddress) === true)) {
-
-        console.log('Valid email');
-
         const currentUser = await auth.getUserByEmail(currentEmailAddress);
 
         // Check if the new email already exists (throws an error if the user is NOT found, which we need to catch)
@@ -43,14 +28,7 @@ export default (config, auth, firebase, db) => {
             // eslint-disable-next-line no-empty
         }
 
-        console.log(`Check for email: ${newEmailAddress}`);
-        console.log('newEmailUser:');
-        console.log(newEmailUser);
-
         if (newEmailUser) {
-
-          console.log('RETURNING ERROR AS EMAIL ALREADY EXISTS!');
-
           return {
             status: 'error',
             data: {
@@ -60,8 +38,6 @@ export default (config, auth, firebase, db) => {
           };
         }
         
-        console.log('EMAIL UNIQUE SO UPDATING USER');
-
         // Update user
         const updatedUser = await auth.updateUser(
           currentUser.uid,
@@ -71,15 +47,8 @@ export default (config, auth, firebase, db) => {
           }
         );
 
-        console.log(`Email updated successfully for UID: ${currentUser.uid}`);
-
         // Generate email verification link
         const verificationLink = await auth.generateEmailVerificationLink(newEmailAddress);
-        console.log(`Verification email link generated: ${verificationLink}`);
-
-
-
-        // @TODO: Uncomment below and make notify service woerk on develop!
 
         // Send the verification email
         const commands = [];
@@ -88,21 +57,16 @@ export default (config, auth, firebase, db) => {
           ref: db.collection('notifications').doc(),
           data: newNotificationEmailVerificationLink(firebase, newEmailAddress, verificationLink),
         });
+
         const result = await applyUpdates(db, commands);
         
         if (result) {
-
-          console.log('The email verification link was sent ok.');
-
           return {
             status: 'success',
             data: updatedUser,
           };
         }
         else {
-
-          console.log('The email verification link could not be sent.');
-
           return {
             status: 'error',
             data: {
@@ -111,16 +75,8 @@ export default (config, auth, firebase, db) => {
             },
           };
         }
-
-        // return {
-        //   status: 'success',
-        //   data: updatedUser,
-        // };
-
-      } else {
-
-        console.log('Invalid email');
-
+      }
+      else {
         return {
           status: 'error',
           data: {
@@ -140,5 +96,4 @@ export default (config, auth, firebase, db) => {
       };
     }
   }
-
 };
