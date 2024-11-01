@@ -127,8 +127,7 @@
     "verror": "^1.10.0"
   },
   "overrides": {
-    "semver": "^7.5.3",
-    "path-to-regexp": "^0.1.10"
+    "semver": "^7.5.3"
   },
   "private": true
 }
