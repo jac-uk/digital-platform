@@ -102,6 +102,7 @@ class htmlWriter {
     const tableEnd = '</table>';
     const rowStartSectionStart = '<tr class="sectionStart">';
     const rowStart = '<tr>';
+    const separateRowStart = '<tr colspan="2">';
     const rowEnd = '</tr>';
     const headingStart = '<th>';
     const headingEnd = '</th>';
@@ -114,7 +115,7 @@ class htmlWriter {
       let value = each.value;
       let html = each.lineBreak ? rowStartSectionStart : rowStart;
       if (each.dataOnSeparateRow) { // Put heading and value in separate rows
-        html += headingStart + heading + headingEnd  + rowEnd + rowStart + dataStart + value + dataEnd + rowEnd;
+        html += headingStart + heading + headingEnd  + rowEnd + separateRowStart + dataStart + value + dataEnd + rowEnd;
       }
       else { // Put heading and value in same row
         html += headingStart + heading + headingEnd + dataStart + value + dataEnd + rowEnd;
