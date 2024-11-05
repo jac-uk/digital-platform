@@ -2,7 +2,7 @@ import { getDocument, getDocuments, applyUpdates } from '../shared/helpers.js';
 import initNotify from '../shared/notify.js';
 
 export default (config, firebase, db) => {
-  const { sendEmail, previewEmail } = initNotify(config);
+  const { sendEmail, previewEmail, sendSMS } = initNotify(config);
   return {
     processNotifications,
     previewNotification,
@@ -41,7 +41,7 @@ export default (config, firebase, db) => {
         if (notification.type === 'sms') {
           const toMobile = notification.mobile;
           promises.push(
-            sendSms(toMobile, notification.template.id, notification.personalisation)
+            sendSMS(toMobile, notification.template.id, notification.personalisation)
               .then((result) => {
                 commands.push({
                   command: 'update',
