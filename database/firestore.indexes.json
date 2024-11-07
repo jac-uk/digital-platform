@@ -393,6 +393,32 @@
           "order": "ASCENDING"
         },
         {
+          "fieldPath": "selectionDay.panelId",
+          "order": "ASCENDING"
+        },
+        {
+          "fieldPath": "status",
+          "order": "ASCENDING"
+        },
+        {
+          "fieldPath": "candidate.fullName",
+          "order": "ASCENDING"
+        }
+      ]
+    },
+    {
+      "collectionGroup": "applicationRecords",
+      "queryScope": "COLLECTION",
+      "fields": [
+        {
+          "fieldPath": "active",
+          "order": "ASCENDING"
+        },
+        {
+          "fieldPath": "exercise.id",
+          "order": "ASCENDING"
+        },
+        {
           "fieldPath": "sift.panelId",
           "order": "ASCENDING"
         }
@@ -3513,6 +3539,20 @@
       "queryScope": "COLLECTION",
       "fields": [
         {
+          "fieldPath": "editors",
+          "arrayConfig": "CONTAINS"
+        },
+        {
+          "fieldPath": "applicationIds",
+          "order": "ASCENDING"
+        }
+      ]
+    },
+    {
+      "collectionGroup": "panels",
+      "queryScope": "COLLECTION",
+      "fields": [
+        {
           "fieldPath": "exercise.id",
           "order": "ASCENDING"
         },
@@ -3522,6 +3562,24 @@
         },
         {
           "fieldPath": "applicationIds",
+          "order": "ASCENDING"
+        }
+      ]
+    },
+    {
+      "collectionGroup": "panels",
+      "queryScope": "COLLECTION",
+      "fields": [
+        {
+          "fieldPath": "exercise.id",
+          "order": "ASCENDING"
+        },
+        {
+          "fieldPath": "type",
+          "order": "ASCENDING"
+        },
+        {
+          "fieldPath": "name",
           "order": "ASCENDING"
         }
       ]
