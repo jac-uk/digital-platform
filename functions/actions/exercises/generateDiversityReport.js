@@ -60,7 +60,21 @@ export default (config, firebase, db) => {
       applied: diversityReport(applications, applicationRecords, exercise),
     };
 
-    const stages = availableStages(exercise);
+    // exclude shortlisted
+    const EXERCISE_STAGE = config.EXERCISE_STAGE;
+    const stages = availableStages(exercise)
+      .filter(stage => ![EXERCISE_STAGE.SHORTLISTED, EXERCISE_STAGE.SELECTION, EXERCISE_STAGE.SCC].includes(stage))
+      .map((stage) => {
+        switch (stage) {
+        case EXERCISE_STAGE.SHORTLISTING:
+        case EXERCISE_STAGE.REVIEW:
+          return EXERCISE_STAGE.APPLIED;
+        case EXERCISE_STAGE.SELECTION:
+        case EXERCISE_STAGE.RECOMMENDATION:
+        default:
+          return stage;
+        }
+      });
     let applicationRecordsByPreviousStage = [];
     if (stages.length && applicationRecords.length) {
       for (let i = stages.length - 1; i >= 0; --i) {
@@ -74,11 +88,6 @@ export default (config, firebase, db) => {
         report[stage] = diversityReport(applicationsByStage, applicationRecordsByStage, exercise);
         // store for next iteration
         applicationRecordsByPreviousStage = applicationsByStage;
-
-        if (i !== 0) {
-          // calculate change from previous stage
-          calculationChangeFromPreviousStage(report[stage], report[stages[i - 1]]);
-        }
       }
     }
 
@@ -125,6 +134,24 @@ export default (config, firebase, db) => {
       report[status] = diversityReport(applicationsByStatus, applicationRecordsByStatus, exercise);
     });
 
+    // calculate change from previous state
+    const states = [stages[0], ...statuses, ...stages.slice(1)];
+    for (let i = 1; i < states.length; i++) {
+      const curState = states[i];
+      const prevState = states[i - 1];
+      const curReport = report[curState];
+      const prevReport = report[prevState];
+      if (!curReport) break;
+
+      Object.keys(curReport).forEach((key) => {
+        Object.keys(curReport[key]).forEach((subKey) => {
+          if (!['total'].includes(subKey)) {
+            curReport[key][subKey].change = curReport[key][subKey].percent - prevReport[key][subKey].percent;
+          }
+        });
+      });
+    }
+
     await db.collection('exercises').doc(exerciseId).collection('reports').doc('diversity').set(report);
     return report;
   }
@@ -152,19 +179,6 @@ const diversityReport = (applications, applicationRecords, exercise) => {
     report.emp = empStats(applicationRecords);
   }
   return report;
-};
-
-const calculationChangeFromPreviousStage = (current, previous) => {
-  const keys = Object.keys(current);
-  for (const key in current) {
-    if (previous[key] && key !== 'totalApplications') {
-      for (const subKey in current[key]) {
-        if (current[key][subKey] && previous[key][subKey] && previous.totalApplications) {
-          current[key][subKey].change = (previous[key][subKey].total - current[key][subKey].total) * 100 / previous.totalApplications;
-        }
-      }
-    }
-  }
 };
 
 const calculatePercents = (report, ignoreKeys) => {
