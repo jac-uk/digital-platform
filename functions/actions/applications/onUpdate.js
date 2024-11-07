@@ -5,7 +5,7 @@ import initApplications from './applications.js';
 
 export default (config, firebase, db, auth) => {
   const { updateCandidate } = initCandidatesSearch(firebase, db);
-  const { sendApplicationConfirmation, sendApplicationInWelsh, sendCharacterCheckRequests, sendCandidateFlagConfirmation } = initApplications(config, firebase, db, auth);
+  const { sendApplicationConfirmation, sendFullApplicationConfirmation, sendApplicationInWelsh, sendCharacterCheckRequests, sendCandidateFlagConfirmation } = initApplications(config, firebase, db, auth);
 
   return onUpdate;
 
@@ -190,6 +190,27 @@ export default (config, firebase, db, auth) => {
 
       // Update application
       return db.doc(`applications/${applicationId}`).update(updateApplicationData);
+    }
+
+    // Update status to 'Full application submitted', if submitted sections for 'Selection Days'
+    const inSelectionDaysStage = dataAfter._processing ? (dataAfter._processing.stage === 'selection') : false;
+    const hasSelectionDaysSubmitted = dataAfter._submittedLog ? Boolean(dataAfter._submittedLog.selection) : false;
+    console.log('inSelectionDaysStage', inSelectionDaysStage);
+    console.log('hasSelectionDaysSubmitted', hasSelectionDaysSubmitted);
+    if (inSelectionDaysStage && hasSelectionDaysSubmitted) {
+      await db.collection('applicationRecords').doc(`${applicationId}`).update({
+        status: 'fullApplicationSubmitted',
+      });
+
+      console.log('update status to fullApplicationSubmitted');
+      if (dataBefore.emailLog && !dataBefore.emailLog.fullApplicationSubmitted) {
+        await sendFullApplicationConfirmation({
+          applicationId,
+          application: dataAfter,
+        });
+      }
+
+      console.log('sent full application submitted email');
     }
 
     return true;

@@ -7,6 +7,7 @@ export default (CONSTANTS) => {
   return {
     newNotificationExerciseApprovalSubmit,
     newNotificationApplicationSubmit,
+    newNotificationFullApplicationSubmit,
     newNotificationApplicationReminder,
     newNotificationApplicationInWelsh,
     newNotificationCandidateFlagConfirmation,
@@ -57,6 +58,35 @@ export default (CONSTANTS) => {
   function newNotificationApplicationSubmit(firebase, applicationId, application, exercise) {
     const templateName = 'Application Submitted';
     const templateId = 'd9c3cf7d-3755-4f96-a508-20909a91b825';
+
+    return {
+      email: application.personalDetails.email,
+      replyTo: exercise.exerciseMailbox,
+      template: {
+        name: templateName,
+        id: templateId,
+      },
+      personalisation: {
+        exerciseId: exercise.id,
+        exerciseRef: exercise.referenceNumber,
+        exerciseName: application.exerciseName,
+        applicantName: application.personalDetails.fullName,
+        refNumber: application.referenceNumber,
+        selectionExerciseManager: exercise.emailSignatureName,
+        exerciseMailbox: exercise.exerciseMailbox,
+      },
+      reference: {
+        collection: 'applications',
+        id: applicationId,
+      },
+      createdAt: firebase.firestore.Timestamp.fromDate(new Date()),
+      status: 'ready',
+    };
+  }
+
+  function newNotificationFullApplicationSubmit(firebase, applicationId, application, exercise) {
+    const templateName = 'Full Application Submitted';
+    const templateId = 'd411b686-f86f-46be-b4a0-4d3946e2beff';
 
     return {
       email: application.personalDetails.email,
