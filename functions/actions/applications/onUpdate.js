@@ -194,16 +194,25 @@ export default (config, firebase, db, auth) => {
 
     // Update status to 'Full application submitted', if submitted sections for 'Selection Days'
     const inSelectionDaysStage = dataAfter._processing ? (dataAfter._processing.stage === 'selection') : false;
-    const hasSelectionDaysSubmitted = dataAfter._submittedLog ? Boolean(dataAfter._submittedLog.selection) : false;
+    const submittedLogBefore = dataBefore._submittedLog || {};
+    const submittedLogAfter = dataAfter._submittedLog || {};
+    const selectionTimestampBefore = submittedLogBefore.selection ? submittedLogBefore.selection.toMillis() : null;
+    const selectionTimestampLogAfter = submittedLogAfter.selection ? submittedLogAfter.selection.toMillis() : null;
+    const hasSelectionDaysSubmitted = selectionTimestampBefore !== selectionTimestampLogAfter;
+    console.log('selectionTimestampBefore', selectionTimestampBefore);
+    console.log('selectionTimestampLogAfter', selectionTimestampLogAfter);
     console.log('inSelectionDaysStage', inSelectionDaysStage);
     console.log('hasSelectionDaysSubmitted', hasSelectionDaysSubmitted);
     if (inSelectionDaysStage && hasSelectionDaysSubmitted) {
+      console.log('dataAfter', JSON.stringify(dataAfter));
+      console.log('dataBefore', JSON.stringify(dataBefore));
       await db.collection('applicationRecords').doc(`${applicationId}`).update({
         status: 'fullApplicationSubmitted',
       });
 
       console.log('update status to fullApplicationSubmitted');
-      if (dataBefore.emailLog && !dataBefore.emailLog.fullApplicationSubmitted) {
+      if (!dataBefore.emailLog || (dataBefore.emailLog && !dataBefore.emailLog.fullApplicationSubmitted)) {
+        console.log('sendFullApplicationConfirmation');
         await sendFullApplicationConfirmation({
           applicationId,
           application: dataAfter,
@@ -211,6 +220,15 @@ export default (config, firebase, db, auth) => {
       }
 
       console.log('sent full application submitted email');
+    }
+
+    // If change full application submitted to full application not submitted, reset related flags
+    if ((dataBefore._processing && dataBefore._processing.status === 'fullApplicationSubmitted') 
+      && (dataAfter._processing && dataAfter._processing.status === 'fullApplicationNotSubmitted')) {
+      db.collection('applications').doc(applicationId).update({
+        'emailLog.fullApplicationSubmitted': null,
+        '_submittedLog.selection': null,
+      });
     }
 
     return true;
