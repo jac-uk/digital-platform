@@ -2,6 +2,7 @@ export default (config) => {
   const EXERCISE_STAGE = config.EXERCISE_STAGE;
   return {
     availableStages,
+    canApplyFullApplicationSubmitted,
   };
 
   function availableStages(exercise) {
@@ -20,6 +21,19 @@ export default (config) => {
       stages.push(EXERCISE_STAGE.HANDOVER);
     }
     return stages;
+  }
+
+  function canApplyFullApplicationSubmitted(exercise) {
+    if (!exercise) return false;
+  
+    const selectionProcess = exercise._applicationContent.selection || {};
+    const isStagedExercise = Object.values(selectionProcess).includes(true);
+    const applyFullApplicationSubmitted = isStagedExercise && exercise.applicationOpenDate.toDate() >= new Date(2024, 7, 18);
+    console.log('selectionProcess', JSON.stringify(selectionProcess));
+    console.log('isStagedExercise', isStagedExercise);
+    console.log('applyFillApplicationSubmitted', applyFullApplicationSubmitted);
+   
+    return applyFullApplicationSubmitted;
   }
   
 };

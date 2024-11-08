@@ -1,9 +1,12 @@
 import { getDocument, applyUpdates, isDateInPast, formatDate } from '../../shared/helpers.js';
+import initExerciseHelper from '../../shared/exerciseHelper.js';
 import { getSearchMap } from '../../shared/search.js';
 import initCandidatesSearch from '../candidates/search.js';
 import initApplications from './applications.js';
 
 export default (config, firebase, db, auth) => {
+  const { canApplyFullApplicationSubmitted } = initExerciseHelper(config);
+  
   const { updateCandidate } = initCandidatesSearch(firebase, db);
   const { sendApplicationConfirmation, sendFullApplicationConfirmation, sendApplicationInWelsh, sendCharacterCheckRequests, sendCandidateFlagConfirmation } = initApplications(config, firebase, db, auth);
 
@@ -84,16 +87,15 @@ export default (config, firebase, db, auth) => {
       //   }
       // }
     }
+    const exercise = await getDocument(db.doc(`exercises/${dataBefore.exerciseId}`));
 
     const characterChecksBefore = dataBefore.characterChecks;
     const characterChecksAfter = dataAfter.characterChecks;
 
     if (characterChecksBefore && characterChecksAfter && characterChecksBefore.status && characterChecksAfter.status) {
       if ((characterChecksBefore.status !== characterChecksAfter.status) && characterChecksAfter.status === 'completed') {
-
         // send confirmation email if it hasn't been sent before
         if (!dataBefore.emailLog || (dataBefore.emailLog && !dataBefore.emailLog.characterCheckSubmitted)) {
-          const exercise = await getDocument(db.doc(`exercises/${dataBefore.exerciseId}`));
           if (exercise) {
             await sendCharacterCheckRequests({
               items: [applicationId],
@@ -192,43 +194,53 @@ export default (config, firebase, db, auth) => {
       return db.doc(`applications/${applicationId}`).update(updateApplicationData);
     }
 
-    // Update status to 'Full application submitted', if submitted sections for 'Selection Days'
-    const inSelectionDaysStage = dataAfter._processing ? (dataAfter._processing.stage === 'selection') : false;
-    const submittedLogBefore = dataBefore._submittedLog || {};
-    const submittedLogAfter = dataAfter._submittedLog || {};
-    const selectionTimestampBefore = submittedLogBefore.selection ? submittedLogBefore.selection.toMillis() : null;
-    const selectionTimestampLogAfter = submittedLogAfter.selection ? submittedLogAfter.selection.toMillis() : null;
-    const hasSelectionDaysSubmitted = selectionTimestampBefore !== selectionTimestampLogAfter;
-    console.log('selectionTimestampBefore', selectionTimestampBefore);
-    console.log('selectionTimestampLogAfter', selectionTimestampLogAfter);
-    console.log('inSelectionDaysStage', inSelectionDaysStage);
-    console.log('hasSelectionDaysSubmitted', hasSelectionDaysSubmitted);
-    if (inSelectionDaysStage && hasSelectionDaysSubmitted) {
-      console.log('dataAfter', JSON.stringify(dataAfter));
-      console.log('dataBefore', JSON.stringify(dataBefore));
-      await db.collection('applicationRecords').doc(`${applicationId}`).update({
-        status: 'fullApplicationSubmitted',
-      });
+    // Apply full application submitted status
+    // const selectionProcess = exercise._applicationContent.selection || {};
+    // const isStagedExercise = Object.values(selectionProcess).includes(true);
+    // const applyFullApplicationSubmitted = isStagedExercise && exercise.applicationOpenDate.toDate() >= new Date(2024, 7, 18);
+    // console.log('selectionProcess', JSON.stringify(selectionProcess));
+    // console.log('isStagedExercise', isStagedExercise);
+    // console.log('applyFillApplicationSubmitted', applyFullApplicationSubmitted);
 
-      console.log('update status to fullApplicationSubmitted');
-      if (!dataBefore.emailLog || (dataBefore.emailLog && !dataBefore.emailLog.fullApplicationSubmitted)) {
-        console.log('sendFullApplicationConfirmation');
-        await sendFullApplicationConfirmation({
-          applicationId,
-          application: dataAfter,
+    if (canApplyFullApplicationSubmitted(exercise)) {
+      // Update status to 'Full application submitted', if submitted sections for 'Selection Days'
+      const inSelectionDaysStage = dataAfter._processing ? (dataAfter._processing.stage === 'selection') : false;
+      const submittedLogBefore = dataBefore._submittedLog || {};
+      const submittedLogAfter = dataAfter._submittedLog || {};
+      const selectionTimestampBefore = submittedLogBefore.selection ? submittedLogBefore.selection.toMillis() : null;
+      const selectionTimestampLogAfter = submittedLogAfter.selection ? submittedLogAfter.selection.toMillis() : null;
+      const hasSelectionDaysSubmitted = selectionTimestampBefore !== selectionTimestampLogAfter;
+      console.log('selectionTimestampBefore', selectionTimestampBefore);
+      console.log('selectionTimestampLogAfter', selectionTimestampLogAfter);
+      console.log('inSelectionDaysStage', inSelectionDaysStage);
+      console.log('hasSelectionDaysSubmitted', hasSelectionDaysSubmitted);
+      if (inSelectionDaysStage && hasSelectionDaysSubmitted) {
+        console.log('dataAfter', JSON.stringify(dataAfter));
+        console.log('dataBefore', JSON.stringify(dataBefore));
+        await db.collection('applicationRecords').doc(`${applicationId}`).update({
+          status: 'fullApplicationSubmitted',
         });
+
+        console.log('update status to fullApplicationSubmitted');
+        if (!dataBefore.emailLog || (dataBefore.emailLog && !dataBefore.emailLog.fullApplicationSubmitted)) {
+          console.log('sendFullApplicationConfirmation');
+          await sendFullApplicationConfirmation({
+            applicationId,
+            application: dataAfter,
+          });
+        }
+
+        console.log('sent full application submitted email');
       }
 
-      console.log('sent full application submitted email');
-    }
-
-    // If change full application submitted to full application not submitted, reset related flags
-    if ((dataBefore._processing && dataBefore._processing.status === 'fullApplicationSubmitted') 
-      && (dataAfter._processing && dataAfter._processing.status === 'fullApplicationNotSubmitted')) {
-      db.collection('applications').doc(applicationId).update({
-        'emailLog.fullApplicationSubmitted': null,
-        '_submittedLog.selection': null,
-      });
+      // If change full application submitted to full application not submitted, reset related flags
+      if ((dataBefore._processing && dataBefore._processing.status === 'fullApplicationSubmitted') 
+        && (dataAfter._processing && dataAfter._processing.status === 'fullApplicationNotSubmitted')) {
+        db.collection('applications').doc(applicationId).update({
+          'emailLog.fullApplicationSubmitted': null,
+          '_submittedLog.selection': null,
+        });
+      }
     }
 
     return true;
