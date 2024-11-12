@@ -2,14 +2,14 @@
 
 import config from './shared/config.js';
 import { firebase, app, db } from './shared/admin.js';
-import initCreateTask from '../functions/actions/tasks/createTask.js';
+import initRefreshTaskApplications from '../functions/actions/tasks/refreshTaskApplications.js';
 
-const createTask = initCreateTask(config, firebase, db);
+const refreshTaskApplications = initRefreshTaskApplications(config, firebase, db);
 
 const main = async () => {
-  return createTask({
+  return refreshTaskApplications({
     exerciseId: '1qef6rsaSLvvsZHrJuw7',
-    type: 'criticalAnalysis',
+    type: 'sift',
   });
 };
 
