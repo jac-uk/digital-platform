@@ -2,7 +2,7 @@
 import createTimeline from '../../shared/Timeline/createTimeline.js';
 import { convertToDate, calculateMean, calculateStandardDeviation } from '../../shared/helpers.js';
 import initExerciseTimeline from '../../shared/Timeline/exerciseTimeline.TMP.js';
-import { MARKING_TYPE, GRADE_VALUES } from '../../shared/scoreSheetHelper.js'
+import { MARKING_TYPE, GRADE_VALUES } from '../../shared/scoreSheetHelper.js';
 
 export default (config) => {
   const exerciseTimeline = initExerciseTimeline(config);

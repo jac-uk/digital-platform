@@ -40,7 +40,7 @@ export default (config, firebase, db) => {
     // update task
     const taskData = {};
     taskData.applications = applications;
-    taskData[`_stats.totalApplications`] = applications.length;
+    taskData['_stats.totalApplications'] = applications.length;
     const commands = [];
     commands.push({
       command: 'update',
@@ -62,7 +62,7 @@ export default (config, firebase, db) => {
                 command: 'update',
                 ref: panel.ref,
                 data: {
-                  applicationIdsOptional: optionalIds
+                  applicationIdsOptional: optionalIds,
                 },
               });
             }

@@ -763,7 +763,7 @@ export default (config, firebase, db) => {
           ref: panel.applications[applicationId].referenceNumber, // TODO extract only the last 7 chars
           panelId: panel.id,
           scoreSheet: finaliseScoreSheet(task.markingScheme, panel.scoreSheet[applicationId]),
-          changes: task.changes && task.changes[applicationId] ? task.changes[applicationId] : {}
+          changes: task.changes && task.changes[applicationId] ? task.changes[applicationId] : {},
         };
         row.score = getScoreSheetTotal(task.markingScheme, panel.scoreSheet[applicationId], row.changes),
         finalScores.push(row);
