@@ -21,7 +21,7 @@ const DEFAULT_STYLESHEET = `
     table {
       border-spacing: 0;
       padding-bottom: 20px;
-      width: 800px;
+      width: 100%;
     }
     .sectionStart th, .sectionStart td {
       padding: 30px 8px 8px 8px;
