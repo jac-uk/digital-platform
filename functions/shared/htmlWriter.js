@@ -6,7 +6,6 @@ const DEFAULT_STYLESHEET = `
     }
     th {
       color: #0B0C14;
-      width: 50%;
       text-align: left;
       border-bottom: solid 1px #0B0C14;
       padding: 4px 8px;
@@ -19,6 +18,7 @@ const DEFAULT_STYLESHEET = `
       vertical-align:top;
     }
     table {
+      table-layout: fixed;
       border-spacing: 0;
       padding-bottom: 20px;
       width: 100%;
