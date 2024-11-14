@@ -34,9 +34,6 @@ export default (config) => {
    * @returns 
    */
   async function createZenhubIssue(referenceNumber, body) {
-
-    console.log('Making API call to zenhub...');
-
     const platformIssuesRepositoryId = config.ZENHUB_ISSUES_WORKSPACE_ID;
     if (baseApiUrl && apiKey) {
       try {
