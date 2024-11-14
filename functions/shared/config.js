@@ -312,18 +312,6 @@ const CONSTANTS = {
     CREATED: 'created',
     SUBMITTED: 'submitted',
   },
-  MARKING_TYPE: {
-    GROUP: 'group',
-    NUMBER: 'number',
-    GRADE: 'grade',
-  },
-  GRADES: ['A', 'B', 'C', 'D'],
-  GRADE_VALUES: {
-    'A': 4,
-    'B': 3,
-    'C': 2,
-    'D': 1,
-  },
   CAPABILITIES: ['L', 'EJ', 'L&J', 'PQ', 'PBK', 'ACI', 'WCO', 'MWE', 'OVERALL'],
   SELECTION_CATEGORIES: ['leadership', 'roleplay', 'situational', 'interview', 'overall'],
   NOTIFY_KEY: functions.config().notify.key,

@@ -2,6 +2,7 @@
 import createTimeline from '../../shared/Timeline/createTimeline.js';
 import { convertToDate, calculateMean, calculateStandardDeviation } from '../../shared/helpers.js';
 import initExerciseTimeline from '../../shared/Timeline/exerciseTimeline.TMP.js';
+import { MARKING_TYPE, GRADE_VALUES } from '../../shared/scoreSheetHelper.js';
 
 export default (config) => {
   const exerciseTimeline = initExerciseTimeline(config);
@@ -90,7 +91,7 @@ export default (config) => {
           TASK_STATUS.DATA_INITIALISED,
           // TASK_STATUS.DATA_ACTIVATED,
           TASK_STATUS.PANELS_INITIALISED,
-          TASK_STATUS.PANELS_ACTIVATED,        
+          TASK_STATUS.PANELS_ACTIVATED,
           TASK_STATUS.FINALISED,
           TASK_STATUS.COMPLETED,
         ];
@@ -190,7 +191,7 @@ export default (config) => {
         }
         if (task.type === TASK_TYPE.SCENARIO) {
           return APPLICATION_STATUS.SCENARIO_TEST_FAILED;
-        }  
+        }
       } else {
         if ([TASK_TYPE.CRITICAL_ANALYSIS, TASK_TYPE.SITUATIONAL_JUDGEMENT].indexOf(task.type) >= 0) {
           if (!hasQualifyingTest(exercise, task)) return 'failedFirstTest';
@@ -200,7 +201,7 @@ export default (config) => {
         }
         if (task.type === TASK_TYPE.SCENARIO) {
           return 'failedScenarioTest';
-        }  
+        }
       }
     }
     // end
@@ -449,7 +450,7 @@ export default (config) => {
     if (!markingScheme) return scoreSheet;
     delete scoreSheet.flagForModeration;  //  removing `flagForModeration` flag in order to reduce object size
     markingScheme.forEach(item => {
-      if (item.type === config.MARKING_TYPE.GROUP) {
+      if (item.type === MARKING_TYPE.GROUP.value) {
         scoreSheet[item.ref].score = 0;
         item.children.forEach(child => {
           scoreSheet[item.ref].score += getScoreSheetItemTotal(child, scoreSheet[item.ref]);
@@ -459,31 +460,40 @@ export default (config) => {
     return scoreSheet;
   }
 
-  function getScoreSheetTotal(markingScheme, scoreSheet) {
+  function getScoreSheetTotal(markingScheme, scoreSheet, changes) {
     let score = 0;
     if (!markingScheme) return score;
     if (!scoreSheet) return score;
     markingScheme.forEach(item => {
-      if (item.type === config.MARKING_TYPE.GROUP) {
+      if (item.type === MARKING_TYPE.GROUP.value) {
         item.children.forEach(child => {
-          score += getScoreSheetItemTotal(child, scoreSheet[item.ref]);
+          const change = changes && changes[item.ref] && changes[item.ref][child.ref];
+          score += getScoreSheetItemTotal(child, scoreSheet[item.ref], change);
         });
       } else {
-        score += getScoreSheetItemTotal(item, scoreSheet);
+        const change = changes && changes[item.ref];
+        score += getScoreSheetItemTotal(item, scoreSheet, change);
       }
     });
     return score;
   }
 
-  function getScoreSheetItemTotal(item, scoreSheet) {
+  function getScoreSheetItemTotal(item, scoreSheet, change) {
+    // console.log('getScoreSheetItemTotal', item, scoreSheet, change);
     if (item.includeInScore) {
       switch (item.type) {
-      case config.MARKING_TYPE.GRADE:
-        if (scoreSheet[item.ref] && config.GRADE_VALUES[scoreSheet[item.ref]]) {
-          return config.GRADE_VALUES[scoreSheet[item.ref]];
+      case MARKING_TYPE.GRADE.value:
+        if (scoreSheet[item.ref] && GRADE_VALUES[scoreSheet[item.ref]]) {
+          if (change) return GRADE_VALUES[change];  // only returns change if we have an original grade
+          return GRADE_VALUES[scoreSheet[item.ref]];
         }
         break;
-      case config.MARKING_TYPE.NUMBER:
+      case MARKING_TYPE.SCORE.value:
+        if (scoreSheet[item.ref]) {
+          return parseFloat(scoreSheet[item.ref].score);
+        }
+        break;
+      case MARKING_TYPE.NUMBER.value:
         if (scoreSheet[item.ref]) {
           return parseFloat(scoreSheet[item.ref]);
         }
