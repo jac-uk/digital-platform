@@ -280,9 +280,9 @@ class ConverterV2 {
             }
           }
         }
-        else {
-          throw new Error('Unable to find location preferences question id');
-        }
+        //else { // fix ts-436 the preference question may be optional, so the answer may not exist
+        //  throw new Error('Unable to find location preferences question id');
+        //}
       }
     }
 

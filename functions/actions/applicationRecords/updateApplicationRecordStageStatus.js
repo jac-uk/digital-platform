@@ -13,7 +13,7 @@ export default (firebase, config, db) => {
 
   /**
    * updateApplicationRecordStageStatus
-   * 
+   *
    * Updates specified applications records with the new stage and status
    * @param {*} `params` is an object containing
    *   `exerciseId` (required) ID of exercise
@@ -64,7 +64,15 @@ export default (firebase, config, db) => {
   }
 
   function convertStageToVersion2(stage) {
+
     switch (stage) {
+      // Version 2 stages should remain unchanged
+      case EXERCISE_STAGE.SHORTLISTING:
+      case EXERCISE_STAGE.SELECTION:
+      case EXERCISE_STAGE.SCC:
+      case EXERCISE_STAGE.RECOMMENDATION:
+        return stage;
+      // Version 1 stages should be converted
       case EXERCISE_STAGE.APPLIED:
       case EXERCISE_STAGE.REVIEW:
         return EXERCISE_STAGE.SHORTLISTING;
@@ -77,6 +85,7 @@ export default (firebase, config, db) => {
         return EXERCISE_STAGE.SCC;
       case EXERCISE_STAGE.HANDOVER:
         return EXERCISE_STAGE.RECOMMENDATION;
+      // Unknown stages should become empty string
       default:
         return '';
     }
@@ -84,14 +93,59 @@ export default (firebase, config, db) => {
 
   function convertStatusToVersion2(status) {
     switch (status) {
+      // Version 2 statuses should remain unchanged
       case APPLICATION_STATUS.CRITICAL_ANALYSIS_PASSED:
-        return APPLICATION_STATUS.CRITICAL_ANALYSIS_PASSED;
       case APPLICATION_STATUS.SITUATIONAL_JUDGEMENT_PASSED:
-        return APPLICATION_STATUS.SITUATIONAL_JUDGEMENT_PASSED;
-      case APPLICATION_STATUS.PASSED_FIRST_TEST:
-        return APPLICATION_STATUS.QUALIFYING_TEST_PASSED;
+      case APPLICATION_STATUS.QUALIFYING_TEST_PASSED:
+      case APPLICATION_STATUS.QUALIFYING_TEST_FAILED:
+      case APPLICATION_STATUS.QUALIFYING_TEST_NOT_SUBMITTED:
+      case APPLICATION_STATUS.SCENARIO_TEST_PASSED:
+      case APPLICATION_STATUS.SCENARIO_TEST_FAILED:
+      case APPLICATION_STATUS.SCENARIO_TEST_NOT_SUBMITTED:
+      case APPLICATION_STATUS.SIFT_PASSED:
+      case APPLICATION_STATUS.SIFT_FAILED:
+      case APPLICATION_STATUS.TELEPHONE_ASSESSMENT_PASSED:
+      case APPLICATION_STATUS.TELEPHONE_ASSESSMENT_FAILED:
+      case APPLICATION_STATUS.SHORTLISTING_PASSED:
+      case APPLICATION_STATUS.SHORTLISTING_FAILED:
+      case APPLICATION_STATUS.FULL_APPLICATION_NOT_SUBMITTED:
+      case APPLICATION_STATUS.ELIGIBILITY_SCC_PASSED:
+      case APPLICATION_STATUS.ELIGIBILITY_SCC_FAILED:
+      case APPLICATION_STATUS.CHARACTER_AND_SELECTION_SCC_PASSED:
+      case APPLICATION_STATUS.CHARACTER_AND_SELECTION_SCC_FAILED:
+      case APPLICATION_STATUS.STATUTORY_CONSULTATION_PASSED:
+      case APPLICATION_STATUS.STATUTORY_CONSULTATION_FAILED:
+      case APPLICATION_STATUS.SELECTION_INVITED:
+      case APPLICATION_STATUS.REJECTED_INELIGIBLE_STATUTORY:
+      case APPLICATION_STATUS.REJECTED_INELIGIBLE_ADDITIONAL:
+      case APPLICATION_STATUS.REJECTED_CHARACTER:
+      case APPLICATION_STATUS.SELECTION_DAY_PASSED:
+      case APPLICATION_STATUS.SELECTION_DAY_FAILED:
+      case APPLICATION_STATUS.SELECTION_PASSED:
+      case APPLICATION_STATUS.SELECTION_FAILED:
+      case APPLICATION_STATUS.SELECTION_OUTCOME_PASSED:
+      case APPLICATION_STATUS.SELECTION_OUTCOME_FAILED:
+      case APPLICATION_STATUS.PASSED_RECOMMENDED:
+      case APPLICATION_STATUS.PASSED_NOT_RECOMMENDED:
+      case APPLICATION_STATUS.RECOMMENDED_IMMEDIATE:
+      case APPLICATION_STATUS.RECOMMENDED_FUTURE:
+      case APPLICATION_STATUS.RECONSIDER:
+      case APPLICATION_STATUS.SECOND_STAGE_INVITED:
+      case APPLICATION_STATUS.SECOND_STAGE_PASSED:
+      case APPLICATION_STATUS.SECOND_STAGE_FAILED:
+      case APPLICATION_STATUS.APPROVED_IMMEDIATE:
+      case APPLICATION_STATUS.APPROVED_FUTURE:
+      case APPLICATION_STATUS.WITHDRAWN:
+        return status;
+
+      // Tidy up version 2 statuses
       case APPLICATION_STATUS.CRITICAL_ANALYSIS_FAILED:
       case APPLICATION_STATUS.SITUATIONAL_JUDGEMENT_FAILED:
+        return APPLICATION_STATUS.QUALIFYING_TEST_FAILED;
+
+      // Version 1 statuses should be converted
+      case APPLICATION_STATUS.PASSED_FIRST_TEST:
+        return APPLICATION_STATUS.QUALIFYING_TEST_PASSED;
       case APPLICATION_STATUS.FAILED_FIRST_TEST:
       case APPLICATION_STATUS.SUBMITTED_FIRST_TEST:
         return APPLICATION_STATUS.QUALIFYING_TEST_FAILED;
@@ -133,6 +187,8 @@ export default (firebase, config, db) => {
         return APPLICATION_STATUS.RECONSIDER;
       case APPLICATION_STATUS.WITHDREW_APPLICATION:
         return APPLICATION_STATUS.WITHDRAWN;
+
+      // Unknown status should be removed (empty string)
       default:
         return '';
     }
@@ -140,10 +196,10 @@ export default (firebase, config, db) => {
 
   /**
    * Get stage and status for the application record based on the version
-   * 
-   * @param {object} applicationRecord 
-   * @param {number} version 
-   * @returns 
+   *
+   * @param {object} applicationRecord
+   * @param {number} version
+   * @returns
    */
   function getApplicationRecordStageStatus(applicationRecord, version) {
     const payload = {};
@@ -196,7 +252,7 @@ export default (firebase, config, db) => {
         });
 
         if (payload.status === APPLICATION_STATUS.CRITICAL_ANALYSIS_PASSED &&
-          (payload.statusLog[APPLICATION_STATUS.SITUATIONAL_JUDGEMENT_FAILED] || 
+          (payload.statusLog[APPLICATION_STATUS.SITUATIONAL_JUDGEMENT_FAILED] ||
             payload.statusLog[APPLICATION_STATUS.QUALIFYING_TEST_NOT_SUBMITTED] ||
             payload.statusLog[APPLICATION_STATUS.QUALIFYING_TEST_FAILED])
         ) {
@@ -224,10 +280,10 @@ export default (firebase, config, db) => {
 
   /**
    * Get new value of _applicationRecords in exercise based on the version
-   * 
-   * @param {object} exercise 
-   * @param {number} version 
-   * @returns 
+   *
+   * @param {object} exercise
+   * @param {number} version
+   * @returns
    */
   function getExerciseApplicationRecords(exercise, version) {
     const payload = {};
@@ -253,7 +309,7 @@ export default (firebase, config, db) => {
             }
             payload[`_applicationRecords.${key}`] = firebase.firestore.FieldValue.delete();
           }
-        });  
+        });
       }
     }
 
