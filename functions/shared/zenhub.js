@@ -38,6 +38,8 @@ export default (config) => {
     if (baseApiUrl && apiKey) {
       try {
         const title = `User Raised Issue ${referenceNumber}`;
+        const escapedTitle = JSON.stringify(title);
+        const escapedBody = JSON.stringify(body);
         const result = await axios({
           url: baseApiUrl,
           method: 'post',
@@ -47,8 +49,8 @@ export default (config) => {
             query: `
               mutation createIssue {
                 createIssue(input: {
-                    title: "${title}",
-                    body: "${body}",
+                    title: ${escapedTitle},
+                    body: ${escapedBody},
                     repositoryId: "${platformIssuesRepositoryId}"
                 }) {
                     issue {
@@ -60,7 +62,6 @@ export default (config) => {
             `,
           },
         });
-
         if (objectHasNestedProperty(result, 'data.errors')) {
           const errorsStr = result.data.errors.map(e => e.message).join('\n');
           throw new Error(errorsStr);
@@ -92,6 +93,8 @@ export default (config) => {
     if (baseApiUrl && apiKey) {
       try {
         const title = `User Raised Issue ${referenceNumber}`;
+        const escapedTitle = JSON.stringify(title);
+        const escapedBody = JSON.stringify(body);
         const result = await axios({
           url: baseApiUrl,
           method: 'post',
@@ -101,8 +104,8 @@ export default (config) => {
             query: `
               mutation createIssue {
                 createIssue(input: {
-                    title: "${title}",
-                    body: "${body}",
+                    title: ${escapedTitle},
+                    body: ${escapedBody},
                     repositoryId: "${platformIssuesRepositoryId}"
                     labels: ["${label}"],
                 }) {
