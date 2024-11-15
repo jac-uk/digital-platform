@@ -9,7 +9,7 @@ export default (config) => {
   const TASK_TYPE = config.TASK_TYPE;
   const SHORTLISTING_TASK_TYPES = config.SHORTLISTING_TASK_TYPES;
   const TASK_STATUS = config.TASK_STATUS;
-  const APPLICATION_STATUS = config.APPLICATION.STATUS;
+  const APPLICATION_STATUS = config.APPLICATION_STATUS;
   return {
     scoreSheet,
     getTimelineDate,
@@ -426,6 +426,7 @@ export default (config) => {
     let status = '';
     if (!exercise) return status;
     if (type === TASK_TYPE.EMP_TIEBREAKER) return APPLICATION_STATUS.SCC_TO_RECONSIDER;  // TODO: remove this eventually: override entry status for EMP tie-breakers
+    if (type === TASK_TYPE.SELECTION_DAY) return APPLICATION_STATUS.SHORTLISTING_PASSED;
     const prevTaskType = previousTaskType(exercise, type);
     if (prevTaskType) {
       console.log('previousTaskType', prevTaskType);

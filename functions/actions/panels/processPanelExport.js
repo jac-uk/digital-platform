@@ -64,7 +64,7 @@ export default (config, firebase, db) => {
       const promises = [];
 
       if (panel.type === 'selection' || panel.type === 'sift') {
-        
+
         // Create application data document
         promises.push(
           drive.createFile('Application Data', {
