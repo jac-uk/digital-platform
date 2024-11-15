@@ -71,7 +71,7 @@ export default (config, firebase, db) => {
       parentId: settings.google.rootFolderId,
     });
 
-    // Create grading spreadsheet 
+    // Create grading spreadsheet
     await exportGradingSheet(drive, panelFolderId, folderName, panel).catch(e => 'Error: Grading Sheet');
 
     // update panel and start processing
