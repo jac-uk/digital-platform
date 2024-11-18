@@ -1,13 +1,13 @@
 import functions from 'firebase-functions';
 import config from '../shared/config.js';
-import { db, auth } from '../shared/admin.js';
+import { db, auth, firebase } from '../shared/admin.js';
 import { objectHasNestedProperty } from '../shared/helpers.js';
 import { checkArguments } from '../shared/helpers.js';
 import initServiceSettings from '../shared/serviceSettings.js';
 import initSlack from '../actions/slack.js';
 
 const { checkFunctionEnabled } = initServiceSettings(db);
-const slack = initSlack(auth, config, db);
+const slack = initSlack(auth, config, db, firebase);
 
 export default functions.region('europe-west2').https.onCall(async (data, context) => {
   await checkFunctionEnabled();

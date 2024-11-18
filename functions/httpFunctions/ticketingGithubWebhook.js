@@ -1,6 +1,6 @@
 import functions from 'firebase-functions';
 import config from '../shared/config.js';
-import { db, auth } from '../shared/admin.js';
+import { db, auth, firebase } from '../shared/admin.js';
 import { getMissingNestedProperties, objectHasNestedProperty } from '../shared/helpers.js';
 import initUsers from '../actions/users.js';
 import initBugReports from '../actions/bugReports.js';
@@ -9,9 +9,9 @@ import initOnCreatedIssue from '../actions/zenhub/hooks/onCreatedIssue.js';
 import initZenhub from '../shared/zenhub.js';
 
 const { getUserByGithubUsername } = initUsers(auth, db);
-const { getBugReportByRef, getBugReportNumberFromIssueTitle } = initBugReports(db);
+const { getBugReportByRef, getBugReportNumberFromIssueTitle } = initBugReports(db, firebase);
 const { onAssignedIssue } = initOnAssignedIssue(config, db, auth);
-const { onCreatedIssue } = initOnCreatedIssue(config, db, auth);
+const { onCreatedIssue } = initOnCreatedIssue(config, db, auth, firebase);
 const { validateWebhookRequest } = initZenhub(config);
 
 export default functions.region('europe-west2').https.onRequest(async (req, res) => {
@@ -84,14 +84,14 @@ export default functions.region('europe-west2').https.onRequest(async (req, res)
       res.status(422).send(errorMsg);
       return;
     }
-    const bugReport = await getBugReportByRef(referenceNumber);
+    let bugReport = await getBugReportByRef(referenceNumber);
     if (!bugReport) {
       const errorMsg = 'The bugReport for this issue could not be found';
       console.error(errorMsg);
       res.status(422).send(errorMsg);
       return;
     }
-    onCreatedIssue(req.body, bugReport, config.SLACK_TICKETING_APP_CHANNEL_ID);
+    await onCreatedIssue(bugReport, req.body.issue.number, req.body.issue.html_url);
     res.status(200).send('Function executed successfully');
   }
   // ASSIGNED/UNASSIGNED ACTIONS
@@ -129,7 +129,7 @@ export default functions.region('europe-west2').https.onRequest(async (req, res)
       res.status(422).send(errorMsg);
       return;
     }
-    onAssignedIssue(req.body, bugReport, user, config.SLACK_TICKETING_APP_CHANNEL_ID);
+    await onAssignedIssue(req.body, bugReport, user, config.SLACK_TICKETING_APP_CHANNEL_ID);
     // Your callable function logic here
     res.status(200).send('Function executed successfully');
   }
