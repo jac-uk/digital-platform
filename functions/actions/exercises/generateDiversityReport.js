@@ -60,7 +60,21 @@ export default (config, firebase, db) => {
       applied: diversityReport(applications, applicationRecords, exercise),
     };
 
-    const stages = availableStages(exercise);
+    // exclude shortlisted
+    const EXERCISE_STAGE = config.EXERCISE_STAGE;
+    const stages = availableStages(exercise)
+      .filter(stage => ![EXERCISE_STAGE.SHORTLISTED, EXERCISE_STAGE.SELECTION, EXERCISE_STAGE.SCC].includes(stage))
+      .map((stage) => {
+        switch (stage) {
+        case EXERCISE_STAGE.SHORTLISTING:
+        case EXERCISE_STAGE.REVIEW:
+          return EXERCISE_STAGE.APPLIED;
+        case EXERCISE_STAGE.SELECTION:
+        case EXERCISE_STAGE.RECOMMENDATION:
+        default:
+          return stage;
+        }
+      });
     let applicationRecordsByPreviousStage = [];
     if (stages.length && applicationRecords.length) {
       for (let i = stages.length - 1; i >= 0; --i) {
@@ -120,6 +134,28 @@ export default (config, firebase, db) => {
       report[status] = diversityReport(applicationsByStatus, applicationRecordsByStatus, exercise);
     });
 
+    // calculate change from previous state
+    const states = [stages[0], ...statuses, ...stages.slice(1)];
+    for (let i = 1; i < states.length; i++) {
+      const curState = states[i];
+      const prevState = states[i - 1];
+      const curReport = report[curState];
+      const prevReport = report[prevState];
+      if (!curReport) break;
+
+      Object.keys(curReport).forEach((key) => {
+        Object.keys(curReport[key]).forEach((subKey) => {
+          if (!['total'].includes(subKey)) {
+            curReport[key][subKey].change = curReport[key][subKey].percent - prevReport[key][subKey].percent;
+            // calculate overall change
+            if (i === states.length - 1) {
+              curReport[key][subKey].overallChange = curReport[key][subKey].percent - report[states[0]][key][subKey].percent;
+            }
+          }
+        });
+      });
+    }
+
     await db.collection('exercises').doc(exerciseId).collection('reports').doc('diversity').set(report);
     return report;
   }
@@ -168,18 +204,22 @@ const empStats = (applicationRecords) => {
     applied: {
       total: 0,
       percent: 0,
+      change: 0,
     },
     gender: {
       total: 0,
       percent: 0,
+      change: 0,
     },
     ethnicity: {
       total: 0,
       percent: 0,
+      change: 0,
     },
     noAnswer: {
       total: 0,
       percent: 0,
+      change: 0,
     },
   };
   for (let i = 0, len = applicationRecords.length; i < len; ++i) {
@@ -211,14 +251,17 @@ const genderStats = (applications) => {
     declaration: {
       total: 0,
       percent: 0,
+      change: 0,
     },
     male: {
       total: 0,
       percent: 0,
+      change: 0,
     },
     female: {
       total: 0,
       percent: 0,
+      change: 0,
     },
     //genderNeutral: {
     //  total: 0,
@@ -227,14 +270,17 @@ const genderStats = (applications) => {
     preferNotToSay: {
       total: 0,
       percent: 0,
+      change: 0,
     },
     other: {
       total: 0,
       percent: 0,
+      change: 0,
     },
     noAnswer: {
       total: 0,
       percent: 0,
+      change: 0,
     },
   };
   for (let i = 0, len = applications.length; i < len; ++i) {
@@ -276,14 +322,17 @@ const ethnicityStats = (applications) => {
     declaration: {
       total: 0,
       percent: 0,
+      change: 0,
     },
     bame: {
       total: 0,
       percent: 0,
+      change: 0,
     },
     white: {
       total: 0,
       percent: 0,
+      change: 0,
     },
     // other: {
     //   total: 0,
@@ -292,10 +341,12 @@ const ethnicityStats = (applications) => {
     preferNotToSay: {
       total: 0,
       percent: 0,
+      change: 0,
     },
     noAnswer: {
       total: 0,
       percent: 0,
+      change: 0,
     },
   };
   for (let i = 0, len = applications.length; i < len; ++i) {
@@ -339,22 +390,27 @@ const disabilityStats = (applications) => {
     declaration: {
       total: 0,
       percent: 0,
+      change: 0,
     },
     yes: {
       total: 0,
       percent: 0,
+      change: 0,
     },
     no: {
       total: 0,
       percent: 0,
+      change: 0,
     },
     preferNotToSay: {
       total: 0,
       percent: 0,
+      change: 0,
     },
     noAnswer: {
       total: 0,
       percent: 0,
+      change: 0,
     },
   };
   for (let i = 0, len = applications.length; i < len; ++i) {
@@ -385,30 +441,37 @@ const professionalBackgroundStats = (applications) => {
     declaration: {
       total: 0,
       percent: 0,
+      change: 0,
     },
     barrister: {
       total: 0,
       percent: 0,
+      change: 0,
     },
     cilex: {
       total: 0,
       percent: 0,
+      change: 0,
     },
     solicitor: {
       total: 0,
       percent: 0,
+      change: 0,
     },
     other: {
       total: 0,
       percent: 0,
+      change: 0,
     },
     preferNotToSay: {
       total: 0,
       percent: 0,
+      change: 0,
     },
     noAnswer: {
       total: 0,
       percent: 0,
+      change: 0,
     },
   };
   for (let i = 0, len = applications.length; i < len; ++i) {
@@ -455,10 +518,12 @@ const attendedUKStateSchoolStats = (applications, exercise) => {
     declaration: {
       total: 0,
       percent: 0,
+      change: 0,
     },
     attendedUKStateSchool: {
       total: 0,
       percent: 0,
+      change: 0,
     },
   };
   for (let i = 0, len = applications.length; i < len; ++i) {
@@ -490,10 +555,12 @@ const parentsNotAttendedUniversityStats = (applications) => {
     declaration: {
       total: 0,
       percent: 0,
+      change: 0,
     },
     parentsNotAttendedUniversity: {
       total: 0,
       percent: 0,
+      change: 0,
     },
   };
   for (let i = 0, len = applications.length; i < len; ++i) {
@@ -521,10 +588,12 @@ const firstGenerationUniversityStats = (applications) => {
     declaration: {
       total: 0,
       percent: 0,
+      change: 0,
     },
     firstGenerationUniversity: {
       total: 0,
       percent: 0,
+      change: 0,
     },
   };
   for (let i = 0, len = applications.length; i < len; ++i) {
