@@ -4,6 +4,7 @@ import backupAuthentication from './scheduledFunctions/backupAuthentication.js';
 import processNotifications from './scheduledFunctions/processNotifications.js';
 import scheduleScanAllFiles from './scheduledFunctions/scheduleScanAllFiles.js';
 import runScannerTest from './scheduledFunctions/runScannerTest.js';
+import retrySlackMessageOnCreateIssue from './scheduledFunctions/retrySlackMsgOnCreateIssue.js';
 
 // Background
 import onDelete from './backgroundFunctions/onDelete.js';
@@ -112,6 +113,7 @@ export {
   processNotifications,
   scheduleScanAllFiles,
   runScannerTest,
+  retrySlackMessageOnCreateIssue,
 
   // Background
   onDelete,

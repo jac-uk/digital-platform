@@ -49,7 +49,7 @@ export default (config) => {
       };
       const msgConfig = {
         headers: {
-          'Content-type': 'application/json',
+          'Content-Type': 'application/json; charset=UTF-8',
           'Authorization': `Bearer ${slackBotToken}`,
         },
       };
@@ -79,7 +79,7 @@ export default (config) => {
       };
       const msgConfig = {
         headers: {
-          'Content-type': 'application/json',
+          'Content-Type': 'application/json; charset=UTF-8',
           'Authorization': `Bearer ${slackBotToken}`,
         },
       };
