@@ -60,6 +60,10 @@ export default (config, firebase, db, auth) => {
             );
           }
         }
+        // Handle Yes or No
+        else if (['resignationFromDWP.workingAtDWP'].includes(column) &&  typeof record[column] === 'boolean') {
+          record[column] = record[column] ? 'Yes' : 'No';
+        }
         // Handle array values
         else if (['personalDetails.address.previous', 'personalDetails.VATNumbers', 'locationPreferences', 'jurisdictionPreferences'].includes(column)) {
           if (column === 'locationPreferences') {
