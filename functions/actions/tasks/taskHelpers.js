@@ -527,17 +527,20 @@ export default (config) => {
           children.push({
             ref: childKey,
             type: 'number',
+            includeInScore: true,
           });
         });
         markingScheme.push({
           ref: key,
           type: 'group',
           children: children,
+          includeInScore: true,
         });
       } else {
         markingScheme.push({
           ref: key,
           type: 'number',
+          includeInScore: true,
         });
       }
     });
