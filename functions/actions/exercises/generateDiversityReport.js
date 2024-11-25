@@ -60,21 +60,7 @@ export default (config, firebase, db) => {
       applied: diversityReport(applications, applicationRecords, exercise),
     };
 
-    // exclude shortlisted
-    const EXERCISE_STAGE = config.EXERCISE_STAGE;
-    const stages = availableStages(exercise)
-      .filter(stage => ![EXERCISE_STAGE.SHORTLISTED, EXERCISE_STAGE.SELECTION, EXERCISE_STAGE.SCC].includes(stage))
-      .map((stage) => {
-        switch (stage) {
-        case EXERCISE_STAGE.SHORTLISTING:
-        case EXERCISE_STAGE.REVIEW:
-          return EXERCISE_STAGE.APPLIED;
-        case EXERCISE_STAGE.SELECTION:
-        case EXERCISE_STAGE.RECOMMENDATION:
-        default:
-          return stage;
-        }
-      });
+    const stages = availableStages(exercise);
     let applicationRecordsByPreviousStage = [];
     if (stages.length && applicationRecords.length) {
       for (let i = stages.length - 1; i >= 0; --i) {
