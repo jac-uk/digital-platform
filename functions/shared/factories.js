@@ -7,6 +7,7 @@ export default (CONSTANTS) => {
   return {
     newNotificationExerciseApprovalSubmit,
     newNotificationApplicationSubmit,
+    newNotificationFullApplicationSubmit,
     newNotificationApplicationReminder,
     newNotificationApplicationInWelsh,
     newNotificationCandidateFlagConfirmation,
@@ -71,6 +72,43 @@ export default (CONSTANTS) => {
         exerciseName: application.exerciseName,
         applicantName: application.personalDetails.fullName,
         refNumber: application.referenceNumber,
+        selectionExerciseManager: exercise.emailSignatureName,
+        exerciseMailbox: exercise.exerciseMailbox,
+      },
+      reference: {
+        collection: 'applications',
+        id: applicationId,
+      },
+      createdAt: firebase.firestore.Timestamp.fromDate(new Date()),
+      status: 'ready',
+    };
+  }
+
+  function newNotificationFullApplicationSubmit(firebase, applicationId, application, exercise) {
+    const templateName = 'Full Application Submitted';
+    const templateId = 'd411b686-f86f-46be-b4a0-4d3946e2beff';
+
+    let secondStageClosingDate = '';
+    if (exercise._applicationContent 
+        && exercise._applicationContent._currentStep 
+        && exercise._applicationContent._currentStep.end) {
+      secondStageClosingDate = formatDate(exercise._applicationContent._currentStep.end.toDate());
+    }
+
+    return {
+      email: application.personalDetails.email,
+      replyTo: exercise.exerciseMailbox,
+      template: {
+        name: templateName,
+        id: templateId,
+      },
+      personalisation: {
+        exerciseId: exercise.id,
+        exerciseRef: exercise.referenceNumber,
+        exerciseName: application.exerciseName,
+        applicantName: application.personalDetails.fullName,
+        refNumber: application.referenceNumber,
+        secondStageClosingDate: secondStageClosingDate,
         selectionExerciseManager: exercise.emailSignatureName,
         exerciseMailbox: exercise.exerciseMailbox,
       },
