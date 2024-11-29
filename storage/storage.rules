@@ -77,5 +77,12 @@ service firebase.storage {
       allow read: if userIsAuthenticated() && userIsJAC() && isOkForDownload();
       allow write: if userIsAuthenticated() && userIsJAC() && screenshotIsOkForUpload();
     }
+
+    match /user/{userId}/{fileName} {
+      allow read: if userIsAuthenticated() && userIsJAC() && isOkForDownload();
+      allow read: if userIsAuthenticated() && currentUser() == userId && isOkForDownload();
+      allow write: if userIsAuthenticated() && currentUser() == userId && isOkForUpload();
+      allow write: if userIsAuthenticated() && userIsJAC() && isOkForUpload();
+    }    
   }
 }
