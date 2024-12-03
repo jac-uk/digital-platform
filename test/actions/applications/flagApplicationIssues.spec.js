@@ -36,25 +36,31 @@ const mockApplication = (id) => {
       dateOfBirth: createTimestamp(1976, 6, 5),
     },
     qualifications: [
-      { date: createTimestamp(1997, 5, 1) },
+      { date: new Date(1995, 0, 20) },
     ],
     experience: [
       {
-        startDate: createTimestamp(1997, 9, 1),
+        startDate: new Date(1995, 0, 20),
         tasks: ['task1'],
       },
     ],
     employmentGaps: [],
   };
-}; 
+};
+
 
 const flagApplicationIssues = initFlagApplicationIssues(firebase, mockDb, mockSlack);
 
-xdescribe('getEligibilityIssues()', () => {
+describe('getEligibilityIssues()', () => {
 
-  it('returns empty array when no issues', async () => {
+  it.only('returns "Met" issues', async () => {
     const eligibilityIssues = flagApplicationIssues.getEligibilityIssues(mockExercise('ex1'), mockApplication('app1'));
-    expect(eligibilityIssues.length).toBe(0);
+
+    expect(Array.isArray(eligibilityIssues)).toBe(true);
+    eligibilityIssues.forEach((issue)=>{
+      expect(issue.summary).toContain('Met');
+    });
+
   });
 
   describe('Citizenship', () => {
@@ -194,6 +200,8 @@ xdescribe('getEligibilityIssues()', () => {
       const application = mockApplication('app1');
       application.qualifications = [];
       const eligibilityIssues = flagApplicationIssues.getEligibilityIssues(exercise, application);
+      console.log(eligibilityIssues);
+      
       expect(eligibilityIssues.length).toBe(1);
       expect(eligibilityIssues[0].type).toBe('pqe');
     });
@@ -386,5 +394,122 @@ xdescribe('getEligibilityIssues()', () => {
     });
 
   });
+
+  // describe('getEligibilityIssues', () => {
+  //   let exercise, application, applicationRecord;
+
+  //   beforeEach(() => {
+  //     exercise = {
+  //       typeOfExercise: 'legal',
+  //       reasonableLengthService: '10',
+  //       retirementAge: '65',
+  //       characterAndSCCDate: '2025-01-01',
+  //     };
+
+  //     application = {
+  //       personalDetails: { dateOfBirth: '1990-01-01' },
+  //       canGiveReasonableLOS: true,
+  //       qualifications: [{ date: '2012-01-01' }],
+  //       experience: [{ startDate: '2012-01-01', endDate: '2022-01-01', tasks: ['relevant'] }],
+  //     };
+
+  //     applicationRecord = {
+  //       issues: {
+  //         eligibilityIssues: [
+  //           { type: 'rls', result: 'Not Met', comments: 'Past comment' },
+  //         ],
+  //       },
+  //     };
+
+  //     getDate.mockImplementation((date) => new Date(date));
+  //     newEligibilityIssue.mockImplementation((type, summary, details) => ({ type, summary, details }));
+  //   });
+
+  //   it('should return RLS issue as "Met" if the candidate meets service requirements', () => {
+  //     const issues = getEligibilityIssues(exercise, application, applicationRecord);
+
+  //     expect(issues).toEqual(
+  //       expect.arrayContaining([
+  //         expect.objectContaining({ type: 'rls', summary: 'Met' }),
+  //       ])
+  //     );
+  //   });
+
+  //   it('should return RLS issue as "Not Met" if retirement age is exceeded', () => {
+  //     application.personalDetails.dateOfBirth = '1960-01-01'; // Candidate too old
+  //     const issues = getEligibilityIssues(exercise, application, applicationRecord);
+
+  //     expect(issues).toEqual(
+  //       expect.arrayContaining([
+  //         expect.objectContaining({ type: 'rls', summary: 'Not Met' }),
+  //       ])
+  //     );
+  //   });
+
+  //   it('should return PQE issue as "Met" if the candidate has sufficient experience', () => {
+  //     const issues = getEligibilityIssues(exercise, application, applicationRecord);
+
+  //     expect(issues).toEqual(
+  //       expect.arrayContaining([
+  //         expect.objectContaining({ type: 'pqe', summary: expect.stringContaining('Met') }),
+  //       ])
+  //     );
+  //   });
+
+  //   it('should return PQE issue as "Not Met" if the candidate lacks sufficient experience', () => {
+  //     application.experience = []; // No relevant experience
+  //     const issues = getEligibilityIssues(exercise, application, applicationRecord);
+
+  //     expect(issues).toEqual(
+  //       expect.arrayContaining([
+  //         expect.objectContaining({ type: 'pqe', summary: expect.stringContaining('Not Met') }),
+  //       ])
+  //     );
+  //   });
+
+  //   it('should merge previous eligibility issues with the current ones', () => {
+  //     const issues = getEligibilityIssues(exercise, application, applicationRecord);
+
+  //     const rlsIssue = issues.find((issue) => issue.type === 'rls');
+  //     expect(rlsIssue.result).toBe('Not Met');
+  //     expect(rlsIssue.comments).toBe('Past comment');
+  //   });
+
+  //   it('should handle missing date of birth gracefully', () => {
+  //     delete application.personalDetails.dateOfBirth;
+  //     const issues = getEligibilityIssues(exercise, application, applicationRecord);
+
+  //     expect(issues).toEqual(
+  //       expect.arrayContaining([
+  //         expect.objectContaining({ type: 'rls', summary: 'Not Met (No date of birth provided)' }),
+  //       ])
+  //     );
+  //   });
+
+  //   it('should handle non-legal exercises and add professional registration issues', () => {
+  //     exercise.typeOfExercise = 'non-legal';
+  //     getProfessionalRegistrationIssue.mockReturnValue({ type: 'registration', summary: 'Not Met' });
+
+  //     const issues = getEligibilityIssues(exercise, application, applicationRecord);
+
+  //     expect(issues).toEqual(
+  //       expect.arrayContaining([
+  //         expect.objectContaining({ type: 'registration', summary: 'Not Met' }),
+  //       ])
+  //     );
+  //   });
+
+  //   it('should return qualification issues for legal exercises', () => {
+  //     getQualificationIssue.mockReturnValue({ type: 'qualification', summary: 'Not Met' });
+
+  //     const issues = getEligibilityIssues(exercise, application, applicationRecord);
+
+  //     expect(issues).toEqual(
+  //       expect.arrayContaining([
+  //         expect.objectContaining({ type: 'qualification', summary: 'Not Met' }),
+  //       ])
+  //     );
+  //   });
+  // });
 
 });

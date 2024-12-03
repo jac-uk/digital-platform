@@ -239,12 +239,14 @@ export default (firebase, config, db) => {
       const expectedEndDate = new Date(expectedStartDate.getFullYear() + reasonableLengthOfService, expectedStartDate.getMonth(), expectedStartDate.getDate());
       const dateOfBirth = getDate(application.personalDetails.dateOfBirth);
       const dateOfRetirement = new Date(dateOfBirth.getFullYear() + retirementAge, dateOfBirth.getMonth(), dateOfBirth.getDate());
+
       sccAge = new Duration(dateOfBirth, getDate(exercise.characterAndSCCDate)).setDays(0).toString();
       
       if (application.canGiveReasonableLOS === false) {
         const rslSummary = isNonLegalExercise ? `Not Met (${application.cantGiveReasonableLOSDetails})` : 'Not Met';
         rlsIssue = newEligibilityIssue('rls', rslSummary, application.cantGiveReasonableLOSDetails);
       } else {
+        // console.log(expectedEndDate > dateOfRetirement);
         if (expectedEndDate > dateOfRetirement) {
           rlsIssue = newEligibilityIssue('rls', 'Not Met');
         } else {
@@ -258,6 +260,7 @@ export default (firebase, config, db) => {
     issues.push(rlsIssue);
 
     if (isLegalExercise) {
+
       // professional qualification
       const qualificationIssue = getQualificationIssue(exercise, application);
       if (qualificationIssue) issues.push(qualificationIssue);
@@ -266,7 +269,7 @@ export default (firebase, config, db) => {
 
       // post qualification experience
       if (application.qualifications && application.qualifications.length) {
-        application.qualifications = application.qualifications.filter((el) => el.date);
+        application.qualifications = application.qualifications.filter((el) => el.date || el.calledToBarDate);
         if (application.qualifications.length) {
           if (application.qualifications.length > 1) {
             application.qualifications.sort((a, b) => (getDate(a.date) >= getDate(b.date)) ? 1 : -1);
@@ -277,6 +280,7 @@ export default (firebase, config, db) => {
             if (application.employmentGaps && application.employmentGaps.length) {
               experienceSinceFirstQualification = experienceSinceFirstQualification.concat(application.employmentGaps);
             }
+
             experienceSinceFirstQualification = experienceSinceFirstQualification.filter((el) => {
               if (el.startDate) {
                 if (el.endDate) {
@@ -287,6 +291,7 @@ export default (firebase, config, db) => {
               }
               return false;
             });
+
             experienceSinceFirstQualification.sort((a, b) => (getDate(a.startDate) >= getDate(b.startDate)) ? 1 : -1);
             const relevantExperience = new Duration();
             const otherExperience = new Duration();

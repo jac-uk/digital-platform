@@ -4,12 +4,11 @@ import { getDocuments, getDocument, formatDate, splitFullName } from '../../shar
 import _ from 'lodash';
 import { ordinal } from '../../shared/converters/helpers.js';
 import htmlWriter from '../../shared/htmlWriter.js';
-import config from '../../shared/config.js';
 import initDrive from '../../shared/google-drive.js';
 
 const drive = initDrive();
 
-export default (firebase, db) => {
+export default (firebase, db, config) => {
 
   return {
     exportApplicationEligibilityIssues,
@@ -35,7 +34,7 @@ export default (firebase, db) => {
       applicationRecordsRef = applicationRecordsRef.where('status', '==', status);
     }
 
-    const applicationRecords = await getDocuments(applicationRecordsRef);
+    const applicationRecords = await getDocuments(applicationRecordsRef);    
 
     for (let i = 0, len = applicationRecords.length; i < len; i++) {
       const applicationRecord = applicationRecords[i];
@@ -77,7 +76,7 @@ export default (firebase, db) => {
    * @param {*} applicationRecords
    * @returns
    */
-   async function exportToGoogleDoc(exercise, applicationRecords) {
+  async function exportToGoogleDoc(exercise, applicationRecords) {
 
     // get drive service
     await drive.login();

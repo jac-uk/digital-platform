@@ -1,12 +1,13 @@
 import functions from 'firebase-functions';
 import { firebase, db, auth } from '../shared/admin.js';
+import config from '../shared/config.js';
 import initExportApplicationEligibilityIssues from '../actions/exercises/exportApplicationEligibilityIssues.js';
 import { getDocument } from '../shared/helpers.js';
 import initLogEvent from '../actions/logs/logEvent.js';
 import initServiceSettings from '../shared/serviceSettings.js';
 import { PERMISSIONS, hasPermissions } from '../shared/permissions.js';
 
-const { exportApplicationEligibilityIssues } = initExportApplicationEligibilityIssues(firebase, db);
+const { exportApplicationEligibilityIssues } = initExportApplicationEligibilityIssues(firebase, db, config);
 const { logEvent } = initLogEvent(firebase, db, auth);
 const { checkFunctionEnabled } = initServiceSettings(db);
 
