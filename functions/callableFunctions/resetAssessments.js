@@ -17,7 +17,7 @@ export default functions.region('europe-west2').https.onCall(async (data, contex
   
   hasPermissions(context.auth.token.rp, [
     PERMISSIONS.assessments.permissions.canReadAssessments.value,
-    PERMISSIONS.assessments.permissions.canDeleteAssessments.value,
+    PERMISSIONS.assessments.permissions.canUpdateAssessments.value,
     PERMISSIONS.exercises.permissions.canUpdateExercises.value,
   ]);
 

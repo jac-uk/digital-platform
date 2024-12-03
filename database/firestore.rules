@@ -155,7 +155,7 @@ service cloud.firestore {
 
       match /documents/{documentId} {
         allow get, create, update: if request.auth.uid == candidateId &&
-          documentId in ['personalDetails', 'characterInformation', 'equalityAndDiversitySurvey'];
+          documentId in ['personalDetails', 'characterInformation', 'equalityAndDiversitySurvey', 'relevantQualifications', 'postQualificationExperience'];
         allow read: if userIsAuthenticated() && userIsJAC() && hasPermission('c1');
         allow create: if userIsAuthenticated() && userIsJAC() && hasPermission('c2');
         allow update: if userIsAuthenticated() && userIsJAC() && hasPermission('c3');
@@ -267,8 +267,7 @@ service cloud.firestore {
         (!('id' in request.resource.data.assessor) || request.resource.data.assessor.id == currentUser()) &&
         resource.data.assessor.email == request.resource.data.assessor.email &&
         resource.data.status == 'pending' &&
-        (request.resource.data.status == 'completed' || request.resource.data.status == 'declined') &&
-        request.time <= resource.data.hardLimitDate;
+        (request.resource.data.status == 'completed' || request.resource.data.status == 'declined');
         // TODO allow uploads after the due date but before the hard limit resource.data.dueDate >= request.time;
     }
 

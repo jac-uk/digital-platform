@@ -55,7 +55,7 @@ export default (config, db, auth) => {
     blocksArr.push(addSlackSection(issue, bugReport, assigneeUser, reporterUser));
 
     // Send Slack msg
-    slack.postBotBlocksMsgToChannel(slackChannelId, blocksArr);
+    await slack.postBotBlocksMsgToChannel(slackChannelId, blocksArr);
   }
 
   function addSlackDivider() {

@@ -13,6 +13,7 @@ export default (config, firebase, db, auth) => {
   const { refreshApplicationCounts } = initRefreshApplicationCounts(firebase, db);
   const {
     newNotificationApplicationSubmit,
+    newNotificationFullApplicationSubmit,
     newNotificationApplicationReminder,
     newNotificationApplicationInWelsh,
     newNotificationCharacterCheckRequest,
@@ -26,6 +27,7 @@ export default (config, firebase, db, auth) => {
     updateApplication,
     onApplicationCreate,
     sendApplicationConfirmation,
+    sendFullApplicationConfirmation,
     sendApplicationReminders,
     sendApplicationInWelsh,
     sendCharacterCheckRequests,
@@ -155,6 +157,45 @@ export default (config, firebase, db, auth) => {
       ref: applicationRef,
       data: {
         'emailLog.applicationSubmitted': firebase.firestore.Timestamp.fromDate(new Date()),
+      },
+    });
+
+    // write to db
+    const result = await applyUpdates(db, commands);
+    return result ? true : false;
+  }
+
+ /**
+  * sendFullApplicationConfirmation
+  * Sends a 'full application submitted' notification for each application
+  * @param {*} `params` is an object containing
+  *   `applicationId`  (required) ID of application
+  *   `application`    (required) application
+  */
+  async function sendFullApplicationConfirmation(params) {
+    const applicationId = params.applicationId;
+    const application = params.application;
+    const applicationRef = db.collection('applications').doc(applicationId);
+
+    // get exercise
+    const exerciseId = application.exerciseId;
+    const exercise = await getDocument(db.doc(`exercises/${exerciseId}`));
+    if (!exercise) return false;
+
+    // create database commands
+    const commands = [];
+    // create notification
+    commands.push({
+      command: 'set',
+      ref: db.collection('notifications').doc(),
+      data: newNotificationFullApplicationSubmit(firebase, applicationId, application, exercise),
+    });
+    // update application
+    commands.push({
+      command: 'update',
+      ref: applicationRef,
+      data: {
+        'emailLog.fullApplicationSubmitted': firebase.firestore.Timestamp.fromDate(new Date()),
       },
     });
 

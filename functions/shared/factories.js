@@ -7,6 +7,7 @@ export default (CONSTANTS) => {
   return {
     newNotificationExerciseApprovalSubmit,
     newNotificationApplicationSubmit,
+    newNotificationFullApplicationSubmit,
     newNotificationApplicationReminder,
     newNotificationApplicationInWelsh,
     newNotificationCandidateFlagConfirmation,
@@ -24,6 +25,8 @@ export default (CONSTANTS) => {
     newCandidateFormResponse,
     newCandidateFormNotification,
     newNotificationPublishedFeedbackReport,
+    newNotificationEmailVerificationLink,
+    newSmsNotificationLoginVerificationNumber,
   };
 
   function newNotificationExerciseApprovalSubmit(firebase, exerciseId, exercise, email) {
@@ -69,6 +72,43 @@ export default (CONSTANTS) => {
         exerciseName: application.exerciseName,
         applicantName: application.personalDetails.fullName,
         refNumber: application.referenceNumber,
+        selectionExerciseManager: exercise.emailSignatureName,
+        exerciseMailbox: exercise.exerciseMailbox,
+      },
+      reference: {
+        collection: 'applications',
+        id: applicationId,
+      },
+      createdAt: firebase.firestore.Timestamp.fromDate(new Date()),
+      status: 'ready',
+    };
+  }
+
+  function newNotificationFullApplicationSubmit(firebase, applicationId, application, exercise) {
+    const templateName = 'Full Application Submitted';
+    const templateId = 'd411b686-f86f-46be-b4a0-4d3946e2beff';
+
+    let secondStageClosingDate = '';
+    if (exercise._applicationContent 
+        && exercise._applicationContent._currentStep 
+        && exercise._applicationContent._currentStep.end) {
+      secondStageClosingDate = formatDate(exercise._applicationContent._currentStep.end.toDate());
+    }
+
+    return {
+      email: application.personalDetails.email,
+      replyTo: exercise.exerciseMailbox,
+      template: {
+        name: templateName,
+        id: templateId,
+      },
+      personalisation: {
+        exerciseId: exercise.id,
+        exerciseRef: exercise.referenceNumber,
+        exerciseName: application.exerciseName,
+        applicantName: application.personalDetails.fullName,
+        refNumber: application.referenceNumber,
+        secondStageClosingDate: secondStageClosingDate,
         selectionExerciseManager: exercise.emailSignatureName,
         exerciseMailbox: exercise.exerciseMailbox,
       },
@@ -609,6 +649,7 @@ export default (CONSTANTS) => {
       pjeDays: null,
       postQualificationExperience: null,
       previousJudicialExperienceApply: null,
+      published: null,
       qualifications: null,
       reasonableLengthService: null,
       referenceNumber: null,
@@ -832,9 +873,60 @@ export default (CONSTANTS) => {
         exerciseName: exerciseName,
         testType: testType,
         reportsLink: reportsLink,
-        createdAt: firebase.firestore.FieldValue.serverTimestamp(),
-        status: 'ready',
       },
+      createdAt: firebase.firestore.FieldValue.serverTimestamp(),
+      status: 'ready',
+    };
+  }
+
+  /**
+   * Send email verification link ** on change of email address **
+   * (Note that this is not used for sending the verification link on sign up)
+   * 
+   * @param {*} email 
+   * @param {*} verificationLink 
+   * @returns 
+   */
+  function newNotificationEmailVerificationLink(firebase, email, verificationLink) {
+    const templateName = 'Change Email Address Verification Link';
+    const templateId = 'e61ecb33-511e-403e-b633-652f94a19e43';
+    return {
+      email: email,
+      replyTo: '',
+      template: {
+        name: templateName,
+        id: templateId,
+      },
+      personalisation: {
+        verificationLink: verificationLink,
+      },
+      createdAt: firebase.firestore.Timestamp.fromDate(new Date()),
+      status: 'ready',
+    };
+  }
+
+  /**
+   * Send sms notification for login device confirmation
+   * @param {*} firebase 
+   * @param {*} intlMobileNumber 
+   * @param {*} verificationNumber 
+   * @returns 
+   */
+  function newSmsNotificationLoginVerificationNumber(firebase, intlMobileNumber, verificationNumber) {
+    const templateName = 'Login Verification Number';
+    const templateId = '18407df7-f669-4b72-9cab-3115bb66563d';
+    return {
+      messageType: 'sms',
+      mobile: intlMobileNumber,
+      template: {
+        name: templateName,
+        id: templateId,
+      },
+      personalisation: {
+        verificationNumber: verificationNumber,
+      },
+      createdAt: firebase.firestore.Timestamp.fromDate(new Date()),
+      status: 'ready',
     };
   }
 };

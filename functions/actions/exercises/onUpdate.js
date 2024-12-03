@@ -20,17 +20,12 @@ export default (config, firebase, db, auth) => {
     const isDraftOrReady = dataAfter.state === 'draft' || dataAfter.state === 'ready';
     const isPreviouslyApproved = objectHasNestedProperty(dataAfter, '_approval.initialApprovalDate');
     const isUnlocked = isDraftOrReady && isPreviouslyApproved;
-    const canPostWithoutApproval = ['listing'].includes(dataAfter.advertType); 
+    const canPostWithoutApproval = ['listing'].includes(dataAfter.advertType);
+    const isPublishedChanged = dataBefore.published !== dataAfter.published;
 
-    if (dataAfter.published === true) {
-      if (!isUnlocked || canPostWithoutApproval) {
-        // Update the vacancy if the exercise is published but not in the unlocked state (as the changes will need approval first)
-        await updateVacancy(exerciseId, dataAfter);
-      }
-    } else if (dataAfter.published === false) {
-      if (dataBefore.published === true) {
-        await deleteVacancy(exerciseId);
-      }
+    if (!isUnlocked || canPostWithoutApproval || isPublishedChanged) {
+      // Update the vacancy if the exercise is published but not in the unlocked state (as the changes will need approval first)
+      await updateVacancy(exerciseId, dataAfter);
     }
 
     // submitted for approval

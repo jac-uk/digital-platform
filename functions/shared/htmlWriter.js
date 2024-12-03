@@ -1,12 +1,11 @@
 const DEFAULT_STYLESHEET = `
   <style>
     body {
-      font-family: Khula, HelveticaNeue, Arial, Helvetica, sans-serif;
-      font-size: 1.1875rem;
+      font-family: Arial, Helvetica, sans-serif;
+      font-size: 11pt;
     }
     th {
       color: #0B0C14;
-      width: 50%;
       text-align: left;
       border-bottom: solid 1px #0B0C14;
       padding: 4px 8px;
@@ -19,9 +18,10 @@ const DEFAULT_STYLESHEET = `
       vertical-align:top;
     }
     table {
+      table-layout: fixed;
       border-spacing: 0;
       padding-bottom: 20px;
-      width: 800px;
+      width: 100%;
     }
     .sectionStart th, .sectionStart td {
       padding: 30px 8px 8px 8px;

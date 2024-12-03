@@ -5,6 +5,7 @@ import initRefreshApplicationCounts from '../exercises/refreshApplicationCounts.
 import initFactories from '../../shared/factories.js';
 import initQts from '../../shared/qts.js';
 import { getOverride } from './meritListHelper.js';
+import { GRADES, GRADE_VALUES, markingScheme2ScoreSheet } from '../../shared/scoreSheetHelper.js';
 
 export default (config, firebase, db) => {
   const {
@@ -30,6 +31,7 @@ export default (config, firebase, db) => {
 
   return {
     updateTask,
+    getApplications,
     initialisePanelTask,
     initialiseTestTask,
     initialiseStatusChangesTask,
@@ -199,10 +201,10 @@ export default (config, firebase, db) => {
     let task;
     let taskType;
     let applicationRecords;
-    if (params.task) { 
-      task = params.task; 
-      taskType = task.type; 
-      applicationRecords = task.applications || params.applicationRecords; 
+    if (params.task) {
+      task = params.task;
+      taskType = task.type;
+      applicationRecords = task.applications || params.applicationRecords;
       if (!applicationRecords) applicationRecords = await getApplications(exercise, task);
     }
     if (params.taskType) taskType = params.taskType;
@@ -220,15 +222,15 @@ export default (config, firebase, db) => {
           data: data,
         });
       });
-      await applyUpdates(db, commands);  
+      await applyUpdates(db, commands);
     }
 
     result.success = true;
-    result.data.grades = config.GRADES;
+    result.data.grades = GRADES;
     if (task && applicationRecords) result.data['_stats.totalApplications'] = applicationRecords.length;
     if (!task || (task && !task.markingScheme)) {
       result.data.markingScheme = createMarkingScheme(exercise, taskType);
-      result.data.emptyScoreSheet = scoreSheet({ type: taskType, exercise: exercise });
+      result.data.emptyScoreSheet = markingScheme2ScoreSheet(result.data.markingScheme); // scoreSheet({ type: taskType, exercise: exercise });
     }
     return result;
   }
@@ -341,7 +343,7 @@ export default (config, firebase, db) => {
       };
       if (task.grades) {
         data.grades = task.grades;
-        data.grade_values = config.GRADE_VALUES;
+        data.grade_values = GRADE_VALUES;
       }
       data[`statusLog.${config.PANEL_STATUS.CREATED}`] = firebase.firestore.FieldValue.serverTimestamp();
 
@@ -543,7 +545,7 @@ export default (config, firebase, db) => {
 
   /**
    * initialiseDataTask
-   * Initialises a data task. Currently does nothing!
+   * Initialises a data task.
    * @param {*} exercise
    * @param {*} taskType
    * @returns Result object of the form `{ success: Boolean, data: Object }`. If successful then `data` is to be stored in the `task` document
@@ -555,9 +557,9 @@ export default (config, firebase, db) => {
       data: {},
     };
     result.success = true;
-    result.data.grades = config.GRADES;
+    result.data.grades = GRADES;
     result.data.markingScheme = createMarkingScheme(exercise, taskType);
-    result.data.emptyScoreSheet = scoreSheet({ type: taskType, exercise: exercise });
+    result.data.emptyScoreSheet = markingScheme2ScoreSheet(result.data.markingScheme);  // scoreSheet({ type: taskType, exercise: exercise });
     return result;
   }
 
@@ -649,14 +651,14 @@ export default (config, firebase, db) => {
     });
 
     await applyUpdates(db, commands);
-    
+
     result.success = true;
     return result;
   }
 
   /**
    * activateDataTask
-   * Activates a data task. Currently does nothing!
+   * Activates a data task.
    * @param {*} exercise
    * @param {*} task
    * @returns Result object of the form `{ success: Boolean, data: Object }`. If successful then `data` is to be stored in the `task` document
@@ -761,8 +763,9 @@ export default (config, firebase, db) => {
           ref: panel.applications[applicationId].referenceNumber, // TODO extract only the last 7 chars
           panelId: panel.id,
           scoreSheet: finaliseScoreSheet(task.markingScheme, panel.scoreSheet[applicationId]),
-          score: getScoreSheetTotal(task.markingScheme, panel.scoreSheet[applicationId]),
+          changes: task.changes && task.changes[applicationId] ? task.changes[applicationId] : {},
         };
+        row.score = getScoreSheetTotal(task.markingScheme, panel.scoreSheet[applicationId], row.changes),
         finalScores.push(row);
       });
     });
@@ -844,7 +847,7 @@ export default (config, firebase, db) => {
     // TODO remove un-necessary fields
     return result;
   }
-  
+
   /**
    * completeCandidateFormTask
    * Completes a candidate data entry task.
@@ -941,7 +944,7 @@ export default (config, firebase, db) => {
           command: 'update',
           ref: db.collection('applicationRecords').doc(application.id),
           data: saveData,
-        }); 
+        });
       });
     }
 
@@ -996,7 +999,7 @@ export default (config, firebase, db) => {
                   command: 'update',
                   ref: db.collection('applicationRecords').doc(scoreData.id),
                   data: saveData,
-                });         
+                });
               }
             }
           });

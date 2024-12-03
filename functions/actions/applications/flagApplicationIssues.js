@@ -71,6 +71,20 @@ export default (firebase, config, db) => {
     let applications = [];
     let lastApplicationDoc = null;
     let lastApplication = null;
+    
+    /**
+     * {
+     *    stage1 : {
+     *        status1: 1,
+     *        status2: 2
+     *    },
+     *    stage2 : {
+     *        status3: 5,
+     *    },
+     * }
+     */
+    // count application stage and status for character issue report
+    const characterIssueStatusCounts = {};
 
     do {
       // get submitted applications
@@ -107,7 +121,7 @@ export default (firebase, config, db) => {
       applicationCount += applications.length;
 
       // process application
-      const result = await updateApplicationIssues(exercise, applications, reset);
+      const result = await updateApplicationIssues(exercise, applications, reset, characterIssueStatusCounts);
 
       if (!result) {
         console.log(`Fail to update Application Issues, start after application: ${lastApplication.id}`);
@@ -123,23 +137,9 @@ export default (firebase, config, db) => {
     return applicationCount;
   }
 
-  async function updateApplicationIssues(exercise, applications, reset) {
+  async function updateApplicationIssues(exercise, applications, reset, characterIssueStatusCounts) {
     
     const exerciseId = exercise.id;
-
-    /**
-     * {
-     *    stage1 : {
-     *        status1: 1,
-     *        status2: 2
-     *    },
-     *    stage2 : {
-     *        status3: 5,
-     *    },
-     * }
-     */
-    // count application stage and status for character issue report
-    const characterIssueStatusCounts = {};
 
     // construct commands
     const commands = [];
@@ -431,7 +431,7 @@ export default (firebase, config, db) => {
 
     if (exercise._applicationVersion >= 2) {
       questions = config.APPLICATION.CHARACTER_ISSUES_V2;
-      answers = application.characterInformationV2;
+      answers = application.characterInformationV3 ? application.characterInformationV3 : application.characterInformationV2;
     } else if (application.characterInformation) {
       questions = config.APPLICATION.CHARACTER_ISSUES;
       answers = application.characterInformation;

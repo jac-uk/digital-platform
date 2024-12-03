@@ -4,7 +4,8 @@ import { firebase, db } from '../shared/admin.js';
 import initScanFile from '../actions/malware-scanning/scanFile.js';
 import initServiceSettings from '../shared/serviceSettings.js';
 
-const { scanFile } = initScanFile(config, firebase);
+const scanFile = initScanFile(config, firebase);
+
 const { checkFunctionEnabled } = initServiceSettings(db);
 
 export default functions.region('europe-west2').https.onCall(async (data, context) => {

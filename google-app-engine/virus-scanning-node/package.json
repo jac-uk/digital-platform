@@ -9,7 +9,7 @@
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "dependencies": {
-    "@google-cloud/storage": "^3.5.0",
+    "@google-cloud/storage": "^7.12.1",
     "body-parser": "^1.19.0",
     "clamdjs": "^1.0.2",
     "express": "^4.17.1",

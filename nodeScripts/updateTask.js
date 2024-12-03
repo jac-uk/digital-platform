@@ -8,8 +8,8 @@ const { updateTask } = initUpdateTask(config, firebase, db);
 
 const main = async () => {
   return updateTask({
-    exerciseId: '',
-    type: 'criticalAnalysis',
+    exerciseId: 'R5mu47EVqEPf1WbXsLfZ',
+    type: 'selectionDay',
   });
 };
 

@@ -2,7 +2,7 @@ import { getDocument, getDocuments, applyUpdates } from '../shared/helpers.js';
 import initNotify from '../shared/notify.js';
 
 export default (config, firebase, db) => {
-  const { sendEmail, previewEmail } = initNotify(config);
+  const { sendEmail, previewEmail, sendSMS } = initNotify(config);
   return {
     processNotifications,
     previewNotification,
@@ -16,67 +16,69 @@ export default (config, firebase, db) => {
    * NB. The rate limit for calling Notify is 3,000 per minute
    */
   async function processNotifications() {
-
     const NOTIFICATIONS_BATCH_SIZE = 1000;
-
+  
     const services = await getDocument(db.doc('settings/services'));
-
+  
     if (services.notifications && services.notifications.isProcessing === true) {
       const delayBeforeSendMinutes = services.notifications.delayInMinutes || 5;
-
-      // get next batch of notifications
-      let dateLessDelay = new Date(Date.now() - (delayBeforeSendMinutes * 60 * 1000));
+  
+      // Get the next batch of notifications
+      const dateLessDelay = new Date(Date.now() - delayBeforeSendMinutes * 60 * 1000);
       const notifications = await getDocuments(
         db.collection('notifications')
           .where('status', '==', 'ready')
           .where('createdAt', '<=', dateLessDelay)
           .limit(NOTIFICATIONS_BATCH_SIZE)
       );
-
-      // send to Notify
+  
       const sendToRecipient = services.notifications.sendToRecipient;
       const promises = [];
       const commands = [];
-      for (let i = 0, len = notifications.length; i < len; ++i) {
-        const notification = notifications[i];
-        let toEmail = sendToRecipient ? notification.email : notification.replyTo;
-        if (!toEmail) { toEmail = services.notifications.defaultMailbox; }
-        promises.push(
-          sendEmail(
-            toEmail,
-            notification.template.id,
-            notification.personalisation
-          ).then((result) => {
-            if (result === true) {
-              commands.push({
-                command: 'update',
-                ref: notification.ref,
-                data: {
-                  status: 'sent',
-                  sentAt: firebase.firestore.Timestamp.fromDate(new Date()),
-                  sentTo: toEmail,
-                },
-              });
-            } else {
-              commands.push({
-                command: 'update',
-                ref: notification.ref,
-                data: {
-                  status: 'failed',
-                },
-              });
-            }
-            return result;
-          })
-        );
+  
+      for (const notification of notifications) {
+        // SMS notification handling
+        if (notification.type === 'sms') {
+          const toMobile = notification.mobile;
+          promises.push(
+            sendSMS(toMobile, notification.template.id, notification.personalisation)
+              .then((result) => {
+                commands.push({
+                  command: 'update',
+                  ref: notification.ref,
+                  data: result
+                    ? { status: 'sent', sentAt: firebase.firestore.Timestamp.fromDate(new Date()), sentTo: toMobile }
+                    : { status: 'failed' },
+                });
+                return result;
+              })
+          );
+        } else {
+          // Email notification handling
+          const toEmail = sendToRecipient ? notification.email : notification.replyTo || services.notifications.defaultMailbox;
+          promises.push(
+            sendEmail(toEmail, notification.template.id, notification.personalisation)
+              .then((result) => {
+                commands.push({
+                  command: 'update',
+                  ref: notification.ref,
+                  data: result
+                    ? { status: 'sent', sentAt: firebase.firestore.Timestamp.fromDate(new Date()), sentTo: toEmail }
+                    : { status: 'failed' },
+                });
+                return result;
+              })
+          );
+        }
       }
+  
+      // Process all promises
       await Promise.all(promises);
-
-      // process commands
+  
+      // Process commands
       const result = await applyUpdates(db, commands);
       return result ? notifications.length : false;
     }
-
     return 0;
   }
 

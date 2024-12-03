@@ -224,7 +224,7 @@ export default (firebase, db) => {
       if (
         application.progress &&
         application.progress.characterInformation &&
-        (application.characterInformation || application.characterInformationV2)
+        (application.characterInformation || application.characterInformationV2 || application.characterInformationV3)
       ) {
         characterIssues = applicationRecord.issues.characterIssues || [];
       }

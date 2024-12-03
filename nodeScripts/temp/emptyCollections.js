@@ -90,10 +90,10 @@ async function cleanCollection(collectionPath, batchSize) {
  * 
  * @returns {string}
  */
-async function listCollections() {
-  const collectionRefs = await db.listCollections();
-  return collectionRefs.map(c => c.id);
-}
+// async function listCollections() {
+//   const collectionRefs = await db.listCollections();
+//   return collectionRefs.map(c => c.id);
+// }
 const main = async () => {
   console.log(chalk.green(`* Project Id: ${projectId}`));
   console.log(chalk.green(`* Environment: ${environment}`));

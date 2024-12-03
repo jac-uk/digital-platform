@@ -3,6 +3,8 @@ import backupFirestore from './scheduledFunctions/backupFirestore.js';
 import backupAuthentication from './scheduledFunctions/backupAuthentication.js';
 import processNotifications from './scheduledFunctions/processNotifications.js';
 import scheduleScanAllFiles from './scheduledFunctions/scheduleScanAllFiles.js';
+import runScannerTest from './scheduledFunctions/runScannerTest.js';
+import retrySlackMessageOnCreateIssue from './scheduledFunctions/retrySlackMsgOnCreateIssue.js';
 
 // Background
 import onDelete from './backgroundFunctions/onDelete.js';
@@ -92,6 +94,9 @@ import verifySlackUser from './callableFunctions/verifySlackUser.js';
 import sendPublishedFeedbackReportNotifications from './callableFunctions/sendPublishedFeedbackReportNotifications.js';
 import updateApplicationRecordStageStatus from './callableFunctions/updateApplicationRecordStageStatus.js';
 import getLatestReleases from './callableFunctions/getLatestReleases.js';
+import verifyFileChecksum from './callableFunctions/verifyFileChecksum.js';
+import sendSmsVerificationCode from './callableFunctions/sendSmsVerificationCode.js';
+import verifySmsVerificationCode from './callableFunctions/verifySmsVerificationCode.js';
 
 // Callable - QTs v2
 import listQualifyingTests from './callableFunctions/qualifyingTests/v2/listQualifyingTests.js';
@@ -107,6 +112,8 @@ export {
   backupAuthentication,
   processNotifications,
   scheduleScanAllFiles,
+  runScannerTest,
+  retrySlackMessageOnCreateIssue,
 
   // Background
   onDelete,
@@ -196,6 +203,9 @@ export {
   sendPublishedFeedbackReportNotifications,
   updateApplicationRecordStageStatus,
   getLatestReleases,
+  verifyFileChecksum,
+  sendSmsVerificationCode,
+  verifySmsVerificationCode,
 
   // Callable - QTs v2
   listQualifyingTests,

@@ -25,8 +25,8 @@ export default (config, firebase, db) => {
     }
 
     // get exercise
-    // TODO store `application-parts` rather than needing to grab exercise document
-    const exercise = await getDocument(db.collection('exercises').doc(panel.exerciseId));
+    const exerciseId = panel.exercise ? panel.exercise.id : panel.exerciseId;
+    const exercise = await getDocument(db.collection('exercises').doc(exerciseId));
 
     // get application to process
     const application = await getDocument(db.collection('applications').doc(panel.processing.current));
@@ -64,7 +64,7 @@ export default (config, firebase, db) => {
       const promises = [];
 
       if (panel.type === 'selection' || panel.type === 'sift') {
-        
+
         // Create application data document
         promises.push(
           drive.createFile('Application Data', {
@@ -80,7 +80,7 @@ export default (config, firebase, db) => {
           promises.push(
             transferFileFromStorage({
               storageBucket: bucket,
-              fileUrl: `exercise/${panel.exerciseId}/user/${application.userId}/${application.uploadedSelfAssessment}`,
+              fileUrl: `exercise/${exerciseId}/user/${application.userId}/${application.uploadedSelfAssessment}`,
               destinationFolderId: folderId,
               destinationFileName: 'Self Assessment',
             }).catch(e => {
@@ -95,7 +95,7 @@ export default (config, firebase, db) => {
           promises.push(
             transferFileFromStorage({
               storageBucket: bucket,
-              fileUrl: `exercise/${panel.exerciseId}/user/${application.userId}/${application.uploadedCoveringLetter}`,
+              fileUrl: `exercise/${exerciseId}/user/${application.userId}/${application.uploadedCoveringLetter}`,
               destinationFolderId: folderId,
               destinationFileName: 'Covering Letter',
             }).catch(e => 'Error: Covering Letter')
@@ -107,7 +107,7 @@ export default (config, firebase, db) => {
           promises.push(
             transferFileFromStorage({
               storageBucket: bucket,
-              fileUrl: `exercise/${panel.exerciseId}/user/${application.userId}/${application.uploadedCV}`,
+              fileUrl: `exercise/${exerciseId}/user/${application.userId}/${application.uploadedCV}`,
               destinationFolderId: folderId,
               destinationFileName: 'CV',
             }).catch(e => 'Error: CV')
@@ -119,7 +119,7 @@ export default (config, firebase, db) => {
           promises.push(
             transferFileFromStorage({
               storageBucket: bucket,
-              fileUrl: `exercise/${panel.exerciseId}/user/${application.userId}/${application.uploadedSuitabilityStatement}`,
+              fileUrl: `exercise/${exerciseId}/user/${application.userId}/${application.uploadedSuitabilityStatement}`,
               destinationFolderId: folderId,
               destinationFileName: 'Statement of Suitability',
             }).catch(e => 'Error: Statement of Suitability')

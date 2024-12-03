@@ -19,23 +19,22 @@ import { getDocument } from '../functions/shared/helpers.js';
 import initDrive from '../functions/shared/google-drive.js';
 const drive = initDrive();
 
-import initExportGradingSheet from '../functions/actions/panels/exportGradingSheet.js';
-const { exportGradingSheet } = initExportGradingSheet();
+import { exportGradingSheet } from '../functions/actions/panels/exportGradingSheet.js';
 
 // Panel with applications on develop
-const panelId = 'eN1iZih36ePXfqYcvqt1';
+const panelId = 'U9Qrw1eMpXtMBw1k02lb';
 // exerciseId = 'wdpALbyICL7ZxxN5AQt8';
 // applicationIds: ['9dQV6YKbgibVF6zlcGqe', 'AzQNMOymDcUs0LjM7mlB'];
 
 const main = async () => {
 
-  const googleDriveFolderName = '00053 WS Test';
+  const googleDriveFolderName = '0000 WS test';
   
   try {
     const panel = await getDocument(db.collection('panels').doc(panelId));
     const folderId = await initialiseGoogleDriveFolder(googleDriveFolderName);
 
-    await exportGradingSheet(drive, folderId, panel);
+    await exportGradingSheet(drive, folderId, googleDriveFolderName, panel);
 
   }
   catch (err) {
