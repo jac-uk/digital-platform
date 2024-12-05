@@ -94,8 +94,5 @@
     "jest-environment-jsdom": "^29.7.0",
     "mocha": "^10.4.0"
   },
-  "overrides": {
-    "path-to-regexp": "^6.2.0"
-  },
   "private": true
 }
