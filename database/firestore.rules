@@ -295,7 +295,9 @@ service cloud.firestore {
       allow read, write: if userIsAuthenticated() && request.auth.uid == userId;
 
       // allow all admins
-      allow read: if userIsAuthenticated() && userIsJAC();  // all admins can read
+      allow read: if userIsAuthenticated() && userIsJAC() && hasPermission('u7');  // can read users
+      allow read: if userIsAuthenticated() && userIsJAC() && hasPermission('e3');  // can update exercise
+
       allow create: if userIsAuthenticated() && userIsJAC() && hasPermission('u6');
       allow update: if userIsAuthenticated() && userIsJAC() && hasPermission('u2');
       allow delete: if userIsAuthenticated() && userIsJAC() && hasPermission('u4');
