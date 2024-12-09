@@ -132,10 +132,10 @@ export default (config, firebase, db) => {
       Object.keys(curReport).forEach((key) => {
         Object.keys(curReport[key]).forEach((subKey) => {
           if (!['total'].includes(subKey)) {
-            curReport[key][subKey].change = curReport[key][subKey].percent - prevReport[key][subKey].percent;
+            curReport[key][subKey].change = curReport[key][subKey].percent.toFixed(2) - prevReport[key][subKey].percent.toFixed(2);
             // calculate overall change
             if (i === states.length - 1) {
-              curReport[key][subKey].overallChange = curReport[key][subKey].percent - report[states[0]][key][subKey].percent;
+              curReport[key][subKey].overallChange = curReport[key][subKey].percent.toFixed(2) - report[states[0]][key][subKey].percent.toFixed(2);
             }
           }
         });
