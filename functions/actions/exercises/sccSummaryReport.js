@@ -1,12 +1,7 @@
-import * as helpers from '../../shared/converters/helpers.js';
-import lookup from '../../shared/converters/lookup.js';
-import { getDocuments, getDocument, formatDate, splitFullName } from '../../shared/helpers.js';
-import _ from 'lodash';
-import { ordinal } from '../../shared/converters/helpers.js';
+import { getDocument, formatDate } from '../../shared/helpers.js';
 import htmlWriter from '../../shared/htmlWriter.js';
 import config from '../../shared/config.js';
 import initDrive from '../../shared/google-drive.js';
-import { date, func, number } from 'assert-plus';
 import initExerciseHelper from '../../shared/exerciseHelper.js';
 
 const drive = initDrive();
@@ -17,11 +12,31 @@ export default (firebase, db) => {
 
   return {
     generateSccSummaryReport,
+    exportSccSummaryReport,
   };
 
   async function generateSccSummaryReport(exerciseId) {
     const exercise = await getDocument(db.collection('exercises').doc(exerciseId));
+    const sccSummaryReport = await db.collection('exercises').doc(exerciseId).collection('reports').doc('sccSummary').get();
+    const reportData = sccSummaryReport.exists ? sccSummaryReport.data() : {};
 
+    // set the report-specific fields from the report document
+    const numberOfCandidatesProposedForRecommendation = reportData.numberOfCandidatesProposedForRecommendation || '';
+    const shortlistingDates = reportData.shortlistingDates || '';
+    const statutoryConsultees = reportData.statutoryConsultees || '';
+    const vr = reportData.vr || '';
+    const dateS94ListCreated = reportData.dateS94ListCreated || '';
+    const candidatesRemainingOnS94List = reportData.candidatesRemainingOnS94List || ''; 
+    const shortlistingMethod = reportData.shortlistingMethod || '';
+    const vacanciesByJurisdictionChamber = reportData.vacanciesByJurisdictionChamber || '';
+    const characterChecksUndertaken = reportData.characterChecksUndertaken || '';
+    const numberOfACandidates = reportData.numberOfACandidates || '';
+    const characterIssues = reportData.characterIssues || '';
+    const mattersRequiringADecision = reportData.mattersRequiringADecision || '';
+    const previouslyDeclaredWithinGuidance = reportData.previouslyDeclaredWithinGuidance || '';
+    const highScoringDCandidates = reportData.highScoringDCandidates || '';
+
+    // set the report-specific fields from the exercise document
     let numberOfVacancies = [];
     if (exercise.immediateStart > 0) {
       numberOfVacancies.push(`${exercise.immediateStart} Immediate start (S87)`);
@@ -38,21 +53,23 @@ export default (firebase, db) => {
     const numberOfApplications = applicationCountValues.applied || 0;
     const numberOfWithdrawals = applicationCountValues.withdrawn || 0;
 
-    const numberOfRemovedOnEligibilityOrASC = 
-    (exercise._applicationRecords.status[APPLICATION_STATUS.REJECTED_INELIGIBLE_STATUTORY] || 0) + 
-    (exercise._applicationRecords.status[APPLICATION_STATUS.REJECTED_INELIGIBLE_ADDITIONAL] || 0);
+    let numberOfRemovedOnEligibilityOrASC = 0;
+    let numberOfShortlisted = 0;
+
+    if (exercise._applicationRecords.status) {
+      numberOfRemovedOnEligibilityOrASC = 
+        (exercise._applicationRecords.status[APPLICATION_STATUS.REJECTED_INELIGIBLE_STATUTORY] || 0) + 
+        (exercise._applicationRecords.status[APPLICATION_STATUS.REJECTED_INELIGIBLE_ADDITIONAL] || 0);
+      numberOfShortlisted = exercise._applicationRecords.status[APPLICATION_STATUS.SHORTLISTING_PASSED] || 0;
+    }
     
-    const numberOfShortlisted = exercise._applicationRecords.status[APPLICATION_STATUS.SHORTLISTING_PASSED] || 0;
-    
-    const methodOfShortlisting = shortlistingMethods(exercise);
-    
+    const methodOfShortlistingArray = shortlistingMethods(exercise);
     const selectionDayTools = selectionCategories(exercise);
-    
     const datesOfSelectionDays = formatSelectionDays(exercise);
 
     // construct the report document
     const report = {
-      numberOfVacancies,
+      numberOfVacancies: numberOfVacancies.join(', '),
       locationDetails,
       launch,
       closed,
@@ -60,22 +77,35 @@ export default (firebase, db) => {
       numberOfWithdrawals,
       numberOfRemovedOnEligibilityOrASC,
       numberOfShortlisted,
-      methodOfShortlisting,
-      selectionDayTools,
+      methodOfShortlistingArray,
+      selectionDayTools: selectionDayTools.join(', '),
       datesOfSelectionDays,
+      numberOfACandidates,
+      characterChecksUndertaken,
+      characterIssues,
+      mattersRequiringADecision,
+      previouslyDeclaredWithinGuidance,
+      highScoringDCandidates,
+      numberOfCandidatesProposedForRecommendation,
+      vacanciesByJurisdictionChamber,
+      vr,
+      shortlistingDates,
+      statutoryConsultees,
+      dateS94ListCreated,
+      candidatesRemainingOnS94List, 
+      shortlistingMethod,
     };
 
     // store the report document in the database
-    await db.collection('exercises').doc(exerciseId).collection('reports').doc('sccSummary').set(report);
+    await db.collection('exercises').doc(exerciseId).collection('reports').doc('sccSummary').set(report, { merge: true });
 
     // return the report in the HTTP response
     return report;
   }
 
-
   /**
-   * exportApplicationEligibilityIssues
-   * Generates an export of all applications in the selected exercise with eligibility issues
+   * exportSccSummaryReport
+   * Generates an export of the SCC Summary report for the selected exercise
    * @param {*} `exerciseId` (required) ID of exercise to include in the export
    */
   async function exportSccSummaryReport(exerciseId) {
@@ -90,7 +120,7 @@ export default (firebase, db) => {
         const settings = await getDocument(db.collection('settings').doc('services'));
         drive.setDriveId(settings.google.driveId);
     
-        // generate a filename for the document we are going to create ex. JAC00787_SCC Eligibility Annexes
+        // generate a filename for the document we are going to create ex. JAC00787_SCC Summary
         const now = new Date();
         // const timestamp = new Date(now.getTime() - (now.getTimezoneOffset() * 60000)).toISOString();
         const filename = `${exercise.referenceNumber}_SCC Summary` ;
@@ -108,7 +138,7 @@ export default (firebase, db) => {
           folderId = await drive.createFolder(folderName);
         }
     
-        // Create eligibility issues document
+        // Create SCC Summary document
         const fileId = await drive.createFile(filename, {
           folderId: folderId,
           sourceType: drive.MIME_TYPE.HTML,
@@ -119,7 +149,7 @@ export default (firebase, db) => {
         if (fileId) {
           return await drive.exportFile(fileId, 'application/vnd.openxmlformats-officedocument.wordprocessingml.document');
         }
-    
+
         return false;
   }
 
@@ -133,17 +163,30 @@ export default (firebase, db) => {
       numberOfWithdrawals,
       numberOfRemovedOnEligibilityOrASC,
       numberOfShortlisted,
-      methodOfShortlisting,
       selectionDayTools,
       datesOfSelectionDays,
+      numberOfACandidates,
+      characterChecksUndertaken,
+      characterIssues,
+      mattersRequiringADecision,
+      previouslyDeclaredWithinGuidance,
+      highScoringDCandidates,
+      numberOfCandidatesProposedForRecommendation,
+      vacanciesByJurisdictionChamber,
+      vr,
+      shortlistingDates,
+      statutoryConsultees,
+      dateS94ListCreated,
+      candidatesRemainingOnS94List,
+      shortlistingMethod,
     } = sccSummaryReport;
 
     const rows = [
-      { header: 'Number of vacancies', content: numberOfVacancies.join(' ,') },
-      { header: 'Number of candidates proposed for Recommendation', content: '' },
-      { header: 'Vacancies by jurisdiction/chamber', content: '' },
+      { header: 'Number of vacancies', content: numberOfVacancies },
+      { header: 'Number of candidates proposed for Recommendation', content: numberOfCandidatesProposedForRecommendation },
+      { header: 'Vacancies by jurisdiction/chamber', content: vacanciesByJurisdictionChamber },
       { header: 'Location details', content: locationDetails },
-      { header: 'VR (includes details of SPTW)', content: 'Annex <span style="color:red" >X</span>' },
+      { header: 'VR (includes details of SPTW)', content: `Annex ${vr}` },
       { header: '', content: '' },
       { header: 'Launch', content: launch },
       { header: 'Closed', content: closed },
@@ -152,27 +195,31 @@ export default (firebase, db) => {
       { header: 'Number removed on eligibility/ASC', content: numberOfRemovedOnEligibilityOrASC },
       { header: '', content: '' },
       { header: 'Number shortlisted', content: numberOfShortlisted },
-      { header: 'Method of shortlisting', content: methodOfShortlisting.join(' ,') },
-      { header: 'Dates of shortlisting', content: '' },
+      { header: 'Method of shortlisting', content: shortlistingMethod },
+      { header: 'Dates of shortlisting', content: shortlistingDates },
       { header: '', content: '' },
-      { header: 'Statutory consultee(s)', content: '<span style="color:red"><pre>insert name/s or &#39;consultation waived&#39;</pre> </span>' },
+      { header: 'Statutory consultee(s)', content: statutoryConsultees },
       { header: '', content: '' },
-      { header: 'Selection day tools', content: selectionDayTools.join(' ,') },
-      { header: 'Number of A-C candidates', content: '' },
+      { header: 'Selection day tools', content: selectionDayTools },
+      { header: 'Number of A-C candidates', content: numberOfACandidates },
       { header: 'Dates of selection days', content: datesOfSelectionDays },
       { header: '', content: '' },
-      { header: '<if applicable> Date s.94 list Created', content: '' },
-      { header: '<if applicable> Candidates Remaining on s.94 list', content: '' },
+      { header: 'Date s.94 list Created', content: dateS94ListCreated },
+      { header: 'Candidates Remaining on s.94 list', content: candidatesRemainingOnS94List },
       { header: '', content: '' },
-      { header: 'Character Checks undertaken', content: '<b style="font-style:italic">E.g. HMRC, ACRO, BSB, etc</b>' },
-      { header: 'Character issues', content: 'No issues identified or &lt;All issues were considered when s.94 list was created and no further issues identified&gt; or &lt;The following matters require a decision&gt; &lt;Amend as needed&gt; &lt;This exercise uses the revised Good Character Guidance launched on 15 October&gt; or &lt;This exercise uses the older Good Character Guidance before its launch on 15 October&gt;:' },
-      { header: 'Matters requiring a decision', content: 'Annex <span style="font-red">X</span>' },
-      { header: 'Previously declared, within guidance', content: 'Annex <span style="font-red">X</span>' },
-      { header: 'High scoring D candidates', content: 'Annex <span style="font-red">X</span>' },
+      { header: 'Character Checks undertaken', content: characterChecksUndertaken },
+      /**
+       * might need this one, so leaving it in for now
+       * { header: 'Character issues', content: 'No issues identified or &lt;All issues were considered when s.94 list was created and no further issues identified&gt; or &lt;The following matters require a decision&gt; &lt;Amend as needed&gt; &lt;This exercise uses the revised Good Character Guidance launched on 15 October&gt; or &lt;This exercise uses the older Good Character Guidance before its launch on 15 October&gt;:' },
+       *  */ 
+      { header: 'Character issues', content: characterIssues },
+      { header: 'Matters requiring a decision', content: `Annex ${mattersRequiringADecision}` },
+      { header: 'Previously declared, within guidance', content: `Annex ${previouslyDeclaredWithinGuidance}` },
+      { header: 'High scoring D candidates', content: `Annex ${highScoringDCandidates}` },
     ];
 
     let writer = new htmlWriter();
-    writer.addHeading('Summary', 'center');
+    writer.addHeading('SCC Summary', 'center');
     writer.addRaw(`
       <table>
         <tbody>`

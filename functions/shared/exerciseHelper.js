@@ -1,5 +1,7 @@
+import { formatDate } from './helpers.js';
 export default (config) => {
   const EXERCISE_STAGE = config.EXERCISE_STAGE;
+  const SELECTION_CATEGORIES = config.SELECTION_CATEGORIES;
   return {
     availableStages,
     isStagedExercise,
@@ -82,6 +84,11 @@ export default (config) => {
 
   function formatSelectionDays(exercise) {
     let dateString = '';
+
+    if (!exercise || !exercise.selectionDay) {
+      return dateString;
+    }
+
     const selectionDayStart = formatDate(exercise.selectionDay.selectionDayStart);
     const selectionDayEnd = formatDate(exercise.selectionDay.selectionDayEnd);
   
