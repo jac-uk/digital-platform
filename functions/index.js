@@ -97,6 +97,8 @@ import getLatestReleases from './callableFunctions/getLatestReleases.js';
 import verifyFileChecksum from './callableFunctions/verifyFileChecksum.js';
 import sendSmsVerificationCode from './callableFunctions/sendSmsVerificationCode.js';
 import verifySmsVerificationCode from './callableFunctions/verifySmsVerificationCode.js';
+import generateSccSummaryReport from './callableFunctions/generateSccSummaryReport.js';
+import exportSccSummaryReport from './callableFunctions/exportSccSummaryReport.js';
 import getMultipleApplicationData from './callableFunctions/getMultipleApplicationData.js';
 
 // Callable - QTs v2

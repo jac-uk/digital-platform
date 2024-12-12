@@ -70,6 +70,9 @@ service cloud.firestore {
       match /reports/{reportId} {
         allow read: if userIsAuthenticated() && userIsJAC() && hasPermission('e1');
       }
+      match /reports/sccSummary { // specific rule for sccSummary report
+        allow write: if userIsAuthenticated() && userIsJAC() && hasPermission('e3');
+      }
       match /tasks/{taskId} {
         allow create, update: if userIsAuthenticated() && userIsJAC();
         allow read: if userIsAuthenticated() && userIsJAC();
