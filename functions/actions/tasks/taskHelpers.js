@@ -315,7 +315,7 @@ export default (config) => {
       const capabilities = getExerciseCapabilities(exercise);
       capabilities.push('OVERALL');
       categories.forEach(cat => {
-        markingScheme.push(createMarkingSchemeGroup(cat, capabilities));
+        markingScheme.push(createMarkingSchemeGroup(cat, capabilities, cat === 'overall'));
       });
       break;
     }
@@ -325,7 +325,7 @@ export default (config) => {
     return markingScheme;
   }
 
-  function createMarkingSchemeGroup(ref, childRefs) {
+  function createMarkingSchemeGroup(ref, childRefs, isGroupScored = true) {
     return {
       ref: ref,
       type: 'group',
@@ -333,6 +333,7 @@ export default (config) => {
         const item = {
           ref: childRef,
           type: 'grade',
+          includeInScore: isGroupScored && childRef !== 'OVERALL' ? true : false,
         };
         return item;
       }),
