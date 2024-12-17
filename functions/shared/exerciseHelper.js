@@ -1,9 +1,15 @@
+import { formatDate } from './helpers.js';
+import lookup from './converters/lookup.js';
+
 export default (config) => {
   const EXERCISE_STAGE = config.EXERCISE_STAGE;
   return {
     availableStages,
     isStagedExercise,
     canApplyFullApplicationSubmitted,
+    applicationCounts,
+    shortlistingMethods,
+    formatSelectionDays,
   };
 
   function availableStages(exercise) {
@@ -43,5 +49,54 @@ export default (config) => {
    
     return applyFullApplicationSubmitted;
   }
+
+  function applicationCounts(exercise) {
+    const applicationCounts = exercise && exercise._applications ? { ...exercise._applications } : {};
+    // include withdrawn applications in applied count
+    if (applicationCounts && applicationCounts.applied) {
+      applicationCounts.applied = applicationCounts.applied + (applicationCounts.withdrawn || 0);
+    }
+    return applicationCounts;
+  }
+
+  function shortlistingMethods(exercise) {
+    const methods = exercise.shortlistingMethods;
+    if (!(methods instanceof Array)) {
+      return [];
+    }
+    const list = methods.filter(value => (value !== 'other'));
+    list.sort();
+
+    if (methods.includes('other')) {
+      exercise.otherShortlistingMethod.forEach((method) => {
+        return list.push(method.name);
+      });
+    }
+
+    const lookupList = list.map((method) => {
+      return lookup(method);
+    });
+
+    return lookupList;
+  }
+
+  function formatSelectionDays(exercise) {
+    let dateString = '';
+
+    if (!exercise || !exercise.selectionDay) {
+      return dateString;
+    }
+
+    const selectionDayStart = formatDate(exercise.selectionDay.selectionDayStart);
+    const selectionDayEnd = formatDate(exercise.selectionDay.selectionDayEnd);
   
+    if (!selectionDayStart || !selectionDayEnd) {
+      dateString = '';
+    } else if (selectionDayStart !== selectionDayEnd) {
+      dateString = `${selectionDayStart} to ${selectionDayEnd}`;
+    } else {
+      dateString = `${selectionDayStart}`;
+    }
+    return dateString;
+  }
 };
