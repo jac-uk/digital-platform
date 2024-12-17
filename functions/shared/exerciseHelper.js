@@ -1,14 +1,14 @@
 import { formatDate } from './helpers.js';
+import lookup from './converters/lookup.js';
+
 export default (config) => {
   const EXERCISE_STAGE = config.EXERCISE_STAGE;
-  const SELECTION_CATEGORIES = config.SELECTION_CATEGORIES;
   return {
     availableStages,
     isStagedExercise,
     canApplyFullApplicationSubmitted,
     applicationCounts,
     shortlistingMethods,
-    selectionCategories,
     formatSelectionDays,
   };
 
@@ -73,13 +73,11 @@ export default (config) => {
       });
     }
 
-    return list;
-  }
+    const lookupList = list.map((method) => {
+      return lookup(method);
+    });
 
-  function selectionCategories(exercise) {
-    if (!exercise) return [];
-    if (!exercise.selectionCategories) return [];
-    return Object.values(SELECTION_CATEGORIES).filter(item => exercise.selectionCategories.indexOf(item.value) >= 0);
+    return lookupList;
   }
 
   function formatSelectionDays(exercise) {

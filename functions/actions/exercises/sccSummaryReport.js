@@ -7,7 +7,7 @@ import initExerciseHelper from '../../shared/exerciseHelper.js';
 const drive = initDrive();
 
 export default (firebase, db) => {
-  const { applicationCounts, shortlistingMethods, selectionCategories, formatSelectionDays } = initExerciseHelper(config);
+  const { applicationCounts, shortlistingMethods, formatSelectionDays } = initExerciseHelper(config);
   const { APPLICATION_STATUS } = config;
 
   return {
@@ -27,7 +27,6 @@ export default (firebase, db) => {
     const vr = reportData.vr || '';
     const dateS94ListCreated = reportData.dateS94ListCreated || '';
     const candidatesRemainingOnS94List = reportData.candidatesRemainingOnS94List || ''; 
-    const shortlistingMethod = reportData.shortlistingMethod || '';
     const vacanciesByJurisdictionChamber = reportData.vacanciesByJurisdictionChamber || '';
     const characterChecksUndertaken = reportData.characterChecksUndertaken || '';
     const numberOfACandidates = reportData.numberOfACandidates || '';
@@ -63,8 +62,8 @@ export default (firebase, db) => {
       numberOfShortlisted = exercise._applicationRecords.status[APPLICATION_STATUS.SHORTLISTING_PASSED] || 0;
     }
     
-    const methodOfShortlistingArray = shortlistingMethods(exercise);
-    const selectionDayTools = selectionCategories(exercise);
+    const shortlistingMethod = shortlistingMethods(exercise);
+    const selectionDayTools = exercise.selectionCategories || [];
     const datesOfSelectionDays = formatSelectionDays(exercise);
 
     // construct the report document
@@ -77,7 +76,6 @@ export default (firebase, db) => {
       numberOfWithdrawals,
       numberOfRemovedOnEligibilityOrASC,
       numberOfShortlisted,
-      methodOfShortlistingArray,
       selectionDayTools: selectionDayTools.join(', '),
       datesOfSelectionDays,
       numberOfACandidates,
@@ -90,10 +88,10 @@ export default (firebase, db) => {
       vacanciesByJurisdictionChamber,
       vr,
       shortlistingDates,
-      statutoryConsultees,
+      statutoryConsultees: statutoryConsultees.length > 0 ? statutoryConsultees : 'Insert name(s) or Consultation waived',
       dateS94ListCreated,
       candidatesRemainingOnS94List, 
-      shortlistingMethod,
+      shortlistingMethod: shortlistingMethod.join(', '),
     };
 
     // store the report document in the database
@@ -188,8 +186,8 @@ export default (firebase, db) => {
       { header: 'Location details', content: locationDetails },
       { header: 'VR (includes details of SPTW)', content: `Annex ${vr}` },
       { header: '', content: '' },
-      { header: 'Launch', content: launch },
-      { header: 'Closed', content: closed },
+      { header: 'Launch', content: formatDate(launch, 'DD/MM/YYYY') },
+      { header: 'Closed', content: formatDate(closed, 'DD/MM/YYYY') },
       { header: 'Number of applications', content: numberOfApplications },
       { header: 'Number of withdrawals', content: numberOfWithdrawals },
       { header: 'Number removed on eligibility/ASC', content: numberOfRemovedOnEligibilityOrASC },
@@ -208,10 +206,6 @@ export default (firebase, db) => {
       { header: 'Candidates Remaining on s.94 list', content: candidatesRemainingOnS94List },
       { header: '', content: '' },
       { header: 'Character Checks undertaken', content: characterChecksUndertaken },
-      /**
-       * might need this one, so leaving it in for now
-       * { header: 'Character issues', content: 'No issues identified or &lt;All issues were considered when s.94 list was created and no further issues identified&gt; or &lt;The following matters require a decision&gt; &lt;Amend as needed&gt; &lt;This exercise uses the revised Good Character Guidance launched on 15 October&gt; or &lt;This exercise uses the older Good Character Guidance before its launch on 15 October&gt;:' },
-       *  */ 
       { header: 'Character issues', content: characterIssues },
       { header: 'Matters requiring a decision', content: `Annex ${mattersRequiringADecision}` },
       { header: 'Previously declared, within guidance', content: `Annex ${previouslyDeclaredWithinGuidance}` },
