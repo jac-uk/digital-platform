@@ -1,6 +1,7 @@
 import { getApp } from 'firebase-admin/app';
 import { Timestamp } from 'firebase-admin/firestore';
 import get from 'lodash/get.js';
+import crypto from 'crypto';
 
 export {
   getDocument,
@@ -34,7 +35,8 @@ export {
   splitFullName,
   isDifferentPropsByPath,
   dedupeArray,
-  dedupeArrayOfObjects
+  dedupeArrayOfObjects,
+  hashEmail
 };
 
 function calculateMean(numArray) {
@@ -500,3 +502,8 @@ const dedupeArrayOfObjects = (arr, key) => {
     return true; // Keep the first occurrence
   });
 };
+function hashEmail(email) {
+  if (!email) return '';
+  const hash = crypto.createHash('sha1');
+  return hash.update(email.toLowerCase().trim()).digest('hex');
+}
