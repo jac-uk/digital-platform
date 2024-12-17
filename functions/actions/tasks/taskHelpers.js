@@ -19,6 +19,7 @@ export default (config) => {
     taskNextStatus,
     taskApplicationsEntryStatus,
     finaliseScoreSheet,
+    hasOverallGradeD,
     getScoreSheetTotal,
     getEmptyScoreSheet,
     scoreSheet2MarkingScheme,
@@ -460,6 +461,29 @@ export default (config) => {
       }
     });
     return scoreSheet;
+  }
+
+  function hasOverallGradeD(markingScheme, scoreSheet, changes) {
+    if (!markingScheme) return score;
+    if (!scoreSheet) return score;
+    let hasOverallGradeD = false;
+    markingScheme.forEach(item => {
+      if (item.type === MARKING_TYPE.GROUP.value) {
+        item.children.forEach(child => {
+          if (child.ref === 'OVERALL') {
+            const change = changes && changes[item.ref] && changes[item.ref][child.ref];
+            if (change && change === 'D') {
+              hasOverallGradeD = true;
+            } else {
+              if (scoreSheet[item.ref][child.ref] === 'D') {
+                hasOverallGradeD = true;
+              }
+            }
+          }
+        });
+      }
+    });
+    return hasOverallGradeD;
   }
 
   function getScoreSheetTotal(markingScheme, scoreSheet, changes) {
