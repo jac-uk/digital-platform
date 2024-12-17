@@ -253,6 +253,10 @@ const PERMISSIONS = {
         label: 'Can approve late applications',
         value: 'a6',
       },
+      canCreateTestApplications: {
+        label: 'Can create test applications',
+        value: 'a7',
+      },
     },
   },
   applicationRecords: {
