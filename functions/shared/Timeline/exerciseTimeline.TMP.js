@@ -293,7 +293,7 @@ export default (config) => {
 
     if (data.equalMeritSecondStageStartDate) {
       timeline.push(
-        createShortlistingMethod('Equal merit second stage', data.equalMeritSecondStageStartDate, data.equalMeritSecondStageEndDate)
+        createShortlistingMethod('Equal merit second stage', data.equalMeritSecondStageStartDate, data.equalMeritSecondStageEndDate, TASK_TYPE.EMP_TIEBREAKER)
       );
     }
 

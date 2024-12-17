@@ -51,6 +51,10 @@ export default (config, firebase, db) => {
       }
       applicationRecords = await getDocuments(queryRef.select('application', 'candidate'));
     }
+    if (!applicationRecords.length) {
+      console.log('No applications');
+      return result;
+    }
 
     // get task data from timeline
     const timelineTask = getTimelineTasks(exercise, params.type)[0];

@@ -162,7 +162,7 @@ const PERMISSIONS = {
         value: 'pa1',
       },
     },
-  },  
+  },
   panels: {
     label: 'Panels',
     permissions: {
@@ -390,6 +390,23 @@ const PERMISSIONS = {
       },
     },
   },
+  tasks: {
+    label: 'Tasks',
+    permissions: {
+      canCreate: {
+        label: 'Can create tasks',
+        value: 't1',
+      },
+      canUpdate: {
+        label: 'Can update tasks',
+        value: 't2',
+      },
+      canEditScoreCalculation: {
+        label: 'Can edit score calculation',
+        value: 't3',
+      },
+    },
+  },
 };
 
 export {
@@ -402,7 +419,7 @@ function hasPermissions(rolePermissions, permissions) {
   const valid = rolePermissions
     && Array.isArray(rolePermissions)
     && permissions.every(p => rolePermissions.includes(p));
-  
+
   if (!valid) {
     throw new functions.https.HttpsError('permission-denied', 'Permission denied');
   }
