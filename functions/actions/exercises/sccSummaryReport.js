@@ -64,7 +64,7 @@ export default (firebase, db) => {
     
     const shortlistingMethod = shortlistingMethods(exercise);
     const selectionCategories = exercise.selectionCategories || [];
-    const selectionDayTools = SELECTION_CATEGORIES.filter((c) => selectionCategories.include(c.value)).map((c) => c.description);
+    const selectionDayTools = Object.values(SELECTION_CATEGORIES).filter((c) => selectionCategories.includes(c.value)).map((c) => c.description);
     const datesOfSelectionDays = formatSelectionDays(exercise);
 
     // construct the report document
