@@ -1,6 +1,6 @@
 import { formatDate } from './helpers.js';
 import lookup from './converters/lookup.js';
-
+import _ from 'lodash';
 export default (config) => {
   const EXERCISE_STAGE = config.EXERCISE_STAGE;
 
@@ -111,22 +111,32 @@ export default (config) => {
   }
 
   function formatSelectionDays(exercise) {
-    let dateString = '';
-
     if (!exercise || !exercise.selectionDays) {
-      return dateString;
+      return [];
     }
 
-    const selectionDayStart = formatDate(exercise.selectionDays.selectionDayStart);
-    const selectionDayEnd = formatDate(exercise.selectionDays.selectionDayEnd);
-  
-    if (!selectionDayStart || !selectionDayEnd) {
-      dateString = '';
-    } else if (selectionDayStart !== selectionDayEnd) {
-      dateString = `${selectionDayStart} to ${selectionDayEnd}`;
-    } else {
-      dateString = `${selectionDayStart}`;
+    let dateStrings = [];
+    
+    for (const selectionDay of exercise.selectionDays) {
+      let dateString = '';
+      const selectionDayStart = formatDate(selectionDay.selectionDayStart);
+      const selectionDayEnd = formatDate(selectionDay.selectionDayEnd);
+    
+      if (!selectionDayStart || !selectionDayEnd) {
+        dateString = '';
+      } else if (selectionDayStart !== selectionDayEnd) {
+        dateString = `${selectionDayStart} to ${selectionDayEnd}`;
+      } else {
+        dateString = `${selectionDayStart}`;
+      }
+      if (!_.isEmpty(dateString)) {
+        if (selectionDay.selectionDayLocation) {
+          dateString = `${selectionDay.selectionDayLocation} - ${dateString}`;
+        }
+        dateStrings.push(dateString);
+      }
     }
-    return dateString;
+
+    return dateStrings;
   }
 };
