@@ -201,7 +201,7 @@ export default (firebase, db) => {
       { header: '', content: '' },
       { header: 'Selection day tools', content: selectionDayTools },
       { header: 'Number of A-C candidates', content: numberOfACandidates },
-      { header: 'Dates of selection days', content: formatSelectionDays({ selectionDays: datesOfSelectionDays}).join(', ') },
+      { header: 'Dates of selection days', content: formatSelectionDays({ selectionDays: datesOfSelectionDays}).join('<br />') },
       { header: '', content: '' },
       { header: 'Date s.94 list Created', content: dateS94ListCreated },
       { header: 'Candidates Remaining on s.94 list', content: candidatesRemainingOnS94List },
