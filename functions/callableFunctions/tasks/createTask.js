@@ -4,6 +4,7 @@ import { firebase, db } from '../../shared/admin.js';
 import { checkArguments } from '../../shared/helpers.js';
 import initCreateTask from '../../actions/tasks/createTask.js';
 import initServiceSettings from '../../shared/serviceSettings.js';
+import { PERMISSIONS, hasPermissions } from '../../shared/permissions.js';
 
 const createTask = initCreateTask(config, firebase, db);
 const { checkFunctionEnabled } = initServiceSettings(db);
@@ -16,6 +17,11 @@ export default functions.runWith({
   if (!context.auth) {
     throw new functions.https.HttpsError('failed-precondition', 'The function must be called while authenticated.');
   }
+
+  hasPermissions(context.auth.token.rp, [
+    PERMISSIONS.tasks.permissions.canCreate.value,
+  ]);
+
   if (!checkArguments({
     exerciseId: { required: true },
     type: { required: true },
