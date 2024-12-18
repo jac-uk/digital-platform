@@ -65,7 +65,7 @@ export default (firebase, db) => {
     const shortlistingMethod = shortlistingMethods(exercise);
     const selectionCategories = exercise.selectionCategories || [];
     const selectionDayTools = Object.values(SELECTION_CATEGORIES).filter((c) => selectionCategories.includes(c.value)).map((c) => c.description);
-    const datesOfSelectionDays = formatSelectionDays(exercise);
+    const datesOfSelectionDays = exercise.selectionDays || [];
 
     // construct the report document
     const report = {
@@ -201,7 +201,7 @@ export default (firebase, db) => {
       { header: '', content: '' },
       { header: 'Selection day tools', content: selectionDayTools },
       { header: 'Number of A-C candidates', content: numberOfACandidates },
-      { header: 'Dates of selection days', content: datesOfSelectionDays },
+      { header: 'Dates of selection days', content: formatSelectionDays({ selectionDays: datesOfSelectionDays}).join(', ') },
       { header: '', content: '' },
       { header: 'Date s.94 list Created', content: dateS94ListCreated },
       { header: 'Candidates Remaining on s.94 list', content: candidatesRemainingOnS94List },
