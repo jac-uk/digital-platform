@@ -119,8 +119,8 @@ export default (config) => {
     
     for (const selectionDay of exercise.selectionDays) {
       let dateString = '';
-      const selectionDayStart = formatDate(selectionDay.selectionDayStart);
-      const selectionDayEnd = formatDate(selectionDay.selectionDayEnd);
+      const selectionDayStart = formatDate(selectionDay.selectionDayStart, 'DD/MM/YYYY');
+      const selectionDayEnd = formatDate(selectionDay.selectionDayEnd, 'DD/MM/YYYY');
     
       if (!selectionDayStart || !selectionDayEnd) {
         dateString = '';
