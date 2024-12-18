@@ -1,14 +1,14 @@
 import assert from 'assert';
 import { firebaseFunctionsTest, generateMockContext } from './helpers.js';
 import { PERMISSIONS } from '../../functions/shared/permissions.js';
-import cancelAssessments from '../../functions/callableFunctions/cancelAssessments.js';
+import resetAssessments from '../../functions/callableFunctions/resetAssessments.js';
 
 const { wrap } = firebaseFunctionsTest;
 
-describe('cancelAssessments', () => {
+describe('resetAssessments', () => {
   context('Permission', () => {
     it ('has no permission', async () => {
-      const wrapped = wrap(cancelAssessments);
+      const wrapped = wrap(resetAssessments);
       try {
         await wrapped({}, generateMockContext());
       } catch (e) {
@@ -16,7 +16,7 @@ describe('cancelAssessments', () => {
       }
     });
     it ('has permission', async () => {
-      const wrapped = wrap(cancelAssessments);
+      const wrapped = wrap(resetAssessments);
       const context = generateMockContext({
         permissions: [
           PERMISSIONS.assessments.permissions.canReadAssessments.value,
@@ -25,7 +25,11 @@ describe('cancelAssessments', () => {
         ],
       });
       try {
-        await wrapped({}, context);
+        await wrapped({
+          exerciseId: { required: true },
+          assessmentIds: { required: false },
+          status: { required: false },
+        }, context);
       } catch (e) {
         assert.equal(e.code, 'invalid-argument');
       }
