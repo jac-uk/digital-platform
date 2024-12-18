@@ -3,7 +3,37 @@ import lookup from './converters/lookup.js';
 
 export default (config) => {
   const EXERCISE_STAGE = config.EXERCISE_STAGE;
+
+  const SELECTION_CATEGORIES = {
+    LEADERSHIP: {
+      value: 'leadership',
+      label: 'Leadership',
+      description: 'Strategic Leadership Questions',
+    },
+    ROLEPLAY: {
+      value: 'roleplay',
+      label: 'Roleplay',
+      description: 'Role Play',
+    },
+    SITUATIONAL: {
+      value: 'situational',
+      label: 'Situational',
+      description: 'Situational Questions',
+    },
+    INTERVIEW: {
+      value: 'interview',
+      label: 'Interview',
+      description: 'Interview',
+    },
+    OVERALL: {
+      value: 'overall',
+      label: 'Overall',
+      description: 'Overall',
+    },
+  };
+
   return {
+    SELECTION_CATEGORIES,
     availableStages,
     isStagedExercise,
     canApplyFullApplicationSubmitted,
@@ -83,12 +113,12 @@ export default (config) => {
   function formatSelectionDays(exercise) {
     let dateString = '';
 
-    if (!exercise || !exercise.selectionDay) {
+    if (!exercise || !exercise.selectionDays) {
       return dateString;
     }
 
-    const selectionDayStart = formatDate(exercise.selectionDay.selectionDayStart);
-    const selectionDayEnd = formatDate(exercise.selectionDay.selectionDayEnd);
+    const selectionDayStart = formatDate(exercise.selectionDays.selectionDayStart);
+    const selectionDayEnd = formatDate(exercise.selectionDays.selectionDayEnd);
   
     if (!selectionDayStart || !selectionDayEnd) {
       dateString = '';

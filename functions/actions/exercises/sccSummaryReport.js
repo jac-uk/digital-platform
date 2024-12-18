@@ -7,7 +7,7 @@ import initExerciseHelper from '../../shared/exerciseHelper.js';
 const drive = initDrive();
 
 export default (firebase, db) => {
-  const { applicationCounts, shortlistingMethods, formatSelectionDays } = initExerciseHelper(config);
+  const { SELECTION_CATEGORIES, applicationCounts, shortlistingMethods, formatSelectionDays } = initExerciseHelper(config);
   const { APPLICATION_STATUS } = config;
 
   return {
@@ -63,7 +63,8 @@ export default (firebase, db) => {
     }
     
     const shortlistingMethod = shortlistingMethods(exercise);
-    const selectionDayTools = exercise.selectionCategories || [];
+    const selectionCategories = exercise.selectionCategories || [];
+    const selectionDayTools = SELECTION_CATEGORIES.filter((c) => selectionCategories.include(c.value)).map((c) => c.description);
     const datesOfSelectionDays = formatSelectionDays(exercise);
 
     // construct the report document
