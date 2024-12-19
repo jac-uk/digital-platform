@@ -315,7 +315,7 @@ export default (config) => {
       const capabilities = getExerciseCapabilities(exercise);
       capabilities.push('OVERALL');
       categories.forEach(cat => {
-        markingScheme.push(createMarkingSchemeGroup(cat, capabilities));
+        markingScheme.push(createMarkingSchemeGroup(cat, capabilities, cat === 'overall'));
       });
       break;
     }
@@ -325,7 +325,7 @@ export default (config) => {
     return markingScheme;
   }
 
-  function createMarkingSchemeGroup(ref, childRefs) {
+  function createMarkingSchemeGroup(ref, childRefs, isGroupScored = true) {
     return {
       ref: ref,
       type: 'group',
@@ -333,6 +333,7 @@ export default (config) => {
         const item = {
           ref: childRef,
           type: 'grade',
+          includeInScore: isGroupScored && childRef !== 'OVERALL' ? true : false,
         };
         return item;
       }),
@@ -425,7 +426,7 @@ export default (config) => {
   function taskApplicationsEntryStatus(exercise, type) {
     let status = '';
     if (!exercise) return status;
-    if (type === TASK_TYPE.EMP_TIEBREAKER) return APPLICATION_STATUS.SCC_TO_RECONSIDER;  // TODO: remove this eventually: override entry status for EMP tie-breakers
+    if (type === TASK_TYPE.EMP_TIEBREAKER) return APPLICATION_STATUS.SECOND_STAGE_INVITED;  // TODO: remove this eventually: override entry status for EMP tie-breakers
     if (type === TASK_TYPE.SELECTION_DAY) return APPLICATION_STATUS.SHORTLISTING_PASSED;
     const prevTaskType = previousTaskType(exercise, type);
     if (prevTaskType) {
