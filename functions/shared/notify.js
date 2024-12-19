@@ -1,4 +1,4 @@
-import { NotifyClient} from 'notifications-node-client';
+import { NotifyClient } from 'notifications-node-client';
 
 export default (config) => {
 

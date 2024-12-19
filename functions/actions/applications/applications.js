@@ -366,7 +366,7 @@ export default (config, firebase, db, auth) => {
   *   `items` (required) IDs of applications
   */
   async function sendCandidateFormNotifications(params) {
-    const { 
+    const {
       type,
       notificationType,
       items: applicationIds,
@@ -441,7 +441,6 @@ export default (config, firebase, db, auth) => {
   async function loadTestApplications() {
     const bucket = firebase.storage().bucket(config.STORAGE_URL);
     const file = bucket.file(testApplicationsFileName);
-
     try {
       const data = await file.download();
       return JSON.parse(data[0]);
@@ -576,7 +575,7 @@ export default (config, firebase, db, auth) => {
     // Get email recipients from firestore config
     const settingsServices = await getDocument(db.collection('settings').doc('services'));
     const emails = settingsServices.emails.CandidateFlagging;
-    
+
     if (emails === undefined) {
       console.error('Error retrieving emails for candidate flagging alerts');
       return false;
