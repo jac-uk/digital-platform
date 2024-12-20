@@ -11,13 +11,10 @@ const getMultipleApplicationData = initGetMultipleApplicationData(config, fireba
 const exerciseIds = ['XvzIg48K9XOhfeFr3w91', 'Biyjd07Xz2usL9yXjtjV', 'IKLcf2Y187f2WTjifsoj'];  
 
 // Params for each call to getApplicationData
-const params = {
-  columns: ['exerciseRef','referenceNumber','personalDetails.fullName','status'],
-  whereClauses: [],
-};
+const columns = ['exerciseRef','referenceNumber','personalDetails.fullName','status'];
 
 const main = async () => {
-  return getMultipleApplicationData(exerciseIds, params);
+  return getMultipleApplicationData(exerciseIds, columns);
 };
 
 main()
