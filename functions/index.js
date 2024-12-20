@@ -210,6 +210,8 @@ export {
   sendSmsVerificationCode,
   verifySmsVerificationCode,
   getMultipleApplicationData,
+  generateSccSummaryReport,
+  exportSccSummaryReport,
 
   // Callable - QTs v2
   listQualifyingTests,
