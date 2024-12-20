@@ -1,9 +1,45 @@
+import { formatDate } from './helpers.js';
+import lookup from './converters/lookup.js';
+import _ from 'lodash';
 export default (config) => {
   const EXERCISE_STAGE = config.EXERCISE_STAGE;
+
+  const SELECTION_CATEGORIES = {
+    LEADERSHIP: {
+      value: 'leadership',
+      label: 'Leadership',
+      description: 'Strategic Leadership Questions',
+    },
+    ROLEPLAY: {
+      value: 'roleplay',
+      label: 'Roleplay',
+      description: 'Role Play',
+    },
+    SITUATIONAL: {
+      value: 'situational',
+      label: 'Situational',
+      description: 'Situational Questions',
+    },
+    INTERVIEW: {
+      value: 'interview',
+      label: 'Interview',
+      description: 'Interview',
+    },
+    OVERALL: {
+      value: 'overall',
+      label: 'Overall',
+      description: 'Overall',
+    },
+  };
+
   return {
+    SELECTION_CATEGORIES,
     availableStages,
     isStagedExercise,
     canApplyFullApplicationSubmitted,
+    applicationCounts,
+    shortlistingMethods,
+    formatSelectionDays,
   };
 
   function availableStages(exercise) {
@@ -43,5 +79,64 @@ export default (config) => {
    
     return applyFullApplicationSubmitted;
   }
-  
+
+  function applicationCounts(exercise) {
+    const applicationCounts = exercise && exercise._applications ? { ...exercise._applications } : {};
+    // include withdrawn applications in applied count
+    if (applicationCounts && applicationCounts.applied) {
+      applicationCounts.applied = applicationCounts.applied + (applicationCounts.withdrawn || 0);
+    }
+    return applicationCounts;
+  }
+
+  function shortlistingMethods(exercise) {
+    const methods = exercise.shortlistingMethods;
+    if (!(methods instanceof Array)) {
+      return [];
+    }
+    const list = methods.filter(value => (value !== 'other'));
+    list.sort();
+
+    if (methods.includes('other')) {
+      exercise.otherShortlistingMethod.forEach((method) => {
+        return list.push(method.name);
+      });
+    }
+
+    const lookupList = list.map((method) => {
+      return lookup(method);
+    });
+
+    return lookupList;
+  }
+
+  function formatSelectionDays(exercise) {
+    if (!exercise || !exercise.selectionDays) {
+      return [];
+    }
+
+    let dateStrings = [];
+    
+    for (const selectionDay of exercise.selectionDays) {
+      let dateString = '';
+      const selectionDayStart = formatDate(selectionDay.selectionDayStart, 'DD/MM/YYYY');
+      const selectionDayEnd = formatDate(selectionDay.selectionDayEnd, 'DD/MM/YYYY');
+    
+      if (!selectionDayStart || !selectionDayEnd) {
+        dateString = '';
+      } else if (selectionDayStart !== selectionDayEnd) {
+        dateString = `${selectionDayStart} to ${selectionDayEnd}`;
+      } else {
+        dateString = `${selectionDayStart}`;
+      }
+      if (!_.isEmpty(dateString)) {
+        if (selectionDay.selectionDayLocation) {
+          dateString = `${selectionDay.selectionDayLocation} - ${dateString}`;
+        }
+        dateStrings.push(dateString);
+      }
+    }
+
+    return dateStrings;
+  }
 };

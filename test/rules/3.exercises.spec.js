@@ -221,5 +221,69 @@ describe('Exercises', () => {
     });
   });
 
+  context('Write SCC summary reports', () => {
+    
+    it('prevent un-authenticated user from writing SCC summary report', async () => {
+      const db = await setup({}, {'exercises/ex1': {}});
+      await assertFails(
+        db.collection('exercises').doc('ex1').collection('reports').doc('sccSummary').set({})
+      );
+    });
 
+    it('prevent authenticated user from writing SCC summary report', async () => {
+      const db = await setup({ uid: 'user1', email: 'user@email.com', email_verified: false }, {'exercises/ex1': {}});
+      await assertFails(
+        db.collection('exercises').doc('ex1').collection('reports').doc('sccSummary').set({})
+      );
+    });
+
+    it('prevent authenticated user with verified email from writing SCC summary report', async () => {
+      const db = await setup({ uid: 'user1', email: 'user@email.com', email_verified: true }, {'exercises/ex1': {}});
+      await assertFails(
+        db.collection('exercises').doc('ex1').collection('reports').doc('sccSummary').set({})
+      );
+    });
+
+    it('prevent authenticated user with un-verified JAC email from writing SCC summary report', async () => {
+      const db = await setup({ uid: 'user1', email: 'user@judicialappointments.digital', email_verified: false }, {'exercises/ex1': {}});
+      await assertFails(
+        db.collection('exercises').doc('ex1').collection('reports').doc('sccSummary').set({})
+      );
+    });
+
+    it('prevent authenticated user with verified @judicialappointments.digital email to write SCC summary report with no data', async () => {
+      const db = await setup({ uid: 'user1', email: 'user@judicialappointments.digital', email_verified: true }, {'exercises/ex1': {}});
+      await assertFails(
+        db.collection('exercises').doc('ex1').collection('reports').doc('sccSummary').set({})
+      );
+    });
+
+    it('prevent authenticated user with verified @judicialappointments.digital email but without permission from writing SCC summary report', async () => {
+      const db = await setup({ uid: 'user1', email: 'user@judicialappointments.digital', email_verified: true }, {'exercises/ex1': {}});
+      await assertFails(
+        db.collection('exercises').doc('ex1').collection('reports').doc('sccSummary').set({})
+      );
+    });
+
+    it('prevent authenticated user with verified @judicialappointments.gov.uk email but without permission from writing SCC summary report', async () => {
+      const db = await setup({ uid: 'user1', email: 'user@judicialappointments.gov.uk', email_verified: true }, {'exercises/ex1': {}});
+      await assertFails(
+        db.collection('exercises').doc('ex1').collection('reports').doc('sccSummary').set({})
+      );
+    });
+
+    it('allow authenticated user with verified @judicialappointments.digital email and permission to write SCC summary report', async () => {
+      const db = await setup({ uid: 'user1', email: 'user@judicialappointments.digital', email_verified: true, rp: [PERMISSIONS.exercises.permissions.canUpdateExercises.value] }, {'exercises/ex1': {}});
+      await assertSucceeds(
+        db.collection('exercises').doc('ex1').collection('reports').doc('sccSummary').set({})
+      );
+    });
+
+    it('allow authenticated user with verified @judicialappointments.gov.uk email and permission to write SCC summary report', async () => {
+      const db = await setup({ uid: 'user1', email: 'user@judicialappointments.gov.uk', email_verified: true, rp: [PERMISSIONS.exercises.permissions.canUpdateExercises.value] }, {'exercises/ex1': {}});
+      await assertSucceeds(
+        db.collection('exercises').doc('ex1').collection('reports').doc('sccSummary').set({})
+      );
+    });
+  });
 });
