@@ -4,8 +4,7 @@ export default (config, firebase, db, auth) => {
 
   const getApplicationData = initGetApplicationData(config, firebase, db, auth);
 
-  return getMultipleApplicationData;
-
+  return getMultipleApplicationData;  
   async function getMultipleApplicationData(exerciseIds, columns) {
     const allData = [];
 
@@ -23,5 +22,4 @@ export default (config, firebase, db, auth) => {
 
     return allData;
   }
-
 };
