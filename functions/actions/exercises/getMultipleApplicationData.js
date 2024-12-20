@@ -5,7 +5,7 @@ export default (config, firebase, db, auth) => {
   const getApplicationData = initGetApplicationData(config, firebase, db, auth);
 
   return getMultipleApplicationData;  
-  async function getMultipleApplicationData(exerciseIds, params) {
+  async function getMultipleApplicationData(exerciseIds, columns) {
     const allData = [];
 
     for (const exerciseId of exerciseIds) {
