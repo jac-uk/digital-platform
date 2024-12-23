@@ -3,6 +3,7 @@ import { firebase, db, auth } from '../shared/admin.js';
 import config from '../shared/config.js';
 import initApplications from '../actions/applications/applications.js';
 import { isProduction } from '../shared/helpers.js';
+import { PERMISSIONS, hasPermissions } from '../shared/permissions.js';
 
 const { loadTestApplications, createTestApplications } = initApplications(config, firebase, db, auth);
 
@@ -20,6 +21,11 @@ export default functions.runWith(runtimeOptions).region('europe-west2').https.on
   if (!context.auth) {
     throw new functions.https.HttpsError('failed-precondition', 'The function must be called while authenticated.');
   }
+
+  hasPermissions(context.auth.token.rp, [
+    PERMISSIONS.applications.permissions.canCreateTestApplications.value,
+  ]);
+
   if (!(typeof data.exerciseId === 'string') || data.exerciseId.length === 0) {
     throw new functions.https.HttpsError('invalid-argument', 'Please specify an exercise id');
   }

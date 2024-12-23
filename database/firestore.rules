@@ -51,6 +51,10 @@ service cloud.firestore {
       request.resource.data[formId].status in ["created", "requested"];
   }
 
+  function dataHasRoleId() {
+    return request.resource.data.role.id != null;
+  }
+
   match /databases/{database}/documents {
 
     match /{document=**} {
@@ -114,7 +118,7 @@ service cloud.firestore {
       allow get, create, update: if request.auth.uid == panellistId;
 
       // Allow JAC to read and write
-      allow read, write: if userIsAuthenticated() && userIsJAC();
+      allow read, write: if userIsAuthenticated() && userIsJAC() && hasPermission('pa1');
     }
 
     match /meta/stats {
@@ -302,7 +306,7 @@ service cloud.firestore {
       allow read: if userIsAuthenticated() && userIsJAC() && hasPermission('e3');  // can update exercise
 
       allow create: if userIsAuthenticated() && userIsJAC() && hasPermission('u6');
-      allow update: if userIsAuthenticated() && userIsJAC() && hasPermission('u2');
+      allow update: if userIsAuthenticated() && userIsJAC() && hasPermission('u2') && dataHasRoleId();
       allow delete: if userIsAuthenticated() && userIsJAC() && hasPermission('u4');
     }
 
@@ -316,13 +320,16 @@ service cloud.firestore {
 
     match /roles/{roleId} {
       allow read: if userIsAuthenticated() && userIsJAC();
-      allow write: if userIsAuthenticated() && userIsJAC() && hasPermission('u3');
+      allow create: if userIsAuthenticated() && userIsJAC() && hasPermission('u5');
+      allow update: if userIsAuthenticated() && userIsJAC() && hasPermission('u3');
     }
 
     match /candidateForms/{formId} {
-      allow read: if userIsAuthenticated() && userIsJAC();
+      allow read: if userIsAuthenticated() && userIsJAC() && hasPermission('cf1');
       allow read: if userIsAuthenticated() && currentUser() in resource.data.candidateIds;
-      allow write: if userIsAuthenticated() && userIsJAC() && hasPermission('cf3');
+      allow create: if userIsAuthenticated() && userIsJAC() && hasPermission('cf2');
+      allow update: if userIsAuthenticated() && userIsJAC() && hasPermission('cf3');
+      allow delete: if userIsAuthenticated() && userIsJAC() && hasPermission('cf4');
 
       match /responses/{responseId} {
         // jac admins can read and update

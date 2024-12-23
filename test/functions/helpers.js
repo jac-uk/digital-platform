@@ -10,6 +10,7 @@ const firebaseFunctionsTest = initFirebaseFunctionsTest(projectConfig, './servic
 function generateMockContext(params = {}) {
   return {
     auth: {
+      uid: params.uid || null,
       token: {
         rp: params.permissions || [],
       },
