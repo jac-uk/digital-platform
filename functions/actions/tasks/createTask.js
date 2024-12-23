@@ -4,7 +4,7 @@ import initUpdateTask from './updateTask.js';
 
 export default (config, firebase, db) => {
   const { getTimelineTasks, taskNextStatus, taskApplicationsEntryStatus } = initTaskHelpers(config);
-  const { initialisePanelTask, initialiseTestTask, initialiseStatusChangesTask, initialiseCandidateFormTask, initialiseDataTask, initialiseStageOutcomeTask } = initUpdateTask(config, firebase, db);
+  const { getApplications, initialisePanelTask, initialiseTestTask, initialiseStatusChangesTask, initialiseCandidateFormTask, initialiseDataTask, initialiseStageOutcomeTask } = initUpdateTask(config, firebase, db);
 
   return createTask;
 
@@ -42,6 +42,7 @@ export default (config, firebase, db) => {
     console.log('applicationEntryStatus', applicationEntryStatus);
 
     // get application records
+    // TODO check whether we still need this now we have `applications`
     let applicationRecords = [];
     if (applicationEntryStatus || [config.TASK_STATUS.PANELS_INITIALISED, config.TASK_STATUS.STATUS_CHANGES].indexOf(nextStatus)) {
       let queryRef = db.collection('applicationRecords')
@@ -51,7 +52,10 @@ export default (config, firebase, db) => {
       }
       applicationRecords = await getDocuments(queryRef.select('application', 'candidate'));
     }
-    if (!applicationRecords.length) {
+
+    // get applications
+    const applications = await getApplications(exercise, { applicationEntryStatus });
+    if (!applications.length) {
       console.log('No applications');
       return result;
     }
@@ -88,7 +92,8 @@ export default (config, firebase, db) => {
         dateString: timelineTask.dateString,
         type: params.type,
       };
-      if (applicationRecords.length) taskData._stats.totalApplications = applicationRecords.length;
+      taskData._stats.totalApplications = applications.length;
+      taskData.applications = applications;
       taskData.applicationEntryStatus = applicationEntryStatus;
       taskData.status = nextStatus;
       taskData.statusLog = {};
