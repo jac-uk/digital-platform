@@ -34,14 +34,7 @@ describe('getMultipleApplicationData', () => {
   context('Functionality', () => {
     it('should return data for multiple exerciseIds', async () => {
       const exerciseIds = ['exerciseId1', 'exerciseId2', 'exerciseId3'];
-      const params = {
-        statuses: ['status1', 'status2'],
-        columns: ['column1', 'column2'],
-        whereClauses: [],
-        type: 'data',
-        stage: 'stage1',
-        stageStatus: 'status',
-      };
+      const columns = ['exerciseRef','referenceNumber'];
 
       const wrapped = wrap(getMultipleApplicationData);
       const context = generateMockContext({
@@ -50,7 +43,7 @@ describe('getMultipleApplicationData', () => {
         ],
       });
       
-      const result = await wrapped({ exerciseIds, params }, context);
+      const result = await wrapped({ exerciseIds, columns }, context);
       assert(Array.isArray(result), 'Result should be an array');
       assert(result.length > 0, 'Result should contain data');
     });

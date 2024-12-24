@@ -30,6 +30,7 @@ export default functions.runWith(runtimeOptions).region('europe-west2').https.on
   }, data)) {
     throw new functions.https.HttpsError('invalid-argument', 'Please provide valid arguments');
   }
+
   return getMultipleApplicationData(data.exerciseIds, data.columns);
 
 });
