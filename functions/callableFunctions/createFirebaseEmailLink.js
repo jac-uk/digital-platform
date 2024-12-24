@@ -16,8 +16,5 @@ export default functions.region('europe-west2').https.onCall(async (data, contex
   }, data)) {
     throw new functions.https.HttpsError('invalid-argument', 'Please provide valid arguments');
   }
-  const result = await users.createFirebaseEmailLink(data);
-  return {
-    result: result,
-  };
+  return await users.createFirebaseEmailLink(data);
 });
