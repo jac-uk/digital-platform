@@ -2,6 +2,7 @@ import { getDocument, getDocuments, getAllDocuments, getDocumentsFromQueries, ap
 import initFactories from '../shared/factories.js';
 import initNotifications from './notifications.js';
 import _ from 'lodash';
+import { link } from 'fs';
 
 export default (config, firebase, db) => {
   const { newAssessment, newNotificationAssessmentRequest, newNotificationAssessmentReminder, newNotificationAssessmentSignInLink, newNotificationAssessmentSubmit } = initFactories(config);
@@ -19,6 +20,7 @@ export default (config, firebase, db) => {
     sendAssessmentRequests,
     sendAssessmentReminders,
     sendAssessmentSignInLink,
+    getTestAssessmentAppLink,
     onAssessmentCompleted,
     testAssessmentNotification,
   };
@@ -634,6 +636,36 @@ export default (config, firebase, db) => {
     result = await applyUpdates(db, commands);
 
     return result ? true : false;
+  }
+
+  /**
+  * getTestingAssessmentSignInLink
+  * 
+  * @param {*} `params` is an object containing
+  *   `assessmentId` ID of an assessment
+  *
+  * Note: if neither `assessmentId` or `assessmentIds`
+  *       are provided function will send requests for
+  *       all assessments
+  */
+  async function getTestAssessmentAppLink(params) {
+    // get assessment
+    const assessment = await getDocument(db.collection('assessments').doc(params.assessmentId));
+    if (!assessment) {
+      console.log('assessment not found:', params.assessmentId);
+      return false;
+    }
+
+    // get exercise
+    const exercise = await getExercise(assessment.exercise.id);
+    if (!exercise) {
+      console.log('exercise not found:', assessment.exercise.id);
+      return false;
+    }
+
+    const notification = newNotificationAssessmentSignInLink(firebase, assessment, exercise);
+
+    return notification.personalisation.uploadUrl;
   }
 
 };

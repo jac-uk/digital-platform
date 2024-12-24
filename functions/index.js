@@ -40,6 +40,7 @@ import testAssessmentNotification from './callableFunctions/testAssessmentNotifi
 import sendAssessmentRequests from './callableFunctions/sendAssessmentRequests.js';
 import sendAssessmentReminders from './callableFunctions/sendAssessmentReminders.js';
 import sendAssessmentSignInLink from './callableFunctions/sendAssessmentSignInLink.js';
+import getTestAssessmentAppLink from './callableFunctions/getTestAssessmentAppLink.js';
 import generateSignInWithEmailLink from './callableFunctions/generateSignInWithEmailLink.js';
 import createFirebaseEmailLink from './callableFunctions/createFirebaseEmailLink.js';
 import initialiseApplicationRecords from './callableFunctions/initialiseApplicationRecords.js';
@@ -154,6 +155,7 @@ export {
   sendAssessmentRequests,
   sendAssessmentReminders,
   sendAssessmentSignInLink,
+  getTestAssessmentAppLink,
   generateSignInWithEmailLink,
   createFirebaseEmailLink,
   initialiseApplicationRecords,
