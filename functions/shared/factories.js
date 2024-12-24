@@ -1,10 +1,12 @@
 import { formatDate, objectHasNestedProperty, hashEmail } from './helpers.js';
+import initToken from './token.js';
 import { applicationOpenDatePost01042023 } from './converters/helpers.js';
 import { getSearchMap } from './search.js';
 import _ from 'lodash';
-import jwt from 'jsonwebtoken';
 
 export default (CONSTANTS) => {
+  const{ createToken } = initToken(CONSTANTS);
+  
   return {
     newNotificationExerciseApprovalSubmit,
     newNotificationApplicationSubmit,
@@ -15,6 +17,7 @@ export default (CONSTANTS) => {
     newNotificationCharacterCheckRequest,
     newNotificationAssessmentRequest,
     newNotificationAssessmentReminder,
+    newNotificationAssessmentSignInLink,
     newNotificationAssessmentSubmit,
     newAssessment,
     newApplicationRecord,
@@ -380,12 +383,8 @@ export default (CONSTANTS) => {
 
   function newNotificationAssessmentSignInLink(firebase, assessment, exercise) {
     const identity = hashEmail(assessment.assessor.email);
-    const token = jwt.sign(
-      { 
-        identity,
-        ref: `assessments/${assessment.id}`,
-      },
-      CONSTANTS.JWT_SECRET,
+    const token = createToken(
+      { identity, ref: `assessments/${assessment.id}` }, 
       { expiresIn: '5m' }
     );
     const link = `${CONSTANTS.ASSESSMENTS_URL}/sign-in?token=${token}`;
