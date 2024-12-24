@@ -20,6 +20,13 @@ export default (auth, db, config) => {
     getUser,
   };
 
+  /**
+   * Create a Firebase email link
+   * @param {*} params 
+   *  - token
+   *  - returnUrl
+   * @returns 
+   */
   async function createFirebaseEmailLink(params) {
     const { token, returnUrl } = params;
     const result = {
