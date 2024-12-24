@@ -4,11 +4,11 @@ import config from './shared/config.js';
 import { firebase, app, db } from './shared/admin.js';
 import initAssessments from '../functions/actions/assessments.js';
 
-const { sendAssessmentReminders } = initAssessments(config, firebase, db);
+const { sendAssessmentSignInLink } = initAssessments(config, firebase, db);
 
 const main = async () => {
-  return sendAssessmentReminders({
-    exerciseId: 'Biyjd07Xz2usL9yXjtjV',
+  return sendAssessmentSignInLink({
+    identity: '37af2cb91e86da159850495f5409527f828bafcf',
     assessmentId: 'yPPeFnHecmlmQUWvuEal-1',
   });
 };

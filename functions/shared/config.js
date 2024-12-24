@@ -329,6 +329,7 @@ const CONSTANTS = {
     OTHER: 'other',
   },
   ZENHUB_GRAPH_QL_URL: functions.config().zenhub.graph_ql_url,
+  JWT_SECRET: functions.config().jwt.secret,
 };
 
 const TASK_TYPE = {
