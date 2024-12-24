@@ -39,7 +39,9 @@ import resetAssessments from './callableFunctions/resetAssessments.js';
 import testAssessmentNotification from './callableFunctions/testAssessmentNotification.js';
 import sendAssessmentRequests from './callableFunctions/sendAssessmentRequests.js';
 import sendAssessmentReminders from './callableFunctions/sendAssessmentReminders.js';
+import sendAssessmentSignInLink from './callableFunctions/sendAssessmentSignInLink.js';
 import generateSignInWithEmailLink from './callableFunctions/generateSignInWithEmailLink.js';
+import createFirebaseEmailLink from './callableFunctions/createFirebaseEmailLink.js';
 import initialiseApplicationRecords from './callableFunctions/initialiseApplicationRecords.js';
 import sendApplicationReminders from './callableFunctions/sendApplicationReminders.js';
 import sendCharacterCheckRequests from './callableFunctions/sendCharacterCheckRequests.js';
@@ -151,7 +153,9 @@ export {
   testAssessmentNotification,
   sendAssessmentRequests,
   sendAssessmentReminders,
+  sendAssessmentSignInLink,
   generateSignInWithEmailLink,
+  createFirebaseEmailLink,
   initialiseApplicationRecords,
   sendApplicationReminders,
   sendCharacterCheckRequests,
