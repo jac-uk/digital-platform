@@ -23,7 +23,7 @@ export default functions.region('europe-west2').https.onCall(async (data, contex
   ]);
 
   if (!checkArguments({
-    assessmentId: { required: false },
+    assessmentId: { required: true },
   }, data)) {
     throw new functions.https.HttpsError('invalid-argument', 'Please provide valid arguments');
   }
