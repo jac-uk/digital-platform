@@ -405,8 +405,8 @@ export default (CONSTANTS) => {
       email: assessment.assessor.email,
       replyTo: exercise.exerciseMailbox,
       template: {
-        name: 'Assessment Reminder',
-        id: '5bd78bc3-5d3b-4cdf-88f5-2daba5464719',
+        name: ' Independent Assessment Sign-In Link',
+        id: '6f6a440d-b32a-4006-b857-05babfbcb764',
       },
       personalisation: {
         assessorName: assessment.assessor.fullName,
