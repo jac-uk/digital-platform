@@ -1,6 +1,7 @@
 import axios from 'axios';
 import crypto from 'crypto';
 import { objectHasNestedProperty } from './helpers.js';
+import initUsers from '../actions/users.js';
 
 /**
  * Zenhub GraphQL API calls
@@ -9,10 +10,11 @@ import { objectHasNestedProperty } from './helpers.js';
  * @param {*} config 
  * @returns issue id | false
  */
-export default (config) => {
+export default (config, db, auth) => {
   const baseApiUrl = config.ZENHUB_GRAPH_QL_URL;
   const apiKey = config.ZENHUB_GRAPH_QL_API_KEY;
   const githubPersonalAccesToken = config.GITHUB_PAT;
+  const { getBugRotaUser } = initUsers(auth, db);
 
   const axiosHeaders = {
     Authorization: `Bearer ${apiKey}`,
@@ -40,6 +42,8 @@ export default (config) => {
         const title = `User Raised Issue ${referenceNumber}`;
         const escapedTitle = JSON.stringify(title);
         const escapedBody = JSON.stringify(body);
+        const user = await getBugRotaUser();
+        const githubUsername = user.githubUsername || '';
         const result = await axios({
           url: baseApiUrl,
           method: 'post',
@@ -52,7 +56,7 @@ export default (config) => {
                     title: ${escapedTitle},
                     body: ${escapedBody},
                     repositoryId: "${platformIssuesRepositoryId}",
-                    assignees: []
+                    assignees: ['${githubUsername}'],
                 }) {
                     issue {
                         id
@@ -96,6 +100,8 @@ export default (config) => {
         const title = `User Raised Issue ${referenceNumber}`;
         const escapedTitle = JSON.stringify(title);
         const escapedBody = JSON.stringify(body);
+        const user = await getBugRotaUser();
+        const githubUsername = user.githubUsername || '';
         const result = await axios({
           url: baseApiUrl,
           method: 'post',
@@ -109,6 +115,7 @@ export default (config) => {
                     body: ${escapedBody},
                     repositoryId: "${platformIssuesRepositoryId}"
                     labels: ["${label}"],
+                    assignees: ['${githubUsername}'],
                 }) {
                     issue {
                         id

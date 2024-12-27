@@ -12,7 +12,7 @@ const { getUserByGithubUsername } = initUsers(auth, db);
 const { getBugReportByRef, getBugReportNumberFromIssueTitle } = initBugReports(db, firebase);
 const { onAssignedIssue } = initOnAssignedIssue(config, db, auth);
 const { onCreatedIssue } = initOnCreatedIssue(config, db, auth, firebase);
-const { validateWebhookRequest } = initZenhub(config);
+const { validateWebhookRequest } = initZenhub(config, db, auth);
 
 export default functions.region('europe-west2').https.onRequest(async (req, res) => {
 

@@ -1,10 +1,10 @@
 import functions from 'firebase-functions';
 import config from '../shared/config.js';
-import { firebase, db } from '../shared/admin.js';
+import { firebase, db, auth } from '../shared/admin.js';
 import initCreateIssue from '../actions/zenhub/createIssue.js';
 import initServiceSettings from '../shared/serviceSettings.js';
 
-const { createIssue } = initCreateIssue(config, firebase, db);
+const { createIssue } = initCreateIssue(config, firebase, db, auth);
 const { checkFunctionEnabled } = initServiceSettings(db);
 
 export default functions.region('europe-west2').https.onCall(async (data, context) => {

@@ -1,9 +1,9 @@
 import initZenhub from '../../shared/zenhub.js';
 import { getDocument } from '../../shared/helpers.js';
 
-export default (config, firebase, db) => {
+export default (config, firebase, db, auth) => {
 
-  const zenhub = initZenhub(config);
+  const zenhub = initZenhub(config, db, auth);
 
   return {
     createIssue,
