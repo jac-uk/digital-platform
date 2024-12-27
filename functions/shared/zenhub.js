@@ -51,7 +51,8 @@ export default (config) => {
                 createIssue(input: {
                     title: ${escapedTitle},
                     body: ${escapedBody},
-                    repositoryId: "${platformIssuesRepositoryId}"
+                    repositoryId: "${platformIssuesRepositoryId}",
+                    assignees: []
                 }) {
                     issue {
                         id

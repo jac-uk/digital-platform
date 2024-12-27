@@ -1,6 +1,9 @@
 import { getDocument, getDocuments } from '../shared/helpers.js';
 import { convertPermissions } from '../shared/permissions.js';
 import { getSearchMap } from '../shared/search.js';
+import initGoogleSheet from '../shared/google-sheet.js';
+
+const googleSheet = initGoogleSheet();
 
 export default (auth, db) => {
   return {
@@ -13,6 +16,7 @@ export default (auth, db) => {
     onUserUpdate,
     updateUserCustomClaims,
     getUserSearchMap,
+    getBugRotaUser,
     getUserByGithubUsername,
     getUser,
   };
@@ -108,6 +112,17 @@ export default (auth, db) => {
     }
 
     return result;
+  }
+
+  async function getBugRotaUser(spreadsheetId, range) {
+    const result = await googleSheet.getValues(spreadsheetId, range);
+    if (!result || !result.data || !result.data.values) return null;
+    const list = result.data.values;
+    const startOfWeek = formatDate(getStartOfWeek(new Date())); // Start of this week
+    const match = list.find(row => row[0].trim() === startOfWeek);
+    if (!match || !match[2]) return null;
+    const githubUsername = match[2].trim();
+    return await getUserByGithubUsername(githubUsername);
   }
 
   async function getUserByGithubUsername(githubUsername) {
@@ -255,5 +270,21 @@ export default (auth, db) => {
       user.displayName,
       user.email,
     ]);
+  }
+
+  function formatDate(date) {
+    const day = String(date.getDate()).padStart(2, '0');
+    const month = String(date.getMonth() + 1).padStart(2, '0'); // Months are 0-based
+    const year = date.getFullYear();
+    return `${day}/${month}/${year}`;
+  }
+
+  // Function to calculate the start of the current week (Monday)
+  function getStartOfWeek(date) {
+    const dayOfWeek = date.getDay(); // 0 = Sunday, 1 = Monday, ..., 6 = Saturday
+    const diff = dayOfWeek === 0 ? -6 : 1 - dayOfWeek; // Adjust for Monday as start
+    const startOfWeek = new Date(date);
+    startOfWeek.setDate(date.getDate() + diff);
+    return startOfWeek;
   }
 };
