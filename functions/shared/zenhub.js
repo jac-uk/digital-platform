@@ -56,7 +56,7 @@ export default (config, db, auth) => {
                     title: ${escapedTitle},
                     body: ${escapedBody},
                     repositoryId: "${platformIssuesRepositoryId}",
-                    assignees: ['${githubUsername}'],
+                    assignees: ["${githubUsername}"],
                 }) {
                     issue {
                         id
@@ -115,7 +115,7 @@ export default (config, db, auth) => {
                     body: ${escapedBody},
                     repositoryId: "${platformIssuesRepositoryId}"
                     labels: ["${label}"],
-                    assignees: ['${githubUsername}'],
+                    assignees: ["${githubUsername}"],
                 }) {
                     issue {
                         id
