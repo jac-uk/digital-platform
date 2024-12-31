@@ -114,7 +114,9 @@ export default (auth, db) => {
     return result;
   }
 
-  async function getBugRotaUser(spreadsheetId, range) {
+  async function getBugRotaUser() {
+    const spreadsheetId = '1E_ppJmSiI0uF7lpXXwuuDYD8PO2ETse316xgSgM1yCw';
+    const range = 'Sheet1';
     const result = await googleSheet.getValues(spreadsheetId, range);
     if (!result || !result.data || !result.data.values) return null;
     const list = result.data.values;
