@@ -1,9 +1,10 @@
 'use strict';
 
-const config = require('./shared/config');
-const { app, db, firebase } = require('./shared/admin.js');
-const { validateFileForDownload } = require('../functions/actions/malware-scanning/validateFileForDownload')(config, db, firebase);
+import config from './shared/config.js';
+import { app, db, firebase } from './shared/admin.js';
+import { initValidateFileForDownload } from '../functions/actions/malware-scanning/validateFileForDownload.js';
 
+const validateFileForDownload = initValidateFileForDownload(config, db, firebase);
 const fileURL = 'blank.docx';
 
 const main = async () => {

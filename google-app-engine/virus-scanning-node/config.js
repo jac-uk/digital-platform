@@ -1,5 +1,5 @@
-const { Storage } = require('@google-cloud/storage');
-const pkgJson = require('./package.json');
+import { Storage } from '@google-cloud/storage';
+import pkgJson from './package.json';
 
 /**
  * @enum {string}
@@ -99,4 +99,6 @@ async function checkBucketExists(bucketName) {
   }
 }
 
-exports.readAndVerifyConfig = readAndVerifyConfig;
+export default {
+  readAndVerifyConfig,
+ };

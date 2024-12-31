@@ -14,10 +14,10 @@
  * limitations under the License.
  */
 
-const process = require('node:process');
-const {GoogleAuth} = require('google-auth-library');
-const {readAndVerifyConfig} = require('./config.js');
-const httpProxy = require('http-proxy');
+import process from 'node:process';
+import {GoogleAuth} from 'google-auth-library';
+import readAndVerifyConfig from './config.js';
+import httpProxy from 'http-proxy';
 
 /** @typedef {import('./config.js').Config} Config */
 /** @typedef {import('http').IncomingMessage} IncomingMessage */
