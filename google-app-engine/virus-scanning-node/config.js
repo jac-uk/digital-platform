@@ -99,6 +99,6 @@ async function checkBucketExists(bucketName) {
   }
 }
 
-export default {
+export {
   readAndVerifyConfig,
  };
