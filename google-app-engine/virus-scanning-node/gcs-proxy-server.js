@@ -17,7 +17,7 @@
 import process from 'node:process';
 import {GoogleAuth} from 'google-auth-library';
 import { readAndVerifyConfig } from './config.js';
-import * as httpProxy from 'http-proxy';
+import httpProxy from 'http-proxy';
 
 /** @typedef {import('./config.js').Config} Config */
 /** @typedef {import('http').IncomingMessage} IncomingMessage */
