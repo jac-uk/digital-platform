@@ -15,138 +15,269 @@
 * limitations under the License.
 */
 
-const clamd = require('clamdjs');
 const express = require('express');
-const {Storage} = require('@google-cloud/storage');
-const fs = require('fs');
+const { Storage } = require('@google-cloud/storage');
+const clamd = require('clamdjs');
+const { readAndVerifyConfig } = require('./config.js');
+const { GoogleAuth } = require('google-auth-library');
+const util = require('node:util');
+const execFile = util.promisify(require('node:child_process').execFile);
+
+const PORT = process.env.PORT || 8080;
+const CLAMD_HOST = '127.0.0.1';
+const CLAMD_PORT = 3310;
+const MAX_FILE_SIZE = 500000000; // 500MiB
 
 const app = express();
-const PORT = process.env.PORT || 8080;
-const scanner = clamd.createScanner('127.0.0.1', 3310);
-
 app.use(express.json());
-app.use(express.urlencoded({
-  extended: true,
-}));
 
-// Setup a rate limiter
-const expressRateLimit = require('express-rate-limit');
-// Enable if you're behind a reverse proxy (Heroku, Bluemix, AWS ELB, Nginx, etc)
-// see https://expressjs.com/en/guide/behind-proxies.html
-// app.set('trust proxy', 1);
-const limiter = expressRateLimit({
-  windowMs: 1 * 60 * 1000, // 1 minute
-  max: 100, // limit each IP to X requests per windowMs
-});
-app.use(limiter);
-
-// Creates a client
 const storage = new Storage();
+const googleAuth = new GoogleAuth();
 
-// start the app server
-const run = () => app.listen(PORT, () => {
-  console.log(`Server started on port ${PORT}`);
-});
+// Create ClamAV scanner instance
+const scanner = clamd.createScanner(CLAMD_HOST, CLAMD_PORT);
 
-/**
- * Route that is invoked by a Cloud Function when a malware scan is requested
- * for a document uploaded to GCS.
- *
- * @param {object} req The request payload
- * @param {object} res The HTTP response object
- */
+let BUCKET_CONFIG = {
+  buckets: [],
+  ClamCvdMirrorBucket: '',
+};
+
+// Function to scan a file using ClamAV
+async function scanWithClamAV(fileStream) {
+  return new Promise((resolve, reject) => {
+    scanner.scanStream(fileStream, 600000) // 10 minutes timeout
+      .then((result) => {
+        resolve({
+          isSafe: clamd.isCleanReply(result),
+          result,
+        });
+        return result;
+      })
+      .catch(reject);
+  });
+}
+
+// Function to add metadata to the file in the bucket
+async function addMetadata(bucket, filename, status) {
+  const file = bucket.file(filename);
+  await file.setMetadata({
+    metadata: { scan_status: status },
+  });
+}
+
+// Route for scanning files manually
 app.post('/scan', async (req, res) => {
-  console.log('Request body', JSON.stringify(req.body));
-
-  let tempPath;
+  console.log('Request body:', JSON.stringify(req.body));
 
   try {
-    // get inputs
     console.log(' - Getting inputs...');
-    const filename = req.body.filename;
-    const projectId = req.body.projectId || process.env.PROJECT_ID;
+    const { filename, projectId } = req.body;
+    const storageUrl = projectId ? `${projectId}.appspot.com` : BUCKET_CONFIG.buckets[0].unscanned;
     console.log(` - - filename = ${filename}`);
-    console.log(` - - projectId = ${projectId}`);
+    console.log(` - - storageUrl = ${storageUrl}`);
 
-    // validate inputs
-    console.log(' - Validating inputs...');
-    // get the bucket based on projectId
-    const STORAGE_URL = projectId + '.appspot.com';
-    console.log(`STORAGE_URL = ${STORAGE_URL}`);
-    const bucket = storage.bucket(STORAGE_URL);
-    const bucketExists = await bucket.exists();
+    // Validate inputs and get the bucket
+    const bucket = storage.bucket(storageUrl);
+    const [bucketExists] = await bucket.exists();
     if (!bucketExists) {
-      throw 'Storage bucket not found';
+      throw new Error('Storage bucket not found');
     }
     const file = bucket.file(filename);
-    const fileExists = (await file.exists())[0]; // the file.exists() function returns an array with a single boolean element in it
+    const [fileExists] = await file.exists();
     if (!fileExists) {
-      throw 'File not found in bucket';
+      throw new Error('File not found in bucket');
+    }
+
+    // Check file size
+    const [metadata] = await file.getMetadata();
+    const fileSize = metadata.size;
+    if (fileSize > MAX_FILE_SIZE) {
+      throw new Error(`File size ${fileSize} exceeds the maximum allowed size of ${MAX_FILE_SIZE}`);
     }
     console.log(' - - Done');
 
-    // download the file so it can be scanned locally
-    tempPath = `/unscanned_files/${Date.now()}`;
-    console.log(` - Downloading file to local temp path: ${tempPath}...`);
-    await bucket.file(filename).download({ destination: tempPath });
-    console.log(' - - Done');
-
-    // scan the file
+    // Create a read stream from the file in the bucket
     console.log(' - Starting malware scan...');
-    const result = await scanner.scanFile(tempPath);
-    const status = result.indexOf('OK') > -1 ? 'clean' : 'infected';
+    const readStream = file.createReadStream();
+    const { isSafe, result } = await scanWithClamAV(readStream);
+    const status = isSafe ? 'clean' : 'infected';
     console.log(' - - Done');
     console.log(` - - File status: ${status}`);
 
-    // add metadata with scan result
+    // Add metadata with scan result
     console.log(' - Adding metadata to file...');
-    addMetadata(bucket, filename, status);
+    await addMetadata(bucket, filename, status);
     console.log(' - - Done');
 
-    // respond to HTTP client
-    console.log(' - Returning HTTP respnose...');
-    res.json({ message: result, status: status });
+    // Respond to HTTP client
+    console.log(' - Returning HTTP response...');
+    res.json({ message: result, status });
     console.log(' - - Done');
 
-  } catch(e) {
+  } catch (e) {
     console.error('*** ERROR ***', JSON.stringify(e));
     res.status(500).json({
       message: e.toString(),
       status: 'error',
     });
-  } finally {
-    if (tempPath) {
-      console.log(' - Deleting temp file...');
-      fs.unlink(tempPath, (err) => {
-        if (err) {
-          console.error('*** ERROR ***', JSON.stringify(err));
-        } else {
-          console.log(' - - Done');
-        }
+  }
+});
+
+// Route for handling GCS events
+app.post('/', async (req, res) => {
+  console.log('Eventarc request body:', JSON.stringify(req.body));
+
+  try {
+    const file = req.body;
+    if (file.kind === 'storage#object') {
+      await handleGcsObject(file, res);
+    } else if (file.kind === 'schedule#cvd_update') {
+      await handleCvdUpdate(res);
+    } else {
+      res.status(400).json({
+        message: `${JSON.stringify(req.body)} is not supported (kind must be storage#object or schedule#cvd_update)`,
+        status: 'error',
       });
     }
+  } catch (e) {
+    console.error('*** ERROR ***', JSON.stringify(e));
+    res.status(500).json({
+      message: e.toString(),
+      status: 'error',
+    });
   }
 });
 
 /**
- * Add metadata to a file, to indicate the outcome of the virus scan
- *
- * @param {bucket} bucket
- * @param {string} filename
- * @param {string} status
+ * Handle a GCS object event
  */
-const addMetadata = (bucket, filename, status) => {
-  const metadata = {
-    metadata: {
-      'scanned': Date.now().toString(),
-      'status': status,
-    },
-  };
-  bucket.file(filename).setMetadata(metadata).then((returned) => {
-    return returned;
-  }).catch(() => {
-    return false;
-  });
-};
+async function handleGcsObject(file, res) {
+  try {
+    if (!file || !file.name) {
+      throw new Error(`File name not specified in ${file}`);
+    }
+    if (!file || !file.bucket) {
+      throw new Error(`Bucket name not specified in ${file}`);
+    }
 
-run();
+    const fileSize = parseInt(file.size, 10);
+    if (fileSize > MAX_FILE_SIZE) {
+      throw new Error(`File gs://${file.bucket}/${file.name} too large for scanning at ${fileSize} bytes`);
+    }
+
+    const config = BUCKET_CONFIG.buckets.find(
+      (c) => c.unscanned === file.bucket
+    );
+    if (!config) {
+      throw new Error(`Bucket name - ${file.bucket} not in config`);
+    }
+
+    const gcsFile = storage.bucket(file.bucket).file(file.name);
+    if (!(await gcsFile.exists())[0]) {
+      console.warn(`Ignoring no longer existing file: gs://${file.bucket}/${file.name}`);
+      res.json({ status: 'deleted' });
+      return;
+    }
+
+    const clamdVersion = await getClamVersion();
+    console.info(`Scan request for gs://${file.bucket}/${file.name}, (${fileSize} bytes) scanning with clam ${clamdVersion}`);
+    const startTime = Date.now();
+    const readStream = await gcsFile.createReadStream();
+    let result;
+    try {
+      result = await scanWithClamAV(readStream);
+    } finally {
+      readStream.destroy();
+    }
+    const scanDuration = Date.now() - startTime;
+
+    if (clamd.isCleanReply(result)) {
+      console.info(`Scan status for gs://${file.bucket}/${file.name}: CLEAN (${fileSize} bytes in ${scanDuration} ms)`);
+      // Move document to clean bucket
+      await moveProcessedFile(file.name, true, config);
+      res.json({ status: 'clean', clam_version: clamdVersion });
+    } else {
+      console.warn(`Scan status for gs://${file.bucket}/${file.name}: INFECTED ${result} (${fileSize} bytes in ${scanDuration} ms)`);
+      // Move document to quarantined bucket
+      await moveProcessedFile(file.name, false, config);
+      res.json({
+        message: result,
+        status: 'infected',
+        result: result,
+        clam_version: clamdVersion,
+      });
+    }
+  } catch (e) {
+    console.error('*** ERROR ***', JSON.stringify(e));
+    res.status(500).json({
+      message: e.toString(),
+      status: 'error',
+    });
+  }
+}
+
+/**
+ * Handle a CVD update request
+ */
+async function handleCvdUpdate(res) {
+  try {
+    console.info('Starting CVD Mirror update');
+    const result = await execFile('./updateCvdMirror.sh', [
+      BUCKET_CONFIG.ClamCvdMirrorBucket,
+    ]);
+    console.info('CVD Mirror update check complete. output:\n' + result.stdout);
+    const newVersions = result.stdout
+      .split('\n')
+      .filter((line) => line.indexOf('Downloaded') >= 0);
+    for (const version of newVersions) {
+      console.info(`CVD Mirror updated: ${version}`);
+    }
+    res.json({
+      status: 'CvdUpdateComplete',
+      updated: newVersions.length > 0,
+    });
+  } catch (err) {
+    console.error('*** ERROR ***', JSON.stringify(err));
+    res.status(500).json({ message: err.message, status: 'CvdUpdateError' });
+  }
+}
+
+/**
+ * Wrapper to get a clean string with the version of CLAM.
+ */
+async function getClamVersion() {
+  return (await clamd.version(CLAMD_HOST, CLAMD_PORT)).replace('\x00', '');
+}
+
+/**
+ * Move the file to the appropriate bucket.
+ */
+async function moveProcessedFile(filename, isClean, config) {
+  const srcfile = storage.bucket(config.unscanned).file(filename);
+  const destinationBucketName = isClean
+    ? `gs://${config.clean}`
+    : `gs://${config.quarantined}`;
+  const destinationBucket = storage.bucket(destinationBucketName);
+  await srcfile.move(destinationBucket);
+}
+
+// Load configuration and start server
+(async function initializeServer() {
+  try {
+    const configFile = 'config.json';
+    BUCKET_CONFIG = await readAndVerifyConfig(configFile);
+
+    // Obtain project ID if not set
+    let projectId = process.env.PROJECT_ID;
+    if (!projectId) {
+      projectId = await googleAuth.getProjectId();
+    }
+
+    app.listen(PORT, () => {
+      console.log(`Server running on port ${PORT}`);
+    });
+  } catch (error) {
+    console.error('Error starting server:', error);
+    process.exit(1);
+  }
+})();

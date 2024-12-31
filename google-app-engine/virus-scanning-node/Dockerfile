@@ -1,8 +1,7 @@
-# Copyright 2019 Google LLC
+# Copyright 2024 Your Company
 
-# Licensed under the Apache License, Version 2.0 (the "License");
-# you may not use this file except in compliance with the License.
-# You may obtain a copy of the License at
+# Use a more recent version of Node.js
+FROM node:22.5.1
 
 #     https://www.apache.org/licenses/LICENSE-2.0
 
@@ -14,18 +13,47 @@
 
 FROM node:20-bookworm
 WORKDIR /app
-COPY . /app
-RUN apt-get update && \
-    apt-get install net-tools -y && \
-    apt-get install dos2unix -y && \
-    apt-get install clamav-daemon -y && \
-    freshclam && \
-    echo "TCPSocket 3310" >> /etc/clamav/clamd.conf && \
-    echo "TCPAddr 127.0.0.1" >> /etc/clamav/clamd.conf && \
-    mkdir /unscanned_files && \
-    npm install && \
-    dos2unix bootstrap.sh
-CMD ["sh", "bootstrap.sh"]
 
-# dos2unix converts Windows\DOS return characters (\r\n) to Unix return characters (\n)
-# and is necessary if the bootstrap.sh file was last edited on a Windows machine
+# Copy application files
+COPY . /app
+
+# Install necessary packages and update ClamAV
+RUN set -x \
+    && echo 'Dir::Log::Planner "/dev/null";' > /etc/apt/apt.conf.d/99disablePlannerLog \
+    && export DEBIAN_FRONTEND=noninteractive \
+    && apt-get -qqy update \
+    && apt-get -qqy --no-install-recommends install \
+        apt-transport-https \
+        ca-certificates \
+        curl \
+        python3-pip \
+        pipx \
+        lsb-release \
+        openssh-client \
+        gnupg \
+        jq \
+        gawk \
+        gettext-base \
+        clamav-daemon \
+        clamav-freshclam \
+        python3-crcmod \
+        dos2unix \
+    && curl https://packages.cloud.google.com/apt/doc/apt-key.gpg | gpg --dearmor -o /usr/share/keyrings/cloud.google.gpg \
+    && echo "deb [signed-by=/usr/share/keyrings/cloud.google.gpg] https://packages.cloud.google.com/apt cloud-sdk main" | tee /etc/apt/sources.list.d/google-cloud-sdk.list \
+    && apt-get -qqy update \
+    && apt-get -qqy --no-install-recommends install google-cloud-sdk \
+    && gcloud config set core/disable_usage_reporting true \
+    && gcloud config set component_manager/disable_update_check true \
+    && gcloud config set metrics/environment github_docker_image \
+    && gcloud --version \
+    && find /var/log -type f -delete \
+    && npm install --omit=dev \
+    && dos2unix bootstrap.sh config.json gcs-proxy-server.js \
+    && apt-get clean \
+    && rm -rf /var/lib/apt/lists/* /tmp/* /var/tmp/*
+
+# Expose the port your application runs on (e.g., 8080)
+EXPOSE 8080
+
+# Set the command to run the application
+CMD ["bash", "bootstrap.sh"]

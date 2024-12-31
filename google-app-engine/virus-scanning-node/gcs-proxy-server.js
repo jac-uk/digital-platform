@@ -1,0 +1,160 @@
+/*
+ * Copyright 2024 Your Company
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *     https://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+
+import process from 'node:process';
+import {GoogleAuth} from 'google-auth-library';
+import { readAndVerifyConfig } from './config.js';
+// eslint-disable-next-line import/no-unresolved
+import httpProxy from 'http-proxy';
+
+/** @typedef {import('./config.js').Config} Config */
+/** @typedef {import('http').IncomingMessage} IncomingMessage */
+/** @typedef {import('http').ServerResponse} ServerResponse */
+/** @typedef {import('http').ClientRequest} ClientRequest */
+
+const TOKEN_REFRESH_THRESHOLD_MILLIS = 60000;
+
+const googleAuth = new GoogleAuth();
+
+/**
+ * Access token for GCS requests - will be refreshed shortly before it expires
+ * @type {string | null | undefined}
+ */
+let accessToken;
+
+/** @type {NodeJS.Timeout | null} */
+let accessTokenRefreshTimeout;
+
+let clamCvdMirrorBucket = 'uninitialized';
+
+/**
+ * Check to see when access token expires and refresh it just before.
+ * This is required because proxy requires access token to be available
+ * synchronously, but getAccessToken() is async.
+ * So a 'current' access token needs to be available.
+ */
+async function accessTokenRefresh() {
+  if (accessTokenRefreshTimeout) {
+    clearTimeout(accessTokenRefreshTimeout);
+    accessTokenRefreshTimeout = null;
+  }
+
+  const client = await googleAuth.getClient();
+  if  (
+    !client.credentials ||
+    !client.credentials.expiry_date ||
+    client.credentials.expiry_date <=
+    new Date().getTime() + TOKEN_REFRESH_THRESHOLD_MILLIS
+  ) {
+    accessToken = await googleAuth.getAccessToken();
+  }
+  const nextCheckDate = new Date(
+    /** @type {number} */ (client.credentials.expiry_date) -
+      TOKEN_REFRESH_THRESHOLD_MILLIS
+  );
+  accessTokenRefreshTimeout = setTimeout(
+    accessTokenRefresh,
+    nextCheckDate.getTime() - new Date().getTime()
+  );
+}
+
+/**
+ * Handle any internal proxy errors by returning a 500
+ *
+ * @param {Error} err
+ * @param {IncomingMessage} req The request payload
+ * @param {ServerResponse | import('node:net').Socket} res The HTTP response object
+ * @param {import('http-proxy').ProxyTargetUrl=} _target
+ */
+function handleProxyError(
+  err,
+  req,
+  res,
+  // eslint-disable-next-line no-unused-vars
+  _target
+) {
+  /**@type {ServerResponse} */ (res).writeHead(500, {
+    'Content-Type': 'text/plain',
+  });
+  res.end('Failed to proxy to GCS: internal error\n');
+}
+
+/**
+ * Handle proxy requests - check path, and add Authorization header.
+ *
+ * @param {!ClientRequest} proxyReq
+ * @param {!IncomingMessage} req The request payload
+ * @param {!ServerResponse} res The HTTP response object
+ */
+function handleProxyReq(proxyReq, req, res) {
+  if (proxyReq.path.startsWith(`/${clamCvdMirrorBucket}/`)) {
+    proxyReq.setHeader('Authorization', 'Bearer ' + accessToken);
+  } else {
+    res.writeHead(403, {
+      'Content-Type': 'text/plain',
+    });
+    res.end('Failed to proxy to GCS - unauthorized path: status 403\n');
+  }
+}
+
+/**
+ * Set up a reverse proxy to add authentication to HTTP requests from
+ * freshclam and proxy it to the GCS API
+ */
+async function setupGcsReverseProxy() {
+  const proxy = httpProxy.createProxyServer({
+    target: 'https://storage.googleapis.com/',
+    changeOrigin: true,
+    autoRewrite: true,
+    secure: true,
+    ws: false,
+  });
+
+  proxy.on('proxyReq', handleProxyReq);
+  proxy.on('error', handleProxyError);
+
+  const PROXY_PORT = parseInt(process.env.PROXY_PORT || '8888', 10);
+
+  proxy.listen(PROXY_PORT, 'localhost');
+}
+
+/**
+ * Perform async setup and start the app.
+ *
+ * @async
+ */
+async function run() {
+  let configFile;
+  if (process.argv.length >= 3) {
+    configFile = process.argv[2];
+  } else {
+    configFile = './config.json';
+  }
+
+  /** @type {Config} */
+  const config = await readAndVerifyConfig(configFile);
+
+  clamCvdMirrorBucket = config.ClamCvdMirrorBucket;
+
+  await accessTokenRefresh();
+  await setupGcsReverseProxy();
+}
+
+// Start the service, exiting on error.
+run().catch((e) => {
+  console.log(e);
+  process.exit(1);
+});
