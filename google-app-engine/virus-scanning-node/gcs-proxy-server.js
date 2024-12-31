@@ -17,6 +17,7 @@
 import process from 'node:process';
 import {GoogleAuth} from 'google-auth-library';
 import { readAndVerifyConfig } from './config.js';
+// eslint-disable-next-line import/no-unresolved
 import httpProxy from 'http-proxy';
 
 /** @typedef {import('./config.js').Config} Config */
