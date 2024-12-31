@@ -1,4 +1,4 @@
-module.exports = (db) => {
+export default (db) => {
   return {
     updateExercise,
   };

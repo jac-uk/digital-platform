@@ -1,11 +1,14 @@
-const config = require('../shared/config');
-const functions = require('firebase-functions');
-const { firebase } = require('../shared/admin');
-const { runScannerTest } = require('../actions/malware-scanning/runScannerTest.js')(config, firebase);
+import config from '../shared/config.js';
+import functions from 'firebase-functions';
+import { firebase, db } from '../shared/admin.js';
+import runScannerTestInit from '../actions/malware-scanning/runScannerTest.js';
+
+const runScannerTest = runScannerTestInit(config, firebase, db);
 
 const SCHEDULE = config.SCANNER_TEST_SCHEDULE ? config.SCANNER_TEST_SCHEDULE : 'every 10 minutes';
 
-module.exports = functions.region('europe-west2')
+export default functions
+  .region('europe-west2')
   .pubsub
   .schedule(SCHEDULE)
   .timeZone('Europe/London')

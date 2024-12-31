@@ -1,6 +1,6 @@
-const axios = require('axios');
-const crypto = require('crypto');
-const { objectHasNestedProperty } = require('./helpers');
+import axios from 'axios';
+import crypto from 'crypto';
+import { objectHasNestedProperty } from './helpers.js';
 
 /**
  * Zenhub GraphQL API calls
@@ -9,7 +9,7 @@ const { objectHasNestedProperty } = require('./helpers');
  * @param {*} config 
  * @returns issue id | false
  */
-module.exports = (config) => {
+export default (config) => {
   const baseApiUrl = config.ZENHUB_GRAPH_QL_URL;
   const apiKey = config.ZENHUB_GRAPH_QL_API_KEY;
   const githubPersonalAccesToken = config.GITHUB_PAT;
@@ -38,6 +38,8 @@ module.exports = (config) => {
     if (baseApiUrl && apiKey) {
       try {
         const title = `User Raised Issue ${referenceNumber}`;
+        const escapedTitle = JSON.stringify(title);
+        const escapedBody = JSON.stringify(body);
         const result = await axios({
           url: baseApiUrl,
           method: 'post',
@@ -47,8 +49,8 @@ module.exports = (config) => {
             query: `
               mutation createIssue {
                 createIssue(input: {
-                    title: "${title}",
-                    body: "${body}",
+                    title: ${escapedTitle},
+                    body: ${escapedBody},
                     repositoryId: "${platformIssuesRepositoryId}"
                 }) {
                     issue {
@@ -60,7 +62,6 @@ module.exports = (config) => {
             `,
           },
         });
-
         if (objectHasNestedProperty(result, 'data.errors')) {
           const errorsStr = result.data.errors.map(e => e.message).join('\n');
           throw new Error(errorsStr);
@@ -92,6 +93,8 @@ module.exports = (config) => {
     if (baseApiUrl && apiKey) {
       try {
         const title = `User Raised Issue ${referenceNumber}`;
+        const escapedTitle = JSON.stringify(title);
+        const escapedBody = JSON.stringify(body);
         const result = await axios({
           url: baseApiUrl,
           method: 'post',
@@ -101,8 +104,8 @@ module.exports = (config) => {
             query: `
               mutation createIssue {
                 createIssue(input: {
-                    title: "${title}",
-                    body: "${body}",
+                    title: ${escapedTitle},
+                    body: ${escapedBody},
                     repositoryId: "${platformIssuesRepositoryId}"
                     labels: ["${label}"],
                 }) {

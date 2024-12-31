@@ -1,4 +1,4 @@
-module.exports = (auth) => {
+export default (auth) => {
 
   return getUserEmailByID;
 

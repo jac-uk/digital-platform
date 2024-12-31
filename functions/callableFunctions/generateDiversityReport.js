@@ -1,14 +1,24 @@
-const functions = require('firebase-functions');
-const config = require('../shared/config.js');
-const { firebase, db, auth } = require('../shared/admin.js');
-const { generateDiversityReport } = require('../actions/exercises/generateDiversityReport')(config, firebase, db);
-const { generateDiversityData } = require('../actions/exercises/generateDiversityData')(firebase, db);
-const { getDocument } = require('../shared/helpers');
-const { logEvent } = require('../actions/logs/logEvent')(firebase, db, auth);
-const { checkFunctionEnabled } = require('../shared/serviceSettings.js')(db);
-const { PERMISSIONS, hasPermissions } = require('../shared/permissions');
+import functions from 'firebase-functions';
+import config from '../shared/config.js';
+import { firebase, db, auth } from '../shared/admin.js';
+import initGenerateDiversityReport from '../actions/exercises/generateDiversityReport.js';
+import initGenerateDiversityData from '../actions/exercises/generateDiversityData.js';
+import { getDocument } from '../shared/helpers.js';
+import initLogEvent from '../actions/logs/logEvent.js';
+import initServiceSettings from '../shared/serviceSettings.js';
+import { PERMISSIONS, hasPermissions } from '../shared/permissions.js';
 
-module.exports = functions.region('europe-west2').https.onCall(async (data, context) => {
+const { generateDiversityReport } = initGenerateDiversityReport(config, firebase, db);
+const { generateDiversityData } = initGenerateDiversityData(firebase, db);
+const { logEvent } = initLogEvent(firebase, db, auth);
+const { checkFunctionEnabled } = initServiceSettings(db);
+
+const runtimeOptions = {
+  timeoutSeconds: 120,
+  memory: '512MB',
+};
+
+export default functions.runWith(runtimeOptions).region('europe-west2').https.onCall(async (data, context) => {
   await checkFunctionEnabled();
 
   // authenticate the request

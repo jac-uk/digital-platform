@@ -1,9 +1,11 @@
-const functions = require('firebase-functions');
-const config = require('../shared/config');
-const { firebase, db, auth } = require('../shared/admin');
-const onUpdate = require('../actions/exercises/onUpdate')(config, firebase, db, auth);
+import functions from 'firebase-functions';
+import config from '../shared/config.js';
+import { firebase, db, auth } from '../shared/admin.js';
+import initExercisesOnUpdate from '../actions/exercises/onUpdate.js';
 
-module.exports = functions.region('europe-west2').firestore
+const onUpdate = initExercisesOnUpdate(config, firebase, db, auth);
+
+export default functions.region('europe-west2').firestore
   .document('exercises/{exerciseId}')
   .onUpdate(async (change, context) => {
     const after = change.after.data();

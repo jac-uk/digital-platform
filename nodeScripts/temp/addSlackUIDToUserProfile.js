@@ -1,8 +1,10 @@
 'use strict';
 
-const { app, auth, db } = require('../shared/admin.js');
-const config = require('../shared/config.js');
-const slack = require('../../functions/actions/slack')(auth, config, db);
+import { app, auth, db, firebase } from '../shared/admin.js';
+import config from '../shared/config.js';
+import initSlack from '../../functions/actions/slack.js';
+
+const slack = initSlack(auth, config, db, firebase);
 
 // Details for 'Drie Contractor'
 const appUserId = 'uq7S68mW3zTKd6duK9L94dIyu1B2';

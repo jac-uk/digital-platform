@@ -1,6 +1,6 @@
-const axios = require('axios');
+import axios from 'axios';
 
-module.exports = (config) => {
+export default (config) => {
 
   return {
     get,

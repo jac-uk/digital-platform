@@ -1,7 +1,7 @@
-const { addField } = require('../helpers');
-const isObject = require('lodash/isObject');
-const orderBy = require('lodash/orderBy');
-const get = require('lodash/get');
+import { addField } from '../helpers.js';
+import isObject from 'lodash/isObject.js';
+import orderBy from 'lodash/orderBy.js';
+import get from 'lodash/get.js';
 
 class ConverterV2 {
   logError(msg, questionId, application, exercise) {
@@ -147,50 +147,52 @@ class ConverterV2 {
 
     const data = [];
 
-    for (const [questionId, answerId] of Object.entries(application.jurisdictionPreferences)) {
-      const questionObj = Array.prototype.find.call(exercise.jurisdictionPreferences, (q) => q.id === questionId);
-      if (questionObj) {
-        const question = questionObj.question;
-        const questionType = questionObj.questionType;
-        const groupAnswers = questionObj.groupAnswers;
-        const answerSource = get(questionObj, 'answerSource', '');
-
-        // SINGLE CHOICE
-        if (questionType === 'single-choice' && typeof (answerId) === 'string') {
-          const answerObj = Array.prototype.find.call(questionObj.answers, (a) => a.id === answerId);
-          if (get(answerObj, 'answer', false)) {
-            const answer = answerObj.answer;
-            addField(data, question, answer);
-          }
-          else {
-            throw new Error('Answer obj does not have an answer field');
-          }
-        }
-
-        // MULTIPLE CHOICE
-        else if (questionType === 'multiple-choice' && Array.isArray(answerId)) {    
-          // GROUPED => Ignored for Jurisdiction Questions      
-          // NOT GROUPED
-          addField(data, question, this.arrayToHtmlList(answerId));
-        }
-        
-        // RANKED CHOICE
-        else if (questionType === 'ranked-choice' && isObject(answerId)) {
-
-          // Get the answers as a list
-          if (answerSource) {
-            addField(data, question, this.jurisdictionRankedArrayToHtmlList(answerId));
-          }
-          else {
-            const obj = {};
-            for (const [ansId, rank] of Object.entries(answerId)) {
-              const answerObj = Array.prototype.find.call(questionObj.answers, (answer) => answer.id === ansId);
-              if (answerObj) {
-                obj[answerObj.answer] = rank;
-                // => { 'answer 1': 1, 'answer 8': 2, 'answer 11': 1 };
-              }
+    if ('jurisdictionPreferences' in application && isObject(application.jurisdictionPreferences)) {
+      for (const [questionId, answerId] of Object.entries(application.jurisdictionPreferences)) {
+        const questionObj = Array.prototype.find.call(exercise.jurisdictionPreferences, (q) => q.id === questionId);
+        if (questionObj) {
+          const question = questionObj.question;
+          const questionType = questionObj.questionType;
+          const groupAnswers = questionObj.groupAnswers;
+          const answerSource = get(questionObj, 'answerSource', '');
+  
+          // SINGLE CHOICE
+          if (questionType === 'single-choice' && typeof (answerId) === 'string') {
+            const answerObj = Array.prototype.find.call(questionObj.answers, (a) => a.id === answerId);
+            if (get(answerObj, 'answer', false)) {
+              const answer = answerObj.answer;
+              addField(data, question, answer);
             }
-            addField(data, question, this.jurisdictionRankedArrayToHtmlList(obj));
+            else {
+              throw new Error('Answer obj does not have an answer field');
+            }
+          }
+  
+          // MULTIPLE CHOICE
+          else if (questionType === 'multiple-choice' && Array.isArray(answerId)) {    
+            // GROUPED => Ignored for Jurisdiction Questions      
+            // NOT GROUPED
+            addField(data, question, this.arrayToHtmlList(answerId));
+          }
+          
+          // RANKED CHOICE
+          else if (questionType === 'ranked-choice' && isObject(answerId)) {
+  
+            // Get the answers as a list
+            if (answerSource) {
+              addField(data, question, this.jurisdictionRankedArrayToHtmlList(answerId));
+            }
+            else {
+              const obj = {};
+              for (const [ansId, rank] of Object.entries(answerId)) {
+                const answerObj = Array.prototype.find.call(questionObj.answers, (answer) => answer.id === ansId);
+                if (answerObj) {
+                  obj[answerObj.answer] = rank;
+                  // => { 'answer 1': 1, 'answer 8': 2, 'answer 11': 1 };
+                }
+              }
+              addField(data, question, this.jurisdictionRankedArrayToHtmlList(obj));
+            }
           }
         }
       }
@@ -202,84 +204,88 @@ class ConverterV2 {
     let questionId = null;
     let answerId = null;
     const data = [];
-    for (const questionObj of exercise[preferencesType]) {
-      const questionId = questionObj.id;
-      const answerId = get(application, [preferencesType, questionId], null);
-      if (answerId) {
-        const question = questionObj.question;
-        const questionType = questionObj.questionType;
-        const groupAnswers = questionObj.groupAnswers;
 
-        // SINGLE CHOICE
-
-        if (questionType === 'single-choice' && typeof (answerId) === 'string') {
-          const answerObj = Array.prototype.find.call(questionObj.answers, (answer) => answer.id === answerId);
-          if (answerObj.answer) {
-            const answer = answerObj.answer;
-            addField(data, question, answer);
-          }
-          else {
-            throw new Error('Answer obj does not have an answer field');
-          }
-        }
-
-        // MULTIPLE CHOICE
-
-        else if (questionType === 'multiple-choice' && Array.isArray(answerId)) {
-          // GROUPED
-          if (groupAnswers) {
-            const result = [];
-            questionObj.answers.forEach(element => {
-                const resultObj = {
-                  group: element.group,
-                };
-                const ansObj = Array.prototype.find.call(element.answers, (answer) => answerId.includes(answer.id));
-                resultObj.answer = ansObj.answer;
-                result.push(resultObj);
-
-            });
-            // Get the answers as a list
-            addField(data, question, this.arrayToHtmlList(result.map(o => `${o.group} - ${o.answer}`)));
-          }
-          // NOT GROUPED
-          else {
-            const answers = questionObj.answers.filter(answer => answerId.includes(answer.id)).map(o => o.answer);
-            addField(data, question, this.arrayToHtmlList(answers));
-          }
-        }
-
-        // RANKED CHOICE
-
-        else if (questionType === 'ranked-choice' && isObject(answerId)) {
-          if (groupAnswers) { // GROUPED
-            addField(data, question, this.groupedRankedArrayToHtmlList(questionObj.answers, answerId));
-          }
-          else { // NOT GROUPED
-            // Group possible answers by rank
-            const groupedAnswers = Object.entries(answerId).reduce((acc, [id, rank]) => {
-              acc[rank] = acc[rank] || [];
-              const foundAnswer = questionObj.answers.find(answer => answer.id === id);
-              if (foundAnswer) {
-                  acc[rank].push(foundAnswer.answer);
-              }
-              return acc;
-          }, {});
-
-            // Map grouped answers to the desired format
-            const results = Object.entries(groupedAnswers).map(([rank, answers]) => ({
-              rank: parseInt(rank),
-              answer: answers.filter(Boolean),
-            }));
+    if (preferencesType in exercise && isObject(exercise[preferencesType])) {
+      for (const questionObj of exercise[preferencesType]) {
+        const questionId = questionObj.id;
+        const answerId = get(application, [preferencesType, questionId], null);
+        if (answerId) {
+          const question = questionObj.question;
+          const questionType = questionObj.questionType;
+          const groupAnswers = questionObj.groupAnswers;
   
-            // Get the answers as a list
-            addField(data, question, this.rankedArrayToHtmlList(results));
+          // SINGLE CHOICE
+  
+          if (questionType === 'single-choice' && typeof (answerId) === 'string') {
+            const answerObj = Array.prototype.find.call(questionObj.answers, (answer) => answer.id === answerId);
+            if (answerObj.answer) {
+              const answer = answerObj.answer;
+              addField(data, question, answer);
+            }
+            else {
+              throw new Error('Answer obj does not have an answer field');
+            }
+          }
+  
+          // MULTIPLE CHOICE
+  
+          else if (questionType === 'multiple-choice' && Array.isArray(answerId)) {
+            // GROUPED
+            if (groupAnswers) {
+              const result = [];
+              questionObj.answers.forEach(element => {
+                  const resultObj = {
+                    group: element.group,
+                  };
+                  const ansObj = Array.prototype.find.call(element.answers, (answer) => answerId.includes(answer.id));
+                  resultObj.answer = ansObj.answer;
+                  result.push(resultObj);
+  
+              });
+              // Get the answers as a list
+              addField(data, question, this.arrayToHtmlList(result.map(o => `${o.group} - ${o.answer}`)));
+            }
+            // NOT GROUPED
+            else {
+              const answers = questionObj.answers.filter(answer => answerId.includes(answer.id)).map(o => o.answer);
+              addField(data, question, this.arrayToHtmlList(answers));
+            }
+          }
+  
+          // RANKED CHOICE
+  
+          else if (questionType === 'ranked-choice' && isObject(answerId)) {
+            if (groupAnswers) { // GROUPED
+              addField(data, question, this.groupedRankedArrayToHtmlList(questionObj.answers, answerId));
+            }
+            else { // NOT GROUPED
+              // Group possible answers by rank
+              const groupedAnswers = Object.entries(answerId).reduce((acc, [id, rank]) => {
+                acc[rank] = acc[rank] || [];
+                const foundAnswer = questionObj.answers.find(answer => answer.id === id);
+                if (foundAnswer) {
+                    acc[rank].push(foundAnswer.answer);
+                }
+                return acc;
+            }, {});
+  
+              // Map grouped answers to the desired format
+              const results = Object.entries(groupedAnswers).map(([rank, answers]) => ({
+                rank: parseInt(rank),
+                answer: answers.filter(Boolean),
+              }));
+    
+              // Get the answers as a list
+              addField(data, question, this.rankedArrayToHtmlList(results));
+            }
           }
         }
-      }
-      else {
-        throw new Error('Unable to find location preferences question id');
+        //else { // fix ts-436 the preference question may be optional, so the answer may not exist
+        //  throw new Error('Unable to find location preferences question id');
+        //}
       }
     }
+
     return data;
   }
 
@@ -293,4 +299,4 @@ class ConverterV2 {
 
 }
 
-module.exports = { ConverterV2 };
+export { ConverterV2 };

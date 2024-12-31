@@ -1,10 +1,13 @@
-const { objectHasNestedProperty } = require('../../shared/helpers');
+import { objectHasNestedProperty } from '../../shared/helpers.js';
+import initSendExerciseReadyForApproval from './sendExerciseReadyForApproval.js';
+import initVacancies from '../vacancies.js';
+import initExercises from './exercises.js';
+import { getSearchMap } from '../../shared/search.js';
 
-module.exports = (config, firebase, db, auth) => {
-  const { sendExerciseReadyForApproval } = require('./sendExerciseReadyForApproval')(config, firebase, db, auth);
-  const { updateVacancy, deleteVacancy } = require('../vacancies')(config, db);
-  const { updateExercise } = require('./exercises')(db);
-  const { getSearchMap } = require('../../shared/search');
+export default (config, firebase, db, auth) => {
+  const { sendExerciseReadyForApproval } = initSendExerciseReadyForApproval(config, firebase, db, auth);
+  const { updateVacancy, deleteVacancy } = initVacancies(config, db);
+  const { updateExercise } = initExercises(db);
 
   return onUpdate;
 
@@ -17,16 +20,12 @@ module.exports = (config, firebase, db, auth) => {
     const isDraftOrReady = dataAfter.state === 'draft' || dataAfter.state === 'ready';
     const isPreviouslyApproved = objectHasNestedProperty(dataAfter, '_approval.initialApprovalDate');
     const isUnlocked = isDraftOrReady && isPreviouslyApproved;
+    const canPostWithoutApproval = ['listing'].includes(dataAfter.advertType);
+    const isPublishedChanged = dataBefore.published !== dataAfter.published;
 
-    if (dataAfter.published === true) {
-      if (!isUnlocked) {
-        // Update the vacancy if the exercise is published but not in the unlocked state (as the changes will need approval first)
-        await updateVacancy(exerciseId, dataAfter);
-      }
-    } else if (dataAfter.published === false) {
-      if (dataBefore.published === true) {
-        await deleteVacancy(exerciseId);
-      }
+    if (!isUnlocked || canPostWithoutApproval || isPublishedChanged) {
+      // Update the vacancy if the exercise is published but not in the unlocked state (as the changes will need approval first)
+      await updateVacancy(exerciseId, dataAfter);
     }
 
     // submitted for approval

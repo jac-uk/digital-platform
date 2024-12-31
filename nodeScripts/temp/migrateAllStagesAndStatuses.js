@@ -4,13 +4,18 @@
  */
 'use strict';
 
-const config = require('../shared/config.js');
-const { firebase, app, db } = require('../shared/admin.js');
-const { getDocuments } = require('../../functions/shared/helpers.js');
-const { updateApplicationRecordStageStatus } = require('../../functions/actions/applicationRecords/updateApplicationRecordStageStatus.js')(firebase, config, db);
-const { generateDiversityReport } = require('../../functions/actions/exercises/generateDiversityReport')(config, firebase, db);
-const { generateDiversityData } = require('../../functions/actions/exercises/generateDiversityData')(firebase, db);
-const { generateOutreachReport } = require('../../functions/actions/exercises/generateOutreachReport')(config, firebase, db);
+import config from '../shared/config.js';
+import { firebase, app, db } from '../shared/admin.js';
+import { getDocuments } from '../../functions/shared/helpers.js';
+import initUpdateApplicationRecordStageStatus from '../../functions/actions/applicationRecords/updateApplicationRecordStageStatus.js';
+import initGenerateDiversityReport from '../../functions/actions/exercises/generateDiversityReport.js';
+import initGenerateDiversityData from '../../functions/actions/exercises/generateDiversityData.js';
+import initGenerateOutreachReport from '../../functions/actions/exercises/generateOutreachReport.js';
+
+const { updateApplicationRecordStageStatus } = initUpdateApplicationRecordStageStatus(firebase, config, db);
+const { generateDiversityReport } = initGenerateDiversityReport(config, firebase, db);
+const { generateDiversityData } = initGenerateDiversityData(firebase, db);
+const { generateOutreachReport } = initGenerateOutreachReport(config, firebase, db);
 
 const main = async () => {
   

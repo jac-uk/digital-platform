@@ -1,8 +1,8 @@
 // 
 // node database/checkIndexes.js
-const fs = require('fs');
+import fs from 'fs';
     
-const json = require('./firestore.indexes.json');
+import json from './firestore.indexes.json';
 
 function returnOnlyUnique(array) {
   console.log('All: ', array.length);

@@ -1,9 +1,7 @@
 /**
  * Initialises Firebase SDK and exports firestore database connection
  */
-const firebase = require('firebase/app');
-require('firebase/auth');
-require('firebase/firestore');
+import firebaseApp from 'firebase/app';
 
 const config = {
   apiKey: process.env.FIREBASE_API_KEY,
@@ -17,7 +15,7 @@ const config = {
 
 firebase.initializeApp(config);
 
-exports.firebase = firebase;
-exports.app = firebase.app();
-exports.db = firebase.firestore();
-exports.auth = firebase.auth();
+export const firebase = firebaseApp;
+export const app = firebase.app();
+export const db = firebase.firestore();
+export const auth = firebase.auth();

@@ -1,6 +1,8 @@
-const config = require('./shared/config');
-const { app, firebase, db } = require('./shared/admin');
-const enableCharacterChecks = require('../functions/actions/characterChecks')(config, firebase, db);
+import config from './shared/config.js';
+import { app, firebase, db } from './shared/admin.js';
+import initCharacterChecks from '../functions/actions/characterChecks.js';
+
+const enableCharacterChecks = initCharacterChecks(config, firebase, db);
 
 const main = async () => {
   return enableCharacterChecks({

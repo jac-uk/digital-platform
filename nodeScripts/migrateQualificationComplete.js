@@ -1,8 +1,8 @@
 'use strict';
 
-const _ = require('lodash');
-const { app, db } = require('./shared/admin.js');
-const { applyUpdates, getDocuments, getDocument } = require('../functions/shared/helpers');
+import _ from 'lodash';
+import { app, db } from './shared/admin.js';
+import { applyUpdates, getDocuments, getDocument } from '../functions/shared/helpers.js';
 
 // whether to make changes in `applications` collection in firestore
 // true:  make changes in `applications` collection

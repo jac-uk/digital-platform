@@ -1,7 +1,7 @@
 'use strict';
 
-const { app } = require('./shared/admin');
-const { listAllUsers, updateUser, log } = require('./shared/helpers');
+import { app } from './shared/admin.js';
+import { listAllUsers, updateUser, log } from './shared/helpers.js';
 
 // whether to make changes in authentication database
 const isAction = false;

@@ -1,6 +1,5 @@
-const { getDocument, getDocuments, formatDate, formatAddress, formatPreviousAddresses, isValidDate } = require('../../shared/helpers');
-
-const _ = require('lodash');
+import { getDocument, getDocuments, formatDate, formatAddress, formatPreviousAddresses, isValidDate } from '../../shared/helpers.js';
+import _ from 'lodash';
 
 function formatPreference(choiceArray, questionType) {
   if(questionType === 'multiple-choice') {
@@ -13,7 +12,7 @@ function formatPreference(choiceArray, questionType) {
   return choiceArray;
 }
 
-module.exports = (config, firebase, db, auth) => {
+export default (config, firebase, db, auth) => {
 
   return getApplicationData;
 
@@ -22,6 +21,7 @@ module.exports = (config, firebase, db, auth) => {
    */
   async function getApplicationData(params) {
 
+    const DEFAULT_VALUE = '- No answer provided -';
     let applicationDataRef = db.collection('applications')
     .where('exerciseId', '==', params.exerciseId);
 
@@ -45,20 +45,24 @@ module.exports = (config, firebase, db, auth) => {
     for(const result of results) {
       let record = {};
       for (const column of params.columns) {
-        record[column] = _.get(result, column, '- No answer provided -');
+        record[column] = _.get(result, column, DEFAULT_VALUE);
         // if key is blank or doesn't exist, set it to - No answer provided -
         if(record[column] === '' || record[column] === null) {
-          record[column] = '- No answer provided -';
+          record[column] = DEFAULT_VALUE;
         }
         else if (column.includes('additionalWorkingPreferences') && Object.prototype.hasOwnProperty.call(result, 'additionalWorkingPreferences')) {
           if (!Object.prototype.hasOwnProperty.call(result.additionalWorkingPreferences, (parseInt(column.replace('additionalWorkingPreferences ',''))))) {
-            record[column] = '- No answer provided -';
+            record[column] = DEFAULT_VALUE;
           } else {
             record[column] = formatPreference(
               (result.additionalWorkingPreferences  ? result.additionalWorkingPreferences[parseInt(column.replace('additionalWorkingPreferences ',''))].selection : '- No answer provided -'),
               exerciseData.additionalWorkingPreferences[parseInt(column.replace('additionalWorkingPreferences ',''))].questionType
             );
           }
+        }
+        // Handle Yes or No
+        else if (['resignationFromDWP.workingAtDWP'].includes(column) &&  typeof record[column] === 'boolean') {
+          record[column] = record[column] ? 'Yes' : 'No';
         }
         // Handle array values
         else if (['personalDetails.address.previous', 'personalDetails.VATNumbers', 'locationPreferences', 'jurisdictionPreferences'].includes(column)) {
@@ -91,7 +95,7 @@ module.exports = (config, firebase, db, auth) => {
                   continue;
                 }
 
-                const str = _.get(arrayItem, arrayValuePath, '- No answer provided -');
+                const str = _.get(arrayItem, arrayValuePath, DEFAULT_VALUE);
                 // handle time values
                 let val = str;
                 if (_.get(str, '_seconds', null) || isValidDate(str)) {
@@ -105,7 +109,7 @@ module.exports = (config, firebase, db, auth) => {
               }
               formattedArray.push(arr.join(' - '));
             } else {
-              formattedArray.push(arrayItem ? arrayItem : '- No answer provided -');
+              formattedArray.push(arrayItem ? arrayItem : DEFAULT_VALUE);
             }
           }
 
@@ -115,8 +119,11 @@ module.exports = (config, firebase, db, auth) => {
           } else {
             record[column] = formattedArray.join(', ');
           }
-        } else if (column === 'personalDetails.dateOfBirth') {
-          record[column] = formatDate(record[column], 'DD/MM/YYYY');
+        }
+        else if (column === 'personalDetails.dateOfBirth') {
+          if (record[column] !== DEFAULT_VALUE) {
+            record[column] = formatDate(record[column], 'DD/MM/YYYY');
+          }
         }
 
         // Handle time values

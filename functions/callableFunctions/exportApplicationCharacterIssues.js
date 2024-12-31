@@ -1,12 +1,16 @@
-const functions = require('firebase-functions');
-const { getDocument } = require('../shared/helpers');
-const { firebase, db, auth } = require('../shared/admin.js');
-const { exportApplicationCharacterIssues } = require('../actions/exercises/exportApplicationCharacterIssues')(firebase, db);
-const { logEvent } = require('../actions/logs/logEvent')(firebase, db, auth);
-const { checkFunctionEnabled } = require('../shared/serviceSettings.js')(db);
-const { PERMISSIONS, hasPermissions } = require('../shared/permissions');
+import functions from 'firebase-functions';
+import { getDocument } from '../shared/helpers.js';
+import { firebase, db, auth } from '../shared/admin.js';
+import initExportApplicationCharacterIssues from '../actions/exercises/exportApplicationCharacterIssues.js';
+import initLogEvent from '../actions/logs/logEvent.js';
+import initServiceSettings from '../shared/serviceSettings.js';
+import { PERMISSIONS, hasPermissions } from '../shared/permissions.js';
 
-module.exports = functions.runWith({
+const { exportApplicationCharacterIssues } = initExportApplicationCharacterIssues(firebase, db);
+const { logEvent } = initLogEvent(firebase, db, auth);
+const { checkFunctionEnabled } = initServiceSettings(db);
+
+export default functions.runWith({
   timeoutSeconds: 180,
   memory: '512MB',
 }).region('europe-west2').https.onCall(async (data, context) => {

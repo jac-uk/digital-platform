@@ -1,7 +1,7 @@
-const assert = require('assert');
-const { firebaseFunctionsTest, generateMockContext } = require('./helpers');
-const { PERMISSIONS } = require('../../functions/shared/permissions');
-const cancelAssessments = require('../../functions/callableFunctions/cancelAssessments');
+import assert from 'assert';
+import { firebaseFunctionsTest, generateMockContext } from './helpers.js';
+import { PERMISSIONS } from '../../functions/shared/permissions.js';
+import cancelAssessments from '../../functions/callableFunctions/cancelAssessments.js';
 
 const { wrap } = firebaseFunctionsTest;
 
@@ -20,7 +20,7 @@ describe('cancelAssessments', () => {
       const context = generateMockContext({
         permissions: [
           PERMISSIONS.assessments.permissions.canReadAssessments.value,
-          PERMISSIONS.assessments.permissions.canDeleteAssessments.value,
+          PERMISSIONS.assessments.permissions.canUpdateAssessments.value,
           PERMISSIONS.exercises.permissions.canUpdateExercises.value,
         ],
       });

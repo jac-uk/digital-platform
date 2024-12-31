@@ -1,7 +1,7 @@
-const { auth } = require('./admin');
-const { PROJECT_ID } = require('./config');
+import { auth } from './admin.js';
+import { PROJECT_ID } from './config.js';
 
-module.exports = {
+export default {
   listAllUsers,
   updateUser,
   deleteUser,

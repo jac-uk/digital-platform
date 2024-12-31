@@ -1,5 +1,5 @@
-const { setup, teardown } = require('./helpers');
-const { assertFails } = require('@firebase/rules-unit-testing');
+import { setup, teardown } from './helpers.js';
+import { assertFails } from '@firebase/rules-unit-testing';
 
 describe('Database', () => {
   after(async () => {

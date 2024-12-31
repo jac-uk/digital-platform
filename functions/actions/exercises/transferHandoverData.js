@@ -1,6 +1,4 @@
-// const { getDocument, getDocuments, applyUpdates } = require('../../shared/helpers');
-
-module.exports = (config, firebase, db) => {
+export default (config, firebase, db) => {
 
   return transferHandoverData;
 

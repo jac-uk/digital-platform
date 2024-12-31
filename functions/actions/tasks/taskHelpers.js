@@ -1,13 +1,15 @@
 
-const createTimeline = require('../../shared/Timeline/createTimeline');
-const { convertToDate, calculateMean, calculateStandardDeviation } = require('../../shared/helpers');
+import createTimeline from '../../shared/Timeline/createTimeline.js';
+import { convertToDate, calculateMean, calculateStandardDeviation } from '../../shared/helpers.js';
+import initExerciseTimeline from '../../shared/Timeline/exerciseTimeline.TMP.js';
+import { MARKING_TYPE, GRADE_VALUES } from '../../shared/scoreSheetHelper.js';
 
-module.exports = (config) => {
-  const exerciseTimeline = require('../../shared/Timeline/exerciseTimeline.TMP')(config);
+export default (config) => {
+  const exerciseTimeline = initExerciseTimeline(config);
   const TASK_TYPE = config.TASK_TYPE;
   const SHORTLISTING_TASK_TYPES = config.SHORTLISTING_TASK_TYPES;
   const TASK_STATUS = config.TASK_STATUS;
-  const APPLICATION_STATUS = config.APPLICATION.STATUS;
+  const APPLICATION_STATUS = config.APPLICATION_STATUS;
   return {
     scoreSheet,
     getTimelineDate,
@@ -29,7 +31,7 @@ module.exports = (config) => {
     includeZScores,
   };
 
-  function taskStatuses(taskType) {
+  function taskStatuses(taskType) { // also in Admin
     let availableStatuses = [];
     switch (taskType) {
       case TASK_TYPE.CRITICAL_ANALYSIS:
@@ -76,12 +78,20 @@ module.exports = (config) => {
         ];
         break;
       case TASK_TYPE.SIFT:
+        availableStatuses = [
+          TASK_STATUS.DATA_INITIALISED,
+          TASK_STATUS.PANELS_INITIALISED,
+          TASK_STATUS.PANELS_ACTIVATED,
+          TASK_STATUS.FINALISED,
+          TASK_STATUS.COMPLETED,
+        ];
+        break;
       case TASK_TYPE.SELECTION_DAY:
         availableStatuses = [
           TASK_STATUS.DATA_INITIALISED,
-          TASK_STATUS.DATA_ACTIVATED,
-          // TASK_STATUS.PANELS_INITIALISED,
-          // TASK_STATUS.PANELS_ACTIVATED,
+          // TASK_STATUS.DATA_ACTIVATED,
+          TASK_STATUS.PANELS_INITIALISED,
+          TASK_STATUS.PANELS_ACTIVATED,
           TASK_STATUS.FINALISED,
           TASK_STATUS.COMPLETED,
         ];
@@ -114,7 +124,6 @@ module.exports = (config) => {
   }
 
   function getApplicationPassStatus(exercise, task) {
-    // TODO the following overrides can be removed when we move to new stages & statuses
     if (
       [
         TASK_TYPE.CRITICAL_ANALYSIS,
@@ -123,17 +132,28 @@ module.exports = (config) => {
         TASK_TYPE.SCENARIO,
       ].indexOf(task.type) >= 0
     ) {
-      if ([TASK_TYPE.CRITICAL_ANALYSIS, TASK_TYPE.SITUATIONAL_JUDGEMENT].indexOf(task.type) >= 0) {
-        if (!hasQualifyingTest(exercise, task)) return 'passedFirstTest';
-      }
-      if (task.type === TASK_TYPE.QUALIFYING_TEST) {
-        return 'passedFirstTest';
-      }
-      if (task.type === TASK_TYPE.SCENARIO) {
-        return 'passedScenarioTest';
+      if (exercise._processingVersion >= 2) {
+        if ([TASK_TYPE.CRITICAL_ANALYSIS, TASK_TYPE.SITUATIONAL_JUDGEMENT].indexOf(task.type) >= 0) {
+          if (!hasQualifyingTest(exercise, task)) return APPLICATION_STATUS.QUALIFYING_TEST_PASSED;
+        }
+        if (task.type === TASK_TYPE.QUALIFYING_TEST) {
+          return APPLICATION_STATUS.QUALIFYING_TEST_PASSED;
+        }
+        if (task.type === TASK_TYPE.SCENARIO) {
+          return APPLICATION_STATUS.SCENARIO_TEST_PASSED;
+        }
+      } else {
+        if ([TASK_TYPE.CRITICAL_ANALYSIS, TASK_TYPE.SITUATIONAL_JUDGEMENT].indexOf(task.type) >= 0) {
+          if (!hasQualifyingTest(exercise, task)) return 'passedFirstTest';
+        }
+        if (task.type === TASK_TYPE.QUALIFYING_TEST) {
+          return 'passedFirstTest';
+        }
+        if (task.type === TASK_TYPE.SCENARIO) {
+          return 'passedScenarioTest';
+        }
       }
     }
-    // end
     return `${task.type}Passed`;
   }
 
@@ -142,9 +162,9 @@ module.exports = (config) => {
     case TASK_TYPE.CRITICAL_ANALYSIS:
     case TASK_TYPE.SITUATIONAL_JUDGEMENT:
     case TASK_TYPE.QUALIFYING_TEST:
-      return 'noTestSubmitted';
+      return APPLICATION_STATUS.QUALIFYING_TEST_NOT_SUBMITTED;
     case TASK_TYPE.SCENARIO:
-      return 'noScenarioTestSubmitted';
+      return APPLICATION_STATUS.SCENARIO_TEST_NOT_SUBMITTED;
     // case TASK_TYPE.PRE_SELECTION_DAY_QUESTIONNAIRE:
     //   return 'noSelectionDayQuestionnaireSubmitted';
     default:
@@ -162,14 +182,26 @@ module.exports = (config) => {
         TASK_TYPE.SCENARIO,
       ].indexOf(task.type) >= 0
     ) {
-      if ([TASK_TYPE.CRITICAL_ANALYSIS, TASK_TYPE.SITUATIONAL_JUDGEMENT].indexOf(task.type) >= 0) {
-        if (!hasQualifyingTest(exercise, task)) return 'failedFirstTest';
-      }
-      if (task.type === TASK_TYPE.QUALIFYING_TEST) {
-        return 'failedFirstTest';
-      }
-      if (task.type === TASK_TYPE.SCENARIO) {
-        return 'failedScenarioTest';
+      if (exercise._processingVersion >= 2) {
+        if ([TASK_TYPE.CRITICAL_ANALYSIS, TASK_TYPE.SITUATIONAL_JUDGEMENT].indexOf(task.type) >= 0) {
+          if (!hasQualifyingTest(exercise, task)) return APPLICATION_STATUS.QUALIFYING_TEST_FAILED;
+        }
+        if (task.type === TASK_TYPE.QUALIFYING_TEST) {
+          return APPLICATION_STATUS.QUALIFYING_TEST_FAILED;
+        }
+        if (task.type === TASK_TYPE.SCENARIO) {
+          return APPLICATION_STATUS.SCENARIO_TEST_FAILED;
+        }
+      } else {
+        if ([TASK_TYPE.CRITICAL_ANALYSIS, TASK_TYPE.SITUATIONAL_JUDGEMENT].indexOf(task.type) >= 0) {
+          if (!hasQualifyingTest(exercise, task)) return 'failedFirstTest';
+        }
+        if (task.type === TASK_TYPE.QUALIFYING_TEST) {
+          return 'failedFirstTest';
+        }
+        if (task.type === TASK_TYPE.SCENARIO) {
+          return 'failedScenarioTest';
+        }
       }
     }
     // end
@@ -271,22 +303,29 @@ module.exports = (config) => {
     // console.log('createMarkingScheme', exercise, taskType);
     const markingScheme = [];
     switch (taskType) {
-    case config.TASK_TYPE.SIFT:
-      console.log('sift', getExerciseCapabilities(exercise));
-      markingScheme.push(createMarkingSchemeGroup(taskType, getExerciseCapabilities(exercise)));
+    case config.TASK_TYPE.SIFT: {
+      const capabilities = getExerciseCapabilities(exercise);
+      capabilities.push('OVERALL');
+      markingScheme.push(createMarkingSchemeGroup(taskType, capabilities));
       break;
-    case config.TASK_TYPE.SELECTION_DAY:
-      getExerciseSelectionCategories(exercise).forEach(cat => {
-        markingScheme.push(createMarkingSchemeGroup(cat, getExerciseCapabilities(exercise)));
+    }
+    case config.TASK_TYPE.SELECTION_DAY: {
+      const categories = getExerciseSelectionCategories(exercise);
+      categories.push('overall');
+      const capabilities = getExerciseCapabilities(exercise);
+      capabilities.push('OVERALL');
+      categories.forEach(cat => {
+        markingScheme.push(createMarkingSchemeGroup(cat, capabilities, cat === 'overall'));
       });
       break;
+    }
     default:
       markingScheme.push(createMarkingSchemeGroup(taskType, []));
     }
     return markingScheme;
   }
 
-  function createMarkingSchemeGroup(ref, childRefs) {
+  function createMarkingSchemeGroup(ref, childRefs, isGroupScored = true) {
     return {
       ref: ref,
       type: 'group',
@@ -294,8 +333,8 @@ module.exports = (config) => {
         const item = {
           ref: childRef,
           type: 'grade',
+          includeInScore: isGroupScored && childRef !== 'OVERALL' ? true : false,
         };
-        if (childRef === 'OVERALL') item.excludeFromScore = true;
         return item;
       }),
     };
@@ -387,7 +426,8 @@ module.exports = (config) => {
   function taskApplicationsEntryStatus(exercise, type) {
     let status = '';
     if (!exercise) return status;
-    if (type === TASK_TYPE.EMP_TIEBREAKER) return APPLICATION_STATUS.SCC_TO_RECONSIDER;  // TODO: remove this eventually: override entry status for EMP tie-breakers
+    if (type === TASK_TYPE.EMP_TIEBREAKER) return APPLICATION_STATUS.SECOND_STAGE_INVITED;  // TODO: remove this eventually: override entry status for EMP tie-breakers
+    if (type === TASK_TYPE.SELECTION_DAY) return APPLICATION_STATUS.SHORTLISTING_PASSED;
     const prevTaskType = previousTaskType(exercise, type);
     if (prevTaskType) {
       console.log('previousTaskType', prevTaskType);
@@ -412,7 +452,7 @@ module.exports = (config) => {
     if (!markingScheme) return scoreSheet;
     delete scoreSheet.flagForModeration;  //  removing `flagForModeration` flag in order to reduce object size
     markingScheme.forEach(item => {
-      if (item.type === config.MARKING_TYPE.GROUP) {
+      if (item.type === MARKING_TYPE.GROUP.value) {
         scoreSheet[item.ref].score = 0;
         item.children.forEach(child => {
           scoreSheet[item.ref].score += getScoreSheetItemTotal(child, scoreSheet[item.ref]);
@@ -422,31 +462,40 @@ module.exports = (config) => {
     return scoreSheet;
   }
 
-  function getScoreSheetTotal(markingScheme, scoreSheet) {
+  function getScoreSheetTotal(markingScheme, scoreSheet, changes) {
     let score = 0;
     if (!markingScheme) return score;
     if (!scoreSheet) return score;
     markingScheme.forEach(item => {
-      if (item.type === config.MARKING_TYPE.GROUP) {
+      if (item.type === MARKING_TYPE.GROUP.value) {
         item.children.forEach(child => {
-          score += getScoreSheetItemTotal(child, scoreSheet[item.ref]);
+          const change = changes && changes[item.ref] && changes[item.ref][child.ref];
+          score += getScoreSheetItemTotal(child, scoreSheet[item.ref], change);
         });
       } else {
-        score += getScoreSheetItemTotal(item, scoreSheet);
+        const change = changes && changes[item.ref];
+        score += getScoreSheetItemTotal(item, scoreSheet, change);
       }
     });
     return score;
   }
 
-  function getScoreSheetItemTotal(item, scoreSheet) {
-    if (!item.excludeFromScore) {
+  function getScoreSheetItemTotal(item, scoreSheet, change) {
+    // console.log('getScoreSheetItemTotal', item, scoreSheet, change);
+    if (item.includeInScore) {
       switch (item.type) {
-      case config.MARKING_TYPE.GRADE:
-        if (scoreSheet[item.ref] && config.GRADE_VALUES[scoreSheet[item.ref]]) {
-          return config.GRADE_VALUES[scoreSheet[item.ref]];
+      case MARKING_TYPE.GRADE.value:
+        if (scoreSheet[item.ref] && GRADE_VALUES[scoreSheet[item.ref]]) {
+          if (change) return GRADE_VALUES[change];  // only returns change if we have an original grade
+          return GRADE_VALUES[scoreSheet[item.ref]];
         }
         break;
-      case config.MARKING_TYPE.NUMBER:
+      case MARKING_TYPE.SCORE.value:
+        if (scoreSheet[item.ref]) {
+          return parseFloat(scoreSheet[item.ref].score);
+        }
+        break;
+      case MARKING_TYPE.NUMBER.value:
         if (scoreSheet[item.ref]) {
           return parseFloat(scoreSheet[item.ref]);
         }
@@ -479,17 +528,20 @@ module.exports = (config) => {
           children.push({
             ref: childKey,
             type: 'number',
+            includeInScore: true,
           });
         });
         markingScheme.push({
           ref: key,
           type: 'group',
           children: children,
+          includeInScore: true,
         });
       } else {
         markingScheme.push({
           ref: key,
           type: 'number',
+          includeInScore: true,
         });
       }
     });
@@ -544,8 +596,11 @@ module.exports = (config) => {
         item.scoreSheet.qualifyingTest.SJ.zScore = SJstdev ? (item.scoreSheet.qualifyingTest.SJ.percent - SJmean) / SJstdev : 0;
       });
       finalScores.forEach(item => {
-        item.zScore = (0.4 * item.scoreSheet.qualifyingTest.CA.zScore) + (0.6 * item.scoreSheet.qualifyingTest.SJ.zScore);
-        item.scoreSheet.qualifyingTest.zScore = item.zScore;
+        let zScore = (0.4 * item.scoreSheet.qualifyingTest.CA.zScore) + (0.6 * item.scoreSheet.qualifyingTest.SJ.zScore);
+        zScore = parseFloat(zScore.toFixed(2));
+        if (zScore === 0) zScore = 0;
+        item.zScore = zScore;
+        item.scoreSheet.qualifyingTest.zScore = zScore;
       });
     } catch (e) {
       return finalScores;

@@ -5,8 +5,8 @@
  * This new field holds the 'stage' and 'status' fields from the associated applicationRecord
  */
 
-const { firebase, app, db } = require('./shared/admin.js');
-const { getDocument, getDocuments, applyUpdates, objectHasNestedProperty } = require('../functions/shared/helpers.js');
+import { firebase, app, db } from './shared/admin.js';
+import { getDocument, getDocuments, applyUpdates, objectHasNestedProperty } from '../functions/shared/helpers.js';
 
 async function checkAllApplications() {
   const applications = await getDocuments(db.collection('applications')

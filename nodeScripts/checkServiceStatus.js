@@ -1,7 +1,9 @@
 'use strict';
 
-const { app, db } = require('./shared/admin.js');
-const { checkFunctionEnabled } = require('../functions/shared/serviceSettings.js')(db);
+import { app, db } from './shared/admin.js';
+import initServiceSettings from '../functions/shared/serviceSettings.js';
+
+const { checkFunctionEnabled } = initServiceSettings(db);
 
 const main = async () => {
   await checkFunctionEnabled();

@@ -1,19 +1,17 @@
 /**
  * Initialises Admin SDK and exports firestore database connection
  */
-const { initializeApp } = require('firebase-admin/app');
-const { getFirestore, FieldPath, FieldValue, Timestamp } = require('firebase-admin/firestore');
-const { getAuth } = require('firebase-admin/auth');
-const { getStorage } = require('firebase-admin/storage');
+import { initializeApp } from 'firebase-admin/app';
+import { getFirestore, FieldPath, FieldValue, Timestamp } from 'firebase-admin/firestore';
+import { getAuth } from 'firebase-admin/auth';
+import { getStorage } from 'firebase-admin/storage';
 
-const app = initializeApp();
-
-exports.firebase = {
+export const app = initializeApp();
+export const firebase = {
   firestore: { FieldPath, FieldValue, Timestamp },
   storage: function() {
     return getStorage(app);
   },
 };
-exports.db = getFirestore(app);
-exports.app = app;
-exports.auth = getAuth(app);
+export const db = getFirestore(app);
+export const auth = getAuth(app);

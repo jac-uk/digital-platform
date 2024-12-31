@@ -1,11 +1,13 @@
 'use strict';
 
-const config = require('./shared/config');
-const { firebase, app, db } = require('./shared/admin.js');
-const { scanAllFiles } = require('../functions/actions/malware-scanning/scanAllFiles')(config, firebase, db);
+import config from './shared/config.js';
+import { firebase, app, db } from './shared/admin.js';
+import initScanAllFiles from '../functions/actions/malware-scanning/scanAllFiles.js';
+
+const { scanAllFiles } = initScanAllFiles(config, firebase, db);
 
 const main = async () => {
-  return scanAllFiles(true, 500);
+  return scanAllFiles(false, 500);
 };
 
 main()

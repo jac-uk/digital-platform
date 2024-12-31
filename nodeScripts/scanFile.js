@@ -1,16 +1,17 @@
 'use strict';
+import config from './shared/config.js';
+import { firebase, app } from './shared/admin.js';
+import scanFileInit from '../functions/actions/malware-scanning/scanFile.js';
 
-const config = require('./shared/config');
-const { firebase, app } = require('./shared/admin.js');
-const { scanFile } = require('../functions/actions/malware-scanning/scanFile')(config, firebase);
+const scan = scanFileInit(config, firebase);
 
 const main = async () => {
-  return scanFile('blank.docx');
+  return scan('exercise/1j25Hmhx4y1M1tF523FH/independent-assessors - 202491614128.docx');
 };
 
 main()
   .then((result) => {
-    console.log(result);
+    console.log(result.statusText);
     app.delete();
     return process.exit();
   })

@@ -1,9 +1,10 @@
-const { getDocument, getDocuments, objectHasNestedProperty } = require('../../shared/helpers');
+import { getDocument, getDocuments, objectHasNestedProperty } from '../../shared/helpers.js';
+import initExerciseHelper from '../../shared/exerciseHelper.js';
 
-const ignoreKeys = ['total', 'declaration', 'preferNotToSay', 'noAnswer'];
+const ignoreKeys = ['totalApplications', 'total', 'declaration', 'preferNotToSay', 'noAnswer'];
 
-module.exports = (config, firebase, db) => {
-  const { availableStages } = require('../../shared/exerciseHelper')(config);
+export default (config, firebase, db) => {
+  const { availableStages } = initExerciseHelper(config);
   return {
     generateOutreachReport,
     attendedOutreachStats,

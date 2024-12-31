@@ -1,13 +1,15 @@
-const functions = require('firebase-functions');
-const config = require('../shared/config');
-const { firebase, db } = require('../shared/admin.js');
-const { onAssessmentCompleted } = require('../actions/assessments')(config, firebase, db);
-const { getSearchMap } = require('../shared/search');
+import functions from 'firebase-functions';
+import config from '../shared/config.js';
+import { firebase, db } from '../shared/admin.js';
+import initAssessments from '../actions/assessments.js';
+import { getSearchMap } from '../shared/search.js';
 
-const has = require('lodash/has');
-const { isDifferentPropsByPath } = require('../shared/helpers.js');
+const { onAssessmentCompleted } = initAssessments(config, firebase, db);
 
-module.exports = functions.region('europe-west2').firestore
+import has from 'lodash/has.js';
+import { isDifferentPropsByPath } from '../shared/helpers.js';
+
+export default functions.region('europe-west2').firestore
   .document('assessments/{assessmentId}')
   .onUpdate(async (change, context) => {
     const after = change.after.data();

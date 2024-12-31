@@ -1,6 +1,6 @@
-const axios = require('axios');
+import axios from 'axios';
 
-module.exports = (config) => {
+export default (config) => {
 
   return {
     post,
@@ -49,7 +49,7 @@ module.exports = (config) => {
       };
       const msgConfig = {
         headers: {
-          'Content-type': 'application/json',
+          'Content-Type': 'application/json; charset=UTF-8',
           'Authorization': `Bearer ${slackBotToken}`,
         },
       };
@@ -79,7 +79,7 @@ module.exports = (config) => {
       };
       const msgConfig = {
         headers: {
-          'Content-type': 'application/json',
+          'Content-Type': 'application/json; charset=UTF-8',
           'Authorization': `Bearer ${slackBotToken}`,
         },
       };

@@ -8,11 +8,11 @@
  *   npm run nodeScript temp/getExercisesByTaskTypes.js
  *   ```
  */
- 'use strict';
+'use strict';
 
-const config = require('../shared/config.js');
-const { app, db } = require('../shared/admin.js');
-const {getDocuments, objectHasNestedProperty} = require('../../functions/shared/helpers.js');
+import config from '../shared/config.js';
+import { app, db } from '../shared/admin.js';
+import { getDocuments, objectHasNestedProperty } from '../../functions/shared/helpers.js';
 
 const main = async () => {
 

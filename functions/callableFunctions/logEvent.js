@@ -1,9 +1,12 @@
-const functions = require('firebase-functions');
-const { firebase, db, auth } = require('../shared/admin.js');
-const { logEvent } = require('../actions/logs/logEvent')(firebase, db, auth);
-const { checkFunctionEnabled } = require('../shared/serviceSettings.js')(db);
+import functions from 'firebase-functions';
+import { firebase, db, auth } from '../shared/admin.js';
+import initLogEvent from '../actions/logs/logEvent.js';
+import initServiceSettings from '../shared/serviceSettings.js';
 
-module.exports = functions.region('europe-west2').https.onCall(async (data, context) => {
+const { logEvent } = initLogEvent(firebase, db, auth);
+const { checkFunctionEnabled } = initServiceSettings(db);
+
+export default functions.region('europe-west2').https.onCall(async (data, context) => {
   await checkFunctionEnabled();
 
   // authenticate the request

@@ -1,8 +1,10 @@
-const { getDocument } = require('../../shared/helpers');
-const applicationConverter = require('../../shared/converters/applicationConverter')();
-const drive = require('../../shared/google-drive')();
+import { getDocument } from '../../shared/helpers.js';
+import initApplicationConverter from '../../shared/converters/applicationConverter.js';
+import initDrive from '../../shared/google-drive.js';
+const applicationConverter = initApplicationConverter();
+const drive = initDrive();
 
-module.exports = (config, firebase, db) => {
+export default (config, firebase, db) => {
 
   return {
     processPanelExport,
@@ -23,8 +25,8 @@ module.exports = (config, firebase, db) => {
     }
 
     // get exercise
-    // TODO store `application-parts` rather than needing to grab exercise document
-    const exercise = await getDocument(db.collection('exercises').doc(panel.exerciseId));
+    const exerciseId = panel.exercise ? panel.exercise.id : panel.exerciseId;
+    const exercise = await getDocument(db.collection('exercises').doc(exerciseId));
 
     // get application to process
     const application = await getDocument(db.collection('applications').doc(panel.processing.current));
@@ -62,6 +64,7 @@ module.exports = (config, firebase, db) => {
       const promises = [];
 
       if (panel.type === 'selection' || panel.type === 'sift') {
+
         // Create application data document
         promises.push(
           drive.createFile('Application Data', {
@@ -77,7 +80,7 @@ module.exports = (config, firebase, db) => {
           promises.push(
             transferFileFromStorage({
               storageBucket: bucket,
-              fileUrl: `exercise/${panel.exerciseId}/user/${application.userId}/${application.uploadedSelfAssessment}`,
+              fileUrl: `exercise/${exerciseId}/user/${application.userId}/${application.uploadedSelfAssessment}`,
               destinationFolderId: folderId,
               destinationFileName: 'Self Assessment',
             }).catch(e => {
@@ -92,7 +95,7 @@ module.exports = (config, firebase, db) => {
           promises.push(
             transferFileFromStorage({
               storageBucket: bucket,
-              fileUrl: `exercise/${panel.exerciseId}/user/${application.userId}/${application.uploadedCoveringLetter}`,
+              fileUrl: `exercise/${exerciseId}/user/${application.userId}/${application.uploadedCoveringLetter}`,
               destinationFolderId: folderId,
               destinationFileName: 'Covering Letter',
             }).catch(e => 'Error: Covering Letter')
@@ -104,7 +107,7 @@ module.exports = (config, firebase, db) => {
           promises.push(
             transferFileFromStorage({
               storageBucket: bucket,
-              fileUrl: `exercise/${panel.exerciseId}/user/${application.userId}/${application.uploadedCV}`,
+              fileUrl: `exercise/${exerciseId}/user/${application.userId}/${application.uploadedCV}`,
               destinationFolderId: folderId,
               destinationFileName: 'CV',
             }).catch(e => 'Error: CV')
@@ -116,7 +119,7 @@ module.exports = (config, firebase, db) => {
           promises.push(
             transferFileFromStorage({
               storageBucket: bucket,
-              fileUrl: `exercise/${panel.exerciseId}/user/${application.userId}/${application.uploadedSuitabilityStatement}`,
+              fileUrl: `exercise/${exerciseId}/user/${application.userId}/${application.uploadedSuitabilityStatement}`,
               destinationFolderId: folderId,
               destinationFileName: 'Statement of Suitability',
             }).catch(e => 'Error: Statement of Suitability')
@@ -168,10 +171,10 @@ module.exports = (config, firebase, db) => {
       try {
         const responses = await Promise.all(promises);
         responses.forEach(response => {
-          if (response.indexOf('Error') > 0) {
-            errorMessages.push(response);
-          } else if (response) {
+          if (response) {
             fileIds.push(response);
+          } else if (response !== false && response.indexOf('Error') > 0) {
+            errorMessages.push(response);
           }
         });
       } catch(e) {
@@ -206,7 +209,7 @@ module.exports = (config, firebase, db) => {
   async function transferFileFromStorage({ storageBucket, fileUrl, destinationFolderId, destinationFileName }) {
     if (fileUrl) {
       const file = storageBucket.file(fileUrl);
-      const exists = await file.exists();
+      const [exists] = await file.exists();
       if (exists) {
         const fileId = await drive.createFile(destinationFileName, {
           folderId: destinationFolderId,

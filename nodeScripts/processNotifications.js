@@ -9,9 +9,11 @@
  */
 'use strict';
 
-const config = require('./shared/config');
-const { firebase, app, db } = require('./shared/admin.js');
-const { processNotifications } = require('../functions/actions/notifications')(config, firebase, db);
+import config from './shared/config.js';
+import { firebase, app, db } from './shared/admin.js';
+import initNotifications from '../functions/actions/notifications.js';
+
+const { processNotifications } = initNotifications(config, firebase, db);
 
 const main = async () => {
   await processNotifications();

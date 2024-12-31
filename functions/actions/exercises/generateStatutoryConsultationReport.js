@@ -1,9 +1,11 @@
-const { getDocument, getAllDocuments, getDocuments, formatDate, getDate } = require('../../shared/helpers');
-const lookup = require('../../shared/converters/lookup');
-const { NOT_COMPLETE_PUPILLAGE_REASONS } = require('../../shared/config');
-const helpers = require('../../shared/converters/helpers');
+import { getDocument, getAllDocuments, getDocuments, formatDate, getDate } from '../../shared/helpers.js';
+import lookup from '../../shared/converters/lookup.js';
+import config from '../../shared/config.js';
+import * as helpers from '../../shared/converters/helpers.js';
 
-module.exports = (firebase, db) => {
+const { NOT_COMPLETE_PUPILLAGE_REASONS } = config;
+
+export default (firebase, db) => {
   return {
     generateStatutoryConsultationReport,
   };

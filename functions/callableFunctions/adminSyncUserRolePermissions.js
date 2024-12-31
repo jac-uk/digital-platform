@@ -1,13 +1,19 @@
-const functions = require('firebase-functions');
-const { db, auth } = require('../shared/admin.js');
-const  { adminSyncUserRolePermissions } = require('../actions/userRoles')(db, auth);
-const { checkFunctionEnabled } = require('../shared/serviceSettings.js')(db);
+import functions from 'firebase-functions';
+import { db, auth } from '../shared/admin.js';
+import initUserRoles from '../actions/userRoles.js';
+import initServiceSettings from '../shared/serviceSettings.js';
+import { PERMISSIONS, hasPermissions } from '../shared/permissions.js';
 
-module.exports = functions.region('europe-west2').https.onCall(async (data, context) => {
+const { adminSyncUserRolePermissions } = initUserRoles(db, auth);
+const { checkFunctionEnabled } = initServiceSettings(db);
+
+export default functions.region('europe-west2').https.onCall(async (data, context) => {
   await checkFunctionEnabled();
   if (!context.auth) {
     throw new functions.https.HttpsError('failed-precondition', 'The function must be called while authenticated.');
   }
+
+  hasPermissions(context.auth.token.rp, [PERMISSIONS.users.permissions.canEditRolePermissions.value]);
 
   //TODO: add role check here
   return await adminSyncUserRolePermissions(context.auth.uid);

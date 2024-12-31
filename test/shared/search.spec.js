@@ -1,6 +1,6 @@
 /* eslint-disable quotes */
 
-const { getSearchMap } = require('../../functions/shared/search');
+import { getSearchMap } from '../../functions/shared/search.js';
 
 describe('getSearchMap()', () => {
 

@@ -1,8 +1,10 @@
 'use strict';
 
-const config = require('./shared/config');
-const { firebase, app, auth, db } = require('./shared/admin.js');
-const getApplicationData = require('../functions/actions/exercises/getApplicationData')(config, firebase, db, auth);
+import config from './shared/config.js';
+import { firebase, app, auth, db } from './shared/admin.js';
+import initGetApplicationData from '../functions/actions/exercises/getApplicationData.js';
+
+const getApplicationData = initGetApplicationData(config, firebase, db, auth);
 
 const params = {
   // columns: ['personalDetails.title'],

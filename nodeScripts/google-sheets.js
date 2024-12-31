@@ -1,7 +1,7 @@
 'use strict';
 
-const { app } = require('./shared/admin.js');
-const { google } = require('googleapis');
+import { app } from './shared/admin.js';
+import { google } from 'googleapis';
 
 const main = async (spreadsheetId, range) => {
 

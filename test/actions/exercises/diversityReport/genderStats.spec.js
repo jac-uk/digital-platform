@@ -1,10 +1,13 @@
-const firebase = require('firebase-admin');
+import firebase from 'firebase-admin';
+import { jest } from '@jest/globals';
+import config from '../../../../nodeScripts/shared/config.js';
+import initGenerateDiversityReport from '../../../../functions/actions/exercises/generateDiversityReport.js';
+
 const db = jest.fn();
-const config = require('../../../../nodeScripts/shared/config');
 
 const {
   genderStats,
-} = require('../../../../functions/actions/exercises/generateDiversityReport.js')(config, firebase, db);
+} = initGenerateDiversityReport(config, firebase, db);
 
 // List of all possible gender groups
 const genderGroups = ['prefer-not-to-say', 'no-answer', 'male', 'female', 'gender-neutral', 'other-gender'];

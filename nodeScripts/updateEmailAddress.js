@@ -1,7 +1,9 @@
 'use strict';
 
-const { app, auth } = require('./shared/admin.js');
-const updateEmailAddress = require('../functions/actions/candidates/updateEmailAddress')(auth);
+import { app, auth } from './shared/admin.js';
+import initUpdateEmailAddress from '../functions/actions/candidates/updateEmailAddress.js';
+
+const updateEmailAddress = initUpdateEmailAddress(auth);
 
 const main = async () => {
   return updateEmailAddress({

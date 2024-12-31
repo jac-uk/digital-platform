@@ -1,10 +1,13 @@
-const functions = require('firebase-functions');
-const config = require('../shared/config');
-const { firebase, db, auth } = require('../shared/admin');
-const onApplicationUpdate = require('../actions/applications/onUpdate')(config, firebase, db, auth);
-const { logEvent } = require('../actions/logs/logEvent')(firebase, db, auth);
+import functions from 'firebase-functions';
+import config from '../shared/config.js';
+import { firebase, db, auth } from '../shared/admin.js';
+import initApplicationOnUpdate from '../actions/applications/onUpdate.js';
+import initLogEvent from '../actions/logs/logEvent.js';
 
-module.exports = functions.region('europe-west2').firestore
+const onApplicationUpdate = initApplicationOnUpdate(config, firebase, db, auth);
+const { logEvent } = initLogEvent(firebase, db, auth);
+
+export default functions.region('europe-west2').firestore
   .document('applications/{applicationId}')
   .onUpdate((change, context) => {
     const dataBefore = change.before.data();

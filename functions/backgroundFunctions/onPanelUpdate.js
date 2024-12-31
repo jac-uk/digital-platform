@@ -1,13 +1,15 @@
-const functions = require('firebase-functions');
-const config = require('../shared/config');
-const { firebase, db } = require('../shared/admin.js');
-const onPanelUpdate = require('../actions/panels/onUpdate')(config, firebase, db);
+import functions from 'firebase-functions';
+import config from '../shared/config.js';
+import { firebase, db } from '../shared/admin.js';
+import initOnPanelUpdate from '../actions/panels/onUpdate.js';
+
+const onPanelUpdate = initOnPanelUpdate(config, firebase, db);
 
 const runtimeOptions = {
   timeoutSeconds: 300,
 };
 
-module.exports = functions.runWith(runtimeOptions).region('europe-west2').firestore
+export default functions.runWith(runtimeOptions).region('europe-west2').firestore
   .document('panels/{panelId}')
   .onUpdate((change, context) => {
     const dataBefore = change.before.data();

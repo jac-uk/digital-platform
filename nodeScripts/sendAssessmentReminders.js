@@ -1,8 +1,10 @@
 'use strict';
 
-const config = require('./shared/config');
-const { firebase, app, db } = require('./shared/admin.js');
-const { cancelAssessments } = require('../functions/actions/assessments')(config, firebase, db);
+import config from './shared/config.js';
+import { firebase, app, db } from './shared/admin.js';
+import initAssessments from '../functions/actions/assessments.js';
+
+const { cancelAssessments } = initAssessments(config, firebase, db);
 
 const main = async () => {
   return cancelAssessments({

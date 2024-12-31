@@ -1,6 +1,6 @@
-const assert = require('assert');
-const { firebaseFunctionsTest } = require('./helpers');
-const verifyRecaptcha = require('../../functions/callableFunctions/verifyRecaptcha');
+import assert from 'assert';
+import { firebaseFunctionsTest } from './helpers.js';
+import verifyRecaptcha from '../../functions/callableFunctions/verifyRecaptcha.js';
 
 const { wrap } = firebaseFunctionsTest;
 

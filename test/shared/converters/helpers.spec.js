@@ -1,5 +1,5 @@
-const { applicationOpenDatePost01042023, ordinal } = require('../../../functions/shared/converters/helpers');
-const { Timestamp } = require('firebase-admin/firestore');
+import { applicationOpenDatePost01042023, ordinal } from '../../../functions/shared/converters/helpers.js';
+import { Timestamp } from 'firebase-admin/firestore';
 
 const pre010423Date = Timestamp.fromDate(new Date('2023-03-31'));
 const on010423Date = Timestamp.fromDate(new Date('2023-04-01'));

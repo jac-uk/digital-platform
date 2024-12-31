@@ -1,7 +1,6 @@
-const { getDocument, getDocuments, normaliseNINs } = require('../../shared/helpers');
-const lookup = require('../../shared/converters/lookup');
+import { getDocuments, normaliseNINs } from '../../shared/helpers.js';
 
-module.exports = (firebase, db) => {
+export default (firebase, db) => {
 
   return {
     targetedOutreachReport,

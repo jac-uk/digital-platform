@@ -1,17 +1,21 @@
-const functions = require('firebase-functions');
-const { firebase, db, auth } = require('../shared/admin.js');
-const { checkArguments } = require('../shared/helpers.js');
-const { generateStatutoryConsultationReport } = require('../actions/exercises/generateStatutoryConsultationReport')(firebase, db);
-const { getDocument } = require('../shared/helpers');
-const { logEvent } = require('../actions/logs/logEvent')(firebase, db, auth);
-const { checkFunctionEnabled } = require('../shared/serviceSettings.js')(db);
-const { PERMISSIONS, hasPermissions } = require('../shared/permissions');
+import functions from 'firebase-functions';
+import { firebase, db, auth } from '../shared/admin.js';
+import { checkArguments } from '../shared/helpers.js';
+import initGenerateStatutoryConsultationReport from '../actions/exercises/generateStatutoryConsultationReport.js';
+import { getDocument } from '../shared/helpers.js';
+import initLogEvent from '../actions/logs/logEvent.js';
+import initServiceSettings from '../shared/serviceSettings.js';
+import { PERMISSIONS, hasPermissions } from '../shared/permissions.js';
+
+const { generateStatutoryConsultationReport } = initGenerateStatutoryConsultationReport(firebase, db);
+const { logEvent } = initLogEvent(firebase, db, auth);
+const { checkFunctionEnabled } = initServiceSettings(db);
 
 const runtimeOptions = {
   memory: '512MB',
 };
 
-module.exports = functions.runWith(runtimeOptions).region('europe-west2').https.onCall(async (data, context) => {
+export default functions.runWith(runtimeOptions).region('europe-west2').https.onCall(async (data, context) => {
   await checkFunctionEnabled();
 
   // authenticate the request

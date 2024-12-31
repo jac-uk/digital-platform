@@ -4,10 +4,12 @@
 
 'use strict';
 
-const config = require('./shared/config');
-const { firebase, app, db } = require('./shared/admin');
-const { applyUpdates, getDocuments, getDocument } = require('../functions/shared/helpers');
-const { getApplicationRecordStageStatus, getExerciseApplicationRecords } = require('../functions/actions/applicationRecords/updateApplicationRecordStageStatus')(firebase, config, db);
+import config from './shared/config.js';
+import { firebase, app, db } from './shared/admin.js';
+import { applyUpdates, getDocuments, getDocument } from '../functions/shared/helpers.js';
+import initUpdateApplicationRecordStageStatus from '../functions/actions/applicationRecords/updateApplicationRecordStageStatus.js';
+
+const { getApplicationRecordStageStatus, getExerciseApplicationRecords } = initUpdateApplicationRecordStageStatus(firebase, config, db);
 
 // whether to make changes in firestore
 const isAction = false;

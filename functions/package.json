@@ -1,6 +1,11 @@
 {
   "name": "functions",
   "description": "Cloud Functions for Firebase",
+  "main": "index.js",
+  "type": "module",
+  "engines": {
+    "node": "18"
+  },
   "scripts": {
     "lint": "eslint .",
     "lint:fix": "eslint . --fix",
@@ -10,22 +15,23 @@
     "deploy": "firebase deploy --only functions:generateDiversityReport",
     "logs": "firebase functions:log"
   },
-  "engines": {
-    "node": "18"
-  },
   "dependencies": {
     "axios": "^0.28.0",
     "bottleneck": "^2.19.5",
+    "exceljs": "^4.4.0",
     "firebase-admin": "^12.1.1",
     "firebase-functions": "^5.0.1",
     "firebase-tools": "^13.11.2",
+    "fs": "^0.0.1-security",
     "googleapis": "^49.0.0",
     "mammoth": "^1.6.0",
     "notifications-node-client": "^8.1.0",
+    "path": "^0.12.7",
     "request-promise": "^4.2.6"
   },
   "devDependencies": {
     "eslint": "^7.15.0",
+    "eslint-plugin-import": "^2.29.1",
     "firebase-functions-test": "^3.2.0"
   },
   "private": true,

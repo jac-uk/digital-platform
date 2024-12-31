@@ -1,7 +1,7 @@
 'use strict';
 
-const { app, db } = require('./shared/admin.js');
-const { getDocuments } = require('../functions/shared/helpers');
+import { app, db } from './shared/admin.js';
+import { getDocuments } from '../functions/shared/helpers.js';
 
 const main = async () => {
   const exerciseId = ''; // enter exercise id

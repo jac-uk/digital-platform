@@ -1,6 +1,6 @@
-const { getDocuments } = require('../../shared/helpers');
+import { getDocuments } from '../../shared/helpers.js';
 
-module.exports = (firebase, db) => {
+export default (firebase, db) => {
   return {
     generateReasonableAdjustmentsReport,
   };

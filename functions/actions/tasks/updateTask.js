@@ -1,7 +1,13 @@
-const { getDocument, getDocuments, getDocumentsFromQueries, applyUpdates } = require('../../shared/helpers');
-const lookup = require('../../shared/converters/lookup');
+import { getDocument, getDocuments, getDocumentsFromQueries, applyUpdates } from '../../shared/helpers.js';
+import lookup from '../../shared/converters/lookup.js';
+import initTaskHelpers from './taskHelpers.js';
+import initRefreshApplicationCounts from '../exercises/refreshApplicationCounts.js';
+import initFactories from '../../shared/factories.js';
+import initQts from '../../shared/qts.js';
+import { getOverride } from './meritListHelper.js';
+import { GRADES, GRADE_VALUES, markingScheme2ScoreSheet } from '../../shared/scoreSheetHelper.js';
 
-module.exports = (config, firebase, db) => {
+export default (config, firebase, db) => {
   const {
     taskStatuses,
     taskNextStatus,
@@ -18,13 +24,14 @@ module.exports = (config, firebase, db) => {
     getApplicationFailStatuses,
     taskApplicationsEntryStatus,
     includeZScores,
-  } = require('./taskHelpers')(config);
+  } = initTaskHelpers(config);
 
-  const { refreshApplicationCounts } = require('../exercises/refreshApplicationCounts')(firebase, db);
-  const { newCandidateFormResponse } = require('../../shared/factories')(config);
+  const { refreshApplicationCounts } = initRefreshApplicationCounts(firebase, db);
+  const { newCandidateFormResponse } = initFactories(config);
 
   return {
     updateTask,
+    getApplications,
     initialisePanelTask,
     initialiseTestTask,
     initialiseStatusChangesTask,
@@ -60,6 +67,7 @@ module.exports = (config, firebase, db) => {
     if (possibleStatuses.indexOf(task.status) < 0) return result;
 
     // get next status
+    console.log('status', task.status);
     let nextStatus = taskNextStatus(params.type, task.status);
     console.log('nextStatus', nextStatus);
 
@@ -69,7 +77,7 @@ module.exports = (config, firebase, db) => {
       if (task.type === config.TASK_TYPE.SCENARIO) {
         result = await initialisePanelTaskForScenario(exercise, task);
       } else {
-        result = await initialisePanelTask(exercise, task.type, task.applications);
+        result = await initialisePanelTask(exercise, { task: task });
       }
       break;
     case config.TASK_STATUS.PANELS_ACTIVATED:
@@ -182,38 +190,55 @@ module.exports = (config, firebase, db) => {
   /**
    * Initialises a panel task by updating application records with placeholder for panelId
    * @param {*} exercise
-   * @param {*} taskType
-   * @param {*} applicationRecords
+   * @param {*} params  object with the following optional properties: `task`, `type`, `applicationRecords`
    * @returns Result object of the form `{ success: Boolean, data: Object }`. If successful then `data` is to be stored in the `task` document
    */
-  async function initialisePanelTask(exercise, taskType, applicationRecords) {
+  async function initialisePanelTask(exercise, params) {
     const result = {
       success: false,
       data: {},
     };
+    let task;
+    let taskType;
+    let applicationRecords;
+    if (params.task) {
+      task = params.task;
+      taskType = task.type;
+      applicationRecords = task.applications || params.applicationRecords;
+      if (!applicationRecords) applicationRecords = await getApplications(exercise, task);
+    }
+    if (params.taskType) taskType = params.taskType;
+    if (params.applicationRecords) applicationRecords = params.applicationRecords;
+
     // update application records with placeholder for panelId
-    const commands = [];
-    applicationRecords.forEach(applicationRecord => {
-      const data = {};
-      data[`${taskType}.panelId`] = null;
-      commands.push({
-        command: 'update',
-        ref: db.collection('applicationRecords').doc(applicationRecord.id),
-        data: data,
+    if (applicationRecords) {
+      const commands = [];
+      applicationRecords.forEach(applicationRecord => {
+        const data = {};
+        data[`${taskType}.panelId`] = null;
+        commands.push({
+          command: 'update',
+          ref: db.collection('applicationRecords').doc(applicationRecord.id),
+          data: data,
+        });
       });
-    });
-    await applyUpdates(db, commands);
+      await applyUpdates(db, commands);
+    }
+
     result.success = true;
-    result.data.grades = config.GRADES;
-    result.data.markingScheme = createMarkingScheme(exercise, taskType);
-    result.data.emptyScoreSheet = scoreSheet({ type: taskType, exercise: exercise });
+    result.data.grades = GRADES;
+    if (task && applicationRecords) result.data['_stats.totalApplications'] = applicationRecords.length;
+    if (!task || (task && !task.markingScheme)) {
+      result.data.markingScheme = createMarkingScheme(exercise, taskType);
+      result.data.emptyScoreSheet = markingScheme2ScoreSheet(result.data.markingScheme); // scoreSheet({ type: taskType, exercise: exercise });
+    }
     return result;
   }
 
   /**
    * Initialises a panel task following scenario test
    * @param {*} exercise
-   * @param {*} taskType
+   * @param {*} task
    * @returns Result object of the form `{ success: Boolean, data: Object }`. If successful then `data` is to be stored in the `task` document
    */
   async function initialisePanelTaskForScenario(exercise, task) {
@@ -223,7 +248,7 @@ module.exports = (config, firebase, db) => {
     };
 
     // get test
-    const qts = require('../../shared/qts')(config);
+    const qts = initQts(config);
     const response = await qts.get('scores', {
       testId: task.test.id,
     });
@@ -312,12 +337,13 @@ module.exports = (config, firebase, db) => {
         applications: {},
         panellists: {},
         markingScheme: task.markingScheme,
+        hasModeration: panelIds.length > 1,
         scoreSheet: {},
         status: config.PANEL_STATUS.CREATED,
       };
       if (task.grades) {
         data.grades = task.grades;
-        data.grade_values = config.GRADE_VALUES;
+        data.grade_values = GRADE_VALUES;
       }
       data[`statusLog.${config.PANEL_STATUS.CREATED}`] = firebase.firestore.FieldValue.serverTimestamp();
 
@@ -369,7 +395,7 @@ module.exports = (config, firebase, db) => {
     const title = `${lookup(testType)} for ${folderName}`;
     const QTType = testType === config.TASK_TYPE.EMP_TIEBREAKER ? config.TASK_TYPE.SCENARIO : testType;
     // initialise test on QT Platform
-    const qts = require('../../shared/qts')(config);
+    const qts = initQts(config);
     const response = await qts.post('qualifying-test', {
       folder: folderName,
       test: {
@@ -416,7 +442,7 @@ module.exports = (config, firebase, db) => {
     });
 
     // send participants to QT Platform
-    const qts = require('../../shared/qts')(config);
+    const qts = initQts(config);
     await qts.post('participants', {
       testId: task.test.id,
       participants: participants,
@@ -519,7 +545,7 @@ module.exports = (config, firebase, db) => {
 
   /**
    * initialiseDataTask
-   * Initialises a data task. Currently does nothing!
+   * Initialises a data task.
    * @param {*} exercise
    * @param {*} taskType
    * @returns Result object of the form `{ success: Boolean, data: Object }`. If successful then `data` is to be stored in the `task` document
@@ -531,9 +557,9 @@ module.exports = (config, firebase, db) => {
       data: {},
     };
     result.success = true;
-    result.data.grades = config.GRADES;
+    result.data.grades = GRADES;
     result.data.markingScheme = createMarkingScheme(exercise, taskType);
-    result.data.emptyScoreSheet = scoreSheet({ type: taskType, exercise: exercise });
+    result.data.emptyScoreSheet = markingScheme2ScoreSheet(result.data.markingScheme);  // scoreSheet({ type: taskType, exercise: exercise });
     return result;
   }
 
@@ -625,14 +651,14 @@ module.exports = (config, firebase, db) => {
     });
 
     await applyUpdates(db, commands);
-    
+
     result.success = true;
     return result;
   }
 
   /**
    * activateDataTask
-   * Activates a data task. Currently does nothing!
+   * Activates a data task.
    * @param {*} exercise
    * @param {*} task
    * @returns Result object of the form `{ success: Boolean, data: Object }`. If successful then `data` is to be stored in the `task` document
@@ -651,7 +677,7 @@ module.exports = (config, firebase, db) => {
     let emptyScoreSheet = task.emptyScoreSheet;
     if (task.type === config.TASK_TYPE.SCENARIO || task.type === config.TASK_TYPE.EMP_TIEBREAKER) {
       // get test
-      const qts = require('../../shared/qts')(config);
+      const qts = initQts(config);
       const response = await qts.get('scores', {
         testId: task.test.id,
       });
@@ -737,8 +763,9 @@ module.exports = (config, firebase, db) => {
           ref: panel.applications[applicationId].referenceNumber, // TODO extract only the last 7 chars
           panelId: panel.id,
           scoreSheet: finaliseScoreSheet(task.markingScheme, panel.scoreSheet[applicationId]),
-          score: getScoreSheetTotal(task.markingScheme, panel.scoreSheet[applicationId]),
+          changes: task.changes && task.changes[applicationId] ? task.changes[applicationId] : {},
         };
+        row.score = getScoreSheetTotal(task.markingScheme, panel.scoreSheet[applicationId], row.changes),
         finalScores.push(row);
       });
     });
@@ -763,7 +790,7 @@ module.exports = (config, firebase, db) => {
     };
 
     // get results from QT Platform
-    const qts = require('../../shared/qts')(config);
+    const qts = initQts(config);
     const response = await qts.get('scores', {
       testId: task.test.id,
     });
@@ -820,7 +847,7 @@ module.exports = (config, firebase, db) => {
     // TODO remove un-necessary fields
     return result;
   }
-  
+
   /**
    * completeCandidateFormTask
    * Completes a candidate data entry task.
@@ -857,6 +884,7 @@ module.exports = (config, firebase, db) => {
    * @returns Result object of the form `{ success: Boolean, data: Object }`. If successful then `data` is to be stored in the `task` document
    */
   async function completeTask(exercise, task) {
+
     const result = {
       success: false,
       data: {},
@@ -881,16 +909,11 @@ module.exports = (config, firebase, db) => {
     const commands = [];
     task.finalScores.filter(scoreData => applicationIdMap[scoreData.id]).forEach(scoreData => {
       let newStatus;
-      if (scoreData[scoreType] > task.passMark) {
-        newStatus = passStatus;
-      } else if (scoreData[scoreType] === task.passMark) {
-        if (task.overrides && task.overrides.fail && task.overrides.fail.length && task.overrides.fail.indexOf(scoreData.id) >= 0) {
-          newStatus = failStatus;
-        } else {
-          newStatus = passStatus;
-        }
-      } else if (scoreData[scoreType] < task.passMark) {
-        if (task.overrides && task.overrides.pass && task.overrides.pass.length && task.overrides.pass.indexOf(scoreData.id) >= 0) {
+      if (scoreData[scoreType] >= task.passMark) {
+        newStatus = passStatus; // TODO double-check we don't want to allow overrides from PASS->FAIL
+      } else {
+        const override = getOverride(task, scoreData.id);
+        if (override) {
           newStatus = passStatus;
         } else {
           newStatus = failStatus;
@@ -921,7 +944,7 @@ module.exports = (config, firebase, db) => {
           command: 'update',
           ref: db.collection('applicationRecords').doc(application.id),
           data: saveData,
-        }); 
+        });
       });
     }
 
@@ -976,7 +999,7 @@ module.exports = (config, firebase, db) => {
                   command: 'update',
                   ref: db.collection('applicationRecords').doc(scoreData.id),
                   data: saveData,
-                });         
+                });
               }
             }
           });
@@ -1021,7 +1044,7 @@ module.exports = (config, firebase, db) => {
     await applyUpdates(db, commands);
     result.success = true;
     result.data['_stats.totalForEachOutcome'] = outcomeStats;
-    result.data.finalScores = task.finalScores;
+    result.data.finalScores = task.finalScores; // includes `pass: Boolean` for each entry in `finalScores`
 
     return result;
   }

@@ -3,11 +3,14 @@ const projectConfig = {
   storageBucket: process.env.FIREBASE_STORAGE_BUCKET,
   projectId: process.env.FIREBASE_PROJECT_ID,
 };
-const firebaseFunctionsTest = require('firebase-functions-test')(projectConfig, './service-account.json');
+import initFirebaseFunctionsTest from 'firebase-functions-test';
+
+const firebaseFunctionsTest = initFirebaseFunctionsTest(projectConfig, './service-account.json');
 
 function generateMockContext(params = {}) {
   return {
     auth: {
+      uid: params.uid || null,
       token: {
         rp: params.permissions || [],
       },
@@ -15,7 +18,7 @@ function generateMockContext(params = {}) {
   };
 }
 
-module.exports = {
+export {
   firebaseFunctionsTest,
-  generateMockContext,
+  generateMockContext
 };

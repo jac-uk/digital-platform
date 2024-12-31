@@ -1,7 +1,8 @@
-const { applyUpdates } = require('../shared/helpers');
+import { applyUpdates } from '../shared/helpers.js';
+import initFactories from '../shared/factories.js';
 
-module.exports = (config, firebase, db, auth) => {
-  const { newNotificationUserInvitation } = require('../shared/factories')(config);
+export default (config, firebase, db, auth) => {
+  const { newNotificationUserInvitation } = initFactories(config);
   
   return {
     onUserInvitationCreate,

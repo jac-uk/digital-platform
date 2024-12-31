@@ -1,9 +1,11 @@
-const functions = require('firebase-functions');
-const config = require('../shared/config');
-const { firebase, db } = require('../shared/admin.js');
-const onSettingsUpdate = require('../actions/settings/onUpdate')(config, firebase, db);
+import functions from 'firebase-functions';
+import config from '../shared/config.js';
+import { firebase, db } from '../shared/admin.js';
+import initOnSettingsUpdate from '../actions/settings/onUpdate.js';
 
-module.exports = functions.region('europe-west2').firestore
+const onSettingsUpdate = initOnSettingsUpdate(config, firebase, db);
+
+export default functions.region('europe-west2').firestore
   .document('settings/services')
   .onUpdate((change) => {
     const dataBefore = change.before.data();

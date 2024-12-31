@@ -1,11 +1,15 @@
-const functions = require('firebase-functions');
-const config = require('../../shared/config');
-const { firebase, db } = require('../../shared/admin.js');
-const { checkArguments } = require('../../shared/helpers.js');
-const createTask = require('../../actions/tasks/createTask')(config, firebase, db);
-const { checkFunctionEnabled } = require('../../shared/serviceSettings.js')(db);
+import functions from 'firebase-functions';
+import config from '../../shared/config.js';
+import { firebase, db } from '../../shared/admin.js';
+import { checkArguments } from '../../shared/helpers.js';
+import initCreateTask from '../../actions/tasks/createTask.js';
+import initServiceSettings from '../../shared/serviceSettings.js';
+import { PERMISSIONS, hasPermissions } from '../../shared/permissions.js';
 
-module.exports = functions.runWith({
+const createTask = initCreateTask(config, firebase, db);
+const { checkFunctionEnabled } = initServiceSettings(db);
+
+export default functions.runWith({
   timeoutSeconds: 180,
   memory: '256MB',
 }).region('europe-west2').https.onCall(async (data, context) => {
@@ -13,6 +17,11 @@ module.exports = functions.runWith({
   if (!context.auth) {
     throw new functions.https.HttpsError('failed-precondition', 'The function must be called while authenticated.');
   }
+
+  hasPermissions(context.auth.token.rp, [
+    PERMISSIONS.tasks.permissions.canCreate.value,
+  ]);
+
   if (!checkArguments({
     exerciseId: { required: true },
     type: { required: true },

@@ -1,15 +1,21 @@
-const functions = require('firebase-functions');
-const config = require('../shared/config');
-const { firebase, db } = require('../shared/admin.js');
-const { updateApplicationRecordStageStatus } = require('../actions/applicationRecords/updateApplicationRecordStageStatus.js')(firebase, config, db);
-const { checkArguments } = require('../shared/helpers.js');
-const { checkFunctionEnabled } = require('../shared/serviceSettings.js')(db);
-const { PERMISSIONS, hasPermissions } = require('../shared/permissions.js');
-const { generateDiversityReport } = require('../actions/exercises/generateDiversityReport')(config, firebase, db);
-const { generateDiversityData } = require('../actions/exercises/generateDiversityData')(firebase, db);
-const { generateOutreachReport } = require('../actions/exercises/generateOutreachReport')(config, firebase, db);
+import functions from 'firebase-functions';
+import config from '../shared/config.js';
+import { firebase, db } from '../shared/admin.js';
+import initUpdateApplicationRecordStageStatus from '../actions/applicationRecords/updateApplicationRecordStageStatus.js';
+import { checkArguments } from '../shared/helpers.js';
+import initServiceSettings from '../shared/serviceSettings.js';
+import { PERMISSIONS, hasPermissions } from '../shared/permissions.js';
+import initGenerateDiversityReport from '../actions/exercises/generateDiversityReport.js';
+import initGenerateDiversityData from '../actions/exercises/generateDiversityData.js';
+import initGenerateOutreachReport from '../actions/exercises/generateOutreachReport.js';
 
-module.exports = functions.runWith({
+const { updateApplicationRecordStageStatus } = initUpdateApplicationRecordStageStatus(firebase, config, db);
+const { checkFunctionEnabled } = initServiceSettings(db);
+const { generateDiversityReport } = initGenerateDiversityReport(config, firebase, db);
+const { generateDiversityData } = initGenerateDiversityData(firebase, db);
+const { generateOutreachReport } = initGenerateOutreachReport(config, firebase, db);
+
+export default functions.runWith({
   timeoutSeconds: 180,
   memory: '1GB',
 }).region('europe-west2').https.onCall(async (data, context) => {

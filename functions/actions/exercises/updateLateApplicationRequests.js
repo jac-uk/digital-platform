@@ -1,4 +1,4 @@
-module.exports = (firebase, db) => {
+export default (firebase, db) => {
 
   return {
     addLateApplicationRequest,

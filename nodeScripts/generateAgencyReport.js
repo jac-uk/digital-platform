@@ -1,7 +1,9 @@
 'use strict';
 
-const { firebase, app, db } = require('./shared/admin.js');
-const { generateAgencyReport } = require('../functions/actions/exercises/generateAgencyReport.js')(firebase, db);
+import { firebase, app, db } from './shared/admin.js';
+import initGenerateAgencyReport from '../functions/actions/exercises/generateAgencyReport.js';
+
+const { generateAgencyReport } = initGenerateAgencyReport(firebase, db);
 
 const main = async () => {
   return generateAgencyReport('ofWyUMtAGBGj6AVck2tH');

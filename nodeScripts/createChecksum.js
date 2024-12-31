@@ -1,8 +1,9 @@
 'use strict';
 
-const config = require('./shared/config');
-const { firebase, app } = require('./shared/admin.js');
-const { createChecksum } = require('../functions/actions/malware-scanning/createChecksum')(config, firebase);
+import config from './shared/config.js';
+import { firebase, app } from './shared/admin.js';
+import createChecksum from '../functions/actions/malware-scanning/createChecksum.js';
+
 const fileURL = 'blank.docx';
 
 const main = async () => {
