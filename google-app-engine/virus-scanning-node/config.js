@@ -100,5 +100,5 @@ async function checkBucketExists(bucketName) {
 }
 
 export {
-  readAndVerifyConfig,
+  readAndVerifyConfig
  };
