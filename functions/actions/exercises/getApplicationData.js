@@ -1,6 +1,10 @@
+import lookup from '../../shared/converters/lookup.js';
 import { getDocument, getDocuments, formatDate, formatAddress, formatPreviousAddresses, isValidDate } from '../../shared/helpers.js';
-import _ from 'lodash';
+import _  from 'lodash';
+import { isWorkingPreferenceColumn, filteredPreferences, extractAnswers, formatAnswers } from '../../shared/workingPreferencesHelper.js';
+import initApplicationHelper from '../../shared/applicationHelper.js';
 
+// TODO: check if this is still needed
 function formatPreference(choiceArray, questionType) {
   if(questionType === 'multiple-choice') {
     return choiceArray instanceof Array ? choiceArray.map(x => `${x} ` ).join('and ').slice(0,-1) : choiceArray;
@@ -11,8 +15,9 @@ function formatPreference(choiceArray, questionType) {
   }
   return choiceArray;
 }
-
 export default (config, firebase, db, auth) => {
+  const { formatExperience } = initApplicationHelper(config);
+
 
   return getApplicationData;
 
@@ -124,6 +129,24 @@ export default (config, firebase, db, auth) => {
           if (record[column] !== DEFAULT_VALUE) {
             record[column] = formatDate(record[column], 'DD/MM/YYYY');
           }
+        }
+        
+        // Handle working preferences
+        if (isWorkingPreferenceColumn(column)) {
+          const [preferenceKey, configId] = column.split('.');
+          const configs = filteredPreferences(exerciseData, result, preferenceKey);
+          const config = configs.find(c => c.id === configId);
+          const data = result[preferenceKey] ? result[preferenceKey][configId] : null;
+          const source = exerciseData;
+          const filters = { lookup };
+          const answers = extractAnswers(config, data, source, filters);
+          const formattedAnswers = formatAnswers(answers);
+          record[column] = formattedAnswers.join(', '); 
+        }
+
+        // Handle non-legal exercises experience
+        if (column === 'experience' && exerciseData.typeOfExercise === 'non-legal') {
+          record[column] = formatExperience(result, exerciseData).join(', ');
         }
 
         // Handle time values
