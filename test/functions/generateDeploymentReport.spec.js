@@ -1,14 +1,14 @@
 import assert from 'assert';
 import { firebaseFunctionsTest, generateMockContext } from './helpers.js';
 import { PERMISSIONS } from '../../functions/shared/permissions.js';
-import cancelAssessments from '../../functions/callableFunctions/cancelAssessments.js';
+import generateDeploymentReport from '../../functions/callableFunctions/generateDeploymentReport.js';
 
 const { wrap } = firebaseFunctionsTest;
 
-describe('cancelAssessments', () => {
+describe('generateDeploymentReport', () => {
   context('Permission', () => {
     it ('has no permission', async () => {
-      const wrapped = wrap(cancelAssessments);
+      const wrapped = wrap(generateDeploymentReport);
       try {
         await wrapped({}, generateMockContext());
       } catch (e) {
@@ -16,12 +16,12 @@ describe('cancelAssessments', () => {
       }
     });
     it ('has permission', async () => {
-      const wrapped = wrap(cancelAssessments);
+      const wrapped = wrap(generateDeploymentReport);
       const context = generateMockContext({
         permissions: [
-          PERMISSIONS.assessments.permissions.canReadAssessments.value,
-          PERMISSIONS.assessments.permissions.canUpdateAssessments.value,
-          PERMISSIONS.exercises.permissions.canUpdateExercises.value,
+          PERMISSIONS.exercises.permissions.canReadExercises.value,
+          PERMISSIONS.applicationRecords.permissions.canReadApplicationRecords.value,
+          PERMISSIONS.applications.permissions.canReadApplications.value,
         ],
       });
       try {

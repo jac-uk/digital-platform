@@ -15,14 +15,6 @@ export default functions.region('europe-west2').https.onCall(async (data, contex
     throw new functions.https.HttpsError('failed-precondition', 'The function must be called while authenticated.');
   }
 
-  //console.log('Verify Slack User');
-
-  // hasPermissions(context.auth.token.rp, [
-  //   PERMISSIONS.applications.permissions.canReadApplications.value,
-  //   PERMISSIONS.applications.permissions.canUpdateApplications.value,
-  //   PERMISSIONS.notifications.permissions.canCreateNotifications.value,
-  // ]);
-
   if (!checkArguments({
     userId: { required: true },
     slackMemberId: { required: true },
