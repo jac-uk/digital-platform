@@ -22,7 +22,11 @@ export default [
       'quotes': ['error', 'single', { avoidEscape: true }],
       'semi': 'error',
       'no-console': 'off',
-      'no-unused-vars': 'warn',
+      'no-unused-vars': ['warn', { 
+        'args': 'none',
+        'ignoreRestSiblings': true, 
+        'caughtErrors': 'none',
+      }],
       'import/no-unresolved': [2, { ignore: ['^firebase-admin/.+'] }],
       'import/no-commonjs': 2,
       'import/extensions': [2, 'ignorePackages'],
