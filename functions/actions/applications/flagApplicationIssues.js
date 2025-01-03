@@ -102,7 +102,6 @@ export default (firebase, config, db) => {
 
       const applicationSnapshot = await query.get();
       applications = [];
-      // eslint-disable-next-line no-loop-func
       applicationSnapshot.forEach((doc) => {
         const document = doc.data();
         document.id = doc.id;

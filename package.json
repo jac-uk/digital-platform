@@ -67,6 +67,7 @@
     "caseless": "^0.12.0",
     "chalk": "^5.4.0",
     "crypto": "^1.0.1",
+    "esmock": "^2.6.9",
     "exceljs": "^4.4.0",
     "firebase": "^11.1.0",
     "firebase-admin": "^13.0.1",

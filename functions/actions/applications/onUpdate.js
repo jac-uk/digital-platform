@@ -1,4 +1,4 @@
-import { getDocument, applyUpdates, isDateInPast, formatDate } from '../../shared/helpers.js';
+import { getDocument, applyUpdates, formatDate } from '../../shared/helpers.js';
 import initExerciseHelper from '../../shared/exerciseHelper.js';
 import { getSearchMap } from '../../shared/search.js';
 import initCandidatesSearch from '../candidates/search.js';

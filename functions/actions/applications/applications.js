@@ -3,7 +3,7 @@ import { getSearchMap } from '../../shared/search.js';
 import initApplicationRecords from '../../actions/applicationRecords.js';
 import initRefreshApplicationCounts from '../../actions/exercises/refreshApplicationCounts.js';
 import initFactories from '../../shared/factories.js';
-import initSlack from '../../shared/slack.js';
+// import initSlack from '../../shared/slack.js';
 import initCandidatesSearch from '../candidates/search.js';
 
 const testApplicationsFileName = 'test_applications.json';
@@ -21,7 +21,7 @@ export default (config, firebase, db, auth) => {
     newCandidateFormNotification,
     newNotificationPublishedFeedbackReport,
   } = initFactories(config);
-  const slack = initSlack(config);
+  // const slack = initSlack(config);
   const { updateCandidate } = initCandidatesSearch(firebase, db);
   return {
     updateApplication,
