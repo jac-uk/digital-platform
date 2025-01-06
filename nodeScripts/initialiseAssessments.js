@@ -12,8 +12,8 @@ const { initialiseAssessments } = initAssessments(config, firebase, db, auth);
 
 const main = async () => {
   return initialiseAssessments({
-    exerciseId: 'BpEL3HgHEyHCvDMI5E9s',
-    applicationId: 's5xUIUNY7imVdNUmM6v0',
+    exerciseId: 'qsBv15StHEVEp1RY20cS',
+    applicationId: 'vj0TUX7ufq6UYjYqNZLJ',
   });
 };
 

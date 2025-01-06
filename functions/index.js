@@ -28,78 +28,33 @@ import onCandidateFormResponseUpdate from './backgroundFunctions/onCandidateForm
 import onSettingsUpdate from './backgroundFunctions/onSettingsUpdate.js';
 
 // Callable
+import * as callableFunctions from './callableFunctions/index.js';
 import getApplicationData from './callableFunctions/getApplicationData.js';
-import generateDiversityReport from './callableFunctions/generateDiversityReport.js';
-import generateDiversityData from './callableFunctions/generateDiversityData.js';
-import generateOutreachReport from './callableFunctions/generateOutreachReport.js';
 import flagApplicationIssuesForExercise from './callableFunctions/flagApplicationIssuesForExercise.js';
-import initialiseAssessments from './callableFunctions/initialiseAssessments.js';
-import cancelAssessments from './callableFunctions/cancelAssessments.js';
-import resetAssessments from './callableFunctions/resetAssessments.js';
-import testAssessmentNotification from './callableFunctions/testAssessmentNotification.js';
-import sendAssessmentRequests from './callableFunctions/sendAssessmentRequests.js';
-import sendAssessmentReminders from './callableFunctions/sendAssessmentReminders.js';
-import generateSignInWithEmailLink from './callableFunctions/generateSignInWithEmailLink.js';
 import initialiseApplicationRecords from './callableFunctions/initialiseApplicationRecords.js';
-import sendApplicationReminders from './callableFunctions/sendApplicationReminders.js';
-import sendCharacterCheckRequests from './callableFunctions/sendCharacterCheckRequests.js';
-import sendCandidateFormNotifications from './callableFunctions/sendCandidateFormNotifications.js';
 import enableCharacterChecks from './callableFunctions/enableCharacterChecks.js';
 import initialiseMissingApplicationRecords from './callableFunctions/initialiseMissingApplicationRecords.js';
-import exportExerciseData from './callableFunctions/exportExerciseData.js';
-import targetedOutreachReport from './callableFunctions/targetedOutreachReport.js';
 //import transferHandoverData from './callableFunctions/transferHandoverData.js';
 import exportApplicationContactsData from './callableFunctions/exportApplicationContactsData.js';
 import exportApplicationEligibilityIssues from './callableFunctions/exportApplicationEligibilityIssues.js';
-import generateHandoverReport from './callableFunctions/generateHandoverReport.js';
-import generateDeploymentReport from './callableFunctions/generateDeploymentReport.js';
-import generateReasonableAdjustmentsReport from './callableFunctions/generateReasonableAdjustmentsReport.js';
-import generateAgencyReport from './callableFunctions/generateAgencyReport.js';
-import generateStatutoryConsultationReport from './callableFunctions/generateStatutoryConsultationReport.js';
 import logEvent from './callableFunctions/logEvent.js';
-import scanFile from './callableFunctions/scanFile.js';
-import scanAllFiles from './callableFunctions/scanAllFiles.js';
 import exportApplicationCharacterIssues from './callableFunctions/exportApplicationCharacterIssues.js';
-import getUserEmailByID from './callableFunctions/getUserEmailByID.js';
-//import getUserByEmail from './callableFunctions/getUserByEmail.js';
-import updateEmailAddress from './callableFunctions/updateEmailAddress.js';
-import ensureEmailVerified from './callableFunctions/ensureEmailVerified.js';
-//import adminGetUsers from './callableFunctions/adminGetUsers.js';
-//import adminGetUserRoles from './callableFunctions/adminGetUserRoles.js';
-import adminDisableUser from './callableFunctions/adminDisableUser.js';
-import adminCreateUserRole from './callableFunctions/adminCreateUserRole.js';
-import adminUpdateUserRole from './callableFunctions/adminUpdateUserRole.js';
-import adminSetUserRole from './callableFunctions/adminSetUserRole.js';
-import adminSetDefaultRole from './callableFunctions/adminSetDefaultRole.js';
-import adminDisableNewUser from './callableFunctions/adminDisableNewUser.js';
-import adminSyncUserRolePermissions from './callableFunctions/adminSyncUserRolePermissions.js';
-//import createUser from './callableFunctions/createUser.js';
-import deleteUsers from './callableFunctions/deleteUsers.js';
-import customReport from './callableFunctions/customReport.js';
 import refreshApplicationCounts from './callableFunctions/refreshApplicationCounts.js';
 import createTestApplications from './callableFunctions/createTestApplications.js';
 import deleteApplications from './callableFunctions/deleteApplications.js';
 //import createTestUsers from './callableFunctions/createTestUsers.js';
 //import deleteTestUsers from './callableFunctions/deleteTestUsers.js';
-import createTask from './callableFunctions/tasks/createTask.js';
-import updateTask from './callableFunctions/tasks/updateTask.js';
 import verifyRecaptcha from './callableFunctions/verifyRecaptcha.js';
-import processNotificationsNow from './callableFunctions/processNotifications.js';
-import checkEnabledUserByEmail from './callableFunctions/checkEnabledUserByEmail.js';
+import verifySmsVerificationCode from './callableFunctions/verifySmsVerificationCode.js';
+import verifySlackUser from './callableFunctions/verifySlackUser.js';
 import extractDocumentContent from './callableFunctions/extractDocumentContent.js';
 import updateUserCustomClaims from './callableFunctions/updateUserCustomClaims.js';
 import createZenhubIssue from './callableFunctions/createZenhubIssue.js';
 import exportApplicationCommissionerConflicts from './callableFunctions/exportApplicationCommissionerConflicts.js';
-import verifySlackUser from './callableFunctions/verifySlackUser.js';
-import sendPublishedFeedbackReportNotifications from './callableFunctions/sendPublishedFeedbackReportNotifications.js';
 import updateApplicationRecordStageStatus from './callableFunctions/updateApplicationRecordStageStatus.js';
 import getLatestReleases from './callableFunctions/getLatestReleases.js';
-import verifyFileChecksum from './callableFunctions/verifyFileChecksum.js';
-import sendSmsVerificationCode from './callableFunctions/sendSmsVerificationCode.js';
-import verifySmsVerificationCode from './callableFunctions/verifySmsVerificationCode.js';
-import generateSccSummaryReport from './callableFunctions/generateSccSummaryReport.js';
-import exportSccSummaryReport from './callableFunctions/exportSccSummaryReport.js';
 import getMultipleApplicationData from './callableFunctions/getMultipleApplicationData.js';
+import exportExerciseData from './callableFunctions/exportExerciseData.js';
 
 // Callable - QTs v2
 //import listQualifyingTests from './callableFunctions/qualifyingTests/v2/listQualifyingTests.js';
@@ -140,78 +95,34 @@ export {
   onSettingsUpdate,
 
   // Callable
+
+
+  callableFunctions,
+
+  
   getApplicationData,
-  generateDiversityReport,
-  generateDiversityData,
-  generateOutreachReport,
   flagApplicationIssuesForExercise,
-  initialiseAssessments,
-  cancelAssessments,
-  resetAssessments,
-  testAssessmentNotification,
-  sendAssessmentRequests,
-  sendAssessmentReminders,
-  generateSignInWithEmailLink,
   initialiseApplicationRecords,
-  sendApplicationReminders,
-  sendCharacterCheckRequests,
-  sendCandidateFormNotifications,
   enableCharacterChecks,
   initialiseMissingApplicationRecords,
   exportExerciseData,
-  targetedOutreachReport,
-  //transferHandoverData,
   exportApplicationContactsData,
   exportApplicationEligibilityIssues,
-  generateHandoverReport,
-  generateDeploymentReport,
-  generateReasonableAdjustmentsReport,
-  generateAgencyReport,
-  generateStatutoryConsultationReport,
   logEvent,
-  scanFile,
-  scanAllFiles,
   exportApplicationCharacterIssues,
-  getUserEmailByID,
-  //getUserByEmail,
-  updateEmailAddress,
-  ensureEmailVerified,
-  //adminGetUsers,
-  //adminGetUserRoles,
-  adminDisableUser,
-  adminCreateUserRole,
-  adminUpdateUserRole,
-  adminSetUserRole,
-  adminSetDefaultRole,
-  adminDisableNewUser,
-  adminSyncUserRolePermissions,
-  //createUser,
-  deleteUsers,
-  customReport,
   refreshApplicationCounts,
   createTestApplications,
   deleteApplications,
-  //createTestUsers,
-  //deleteTestUsers,
-  createTask,
-  updateTask,
   verifyRecaptcha,
-  processNotificationsNow,
-  checkEnabledUserByEmail,
   extractDocumentContent,
   updateUserCustomClaims,
   createZenhubIssue,
   exportApplicationCommissionerConflicts,
   verifySlackUser,
-  sendPublishedFeedbackReportNotifications,
   updateApplicationRecordStageStatus,
   getLatestReleases,
-  verifyFileChecksum,
-  sendSmsVerificationCode,
   verifySmsVerificationCode,
   getMultipleApplicationData,
-  generateSccSummaryReport,
-  exportSccSummaryReport,
 
   // Callable - QTs v2
   //listQualifyingTests,
