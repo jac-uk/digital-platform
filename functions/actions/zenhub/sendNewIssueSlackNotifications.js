@@ -67,6 +67,9 @@ export default (config, db, auth, firebase) => {
     if (githubIssueUrl && zenhubIssueNumber) {
       text += `The following *${data.criticality}* issue <${githubIssueUrl}|#${zenhubIssueNumber}> was raised by <@${user.slackMemberId}>`;
     }
+    else if (data.type === 'question') {
+      text += `A question was raised by <@${user.slackMemberId}>`;
+    }
     else {
       text += `An issue was raised by <@${user.slackMemberId}> but we are unable to include the ticket number`;
     }
@@ -86,11 +89,13 @@ export default (config, db, auth, firebase) => {
   }
 
   function addSlackSection2(data) {
+    const text = data.type === 'question' ? data.question : data.issue;
+
     return {
       'type': 'section',
       'text': {
         'type': 'mrkdwn',
-        'text': `Description: ${data.issue}`,
+        'text': `Description: ${text}`,
       },
     };
   }

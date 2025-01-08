@@ -24,16 +24,18 @@ export default (config, firebase, db, auth) => {
 
     const label = bugReport.candidate ? 'Apply' : 'Admin';
 
-    // Create issue in Zenhub
-    const zenhubIssueId = await zenhub.createGithubIssue(bugReport.referenceNumber, body, label);
-
-    // Update bugReport with Zenhub issue ID in firestore
-    if (zenhubIssueId) {
-      await db.doc(`bugReports/${bugReportId}`).update({
-        zenhubIssueId: zenhubIssueId,
-        lastUpdatedAt: firebase.firestore.FieldValue.serverTimestamp(),
-      });
-    }    
+    if (bugReport.type !== 'question') {
+      // Create issue in Zenhub
+      const zenhubIssueId = await zenhub.createGithubIssue(bugReport.referenceNumber, body, label);
+  
+      // Update bugReport with Zenhub issue ID in firestore
+      if (zenhubIssueId) {
+        await db.doc(`bugReports/${bugReportId}`).update({
+          zenhubIssueId: zenhubIssueId,
+          lastUpdatedAt: firebase.firestore.FieldValue.serverTimestamp(),
+        });
+      }   
+    }
   }
 
   function buildZenhubPayload(data, user) {
