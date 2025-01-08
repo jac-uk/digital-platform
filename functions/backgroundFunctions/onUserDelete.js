@@ -1,4 +1,4 @@
-import functions from 'firebase-functions';
+import functions from 'firebase-functions/v1';
 import { db, auth } from '../shared/admin.js';
 import initUsers from '../actions/users.js';
 

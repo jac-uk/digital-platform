@@ -1,10 +1,12 @@
-import initGetApplicationData from './getApplicationData.js';
+// import initGetApplicationData from './getApplicationData.js';
 
 export default (config, firebase, db, auth) => {
 
-  const getApplicationData = initGetApplicationData(config, firebase, db, auth);
+  // const getApplicationData = initGetApplicationData(config, firebase, db, auth);
+  const getApplicationData = () => 'i';
 
-  return getMultipleApplicationData;  
+  return getMultipleApplicationData; 
+
   async function getMultipleApplicationData(exerciseIds, columns) {
     const allData = [];
 
@@ -21,5 +23,5 @@ export default (config, firebase, db, auth) => {
     }
 
     return allData;
-  }
+  };
 };
