@@ -1,6 +1,6 @@
 {
   "name": "jac-digital-platform",
-  "version": "1.132.0",
+  "version": "1.133.0",
   "description": "Firebase/GCP configuration and components for the JAC digital platform",
   "repository": "https://github.com/jac-uk/digital-platform",
   "license": "MIT",
