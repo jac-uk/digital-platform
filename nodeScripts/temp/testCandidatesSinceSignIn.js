@@ -1,14 +1,13 @@
 'use strict';
 
 /**
- * Get a list of candidates who 
+ * Get a list of candidates who have signed in after a specific date
  */
 
 import { app, db, auth } from '../shared/admin.js';
 import initUserRoles from '../../functions/actions/userRoles.js';
 import path  from 'path';
 
-//import { createObjectCsvWriter } from 'csv-writer';
 import ExcelJS from 'exceljs';
 
 const { getCandidatesSinceSignInDate } = initUserRoles(db, auth);
@@ -19,8 +18,6 @@ const exportToExcel = async (data, filePath) => {
 
   // Add headers
   worksheet.columns = [
-    // { header: 'Column', key: 'string', width: 100 },
-    // { header: 'Count', key: 'count', width: 15 },
     { header: 'User ID', key: 'uid', width: 100 },
     { header: 'Email', key: 'email', width: 30 },
     { header: 'Full Name', key: 'fullName', width: 30 },
@@ -39,65 +36,18 @@ const exportToExcel = async (data, filePath) => {
   console.log(`Excel file saved at ${filePath}`);
 };
 
-
-
-
 const main = async () => {
-
-  // GET DATA
   const results = await getCandidatesSinceSignInDate('2024-01-01');
-
-  console.log('results:');
-  console.log(results);
-
-  const fileName = 'candidates-signin-since-01-01-2024.xlsx';
+  const fileName = 'candidates-signin.xlsx';
   const nestedDir = path.join(process.cwd(), 'nodeScripts', 'temp');
   const filePath = path.join(nestedDir, fileName);
   await exportToExcel(results, filePath);
-
-
-
-
-  // @TODO: You've got the users coming back just need to find ur nodescript where you're writing the data to a csv!
-
-  const candidates = await getCandidatesSinceSignInDate('2024-01-01');
-
-  // const headers = [
-  //   { id: 'uid', title: 'User ID' },
-  //   { id: 'email', title: 'Email' },
-  //   { id: 'fullName', title: 'Full Name' },
-  //   { id: 'displayName', title: 'Display Name' },
-  //   { id: 'lastSignInDate', title: 'Last Signed In' },
-  // ];
-
-  // const csvWriter = createObjectCsvWriter({
-  //   path: 'output.csv',
-  //   header: headers,
-  // });
-
-  // const writeCsvFile = async () => {
-  //   try {
-  //     await csvWriter.writeRecords(candidates);
-  //     console.log('CSV file written successfully.');
-  //   } catch (error) {
-  //     console.error('Error writing CSV file:', error);
-  //   }
-  // };
-  
-  // writeCsvFile();
-
-
-  return candidates.length;
-
+  return results.length;
 };
 
 main()
   .then((result) => {
-    
-    
     console.log(result);
-
-
     app.delete();
     return process.exit();
   })
