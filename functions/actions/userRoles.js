@@ -16,6 +16,7 @@ export default (db, auth) => {
     toggleDisableUser,
     disableNewUser,
     adminSyncUserRolePermissions,
+    getCandidatesSinceSignInDate,
   };
 
   /**
@@ -87,6 +88,64 @@ export default (db, auth) => {
             providerData: user.providerData,
           };
           adminUsers.push(adminUser);
+        }
+      }
+      return adminUsers;
+    }
+    catch(e) {
+      console.log(e);
+      return false;
+    }
+  }
+
+  /**
+   * Return all candidates authenticated with google / microsoft (i.e. users who have attempted authentication with admin)
+   * since a specific sign in date (includes the sign in date)
+   * @param {String} cutoffDate eg '2024-01-01'
+   * @returns 
+   */
+  async function getCandidatesSinceSignInDate(cutoffDate) {
+    let adminUsers = [];
+    try {
+      // get all users
+      const users = [];
+      await listAllUsers(users);
+      for (const user of users) {
+        let isJacAdmin = false;
+        const cutoffDate = new Date('2024-01-01'); // Set cutoff date
+        const lastSignInTime = user.metadata.lastSignInTime;
+        if (lastSignInTime && new Date(lastSignInTime) >= cutoffDate) {
+          if (user.providerData.length === 1) {
+            const provider = user.providerData[0];
+            if (user.email.match(/(.*@judicialappointments|.*@justice)[.](digital|gov[.]uk)/) && 
+              (provider.providerId === 'google.com' || provider.providerId === 'microsoft.com' || provider.providerId === 'password')) {
+              isJacAdmin = true; // user has authenticated successfully with google or microsoft
+            }
+          } else if (user.providerData.length > 1) {
+            isJacAdmin = true;
+          } else {
+            isJacAdmin = false;
+          }
+  
+          if (!isJacAdmin) {
+            // Get fullname from candidate record by email
+            let fullName = '';
+            let candidatesRef = db.collection('candidates')
+              .where('email', '==', user.email);
+            const candidates = await getDocuments(candidatesRef);
+            if (candidates.length) {
+              fullName = candidates[0].fullName;
+            }
+
+            // Get formatted sign in date
+            const formattedSignInDate = new Intl.DateTimeFormat('en-GB', {
+              day: '2-digit',
+              month: '2-digit',
+              year: 'numeric',
+            }).format(new Date(lastSignInTime));
+            const adminUser = [user.uid, user.email, fullName, user.displayName, formattedSignInDate];
+            adminUsers.push(adminUser);
+          }
         }
       }
       return adminUsers;
