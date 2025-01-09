@@ -28,7 +28,6 @@ import onCandidateFormResponseUpdate from './backgroundFunctions/onCandidateForm
 import onSettingsUpdate from './backgroundFunctions/onSettingsUpdate.js';
 
 // Callable
-import * as callableFunctions from './callableFunctions/index.js';
 import getApplicationData from './callableFunctions/getApplicationData.js';
 import flagApplicationIssuesForExercise from './callableFunctions/flagApplicationIssuesForExercise.js';
 import initialiseApplicationRecords from './callableFunctions/initialiseApplicationRecords.js';
@@ -55,6 +54,13 @@ import updateApplicationRecordStageStatus from './callableFunctions/updateApplic
 import getLatestReleases from './callableFunctions/getLatestReleases.js';
 import getMultipleApplicationData from './callableFunctions/getMultipleApplicationData.js';
 import exportExerciseData from './callableFunctions/exportExerciseData.js';
+// (Modular callable functions below)
+import * as tasks from './callableFunctions/tasks/index.js';
+import * as users from './callableFunctions/users/index.js';
+import * as assessments from './callableFunctions/assessments/index.js';
+import * as notifications from './callableFunctions/notifications/index.js';
+import * as reports from './callableFunctions/reports/index.js';
+import * as virusScan from './callableFunctions/virusScan/index.js';
 
 // Callable - QTs v2
 //import listQualifyingTests from './callableFunctions/qualifyingTests/v2/listQualifyingTests.js';
@@ -95,11 +101,6 @@ export {
   onSettingsUpdate,
 
   // Callable
-
-
-  callableFunctions,
-
-  
   getApplicationData,
   flagApplicationIssuesForExercise,
   initialiseApplicationRecords,
@@ -123,6 +124,13 @@ export {
   getLatestReleases,
   verifySmsVerificationCode,
   getMultipleApplicationData,
+  // (Modular callable functions below)
+  tasks,
+  users,
+  assessments,
+  notifications,
+  reports,
+  virusScan,
 
   // Callable - QTs v2
   //listQualifyingTests,
