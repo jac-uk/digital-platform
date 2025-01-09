@@ -12,7 +12,6 @@ export default (config, firebase, db) => {
     taskStatuses,
     taskNextStatus,
     finaliseScoreSheet,
-    hasOverallGradeD,
     getScoreSheetTotal,
     createMarkingScheme,
     scoreSheet,
@@ -766,11 +765,7 @@ export default (config, firebase, db) => {
           scoreSheet: finaliseScoreSheet(task.markingScheme, panel.scoreSheet[applicationId]),
           changes: task.changes && task.changes[applicationId] ? task.changes[applicationId] : {},
         };
-        if (hasOverallGradeD(task.markingScheme, panel.scoreSheet[applicationId], row.changes)) {
-          row.score = 0;
-        } else {
-          row.score = getScoreSheetTotal(task.markingScheme, panel.scoreSheet[applicationId], row.changes);
-        }
+        row.score = getScoreSheetTotal(task.markingScheme, panel.scoreSheet[applicationId], row.changes),
         finalScores.push(row);
       });
     });
@@ -779,7 +774,6 @@ export default (config, firebase, db) => {
     result.data.finalScores = finalScores;
     return result;
   }
-
 
   /**
    * finaliseTestTask
