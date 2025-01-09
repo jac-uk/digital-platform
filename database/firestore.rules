@@ -100,15 +100,15 @@ service cloud.firestore {
       allow create: if userIsAuthenticated() && userIsJAC() && hasPermission('p2');
       allow update: if userIsAuthenticated() && userIsJAC() && hasPermission('p3');
       allow delete: if userIsAuthenticated() && userIsJAC() && hasPermission('p4');
-      
+
       // allow panel members access
       allow read: if request.auth.token.email in resource.data.editors;
       allow update: if request.auth.token.email in resource.data.editors && request.resource.data.editors == resource.data.editors;
     }
 
     match /panellists/{panellistId} {
-  		// Users can read & write to their own candidate document
-      allow get, create, update: if request.auth.uid == panellistId;
+  		// Panellists can read & write to their own document
+      allow read, create, update: if resource.data.jacEmail == request.auth.token.email;
 
       // Allow JAC to read and write
       allow read, write: if userIsAuthenticated() && userIsJAC();
