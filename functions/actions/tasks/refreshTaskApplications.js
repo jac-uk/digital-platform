@@ -56,13 +56,16 @@ export default (config, firebase, db) => {
       if (panels) {
         panels.forEach(panel => {
           if (panel.applicationIds) {
-            const optionalIds = panel.applicationIds.filter(id => !applications.find(application => application.id === id));
-            if (optionalIds.length) {
+            const validIds = panel.applicationIds.filter(id => applications.find(application => application.id === id));
+            const removedIds = panel.applicationIds.filter(id => !validIds.find(validId => validId === id));
+            if (removedIds.length) {
+              removedIds.forEach(id => delete panel.applications[id]);
               commands.push({
                 command: 'update',
                 ref: panel.ref,
                 data: {
-                  applicationIdsOptional: optionalIds,
+                  applicationIds: validIds,
+                  applications: panel.applications,
                 },
               });
             }

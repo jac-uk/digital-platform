@@ -45,7 +45,7 @@ export default (firebase, db) => {
 
 /**
  * Get the report headers
- * 
+ *
  * @param {object} exercise
  * @param {number} maxQualificationNum
  * @param {number} maxJudicialExperienceNum
@@ -82,7 +82,7 @@ const reportData = (exercise, applications) => {
   let maxNonJudicialExperienceNum = 0;
 
   const data = applications.map((application) => {
-    const personalDetails = application.personalDetails || {}; 
+    const personalDetails = application.personalDetails || {};
     const qualifications = application.qualifications || [];
     const experiences = application.experience || [];
     // sort experiences by start date descending
