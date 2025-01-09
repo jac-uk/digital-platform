@@ -107,8 +107,8 @@ service cloud.firestore {
     }
 
     match /panellists/{panellistId} {
-  		// Panellists can read & write to their own document
-      allow read, create, update: if resource.data.jacEmail == request.auth.token.email;
+  		// Panellists can read & update to their own document
+      allow read, update: if resource.data.jacEmail == request.auth.token.email;
 
       // Allow JAC to read and write
       allow read, write: if userIsAuthenticated() && userIsJAC();
