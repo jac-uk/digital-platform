@@ -1,4 +1,4 @@
-import functions from 'firebase-functions';
+import * as functions from 'firebase-functions/v1';
 import config from '../shared/config.js';
 import { db, auth, firebase } from '../shared/admin.js';
 import { objectHasNestedProperty } from '../shared/helpers.js';

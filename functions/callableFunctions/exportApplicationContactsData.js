@@ -1,4 +1,4 @@
-import functions from 'firebase-functions';
+import * as functions from 'firebase-functions/v1';
 import { firebase, db, auth } from '../shared/admin.js';
 import initExportApplicationContactsData from '../actions/exercises/exportApplicationContactsData.js';
 import { getDocument, checkArguments } from '../shared/helpers.js';

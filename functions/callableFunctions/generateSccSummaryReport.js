@@ -1,4 +1,4 @@
-import functions from 'firebase-functions';
+import * as functions from 'firebase-functions/v1';
 import { firebase, db, auth } from '../shared/admin.js';
 import initGenerateSccSummaryReport from '../actions/exercises/sccSummaryReport.js';
 import { getDocument } from '../shared/helpers.js';
