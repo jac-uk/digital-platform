@@ -27,7 +27,7 @@ export default [
         'ignoreRestSiblings': true, 
         'caughtErrors': 'none',
       }],
-      'import/no-unresolved': [2, { ignore: ['^firebase-admin/.+'] }],
+      'import/no-unresolved': [2, { ignore: ['^firebase-admin/.+', '^firebase-functions/.+'] }],
       'import/no-commonjs': 2,
       'import/extensions': [2, 'ignorePackages'],
       ...eslintPluginPromise.configs.recommended.rules,
