@@ -1,5 +1,5 @@
 import config from '../shared/config.js';
-import functions from 'firebase-functions';
+import * as functions from 'firebase-functions/v1';
 import { firebase } from '../shared/admin.js';
 import initBackupFirestore from '../actions/backup/firestore.js';
 

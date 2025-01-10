@@ -1,4 +1,4 @@
-import functions from 'firebase-functions';
+import * as functions from 'firebase-functions/v1';
 import config from '../shared/config.js';
 import { firebase } from '../shared/admin.js';
 import scanFileInit from '../actions/malware-scanning/scanFile.js';

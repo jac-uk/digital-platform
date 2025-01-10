@@ -1,4 +1,4 @@
-import functions from 'firebase-functions';
+import * as functions from 'firebase-functions/v1';
 import initCloseExercises from '../actions/exercises/closeExercises.js';
 
 const { closeExercises } = initCloseExercises(db);
