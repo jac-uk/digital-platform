@@ -6,12 +6,12 @@
  * Run with: > npm run local:nodeScript testZenHub.js
  */
 
-import { app, db, auth } from './shared/admin.js';
+import { app } from './shared/admin.js';
 //import config from './shared/config.js';
 import config from '../functions/shared/config.js';
 import initZenhub from '../functions/shared/zenhub.js';
 
-const zenhub = initZenhub(config, db, auth);
+const zenhub = initZenhub(config);
 
 const main = async () => {
 

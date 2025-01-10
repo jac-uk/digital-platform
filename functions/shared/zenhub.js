@@ -9,7 +9,7 @@ import { objectHasNestedProperty } from './helpers.js';
  * @param {*} config 
  * @returns issue id | false
  */
-export default (config, db, auth) => {
+export default (config) => {
   const baseApiUrl = config.ZENHUB_GRAPH_QL_URL;
   const apiKey = config.ZENHUB_GRAPH_QL_API_KEY;
   const githubPersonalAccesToken = config.GITHUB_PAT;
