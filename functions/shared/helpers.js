@@ -33,7 +33,8 @@ export {
   formatPreviousAddresses,
   splitFullName,
   isDifferentPropsByPath,
-  dedupeArray
+  dedupeArray,
+  dedupeArrayOfObjects
 };
 
 function calculateMean(numArray) {
@@ -488,3 +489,14 @@ function dedupeArray(arr, dupeIndex) {
     return true; // Keep the first occurrence
   });
 }
+
+const dedupeArrayOfObjects = (arr, key) => {
+  const seen = new Map(); // Use a Map to track unique emails
+  return arr.filter((item) => {
+    if (seen.has(item[key])) {
+      return false; // Skip duplicate vals
+    }
+    seen.set(item[key], true); // Mark val as seen
+    return true; // Keep the first occurrence
+  });
+};
