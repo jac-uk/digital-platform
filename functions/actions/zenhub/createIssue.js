@@ -1,9 +1,11 @@
 import initZenhub from '../../shared/zenhub.js';
 import { getDocument } from '../../shared/helpers.js';
+import initUsers from '../../actions/users.js';
 
 export default (config, firebase, db, auth) => {
 
   const zenhub = initZenhub(config, db, auth);
+  const { getBugRotaUser } = initUsers(auth, db);
 
   return {
     createIssue,
@@ -18,6 +20,8 @@ export default (config, firebase, db, auth) => {
   async function createIssue(bugReportId, userId) {
     const user = await getDocument(db.collection('users').doc(userId));
     const bugReport = await getDocument(db.collection('bugReports').doc(bugReportId));
+    const bugRotaUser = await getBugRotaUser();
+    const assigneeUserIds = bugRotaUser.id ? [bugRotaUser.id] : [];
 
     // Build Zenhub message
     const body = buildZenhubPayload(bugReport, user);
@@ -26,12 +30,13 @@ export default (config, firebase, db, auth) => {
 
     if (bugReport.type !== 'question') {
       // Create issue in Zenhub
-      const zenhubIssueId = await zenhub.createGithubIssue(bugReport.referenceNumber, body, label);
+      const zenhubIssueId = await zenhub.createGithubIssue(bugReport.referenceNumber, body, label, bugRotaUser);
   
       // Update bugReport with Zenhub issue ID in firestore
       if (zenhubIssueId) {
         await db.doc(`bugReports/${bugReportId}`).update({
           zenhubIssueId: zenhubIssueId,
+          assigneeUserIds,
           lastUpdatedAt: firebase.firestore.FieldValue.serverTimestamp(),
         });
       }   

@@ -1,7 +1,6 @@
 import axios from 'axios';
 import crypto from 'crypto';
 import { objectHasNestedProperty } from './helpers.js';
-import initUsers from '../actions/users.js';
 
 /**
  * Zenhub GraphQL API calls
@@ -14,7 +13,6 @@ export default (config, db, auth) => {
   const baseApiUrl = config.ZENHUB_GRAPH_QL_URL;
   const apiKey = config.ZENHUB_GRAPH_QL_API_KEY;
   const githubPersonalAccesToken = config.GITHUB_PAT;
-  const { getBugRotaUser } = initUsers(auth, db);
 
   const axiosHeaders = {
     Authorization: `Bearer ${apiKey}`,
@@ -42,8 +40,6 @@ export default (config, db, auth) => {
         const title = `User Raised Issue ${referenceNumber}`;
         const escapedTitle = JSON.stringify(title);
         const escapedBody = JSON.stringify(body);
-        const user = await getBugRotaUser();
-        const githubUsername = user.githubUsername || '';
         const result = await axios({
           url: baseApiUrl,
           method: 'post',
@@ -55,8 +51,7 @@ export default (config, db, auth) => {
                 createIssue(input: {
                     title: ${escapedTitle},
                     body: ${escapedBody},
-                    repositoryId: "${platformIssuesRepositoryId}",
-                    assignees: ["${githubUsername}"],
+                    repositoryId: "${platformIssuesRepositoryId}"
                 }) {
                     issue {
                         id
@@ -93,15 +88,14 @@ export default (config, db, auth) => {
    * @param {*} body 
    * @returns 
    */
-  async function createGithubIssue(referenceNumber, body, label) {
+  async function createGithubIssue(referenceNumber, body, label, assigneeUser) {
     const platformIssuesRepositoryId = 'Z2lkOi8vcmFwdG9yL1JlcG9zaXRvcnkvMTMzOTczMzA2';
     if (baseApiUrl && apiKey) {
       try {
         const title = `User Raised Issue ${referenceNumber}`;
         const escapedTitle = JSON.stringify(title);
         const escapedBody = JSON.stringify(body);
-        const user = await getBugRotaUser();
-        const githubUsername = user.githubUsername || '';
+        const githubUsername = assigneeUser.githubUsername || '';
         const result = await axios({
           url: baseApiUrl,
           method: 'post',

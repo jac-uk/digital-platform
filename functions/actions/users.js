@@ -18,6 +18,7 @@ export default (auth, db) => {
     getUserSearchMap,
     getBugRotaUser,
     getUserByGithubUsername,
+    getUsersByEmails,
     getUser,
   };
 
@@ -134,6 +135,11 @@ export default (auth, db) => {
       return null;
     }
     return users[0];
+  }
+
+  async function getUsersByEmails(emails) {
+    const usersRef = db.collection('users').where('email', 'in', emails);
+    return await getDocuments(usersRef);
   }
 
   async function getUser(userId) {
