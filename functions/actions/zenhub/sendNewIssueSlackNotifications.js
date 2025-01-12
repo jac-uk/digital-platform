@@ -6,7 +6,7 @@ import get from 'lodash/get.js';
 export default (config, db, auth, firebase) => {
 
   const slack = initSlack(config);
-  const { getUser, getUsersByEmails } = initUsers(auth, db);
+  const { getUser, getQuestionAssigneeUsers } = initUsers(auth, db);
   const { incrementSlackRetries, updateBugReportOnSlackSent } = initBugReports(db, firebase);
 
   return {
@@ -46,10 +46,7 @@ export default (config, db, auth, firebase) => {
 
       let assigneeUsers = [];
       if (bugReport.type === 'question') {
-        const emails = [
-          'halcyon@judicialappointments.digital',
-        ];
-        assigneeUsers = await getUsersByEmails(emails);
+        assigneeUsers = await getQuestionAssigneeUsers();
       } else {
         assigneeUsers = await Promise.all(bugReport.assigneeUserIds.map(async (userId) => await getUser(userId)));
       }
@@ -146,7 +143,7 @@ export default (config, db, auth, firebase) => {
   }
 
   function addSlackSectionForAssignee(assigneeUsers) {
-    const assigneeText = assigneeUsers.map((assigneeUser) => `<@${assigneeUser.slackMemberId}>`).join(', ');
+    const assigneeText = assigneeUsers.filter(user => user.slackMemberId).map(user => `<@${user.slackMemberId}>`).join(', ');
     const text = `The issue has been assigned to ${assigneeText}.`;
     return {
       'type': 'section',

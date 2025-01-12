@@ -17,6 +17,7 @@ export default (auth, db) => {
     updateUserCustomClaims,
     getUserSearchMap,
     getBugRotaUser,
+    getQuestionAssigneeUsers,
     getUserByGithubUsername,
     getUsersByEmails,
     getUser,
@@ -115,21 +116,40 @@ export default (auth, db) => {
     return result;
   }
 
-  async function getBugRotaUser() {
+  async function getBugRotaGoogleSheet(range) {
     const spreadsheetId = '1E_ppJmSiI0uF7lpXXwuuDYD8PO2ETse316xgSgM1yCw';
-    const range = 'Developer';
     const result = await googleSheet.getValues(spreadsheetId, range);
     if (!result || !result.data || !result.data.values) return null;
     const list = result.data.values;
+    return list;
+  }
+
+  async function getBugRotaUser() {
+    const list = await getBugRotaGoogleSheet('Developer');
     const startOfWeek = formatDate(getStartOfWeek(new Date())); // Start of this week
     const match = list.find(row => row[0].trim() === startOfWeek);
     if (!match || !match[2]) return null;
-    const githubUsername = match[2].trim();
-    return await getUserByGithubUsername(githubUsername);
+    const email = match[2].trim();
+    return await getUserByEmail(email);
+  }
+
+  async function getQuestionAssigneeUsers() {
+    const list = await getBugRotaGoogleSheet('Question Assignee');
+    const emails = list.slice(1).map(row => row[0].trim());
+    return await getUsersByEmails(emails);
   }
 
   async function getUserByGithubUsername(githubUsername) {
     const usersRef = db.collection('users').where('githubUsername', '==', githubUsername);
+    let users = await getDocuments(usersRef);
+    if (users.length === 0) {
+      return null;
+    }
+    return users[0];
+  }
+
+  async function getUserByEmail(email) {
+    const usersRef = db.collection('users').where('email', '==', email);
     let users = await getDocuments(usersRef);
     if (users.length === 0) {
       return null;

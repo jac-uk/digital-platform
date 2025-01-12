@@ -98,7 +98,6 @@ export default (db, firebase) => {
   async function updateBugReportOnSlackSent(bugReport, action = 'create', slackResponse) {
     const commands = [];
     if (action === 'create') {
-      const bugReportAction = 'onCreate';
       const data = bugReport;
       data.slackMessages.onCreate.sentAt = firebase.firestore.FieldValue.serverTimestamp();
       data.slackMessages.onCreate.ts = slackResponse.ts || null; // use ts to create message in thread
