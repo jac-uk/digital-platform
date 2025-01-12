@@ -1,16 +1,16 @@
 'use strict';
 
 /**
- * Get a list of candidates who have signed in after a specific date
+ * Get a list of candidates who have signed in after a specific date and export to csv
  */
 
 import { app, db, auth } from '../shared/admin.js';
-import initUserRoles from '../../functions/actions/userRoles.js';
+import initInternalReporting from '../../functions/actions/internalReporting.js';
 import path  from 'path';
 
 import ExcelJS from 'exceljs';
 
-const { getCandidatesSinceSignInDate } = initUserRoles(db, auth);
+const { getCandidatesSinceSignInDate } = initInternalReporting(db, auth);
 
 const exportToExcel = async (data, filePath) => {
   const workbook = new ExcelJS.Workbook();

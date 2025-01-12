@@ -17,9 +17,6 @@ const main = async () => {
       email: assessments[i].assessor.email,
     };
     assessors.push(assessor);
-    // if (i === 50) {
-    //   break;
-    // }
   }
   const uniqueAssessors = dedupeArrayOfObjects(assessors, 'email');
   return uniqueAssessors.length;
