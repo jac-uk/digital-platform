@@ -10,9 +10,9 @@ export {
   formatAnswers
 };
 
-import _map from 'lodash/map';
-import _keys from 'lodash/keys';
-import _difference from 'lodash/difference';
+import _map from 'lodash/map.js';
+import _keys from 'lodash/keys.js';
+import _difference from 'lodash/difference.js';
 
 // === Share with the apply site  ===
 function filteredPreferences(vacancy, formData, formId) {
