@@ -65,11 +65,11 @@ export default (db, auth) => {
           const personalDetails = doc.data();
           if (personalDetails.twoFactorAuthVerifiedAt) {
             if (!specifiedCutoffDate || (personalDetails.twoFactorAuthVerifiedAt.toDate() >= new Date(specifiedCutoffDate))) {
-              candidatesCompleted2FA.push({
-                fullName: personalDetails.fullName,
-                email: personalDetails.email,
-                twoFactorAuthVerifiedAt: personalDetails.twoFactorAuthVerifiedAt.toDate().toISOString().split('T')[0]
-              });
+              candidatesCompleted2FA.push([
+                personalDetails.fullName,
+                personalDetails.email,
+                personalDetails.twoFactorAuthVerifiedAt.toDate().toISOString().split('T')[0]
+              ]);
             }
           }
         }
