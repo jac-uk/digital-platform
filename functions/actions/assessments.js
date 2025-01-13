@@ -1,11 +1,15 @@
-import { getDocument, getDocuments, getAllDocuments, getDocumentsFromQueries, applyUpdates } from '../shared/helpers.js';
+import { getDocument, getDocuments, getAllDocuments, getDocumentsFromQueries, applyUpdates, hashEmail } from '../shared/helpers.js';
 import initFactories from '../shared/factories.js';
 import initNotifications from './notifications.js';
 import _ from 'lodash';
 
 export default (config, firebase, db) => {
-  const { newAssessment, newNotificationAssessmentRequest, newNotificationAssessmentReminder, newNotificationAssessmentSubmit } = initFactories(config);
+  const { newAssessment, newNotificationAssessmentRequest, newNotificationAssessmentReminder, newNotificationAssessmentSignInLink, newNotificationAssessmentSubmit } = initFactories(config);
   const { testNotification } = initNotifications(config, db);
+
+  function verifyAssessorIdentity(assessment, identity) {
+    return hashEmail(assessment.assessor.email) === identity;
+  }
 
   return {
     initialiseAssessments,
@@ -14,6 +18,8 @@ export default (config, firebase, db) => {
     resetAssessments,
     sendAssessmentRequests,
     sendAssessmentReminders,
+    sendAssessmentSignInLink,
+    getTestAssessmentAppLink,
     onAssessmentCompleted,
     testAssessmentNotification,
   };
@@ -575,6 +581,90 @@ export default (config, firebase, db) => {
     // write to db
     result = await applyUpdates(db, commands);
     return result ? assessments.length : false;
+  }
+
+    /**
+  * sendAssessmentRequests
+  * Sends a 'request for assessment' notification for each assessment
+  * @param {*} `params` is an object containing
+  *   `assessmentId` ID of an assessment
+  *   `identity` hash of assessor's email
+  *
+  * Note: if neither `assessmentId` or `assessmentIds`
+  *       are provided function will send requests for
+  *       all assessments
+  */
+  async function sendAssessmentSignInLink(params) {
+    // get assessment
+    const assessment = await getDocument(db.collection('assessments').doc(params.assessmentId));
+    if (!assessment) {
+      console.log('assessment not found:', params.assessmentId);
+      return false;
+    }
+
+    // get exercise
+    const exercise = await getExercise(assessment.exercise.id);
+    if (!exercise) {
+      console.log('exercise not found:', assessment.exercise.id);
+      return false;
+    }
+
+    // verify identity
+    if (!verifyAssessorIdentity(assessment, params.identity)) {
+      console.log('invalid identity:', params.identity);
+      return false;
+    }
+
+    let result = validateAssessorEmailAddresses([assessment]);
+
+    if (result !== true) {
+      return result;
+    }
+
+    // create database commands
+    const commands = [];
+
+    // create notification
+    commands.push({
+      command: 'set',
+      ref: db.collection('notifications').doc(),
+      data: newNotificationAssessmentSignInLink(firebase, assessment, exercise),
+    });
+
+    // write to db
+    result = await applyUpdates(db, commands);
+
+    return result ? true : false;
+  }
+
+  /**
+  * getTestingAssessmentSignInLink
+  * 
+  * @param {*} `params` is an object containing
+  *   `assessmentId` ID of an assessment
+  *
+  * Note: if neither `assessmentId` or `assessmentIds`
+  *       are provided function will send requests for
+  *       all assessments
+  */
+  async function getTestAssessmentAppLink(params) {
+    // get assessment
+    const assessment = await getDocument(db.collection('assessments').doc(params.assessmentId));
+    if (!assessment) {
+      console.log('assessment not found:', params.assessmentId);
+      return false;
+    }
+
+    // get exercise
+    const exercise = await getExercise(assessment.exercise.id);
+    if (!exercise) {
+      console.log('exercise not found:', assessment.exercise.id);
+      return false;
+    }
+
+    const notification = newNotificationAssessmentSignInLink(firebase, assessment, exercise);
+
+    return notification.personalisation.uploadUrl;
   }
 
 };

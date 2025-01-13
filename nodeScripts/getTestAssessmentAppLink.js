@@ -4,11 +4,10 @@ import config from './shared/config.js';
 import { firebase, app, db } from './shared/admin.js';
 import initAssessments from '../functions/actions/assessments.js';
 
-const { sendAssessmentReminders } = initAssessments(config, firebase, db);
+const { getTestAssessmentAppLink } = initAssessments(config, firebase, db);
 
 const main = async () => {
-  return sendAssessmentReminders({
-    exerciseId: 'Biyjd07Xz2usL9yXjtjV',
+  return getTestAssessmentAppLink({
     assessmentId: 'yPPeFnHecmlmQUWvuEal-1',
   });
 };

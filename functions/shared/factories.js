@@ -1,9 +1,12 @@
-import { formatDate, objectHasNestedProperty } from './helpers.js';
+import { formatDate, objectHasNestedProperty, hashEmail } from './helpers.js';
+import initToken from './token.js';
 import { applicationOpenDatePost01042023 } from './converters/helpers.js';
 import { getSearchMap } from './search.js';
 import _ from 'lodash';
 
 export default (CONSTANTS) => {
+  const{ createToken } = initToken(CONSTANTS);
+  
   return {
     newNotificationExerciseApprovalSubmit,
     newNotificationApplicationSubmit,
@@ -14,6 +17,7 @@ export default (CONSTANTS) => {
     newNotificationCharacterCheckRequest,
     newNotificationAssessmentRequest,
     newNotificationAssessmentReminder,
+    newNotificationAssessmentSignInLink,
     newNotificationAssessmentSubmit,
     newAssessment,
     newApplicationRecord,
@@ -247,7 +251,8 @@ export default (CONSTANTS) => {
   }
 
   function newNotificationAssessmentRequest(firebase, assessment, exercise) {
-    const link = `${CONSTANTS.ASSESSMENTS_URL}/sign-in?email=${assessment.assessor.email}&ref=assessments/${assessment.id}`;
+    const identity = hashEmail(assessment.assessor.email);
+    const link = `${CONSTANTS.ASSESSMENTS_URL}/sign-in-request?identity=${identity}&ref=assessments/${assessment.id}`;
     let xCompetencyAreasOrXSkillsAndAbilities;
     switch (assessment.type) {
       case CONSTANTS.ASSESSMENT_TYPE.COMPETENCY:
@@ -259,6 +264,7 @@ export default (CONSTANTS) => {
       default:
         xCompetencyAreasOrXSkillsAndAbilities = 'requirements';
     }
+    // TODO: change to request sign in link email template
     return {
       email: assessment.assessor.email,
       replyTo: exercise.exerciseMailbox,
@@ -288,7 +294,8 @@ export default (CONSTANTS) => {
   }
 
   function newNotificationAssessmentReminder(firebase, assessment, exercise) {
-    const link = `${CONSTANTS.ASSESSMENTS_URL}/sign-in?email=${assessment.assessor.email}&ref=assessments/${assessment.id}`;
+    const identity = hashEmail(assessment.assessor.email);
+    const link = `${CONSTANTS.ASSESSMENTS_URL}/sign-in-request?identity=${identity}&ref=assessments/${assessment.id}`;
     let xCompetencyAreasOrXSkillsAndAbilities;
     switch (assessment.type) {
       case CONSTANTS.ASSESSMENT_TYPE.COMPETENCY:
@@ -300,6 +307,8 @@ export default (CONSTANTS) => {
       default:
         xCompetencyAreasOrXSkillsAndAbilities = 'requirements';
     }
+
+    // TODO: change to request sign in link email template
     return {
       email: assessment.assessor.email,
       replyTo: exercise.exerciseMailbox,
@@ -329,7 +338,9 @@ export default (CONSTANTS) => {
   }
 
   function newNotificationAssessmentSubmit(firebase, assessment, exercise) {
-    const link = `${CONSTANTS.ASSESSMENTS_URL}/sign-in?email=${assessment.assessor.email}&ref=assessments/${assessment.id}`;
+    // The link seem not used in the submit template
+    const identity = hashEmail(assessment.assessor.email);
+    const link = `${CONSTANTS.ASSESSMENTS_URL}/sign-in-request?identity=${identity}&ref=assessments/${assessment.id}`;
     let xCompetencyAreasOrXSkillsAndAbilities;
     switch (assessment.type) {
       case CONSTANTS.ASSESSMENT_TYPE.COMPETENCY:
@@ -341,12 +352,61 @@ export default (CONSTANTS) => {
       default:
         xCompetencyAreasOrXSkillsAndAbilities = 'requirements';
     }
+
     return {
       email: assessment.assessor.email,
       replyTo: exercise.exerciseMailbox,
       template: {
         name: 'Assessment Submit',
         id: '5b933b71-3359-488a-aa86-13ceb581209c',
+      },
+      personalisation: {
+        assessorName: assessment.assessor.fullName,
+        applicantName: assessment.candidate.fullName,
+        exerciseName: assessment.exercise.name,
+        xCompetencyAreasOrXSkillsAndAbilities: xCompetencyAreasOrXSkillsAndAbilities,
+        submitAssessmentDueDate: assessment.dueDate.toDate().toLocaleDateString('en-GB', { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' }),
+        uploadUrl: link,
+        downloadUrl: link,
+        exerciseMailbox: exercise.exerciseMailbox,
+        exercisePhoneNumber: exercise.exercisePhoneNumber,
+        selectionExerciseManager: exercise.emailSignatureName,
+      },
+      reference: {
+        collection: 'assessments',
+        id: assessment.id,
+      },
+      createdAt: firebase.firestore.Timestamp.fromDate(new Date()),
+      status: 'ready',
+    };
+  }
+
+  function newNotificationAssessmentSignInLink(firebase, assessment, exercise) {
+    const identity = hashEmail(assessment.assessor.email);
+    const token = createToken(
+      { identity, ref: `assessments/${assessment.id}` }, 
+      { expiresIn: '5m' }
+    );
+    const link = `${CONSTANTS.ASSESSMENTS_URL}/sign-in?token=${token}`;
+    let xCompetencyAreasOrXSkillsAndAbilities;
+    switch (assessment.type) {
+      case CONSTANTS.ASSESSMENT_TYPE.COMPETENCY:
+        xCompetencyAreasOrXSkillsAndAbilities = 'competency areas';
+        break;
+      case CONSTANTS.ASSESSMENT_TYPE.SKILLS:
+        xCompetencyAreasOrXSkillsAndAbilities = 'skills and abilities';
+        break;
+      default:
+        xCompetencyAreasOrXSkillsAndAbilities = 'requirements';
+    }
+
+    // TODO: change to sign in link email template
+    return {
+      email: assessment.assessor.email,
+      replyTo: exercise.exerciseMailbox,
+      template: {
+        name: ' Independent Assessment Sign-In Link',
+        id: '6f6a440d-b32a-4006-b857-05babfbcb764',
       },
       personalisation: {
         assessorName: assessment.assessor.fullName,
