@@ -29,7 +29,7 @@ export default (db, auth) => {
           const personalDetails = doc.data();
           if (personalDetails.twoFactorAuthVerifiedAt) {
             if (!specifiedCutoffDate || (personalDetails.twoFactorAuthVerifiedAt.toDate() >= new Date(specifiedCutoffDate))) {
-              ++candidatesCompleted2FA
+              ++candidatesCompleted2FA;
             }
           }
         }
@@ -68,7 +68,7 @@ export default (db, auth) => {
               candidatesCompleted2FA.push([
                 personalDetails.fullName,
                 personalDetails.email,
-                personalDetails.twoFactorAuthVerifiedAt.toDate().toISOString().split('T')[0]
+                personalDetails.twoFactorAuthVerifiedAt.toDate().toISOString().split('T')[0],
               ]);
             }
           }
