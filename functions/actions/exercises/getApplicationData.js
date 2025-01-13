@@ -136,12 +136,18 @@ export default (config, firebase, db, auth) => {
           const [preferenceKey, configId] = column.split('.');
           const configs = filteredPreferences(exerciseData, result, preferenceKey);
           const config = configs.find(c => c.id === configId);
+          console.log('applicationId', result.id);
           const data = result[preferenceKey] ? result[preferenceKey][configId] : null;
-          const source = exerciseData;
-          const filters = { lookup };
-          const answers = extractAnswers(config, data, source, filters);
-          const formattedAnswers = formatAnswers(answers);
-          record[column] = formattedAnswers.join(', '); 
+          if (data !== null) {
+            const source = exerciseData;
+            const filters = { lookup };
+            const answers = extractAnswers(config, data, source, filters);
+            const formattedAnswers = formatAnswers(answers);
+            record[column] = formattedAnswers.join(', '); 
+          } else {
+            record[column] = DEFAULT_VALUE;
+          }
+
         }
 
         // Handle non-legal exercises experience
