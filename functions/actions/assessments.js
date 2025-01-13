@@ -2,7 +2,6 @@ import { getDocument, getDocuments, getAllDocuments, getDocumentsFromQueries, ap
 import initFactories from '../shared/factories.js';
 import initNotifications from './notifications.js';
 import _ from 'lodash';
-import { link } from 'fs';
 
 export default (config, firebase, db) => {
   const { newAssessment, newNotificationAssessmentRequest, newNotificationAssessmentReminder, newNotificationAssessmentSignInLink, newNotificationAssessmentSubmit } = initFactories(config);
@@ -624,7 +623,7 @@ export default (config, firebase, db) => {
 
     // create database commands
     const commands = [];
-    let countDraft = 0;
+
     // create notification
     commands.push({
       command: 'set',
