@@ -1,12 +1,9 @@
-import { getDocument, getDocuments, hashEmail } from '../shared/helpers.js';
+import { getDocument, getDocuments } from '../shared/helpers.js';
 import { convertPermissions } from '../shared/permissions.js';
 import { getSearchMap } from '../shared/search.js';
-import  initToken from '../shared/token.js';
-export default (auth, db, config) => {
-  const { verifyToken } = initToken(config);
 
+export default (auth, db) => {
   return {
-    createFirebaseEmailLink,
     generateSignInWithEmailLink,
     createUser,
     updateUser,
@@ -20,90 +17,11 @@ export default (auth, db, config) => {
     getUser,
   };
 
-  /**
-   * Create a Firebase email link
-   * @param {*} params 
-   *  - token
-   *  - returnUrl
-   * @returns 
-   */
-  async function createFirebaseEmailLink(params) {
-    const { token, returnUrl } = params;
-    const result = {
-      success: false,
-      emailLink: null,
-      ref: null,
-      email: null,
-      errorMsg: null,
-    };
-
-    // verify token
-    let payload = null;
-    try {
-      payload = verifyToken(token);      
-    } catch (error) {
-      if (error.name === 'TokenExpiredError') {
-        result.errorMsg = 'token-expired';
-      } else {
-        result.errorMsg = 'invalid-token';
-      }
-      return result;
-    }
-
-    // parse token
-    const { ref, identity } = payload;
-    if (!ref || !identity) {
-      result.errorMsg = 'invalid-token';
-      return result;
-    }
-
-    let hasAccess = false;
-    let email = null;
-    switch (ref.substring(0, ref.indexOf('/'))) {
-      case 'assessments':
-        ({ hasAccess, email } = await canAccessAssessments(ref, identity));
-        break;
-      default:
-        result.errorMsg = 'invalid-token';
-        return result;
-    }
-
-    if (!email) {
-      result.errorMsg = 'invalid-token';
-      return result;
-    }
-    if (!hasAccess) {
-      result.errorMsg = 'cannot-access';
-      return result;
-    }
-    
-    // generate firebase email link
-    if (!result.errorMsg) {
-      result.success = true;
-
-      const actionCodeSettings = {
-        url: `${returnUrl}?return=true`,
-        handleCodeInApp: true,
-      };
-      console.log('generateSignInWithEmailLink', ref);
-      const emailLink = await auth.generateSignInWithEmailLink(email, actionCodeSettings);
-      console.log('generateSignInWithEmailLink DONE', ref);
-      
-      // include in result
-      result.emailLink = emailLink;
-      result.ref = ref;
-      result.email = email;
-    }
-
-    return result;
-  }
-
-
   async function generateSignInWithEmailLink(ref, email, returnUrl) {
     let hasAccess;
     switch (ref.substring(0, ref.indexOf('/'))) {
       case 'assessments':
-        ({ hasAccess } = await canAccessAssessments(ref, hashEmail(email)));
+        hasAccess = await canAccessAssessments(ref, email);
         break;
       default:
         return false;
@@ -122,19 +40,13 @@ export default (auth, db, config) => {
     }
   }
 
-  async function canAccessAssessments(ref, emailHash) {
+  async function canAccessAssessments(ref, email) {
     // @TODO improve ref validation
     let resource = await getDocument(db.doc(ref));
-    if (resource && resource.assessor && hashEmail(resource.assessor.email) === emailHash) {
-      return {
-        hasAccess: true,
-        email: resource.assessor.email,
-      };
+    if (resource && resource.assessor && resource.assessor.email === email) {
+      return true;
     }
-    return {
-      hasAccess: false,
-      email: null,
-    };
+    return false;
   }
 
   /**
