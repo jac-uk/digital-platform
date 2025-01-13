@@ -1,6 +1,14 @@
+import lookup from '../../shared/converters/lookup.js';
 import { getDocument, getDocuments, formatDate, formatAddress, formatPreviousAddresses, isValidDate } from '../../shared/helpers.js';
-import _ from 'lodash';
+import _get from 'lodash/get.js';
+import _isObject from 'lodash/isObject.js';
+import _isArray from 'lodash/isArray.js';
+import _remove from 'lodash/remove.js';
+import _countBy from 'lodash/countBy.js';
+import { isWorkingPreferenceColumn, filteredPreferences, extractAnswers, formatAnswers } from '../../shared/workingPreferencesHelper.js';
+import initApplicationHelper from '../../shared/applicationHelper.js';
 
+// TODO: check if this is still needed
 function formatPreference(choiceArray, questionType) {
   if(questionType === 'multiple-choice') {
     return choiceArray instanceof Array ? choiceArray.map(x => `${x} ` ).join('and ').slice(0,-1) : choiceArray;
@@ -11,8 +19,9 @@ function formatPreference(choiceArray, questionType) {
   }
   return choiceArray;
 }
-
 export default (config, firebase, db, auth) => {
+  const { formatExperience } = initApplicationHelper(config);
+
 
   return getApplicationData;
 
@@ -45,7 +54,7 @@ export default (config, firebase, db, auth) => {
     for(const result of results) {
       let record = {};
       for (const column of params.columns) {
-        record[column] = _.get(result, column, DEFAULT_VALUE);
+        record[column] = _get(result, column, DEFAULT_VALUE);
         // if key is blank or doesn't exist, set it to - No answer provided -
         if(record[column] === '' || record[column] === null) {
           record[column] = DEFAULT_VALUE;
@@ -79,10 +88,10 @@ export default (config, firebase, db, auth) => {
             record[column] = record[column].map(item => item.VATNumber).join(',');
           }
         }
-        else if (column === 'personalDetails.address.current' && _.isObject(record[column]) && !_.isArray(record[column])) {
+        else if (column === 'personalDetails.address.current' && _isObject(record[column]) && !_isArray(record[column])) {
           record[column] = formatAddress(record[column]);
         }
-        else if(_.isArray(record[column])) {
+        else if(_isArray(record[column])) {
           let formattedArray = [];
           for (const arrayItem of record[column]) {
             const arrayValuePaths = getArrayValuePath(column);
@@ -95,10 +104,10 @@ export default (config, firebase, db, auth) => {
                   continue;
                 }
 
-                const str = _.get(arrayItem, arrayValuePath, DEFAULT_VALUE);
+                const str = _get(arrayItem, arrayValuePath, DEFAULT_VALUE);
                 // handle time values
                 let val = str;
-                if (_.get(str, '_seconds', null) || isValidDate(str)) {
+                if (_get(str, '_seconds', null) || isValidDate(str)) {
                   if (['experience', 'employmentGaps'].includes(column)) {
                     val = formatDate(str, 'MMM YYYY');
                   } else {
@@ -125,9 +134,33 @@ export default (config, firebase, db, auth) => {
             record[column] = formatDate(record[column], 'DD/MM/YYYY');
           }
         }
+        
+        // Handle working preferences
+        if (isWorkingPreferenceColumn(column)) {
+          const [preferenceKey, configId] = column.split('.');
+          const configs = filteredPreferences(exerciseData, result, preferenceKey);
+          const config = configs.find(c => c.id === configId);
+          console.log('applicationId', result.id);
+          const data = result[preferenceKey] ? result[preferenceKey][configId] : null;
+          if (data !== null) {
+            const source = exerciseData;
+            const filters = { lookup };
+            const answers = extractAnswers(config, data, source, filters);
+            const formattedAnswers = formatAnswers(answers);
+            record[column] = formattedAnswers.join(', '); 
+          } else {
+            record[column] = DEFAULT_VALUE;
+          }
+
+        }
+
+        // Handle non-legal exercises experience
+        if (column === 'experience' && exerciseData.typeOfExercise === 'non-legal') {
+          record[column] = formatExperience(result, exerciseData).join(', ');
+        }
 
         // Handle time values
-        if(_.get(record[column], '_seconds', null)) {
+        if(_get(record[column], '_seconds', null)) {
           record[column] = formatDate(record[column], 'DD/MM/YYYY');
         }
 
@@ -139,8 +172,8 @@ export default (config, firebase, db, auth) => {
     // where clause goes here
     if(params.whereClauses.length > 0 && params.columns.length > 0) {
       for(const whereClause of params.whereClauses) {
-        _.remove(data, (el) => {
-          let value = _.get(el, whereClause.column, '');
+        _remove(data, (el) => {
+          let value = _get(el, whereClause.column, '');
           value = value.toString().toLowerCase();
           whereClause.value = whereClause.value.toString().toLowerCase();
           switch (whereClause.operator) {
@@ -159,7 +192,7 @@ export default (config, firebase, db, auth) => {
     if(params.type === 'count') {
       let countData = {};
       for (const column of params.columns) {
-          countData[column] = _.countBy(data, column);
+          countData[column] = _countBy(data, column);
       }
       return countData;
     }
