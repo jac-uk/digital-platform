@@ -63,8 +63,8 @@ export default (config, firebase, db, auth) => {
     payload += `<br><strong>Url:</strong> ${data.url} `;
     payload += `<br><strong>CPS Device?</strong> ${data.cpsDevice === '0' ? 'No' : 'Yes'}`;
 
-    const screenshotUrl = getScreenshotUrl(data.environment, data.id);
-    if (screenshotUrl) {
+    if (data.screenshot) {
+      const screenshotUrl = getScreenshotUrl(data.environment, data.id);
       payload += `<br><strong>Screenshot Link:</strong> ${screenshotUrl}`;
       // payload += '<br><strong>Screenshot:</strong>';
 
