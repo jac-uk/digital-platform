@@ -62,12 +62,14 @@ export default (config, firebase, db, auth) => {
     payload += `<br><strong>Contact Details:</strong> ${data.contactDetails}`;
     payload += `<br><strong>Url:</strong> ${data.url} `;
     payload += `<br><strong>CPS Device?</strong> ${data.cpsDevice === '0' ? 'No' : 'Yes'}`;
-    if (data.screenshot) {
-      payload += `<br><strong>Screenshot Link:</strong> ${data.screenshot.downloadUrl}`;
-      payload += '<br><strong>Screenshot:</strong>';
+
+    const screenshotUrl = getScreenshotUrl(data.environment, data.id);
+    if (screenshotUrl) {
+      payload += `<br><strong>Screenshot Link:</strong> ${screenshotUrl}`;
+      // payload += '<br><strong>Screenshot:</strong>';
 
       // Note:The image src below does not work when using localhost
-      payload += `<img src='${data.screenshot.downloadUrl}' /> `;
+      // payload += `<img src='${data.screenshot.downloadUrl}' /> `;
     }
     //payload += '<!-- test = { id: 23, name: \'tester\' } -->';
     //payload += `<!-- reporter = { email: '${data.contactDetails}' } -->`;
@@ -84,4 +86,15 @@ export default (config, firebase, db, auth) => {
     return text1.replace(/[\r\n]+/g, '<br>');
   }
 
+  function getScreenshotUrl(environment, bugReportId) {
+    if (environment === 'DEVELOP') {
+      return `https://jac-admin-develop--pr2639-feature-2627-improve-gg1s0z6s.web.app/bug-reports/screenshot/${bugReportId}`;
+      // return `https://admin-develop.judicialappointments.digital/bug-reports/screenshot/${bugReportId}`;
+    } else if (environment === 'STAGING') {
+      return `https://admin-staging.judicialappointments.digital/bug-reports/screenshot/${bugReportId}`;
+    } else if (environment === 'PRODUCTION') {
+      return `https://admin.judicialappointments.digital/bug-reports/screenshot/${bugReportId}`;
+    }
+    return '';
+  }
 };
