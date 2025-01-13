@@ -1,6 +1,4 @@
 import { formatDate } from './helpers.js';
-import lookup from './converters/lookup.js';
-import _ from 'lodash';
 export default (config) => {
 
   return {

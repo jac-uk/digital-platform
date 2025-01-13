@@ -10,7 +10,9 @@ export {
   formatAnswers
 };
 
-import _ from 'lodash';
+import _map from 'lodash/map';
+import _keys from 'lodash/keys';
+import _difference from 'lodash/difference';
 
 // === Share with the apply site  ===
 function filteredPreferences(vacancy, formData, formId) {
@@ -61,9 +63,9 @@ function filteredPreferences(vacancy, formData, formId) {
 function isAllRequiredFilled(filteredPreferences, formData, formId) {
   const requiredPreferences = filteredPreferences.filter((p) => p.questionRequired);
   if (filteredPreferences.length) {
-    const requiredPreferenceIds = _.map(requiredPreferences, 'id');
-    const filledPreferenceIds = _.keys(formData[formId]);
-    const unfilledRequiredPreferenceIds = _.difference(requiredPreferenceIds, filledPreferenceIds);
+    const requiredPreferenceIds = _map(requiredPreferences, 'id');
+    const filledPreferenceIds = _keys(formData[formId]);
+    const unfilledRequiredPreferenceIds = _difference(requiredPreferenceIds, filledPreferenceIds);
     const isAllRequiredFilled = unfilledRequiredPreferenceIds.length === 0;
     return isAllRequiredFilled;
   } else {
