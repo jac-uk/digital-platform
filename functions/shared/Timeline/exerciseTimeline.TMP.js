@@ -122,7 +122,7 @@ export default (config) => {
       }
 
       if (data.shortlistingMethods.includes('telephone-assessment')) {
-        timeline.push(createShortlistingMethod('Telephone assessment', data.telephoneAssessmentStartDate, data.telephoneAssessmentEndDate, TASK_TYPE.TELEPHONE_ASSESSMENT));
+        timeline.push(createShortlistingMethod('Telephone assessment', data.telephoneAssessmentStartDate, data.telephoneAssessmentEndDate, TASK_TYPE.TELEPHONE_ASSESSMENT ));
       }
 
       if (data.shortlistingMethods.includes('situational-judgement-qualifying-test')) {
@@ -202,7 +202,6 @@ export default (config) => {
             entry: 'JAC Contacts Independent Assessors',
             date: data.contactIndependentAssessors,
             dateString: getDateString(data.contactIndependentAssessors),
-            // TODO make this a task
           }
         );
       }
@@ -224,7 +223,27 @@ export default (config) => {
           entry: 'Eligibility SCC',
           date: data.eligibilitySCCDate,
           dateString: getDateString(data.eligibilitySCCDate),
-          taskType: TASK_TYPE.ELIGIBILITY_SCC,
+        }
+      );
+    }
+
+    if (data.preSelectionDayQuestionnaireSendDate) {
+      timeline.push(
+        {
+          entry: 'Pre Selection Day Questionnaire - send',
+          date: data.preSelectionDayQuestionnaireSendDate,
+          dateString: getDateString(data.preSelectionDayQuestionnaireSendDate),
+          taskType: TASK_TYPE.PRE_SELECTION_DAY_QUESTIONNAIRE,
+        }
+      );
+    }
+
+    if (data.preSelectionDayQuestionnaireReturnDate) {
+      timeline.push(
+        {
+          entry: 'Pre Selection Day Questionnaire - return',
+          date: data.preSelectionDayQuestionnaireReturnDate,
+          dateString: getDateString(data.preSelectionDayQuestionnaireReturnDate),
         }
       );
     }
@@ -240,10 +259,9 @@ export default (config) => {
     if (data.characterChecksDate) {
       timeline.push(
         {
-          entry: 'Character Checks',
+          entry: 'Character Checks - Candidate Consent sent',
           date: data.characterChecksDate,
           dateString: getDateString(data.characterChecksDate),
-          // TODO make this a task
         }
       );
     }
@@ -251,9 +269,29 @@ export default (config) => {
     if (data.characterChecksReturnDate) {
       timeline.push(
         {
-          entry: 'Character Checks return',
+          entry: 'Character Checks - Candidate Consent return',
           date: data.characterChecksReturnDate,
           dateString: getDateString(data.characterChecksReturnDate),
+        }
+      );
+    }
+
+    if (data.characterChecksProfessionalDate) {
+      timeline.push(
+        {
+          entry: 'Character Checks - Professional Checks sent',
+          date: data.characterChecksProfessionalDate,
+          dateString: getDateString(data.characterChecksProfessionalDate),
+        }
+      );
+    }
+
+    if (data.characterChecksProfessionalReturnDate) {
+      timeline.push(
+        {
+          entry: 'Character Checks - Professional Checks return',
+          date: data.characterChecksProfessionalReturnDate,
+          dateString: getDateString(data.characterChecksProfessionalReturnDate),
         }
       );
     }
@@ -264,7 +302,6 @@ export default (config) => {
           entry: 'Statutory consultation',
           date: data.statutoryConsultationDate,
           dateString: getDateString(data.statutoryConsultationDate),
-          taskType: TASK_TYPE.STATUTORY_CONSULTATION,
         }
       );
     }
@@ -275,7 +312,6 @@ export default (config) => {
           entry: 'Character and Selection SCC',
           date: data.characterAndSCCDate,
           dateString: getDateString(data.characterAndSCCDate),
-          taskType: TASK_TYPE.CHARACTER_AND_SELECTION_SCC,
         }
       );
     }
@@ -285,8 +321,8 @@ export default (config) => {
         {
           entry: 'Selection process outcome',
           date: data.finalOutcome,
-          dateString: getDateString(data.finalOutcome),
-          taskType: TASK_TYPE.SELECTION_OUTCOME,
+          dateString: getDateString(data.finalOutcome, 'month'),
+          // taskType: TASK_TYPE.SELECTION_OUTCOME,
         }
       );
     }
