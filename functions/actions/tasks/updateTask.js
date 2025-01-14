@@ -861,16 +861,22 @@ export default (config, firebase, db) => {
       data: {},
     };
 
-    const outcomeStats = {};
-    const passStatus = getApplicationPassStatus(exercise, task);
-    const failStatus = getApplicationFailStatus(exercise, task);
-    outcomeStats[passStatus] = 0;
-    outcomeStats[failStatus] = 0;
+    // get candidateForm
+    const candidateForm = await getDocument(db.collection('candidateForms').doc(task.formId));
+    if (!candidateForm) { result.message = 'No candidate form'; return result; }
 
-    // TODO update application status here, perhaps, or just get stats for completed vs not completed
+    // get responses
+    const responses = await getDocuments(db.collection('candidateForms').doc(task.formId).collection('responses'));
+    if (!responses.length) { result.message = 'No responses'; return result; }
+
+    // populate stats
+    const stats = {};
+    stats.completed = 0;
+    stats.notCompleted = 0;
+    responses.forEach(response => response.status === 'completed' ? stats.completed++: stats.notCompleted++ );
 
     result.success = true;
-    result.data['_stats.totalForEachOutcome'] = outcomeStats;
+    result.data._stats = { ...task._stats, ...stats };
 
     return result;
   }
