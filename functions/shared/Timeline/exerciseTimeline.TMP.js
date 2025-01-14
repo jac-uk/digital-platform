@@ -122,7 +122,7 @@ export default (config) => {
       }
 
       if (data.shortlistingMethods.includes('telephone-assessment')) {
-        timeline.push(createShortlistingMethod('Telephone assessment', data.telephoneAssessmentStartDate, data.telephoneAssessmentEndDate, TASK_TYPE.TELEPHONE_ASSESSMENT ));
+        timeline.push(createShortlistingMethod('Telephone assessment', data.telephoneAssessmentStartDate, data.telephoneAssessmentEndDate, TASK_TYPE.TELEPHONE_ASSESSMENT));
       }
 
       if (data.shortlistingMethods.includes('situational-judgement-qualifying-test')) {
