@@ -6,8 +6,8 @@
 
 'use strict';
 
-const { app, db } = require('./shared/admin');
-const { applyUpdates, getDocuments, getDocument } = require('../functions/shared/helpers');
+import { app, db } from './shared/admin.js';
+import { applyUpdates, getDocuments, getDocument } from '../functions/shared/helpers.js';
 
 let exerciseId = null;
 let dueDate = null;

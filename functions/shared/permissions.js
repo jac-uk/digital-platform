@@ -1,4 +1,4 @@
-const functions = require('firebase-functions');
+import * as functions from 'firebase-functions/v1';
 
 const PERMISSIONS = {
   users: {
@@ -162,7 +162,7 @@ const PERMISSIONS = {
         value: 'pa1',
       },
     },
-  },  
+  },
   panels: {
     label: 'Panels',
     permissions: {
@@ -252,6 +252,10 @@ const PERMISSIONS = {
       canApproveLateApplications: {
         label: 'Can approve late applications',
         value: 'a6',
+      },
+      canCreateTestApplications: {
+        label: 'Can create test applications',
+        value: 'a7',
       },
     },
   },
@@ -390,19 +394,36 @@ const PERMISSIONS = {
       },
     },
   },
+  tasks: {
+    label: 'Tasks',
+    permissions: {
+      canCreate: {
+        label: 'Can create tasks',
+        value: 't1',
+      },
+      canUpdate: {
+        label: 'Can update tasks',
+        value: 't2',
+      },
+      canEditScoreCalculation: {
+        label: 'Can edit score calculation',
+        value: 't3',
+      },
+    },
+  },
 };
 
-module.exports = {
+export {
   PERMISSIONS,
   hasPermissions,
-  convertPermissions,
+  convertPermissions
 };
 
 function hasPermissions(rolePermissions, permissions) {
   const valid = rolePermissions
     && Array.isArray(rolePermissions)
     && permissions.every(p => rolePermissions.includes(p));
-  
+
   if (!valid) {
     throw new functions.https.HttpsError('permission-denied', 'Permission denied');
   }

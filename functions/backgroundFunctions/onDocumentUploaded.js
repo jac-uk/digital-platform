@@ -1,9 +1,11 @@
-const functions = require('firebase-functions');
-const config = require('../shared/config');
-const { firebase } = require('../shared/admin.js');
-const { scanFile } = require('../actions/malware-scanning/scanFile')(config, firebase);
+import * as functions from 'firebase-functions/v1';
+import config from '../shared/config.js';
+import { firebase } from '../shared/admin.js';
+import scanFileInit from '../actions/malware-scanning/scanFile.js';
 
-module.exports = functions.region('europe-west2').storage
+const scanFile = scanFileInit(config, firebase);
+
+export default functions.region('europe-west2').storage
   .object()
   .onFinalize(async (object) => {
     // console.log('object', JSON.stringify(object));

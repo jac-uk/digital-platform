@@ -1,12 +1,14 @@
-const functions = require('firebase-functions');
-const { firebase, db, auth } = require('../shared/admin');
-const { logEvent } = require('../actions/logs/logEvent')(firebase, db, auth);
+import * as functions from 'firebase-functions/v1';
+import { firebase, db, auth } from '../shared/admin.js';
+import initLogEvent from '../actions/logs/logEvent.js';
+
+const { logEvent } = initLogEvent(firebase, db, auth);
 
 // This function is triggered when records are deleted in firestore.
 // The purpose is to archive, not delete data from the database.
 // When a record is deleted, this function will take a copy and insert it into `{collectionName}_deleted`
 
-module.exports = functions.region('europe-west2').firestore
+export default functions.region('europe-west2').firestore
   .document('{collection}/{documentId}')
   .onDelete((snap, context) => {
 

@@ -1,5 +1,5 @@
-const axios = require('axios');
-const { objectHasNestedProperty } = require('./helpers');
+import axios from 'axios';
+import { objectHasNestedProperty } from './helpers.js';
 
 /**
  * Calls to the Slack Web API
@@ -16,7 +16,7 @@ const { objectHasNestedProperty } = require('./helpers');
  * @param {object} config 
  * @returns 
  */
-module.exports = (config) => {
+export default (config) => {
 
   return {
     getUser,

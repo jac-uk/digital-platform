@@ -1,8 +1,8 @@
-const { getDocuments, getAllDocuments, formatDate } = require('../../shared/helpers');
-const lookup = require('../../shared/converters/lookup');
-const applicationHelpers = require('../../shared/converters/helpers');
+import { getDocuments, getAllDocuments, formatDate } from '../../shared/helpers.js';
+import lookup from '../../shared/converters/lookup.js';
+import * as applicationHelpers from '../../shared/converters/helpers.js';
 
-module.exports = (config, firebase, db) => {
+export default (config, firebase, db) => {
 
   return {
     exportExerciseData,

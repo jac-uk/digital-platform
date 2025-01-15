@@ -1,27 +1,33 @@
-const { SSL_OP_NETSCAPE_DEMO_CIPHER_CHANGE_BUG } = require('constants');
-const { getAllDocuments, applyUpdates, getDocument, getDocuments } = require('../../shared/helpers');
-const { getSearchMap } = require('../../shared/search');
+import { getAllDocuments, applyUpdates, getDocument, getDocuments } from '../../shared/helpers.js';
+import { getSearchMap } from '../../shared/search.js';
+import initApplicationRecords from '../../actions/applicationRecords.js';
+import initRefreshApplicationCounts from '../../actions/exercises/refreshApplicationCounts.js';
+import initFactories from '../../shared/factories.js';
+// import initSlack from '../../shared/slack.js';
+import initCandidatesSearch from '../candidates/search.js';
 
 const testApplicationsFileName = 'test_applications.json';
 
-module.exports = (config, firebase, db, auth) => {
-  const { initialiseApplicationRecords } = require('../../actions/applicationRecords')(config, firebase, db, auth);
-  const { refreshApplicationCounts } = require('../../actions/exercises/refreshApplicationCounts')(firebase, db);
+export default (config, firebase, db, auth) => {
+  const { initialiseApplicationRecords } = initApplicationRecords(config, firebase, db, auth);
+  const { refreshApplicationCounts } = initRefreshApplicationCounts(firebase, db);
   const {
     newNotificationApplicationSubmit,
+    newNotificationFullApplicationSubmit,
     newNotificationApplicationReminder,
     newNotificationApplicationInWelsh,
     newNotificationCharacterCheckRequest,
     newNotificationCandidateFlagConfirmation,
     newCandidateFormNotification,
     newNotificationPublishedFeedbackReport,
-  } = require('../../shared/factories')(config);
-  const slack = require('../../shared/slack')(config);
-  const { updateCandidate } = require('../candidates/search')(firebase, db);
+  } = initFactories(config);
+  // const slack = initSlack(config);
+  const { updateCandidate } = initCandidatesSearch(firebase, db);
   return {
     updateApplication,
     onApplicationCreate,
     sendApplicationConfirmation,
+    sendFullApplicationConfirmation,
     sendApplicationReminders,
     sendApplicationInWelsh,
     sendCharacterCheckRequests,
@@ -151,6 +157,45 @@ module.exports = (config, firebase, db, auth) => {
       ref: applicationRef,
       data: {
         'emailLog.applicationSubmitted': firebase.firestore.Timestamp.fromDate(new Date()),
+      },
+    });
+
+    // write to db
+    const result = await applyUpdates(db, commands);
+    return result ? true : false;
+  }
+
+ /**
+  * sendFullApplicationConfirmation
+  * Sends a 'full application submitted' notification for each application
+  * @param {*} `params` is an object containing
+  *   `applicationId`  (required) ID of application
+  *   `application`    (required) application
+  */
+  async function sendFullApplicationConfirmation(params) {
+    const applicationId = params.applicationId;
+    const application = params.application;
+    const applicationRef = db.collection('applications').doc(applicationId);
+
+    // get exercise
+    const exerciseId = application.exerciseId;
+    const exercise = await getDocument(db.doc(`exercises/${exerciseId}`));
+    if (!exercise) return false;
+
+    // create database commands
+    const commands = [];
+    // create notification
+    commands.push({
+      command: 'set',
+      ref: db.collection('notifications').doc(),
+      data: newNotificationFullApplicationSubmit(firebase, applicationId, application, exercise),
+    });
+    // update application
+    commands.push({
+      command: 'update',
+      ref: applicationRef,
+      data: {
+        'emailLog.fullApplicationSubmitted': firebase.firestore.Timestamp.fromDate(new Date()),
       },
     });
 
@@ -321,7 +366,7 @@ module.exports = (config, firebase, db, auth) => {
   *   `items` (required) IDs of applications
   */
   async function sendCandidateFormNotifications(params) {
-    const { 
+    const {
       type,
       notificationType,
       items: applicationIds,
@@ -396,7 +441,6 @@ module.exports = (config, firebase, db, auth) => {
   async function loadTestApplications() {
     const bucket = firebase.storage().bucket(config.STORAGE_URL);
     const file = bucket.file(testApplicationsFileName);
-
     try {
       const data = await file.download();
       return JSON.parse(data[0]);
@@ -531,7 +575,7 @@ module.exports = (config, firebase, db, auth) => {
     // Get email recipients from firestore config
     const settingsServices = await getDocument(db.collection('settings').doc('services'));
     const emails = settingsServices.emails.CandidateFlagging;
-    
+
     if (emails === undefined) {
       console.error('Error retrieving emails for candidate flagging alerts');
       return false;

@@ -1,7 +1,9 @@
 'use strict';
 
-const { app, auth } = require('./shared/admin.js');
-const checkEnabledUserByEmail = require('../functions/actions/candidates/checkEnabledUserByEmail.js')(auth);
+import { app, auth } from './shared/admin.js';
+import initCheckEnabledUserByEmail from '../functions/actions/candidates/checkEnabledUserByEmail.js';
+
+const checkEnabledUserByEmail = initCheckEnabledUserByEmail(auth);
 
 const candidateEmail = { email: 'wrongemail@bademailprovider.com'};
 

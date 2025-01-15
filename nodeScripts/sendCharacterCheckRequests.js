@@ -1,8 +1,10 @@
 'use strict';
 
-const config = require('./shared/config');
-const { firebase, app, db, auth } = require('./shared/admin.js');
-const { sendCharacterCheckRequests } = require('../functions/actions/applications/applications')(config, firebase, db, auth);
+import config from './shared/config.js';
+import { firebase, app, db, auth } from './shared/admin.js';
+import initApplications from '../functions/actions/applications/applications.js';
+
+const { sendCharacterCheckRequests } = initApplications(config, firebase, db, auth);
 
 const main = async () => {
   return sendCharacterCheckRequests({

@@ -1,6 +1,6 @@
-const { getDocument, getDocuments } = require('../../shared/helpers');
+import { getDocument, getDocuments } from '../../shared/helpers.js';
 
-module.exports = (firebase, db) => {
+export default (firebase, db) => {
   return {
     refreshApplicationCounts,
   };

@@ -1,8 +1,8 @@
-const helpers = require('../../shared/converters/helpers');
-const lookup = require('../../shared/converters/lookup');
-const { getDocument, getDocuments } = require('../../shared/helpers');
+import * as helpers from '../../shared/converters/helpers.js';
+import lookup from '../../shared/converters/lookup.js';
+import { getDocument, getDocuments } from '../../shared/helpers.js';
 
-module.exports = (firebase, db) => {
+export default (firebase, db) => {
   return {
     generateAgencyReport,
   };

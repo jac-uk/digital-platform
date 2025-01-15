@@ -1,13 +1,15 @@
-const lookup = require('../../shared/converters/lookup');
-const helpers = require('../../shared/converters/helpers');
-const { getDocuments, getDocument, formatDate, getDate, splitFullName } = require('../../shared/helpers');
-const { applicationOpenDatePost01042023, ordinal, getJudicialExperienceString } = require('../../shared/converters/helpers');
-const _ = require('lodash');
-const htmlWriter = require('../../shared/htmlWriter');
-const config = require('../../shared/config');
-const drive = require('../../shared/google-drive')();
+import lookup from '../../shared/converters/lookup.js';
+import * as helpers from '../../shared/converters/helpers.js';
+import { getDocuments, getDocument, formatDate, getDate, splitFullName } from '../../shared/helpers.js';
+import { applicationOpenDatePost01042023, ordinal, getJudicialExperienceString } from '../../shared/converters/helpers.js';
+import _ from 'lodash';
+import htmlWriter from '../../shared/htmlWriter.js';
+import config from '../../shared/config.js';
+import initDrive from '../../shared/google-drive.js';
 
-module.exports = (firebase, db) => {
+const drive = initDrive();
+
+export default (firebase, db) => {
   return {
     exportApplicationCharacterIssues,
   };
@@ -222,7 +224,7 @@ module.exports = (firebase, db) => {
       if (
         application.progress &&
         application.progress.characterInformation &&
-        (application.characterInformation || application.characterInformationV2)
+        (application.characterInformation || application.characterInformationV2 || application.characterInformationV3)
       ) {
         characterIssues = applicationRecord.issues.characterIssues || [];
       }
@@ -255,7 +257,7 @@ module.exports = (firebase, db) => {
         reasonableAdjustments: _.get(applicationRecord, 'application.personalDetails.reasonableAdjustmentsDetails', ''),
         ...getCharacterInformation(characterIssues),
         ...getProfessionalBackgrounds(application.equalityAndDiversitySurvey),
-        ...getEqualityAndDiversityData(application),
+        ...getEqualityAndDiversityData(exercise, application),
         locationPreferences: getLocationPreferencesString(application),
         jurisdictionPreferences: getJurisdictionPreferencesString(application),
         ...getQualifications(qualifications),
@@ -313,7 +315,7 @@ module.exports = (firebase, db) => {
     return headers;
   }
 
-  function getEqualityAndDiversityData (application) {
+  function getEqualityAndDiversityData (exercise, application) {
     const survey = application.equalityAndDiversitySurvey;
     if (!survey) return {};
 
@@ -345,7 +347,7 @@ module.exports = (firebase, db) => {
       hasTakenPAJE : 'No', // default (see below)
     };
 
-    if (this.exerciseType === 'legal' || this.exerciseType === 'leadership') {
+    if (exercise.typeOfExercise === 'legal' || exercise.typeOfExercise === 'leadership') {
       formattedDiversityData.participatedInJudicialWorkshadowingScheme = helpers.toYesNo(lookup(survey.participatedInJudicialWorkshadowingScheme));
       formattedDiversityData.hasTakenPAJE = helpers.toYesNo(lookup(survey.hasTakenPAJE));
     }
@@ -379,8 +381,9 @@ module.exports = (firebase, db) => {
     const data = {};
     for (let i = 0; i < qualifications.length; i++) {
       const qualification = qualifications[i];
+
       const index = i + 1;
-      if (typeof qualification.type === 'undefined' || typeof qualification.date === 'undefined') {
+      if ((typeof qualification.type === 'undefined' || qualification.type === null)  || typeof qualification.date === 'undefined') {
         continue;
       }
       let description = `${qualification.type.toUpperCase()} - ${formatDate(qualification.date, 'DD/MM/YYYY')} \r\n`;

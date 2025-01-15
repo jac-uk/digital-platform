@@ -1,10 +1,11 @@
-const NotifyClient = require('notifications-node-client').NotifyClient;
+import { NotifyClient } from 'notifications-node-client';
 
-module.exports = (config) => {
+export default (config) => {
 
   return {
     sendEmail,
     previewEmail,
+    sendSMS,
   };
 
   function sendEmail(email, templateId, personalisation) {
@@ -42,4 +43,20 @@ module.exports = (config) => {
       .catch((err) => console.error(err));
   }
 
+  function sendSMS(intlMobileNumber, templateId, personalisation) {
+    const client = new NotifyClient(config.NOTIFY_KEY);
+    return client
+      .sendSms(templateId, intlMobileNumber, {
+        personalisation: personalisation,
+        reference: null,
+      })
+      .then(response => {
+        console.info(response);
+        return true;
+      })
+      .catch(err => {
+        console.error('Error Sending SMS:', JSON.stringify(err.response.data));
+        return false;
+      });
+  }
 };

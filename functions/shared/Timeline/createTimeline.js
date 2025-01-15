@@ -18,4 +18,4 @@ const ascendingDate = ( item1, item2 ) => {
   }
 };
 
-module.exports = createTimeline;
+export default createTimeline;

@@ -1,8 +1,11 @@
-const { getDocument, getDocuments, getAllDocuments, getDocumentsFromQueries, applyUpdates } = require('../shared/helpers');
+import { getDocument, getDocuments, getAllDocuments, getDocumentsFromQueries, applyUpdates } from '../shared/helpers.js';
+import initFactories from '../shared/factories.js';
+import initNotifications from './notifications.js';
+import _ from 'lodash';
 
-module.exports = (config, firebase, db) => {
-  const { newAssessment, newNotificationAssessmentRequest, newNotificationAssessmentReminder, newNotificationAssessmentSubmit } = require('../shared/factories')(config);
-  const { testNotification } = require('./notifications')(config, db);
+export default (config, firebase, db) => {
+  const { newAssessment, newNotificationAssessmentRequest, newNotificationAssessmentReminder, newNotificationAssessmentSubmit } = initFactories(config);
+  const { testNotification } = initNotifications(config, db);
 
   return {
     initialiseAssessments,
@@ -353,7 +356,7 @@ module.exports = (config, firebase, db) => {
     }
 
     // write to db
-    result = await applyUpdates(db, commands);
+    const result = await applyUpdates(db, commands);
     return result ? assessments.length : false;
   }
 
@@ -475,38 +478,44 @@ module.exports = (config, firebase, db) => {
       return result;
     }
 
-    // create database commands
-    const commands = [];
-    let countDraft = 0;
-    for (let i = 0, len = assessments.length; i < len; ++i) {
-      const assessment = assessments[i];
-      // create notification
-      commands.push({
-        command: 'set',
-        ref: db.collection('notifications').doc(),
-        data: newNotificationAssessmentRequest(firebase, assessment, exercise),
-      });
-      // update assessment
-      if (assessment.status === 'draft') { countDraft++; }
-      commands.push({
-        command: 'update',
-        ref: assessment.ref,
-        data: {
-          status: 'pending',
-        },
-      });
-    }
-    if (countDraft) {
-      let currentSent = exercise.assessments.sent ? exercise.assessments.sent : 0;
-      commands.push({
-        command: 'update',
-        ref: exercise.ref,
-        data: { 'assessments.sent': currentSent + countDraft },
-      });
+    const chunks = _.chunk(assessments, 100);
+
+    for (const chunkedAssessments of chunks) {
+      // create database commands
+      const commands = [];
+      let countDraft = 0;
+      for (let i = 0, len = chunkedAssessments.length; i < len; ++i) {
+        const assessment = chunkedAssessments[i];
+        // create notification
+        commands.push({
+          command: 'set',
+          ref: db.collection('notifications').doc(),
+          data: newNotificationAssessmentRequest(firebase, assessment, exercise),
+        });
+        // update assessment
+        if (assessment.status === 'draft') { countDraft++; }
+        commands.push({
+          command: 'update',
+          ref: assessment.ref,
+          data: {
+            status: 'pending',
+          },
+        });
+      }
+      if (countDraft) {
+        let currentSent = exercise.assessments.sent ? exercise.assessments.sent : 0;
+        commands.push({
+          command: 'update',
+          ref: exercise.ref,
+          data: { 'assessments.sent': currentSent + countDraft },
+        });
+      }
+
+      // write to db
+      result = await applyUpdates(db, commands);
+      console.log(`${chunkedAssessments.length}/${assessments.length} assessment processed`);
     }
 
-    // write to db
-    result = await applyUpdates(db, commands);
     return result ? assessments.length : false;
   }
 

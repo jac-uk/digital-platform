@@ -1,4 +1,4 @@
-const functions = require('firebase-functions');
+import * as functions from 'firebase-functions/v1';
 
 const CONSTANTS = {
   PROJECT_ID: functions.config().project.id,
@@ -13,6 +13,9 @@ const CONSTANTS = {
   GITHUB_PAT: functions.config().github.pat, // personal access token
   SLACK_TICKETING_APP_BOT_TOKEN: functions.config().slack.ticketing_app_bot_token,
   SLACK_TICKETING_APP_CHANNEL_ID: functions.config().slack.ticketing_app_channel_id,
+  SLACK_RETRY_SCHEDULE: functions.config().slack.retry_send_schedule,
+  SLACK_MAX_RETRIES: 3,
+  SCANNER_TEST_SCHEDULE: functions.config().scan_service.test_schedule,
   APPLICATION: {
     STATUS: {
       QUALIFYING_TEST_PASSED: 'qualifyingTestPassed',
@@ -199,7 +202,7 @@ const CONSTANTS = {
         group: 'Further Information to be disclosed',
         title: 'Further Information',
         details: 'furtherInformationDetails',
-        summary: 'Candidate has declare further information',
+        summary: 'Candidate has declared further information',
       },
     },
     CHARACTER_ISSUE_STATUS: {
@@ -231,6 +234,16 @@ const CONSTANTS = {
       FINANCIAL_VAT_TAX: 'financialVatTax',
       PROFESSIONAL_CONDUCT: 'professionalConduct',
       FURTHER_DISCLOSURES: 'furtherDisclosures',
+    },
+    GUIDANCE_REFERENCE_V2: {
+      CRIMINAL_OFFENCES: 'criminalOffencesV2',
+      MOTERING_OFFENCES: 'moteringOffencesV2',
+      FIXED_PENALTY_NOTICES: 'fixedPenaltyNoticesV2',
+      FINANCIAL_INSOLVENCY_DEBT: 'financialInsolvencyDebtV2',
+      FINANCIAL_VAT_TAX: 'financialVatTaxV2',
+      PROFESSIONAL_CONDUCT: 'professionalConductV2',
+      CIVIL_PROCEEDINGS: 'civilProceedingsV2',
+      FURTHER_DISCLOSURES: 'furtherDisclosuresV2',
     },
     ELIGIBILITY_ISSUE_STATUS: {
       PROCEED: 'proceed',
@@ -300,18 +313,6 @@ const CONSTANTS = {
     PROCESSING: 'processing',
     CREATED: 'created',
     SUBMITTED: 'submitted',
-  },
-  MARKING_TYPE: {
-    GROUP: 'group',
-    NUMBER: 'number',
-    GRADE: 'grade',
-  },
-  GRADES: ['A', 'B', 'C', 'D'],
-  GRADE_VALUES: {
-    'A': 4,
-    'B': 3,
-    'C': 2,
-    'D': 1,
   },
   CAPABILITIES: ['L', 'EJ', 'L&J', 'PQ', 'PBK', 'ACI', 'WCO', 'MWE', 'OVERALL'],
   SELECTION_CATEGORIES: ['leadership', 'roleplay', 'situational', 'interview', 'overall'],
@@ -481,7 +482,7 @@ const APPLICATION_STATUS = {
   SCC_TO_RECONSIDER: 'sccToReconsider',
 };
 
-module.exports = {
+export default {
   ...CONSTANTS,
   TASK_TYPE,
   SHORTLISTING_TASK_TYPES,

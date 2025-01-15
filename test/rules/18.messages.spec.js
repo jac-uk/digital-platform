@@ -1,6 +1,6 @@
-const { setup, teardown, getValidMessageData } = require('./helpers');
-const { assertFails, assertSucceeds } = require('@firebase/rules-unit-testing');
-const { PERMISSIONS } = require('../../functions/shared/permissions');
+import { setup, teardown, getValidMessageData } from './helpers.js';
+import { assertFails, assertSucceeds } from '@firebase/rules-unit-testing';
+import { PERMISSIONS } from '../../functions/shared/permissions.js';
 
 describe('Messages', () => {
   afterEach(async () => {

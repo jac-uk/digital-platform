@@ -1,8 +1,8 @@
-const { replaceCharacters } = require('./helpers');
+import { replaceCharacters } from './helpers.js';
 
-module.exports = {
+export {
   getSearchMap,
-  formatSearchTerm,
+  formatSearchTerm
 };
 
 function getSearchMap(searchables = []) {

@@ -1,7 +1,8 @@
-const { getDocument, getDocuments, isEmpty, applyUpdates, getDate } = require('../../shared/helpers');
-const lookup = require('../../shared/converters/lookup');
+import { getDocument, isEmpty, applyUpdates, getDate } from '../../shared/helpers.js';
+import lookup from '../../shared/converters/lookup.js';
+import _ from 'lodash';
 
-module.exports = (firebase, config, db) => {
+export default (firebase, config, db) => {
   return {
     flagApplicationIssues,
     flagApplicationIssuesForExercise,
@@ -58,19 +59,19 @@ module.exports = (firebase, config, db) => {
    * @param {boolean} reset If true, issues are repopulated even if they already exist
    */
   async function flagApplicationIssuesForExercise(exerciseId, reset = false) {
-
     // get exercise data
     const exercise = await getExercise(exerciseId);
     if (!exercise) {
       return false;
     }
 
-    // get submitted applications
-    const applications = await getDocuments(db.collection('applications')
-      .where('exerciseId', '==', exerciseId)
-      .where('status', '==', 'applied')
-    );
-
+    // batched process applications
+    const batchSize = 100;
+    let applicationCount = 0;
+    let applications = [];
+    let lastApplicationDoc = null;
+    let lastApplication = null;
+    
     /**
      * {
      *    stage1 : {
@@ -84,6 +85,60 @@ module.exports = (firebase, config, db) => {
      */
     // count application stage and status for character issue report
     const characterIssueStatusCounts = {};
+
+    do {
+      // get submitted applications
+      let query = db
+        .collection('applications')
+        .where('exerciseId', '==', exerciseId)
+        .where('status', '==', 'applied')
+        .orderBy('createdAt');
+
+      if (lastApplicationDoc) {
+        query = query.startAfter(lastApplicationDoc);
+      }
+
+      query = query.limit(batchSize);
+
+      const applicationSnapshot = await query.get();
+      applications = [];
+      applicationSnapshot.forEach((doc) => {
+        const document = doc.data();
+        document.id = doc.id;
+        document.ref = doc.ref;
+        applications.push(document);
+      });
+
+      // end the loop if no more applications
+      if (!applications.length) {
+        break;
+      }
+
+      // update cursor & total
+      lastApplicationDoc = _.last(applicationSnapshot.docs);
+      lastApplication = _.last(applications);
+      applicationCount += applications.length;
+
+      // process application
+      const result = await updateApplicationIssues(exercise, applications, reset, characterIssueStatusCounts);
+
+      if (!result) {
+        console.log(`Fail to update Application Issues, start after application: ${lastApplication.id}`);
+        return false;
+      }
+
+      console.log(`Issues of ${applications.length} applications processed, start after application: ${lastApplication.id}`);
+    } while (applications.length);
+
+    console.log(`Flag Application Issues completed, ${applicationCount} applications processed`);
+
+    // return
+    return applicationCount;
+  }
+
+  async function updateApplicationIssues(exercise, applications, reset, characterIssueStatusCounts) {
+    
+    const exerciseId = exercise.id;
 
     // construct commands
     const commands = [];
@@ -375,7 +430,7 @@ module.exports = (firebase, config, db) => {
 
     if (exercise._applicationVersion >= 2) {
       questions = config.APPLICATION.CHARACTER_ISSUES_V2;
-      answers = application.characterInformationV2;
+      answers = application.characterInformationV3 ? application.characterInformationV3 : application.characterInformationV2;
     } else if (application.characterInformation) {
       questions = config.APPLICATION.CHARACTER_ISSUES;
       answers = application.characterInformation;

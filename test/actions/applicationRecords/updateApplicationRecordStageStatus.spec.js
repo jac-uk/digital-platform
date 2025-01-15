@@ -1,8 +1,10 @@
-const mockFirebase = require('firebase-admin');
-const mockDB = jest.fn();
-const config = require('../../../nodeScripts/shared/config');
+import mockFirebase from 'firebase-admin';
+import { jest } from '@jest/globals';
+import config from '../../../nodeScripts/shared/config.js';
+import initUpdateApplicationRecordStageStatus from '../../../functions/actions/applicationRecords/updateApplicationRecordStageStatus.js';
 
-const { convertStageToVersion2, convertStatusToVersion2 } = require('../../../functions/actions/applicationRecords/updateApplicationRecordStageStatus')(mockFirebase, config, mockDB);
+const mockDB = jest.fn();
+const { convertStageToVersion2, convertStatusToVersion2 } = initUpdateApplicationRecordStageStatus(mockFirebase, config, mockDB);
 
 describe('Update stages to version 2', () => {
   const { EXERCISE_STAGE } = config;

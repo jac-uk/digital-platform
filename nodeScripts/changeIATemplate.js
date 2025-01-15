@@ -1,8 +1,10 @@
 'use strict';
 
-const config = require('./shared/config');
-const { firebase, app, db } = require('./shared/admin.js');
-const { changeIATemplate: changeIATemplate } = require('../functions/actions/changeIATemplate')(config, firebase, db);
+import config from './shared/config.js';
+import { firebase, app, db } from './shared/admin.js';
+import initChangeIATemplate from '../functions/actions/changeIATemplate.js';
+
+const { changeIATemplate: changeIATemplate } = initChangeIATemplate(config, firebase, db);
 
 const main = async () => {
   return changeIATemplate (

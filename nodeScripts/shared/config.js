@@ -9,6 +9,7 @@ const CONSTANTS = {
   ZENHUB_ISSUES_WORKSPACE_ID: process.env.ZENHUB_ISSUES_WORKSPACE_ID,
   SLACK_TICKETING_APP_BOT_TOKEN: process.env.SLACK_TICKETING_APP_BOT_TOKEN,
   GITHUB_PAT: process.env.GITHUB_PAT, // personal access token
+  SCAN_SERVICE_URL: 'https://malware-scanner-dot-platform-production-9207d.appspot.com/scan',
   APPLICATION: {
     STATUS: {
       QUALIFYING_TEST_PASSED: 'qualifyingTestPassed',
@@ -194,7 +195,7 @@ const CONSTANTS = {
         group: 'Further Information to be disclosed',
         title: 'Further Information',
         details: 'furtherInformationDetails',
-        summary: 'Candidate has declare further information',
+        summary: 'Candidate has declared further information',
       },
     },
     CHARACTER_ISSUE_STATUS: {
@@ -226,6 +227,16 @@ const CONSTANTS = {
       FINANCIAL_VAT_TAX: 'financialVatTax',
       PROFESSIONAL_CONDUCT: 'professionalConduct',
       FURTHER_DISCLOSURES: 'furtherDisclosures',
+    },
+    GUIDANCE_REFERENCE_V2: {
+      CRIMINAL_OFFENCES: 'criminalOffencesV2',
+      MOTERING_OFFENCES: 'moteringOffencesV2',
+      FIXED_PENALTY_NOTICES: 'fixedPenaltyNoticesV2',
+      FINANCIAL_INSOLVENCY_DEBT: 'financialInsolvencyDebtV2',
+      FINANCIAL_VAT_TAX: 'financialVatTaxV2',
+      PROFESSIONAL_CONDUCT: 'professionalConductV2',
+      CIVIL_PROCEEDINGS: 'civilProceedingsV2',
+      FURTHER_DISCLOSURES: 'furtherDisclosuresV2',
     },
   },
   ASSESSMENTS_URL: process.env.ASSESSMENTS_URL,
@@ -288,18 +299,6 @@ const CONSTANTS = {
     PROCESSING: 'processing',
     CREATED: 'created',
     SUBMITTED: 'submitted',
-  },
-  MARKING_TYPE: {
-    GROUP: 'group',
-    NUMBER: 'number',
-    GRADE: 'grade',
-  },
-  GRADES: ['A', 'B', 'C', 'D'],
-  GRADE_VALUES: {
-    'A': 4,
-    'B': 3,
-    'C': 2,
-    'D': 1,
   },
   CAPABILITIES: ['L', 'EJ', 'L&J', 'PQ', 'PBK', 'ACI', 'WCO', 'MWE', 'OVERALL'],
   SELECTION_CATEGORIES: ['leadership', 'roleplay', 'situational', 'interview', 'overall'],
@@ -461,7 +460,7 @@ const APPLICATION_STATUS = {
   SCC_TO_RECONSIDER: 'sccToReconsider',
 };
 
-module.exports = {
+export default {
   ...CONSTANTS,
   TASK_TYPE,
   SHORTLISTING_TASK_TYPES,

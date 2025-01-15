@@ -5,7 +5,7 @@
 
 'use strict';
 
-const { app, db } = require('./shared/admin.js');
+import { app, db } from './shared/admin.js';
 
 const main = async () => {
   const stats = {

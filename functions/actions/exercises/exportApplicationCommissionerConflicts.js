@@ -1,8 +1,10 @@
-const { getDocuments, getDocument } = require('../../shared/helpers');
-const htmlWriter = require('../../shared/htmlWriter');
-const drive = require('../../shared/google-drive')();
+import { getDocuments, getDocument } from '../../shared/helpers.js';
+import htmlWriter from '../../shared/htmlWriter.js';
+import initDrive from '../../shared/google-drive.js';
 
-module.exports = (firebase, db) => {
+const drive = initDrive();
+
+export default (firebase, db) => {
   return {
     exportApplicationCommissionerConflicts,
   };

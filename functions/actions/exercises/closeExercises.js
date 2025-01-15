@@ -1,8 +1,8 @@
-const { applyUpdates, convertToDate, getDocuments, getLatestDate, timeDifference } = require('../../shared/helpers');
+import { applyUpdates, convertToDate, getDocuments, getLatestDate, timeDifference } from '../../shared/helpers.js';
 
 const closeDiffMS = 15768000000; // six months
 
-module.exports = (db) => {
+export default (db) => {
   return {
     closeExercises,
   };

@@ -1,12 +1,12 @@
-const functions = require('firebase-functions');
-const config = require('../shared/config');
-const { db, firebase } = require('../shared/admin');
-const { getDocument } = require('../shared/helpers');
-const { processNotifications } = require('../actions/notifications')(config, firebase, db);
+import * as functions from 'firebase-functions/v1';
+import config from '../shared/config.js';
+import { db, firebase } from '../shared/admin.js';
+import initNotifications from '../actions/notifications.js';
 
+const { processNotifications } = initNotifications(config, firebase, db);
 const SCHEDULE = 'every 1 minutes synchronized';
 
-module.exports = functions.region('europe-west2')
+export default functions.region('europe-west2')
   .pubsub
   .schedule(SCHEDULE)
   .timeZone('Europe/London')

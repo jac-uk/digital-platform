@@ -1,8 +1,10 @@
-const { getDocument, getDocuments, applyUpdates } = require('../../shared/helpers');
+import { getDocument, getDocuments, applyUpdates } from '../../shared/helpers.js';
+import initTaskHelpers from './taskHelpers.js';
+import initUpdateTask from './updateTask.js';
 
-module.exports = (config, firebase, db) => {
-  const { getTimelineTasks, taskNextStatus, taskApplicationsEntryStatus } = require('./taskHelpers')(config);
-  const { initialisePanelTask, initialiseTestTask, initialiseStatusChangesTask, initialiseCandidateFormTask, initialiseDataTask, initialiseStageOutcomeTask } = require('./updateTask')(config, firebase, db);
+export default (config, firebase, db) => {
+  const { getTimelineTasks, taskNextStatus, taskApplicationsEntryStatus } = initTaskHelpers(config);
+  const { getApplications, initialisePanelTask, initialiseTestTask, initialiseStatusChangesTask, initialiseCandidateFormTask, initialiseDataTask, initialiseStageOutcomeTask } = initUpdateTask(config, firebase, db);
 
   return createTask;
 
@@ -40,6 +42,7 @@ module.exports = (config, firebase, db) => {
     console.log('applicationEntryStatus', applicationEntryStatus);
 
     // get application records
+    // TODO check whether we still need this now we have `applications`
     let applicationRecords = [];
     if (applicationEntryStatus || [config.TASK_STATUS.PANELS_INITIALISED, config.TASK_STATUS.STATUS_CHANGES].indexOf(nextStatus)) {
       let queryRef = db.collection('applicationRecords')
@@ -50,13 +53,20 @@ module.exports = (config, firebase, db) => {
       applicationRecords = await getDocuments(queryRef.select('application', 'candidate'));
     }
 
+    // get applications
+    const applications = await getApplications(exercise, { applicationEntryStatus });
+    if (!applications.length) {
+      console.log('No applications');
+      return result;
+    }
+
     // get task data from timeline
     const timelineTask = getTimelineTasks(exercise, params.type)[0];
 
     // construct task document, based on next status
     switch (nextStatus) {
     case config.TASK_STATUS.PANELS_INITIALISED:
-      result = await initialisePanelTask(exercise, params.type, applicationRecords);
+      result = await initialisePanelTask(exercise, { taskType: params.type, applicationRecords: applicationRecords });
       break;
     case config.TASK_STATUS.TEST_INITIALISED:
       result = await initialiseTestTask(exercise.referenceNumber, params.type, timelineTask.date, timelineTask.endDate);
@@ -82,7 +92,8 @@ module.exports = (config, firebase, db) => {
         dateString: timelineTask.dateString,
         type: params.type,
       };
-      if (applicationRecords.length) taskData._stats.totalApplications = applicationRecords.length;
+      taskData._stats.totalApplications = applications.length;
+      taskData.applications = applications;
       taskData.applicationEntryStatus = applicationEntryStatus;
       taskData.status = nextStatus;
       taskData.statusLog = {};

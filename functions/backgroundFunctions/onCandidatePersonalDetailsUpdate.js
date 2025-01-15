@@ -1,9 +1,11 @@
-const functions = require('firebase-functions');
-const config = require('../shared/config');
-const { firebase, db } = require('../shared/admin');
-const onCandidatePersonalDetailsUpdate = require('../actions/candidates/personalDetails/onUpdate')(config, firebase, db);
+import * as functions from 'firebase-functions/v1';
+import config from '../shared/config.js';
+import { firebase, db } from '../shared/admin.js';
+import initOnCandidatePersonalDetailsUpdate from '../actions/candidates/personalDetails/onUpdate.js';
 
-module.exports = functions.region('europe-west2').firestore
+const onCandidatePersonalDetailsUpdate = initOnCandidatePersonalDetailsUpdate(config, firebase, db);
+
+export default functions.region('europe-west2').firestore
   .document('candidates/{candidateId}/documents/personalDetails')
   .onUpdate((change, context) => {
     const candidateId = context.params.candidateId;

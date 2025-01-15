@@ -1,5 +1,7 @@
-module.exports = (config, firebase, db) => {
-  const { updateCandidate } = require('../search')(firebase, db);
+import initSearch from '../search.js';
+
+export default (config, firebase, db) => {
+  const { updateCandidate } = initSearch(firebase, db);
 
   return onCreate;
 

@@ -1,16 +1,18 @@
 /**
  * Backup authentication
  */
-const firebaseTools = require('firebase-tools');
-const fs = require('fs');
-const os = require('os');
-const path = require('path');
+import firebaseTools from 'firebase-tools';
+import os from 'os';
+import path from 'path';
+import initSlack from '../../shared/slack.js';
 
-module.exports = (config, firebase) => {
+import { deleteLocalFile, uploadToStorageBucket } from '../../shared/file.js';
+
+export default (config, firebase) => {
   const BACKUP_BUCKET = `${config.PROJECT_ID}-backups`;
   const BACKUP_PATH = 'authentication';
   const PROJECT_ID = config.PROJECT_ID;
-  const slack = require('../../shared/slack')(config);
+  const slack = initSlack(config);
   return {
     backupAuthentication,
   };
@@ -26,19 +28,6 @@ module.exports = (config, firebase) => {
     };
 
     const bucket = firebase.storage().bucket(BACKUP_BUCKET);
-
-    // Upload local file to the backup Cloud Storage bucket
-    const uploadToStorageBucket = async (localPath, fileName) => {
-      console.log('Uploading ' + fileName + '...');
-      await bucket.upload(localPath, {
-        destination: BACKUP_PATH + '/' + fileName,
-      });
-    };
-
-    // Delete a file from the local filesystem
-    const deleteLocalFile = (filePath) => {
-      return fs.unlinkSync(filePath);
-    };
 
     // Delete all backup files more than 30 days old
     const purgeBackupHistory = async () => {
@@ -59,10 +48,11 @@ module.exports = (config, firebase) => {
     const timestamp = (new Date()).toISOString();
     const fileName = timestamp + '.json';
     const tempFilePath = path.join(os.tmpdir(), fileName);
+    const destinationFilePath = BACKUP_PATH + '/' + fileName;
 
     try {
       await downloadAuthExport(tempFilePath);
-      await uploadToStorageBucket(tempFilePath, fileName);
+      await uploadToStorageBucket(bucket, tempFilePath, destinationFilePath);
       deleteLocalFile(tempFilePath);
       await purgeBackupHistory();
     } catch (err) {

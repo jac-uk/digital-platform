@@ -1,4 +1,4 @@
-const selectionDayTimetable = require('../../../functions/actions/tasks/selectionDayTimetable.js');
+import selectionDayTimetable from '../../../functions/actions/tasks/selectionDayTimetable.js';
 
 describe('selectionDayTimetable', () => {
   let mockPanelData;

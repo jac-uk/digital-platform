@@ -1,6 +1,6 @@
-const { getDocument, getDocuments, applyUpdates, getDocumentsFromQueries } = require('../../shared/helpers');
+import { applyUpdates, getDocumentsFromQueries } from '../../shared/helpers.js';
 
-module.exports = (config, firebase, db) => {
+export default (config, firebase, db) => {
 
   return setApplicationRecordStatus;
 

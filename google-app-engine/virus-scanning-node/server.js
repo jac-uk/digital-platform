@@ -1,3 +1,4 @@
+/* eslint-disable import/no-commonjs */
 /*
 * Copyright 2019 Google LLC
 

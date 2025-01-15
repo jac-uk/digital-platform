@@ -1,10 +1,13 @@
 'use strict';
 
-const config = require('./shared/config');
-const { firebase, app, db } = require('./shared/admin.js');
-const { testNotification } = require('../functions/actions/notifications')(config, firebase, db);
-const { newNotificationCharacterCheckRequest } = require('../functions/shared/factories')(config);
-const { getDocument } = require('../functions/shared/helpers');
+import config from './shared/config.js';
+import { firebase, app, db } from './shared/admin.js';
+import initNotifications from '../functions/actions/notifications.js';
+import initFactories from '../functions/shared/factories.js';
+import { getDocument } from '../functions/shared/helpers.js';
+
+const { testNotification } = initNotifications(config, firebase, db);
+const { newNotificationCharacterCheckRequest } = initFactories(config);
 
 const main = async () => {
   const applicationId = 'xmnLGyEmaQd2w18BnCJP';

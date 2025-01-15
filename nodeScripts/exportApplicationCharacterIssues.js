@@ -1,7 +1,9 @@
 'use strict';
 
-const { firebase, app, db } = require('./shared/admin.js');
-const { exportApplicationCharacterIssues } = require('../functions/actions/exercises/exportApplicationCharacterIssues')(firebase, db);
+import { firebase, app, db } from './shared/admin.js';
+import initExportApplicationCharacterIssues from '../functions/actions/exercises/exportApplicationCharacterIssues.js';
+
+const { exportApplicationCharacterIssues } = initExportApplicationCharacterIssues(firebase, db);
 
 const main = async () => {
   return exportApplicationCharacterIssues('aRrY8ad5TwiznZZhBqee', 'all', 'all', 'googledoc');

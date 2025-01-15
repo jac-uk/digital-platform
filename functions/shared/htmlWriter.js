@@ -1,12 +1,11 @@
 const DEFAULT_STYLESHEET = `
   <style>
     body {
-      font-family: Khula, HelveticaNeue, Arial, Helvetica, sans-serif;
-      font-size: 1.1875rem;
+      font-family: Arial, Helvetica, sans-serif;
+      font-size: 11pt;
     }
     th {
       color: #0B0C14;
-      width: 50%;
       text-align: left;
       border-bottom: solid 1px #0B0C14;
       padding: 4px 8px;
@@ -19,9 +18,10 @@ const DEFAULT_STYLESHEET = `
       vertical-align:top;
     }
     table {
+      table-layout: fixed;
       border-spacing: 0;
       padding-bottom: 20px;
-      width: 800px;
+      width: 100%;
     }
     .sectionStart th, .sectionStart td {
       padding: 30px 8px 8px 8px;
@@ -112,9 +112,13 @@ class htmlWriter {
     data.forEach(each => {
       const heading = each.label;
       let value = each.value;
-
       let html = each.lineBreak ? rowStartSectionStart : rowStart;
-      html += headingStart + heading + headingEnd + dataStart + value + dataEnd + rowEnd;
+      if (each.dataOnSeparateRow) { // Put heading and value in separate rows
+        html += headingStart + heading + headingEnd  + rowEnd + rowStart + dataStart + value + dataEnd + rowEnd;
+      }
+      else { // Put heading and value in same row
+        html += headingStart + heading + headingEnd + dataStart + value + dataEnd + rowEnd;
+      }
       rowHtml.push(html);
     });
     rowHtml.unshift(tableStart);
@@ -133,4 +137,4 @@ class htmlWriter {
   }
 }
 
-module.exports = htmlWriter;
+export default htmlWriter;

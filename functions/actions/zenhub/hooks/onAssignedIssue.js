@@ -1,7 +1,10 @@
-module.exports = (config, db, auth) => {
+import initSlack from '../../../shared/slack.js';
+import initUsers from '../../users.js';
 
-  const slack = require('../../../shared/slack')(config);
-  const { getUser } = require('../../users')(auth, db);
+export default (config, db, auth) => {
+
+  const slack = initSlack(config);
+  const { getUser } = initUsers(auth, db);
 
   return {
     onAssignedIssue,
@@ -52,7 +55,7 @@ module.exports = (config, db, auth) => {
     blocksArr.push(addSlackSection(issue, bugReport, assigneeUser, reporterUser));
 
     // Send Slack msg
-    slack.postBotBlocksMsgToChannel(slackChannelId, blocksArr);
+    await slack.postBotBlocksMsgToChannel(slackChannelId, blocksArr);
   }
 
   function addSlackDivider() {

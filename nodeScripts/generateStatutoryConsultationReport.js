@@ -1,7 +1,9 @@
 'use strict';
 
-const { firebase, app, db } = require('./shared/admin.js');
-const { generateStatutoryConsultationReport } = require('../functions/actions/exercises/generateStatutoryConsultationReport')(firebase, db);
+import { firebase, app, db } from './shared/admin.js';
+import initGenerateStatutoryConsultationReport from '../functions/actions/exercises/generateStatutoryConsultationReport.js';
+
+const { generateStatutoryConsultationReport } = initGenerateStatutoryConsultationReport(firebase, db);
 
 const main = async () => {
   return generateStatutoryConsultationReport('kJKbG9TOQToEzB4AlEV1');

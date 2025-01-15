@@ -1,8 +1,10 @@
-const functions = require('firebase-functions');
-const { db, auth } = require('../shared/admin');
-const { onUserUpdate } = require('../actions/users')(auth, db);
+import * as functions from 'firebase-functions/v1';
+import { db, auth } from '../shared/admin.js';
+import initUsers from '../actions/users.js';
 
-module.exports = functions.region('europe-west2').firestore
+const { onUserUpdate } = initUsers(auth, db);
+
+export default functions.region('europe-west2').firestore
   .document('users/{userId}')
   .onUpdate(async (change, context) => {
     const after = change.after.data();

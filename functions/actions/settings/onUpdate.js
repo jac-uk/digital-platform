@@ -1,4 +1,4 @@
-module.exports = (config, firebase, db) => {
+export default (config, firebase, db) => {
 
   return onUpdate;
 

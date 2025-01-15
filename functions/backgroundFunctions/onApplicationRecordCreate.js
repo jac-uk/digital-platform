@@ -1,9 +1,10 @@
-const functions = require('firebase-functions');
-const config = require('../shared/config');
-const { firebase, db, auth } = require('../shared/admin');
-const { logEvent } = require('../actions/logs/logEvent')(firebase, db, auth);
+import * as functions from 'firebase-functions/v1';
+import { firebase, db, auth } from '../shared/admin.js';
+import initLogEvent from '../actions/logs/logEvent.js';
 
-module.exports = functions.region('europe-west2').firestore
+const { logEvent } = initLogEvent(firebase, db, auth);
+
+export default functions.region('europe-west2').firestore
   .document('applicationRecords/{applicationRecordId}')
   .onCreate((snap, context) => {
     const applicationRecord = snap.data();

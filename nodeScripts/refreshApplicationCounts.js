@@ -1,7 +1,9 @@
 'use strict';
 
-const { firebase, app, db } = require('./shared/admin.js');
-const { refreshApplicationCounts } = require('../functions/actions/exercises/refreshApplicationCounts')(firebase, db);
+import { firebase, app, db } from './shared/admin.js';
+import initRefreshApplicationCounts from '../functions/actions/exercises/refreshApplicationCounts.js';
+
+const { refreshApplicationCounts } = initRefreshApplicationCounts(firebase, db);
 
 const main = async () => {
 

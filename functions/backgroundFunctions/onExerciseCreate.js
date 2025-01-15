@@ -1,8 +1,10 @@
-const functions = require('firebase-functions');
-const { db } = require('../shared/admin');
-const onCreate = require('../actions/exercises/onCreate')(db);
+import * as functions from 'firebase-functions/v1';
+import { db } from '../shared/admin.js';
+import initExercisesOnCreate from '../actions/exercises/onCreate.js';
 
-module.exports = functions.region('europe-west2').firestore
+const onCreate = initExercisesOnCreate(db);
+
+export default functions.region('europe-west2').firestore
   .document('exercises/{exerciseId}')
   .onCreate(async (snap, context) => {
     const exerciseId = context.params.exerciseId;

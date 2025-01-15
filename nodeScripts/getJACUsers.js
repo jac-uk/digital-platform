@@ -1,7 +1,7 @@
 'use strict';
 
-const { app } = require('./shared/admin');
-const { listAllUsers } = require('./shared/helpers');
+import { app } from './shared/admin.js';
+import { listAllUsers } from './shared/helpers.js';
 
 const main = async () => {
   let users = await listAllUsers();

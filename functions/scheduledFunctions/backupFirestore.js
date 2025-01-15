@@ -1,11 +1,13 @@
-const config = require('../shared/config');
-const functions = require('firebase-functions');
-const { firebase } = require('../shared/admin');
-const { backupFirestore } = require('../actions/backup/firestore')(config, firebase);
+import config from '../shared/config.js';
+import * as functions from 'firebase-functions/v1';
+import { firebase } from '../shared/admin.js';
+import initBackupFirestore from '../actions/backup/firestore.js';
+
+const { backupFirestore } = initBackupFirestore(config, firebase);
 
 const SCHEDULE = 'every day 23:01';
 
-module.exports = functions.region('europe-west2')
+export default functions.region('europe-west2')
   .pubsub
   .schedule(SCHEDULE)
   .timeZone('Europe/London')

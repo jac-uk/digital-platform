@@ -1,6 +1,6 @@
-const { setup, teardown, getTimeStamp } = require('./helpers');
-const { assertFails, assertSucceeds } = require('@firebase/rules-unit-testing');
-const { PERMISSIONS } = require('../../functions/shared/permissions');
+import { setup, teardown, getTimeStamp } from './helpers.js';
+import { assertFails, assertSucceeds } from '@firebase/rules-unit-testing';
+import { PERMISSIONS } from '../../functions/shared/permissions.js';
 
 describe('Assessments', () => {
   afterEach(async () => {
@@ -108,7 +108,7 @@ describe('Assessments', () => {
     it('allow authenticated user to update own assessment data', async () => {
       const db = await setup(
         { uid: 'user1', email: 'user1@user1.user1', email_verified: true },
-        { 'assessments/assessment1': { assessor: { email: 'user1@user1.user1' }, status: 'pending', hardLimitDate: getTimeStamp(tomorrow) } }
+        { 'assessments/assessment1': { assessor: { email: 'user1@user1.user1' }, status: 'pending', dueDate: getTimeStamp(tomorrow) } }
       );
       await assertSucceeds(db.collection('assessments').doc('assessment1').update({ status: 'completed', 'assessor.id': 'user1' }));
     });
@@ -133,12 +133,12 @@ describe('Assessments', () => {
       );
       await assertFails(db.collection('assessments').doc('assessment1').update({ status: 'completed', 'assessor.email': 'user2@user2.user2' }));
     });
-    it('prevent authenticated user from updating assessment after the due date', async () => {
+    it('allow authenticated user to update assessment after the due date', async () => {
       const db = await setup(
         { uid: 'user1', email: 'user1@user1.user1', email_verified: true },
         { 'assessments/assessment1': { assessor: { email: 'user1@user1.user1' }, status: 'pending', dueDate: getTimeStamp(yesterday) } }
       );
-      await assertFails(db.collection('assessments').doc('assessment1').update({ status: 'completed' }));
+      await assertSucceeds(db.collection('assessments').doc('assessment1').update({ status: 'completed' }));
     });
     it('prevent JAC admin without permission from updating assessment data', async () => {
       const db = await setup(

@@ -1,6 +1,6 @@
-const { initializeTestEnvironment } = require('@firebase/rules-unit-testing');
-const { Timestamp, setLogLevel } = require('firebase/firestore');
-const fs = require('fs');
+import { initializeTestEnvironment } from '@firebase/rules-unit-testing';
+import { Timestamp, setLogLevel } from 'firebase/firestore';
+import fs from 'fs';
 
 const projectId = `rules-spec-${Date.now()}`;
 const rules = fs.readFileSync('database/firestore.rules', 'utf8');
@@ -8,7 +8,7 @@ const rules = fs.readFileSync('database/firestore.rules', 'utf8');
 let testEnv;
 
 // Returns database instance used in your tests
-module.exports.setup = async (auth, data) => {
+export const setup = async (auth, data) => {
   setLogLevel('error');
   testEnv = await initializeTestEnvironment({
     projectId,
@@ -40,13 +40,13 @@ module.exports.setup = async (auth, data) => {
   return db;
 };
 
-module.exports.teardown = async () => {
+export const teardown = async () => {
   if (testEnv) {
     await testEnv.cleanup();
   }
 };
 
-module.exports.getTimeStamp = (date) => {
+export const getTimeStamp = (date) => {
   return Timestamp.fromDate(date);
 };
 
@@ -56,7 +56,7 @@ const getRandomInt = (min, max) => {
   return Math.floor(Math.random() * (max - min) + min); //The maximum is exclusive and the minimum is inclusive
 };
 
-module.exports.getValidExerciseData = () => {
+export const getValidExerciseData = () => {
   return {
     referenceNumber: '000' + getRandomInt(100, 1000),
     progress: {started: true},
@@ -65,7 +65,7 @@ module.exports.getValidExerciseData = () => {
   };
 };
 
-module.exports.getValidMessageData = () => {
+export const getValidMessageData = () => {
   return {
     referenceNumber: '000' + getRandomInt(100, 1000),
     status: 'created',

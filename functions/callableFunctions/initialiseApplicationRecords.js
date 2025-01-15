@@ -1,14 +1,17 @@
-const functions = require('firebase-functions');
-const config = require('../shared/config');
-const { firebase, db, auth } = require('../shared/admin.js');
-const { checkArguments } = require('../shared/helpers.js');
-const { initialiseApplicationRecords } = require('../actions/applicationRecords')(config, firebase, db, auth);
-const { generateDiversityReport } = require('../actions/exercises/generateDiversityReport')(config, firebase, db);
-// const { flagApplicationIssuesForExercise } = require('../actions/applications/flagApplicationIssues')(config, db);
-const { checkFunctionEnabled } = require('../shared/serviceSettings.js')(db);
-const { PERMISSIONS, hasPermissions } = require('../shared/permissions');
+import * as functions from 'firebase-functions/v1';
+import config from '../shared/config.js';
+import { firebase, db, auth } from '../shared/admin.js';
+import { checkArguments } from '../shared/helpers.js';
+import initApplicationRecords from '../actions/applicationRecords.js';
+import initGenerateDiversityReport from '../actions/exercises/generateDiversityReport.js';
+import initServiceSettings from '../shared/serviceSettings.js';
+import { PERMISSIONS, hasPermissions } from '../shared/permissions.js';
 
-module.exports = functions.runWith({
+const { initialiseApplicationRecords } = initApplicationRecords(config, firebase, db, auth);
+const { generateDiversityReport } = initGenerateDiversityReport(config, firebase, db);
+const { checkFunctionEnabled } = initServiceSettings(db);
+
+export default functions.runWith({
   timeoutSeconds: 180,
   memory: '1GB',
 }).region('europe-west2').https.onCall(async (data, context) => {

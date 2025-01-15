@@ -1,10 +1,13 @@
-const functions = require('firebase-functions');
-const config = require('../shared/config');
-const { firebase, db, auth } = require('../shared/admin');
-const { onUserCreate } = require('../actions/users')(config, firebase, db, auth);
-const { logEvent } = require('../actions/logs/logEvent')(firebase, db, auth);
+import * as functions from 'firebase-functions/v1';
+import config from '../shared/config.js';
+import { firebase, db, auth } from '../shared/admin.js';
+import initUsers from '../actions/users.js';
+import initLogEvent from '../actions/logs/logEvent.js';
 
-module.exports = functions.region('europe-west2').firestore
+const { onUserCreate } = initUsers(config, firebase, db, auth);
+const { logEvent } = initLogEvent(firebase, db, auth);
+
+export default functions.region('europe-west2').firestore
   .document('users/{userId}')
   .onCreate((snap, context) => {
     const details = {

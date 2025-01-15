@@ -1,12 +1,13 @@
-const htmlWriter = require('../htmlWriter');
-const lookup = require('./lookup');
-const {addField, formatDate, toYesNo} = require('./helpers');
-const helpers = require('../../shared/helpers');
+import htmlWriter from '../htmlWriter.js';
+import lookup from './lookup.js';
+import { addField, formatDate, toYesNo } from './helpers.js';
+import * as helpers from '../../shared/helpers.js';
+import { objectHasNestedProperty } from '../helpers.js';
 
-const { getJurisdictionPreferences, getLocationPreferences, getAdditionalWorkingPreferences } = require('./workingPreferencesConverter');
-const has = require('lodash/has');
+import { getJurisdictionPreferences, getLocationPreferences, getAdditionalWorkingPreferences } from './workingPreferencesConverter.js';
+import has from 'lodash/has.js';
 
-module.exports = () => {
+export default () => {
 
   return {
     getHtmlPanelPack,
@@ -29,37 +30,6 @@ module.exports = () => {
       else {
         // The last resort if no other info is available!
         html.addTitle('Error - Missing Application Title');
-      }
-
-      const jurisdictionPrefs = getJurisdictionPreferences(application, exercise);
-      if (jurisdictionPrefs.length) {
-        html.addHeading('Jurisdiction Preferences');
-        html.addTable(jurisdictionPrefs);
-      }
-
-      const locationPrefs = getLocationPreferences(application, exercise);
-      if (locationPrefs.length) {
-        html.addHeading('Location Preferences');
-        html.addTable(locationPrefs);
-      }
-      
-      const additionalPrefs = getAdditionalWorkingPreferences(application, exercise);
-      if (additionalPrefs.length) {
-        html.addHeading('Additional Preferences');
-        html.addTable(additionalPrefs);
-      }
-      
-      if (application.uploadedSelfAssessment) {
-        const selfAssessment = getSelfAssessment(application, exercise);
-        if (selfAssessment.length) {
-          html.addHeading('Self Assessment');
-          html.addTable(selfAssessment);
-        }
-      }
-
-      if (application.selectionCriteriaAnswers && application.selectionCriteriaAnswers.length) {
-        html.addHeading('Additional selection criteria');
-        html.addTable(getAdditionalSelectionCriteria(application, exercise));
       }
     }
     else {
@@ -111,6 +81,38 @@ module.exports = () => {
           html.addTable(data);
         }
       }
+
+      const jurisdictionPrefs = getJurisdictionPreferences(application, exercise);
+      if (jurisdictionPrefs.length) {
+        html.addHeading('Jurisdiction Preferences');
+        html.addTable(jurisdictionPrefs);
+      }
+
+      const locationPrefs = getLocationPreferences(application, exercise);
+      if (locationPrefs.length) {
+        html.addHeading('Location Preferences');
+        html.addTable(locationPrefs);
+      }
+      
+      const additionalPrefs = getAdditionalWorkingPreferences(application, exercise);
+      if (additionalPrefs.length) {
+        html.addHeading('Additional Preferences');
+        html.addTable(additionalPrefs);
+      }
+      
+      if (objectHasNestedProperty(application, 'uploadedSelfAssessment') && application.uploadedSelfAssessment) {
+        const selfAssessment = getSelfAssessment(application, exercise);
+        if (selfAssessment.length) {
+          html.addHeading('Self Assessment');
+          html.addTable(selfAssessment);
+        }
+      }
+
+      if (objectHasNestedProperty(application, 'selectionCriteriaAnswers') && application.selectionCriteriaAnswers && application.selectionCriteriaAnswers.length) {
+        html.addHeading('Additional selection criteria');
+        html.addTable(getAdditionalSelectionCriteria(application, exercise));
+      }
+
     } else {
       html.addTitle('Error - Missing Exercise information');
     }
@@ -123,7 +125,8 @@ module.exports = () => {
     const data = [];
     if (!selfAssessmentData || !exercise.selfAssessmentWordLimits) return data;
     selfAssessmentData.forEach((q, i) => {
-      addField(data, exercise.selfAssessmentWordLimits[i].question, q);
+      // The last argument below tells addField that the heading and data should go in separate rows
+      addField(data, exercise.selfAssessmentWordLimits[i].question, q, false, true);
     });
     return data;
   }
@@ -257,10 +260,14 @@ module.exports = () => {
   }
 
   function getAdditionalSelectionCriteria(application, exercise) {
+    if (!exercise.selectionCriteria) return [];
+    if (!application.selectionCriteriaAnswers) return [];
     const additionalSelectionCriteria = application.selectionCriteriaAnswers;
     const data = [];
     additionalSelectionCriteria.forEach((sC, index) => {
-      addField(data, exercise.selectionCriteria[index].title, sC.answerDetails || 'Does not meet this requirement');
+      const answer = sC.answerDetails || 'Does not meet this requirement';
+      // The last argument below tells addField that the heading and data should go in separate rows
+      addField(data, exercise.selectionCriteria[index].title, answer, false, true);
     });
     return data;
   }

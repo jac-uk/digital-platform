@@ -1,16 +1,18 @@
-const functions = require('firebase-functions');
-const { firebase, db, auth } = require('../shared/admin.js');
-const config = require('../shared/config');
-const { deleteApplications } = require('../actions/applications/applications')(config, firebase, db, auth);
-const { isProduction } = require('../shared/helpers');
-const { PERMISSIONS, hasPermissions } = require('../shared/permissions');
+import * as functions from 'firebase-functions/v1';
+import { firebase, db, auth } from '../shared/admin.js';
+import config from '../shared/config.js';
+import initApplications from '../actions/applications/applications.js';
+import { isProduction } from '../shared/helpers.js';
+import { PERMISSIONS, hasPermissions } from '../shared/permissions.js';
+
+const { deleteApplications } = initApplications(config, firebase, db, auth);
 
 const runtimeOptions = {
   timeoutSeconds: 120,
   memory: '1GB',
 };
 
-module.exports = functions.runWith(runtimeOptions).region('europe-west2').https.onCall(async (data, context) => {
+export default functions.runWith(runtimeOptions).region('europe-west2').https.onCall(async (data, context) => {
   if (!context.auth) {
     throw new functions.https.HttpsError('failed-precondition', 'The function must be called while authenticated.');
   }

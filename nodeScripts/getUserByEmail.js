@@ -1,7 +1,9 @@
 'use strict';
 
-const { app, auth } = require('./shared/admin.js');
-const getUserByEmail = require('../functions/actions/candidates/getUserByEmail')(auth);
+import { app, auth } from './shared/admin.js';
+import initGetUserByEmail from '../functions/actions/candidates/getUserByEmail.js';
+
+const getUserByEmail = initGetUserByEmail(auth);
 
 const candidateEmail = { email: '<put the email to search here>'};
 

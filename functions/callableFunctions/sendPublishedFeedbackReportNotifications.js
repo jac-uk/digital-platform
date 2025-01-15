@@ -1,11 +1,14 @@
-const functions = require('firebase-functions');
-const config = require('../shared/config');
-const { firebase, db, auth } = require('../shared/admin.js');
-const { sendPublishedFeedbackReportNotifications } = require('../actions/applications/applications.js')(config, firebase, db, auth);
-const { checkFunctionEnabled } = require('../shared/serviceSettings.js')(db);
-const { PERMISSIONS, hasPermissions } = require('../shared/permissions.js');
+import * as functions from 'firebase-functions/v1';
+import config from '../shared/config.js';
+import { firebase, db, auth } from '../shared/admin.js';
+import initApplications from '../actions/applications/applications.js';
+import initServiceSettings from '../shared/serviceSettings.js';
+import { PERMISSIONS, hasPermissions } from '../shared/permissions.js';
 
-module.exports = functions.region('europe-west2').https.onCall(async (data, context) => {
+const { sendPublishedFeedbackReportNotifications } = initApplications(config, firebase, db, auth);
+const { checkFunctionEnabled } = initServiceSettings(db);
+
+export default functions.region('europe-west2').https.onCall(async (data, context) => {
   await checkFunctionEnabled();
 
   // authenticate request

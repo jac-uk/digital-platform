@@ -10,9 +10,9 @@
  * Run with: > npm run local:nodeScript temp/syncExerciseAndVacancyForCompare
  */
 
-const { app, db } = require('../shared/admin.js');
-const { getDocuments, getDocument, applyUpdates } = require('../../functions/shared/helpers.js');
-const { objectHasNestedProperty } = require('../../functions/shared/helpers.js');
+import { app, db } from '../shared/admin.js';
+import { getDocuments, getDocument, applyUpdates } from '../../functions/shared/helpers.js';
+import { objectHasNestedProperty } from '../../functions/shared/helpers.js';
 
 async function updateVacancies() {
   const commands = [];

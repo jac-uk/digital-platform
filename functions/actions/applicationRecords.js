@@ -1,9 +1,12 @@
-const { getDocument, getDocuments, applyUpdates } = require('../shared/helpers');
+import { getDocument, getDocuments, applyUpdates } from '../shared/helpers.js';
+import initFactories from '../shared/factories.js';
+import initLogEvent from './logs/logEvent.js';
+import initRefreshApplicationCounts from '../actions/exercises/refreshApplicationCounts.js';
 
-module.exports = (config, firebase, db, auth) => {
-  const { newApplicationRecord } = require('../shared/factories')(config);
-  const { logEvent } = require('./logs/logEvent')(firebase, db, auth);
-  const { refreshApplicationCounts } = require('../actions/exercises/refreshApplicationCounts')(firebase, db);
+export default (config, firebase, db, auth) => {
+  const { newApplicationRecord } = initFactories(config);
+  const { logEvent } = initLogEvent(firebase, db, auth);
+  const { refreshApplicationCounts } = initRefreshApplicationCounts(firebase, db);
 
   return {
     initialiseApplicationRecords,  // @TODO this will be removed once we have database triggers turned on *and* existing exercises have been initialised

@@ -1,7 +1,7 @@
-const { getDocument, getDocuments, applyUpdates } = require('../shared/helpers');
-const { PERMISSIONS } = require('../shared/permissions');
+import { getDocument, getDocuments, applyUpdates } from '../shared/helpers.js';
+import { PERMISSIONS } from '../shared/permissions.js';
 
-module.exports = (db, auth) => {
+export default (db, auth) => {
 
   //TODO: add logging for all changes to roles
 

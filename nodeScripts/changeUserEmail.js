@@ -1,6 +1,6 @@
 'use strict';
 
-const { app, auth } = require('./shared/admin.js');
+import { app, auth } from './shared/admin.js';
 
 const main = async () => {
   try {

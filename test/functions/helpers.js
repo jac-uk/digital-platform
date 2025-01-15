@@ -7,16 +7,14 @@ const projectConfig = {
   storageBucket: process.env.FIREBASE_STORAGE_BUCKET,
   projectId: process.env.FIREBASE_PROJECT_ID,
 };
-if (process.env.CI === 'true') {
-  firebaseFunctionsTestInstance = firebaseFunctionsTest(projectConfig, null);
-} else {
-  // Initialize firebase-functions-test with projectConfig and a local service-account.json
-  firebaseFunctionsTestInstance = firebaseFunctionsTest(projectConfig, './service-account.json');
-}
+import initFirebaseFunctionsTest from 'firebase-functions-test';
+
+const firebaseFunctionsTest = initFirebaseFunctionsTest(projectConfig, './service-account.json');
 
 function generateMockContext(params = {}) {
   return {
     auth: {
+      uid: params.uid || null,
       token: {
         rp: params.permissions || [],
       },
@@ -24,7 +22,7 @@ function generateMockContext(params = {}) {
   };
 }
 
-module.exports = {
-  firebaseFunctionsTest: firebaseFunctionsTestInstance,
-  generateMockContext,
+export {
+  firebaseFunctionsTest,
+  generateMockContext
 };

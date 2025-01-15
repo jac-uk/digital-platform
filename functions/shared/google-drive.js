@@ -1,7 +1,7 @@
-const { google } = require('googleapis');
-const Bottleneck = require('bottleneck');
+import { google } from 'googleapis';
+import Bottleneck from 'bottleneck';
 
-module.exports = () => {
+export default () => {
 
   const MIME_TYPE = {
     FOLDER: 'application/vnd.google-apps.folder',

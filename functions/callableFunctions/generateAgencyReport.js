@@ -1,12 +1,16 @@
-const functions = require('firebase-functions');
-const { firebase, db, auth } = require('../shared/admin.js');
-const { generateAgencyReport } = require('../actions/exercises/generateAgencyReport')(firebase, db);
-const { getDocument } = require('../shared/helpers');
-const { logEvent } = require('../actions/logs/logEvent')(firebase, db, auth);
-const { checkFunctionEnabled } = require('../shared/serviceSettings.js')(db);
-const { PERMISSIONS, hasPermissions } = require('../shared/permissions');
+import * as functions from 'firebase-functions/v1';
+import { firebase, db, auth } from '../shared/admin.js';
+import initGenerateAgencyReport from '../actions/exercises/generateAgencyReport.js';
+import { getDocument } from '../shared/helpers.js';
+import initLogEvent from '../actions/logs/logEvent.js';
+import initServiceSettings from '../shared/serviceSettings.js';
+import { PERMISSIONS, hasPermissions } from '../shared/permissions.js';
 
-module.exports = functions.region('europe-west2').https.onCall(async (data, context) => {
+const { generateAgencyReport } = initGenerateAgencyReport(firebase, db);
+const { logEvent } = initLogEvent(firebase, db, auth);
+const { checkFunctionEnabled } = initServiceSettings(db);
+
+export default functions.region('europe-west2').https.onCall(async (data, context) => {
   await checkFunctionEnabled();
 
   // authenticate the request

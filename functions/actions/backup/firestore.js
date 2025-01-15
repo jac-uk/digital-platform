@@ -1,11 +1,14 @@
 /**
  * Backup firestore
  */
-const firestore = require('@google-cloud/firestore');
+import firestore from '@google-cloud/firestore';
+import initSlack from '../../shared/slack.js';
+
 const client = new firestore.v1.FirestoreAdminClient();
 
-module.exports = (config, firebase) => {
-  const slack = require('../../shared/slack')(config);
+
+export default (config, firebase) => {
+  const slack = initSlack(config);
   return {
     backupFirestore,
   };

@@ -1,7 +1,10 @@
-const { getDocument, getDocuments, applyUpdates, getAllDocuments, formatDate } = require('../../shared/helpers');
-const drive = require('../../shared/google-drive')();
+import { getDocument, getDocuments, applyUpdates, getAllDocuments, formatDate } from '../../shared/helpers.js';
+import initDrive from '../../shared/google-drive.js';
+import { exportGradingSheet } from './exportGradingSheet.js';
 
-module.exports = (config, firebase, db) => {
+const drive = initDrive();
+
+export default (config, firebase, db) => {
 
   return {
     initialisePanelExport,
@@ -22,10 +25,6 @@ module.exports = (config, firebase, db) => {
     if (panel.status !== 'approved') {
       return false;
     }
-
-    // get exercise
-    // TODO store `panel.exercise.referenceNumber` instead of getting exercise
-    const exercise = await getDocument(db.collection('exercises').doc(panel.exerciseId));
 
     // get application ids
     let applicationRecords = await getDocuments(
@@ -56,6 +55,10 @@ module.exports = (config, firebase, db) => {
     // get settings
     const settings = await getDocument(db.collection('settings').doc('services'));
 
+    // get exercise
+    const exerciseId = panel.exercise ? panel.exercise.id : panel.exerciseId;
+    const exercise = await getDocument(db.collection('exercises').doc(exerciseId));
+
     // get exercise ref number and make a folder name
     const folderName =
       (exercise.referenceNumber).slice(3) + ' ' + panel.name;
@@ -67,6 +70,9 @@ module.exports = (config, firebase, db) => {
     const panelFolderId = await drive.createFolder(folderName, {
       parentId: settings.google.rootFolderId,
     });
+
+    // Create grading spreadsheet
+    await exportGradingSheet(drive, panelFolderId, folderName, panel).catch(e => 'Error: Grading Sheet');
 
     // update panel and start processing
     const applicationIds = Object.keys(applicationsMap);

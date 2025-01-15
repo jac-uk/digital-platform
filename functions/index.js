@@ -1,103 +1,223 @@
-
 // Scheduled
-exports.backupFirestore = require('./scheduledFunctions/backupFirestore');
-exports.backupAuthentication = require('./scheduledFunctions/backupAuthentication');
-exports.processNotifications = require('./scheduledFunctions/processNotifications');
-exports.scheduleScanAllFiles = require('./scheduledFunctions/scheduleScanAllFiles');
+import backupFirestore from './scheduledFunctions/backupFirestore.js';
+import backupAuthentication from './scheduledFunctions/backupAuthentication.js';
+import processNotifications from './scheduledFunctions/processNotifications.js';
+import scheduleScanAllFiles from './scheduledFunctions/scheduleScanAllFiles.js';
+import runScannerTest from './scheduledFunctions/runScannerTest.js';
+import retrySlackMessageOnCreateIssue from './scheduledFunctions/retrySlackMsgOnCreateIssue.js';
 
 // Background
-exports.onDelete = require('./backgroundFunctions/onDelete');
-exports.onExerciseCreate = require('./backgroundFunctions/onExerciseCreate');
-exports.onExerciseUpdate = require('./backgroundFunctions/onExerciseUpdate');
-exports.onApplicationCreate = require('./backgroundFunctions/onApplicationCreate');
-exports.onApplicationUpdate = require('./backgroundFunctions/onApplicationUpdate');
-exports.onAssessmentUpdate = require('./backgroundFunctions/onAssessmentUpdate');
-exports.onApplicationRecordUpdate = require('./backgroundFunctions/onApplicationRecordUpdate');
-exports.onPanelUpdate = require('./backgroundFunctions/onPanelUpdate');
-exports.onDocumentUploaded = require('./backgroundFunctions/onDocumentUploaded');
-exports.onCandidatePersonalDetailsCreate = require('./backgroundFunctions/onCandidatePersonalDetailsCreate');
-exports.onCandidatePersonalDetailsUpdate = require('./backgroundFunctions/onCandidatePersonalDetailsUpdate');
-exports.onMessageCreate = require('./backgroundFunctions/onMessageCreate');
-exports.onUserCreate = require('./backgroundFunctions/onUserCreate');
-exports.onUserUpdate = require('./backgroundFunctions/onUserUpdate');
-exports.onUserDelete = require('./backgroundFunctions/onUserDelete');
-exports.onUserInvitationCreate = require('./backgroundFunctions/onUserInvitationCreate');
-exports.onRoleUpdate = require('./backgroundFunctions/onRoleUpdate');
-exports.onCandidateFormResponseUpdate = require('./backgroundFunctions/onCandidateFormResponseUpdate');
-exports.onSettingsUpdate = require('./backgroundFunctions/onSettingsUpdate');
+import onDelete from './backgroundFunctions/onDelete.js';
+import onExerciseCreate from './backgroundFunctions/onExerciseCreate.js';
+import onExerciseUpdate from './backgroundFunctions/onExerciseUpdate.js';
+import onApplicationCreate from './backgroundFunctions/onApplicationCreate.js';
+import onApplicationUpdate from './backgroundFunctions/onApplicationUpdate.js';
+import onAssessmentUpdate from './backgroundFunctions/onAssessmentUpdate.js';
+import onApplicationRecordUpdate from './backgroundFunctions/onApplicationRecordUpdate.js';
+import onPanelUpdate from './backgroundFunctions/onPanelUpdate.js';
+import onDocumentUploaded from './backgroundFunctions/onDocumentUploaded.js';
+import onCandidatePersonalDetailsCreate from './backgroundFunctions/onCandidatePersonalDetailsCreate.js';
+import onCandidatePersonalDetailsUpdate from './backgroundFunctions/onCandidatePersonalDetailsUpdate.js';
+import onMessageCreate from './backgroundFunctions/onMessageCreate.js';
+import onUserCreate from './backgroundFunctions/onUserCreate.js';
+import onUserUpdate from './backgroundFunctions/onUserUpdate.js';
+import onUserDelete from './backgroundFunctions/onUserDelete.js';
+import onUserInvitationCreate from './backgroundFunctions/onUserInvitationCreate.js';
+import onRoleUpdate from './backgroundFunctions/onRoleUpdate.js';
+import onCandidateFormResponseUpdate from './backgroundFunctions/onCandidateFormResponseUpdate.js';
+import onSettingsUpdate from './backgroundFunctions/onSettingsUpdate.js';
 
 // Callable
-exports.getApplicationData = require('./callableFunctions/getApplicationData');
-exports.generateDiversityReport = require('./callableFunctions/generateDiversityReport');
-exports.generateDiversityData = require('./callableFunctions/generateDiversityData');
-exports.generateOutreachReport = require('./callableFunctions/generateOutreachReport');
-exports.flagApplicationIssuesForExercise = require('./callableFunctions/flagApplicationIssuesForExercise');
-exports.initialiseAssessments = require('./callableFunctions/initialiseAssessments');
-exports.cancelAssessments = require('./callableFunctions/cancelAssessments');
-exports.resetAssessments = require('./callableFunctions/resetAssessments');
-exports.testAssessmentNotification = require('./callableFunctions/testAssessmentNotification');
-exports.sendAssessmentRequests = require('./callableFunctions/sendAssessmentRequests');
-exports.sendAssessmentReminders = require('./callableFunctions/sendAssessmentReminders');
-exports.generateSignInWithEmailLink = require('./callableFunctions/generateSignInWithEmailLink');
-exports.initialiseApplicationRecords = require('./callableFunctions/initialiseApplicationRecords');
-exports.sendApplicationReminders = require('./callableFunctions/sendApplicationReminders');
-exports.sendCharacterCheckRequests = require('./callableFunctions/sendCharacterCheckRequests');
-exports.sendCandidateFormNotifications = require('./callableFunctions/sendCandidateFormNotifications');
-exports.enableCharacterChecks = require('./callableFunctions/enableCharacterChecks');
-exports.initialiseMissingApplicationRecords = require('./callableFunctions/initialiseMissingApplicationRecords');
-exports.exportExerciseData = require('./callableFunctions/exportExerciseData');
-exports.targetedOutreachReport = require('./callableFunctions/targetedOutreachReport');
-exports.transferHandoverData = require('./callableFunctions/transferHandoverData');
-exports.exportApplicationContactsData = require('./callableFunctions/exportApplicationContactsData');
-exports.exportApplicationEligibilityIssues = require('./callableFunctions/exportApplicationEligibilityIssues');
-exports.generateHandoverReport = require('./callableFunctions/generateHandoverReport');
-exports.generateDeploymentReport = require('./callableFunctions/generateDeploymentReport');
-exports.generateReasonableAdjustmentsReport = require('./callableFunctions/generateReasonableAdjustmentsReport');
-exports.generateAgencyReport = require('./callableFunctions/generateAgencyReport');
-exports.generateStatutoryConsultationReport = require('./callableFunctions/generateStatutoryConsultationReport');
-exports.logEvent = require('./callableFunctions/logEvent');
-exports.scanFile = require('./callableFunctions/scanFile');
-exports.scanAllFiles = require('./callableFunctions/scanAllFiles');
-exports.exportApplicationCharacterIssues = require('./callableFunctions/exportApplicationCharacterIssues');
-exports.getUserEmailByID = require('./callableFunctions/getUserEmailByID');
-exports.getUserByEmail = require('./callableFunctions/getUserByEmail');
-exports.updateEmailAddress = require('./callableFunctions/updateEmailAddress');
-exports.ensureEmailVerified = require('./callableFunctions/ensureEmailVerified');
-exports.adminGetUsers = require('./callableFunctions/adminGetUsers');
-exports.adminGetUserRoles = require('./callableFunctions/adminGetUserRoles');
-exports.adminDisableUser = require('./callableFunctions/adminDisableUser');
-exports.adminCreateUserRole = require('./callableFunctions/adminCreateUserRole');
-exports.adminUpdateUserRole = require('./callableFunctions/adminUpdateUserRole');
-exports.adminSetUserRole = require('./callableFunctions/adminSetUserRole');
-exports.adminSetDefaultRole = require('./callableFunctions/adminSetDefaultRole');
-exports.adminDisableNewUser = require('./callableFunctions/adminDisableNewUser');
-exports.adminSyncUserRolePermissions = require('./callableFunctions/adminSyncUserRolePermissions');
-exports.createUser = require('./callableFunctions/createUser');
-exports.deleteUsers = require('./callableFunctions/deleteUsers');
-exports.customReport = require('./callableFunctions/customReport');
-exports.refreshApplicationCounts = require('./callableFunctions/refreshApplicationCounts');
-exports.createTestApplications = require('./callableFunctions/createTestApplications');
-exports.deleteApplications = require('./callableFunctions/deleteApplications');
-exports.createTestUsers = require('./callableFunctions/createTestUsers');
-exports.deleteTestUsers = require('./callableFunctions/deleteTestUsers');
-exports.createTask = require('./callableFunctions/tasks/createTask');
-exports.updateTask = require('./callableFunctions/tasks/updateTask');
-exports.verifyRecaptcha = require('./callableFunctions/verifyRecaptcha');
-exports.processNotificationsNow = require('./callableFunctions/processNotifications');
-exports.checkEnabledUserByEmail = require('./callableFunctions/checkEnabledUserByEmail');
-exports.extractDocumentContent = require('./callableFunctions/extractDocumentContent');
-exports.updateUserCustomClaims = require('./callableFunctions/updateUserCustomClaims');
-exports.createZenhubIssue = require('./callableFunctions/createZenhubIssue');
-exports.exportApplicationCommissionerConflicts = require('./callableFunctions/exportApplicationCommissionerConflicts');
-exports.verifySlackUser = require('./callableFunctions/verifySlackUser');
-exports.sendPublishedFeedbackReportNotifications = require('./callableFunctions/sendPublishedFeedbackReportNotifications');
-exports.updateApplicationRecordStageStatus = require('./callableFunctions/updateApplicationRecordStageStatus');
-exports.getLatestReleases = require('./callableFunctions/getLatestReleases');
+import getApplicationData from './callableFunctions/getApplicationData.js';
+import generateDiversityReport from './callableFunctions/generateDiversityReport.js';
+import generateDiversityData from './callableFunctions/generateDiversityData.js';
+import generateOutreachReport from './callableFunctions/generateOutreachReport.js';
+import flagApplicationIssuesForExercise from './callableFunctions/flagApplicationIssuesForExercise.js';
+import initialiseAssessments from './callableFunctions/initialiseAssessments.js';
+import cancelAssessments from './callableFunctions/cancelAssessments.js';
+import resetAssessments from './callableFunctions/resetAssessments.js';
+import testAssessmentNotification from './callableFunctions/testAssessmentNotification.js';
+import sendAssessmentRequests from './callableFunctions/sendAssessmentRequests.js';
+import sendAssessmentReminders from './callableFunctions/sendAssessmentReminders.js';
+import generateSignInWithEmailLink from './callableFunctions/generateSignInWithEmailLink.js';
+import initialiseApplicationRecords from './callableFunctions/initialiseApplicationRecords.js';
+import sendApplicationReminders from './callableFunctions/sendApplicationReminders.js';
+import sendCharacterCheckRequests from './callableFunctions/sendCharacterCheckRequests.js';
+import sendCandidateFormNotifications from './callableFunctions/sendCandidateFormNotifications.js';
+import enableCharacterChecks from './callableFunctions/enableCharacterChecks.js';
+import initialiseMissingApplicationRecords from './callableFunctions/initialiseMissingApplicationRecords.js';
+import exportExerciseData from './callableFunctions/exportExerciseData.js';
+import targetedOutreachReport from './callableFunctions/targetedOutreachReport.js';
+//import transferHandoverData from './callableFunctions/transferHandoverData.js';
+import exportApplicationContactsData from './callableFunctions/exportApplicationContactsData.js';
+import exportApplicationEligibilityIssues from './callableFunctions/exportApplicationEligibilityIssues.js';
+import generateHandoverReport from './callableFunctions/generateHandoverReport.js';
+import generateDeploymentReport from './callableFunctions/generateDeploymentReport.js';
+import generateReasonableAdjustmentsReport from './callableFunctions/generateReasonableAdjustmentsReport.js';
+import generateAgencyReport from './callableFunctions/generateAgencyReport.js';
+import generateStatutoryConsultationReport from './callableFunctions/generateStatutoryConsultationReport.js';
+import logEvent from './callableFunctions/logEvent.js';
+import scanFile from './callableFunctions/scanFile.js';
+import scanAllFiles from './callableFunctions/scanAllFiles.js';
+import exportApplicationCharacterIssues from './callableFunctions/exportApplicationCharacterIssues.js';
+import getUserEmailByID from './callableFunctions/getUserEmailByID.js';
+//import getUserByEmail from './callableFunctions/getUserByEmail.js';
+import updateEmailAddress from './callableFunctions/updateEmailAddress.js';
+import ensureEmailVerified from './callableFunctions/ensureEmailVerified.js';
+//import adminGetUsers from './callableFunctions/adminGetUsers.js';
+//import adminGetUserRoles from './callableFunctions/adminGetUserRoles.js';
+import adminDisableUser from './callableFunctions/adminDisableUser.js';
+import adminCreateUserRole from './callableFunctions/adminCreateUserRole.js';
+import adminUpdateUserRole from './callableFunctions/adminUpdateUserRole.js';
+import adminSetUserRole from './callableFunctions/adminSetUserRole.js';
+import adminSetDefaultRole from './callableFunctions/adminSetDefaultRole.js';
+import adminDisableNewUser from './callableFunctions/adminDisableNewUser.js';
+import adminSyncUserRolePermissions from './callableFunctions/adminSyncUserRolePermissions.js';
+//import createUser from './callableFunctions/createUser.js';
+import deleteUsers from './callableFunctions/deleteUsers.js';
+import customReport from './callableFunctions/customReport.js';
+import refreshApplicationCounts from './callableFunctions/refreshApplicationCounts.js';
+import createTestApplications from './callableFunctions/createTestApplications.js';
+import deleteApplications from './callableFunctions/deleteApplications.js';
+//import createTestUsers from './callableFunctions/createTestUsers.js';
+//import deleteTestUsers from './callableFunctions/deleteTestUsers.js';
+import createTask from './callableFunctions/tasks/createTask.js';
+import updateTask from './callableFunctions/tasks/updateTask.js';
+import verifyRecaptcha from './callableFunctions/verifyRecaptcha.js';
+import processNotificationsNow from './callableFunctions/processNotifications.js';
+import checkEnabledUserByEmail from './callableFunctions/checkEnabledUserByEmail.js';
+import extractDocumentContent from './callableFunctions/extractDocumentContent.js';
+import updateUserCustomClaims from './callableFunctions/updateUserCustomClaims.js';
+import createZenhubIssue from './callableFunctions/createZenhubIssue.js';
+import exportApplicationCommissionerConflicts from './callableFunctions/exportApplicationCommissionerConflicts.js';
+import verifySlackUser from './callableFunctions/verifySlackUser.js';
+import sendPublishedFeedbackReportNotifications from './callableFunctions/sendPublishedFeedbackReportNotifications.js';
+import updateApplicationRecordStageStatus from './callableFunctions/updateApplicationRecordStageStatus.js';
+import getLatestReleases from './callableFunctions/getLatestReleases.js';
+import verifyFileChecksum from './callableFunctions/verifyFileChecksum.js';
+import sendSmsVerificationCode from './callableFunctions/sendSmsVerificationCode.js';
+import verifySmsVerificationCode from './callableFunctions/verifySmsVerificationCode.js';
+import generateSccSummaryReport from './callableFunctions/generateSccSummaryReport.js';
+import exportSccSummaryReport from './callableFunctions/exportSccSummaryReport.js';
+import getMultipleApplicationData from './callableFunctions/getMultipleApplicationData.js';
 
 // Callable - QTs v2
-exports.listQualifyingTests = require('./callableFunctions/qualifyingTests/v2/listQualifyingTests');
-exports.updateQualifyingTestParticipants = require('./callableFunctions/qualifyingTests/v2/updateQualifyingTestParticipants');
-exports.updateQualifyingTestScores = require('./callableFunctions/qualifyingTests/v2/updateQualifyingTestScores');
+//import listQualifyingTests from './callableFunctions/qualifyingTests/v2/listQualifyingTests.js';
+//import updateQualifyingTestParticipants from './callableFunctions/qualifyingTests/v2/updateQualifyingTestParticipants.js';
+//import updateQualifyingTestScores from './callableFunctions/qualifyingTests/v2/updateQualifyingTestScores.js';
 
 // HTTP
-exports.ticketingGithubWebhook = require('./httpFunctions/ticketingGithubWebhook');
+import ticketingGithubWebhook from './httpFunctions/ticketingGithubWebhook.js';
+
+export {
+  // Scheduled
+  backupFirestore,
+  backupAuthentication,
+  processNotifications,
+  scheduleScanAllFiles,
+  runScannerTest,
+  retrySlackMessageOnCreateIssue,
+
+  // Background
+  onDelete,
+  onExerciseCreate,
+  onExerciseUpdate,
+  onApplicationCreate,
+  onApplicationUpdate,
+  onAssessmentUpdate,
+  onApplicationRecordUpdate,
+  onPanelUpdate,
+  onDocumentUploaded,
+  onCandidatePersonalDetailsCreate,
+  onCandidatePersonalDetailsUpdate,
+  onMessageCreate,
+  onUserCreate,
+  onUserUpdate,
+  onUserDelete,
+  onUserInvitationCreate,
+  onRoleUpdate,
+  onCandidateFormResponseUpdate,
+  onSettingsUpdate,
+
+  // Callable
+  getApplicationData,
+  generateDiversityReport,
+  generateDiversityData,
+  generateOutreachReport,
+  flagApplicationIssuesForExercise,
+  initialiseAssessments,
+  cancelAssessments,
+  resetAssessments,
+  testAssessmentNotification,
+  sendAssessmentRequests,
+  sendAssessmentReminders,
+  generateSignInWithEmailLink,
+  initialiseApplicationRecords,
+  sendApplicationReminders,
+  sendCharacterCheckRequests,
+  sendCandidateFormNotifications,
+  enableCharacterChecks,
+  initialiseMissingApplicationRecords,
+  exportExerciseData,
+  targetedOutreachReport,
+  //transferHandoverData,
+  exportApplicationContactsData,
+  exportApplicationEligibilityIssues,
+  generateHandoverReport,
+  generateDeploymentReport,
+  generateReasonableAdjustmentsReport,
+  generateAgencyReport,
+  generateStatutoryConsultationReport,
+  logEvent,
+  scanFile,
+  scanAllFiles,
+  exportApplicationCharacterIssues,
+  getUserEmailByID,
+  //getUserByEmail,
+  updateEmailAddress,
+  ensureEmailVerified,
+  //adminGetUsers,
+  //adminGetUserRoles,
+  adminDisableUser,
+  adminCreateUserRole,
+  adminUpdateUserRole,
+  adminSetUserRole,
+  adminSetDefaultRole,
+  adminDisableNewUser,
+  adminSyncUserRolePermissions,
+  //createUser,
+  deleteUsers,
+  customReport,
+  refreshApplicationCounts,
+  createTestApplications,
+  deleteApplications,
+  //createTestUsers,
+  //deleteTestUsers,
+  createTask,
+  updateTask,
+  verifyRecaptcha,
+  processNotificationsNow,
+  checkEnabledUserByEmail,
+  extractDocumentContent,
+  updateUserCustomClaims,
+  createZenhubIssue,
+  exportApplicationCommissionerConflicts,
+  verifySlackUser,
+  sendPublishedFeedbackReportNotifications,
+  updateApplicationRecordStageStatus,
+  getLatestReleases,
+  verifyFileChecksum,
+  sendSmsVerificationCode,
+  verifySmsVerificationCode,
+  getMultipleApplicationData,
+  generateSccSummaryReport,
+  exportSccSummaryReport,
+
+  // Callable - QTs v2
+  //listQualifyingTests,
+  //updateQualifyingTestParticipants,
+  //updateQualifyingTestScores,
+
+  // HTTP
+  ticketingGithubWebhook
+};

@@ -1,17 +1,20 @@
-const functions = require('firebase-functions');
-const { auth } = require('../shared/admin.js');
-const config = require('../shared/config');
-const { firebase, db } = require('../shared/admin.js');
-const { checkArguments } = require('../shared/helpers.js');
-const getApplicationData = require('../actions/exercises/getApplicationData')(config, firebase, db, auth);
-const { checkFunctionEnabled } = require('../shared/serviceSettings.js')(db);
-const { PERMISSIONS, hasPermissions } = require('../shared/permissions');
+import * as functions from 'firebase-functions/v1';
+import { auth } from '../shared/admin.js';
+import config from '../shared/config.js';
+import { firebase, db } from '../shared/admin.js';
+import { checkArguments } from '../shared/helpers.js';
+import initGetApplicationData from '../actions/exercises/getApplicationData.js';
+import initServiceSettings from '../shared/serviceSettings.js';
+import { PERMISSIONS, hasPermissions } from '../shared/permissions.js';
+
+const getApplicationData = initGetApplicationData(config, firebase, db, auth);
+const { checkFunctionEnabled } = initServiceSettings(db);
 
 const runtimeOptions = {
   memory: '512MB',
 };
 
-module.exports = functions.runWith(runtimeOptions).region('europe-west2').https.onCall(async (data, context) => {
+export default functions.runWith(runtimeOptions).region('europe-west2').https.onCall(async (data, context) => {
   await checkFunctionEnabled();
   if (!context.auth) {
     throw new functions.https.HttpsError('failed-precondition', 'The function must be called while authenticated.');

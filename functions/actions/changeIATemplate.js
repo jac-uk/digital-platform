@@ -1,6 +1,6 @@
-const { getDocument, getDocuments, applyUpdates } = require('../shared/helpers');
+import { getDocument, getDocuments, applyUpdates } from '../shared/helpers.js';
 
-module.exports = (config, firebase, db) => {
+export default (config, firebase, db) => {
   return {
     changeIATemplate,
   };

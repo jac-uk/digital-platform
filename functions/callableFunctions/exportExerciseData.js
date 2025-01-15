@@ -1,19 +1,23 @@
-const functions = require('firebase-functions');
-const { checkArguments } = require('../shared/helpers.js');
-const config = require('../shared/config');
-const { firebase, db, auth } = require('../shared/admin.js');
-const { exportExerciseData } = require('../actions/exercises/exportExerciseData')(config, firebase, db);
-const { getAllDocuments } = require('../shared/helpers');
-const { logEvent } = require('../actions/logs/logEvent')(firebase, db, auth);
-const { checkFunctionEnabled } = require('../shared/serviceSettings.js')(db);
-const { PERMISSIONS, hasPermissions } = require('../shared/permissions');
+import * as functions from 'firebase-functions/v1';
+import { checkArguments } from '../shared/helpers.js';
+import config from '../shared/config.js';
+import { firebase, db, auth } from '../shared/admin.js';
+import initExportExerciseData from '../actions/exercises/exportExerciseData.js';
+import { getAllDocuments } from '../shared/helpers.js';
+import initLogEvent from '../actions/logs/logEvent.js';
+import initServiceSettings from '../shared/serviceSettings.js';
+import { PERMISSIONS, hasPermissions } from '../shared/permissions.js';
+
+const { exportExerciseData } = initExportExerciseData(config, firebase, db);
+const { logEvent } = initLogEvent(firebase, db, auth);
+const { checkFunctionEnabled } = initServiceSettings(db);
 
 const runtimeOptions = {
   timeoutSeconds: 300,
   memory: '1GB',
 };
 
-module.exports = functions.runWith(runtimeOptions).region('europe-west2').https.onCall(async (data, context) => {
+export default functions.runWith(runtimeOptions).region('europe-west2').https.onCall(async (data, context) => {
   await checkFunctionEnabled();
 
   // authenticate the request

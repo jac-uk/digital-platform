@@ -1,10 +1,13 @@
-const functions = require('firebase-functions');
-const { auth, db } = require('../shared/admin.js');
-const { checkArguments } = require('../shared/helpers.js');
-const users = require('../actions/users')(auth, db);
-const { checkFunctionEnabled } = require('../shared/serviceSettings.js')(db);
+import * as functions from 'firebase-functions/v1';
+import { auth, db } from '../shared/admin.js';
+import { checkArguments } from '../shared/helpers.js';
+import initUsers from '../actions/users.js';
+import initServiceSettings from '../shared/serviceSettings.js';
 
-module.exports = functions.region('europe-west2').https.onCall(async (data, context) => {
+const users = initUsers(auth, db);
+const { checkFunctionEnabled } = initServiceSettings(db);
+
+export default functions.region('europe-west2').https.onCall(async (data, context) => {
   await checkFunctionEnabled();
   if (!checkArguments({
     ref: { required: true },

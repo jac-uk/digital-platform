@@ -1,5 +1,5 @@
 
-module.exports = (firebase, db, auth) => {
+export default (firebase, db, auth) => {
   return {
     logEvent,
   };

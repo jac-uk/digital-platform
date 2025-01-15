@@ -1,10 +1,13 @@
-const functions = require('firebase-functions');
-const config = require('../shared/config');
-const { firebase, db } = require('../shared/admin.js');
-const { scanAllFiles } = require('../actions/malware-scanning/scanAllFiles')(config, firebase);
-const { checkFunctionEnabled } = require('../shared/serviceSettings.js')(db);
+import * as functions from 'firebase-functions/v1';
+import config from '../shared/config.js';
+import { firebase, db } from '../shared/admin.js';
+import initScanAllFiles from '../actions/malware-scanning/scanAllFiles.js';
+import initServiceSettings from '../shared/serviceSettings.js';
 
-module.exports = functions.region('europe-west2').https.onCall(async (data, context) => {
+const { scanAllFiles } = initScanAllFiles(config, firebase);
+const { checkFunctionEnabled } = initServiceSettings(db);
+
+export default functions.region('europe-west2').https.onCall(async (data, context) => {
   await checkFunctionEnabled();
 
   // authenticate the request

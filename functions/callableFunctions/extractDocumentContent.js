@@ -1,12 +1,13 @@
-const functions = require('firebase-functions');
-const config = require('../shared/config.js');
-const { firebase, db } = require('../shared/admin.js');
-const { extractDocumentContent } = require('../shared/file-extraction/extractDocumentContent')(config, firebase);
-// const { logEvent } = require('../actions/logs/logEvent')(firebase, db, auth);
-const { checkFunctionEnabled } = require('../shared/serviceSettings.js')(db);
-// const { PERMISSIONS, hasPermissions } = require('../shared/permissions');
+import * as functions from 'firebase-functions/v1';
+import config from '../shared/config.js';
+import { firebase, db } from '../shared/admin.js';
+import initExtractDocumentContent from '../shared/file-extraction/extractDocumentContent.js';
+import initServiceSettings from '../shared/serviceSettings.js';
 
-module.exports = functions.region('europe-west2').https.onCall(async (data, context) => {
+const { extractDocumentContent } = initExtractDocumentContent(config, firebase);
+const { checkFunctionEnabled } = initServiceSettings(db);
+
+export default functions.region('europe-west2').https.onCall(async (data, context) => {
   await checkFunctionEnabled();
 
   // authenticate the request
