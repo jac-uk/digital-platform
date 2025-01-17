@@ -28,27 +28,28 @@ export const isProduction = environment === 'production';
  * @returns {string} one of environment literal: ['production', 'staging', 'develop'] 
  */
 function whichEnvironment(projectId) {
-  const lowercaseProjectId = projectId.toLowerCase();
-  const environmentMarks = {
-    production: [
-      'production',
-      'prod',
-      'live',
-    ],
-    staging: [
-      'staging',
-    ],
-    develop: [
-      'develop',
-      'dev',
-    ],
-  };
-
-  for (const [environment, marks] of Object.entries(environmentMarks)) {
-    for (const mark of marks) {
-      if (lowercaseProjectId.includes(mark)) return environment;
+  if (projectId) {
+    const lowercaseProjectId = projectId.toLowerCase();
+    const environmentMarks = {
+      production: [
+        'production',
+        'prod',
+        'live',
+      ],
+      staging: [
+        'staging',
+      ],
+      develop: [
+        'develop',
+        'dev',
+      ],
+    };
+  
+    for (const [environment, marks] of Object.entries(environmentMarks)) {
+      for (const mark of marks) {
+        if (lowercaseProjectId.includes(mark)) return environment;
+      }
     }
   }
-  
   return '';
 }

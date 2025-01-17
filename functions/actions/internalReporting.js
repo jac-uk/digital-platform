@@ -1,5 +1,6 @@
 import { getDocuments, dedupeArray } from '../shared/helpers.js';
-import { listAllUsers } from './userRoles.js';
+import candidateCompleted2FASinceDate from '../shared/candidateHelper.js';
+import listAllUsers from './userRoles.js';
 
 export default (db, auth) => {
 
@@ -31,7 +32,7 @@ export default (db, auth) => {
         if (doc.exists) {
           const personalDetails = doc.data();
           if (personalDetails.twoFactorAuthVerifiedAt) {
-            if (!specifiedCutoffDate || (personalDetails.twoFactorAuthVerifiedAt.toDate() >= new Date(specifiedCutoffDate))) {
+            if (candidateCompleted2FASinceDate(personalDetails)) {
               ++candidatesCompleted2FA;
             }
           }
@@ -67,7 +68,7 @@ export default (db, auth) => {
         if (doc.exists) {
           const personalDetails = doc.data();
           if (personalDetails.twoFactorAuthVerifiedAt) {
-            if (!specifiedCutoffDate || (personalDetails.twoFactorAuthVerifiedAt.toDate() >= new Date(specifiedCutoffDate))) {
+            if (candidateCompleted2FASinceDate(personalDetails)) {
               candidatesCompleted2FA.push([
                 personalDetails.fullName,
                 personalDetails.email,
@@ -84,7 +85,7 @@ export default (db, auth) => {
       console.log(e);
       return false;
     }
-  },
+  }
 
   /**
    * Return all candidates authenticated with google / microsoft (i.e. users who have attempted authentication with admin)
