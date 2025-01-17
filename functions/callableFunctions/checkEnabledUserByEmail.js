@@ -1,4 +1,4 @@
-import functions from 'firebase-functions';
+import * as functions from 'firebase-functions/v1';
 import { auth, db } from '../shared/admin.js';
 import { checkArguments } from '../shared/helpers.js';
 import initCheckEnabledUserByEmail from '../actions/candidates/checkEnabledUserByEmail.js';

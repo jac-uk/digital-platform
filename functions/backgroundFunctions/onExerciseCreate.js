@@ -1,4 +1,4 @@
-import functions from 'firebase-functions';
+import * as functions from 'firebase-functions/v1';
 import { db } from '../shared/admin.js';
 import initExercisesOnCreate from '../actions/exercises/onCreate.js';
 

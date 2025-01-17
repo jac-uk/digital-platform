@@ -1,4 +1,4 @@
-import functions from 'firebase-functions';
+import * as functions from 'firebase-functions/v1';
 import { auth } from '../shared/admin.js';
 
 export default functions.region('europe-west2').https.onCall(async (data, context) => {

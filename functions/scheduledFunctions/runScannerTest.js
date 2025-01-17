@@ -1,5 +1,5 @@
 import config from '../shared/config.js';
-import functions from 'firebase-functions';
+import * as functions from 'firebase-functions/v1';
 import { firebase, db } from '../shared/admin.js';
 import runScannerTestInit from '../actions/malware-scanning/runScannerTest.js';
 

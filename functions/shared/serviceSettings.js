@@ -1,4 +1,4 @@
-import functions from 'firebase-functions';
+import * as functions from 'firebase-functions/v1';
 import { getDocument } from './helpers.js';
 
 export default (db) => {

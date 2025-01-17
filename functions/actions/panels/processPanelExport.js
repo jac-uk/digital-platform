@@ -63,7 +63,7 @@ export default (config, firebase, db) => {
 
       const promises = [];
 
-      if (panel.type === 'selection' || panel.type === 'sift') {
+      if (['selection', 'selectionDay', 'sift'].includes(panel.type)) {
 
         // Create application data document
         promises.push(

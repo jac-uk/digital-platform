@@ -1,4 +1,4 @@
-import functions from 'firebase-functions';
+import * as functions from 'firebase-functions/v1';
 import config from '../shared/config.js';
 import { firebase, db } from '../shared/admin.js';
 import initExtractDocumentContent from '../shared/file-extraction/extractDocumentContent.js';

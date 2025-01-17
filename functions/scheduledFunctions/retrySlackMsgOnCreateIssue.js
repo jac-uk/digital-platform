@@ -1,5 +1,5 @@
 import config from '../shared/config.js';
-import functions from 'firebase-functions';
+import * as functions from 'firebase-functions/v1';
 import { auth, firebase, db } from '../shared/admin.js';
 import initSlackActions from '../actions/slack.js';
 const { retrySlackMessageOnCreateIssue } = initSlackActions(auth, config, db, firebase);

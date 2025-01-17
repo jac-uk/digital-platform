@@ -1,4 +1,4 @@
-import functions from 'firebase-functions';
+import * as functions from 'firebase-functions/v1';
 import { getDocument } from '../shared/helpers.js';
 import { firebase, db, auth } from '../shared/admin.js';
 import initExportApplicationCharacterIssues from '../actions/exercises/exportApplicationCharacterIssues.js';

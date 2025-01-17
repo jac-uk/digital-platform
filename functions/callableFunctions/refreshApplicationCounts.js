@@ -1,4 +1,4 @@
-import functions from 'firebase-functions';
+import * as functions from 'firebase-functions/v1';
 import { firebase, db } from '../shared/admin.js';
 import { checkArguments } from '../shared/helpers.js';
 import initRefreshApplicationCounts from '../actions/exercises/refreshApplicationCounts.js';
