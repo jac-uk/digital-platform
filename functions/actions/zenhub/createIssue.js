@@ -88,6 +88,7 @@ export default (config, firebase, db, auth) => {
 
   function getScreenshotUrl(environment, bugReportId) {
     if (environment === 'DEVELOP') {
+      // need to update this to the correct url before merging
       return `https://jac-admin-develop--pr2639-feature-2627-improve-gg1s0z6s.web.app/bug-reports/screenshot/${bugReportId}`;
       // return `https://admin-develop.judicialappointments.digital/bug-reports/screenshot/${bugReportId}`;
     } else if (environment === 'STAGING') {
