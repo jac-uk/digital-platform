@@ -27,7 +27,7 @@
     "mammoth": "^1.8.0",
     "notifications-node-client": "^8.2.1",
     "path": "^0.12.7",
-    "request-promise": "^4.2.6"
+    "request-promise": "^0.0.1"
   },
   "devDependencies": {
     "eslint": "^9.17.0",
