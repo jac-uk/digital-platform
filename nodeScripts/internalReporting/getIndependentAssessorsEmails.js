@@ -6,10 +6,7 @@
 
 import { app, db, auth } from '../shared/admin.js';
 import initInternalReporting from '../../functions/actions/internalReporting.js';
-
-
 import path  from 'path';
-
 import ExcelJS from 'exceljs';
 
 const { getIndependentAssessorsSinceSignInDate } = initInternalReporting(db, auth);

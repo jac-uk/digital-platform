@@ -15,7 +15,7 @@ export default () => {
    */
   function candidateCompleted2FASinceDate(candidatePersonalDetails, specifiedCutoffDate = null) {
      return (
-      objectHasNestedProperty(candidatePersonalDetails, twoFactorAuthVerifiedAt)
+      objectHasNestedProperty(candidatePersonalDetails, 'twoFactorAuthVerifiedAt')
       && (!specifiedCutoffDate || (candidatePersonalDetails.twoFactorAuthVerifiedAt.toDate() >= new Date(specifiedCutoffDate))));
   }
 };

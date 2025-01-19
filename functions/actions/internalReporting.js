@@ -1,6 +1,10 @@
 import { getDocuments, dedupeArray } from '../shared/helpers.js';
-import candidateCompleted2FASinceDate from '../shared/candidateHelper.js';
-import listAllUsers from './userRoles.js';
+import { auth } from '../shared/admin.js';
+import initCandidateHelper from '../shared/candidateHelper.js';
+import initAuthHelper from '../shared/authHelper.js';
+
+const  { candidateCompleted2FASinceDate } = initCandidateHelper(auth);
+const  { listAllUsers } = initAuthHelper(auth);
 
 export default (db, auth) => {
 
