@@ -32,7 +32,9 @@ export {
   formatAddress,
   formatPreviousAddresses,
   splitFullName,
-  isDifferentPropsByPath
+  isDifferentPropsByPath,
+  dedupeArray,
+  dedupeArrayOfObjects
 };
 
 function calculateMean(numArray) {
@@ -467,3 +469,34 @@ function isDifferentPropsByPath(object1, object2, pathInObject) {
   const val2 = get(object2, pathInObject, null);
   return val1 !== val2;
 }
+
+/**
+ * Remove duplicates from an array of array
+ * Pass in the index of the value you want to dedupe on, eg second element means passing 1
+ * @param {Array} arr 
+ * @param {Number} dupeIndex 
+ * @returns 
+ */
+function dedupeArray(arr, dupeIndex) {
+  const seen = new Set(); // Use a Set to track unique values
+
+  return arr.filter((item) => {
+    const value = item[dupeIndex];
+    if (seen.has(value)) {
+      return false;
+    }
+    seen.add(value);
+    return true; // Keep the first occurrence
+  });
+}
+
+const dedupeArrayOfObjects = (arr, key) => {
+  const seen = new Map(); // Use a Map to track unique emails
+  return arr.filter((item) => {
+    if (seen.has(item[key])) {
+      return false; // Skip duplicate vals
+    }
+    seen.set(item[key], true); // Mark val as seen
+    return true; // Keep the first occurrence
+  });
+};

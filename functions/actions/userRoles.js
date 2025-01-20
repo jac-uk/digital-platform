@@ -1,6 +1,10 @@
 import { getDocument, getDocuments, applyUpdates } from '../shared/helpers.js';
 import { PERMISSIONS } from '../shared/permissions.js';
 
+import { auth } from '../shared/admin.js';
+import initAuthHelper from '../shared/authHelper.js';
+const  { listAllUsers } = initAuthHelper(auth);
+
 export default (db, auth) => {
 
   //TODO: add logging for all changes to roles
@@ -94,20 +98,6 @@ export default (db, auth) => {
     catch(e) {
       console.log(e);
       return false;
-    }
-  }
-
-  async function listAllUsers(users, nextPageToken) {
-    // List batch of users, 1000 at a time.
-    try {
-      const listUsersResult = await auth.listUsers(1000, nextPageToken);
-      users.push(...listUsersResult.users);
-      if (listUsersResult.pageToken) {
-        // List next batch of users.
-        await listAllUsers(users, listUsersResult.pageToken);
-      }
-    } catch (error) {
-      console.log('Error listing users:', error);
     }
   }
 
