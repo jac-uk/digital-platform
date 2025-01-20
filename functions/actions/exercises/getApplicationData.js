@@ -165,6 +165,7 @@ export default (config, firebase, db, auth) => {
         }
 
       }
+      record['_status'] = result.status;
 
       data.push(record);
     }
@@ -178,10 +179,10 @@ export default (config, firebase, db, auth) => {
           whereClause.value = whereClause.value.toString().toLowerCase();
           switch (whereClause.operator) {
             case '==':
-              // eslint-disable-next-line eqeqeq
+               
               return value != whereClause.value;
             case '!=':
-              // eslint-disable-next-line eqeqeq
+               
               return value == whereClause.value;
           }
           return false;
