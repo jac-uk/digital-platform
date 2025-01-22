@@ -15,7 +15,7 @@ export default (firebase, config, db) => {
     generateHandoverReport,
   };
 
-  async function generateHandoverReport(exerciseId) {
+  async function generateHandoverReport(exerciseId, forAdminDisplay = false) {
 
     // get exercise
     const exercise = await getDocument(db.collection('exercises').doc(exerciseId));
@@ -38,10 +38,10 @@ export default (firebase, config, db) => {
     const applications = await getAllDocuments(db, applicationRefs);
 
     // get report headers
-    const headers = reportHeaders(exercise);
+    const headers = reportHeaders(exercise, forAdminDisplay);
 
     // get report rows
-    const rows = reportData(db, exercise, applicationRecords, applications);
+    const rows = reportData(db, exercise, applicationRecords, applications, forAdminDisplay);
 
     // construct the report document
     const report = {
@@ -61,12 +61,22 @@ export default (firebase, config, db) => {
 
 /**
  * Get the report headers for the given exercise
+ * Prepend extra headers if the data is intended for the admin frontend
  *
  * @param {document} exercise
  * @return {array}
  */
-const reportHeaders = (exercise) => {
-  return [
+const reportHeaders = (exercise, forAdminDisplay) => {
+  let headers = [];
+  if (forAdminDisplay) {
+    headers = [
+      { title: 'Application ID', ref: 'applicationId' },
+      { title: 'Candidate ID', ref: 'candidateId' },
+      { title: 'Reference Number', ref: 'referenceNumber' },
+      { title: 'Full Name', ref: 'fullName' },
+    ];
+  }
+  headers.push(...[
     { title: 'Candidate Title', ref: 'title' },
     { title: 'Candidate First Name', ref: 'firstName' },
     { title: 'Professional name', ref: 'professionalName' },
@@ -122,11 +132,13 @@ const reportHeaders = (exercise) => {
     { title: 'Part Time Working Preferences', ref: 'interestedInPartTime' },
     { title: 'Part Time Working Preferences details', ref: 'partTimeWorkingPreferencesDetails' },
     { title: 'Suitable for vacancies in Wales', ref: 'welshPosts' },
-  ];
+  ]);
+  return headers;
 };
 
 /**
  * Get the report data for the given exercise and applications
+ * Prepend extra cols if the data is intended for the admin frontend
  *
  * @param {db} db
  * @param {document} exercise
@@ -134,7 +146,7 @@ const reportHeaders = (exercise) => {
  * @param {array} applications
  * @returns {array}
  */
-const reportData = (db, exercise, applicationRecords, applications) => {
+const reportData = (db, exercise, applicationRecords, applications, forAdminDisplay) => {
   return applications.map((application) => {
     const welshPosts = null;  // To be manually filled in
     const partTimeWorkingPreferences = {
@@ -145,6 +157,7 @@ const reportData = (db, exercise, applicationRecords, applications) => {
 
     // return report data for this application
     return {
+      ...(forAdminDisplay ? adminDisplayFields(application) : {}),
       ...formatPersonalDetails(application.personalDetails),
       ...formatDiversityData(application.equalityAndDiversitySurvey, exercise, application.personalDetails),
       ...formatRelevantQualificationsData(application),
@@ -153,6 +166,20 @@ const reportData = (db, exercise, applicationRecords, applications) => {
       welshPosts,
     };
   });
+};
+
+/**
+ * Fields only used for display on the admin frontend (not for download so get stripped out by the frontend)
+ * @param {Object} application 
+ * @returns 
+ */
+const adminDisplayFields = (application) => {
+  return {
+    applicationId: application.id,
+    candidateId: application.userId,
+    referenceNumber: application.referenceNumber,
+    fullName: application.personalDetails.fullName,
+  };
 };
 
 const formatPersonalDetails = (personalDetails) => {
@@ -243,11 +270,12 @@ const formatRelevantQualificationsData = (application) => {
   };
   if (application.qualifications && Array.isArray(application.qualifications)) {
     for (const qualification of application.qualifications) {
+      const qualificationType = qualification.type ? qualification.type.toLowerCase() : '';
       if (Object.prototype.hasOwnProperty.call(qualification, 'calledToBarDate')) {
         response.calledToBarDate = helpers.formatDate(qualification.calledToBarDate);
       }
       // check if solicitor and put their qualification date in
-      if (Object.prototype.hasOwnProperty.call(qualification, 'date') && qualification.type === 'solicitor') {
+      if (Object.prototype.hasOwnProperty.call(qualification, 'date') && (qualificationType === 'solicitor' || qualificationType === 'cilex') {
         response.date = helpers.formatDate(qualification.date);
       }
     }

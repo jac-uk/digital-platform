@@ -8,8 +8,10 @@ const { generateHandoverReport } = initGenerateHandoverReport(firebase, config, 
 
 // Live: IiaXjmpDQd7BQx7ovlv0, R5mu47EVqEPf1WbXsLfZ, Bfoe64GS5GoDOSgXz2GT, T0UYPpfHpLUDLdYWlnQI, IiaXjmpDQd7BQx7ovlv0
 
+const forAdminDisplay = true;
+
 const main = async () => {
-  return generateHandoverReport('IiaXjmpDQd7BQx7ovlv0');
+  return generateHandoverReport('IiaXjmpDQd7BQx7ovlv0', forAdminDisplay);
 };
 
 main()
