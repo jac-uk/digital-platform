@@ -1,7 +1,6 @@
 import * as helpers from '../../shared/converters/helpers.js';
 import lookup from '../../shared/converters/lookup.js';
-import { getDocument, getDocuments, getAllDocuments, removeHtml } from '../../shared/helpers.js';
-import { getAdditionalWorkingPreferences } from '../../shared/converters/workingPreferencesConverter.js';
+import { getDocument, getDocuments, getAllDocuments, removeHtml, objectHasNestedProperty } from '../../shared/helpers.js';
 import initApplicationConverter from '../../shared/converters/applicationConverter.js';
 import initUpdateApplicationRecordStageStatus from '../applicationRecords/updateApplicationRecordStageStatus.js';
 
@@ -16,7 +15,7 @@ export default (firebase, config, db) => {
     generateHandoverReport,
   };
 
-  async function generateHandoverReport(exerciseId) {
+  async function generateHandoverReport(exerciseId, forAdminDisplay = false) {
 
     // get exercise
     const exercise = await getDocument(db.collection('exercises').doc(exerciseId));
@@ -39,10 +38,10 @@ export default (firebase, config, db) => {
     const applications = await getAllDocuments(db, applicationRefs);
 
     // get report headers
-    const headers = reportHeaders(exercise);
+    const headers = reportHeaders(exercise, forAdminDisplay);
 
     // get report rows
-    const rows = reportData(db, exercise, applicationRecords, applications);
+    const rows = reportData(db, exercise, applicationRecords, applications, forAdminDisplay);
 
     // construct the report document
     const report = {
@@ -62,118 +61,84 @@ export default (firebase, config, db) => {
 
 /**
  * Get the report headers for the given exercise
+ * Prepend extra headers if the data is intended for the admin frontend
  *
  * @param {document} exercise
  * @return {array}
  */
-const reportHeaders = (exercise) => {
-
-  const headers = {
-    personalDetails: [
-      { title: 'Candidate ID', ref: 'candidateId'},
-      { title: 'Candidate Title', ref: 'title' },
-      { title: 'Candidate Name', ref: 'fullName' },
-      { title: 'Middle name(s)', ref: 'middleNames' },
-      { title: 'Suffix', ref: 'suffix' },
-      { title: 'Previous known name(s)', ref: 'previousNames' },
-      { title: 'Professional name', ref: 'professionalName' },
-      { title: 'Other Names', ref: 'otherNames' },
-      { title: 'Email address', ref: 'email' },
-      { title: 'Date of Birth', ref: 'dateOfBirth' },
-      { title: 'National Insurance Number', ref: 'nationalInsuranceNumber' },
-      { title: 'Citizenship', ref: 'citizenship' },
-      { title: 'Contact Address', ref: 'address' },
-      { title: 'Previous addresses', ref: 'previousAddresses' },
-      { title: 'Telephone number', ref: 'phone' },
-    ],
-    qualifications: {
-      legalOrLeadership: [
-        { title: 'Legal qualifications', ref: 'qualifications' },
-        { title: 'Judicial experience', ref: 'judicialExperience' },
-      ],
-    },
-    memberships: {
-      title: 'Professional Memberships', ref: 'professionalMemberships' ,
-    },
-    diversity: {
-      common: [
-        { title: 'Agreed to share Diversity', ref: 'shareData' },
-        { title: 'Professional Background', ref: 'professionalBackground' },
-        { title: 'Previous roles', ref: 'formattedFeePaidJudicialRole' },
-        { title: 'School type', ref: 'stateOrFeeSchool16' },
-        { title: 'Parents attended university', ref: 'parentsAttendedUniversity' },
-        { title: 'Ethnicity', ref: 'ethnicGroup' },
-        { title: 'Gender', ref: 'gender' },
-        { title: 'Sexual orientation', ref: 'sexualOrientation' },
-        { title: 'Disability', ref: 'disability' },
-        { title: 'Religion or belief', ref: 'religionFaith' },
-      ],
-      legalOrLeadership: [
-        { title: 'Judicial workshadowing', ref: 'participatedInJudicialWorkshadowingScheme' },
-        { title: 'Attended Outreach Events', ref: 'attendedOutreachEvents'},
-        { title: 'PAJE', ref: 'hasTakenPAJE' },
-      ],
-    },
-  };
-
-  // old version equality and diversity info 
-  if (!isApplicationOpenDatePost01042023(exercise)) {
-    headers.diversity.common = [
-      { title: 'Previous roles', ref: 'formattedFeePaidJudicialRole' },
-      { title: 'School type', ref: 'stateOrFeeSchool' },
-      { title: 'Parents attended university', ref: 'firstGenerationStudent' },
-      { title: 'Ethnicity', ref: 'ethnicGroup' },
-      { title: 'Gender', ref: 'gender' },
-      { title: 'Sexual orientation', ref: 'sexualOrientation' },
-      { title: 'Disability', ref: 'disability' },
-      { title: 'Religion or belief', ref: 'religionFaith' },
+const reportHeaders = (exercise, forAdminDisplay) => {
+  let headers = [];
+  if (forAdminDisplay) {
+    headers = [
+      { title: 'Application ID', ref: 'applicationId' },
+      { title: 'Candidate ID', ref: 'candidateId' },
+      { title: 'Reference Number', ref: 'referenceNumber' },
+      { title: 'Full Name', ref: 'fullName' },
     ];
   }
-
-  const reportHeaders = [
-    { title: 'Application ID', ref: 'applicationId' },
-    { title: 'Reference Number', ref: 'referenceNumber' },
-    ...headers.personalDetails,
-  ];
-
-  if (exercise.typeOfExercise === 'legal' || exercise.typeOfExercise === 'leadership') {
-    reportHeaders.push(...headers.qualifications.legalOrLeadership);
-    reportHeaders.push(...headers.diversity.common);
-    reportHeaders.push(...headers.diversity.legalOrLeadership);
-  }
-
-  if (exercise.typeOfExercise === 'non-legal') {
-    reportHeaders.push(headers.memberships);
-    reportHeaders.push(...headers.diversity.common);
-  }
-
-  if (exercise.typeOfExercise === 'leadership-non-legal') {
-    reportHeaders.push(...headers.diversity.common);
-  }
-
-  if (exercise.isSPTWOffered) {
-    reportHeaders.push(
-      { title: 'Part Time Working Preferences', ref: 'interestedInPartTime' },
-      { title: 'Part Time Working Preferences details', ref: 'partTimeWorkingPreferencesDetails' }
-    );
-  }
-
-  // separate additional working preferences
-  if (Array.isArray(exercise.additionalWorkingPreferences)) {
-    exercise.additionalWorkingPreferences.forEach((additionalWorkingPreference, index) => {
-      reportHeaders.push({ title: additionalWorkingPreference.question, ref: `additionalWorkingPreference${index}` });
-    });
-  }
-
-  reportHeaders.push(
-    { title: 'Welsh posts', ref: 'welshPosts' }
-  );
-
-  return reportHeaders;
+  headers.push(...[
+    { title: 'Candidate Title', ref: 'title' },
+    { title: 'Candidate First Name', ref: 'firstName' },
+    { title: 'Professional name', ref: 'professionalName' },
+    { title: 'Candidate Last Name', ref: 'lastName' },
+    { title: 'Previous known name(s)', ref: 'previousNames' },
+    { title: 'Suffix', ref: 'suffix' },
+    { title: 'Blank', ref: 'blank1' },
+    { title: 'Date of Birth', ref: 'dateOfBirth' },
+    { title: 'National Insurance Number', ref: 'nationalInsuranceNumber' },
+    { title: 'Street', ref: 'street' },
+    { title: 'Street2', ref: 'street2' },
+    { title: 'Blank', ref: 'blank2' },
+    { title: 'Blank', ref: 'blank3' },
+    { title: 'Town', ref: 'town' },
+    { title: 'County', ref: 'county' },
+    { title: 'Postcode', ref: 'postcode' },
+    { title: 'Country', ref: 'country' },         // Q
+    { title: 'Phone number', ref: 'phone' },
+    { title: 'Mobile number', ref: 'mobile' },
+    { title: 'Email address', ref: 'email' },
+    { title: 'Gender', ref: 'gender' },
+    { title: 'Citizenship', ref: 'citizenship' },   // V
+    { title: 'Ethnicity', ref: 'ethnicGroup' },
+    { title: 'School type', ref: 'stateOrFeeSchool16' },
+    { title: 'Parents attended university', ref: 'parentsAttendedUniversity' },
+    { title: 'Occupation of main household earner', ref: 'occupationOfChildhoodEarner' },       // Z
+    { title: 'Religion or belief', ref: 'religionFaith' },                                      // AA
+    { title: 'Sexual orientation', ref: 'sexualOrientation' },
+    { title: 'Blank', ref: 'blank4' },
+    { title: 'Blank', ref: 'blank5' },
+    { title: 'Same as sex registered at birth', ref: 'sameAsSexAtBirth' },
+    { title: 'Blank', ref: 'blank6' },
+    { title: 'Judicial workshadowing', ref: 'participatedInJudicialWorkshadowingScheme' },
+    { title: 'Disability', ref: 'disability' },             // AH
+    { title: 'Blank', ref: 'blank7' },
+    { title: 'Blank', ref: 'blank8' },
+    { title: 'Blank', ref: 'blank9' },
+    { title: 'Blank', ref: 'blank10' },
+    { title: 'Date called to the Bar', ref: 'calledToBarDate' },
+    { title: 'Date qualified', ref: 'date' },                         // AN
+    { title: 'Blank', ref: 'blank11' },
+    { title: 'Blank', ref: 'blank12' },
+    { title: 'Blank', ref: 'blank13' },
+    { title: 'Blank', ref: 'blank14' },
+    { title: 'Blank', ref: 'blank15' },
+    { title: 'Blank', ref: 'blank16' },
+    { title: 'Blank', ref: 'blank17' },
+    { title: 'Blank', ref: 'blank18' },
+    { title: 'Blank', ref: 'blank19' },
+    { title: 'Blank', ref: 'blank20' },
+    { title: 'Blank', ref: 'blank21' },
+    { title: 'Agreed to share Diversity', ref: 'shareData' },
+    { title: 'Part Time Working Preferences', ref: 'interestedInPartTime' },
+    { title: 'Part Time Working Preferences details', ref: 'partTimeWorkingPreferencesDetails' },
+    { title: 'Suitable for vacancies in Wales', ref: 'welshPosts' },
+  ]);
+  return headers;
 };
 
 /**
  * Get the report data for the given exercise and applications
+ * Prepend extra cols if the data is intended for the admin frontend
  *
  * @param {db} db
  * @param {document} exercise
@@ -181,165 +146,139 @@ const reportHeaders = (exercise) => {
  * @param {array} applications
  * @returns {array}
  */
-const reportData = (db, exercise, applicationRecords, applications) => {
-
+const reportData = (db, exercise, applicationRecords, applications, forAdminDisplay) => {
   return applications.map((application) => {
-
-    // format qualifications
-    let qualifications;
-    let memberships;
-    if (exercise.typeOfExercise === 'legal' || exercise.typeOfExercise === 'leadership') {
-      qualifications = formatLegalData(exercise, application);
-    } else if (exercise.typeOfExercise === 'non-legal') {
-      memberships = {
-        professionalMemberships: helpers.formatMemberships(application, exercise),
-      };
-    }
-
-    const additionalPreferences = {};
-    if (Array.isArray(application.additionalWorkingPreferences)) {
-      getAdditionalWorkingPreferences(application, exercise).forEach((additionalWorkingPreference, index) => {
-        additionalPreferences[`additionalWorkingPreference${index}`] = removeHtml(additionalWorkingPreference.value).replace('answer:', '').trim() || '';
-      });
-    }
-
-    const welshPosts = exercise.welshRequirement
-      ? getWelshData(application).map(x => `${removeHtml(x.label)}\n${removeHtml(x.value)}`).join('\n\n') : '';
+    const welshPosts = null;  // To be manually filled in
     const partTimeWorkingPreferences = {
       interestedInPartTime: helpers.toYesNo(application.interestedInPartTime) || '',
       partTimeWorkingPreferencesDetails: application.partTimeWorkingPreferencesDetails || '',
     };
+    const shareData = application.equalityAndDiversitySurvey ? helpers.toYesNo(application.equalityAndDiversitySurvey.shareData) : null;
 
     // return report data for this application
     return {
-      applicationId: application.id,
-      referenceNumber: application.referenceNumber || null,
-      candidateId: getCandidateId(applicationRecords, application),
+      ...(forAdminDisplay ? adminDisplayFields(application) : {}),
       ...formatPersonalDetails(application.personalDetails),
-      ...qualifications,
-      ...memberships,
-      ...formatDiversityData(application.equalityAndDiversitySurvey, exercise),
-      ...additionalPreferences,
-      welshPosts,
+      ...formatDiversityData(application.equalityAndDiversitySurvey, exercise, application.personalDetails),
+      ...formatRelevantQualificationsData(application),
+      shareData,
       ...partTimeWorkingPreferences,
+      welshPosts,
     };
-
   });
 };
 
-const getCandidateId = (applicationRecords, application) => {
-  const applicationRecord = applicationRecords.find(e => e.application.id === application.id);
-  return applicationRecord.candidate.id;
+/**
+ * Fields only used for display on the admin frontend (not for download so get stripped out by the frontend)
+ * @param {Object} application 
+ * @returns 
+ */
+const adminDisplayFields = (application) => {
+  return {
+    applicationId: application.id,
+    candidateId: application.userId,
+    referenceNumber: application.referenceNumber,
+    fullName: application.personalDetails.fullName,
+  };
 };
 
 const formatPersonalDetails = (personalDetails) => {
-  const formatAddress = (address => {
-    const result = [];
-    if (address.street) result.push(address.street);
-    if (address.street2) result.push(address.street2);
-    if (address.town) result.push(address.town);
-    if (address.county) result.push(address.county);
-    if (address.postcode) result.push(address.postcode);
-    return `${result.join(' ')} `;
-  });
-
-  let formattedPreviousAddresses;
-  if (personalDetails.address && !personalDetails.address.currentMoreThan5Years) {
-    if (personalDetails.address.previous) {
-      formattedPreviousAddresses = personalDetails.address.previous.map((address) => {
-        const dates = `${helpers.formatDate(address.startDate)} - ${helpers.formatDate(address.endDate)}`;
-        const formattedAddress = formatAddress(address);
-        return `${dates} ${formattedAddress}`;
-      }).join('\n\n');  
-    }
-  }
-
-  let candidate = {
+  const address = objectHasNestedProperty(personalDetails, 'address.current') ? personalDetails.address.current : null;
+  return {
     title: personalDetails.title || null,
-    middleNames: personalDetails.middleNames || null,
-    suffix: personalDetails.suffix || null,
-    previousNames: personalDetails.previousNames || null,
+    firstName: personalDetails.firstName || null,
     professionalName: personalDetails.professionalName || null,
-    otherNames: personalDetails.otherNames || null,
-    email: personalDetails.email || null,
+    lastName: personalDetails.lastName || null,
+    previousNames: personalDetails.previousNames || null,
+    suffix: personalDetails.suffix || null,
+    blank1: null,
     dateOfBirth: helpers.formatDate(personalDetails.dateOfBirth),
     nationalInsuranceNumber: helpers.formatNIN(personalDetails.nationalInsuranceNumber),
+    street: address && address.street ? address.street : null,
+    street2: address && address.street2 ? address.street2 : null,
+    blank2: null,
+    blank3: null,
+    town: address && address.town ? address.town : null,
+    county: address && address.county ? address.county : null,
+    postcode: address && address.postcode ? address.postcode : null,
     citizenship: lookup(personalDetails.citizenship),
-    address: personalDetails.address ? formatAddress(personalDetails.address.current) : null,
-    previousAddresses: formattedPreviousAddresses || null,
     phone: personalDetails.phone || null,
+    mobile: personalDetails.mobile || null,
+    email: personalDetails.email || null,
   };
-
-  if (personalDetails.firstName && personalDetails.lastName) {
-    candidate.fullName = `${personalDetails.firstName} ${personalDetails.lastName}`;
-  } else {
-    candidate.fullName = personalDetails.fullName;
-  }
-  return candidate;
 };
 
-const formatDiversityData = (survey, exercise) => {
+const formatDiversityData = (survey, exercise, personalDetails) => {
   if (!survey) return {};
-
   const share = (value) => survey.shareData ? value : null;
 
-  let formattedFeePaidJudicialRole;
-  if (survey.shareData) {
-    formattedFeePaidJudicialRole = helpers.toYesNo(lookup(survey.feePaidJudicialRole));
-    if (survey.feePaidJudicialRole === 'other-fee-paid-judicial-office') {
-      formattedFeePaidJudicialRole = `${formattedFeePaidJudicialRole} ${survey.otherFeePaidJudicialRoleDetails}`;
+  // If (Same as sex registered at birth = Yes) value = value in column U; else if (Same as sex registered at birth = No) value = opposite of value in column U (i.e. if U = male, value = female and vice versa; else if (Same as sex registered at birth = Prefer not to say) value = Prefer not to say
+  const sameAsSexRegBirth = survey.changedGender; // when changedGender is false it means they HAVEN'T changed gender, this is due to the question not aligning with the variable name!
+  let sameAsSexValue = null;
+  const gender = survey.gender;
+  if (sameAsSexRegBirth) {
+    sameAsSexValue = share(lookup(survey.gender));
+  }
+  else if (sameAsSexRegBirth === 'prefer-not-to-say') {
+    sameAsSexValue = share(lookup('prefer-not-to-say'));
+  }
+  else {
+    if (gender === 'male') {
+      sameAsSexValue = share(lookup('female'));
+    }
+    else if (gender === 'female') {
+      sameAsSexValue = share(lookup('male'));
     }
   }
-
-  const formattedDiversityData = {
-    shareData: helpers.toYesNo(survey.shareData),
-    professionalBackground: share(survey.professionalBackground.map(position => lookup(position)).join(', ')),
-    formattedFeePaidJudicialRole: formattedFeePaidJudicialRole || null,
-    stateOrFeeSchool: share(lookup(survey.stateOrFeeSchool)),
-    firstGenerationStudent: share(helpers.toYesNo(lookup(survey.firstGenerationStudent))),
+  return {
+    gender: share(lookup(survey.gender)),
+    country: lookup(personalDetails.citizenship), // the content should come from the Citizenship field as most candidates will not specify country in their address
+    ethnicGroup: share(lookup(survey.ethnicGroup)),
     stateOrFeeSchool16: share(lookup(survey.stateOrFeeSchool16)),
     parentsAttendedUniversity: share(helpers.toYesNo(lookup(survey.parentsAttendedUniversity))),
-    ethnicGroup: share(lookup(survey.ethnicGroup)),
-    gender: share(lookup(survey.gender)),
-    sexualOrientation: share(lookup(survey.sexualOrientation)),
-    disability: share(survey.disability ? survey.disabilityDetails : helpers.toYesNo(survey.disability)),
+    occupationOfChildhoodEarner: lookup(survey.occupationOfChildhoodEarner),
     religionFaith: share(lookup(survey.religionFaith)),
+    sexualOrientation: share(lookup(survey.sexualOrientation)),
+    blank4: null,
+    blank5: null,
+    sameAsSexAtBirth: sameAsSexValue,
+    blank6: null,
+    participatedInJudicialWorkshadowingScheme: share(helpers.toYesNo(lookup(survey.participatedInJudicialWorkshadowingScheme))),
+    disability: share(helpers.toYesNo(survey.disability)),
+    blank7: null,
+    blank8: null,
+    blank9: null,
+    blank10: null,
   };
-
-  if (exercise.typeOfExercise === 'legal' || exercise.typeOfExercise === 'leadership') {
-    formattedDiversityData.participatedInJudicialWorkshadowingScheme = share(helpers.toYesNo(lookup(survey.participatedInJudicialWorkshadowingScheme)));
-    formattedDiversityData.attendedOutreachEvents = share(helpers.toYesNo(lookup(survey.attendedOutreachEvents)));
-    formattedDiversityData.hasTakenPAJE = share(helpers.toYesNo(lookup(survey.hasTakenPAJE)));
-  }
-
-  return formattedDiversityData;
 };
 
-const formatLegalData = (exercise, application) => {
-  let qualifications = '';
+const formatRelevantQualificationsData = (application) => {
+  const response = {
+    calledToBarDate: null,
+    date: null,
+    blank11: null,
+    blank12: null,
+    blank13: null,
+    blank14: null,
+    blank15: null,
+    blank16: null,
+    blank17: null,
+    blank18: null,
+    blank19: null,
+    blank20: null,
+    blank21: null,
+  };
   if (application.qualifications && Array.isArray(application.qualifications)) {
-    qualifications = application.qualifications.map(qualification => {
-      return [
-        lookup(qualification.location),
-        lookup(qualification.type),
-        helpers.formatDate(qualification.date),
-        qualification.membershipNumber,
-      ].join(' ');
-    }).join('\n');
+    for (const qualification of application.qualifications) {
+      const qualificationType = qualification.type ? qualification.type.toLowerCase() : '';
+      if (Object.prototype.hasOwnProperty.call(qualification, 'calledToBarDate')) {
+        response.calledToBarDate = helpers.formatDate(qualification.calledToBarDate);
+      }
+      // check if solicitor and put their qualification date in
+      if (Object.prototype.hasOwnProperty.call(qualification, 'date') && (qualificationType === 'solicitor' || qualificationType === 'cilex')) {
+        response.date = helpers.formatDate(qualification.date);
+      }
+    }
   }
-
-  const judicialExperience = helpers.getJudicialExperienceString(exercise, application);
-
-  return {
-    qualifications: qualifications,
-    judicialExperience: judicialExperience,
-  };
+  return response;
 };
-
-function isApplicationOpenDatePost01042023(exercise) {
-  const usesPre01042023Questions = ['JAC00130', 'JAC00123', 'JAC00164'].includes(exercise.referenceNumber);
-  if (usesPre01042023Questions) {
-    return false;
-  }
-  return Object.prototype.hasOwnProperty.call(exercise, 'applicationOpenDate') && exercise.applicationOpenDate.toDate() > new Date('2023-04-01');
-}

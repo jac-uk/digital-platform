@@ -6,8 +6,12 @@ import initGenerateHandoverReport from '../functions/actions/exercises/generateH
 
 const { generateHandoverReport } = initGenerateHandoverReport(firebase, config, db);
 
+// Live: IiaXjmpDQd7BQx7ovlv0, R5mu47EVqEPf1WbXsLfZ, Bfoe64GS5GoDOSgXz2GT, T0UYPpfHpLUDLdYWlnQI, IiaXjmpDQd7BQx7ovlv0
+
+const forAdminDisplay = true;
+
 const main = async () => {
-  return generateHandoverReport('ofWyUMtAGBGj6AVck2tH');
+  return generateHandoverReport('IiaXjmpDQd7BQx7ovlv0', forAdminDisplay);
 };
 
 main()
