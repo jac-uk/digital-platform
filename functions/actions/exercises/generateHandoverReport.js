@@ -275,7 +275,7 @@ const formatRelevantQualificationsData = (application) => {
         response.calledToBarDate = helpers.formatDate(qualification.calledToBarDate);
       }
       // check if solicitor and put their qualification date in
-      if (Object.prototype.hasOwnProperty.call(qualification, 'date') && (qualificationType === 'solicitor' || qualificationType === 'cilex') {
+      if (Object.prototype.hasOwnProperty.call(qualification, 'date') && (qualificationType === 'solicitor' || qualificationType === 'cilex')) {
         response.date = helpers.formatDate(qualification.date);
       }
     }
