@@ -31,7 +31,7 @@ export default functions.region('europe-west2').https.onCall(async (data, contex
   }
 
   // generate the report
-  const result = await generateHandoverReport(data.exerciseId);
+  const result = await generateHandoverReport(data.exerciseId, true);
 
   // log an event
   const exercise = await getDocument(db.collection('exercises').doc(data.exerciseId));
