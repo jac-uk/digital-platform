@@ -4,8 +4,30 @@ steps:
         args:
           - '-c'
           - |
+            echo "CI..."
+            npm ci
+            npm run ci:test:rules
+      - name: 'node:18'  # Specify the Node.js version you want to use
+        entrypoint: 'bash'
+        args:
+          - '-c'
+          - |
             echo "Running npm install..."
             npm install  # Run npm install to install dependencies
+      - name: 'node:18'  # Specify the Node.js version you want to use
+        entrypoint: 'bash'
+        args:
+          - '-c'
+          - |
+            echo "Test Actions..."
+            npm run test:actions
+      - name: 'node:18'  # Specify the Node.js version you want to use
+        entrypoint: 'bash'
+        args:
+          - '-c'
+          - |
+            echo "Test Shared..."
+            npm run test:shared    
       - name: gcr.io/digital-platform-develop/firebase
         args: ['deploy', '--project=digital-platform-develop', '--only=functions:getApplicationData']
 options:
