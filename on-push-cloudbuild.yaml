@@ -1,12 +1,11 @@
 steps:
-  - name: 'node:18'  # Specify the Node.js version you want to use
-    entrypoint: 'bash'
-    args:
-      - '-c'
-      - |
-        echo "Running npm install..."
-        npm install  # Run npm install to install dependencies
-steps:
+      - name: 'node:18'  # Specify the Node.js version you want to use
+        entrypoint: 'bash'
+        args:
+          - '-c'
+          - |
+            echo "Running npm install..."
+            npm install  # Run npm install to install dependencies
       - name: gcr.io/digital-platform-develop/firebase
         args: ['deploy', '--project=digital-platform-develop', '--only=functions:getApplicationData']
 options:
