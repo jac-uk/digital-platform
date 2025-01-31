@@ -125,6 +125,7 @@ export default (config, firebase, db) => {
         queue: applicationIds,
         errors: [],
       },
+      error: '',
     };
     await panel.ref.update(data);
 
