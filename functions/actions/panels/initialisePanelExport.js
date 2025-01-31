@@ -75,6 +75,7 @@ export default (config, firebase, db) => {
     if (!drives.length) {
       console.error('Folder not found:', driveName);
       const data = {
+        status: 'draft',
         error: 'Folder not found - please rename root exercise folder according to the reference number of the exercise, i.e. JAC00XXX',
       };
       await panel.ref.update(data);
