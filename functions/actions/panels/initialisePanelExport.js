@@ -84,16 +84,10 @@ export default (config, firebase, db) => {
     const driveId = drives[0].id;
     drive.setDriveId(driveId);
     
-    const panelFolders = await drive.listFolders('', false, panelFolderName);
-    console.log('panelFolders', panelFolders);
-    let panelFolderId = null;
-    if (panelFolders && panelFolders.length) {
-      panelFolderId = panelFolders[0].id;
-    } else {
-      panelFolderId = await drive.createFolder(panelFolderName, {
-        parentId: driveId,
-      });
-    }
+    // create panel folder and get id
+    const panelFolderId = await drive.createFolder(panelFolderName, {
+      parentId: driveId,
+    });
     console.log('panelFolderId', panelFolderId);
 
     // Create grading spreadsheet
