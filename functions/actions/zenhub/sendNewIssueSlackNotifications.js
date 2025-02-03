@@ -6,7 +6,7 @@ import get from 'lodash/get.js';
 export default (config, db, auth, firebase) => {
 
   const slack = initSlack(config);
-  const { getUser } = initUsers(auth, db);
+  const { getUser, getQuestionAssigneeUsers } = initUsers(auth, db);
   const { incrementSlackRetries, updateBugReportOnSlackSent } = initBugReports(db, firebase);
 
   return {
@@ -42,7 +42,23 @@ export default (config, db, auth, firebase) => {
     if (slackResponse && Object.prototype.hasOwnProperty.call(slackResponse, 'ok') && slackResponse.ok === true) {
 
       // Update the slack timestamp for the 'create' action
-      await updateBugReportOnSlackSent(bugReport, 'create');
+      await updateBugReportOnSlackSent(bugReport, 'create', slackResponse);
+
+      let assigneeUsers = [];
+      if (bugReport.type === 'question') {
+        assigneeUsers = await getQuestionAssigneeUsers();
+      } else {
+        assigneeUsers = await Promise.all(bugReport.assigneeUserIds.map(async (userId) => await getUser(userId)));
+      }
+
+      if (assigneeUsers && assigneeUsers.length) {
+        // Send Slack msg to assign the issue to the assignee
+        const blocksArr = [];
+        blocksArr.push(addSlackDivider());
+        blocksArr.push(addSlackSectionForAssignee(assigneeUsers));
+        await slack.postBotBlocksMsgToChannel(slackChannelId, blocksArr, slackResponse.ts || null);
+      }
+
       return true;
     }
     else {
@@ -67,6 +83,9 @@ export default (config, db, auth, firebase) => {
     if (githubIssueUrl && zenhubIssueNumber) {
       text += `The following *${data.criticality}* issue <${githubIssueUrl}|#${zenhubIssueNumber}> was raised by <@${user.slackMemberId}>`;
     }
+    else if (data.type === 'question') {
+      text += `A question was raised by <@${user.slackMemberId}>`;
+    }
     else {
       text += `An issue was raised by <@${user.slackMemberId}> but we are unable to include the ticket number`;
     }
@@ -86,11 +105,13 @@ export default (config, db, auth, firebase) => {
   }
 
   function addSlackSection2(data) {
+    const text = data.type === 'question' ? data.question : data.issue;
+
     return {
       'type': 'section',
       'text': {
         'type': 'mrkdwn',
-        'text': `Description: ${data.issue}`,
+        'text': `Description: ${text}`,
       },
     };
   }
@@ -118,6 +139,18 @@ export default (config, db, auth, firebase) => {
     return {
       'type': 'section',
       'fields': fields,
+    };
+  }
+
+  function addSlackSectionForAssignee(assigneeUsers) {
+    const assigneeText = assigneeUsers.filter(user => user.slackMemberId).map(user => `<@${user.slackMemberId}>`).join(', ');
+    const text = `The issue has been assigned to ${assigneeText}.`;
+    return {
+      'type': 'section',
+      'text': {
+        'type': 'mrkdwn',
+        'text': text,
+      },
     };
   }
 };

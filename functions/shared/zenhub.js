@@ -88,13 +88,14 @@ export default (config) => {
    * @param {*} body 
    * @returns 
    */
-  async function createGithubIssue(referenceNumber, body, label) {
+  async function createGithubIssue(referenceNumber, body, label, assigneeUser) {
     const platformIssuesRepositoryId = 'Z2lkOi8vcmFwdG9yL1JlcG9zaXRvcnkvMTMzOTczMzA2';
     if (baseApiUrl && apiKey) {
       try {
         const title = `User Raised Issue ${referenceNumber}`;
         const escapedTitle = JSON.stringify(title);
         const escapedBody = JSON.stringify(body);
+        const githubUsername = assigneeUser.githubUsername || '';
         const result = await axios({
           url: baseApiUrl,
           method: 'post',
@@ -108,6 +109,7 @@ export default (config) => {
                     body: ${escapedBody},
                     repositoryId: "${platformIssuesRepositoryId}"
                     labels: ["${label}"],
+                    assignees: ["${githubUsername}"],
                 }) {
                     issue {
                         id

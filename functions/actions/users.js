@@ -1,6 +1,9 @@
 import { getDocument, getDocuments } from '../shared/helpers.js';
 import { convertPermissions } from '../shared/permissions.js';
 import { getSearchMap } from '../shared/search.js';
+import initGoogleSheet from '../shared/google-sheet.js';
+
+const googleSheet = initGoogleSheet();
 
 export default (auth, db) => {
   return {
@@ -13,7 +16,10 @@ export default (auth, db) => {
     onUserUpdate,
     updateUserCustomClaims,
     getUserSearchMap,
+    getBugRotaUser,
+    getQuestionAssigneeUsers,
     getUserByGithubUsername,
+    getUsersByEmails,
     getUser,
   };
 
@@ -110,6 +116,29 @@ export default (auth, db) => {
     return result;
   }
 
+  async function getBugRotaGoogleSheet(range) {
+    const spreadsheetId = '1E_ppJmSiI0uF7lpXXwuuDYD8PO2ETse316xgSgM1yCw';
+    const result = await googleSheet.getValues(spreadsheetId, range);
+    if (!result || !result.data || !result.data.values) return null;
+    const list = result.data.values;
+    return list;
+  }
+
+  async function getBugRotaUser() {
+    const list = await getBugRotaGoogleSheet('Developer');
+    const startOfWeek = formatDate(getStartOfWeek(new Date())); // Start of this week
+    const match = list.find(row => row[0].trim() === startOfWeek);
+    if (!match || !match[2]) return null;
+    const email = match[2].trim();
+    return await getUserByEmail(email);
+  }
+
+  async function getQuestionAssigneeUsers() {
+    const list = await getBugRotaGoogleSheet('Question Assignee');
+    const emails = list.slice(1).map(row => row[0].trim());
+    return await getUsersByEmails(emails);
+  }
+
   async function getUserByGithubUsername(githubUsername) {
     const usersRef = db.collection('users').where('githubUsername', '==', githubUsername);
     let users = await getDocuments(usersRef);
@@ -117,6 +146,20 @@ export default (auth, db) => {
       return null;
     }
     return users[0];
+  }
+
+  async function getUserByEmail(email) {
+    const usersRef = db.collection('users').where('email', '==', email);
+    let users = await getDocuments(usersRef);
+    if (users.length === 0) {
+      return null;
+    }
+    return users[0];
+  }
+
+  async function getUsersByEmails(emails) {
+    const usersRef = db.collection('users').where('email', 'in', emails);
+    return await getDocuments(usersRef);
   }
 
   async function getUser(userId) {
@@ -255,5 +298,21 @@ export default (auth, db) => {
       user.displayName,
       user.email,
     ]);
+  }
+
+  function formatDate(date) {
+    const day = String(date.getDate()).padStart(2, '0');
+    const month = String(date.getMonth() + 1).padStart(2, '0'); // Months are 0-based
+    const year = date.getFullYear();
+    return `${day}/${month}/${year}`;
+  }
+
+  // Function to calculate the start of the current week (Monday)
+  function getStartOfWeek(date) {
+    const dayOfWeek = date.getDay(); // 0 = Sunday, 1 = Monday, ..., 6 = Saturday
+    const diff = dayOfWeek === 0 ? -6 : 1 - dayOfWeek; // Adjust for Monday as start
+    const startOfWeek = new Date(date);
+    startOfWeek.setDate(date.getDate() + diff);
+    return startOfWeek;
   }
 };

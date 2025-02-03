@@ -129,7 +129,7 @@ export default functions.region('europe-west2').https.onRequest(async (req, res)
       res.status(422).send(errorMsg);
       return;
     }
-    await onAssignedIssue(req.body, bugReport, user, config.SLACK_TICKETING_APP_CHANNEL_ID);
+    // await onAssignedIssue(req.body, bugReport, user, config.SLACK_TICKETING_APP_CHANNEL_ID);
     // Your callable function logic here
     res.status(200).send('Function executed successfully');
   }

@@ -67,16 +67,20 @@ export default (config) => {
   /**
    * Post blocks message to a channel using the Slack Bot and Slack API
    * @param {string} channelId 
-   * @param {array} blocks 
+   * @param {array} blocks
+   * @param {string} ts
    * @returns 
    */
-  async function postBotBlocksMsgToChannel(channelId, blocks) {
+  async function postBotBlocksMsgToChannel(channelId, blocks, ts = null) {
     if (config.SLACK_TICKETING_APP_BOT_TOKEN) {
       const slackBotToken = config.SLACK_TICKETING_APP_BOT_TOKEN;      
       const postData = {
         channel: channelId,
         blocks: blocks,
       };
+      if (ts) {
+        postData.thread_ts = ts;
+      }
       const msgConfig = {
         headers: {
           'Content-Type': 'application/json; charset=UTF-8',

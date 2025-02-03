@@ -92,14 +92,15 @@ export default (db, firebase) => {
    * This timestamp specifies the time that the slack msg was sent when the issue was eg created
    * @param {*} bugReport 
    * @param {*} action 
+   * @param {*} slackResponse
    * @returns 
    */
-  async function updateBugReportOnSlackSent(bugReport, action = 'create') {
+  async function updateBugReportOnSlackSent(bugReport, action = 'create', slackResponse) {
     const commands = [];
     if (action === 'create') {
-      const bugReportAction = 'onCreate';
       const data = bugReport;
       data.slackMessages.onCreate.sentAt = firebase.firestore.FieldValue.serverTimestamp();
+      data.slackMessages.onCreate.ts = slackResponse.ts || null; // use ts to create message in thread
       commands.push({
         command: 'update',
         ref: bugReport.ref,
