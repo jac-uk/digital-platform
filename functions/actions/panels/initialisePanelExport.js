@@ -96,27 +96,15 @@ export default (config, firebase, db) => {
     }
     console.log('panelFolderId', panelFolderId);
 
-    const panelTypeFolders = await drive.listFolders('', false, panelTypeFolderName);
-    console.log('panelTypeFolders', panelTypeFolders);
-    let panelTypeFolderId = null;
-    if (panelTypeFolders && panelTypeFolders.length) {
-      panelTypeFolderId = panelTypeFolders[0].id;
-    } else {
-      panelTypeFolderId = await drive.createFolder(panelTypeFolderName, {
-        parentId: panelFolderId,
-      });
-    }
-    console.log('panelTypeFolderId', panelTypeFolderId);
-
     // Create grading spreadsheet
-    await exportGradingSheet(drive, panelTypeFolderId, panelTypeFolderName, panel).catch(e => 'Error: Grading Sheet');
+    await exportGradingSheet(drive, panelFolderId, panelFolderName, panel).catch(e => 'Error: Grading Sheet');
 
     // update panel and start processing
     const applicationIds = Object.keys(applicationsMap);
     const data = {
       drive: {
         driveId: driveId,
-        folderId: panelTypeFolderId,
+        folderId: panelFolderId,
       },
       applicationsMap: applicationsMap,
       status: 'processing',
