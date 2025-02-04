@@ -756,7 +756,6 @@ export default (config, firebase, db) => {
     const panels = await getDocumentsFromQueries(panelQueries);
 
     const hasGrade = hasOverallGrade(task);
-    console.log('hasGrade', hasGrade);
 
     // construct final scores
     // TODO change to `.applications` and `.scores`
