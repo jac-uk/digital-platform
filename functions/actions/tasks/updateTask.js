@@ -13,6 +13,8 @@ export default (config, firebase, db) => {
     taskNextStatus,
     finaliseScoreSheet,
     getScoreSheetTotal,
+    hasOverallGrade,
+    getOverallGrade,
     createMarkingScheme,
     scoreSheet,
     getEmptyScoreSheet,
@@ -753,6 +755,8 @@ export default (config, firebase, db) => {
     });
     const panels = await getDocumentsFromQueries(panelQueries);
 
+    const hasGrade = hasOverallGrade(task);
+
     // construct final scores
     // TODO change to `.applications` and `.scores`
     const finalScores = [];
@@ -765,7 +769,13 @@ export default (config, firebase, db) => {
           scoreSheet: finaliseScoreSheet(task.markingScheme, panel.scoreSheet[applicationId]),
           changes: task.changes && task.changes[applicationId] ? task.changes[applicationId] : {},
         };
-        row.score = getScoreSheetTotal(task.markingScheme, panel.scoreSheet[applicationId], row.changes),
+        row.score = getScoreSheetTotal(task.markingScheme, panel.scoreSheet[applicationId], row.changes);
+        if (hasGrade) {
+          row.grade = getOverallGrade(task, panel.scoreSheet[applicationId], row.changes);
+          // row.gradeScore = `${GRADE_VALUES[row.grade]}_${row.score}`;
+          row.gradeScore = `${row.grade}:${row.score}`;
+          row.scoreType = 'gradeScore';
+        }
         finalScores.push(row);
       });
     });
@@ -915,7 +925,18 @@ export default (config, firebase, db) => {
     const commands = [];
     task.finalScores.filter(scoreData => applicationIdMap[scoreData.id]).forEach(scoreData => {
       let newStatus;
-      if (scoreData[scoreType] >= task.passMark) {
+      if (scoreType === 'gradeScore') {
+        let isPass = false;
+        const passParts = task.passMark.split(':');
+        if (scoreData.grade < passParts[0]) {
+          isPass = true;
+        } else if (scoreData.grade > passParts[0]) {
+          isPass = false;
+        } else if (scoreData.score >= parseInt(passParts[1])) {
+          isPass = true;
+        }
+        newStatus = isPass ? passStatus : failStatus;
+      } else if (scoreData[scoreType] >= task.passMark) {
         newStatus = passStatus; // TODO double-check we don't want to allow overrides from PASS->FAIL
       } else {
         const override = getOverride(task, scoreData.id);

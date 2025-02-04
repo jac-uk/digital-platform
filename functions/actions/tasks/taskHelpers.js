@@ -20,6 +20,8 @@ export default (config) => {
     taskApplicationsEntryStatus,
     finaliseScoreSheet,
     getScoreSheetTotal,
+    hasOverallGrade,
+    getOverallGrade,
     getEmptyScoreSheet,
     scoreSheet2MarkingScheme,
     hasQualifyingTest,
@@ -503,6 +505,41 @@ export default (config) => {
       }
     }
     return 0;
+  }
+
+  function hasOverallGrade(task) {
+    if (!task) return false;
+    if (!task.markingScheme) return false;
+    switch (task.type) {
+    case TASK_TYPE.SIFT:
+      const sift = task.markingScheme.find(item => item.ref === TASK_TYPE.SIFT);
+      if (!sift) return false;
+      if (!sift.children) return false;
+      const siftOverallGrade = sift.children.find(item => item.ref === 'OVERALL');
+      return siftOverallGrade ? true : false;
+    case TASK_TYPE.SELECTION_DAY:
+      const selectionDay = task.markingScheme.find(item => item.ref === 'overall');
+      if (!selectionDay) return false;
+      if (!selectionDay.children) return false;
+      const selectionDayOverallGrade = selectionDay.children.find(item => item.ref === 'OVERALL');
+      return selectionDayOverallGrade ? true : false;
+    default:
+      return false;
+    }
+  }
+
+  function getOverallGrade(task, scoreSheet, changes) {
+    if (!task) return false;
+    switch (task.type) {
+    case TASK_TYPE.SIFT:
+      if (changes && changes[task.type] && changes[task.type].OVERALL) return changes[task.type].OVERALL;
+      return scoreSheet[task.type].OVERALL;
+    case TASK_TYPE.SELECTION_DAY:
+      if (changes && changes.overall && changes.overall.OVERALL) return changes.overall.OVERALL;
+      return scoreSheet.overall.OVERALL;
+    default:
+      return '';
+    }
   }
 
   function getEmptyScoreSheet(arrData) {
