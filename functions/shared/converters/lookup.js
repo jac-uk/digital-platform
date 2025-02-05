@@ -264,6 +264,11 @@ const lookup = (value) => {
       'professionalConductV2': 'Professional conduct: paras 39-51',
       'civilProceedingsV2': 'Civil proceedings: paras 52-53',
       'furtherDisclosuresV2': 'Further disclosures: paras 56-60',
+
+      // task panel packs 
+      'sift': 'Sift',
+      'selectionDay': 'Selection Day',
+      'scenario': 'Scenario',
     };
 
     return lookup[value] || value;

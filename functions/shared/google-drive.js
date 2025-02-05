@@ -20,6 +20,7 @@ export default () => {
 
   return {
     login,
+    listSharedDrives,
     setDriveId,
     listFolders,
     createFolder,
@@ -45,17 +46,39 @@ export default () => {
     return drive;
   }
 
+  async function listSharedDrives(driveName = '') {
+    try {
+      const metaData = {
+        fields: 'drives(id, name)',
+      };
+      if (driveName) {
+        metaData.q = `name='${driveName}'`;
+      }
+
+      const response = await drive.drives.list(metaData);
+      return response.data.drives;
+    } catch (error) {
+      console.error('Error listing Shared Drives:', error.message);
+      return [];
+    }
+  }
+
   function setDriveId(driveId) {
     currentDriveId = driveId;
   }
 
-  async function listFolders(driveId, includeTrashed = false) {
+  async function listFolders(driveId, includeTrashed = false, name = '') {
+    let q = `mimeType='application/vnd.google-apps.folder' and trashed=${includeTrashed ? 'true' : 'false'}`;
+    if (name) {
+      q += ` and name='${name}'`;
+    }
+
     const response = await drive.files.list({
       corpora: 'drive',
       driveId: driveId || currentDriveId,
       includeItemsFromAllDrives: true,
       supportsAllDrives: true,
-      q: "mimeType='application/vnd.google-apps.folder' and trashed=" + (includeTrashed ? 'true' : 'false'),
+      q,
       fields: 'files(id, name)',
     });
     return response.data.files;
