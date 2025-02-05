@@ -584,6 +584,7 @@ export default (config, firebase, db) => {
           email: application.personalDetails.email || '',
           fullName: application.personalDetails.fullName || '',
           adjustments: application.personalDetails.reasonableAdjustments || false,
+          status: application.status,
         });
       }
     });
