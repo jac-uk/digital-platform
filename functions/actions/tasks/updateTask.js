@@ -565,12 +565,12 @@ export default (config, firebase, db) => {
     return result;
   }
 
-  async function getApplications(exercise, task) {
+  async function getApplications(exercise, task, checkApplicationEntryStatus = true) {
     const applicationsData = [];
     let applicationsRef = db.collection('applications')
       .where('exerciseId', '==', exercise.id)
-      .where('status', '==', 'applied');
-    if (task.applicationEntryStatus) {
+      .where('status', 'in', ['applied', 'withdrawn']);
+    if (checkApplicationEntryStatus && task.applicationEntryStatus) {
       applicationsRef = applicationsRef.where('_processing.status', '==', task.applicationEntryStatus);
       console.log('get applications with status', task.applicationEntryStatus);
     }
@@ -903,7 +903,7 @@ export default (config, firebase, db) => {
    * @returns Result object of the form `{ success: Boolean, data: Object }`. If successful then `data` is to be stored in the `task` document
    */
   async function completeTask(exercise, task) {
-
+    console.log('completeTask', task.type);
     const result = {
       success: false,
       data: {},
@@ -920,7 +920,8 @@ export default (config, firebase, db) => {
     if (didNotParticipateStatus) outcomeStats[didNotParticipateStatus] = 0;
 
     // get applications still relevant to this task
-    const applications = await getApplications(exercise, task);
+    const applications = await getApplications(exercise, task, false);
+    console.log('completeTask applications', applications.length);
     const applicationIdMap = {};
     applications.forEach(application => applicationIdMap[application.id] = true);
 
@@ -978,48 +979,69 @@ export default (config, firebase, db) => {
       });
     }
 
+    console.log('applications.length', applications.length);
+
     // check for qualifying test follow on task
     if (task.type === config.TASK_TYPE.CRITICAL_ANALYSIS || task.type === config.TASK_TYPE.SITUATIONAL_JUDGEMENT) {
       if (
         exercise.shortlistingMethods.indexOf('critical-analysis-qualifying-test') >= 0 && exercise.criticalAnalysisTestDate
         && exercise.shortlistingMethods.indexOf('situational-judgement-qualifying-test') >= 0 && exercise.situationalJudgementTestDate
       ) {
+
         // get the other QT task
         const otherTaskType = task.type === config.TASK_TYPE.CRITICAL_ANALYSIS ? config.TASK_TYPE.SITUATIONAL_JUDGEMENT : config.TASK_TYPE.CRITICAL_ANALYSIS;
         const otherTask = await getDocument(db.doc(`exercises/${exercise.id}/tasks/${otherTaskType}`));
+       
+        console.log('task.type', task.type);
+        console.log('otherTaskType', otherTaskType);
+        console.log('otherTask.status', otherTask.status);
+
         if (otherTask.status === config.TASK_STATUS.COMPLETED) {
           // create qualifying test task
           const finalScores = [];
-          const applications = [];
-          task.finalScores.filter(scoreData => applicationIdMap[scoreData.id]).forEach(scoreData => {
-            if (scoreData.pass) {
-              const otherTaskScoreData = otherTask.finalScores.find(otherScoreData => otherScoreData.id === scoreData.id);
-              if (otherTaskScoreData && otherTaskScoreData.pass) {
-                const CAData = task.type === config.TASK_TYPE.CRITICAL_ANALYSIS ? scoreData : otherTaskScoreData;
-                const SJData = task.type === config.TASK_TYPE.CRITICAL_ANALYSIS ? otherTaskScoreData : scoreData;
-                finalScores.push({
-                  id: scoreData.id,
-                  ref: scoreData.ref,
-                  score: CAData.score + SJData.score,
-                  scoreSheet: {
-                    qualifyingTest: {
-                      CA: {
-                        score: CAData.score,
-                        percent: CAData.percent,
-                      },
-                      SJ: {
-                        score: SJData.score,
-                        percent: SJData.percent,
-                      },
-                      score: CAData.score + SJData.score,
-                    },
+
+          // the merit list should contains all the applications, even the CAT or SJT scores missing
+          const idToCAScore = {};
+          const idToSJScore = {};
+          for (const scoreData of task.finalScores) {
+            if (task.type === config.TASK_TYPE.CRITICAL_ANALYSIS) {
+              idToCAScore[scoreData.id] = scoreData;
+            } else if (task.type === config.TASK_TYPE.SITUATIONAL_JUDGEMENT) {
+              idToSJScore[scoreData.id] = scoreData;
+            }
+          }
+          for (const scoreData of otherTask.finalScores) {
+            if (otherTask.type === config.TASK_TYPE.CRITICAL_ANALYSIS) {
+              idToCAScore[scoreData.id] = scoreData;
+            } else if (otherTask.type === config.TASK_TYPE.SITUATIONAL_JUDGEMENT) {
+              idToSJScore[scoreData.id] = scoreData;
+            }
+          }
+
+          for (const application of applications) {
+            const CAData = idToCAScore[application.id] || { score: 0, percent: 0 };
+            const SJData = idToSJScore[application.id] || { score: 0, percent: 0 };
+            finalScores.push({
+              id: application.id,
+              ref: application.ref,
+              score: CAData.score + SJData.score,
+              scoreSheet: {
+                qualifyingTest: {
+                  CA: {
+                    score: CAData.score,
+                    percent: CAData.percent,
                   },
-                });
-                const application = task.applications.find(application => application.id === scoreData.id);
-                if (application) {
-                  applications.push(application);
-                }
-              } else {
+                  SJ: {
+                    score: SJData.score,
+                    percent: SJData.percent,
+                  },
+                  score: CAData.score + SJData.score,
+                },
+              },
+            });
+
+            // if not pass one of the tests then fail
+            if (!CAData.pass || !SJData.pass) {
                 // update application record status to failed first test
                 outcomeStats[failStatus] += 1;
                 const saveData = {};
@@ -1027,12 +1049,53 @@ export default (config, firebase, db) => {
                 saveData[`statusLog.${failStatus}`] = firebase.firestore.FieldValue.serverTimestamp(); // we still always log the status change
                 commands.push({
                   command: 'update',
-                  ref: db.collection('applicationRecords').doc(scoreData.id),
+                  ref: db.collection('applicationRecords').doc(application.id),
                   data: saveData,
                 });
-              }
             }
-          });
+          }
+          // task.finalScores.filter(scoreData => applicationIdMap[scoreData.id]).forEach(scoreData => {
+          //   if (scoreData.pass) {
+          //     const otherTaskScoreData = otherTask.finalScores.find(otherScoreData => otherScoreData.id === scoreData.id);
+          //     if (otherTaskScoreData && otherTaskScoreData.pass) {
+          //       const CAData = task.type === config.TASK_TYPE.CRITICAL_ANALYSIS ? scoreData : otherTaskScoreData;
+          //       const SJData = task.type === config.TASK_TYPE.CRITICAL_ANALYSIS ? otherTaskScoreData : scoreData;
+          //       finalScores.push({
+          //         id: scoreData.id,
+          //         ref: scoreData.ref,
+          //         score: CAData.score + SJData.score,
+          //         scoreSheet: {
+          //           qualifyingTest: {
+          //             CA: {
+          //               score: CAData.score,
+          //               percent: CAData.percent,
+          //             },
+          //             SJ: {
+          //               score: SJData.score,
+          //               percent: SJData.percent,
+          //             },
+          //             score: CAData.score + SJData.score,
+          //           },
+          //         },
+          //       });
+          //       const application = task.applications.find(application => application.id === scoreData.id);
+          //       if (application) {
+          //         applications.push(application);
+          //       }
+          //     } else {
+          //       // update application record status to failed first test
+          //       outcomeStats[failStatus] += 1;
+          //       const saveData = {};
+          //       if (!(task.allowStatusUpdates === false)) { saveData.status = failStatus; }  // here we update status unless this has been explicitly denied
+          //       saveData[`statusLog.${failStatus}`] = firebase.firestore.FieldValue.serverTimestamp(); // we still always log the status change
+          //       commands.push({
+          //         command: 'update',
+          //         ref: db.collection('applicationRecords').doc(scoreData.id),
+          //         data: saveData,
+          //       });
+          //     }
+          //   }
+          // });
 
           const taskData = {
             _stats: {
