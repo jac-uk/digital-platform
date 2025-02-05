@@ -812,7 +812,8 @@ export default (config, firebase, db) => {
     // construct finalScores
     const finalScores = [];
     task.applications.forEach(application => {
-      if (response.scores[application.id]) {
+      // include zero score
+      if (response.scores[application.id] && response.scores[application.id] >= 0) {
         finalScores.push({
           id: application.id,
           ref: application.ref,
