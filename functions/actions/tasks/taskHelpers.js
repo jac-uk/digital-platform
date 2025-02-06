@@ -635,6 +635,11 @@ export default (config) => {
       });
       finalScores.forEach(item => {
         let zScore = (0.4 * item.scoreSheet.qualifyingTest.CA.zScore) + (0.6 * item.scoreSheet.qualifyingTest.SJ.zScore);
+        /**
+         * If failed one of CAT or SJT, then it should fail in overall merit list task.
+         * To achieve this, if one of the tests fails, all the scores and z-scores should be 0.
+         */
+        if (!item.scoreSheet.qualifyingTest.CA.pass || !item.scoreSheet.qualifyingTest.SJ.pass) zScore = 0;
         zScore = parseFloat(zScore.toFixed(2));
         if (zScore === 0) zScore = 0;
         item.zScore = zScore;

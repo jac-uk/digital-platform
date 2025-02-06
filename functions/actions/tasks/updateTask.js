@@ -1020,21 +1020,32 @@ export default (config, firebase, db) => {
           }
 
           for (const application of applications) {
-            const CAData = idToCAScore[application.id] || { score: 0, percent: 0 };
-            const SJData = idToSJScore[application.id] || { score: 0, percent: 0 };
+            const failedScoreData = { score: 0, percent: 0, pass: false };
+            let CAData = idToCAScore[application.id] || failedScoreData;
+            let SJData = idToSJScore[application.id] || failedScoreData;
+            
+            /**
+             * If failed one of CAT or SJT, then it should fail in overall merit list task.
+             * To achieve this, if one of the tests fails, all the scores and z-scores should be 0.
+             */
+            let score = CAData.score + SJData.score;
+            if (!CAData.pass || !SJData.pass) score = 0;
+            
             finalScores.push({
               id: application.id,
               ref: application.ref,
-              score: CAData.score + SJData.score,
+              score,
               scoreSheet: {
                 qualifyingTest: {
                   CA: {
                     score: CAData.score,
                     percent: CAData.percent,
+                    pass: CAData.pass, // for frontend can know if is first test failed
                   },
                   SJ: {
                     score: SJData.score,
                     percent: SJData.percent,
+                    pass: SJData.pass, // for frontend can know if is first test failed
                   },
                   score: CAData.score + SJData.score,
                 },
