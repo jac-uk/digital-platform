@@ -1066,48 +1066,6 @@ export default (config, firebase, db) => {
                 });
             }
           }
-          // task.finalScores.filter(scoreData => applicationIdMap[scoreData.id]).forEach(scoreData => {
-          //   if (scoreData.pass) {
-          //     const otherTaskScoreData = otherTask.finalScores.find(otherScoreData => otherScoreData.id === scoreData.id);
-          //     if (otherTaskScoreData && otherTaskScoreData.pass) {
-          //       const CAData = task.type === config.TASK_TYPE.CRITICAL_ANALYSIS ? scoreData : otherTaskScoreData;
-          //       const SJData = task.type === config.TASK_TYPE.CRITICAL_ANALYSIS ? otherTaskScoreData : scoreData;
-          //       finalScores.push({
-          //         id: scoreData.id,
-          //         ref: scoreData.ref,
-          //         score: CAData.score + SJData.score,
-          //         scoreSheet: {
-          //           qualifyingTest: {
-          //             CA: {
-          //               score: CAData.score,
-          //               percent: CAData.percent,
-          //             },
-          //             SJ: {
-          //               score: SJData.score,
-          //               percent: SJData.percent,
-          //             },
-          //             score: CAData.score + SJData.score,
-          //           },
-          //         },
-          //       });
-          //       const application = task.applications.find(application => application.id === scoreData.id);
-          //       if (application) {
-          //         applications.push(application);
-          //       }
-          //     } else {
-          //       // update application record status to failed first test
-          //       outcomeStats[failStatus] += 1;
-          //       const saveData = {};
-          //       if (!(task.allowStatusUpdates === false)) { saveData.status = failStatus; }  // here we update status unless this has been explicitly denied
-          //       saveData[`statusLog.${failStatus}`] = firebase.firestore.FieldValue.serverTimestamp(); // we still always log the status change
-          //       commands.push({
-          //         command: 'update',
-          //         ref: db.collection('applicationRecords').doc(scoreData.id),
-          //         data: saveData,
-          //       });
-          //     }
-          //   }
-          // });
 
           const taskData = {
             _stats: {
