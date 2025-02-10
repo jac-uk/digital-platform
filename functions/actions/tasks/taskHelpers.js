@@ -31,6 +31,7 @@ export default (config) => {
     getApplicationPassStatuses,
     getApplicationFailStatuses,
     includeZScores,
+    hasTaskType
   };
 
   function taskStatuses(taskType) { // also in Admin
@@ -644,6 +645,11 @@ export default (config) => {
       return finalScores;
     }
     return finalScores;
+  }
+
+  function hasTaskType(exercise, taskType) {
+    const task = getTimelineTasks(exercise, taskType)[0];
+    return task ? true : false;
   }
 
 };
