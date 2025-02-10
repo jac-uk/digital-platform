@@ -3,7 +3,7 @@ import initTaskHelpers from './taskHelpers.js';
 import initUpdateTask from './updateTask.js';
 
 export default (config, firebase, db) => {
-  const { getTimelineTasks, taskNextStatus, taskApplicationsEntryStatus } = initTaskHelpers(config);
+  const { getTimelineTasks, taskNextStatus, taskApplicationsEntryStatus, hasTaskType } = initTaskHelpers(config);
   const { getApplications, initialisePanelTask, initialiseTestTask, initialiseStatusChangesTask, initialiseCandidateFormTask, initialiseDataTask, initialiseStageOutcomeTask } = initUpdateTask(config, firebase, db);
 
   return createTask;
@@ -84,6 +84,24 @@ export default (config, firebase, db) => {
       result = await initialiseStageOutcomeTask(exercise, params.type);
       break;
     }
+
+    // task-specific updates
+    if (result.success) {
+      switch (params.type) {
+      case config.TASK_TYPE.SELECTION_DAY:
+        if (hasTaskType(exercise, config.TASK_TYPE.PRE_SELECTION_DAY_QUESTIONNAIRE)) {
+          const psdq = await getDocument(db.doc(`exercises/${params.exerciseId}/tasks/${config.TASK_TYPE.PRE_SELECTION_DAY_QUESTIONNAIRE}`));
+          if (psdq) {
+            result[`_${config.TASK_TYPE.PRE_SELECTION_DAY_QUESTIONNAIRE}`] = {
+              formId: psdq.formId,
+            };
+          }
+        }
+        break;
+      default:
+      }
+    }
+
     if (result.success) {
       const taskData = {
         _stats: {},
