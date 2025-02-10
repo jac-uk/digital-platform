@@ -31,7 +31,7 @@ export default (config) => {
     getApplicationPassStatuses,
     getApplicationFailStatuses,
     includeZScores,
-    hasTaskType
+    hasTaskType,
   };
 
   function taskStatuses(taskType) { // also in Admin

@@ -93,7 +93,7 @@ export default (config, firebase, db) => {
           const psdq = await getDocument(db.doc(`exercises/${params.exerciseId}/tasks/${config.TASK_TYPE.PRE_SELECTION_DAY_QUESTIONNAIRE}`));
           if (psdq) {
             result[`_${config.TASK_TYPE.PRE_SELECTION_DAY_QUESTIONNAIRE}`] = {
-              formId: psdq.formId
+              formId: psdq.formId,
             };
           }
         }
