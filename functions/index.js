@@ -100,6 +100,7 @@ import verifySmsVerificationCode from './callableFunctions/verifySmsVerification
 import generateSccSummaryReport from './callableFunctions/generateSccSummaryReport.js';
 import exportSccSummaryReport from './callableFunctions/exportSccSummaryReport.js';
 import getMultipleApplicationData from './callableFunctions/getMultipleApplicationData.js';
+import generateSelectionDayTimetable from './callableFunctions/generateSelectionDayTimetable.js';
 
 // Callable - QTs v2
 //import listQualifyingTests from './callableFunctions/qualifyingTests/v2/listQualifyingTests.js';
@@ -212,6 +213,7 @@ export {
   getMultipleApplicationData,
   generateSccSummaryReport,
   exportSccSummaryReport,
+  generateSelectionDayTimetable,
 
   // Callable - QTs v2
   //listQualifyingTests,
