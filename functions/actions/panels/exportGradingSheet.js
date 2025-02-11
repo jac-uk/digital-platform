@@ -86,14 +86,24 @@ async function createWorkbook(columns, applicationIds, applications) {
   // Freeze the first row
   worksheet.views = [{ state: 'frozen', ySplit: 1 }];
 
-  // Populate the Application ID columns
-  applicationIds.forEach((applicationId) => {
+  // Populate the Reference Number (and name) columns and sort
+  applicationIds.map((applicationId) => {
     const application = applications[applicationId];
     const row = {};
     row.referenceNumber = application.referenceNumber;
     if (showNames) row.fullName = application.fullName;
-    worksheet.addRow(row);
-  });
+    return row;
+  }).sort((rowA, rowB) => {
+    if (showNames) {
+      if (rowA.fullName < rowB.fullName) return -1;
+      if (rowA.fullName > rowB.fullName) return 1;
+    } else {
+      if (rowA.referenceNumber < rowB.referenceNumber) return -1;
+      if (rowA.referenceNumber > rowB.referenceNumber) return 1;
+    }
+    return 0;
+  })
+  .forEach(row => worksheet.addRow(row));
 
   // Add validation to the other columns, only for rows that were added from `applicationIds`
   worksheet = addValidationColumnsToWorksheet(worksheet, columns, applicationIds.length, showNames ? 2 : 1);
@@ -126,7 +136,6 @@ function addValidationColumnsToWorksheet(worksheet, columns, numApplications, st
         };
       }
     } else if (columnType === MARKING_TYPE.NUMBER.value) {
-      console.log('add Number validation');
       for (let j = 2; j <= rowCount; j++) { // only apply validation to existing rows
         const cellStr = `${columnLetter}${j}`;
         worksheet.getCell(cellStr).dataValidation = {
