@@ -574,9 +574,39 @@ export default (config, firebase, db) => {
       applicationsRef = applicationsRef.where('_processing.status', '==', task.applicationEntryStatus);
       console.log('get applications with status', task.applicationEntryStatus);
     }
+
+    // exclude the applications withdrawn before QT
+    let withdrawnBeforeQT = [];
+    if (task.type === config.TASK_TYPE.CRITICAL_ANALYSIS || task.type === config.TASK_TYPE.SITUATIONAL_JUDGEMENT) {
+      let qtStartDate = null;
+      if (task.type === config.TASK_TYPE.CRITICAL_ANALYSIS) {
+        qtStartDate = exercise.criticalAnalysisTestDate;        ;
+      } else if (task.type === config.TASK_TYPE.SITUATIONAL_JUDGEMENT) {
+        qtStartDate = exercise.situationalJudgementTestDate;
+      }
+      if (qtStartDate) {
+        withdrawnBeforeQT = await getDocuments(
+          db.collection('applicationRecords')
+            .where('exercise.id', '==', exercise.id)
+            .where('statusLog.withdrawn', '<', qtStartDate)
+            .select('status', 'statusLog')
+        );
+      }
+    }
+
+    let isWithdrawnBeforeQT = {};
+    if (withdrawnBeforeQT) {
+      withdrawnBeforeQT.forEach(applicationRecord => {
+        isWithdrawnBeforeQT[applicationRecord.id] = true;
+      });
+    }
+
     const applications = await getDocuments(applicationsRef);
     if (!applications) return applicationsData;
     applications.forEach(application => {
+      // exclude the applications withdrawn before QT
+      if (isWithdrawnBeforeQT[application.id]) return;
+
       if (application.personalDetails) {
         applicationsData.push({
           id: application.id,
@@ -588,6 +618,7 @@ export default (config, firebase, db) => {
         });
       }
     });
+
     return applicationsData;
   }
 
