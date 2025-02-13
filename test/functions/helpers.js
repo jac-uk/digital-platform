@@ -1,3 +1,7 @@
+const firebaseFunctionsTest = require('firebase-functions-test');
+
+let firebaseFunctionsTestInstance;
+
 const projectConfig = {
   databaseURL: process.env.FIREBASE_DATABASE_URL,
   storageBucket: process.env.FIREBASE_STORAGE_BUCKET,

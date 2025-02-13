@@ -1,84 +1,73 @@
-name: Cloud functions for firebase
+# name: Cloud functions for firebase
 
-on:
-  pull_request:
-    branches:
-      - develop
-    paths:
-      - 'functions/**'
-  push:
-    branches:
-      - develop
-    paths:
-      - 'functions/**'
+# on:
+#   pull_request:
+#     branches:
+#       - develop
+#     paths:
+#       - 'functions/**'
+#   push:
+#     branches:
+#       - develop
+#     paths:
+#       - 'functions/**'
 
-concurrency: one_at_a_time
+# concurrency: one_at_a_time
 
-jobs:
-  test_and_deploy:
-    runs-on: ubuntu-latest
-    steps:
-      ## Install and test
-      - uses: actions/checkout@v4
-        with:
-          token: ${{ secrets.DEPLOY_TOKEN }}
-      - name: Cache node modules
-        uses: actions/cache@v4
-        env:
-          cache-name: cache-node-modules
-        with:
-          path: ~/.npm
-          key: ${{ runner.os }}-build-${{ env.cache-name }}-${{ hashFiles('**/package-lock.json') }}
-          restore-keys: |
-            ${{ runner.os }}-build-${{ env.cache-name }}-
-            ${{ runner.os }}-build-
-            ${{ runner.os }}-
-      - uses: actions/setup-node@master
-        with:
-          node-version: '18.20.3'
-      - run: npm ci
-      - name: Run lint
-        run: npm run lint
-      - name: Test functions
-        run: echo "Under construction"
-        # run: npm run test:functions
-      - name: Test actions
-        run: npm run test:actions
-      - name: Test shared
-        run: npm run test:shared
+# jobs:
+#   test_and_deploy:
+#     runs-on: ubuntu-latest
+#     steps:
+#       ## Install and test
+#       - uses: actions/checkout@v4
+#         with:
+#           token: ${{ secrets.DEPLOY_TOKEN }}
+#       - uses: actions/setup-node@master
+#         with:
+#           node-version: '18.20.3'
+#       - run: npm ci
+#       - name: Run lint
+#         run: npm run lint
+#       - name: Test functions
+#         run: echo "Under construction"
+#         # run: npm run test:functions
+#       - name: Test actions
+#         run: npm run test:actions
+#       - name: Test shared
+#         run: npm run test:shared
 
-      ## Update release notes and bump version (for pushes)
-      - name: Update release notes (for pushes)
-        if: github.event_name == 'push' && success()
-        id: release_drafter
-        uses: release-drafter/release-drafter@v6
-        with:
-          config-name: release-drafter.yml
-          disable-autolabeler: true
-        env:
-          GITHUB_TOKEN: ${{ secrets.DEPLOY_TOKEN }}
-      - name: Get package version (for pushes)
-        if: github.event_name == 'push' && success()
-        id: package_version
-        run: echo "current_version=$(node -p "require('./package.json').version")" >> $GITHUB_OUTPUT
-      - name: Bump package version (for pushes)
-        if: github.event_name == 'push' && success() &&
-          steps.package_version.outputs.current_version != steps.release_drafter.outputs.tag_name
-        run: |
-          echo "Bump package version from ${{ steps.package_version.outputs.current_version }} to ${{ steps.release_drafter.outputs.tag_name }}"
-          git config --local user.email "$(git log --format='%ae' HEAD^!)"
-          git config --local user.name "$(git log --format='%an' HEAD^!)"
-          npm version ${{ steps.release_drafter.outputs.tag_name }} -m "Bump version number to %s"
-          git push
+#       ## Update release notes and bump version (for pushes)
+#       - name: Update release notes (for pushes)
+#         if: github.event_name == 'push' && success()
+#         id: release_drafter
+#         uses: release-drafter/release-drafter@v6
+#         with:
+#           config-name: release-drafter.yml
+#           disable-autolabeler: true
+#         env:
+#           GITHUB_TOKEN: ${{ secrets.DEPLOY_TOKEN }}
+#       - name: Get package version (for pushes)
+#         if: github.event_name == 'push' && success()
+#         id: package_version
+#         run: echo "current_version=$(node -p "require('./package.json').version")" >> $GITHUB_OUTPUT
+#       - name: Bump package version (for pushes)
+#         if: github.event_name == 'push' && success() &&
+#           steps.package_version.outputs.current_version != steps.release_drafter.outputs.tag_name
+#         run: |
+#           echo "Bump package version from ${{ steps.package_version.outputs.current_version }} to ${{ steps.release_drafter.outputs.tag_name }}"
+#           git config --local user.email "$(git log --format='%ae' HEAD^!)"
+#           git config --local user.name "$(git log --format='%an' HEAD^!)"
+#           npm version ${{ steps.release_drafter.outputs.tag_name }} -m "Bump version number to %s"
+#           git push
 
-      ## Deploy to develop and staging (for pushes)
-      - name: Deploy to develop (for pushes)
-        if: ${{ github.event_name == 'push' && success() }}
-        run: npm run deploy:functions
-        env:
-          FIREBASE_TOKEN: ${{ secrets.FIREBASE_CLI_TOKEN }}
-      - name: Deploy to staging (for pushes)
-        if: ${{ github.event_name == 'push' && success() }}
-        run: npm run staging:deploy:functions
-        env:
-          FIREBASE_TOKEN: ${{ secrets.FIREBASE_CLI_TOKEN }}
+#       ## Deploy to develop and staging (for pushes)
+#       - name: Deploy to develop (for pushes)
+#         if: ${{ github.event_name == 'push' && success() }}
+#         run: npm run deploy:functions
+#         env:
+#           FIREBASE_TOKEN: ${{ secrets.FIREBASE_CLI_TOKEN }}
+#       - name: Deploy to staging (for pushes)
+#         if: ${{ github.event_name == 'push' && success() }}
+#         run: npm run staging:deploy:functions
+#         env:
+#           FIREBASE_TOKEN: ${{ secrets.FIREBASE_CLI_TOKEN }}

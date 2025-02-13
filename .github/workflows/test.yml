@@ -1,0 +1,33 @@
+name: Function Tests
+
+on:
+  pull_request:
+    branches:
+      - develop
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    permissions:
+      id-token: write
+    environment: develop
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v2
+
+    - name: Set up Node.js
+      uses: actions/setup-node@v2
+      with:
+        node-version: '14'
+
+    - name: Install dependencies
+      run: npm install
+
+    - name: Authenticate to GCP using WIF
+      uses: google-github-actions/auth@v0.3.1
+      with:
+        create_credentials_file: 'true'
+        workload_identity_provider: ${{secrets.WORKLOAD_IDENTITY_PROVIDER_ID}}
+        service_account: ${{secrets.SERVICE_ACCOUNT}}
+
+    - name: Run tests
+      run: npm run test:functions
