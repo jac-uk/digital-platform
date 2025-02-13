@@ -6,7 +6,7 @@ import initFactories from '../../shared/factories.js';
 import initQts from '../../shared/qts.js';
 import { getOverride } from './meritListHelper.js';
 import { GRADES, GRADE_VALUES, markingScheme2ScoreSheet } from '../../shared/scoreSheetHelper.js';
-
+import _unionBy from 'lodash/unionBy.js';
 export default (config, firebase, db) => {
   const {
     taskStatuses,
@@ -1050,7 +1050,9 @@ export default (config, firebase, db) => {
             }
           }
 
-          for (const application of applications) {
+          // contains union of CAT and SJT applications
+          const overallQTApplications = _unionBy(task.applications, otherTask.applications, 'id');
+          for (const application of overallQTApplications) {
             const failedScoreData = { score: 0, percent: 0, pass: false };
             let CAData = idToCAScore[application.id] || failedScoreData;
             let SJData = idToSJScore[application.id] || failedScoreData;
@@ -1102,7 +1104,7 @@ export default (config, firebase, db) => {
             _stats: {
               totalApplications: finalScores.length,
             },
-            applications: applications,
+            applications: overallQTApplications,
             scoreType: 'zScore',
             finalScores: includeZScores(finalScores),
             markingScheme: [
