@@ -1,4 +1,4 @@
-import { getDocument, getDocuments } from '../../shared/helpers.js';
+import { getDocument, getDocuments, applyUpdates } from '../../shared/helpers.js';
 import selectionDayTimetable from './selectionDayTimetable.js';
 
 export default (db) => {
@@ -33,7 +33,14 @@ export default (db) => {
         ? response.panelConflicts.panelConflicts.filter(panelConflict => panelConflict.hasRelationship).map(panelConflict => ({ id: panelConflict.id }))
         : [],
     }));
-    const result = await selectionDayTimetable(panelData, candidateInfo, reasonableAdjustments, panelConflicts);  
+    const result = await selectionDayTimetable(panelData, candidateInfo, reasonableAdjustments, panelConflicts);
+    const commands = [];
+    commands.push({
+      command: 'update',
+      ref: db.collection('exercises').doc(exerciseId).collection('tasks').doc('selectionDay'),
+      data: result,
+    });
+    await applyUpdates(db, commands);
     return result;
   }
 };
