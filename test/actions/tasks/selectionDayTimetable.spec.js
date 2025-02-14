@@ -21,8 +21,12 @@ describe('selectionDayTimetable', () => {
             id: 'panellist2',
           },
         ],
-        date: new Date('2024-01-01'),
-        totalSlots: 5,
+        timetable: [
+          {
+            date: new Date('2024-01-01'),
+            totalSlots: 5,
+          },
+        ],
       },
       { 
         panel: { 
@@ -36,8 +40,12 @@ describe('selectionDayTimetable', () => {
             id: 'panellist4',
           },
         ],
-        date: new Date('2024-01-02'),
-        totalSlots: 5,
+        timetable: [
+          {
+            date: new Date('2024-01-02'),
+            totalSlots: 5,
+          },
+        ],
       },
       // Add more panel data as needed
     ];
@@ -68,9 +76,11 @@ describe('selectionDayTimetable', () => {
         candidate: {
           id: 'candidate1',
         },
-        panellist: {
-          id: 'panellist3',
-        },
+        panellists: [
+          {
+            id: 'panellist3',
+          },
+        ],
       },
     ];
   });
@@ -82,14 +92,14 @@ describe('selectionDayTimetable', () => {
 
     const firstRow = result[0];
     expect(firstRow.Panel).toBe(mockPanelData[0].panel.id);
-    expect(firstRow.Date).toEqual(mockPanelData[0].date);
+    expect(firstRow.Date).toEqual(mockPanelData[0].timetable[0].date);
     expect(firstRow.Slot).toBe(1);
     expect(firstRow.CandidateRef).toBe(mockCandidateInfo[0].candidate.id); 
     expect(firstRow.ReasonableAdjustment).toBe(true);
 
     const secondRow = result[1];
     expect(secondRow.Panel).toBe(mockPanelData[1].panel.id);
-    expect(secondRow.Date).toEqual(mockPanelData[1].date);
+    expect(secondRow.Date).toEqual(mockPanelData[1].timetable[0].date);
     expect(secondRow.Slot).toBe(1);
     expect(secondRow.CandidateRef).toBe(mockCandidateInfo[1].candidate.id);
     expect(secondRow.ReasonableAdjustment).toBe(false);
@@ -119,14 +129,14 @@ describe('selectionDayTimetable', () => {
       
       const firstRow = result[0];
       expect(firstRow.Panel).toBe(mockPanelData[0].panel.id);
-      expect(firstRow.Date).toEqual(mockPanelData[0].date);
+      expect(firstRow.Date).toEqual(mockPanelData[0].timetable[0].date);
       expect(firstRow.Slot).toBe(1);
       expect(firstRow.CandidateRef).toBe(mockCandidateInfo[0].candidate.id); 
       expect(firstRow.ReasonableAdjustment).toBe(true);
 
       const secondRow = result[1];
       expect(secondRow.Panel).toBe(mockPanelData[0].panel.id);
-      expect(secondRow.Date).toEqual(mockPanelData[0].date);
+      expect(secondRow.Date).toEqual(mockPanelData[0].timetable[0].date);
       expect(secondRow.Slot).toBe(2);
       expect(secondRow.CandidateRef).toBe(mockCandidateInfo[1].candidate.id);
       expect(secondRow.ReasonableAdjustment).toBe(false);
@@ -193,8 +203,12 @@ describe('selectionDayTimetable', () => {
               id: 'panellist2',
             },
           ],
-          date: new Date('2024-01-01'),
-          totalSlots: 1,
+          timetable: [
+            {
+              date: new Date('2024-01-01'),
+              totalSlots: 1,
+            },
+          ],
         },
         { 
           panel: { 
@@ -208,8 +222,12 @@ describe('selectionDayTimetable', () => {
               id: 'panellist4',
             },
           ],
-          date: new Date('2024-01-02'),
-          totalSlots: 1,
+          timetable: [
+            {
+              date: new Date('2024-01-02'),
+              totalSlots: 1,
+            },
+          ],
         },
         { 
           panel: { 
@@ -223,8 +241,12 @@ describe('selectionDayTimetable', () => {
               id: 'panellist6',
             },
           ],
-          date: new Date('2024-01-03'),
-          totalSlots: 1,
+          timetable: [
+            {
+              date: new Date('2024-01-03'),
+              totalSlots: 1,
+            },
+          ],
         },
       ];
       mockReasonableAdjustments = [];
@@ -269,20 +291,32 @@ describe('selectionDayTimetable', () => {
         {
           panel: { id: 'panel1' },
           panellists: [{ id: 'panellist1' }],
-          date: new Date('2024-01-01'),
-          totalSlots: 1,
+          timetable: [
+            {
+              date: new Date('2024-01-01'),
+              totalSlots: 1,
+            },
+          ],
         },
         {
           panel: { id: 'panel2' },
           panellists: [{ id: 'panellist1' }],
-          date: new Date('2024-01-02'),
-          totalSlots: 1,
+          timetable: [
+            {
+              date: new Date('2024-01-02'),
+              totalSlots: 1,
+            },
+          ],
         },
         {
           panel: { id: 'panel3' },
           panellists: [{ id: 'panellist1' }],
-          date: new Date('2024-01-03'),
-          totalSlots: 1,
+          timetable: [
+            {
+              date: new Date('2024-01-03'),
+              totalSlots: 1,
+            },
+          ],
         },
       ];
     
@@ -314,14 +348,22 @@ describe('selectionDayTimetable', () => {
         {
           panel: { id: 'panel1' },
           panellists: [{ id: 'panellist1' }],
-          date: new Date('2024-01-01'),
-          totalSlots: 1,
+          timetable: [
+            {
+              date: new Date('2024-01-01'),
+              totalSlots: 1,
+            },
+          ],
         },
         {
           panel: { id: 'panel2' },
           panellists: [{ id: 'panellist2' }],
-          date: new Date('2024-01-02'),
-          totalSlots: 1,
+          timetable: [
+            {
+              date: new Date('2024-01-02'),
+              totalSlots: 1,
+            },
+          ],
         },
       ];
     
@@ -353,14 +395,22 @@ describe('selectionDayTimetable', () => {
         {
           panel: { id: 'panel1' },
           panellists: [{ id: 'panellist1' }],
-          date: new Date('2024-01-01'),
-          totalSlots: 0,
+          timetable: [
+            {
+              date: new Date('2024-01-01'),
+              totalSlots: 0,
+            },
+          ],
         },
         {
           panel: { id: 'panel2' },
           panellists: [{ id: 'panellist2' }],
-          date: new Date('2024-01-02'),
-          totalSlots: 0,
+          timetable: [
+            {
+              date: new Date('2024-01-02'),
+              totalSlots: 0,
+            },
+          ],
         },
       ];
     
@@ -451,8 +501,12 @@ describe('selectionDayTimetable', () => {
               id: 'panellist2',
             },
           ],
-          date: new Date('2024-01-01'),
-          totalSlots: 5,
+          timetable: [
+            {
+              date: new Date('2024-01-01'),
+              totalSlots: 5,
+            },
+          ],
         },
       ];
       
@@ -461,9 +515,11 @@ describe('selectionDayTimetable', () => {
           candidate: {
             id: 'candidate1',
           },
-          panellist: {
-            id: 'panellist1',
-          },
+          panellists: [
+            {
+              id: 'panellist1',
+            },
+          ], 
         },
       ];
 
@@ -488,8 +544,12 @@ describe('selectionDayTimetable', () => {
               id: 'panellist2',
             },
           ],
-          date: new Date('2024-01-01'),
-          totalSlots: 1,
+          timetable: [
+            {
+              date: new Date('2024-01-01'),
+              totalSlots: 1,
+            },
+          ],
         },
       ];
       mockCandidateInfo = [
@@ -528,8 +588,12 @@ describe('selectionDayTimetable', () => {
               id: 'panellist2',
             },
           ],
-          date: new Date('2024-01-02'),
-          totalSlots: 5,
+          timetable: [
+            {
+              date: new Date('2024-01-02'),
+              totalSlots: 5,
+            },
+          ],
         },
       ];
       mockCandidateInfo = [
@@ -582,8 +646,12 @@ describe('selectionDayTimetable', () => {
         {
           panel: { id: 'panel1' },
           panellists: [{ id: 'panellist1' }],
-          date: new Date('2024-01-01'),
-          totalSlots: 3,
+          timetable: [
+            {
+              date: new Date('2024-01-01'),
+              totalSlots: 3,
+            },
+          ],
         },
       ];
     
@@ -603,8 +671,8 @@ describe('selectionDayTimetable', () => {
       ];
     
       const conflictPanelConflicts = [
-        { candidate: { id: 'candidate2' }, panellist: { id: 'panellist1' } },
-        { candidate: { id: 'candidate3' }, panellist: { id: 'panellist1' } },
+        { candidate: { id: 'candidate2' }, panellists: [{ id: 'panellist1' }] },
+        { candidate: { id: 'candidate3' }, panellists: [{ id: 'panellist1' }] },
       ];
     
       const result = selectionDayTimetable(
@@ -666,7 +734,7 @@ describe('selectionDayTimetable', () => {
         mockPanelData,
         [conflictingCandidate, reasonableAdjustedCandidate],
         [conflictingCandidate.candidate.id, reasonableAdjustedCandidate.candidate.id],
-        [{ candidate: { id: 'conflictingCandidate' }, panellist: { id: 'panellist1' } }]
+        [{ candidate: { id: 'conflictingCandidate' }, panellists: [{ id: 'panellist1' }] }]
       ).timetable;
   
       expect(result).toHaveLength(1);
@@ -679,8 +747,12 @@ describe('selectionDayTimetable', () => {
       const largePanelData = Array.from({ length: 100 }, (_, index) => ({
         panel: { id: `panel${index + 1}` },
         panellists: [{ id: `panellist${index * 2 + 1}` }, { id: `panellist${index * 2 + 2}` }],
-        date: new Date(`2024-01-${index + 1}`),
-        totalSlots: 5,
+        timetable: [
+          {
+            date: new Date(`2024-01-${index + 1}`),
+            totalSlots: 5,
+          },
+        ],
       }));
   
       const largeCandidateInfo = Array.from({ length: 200 }, (_, index) => ({
@@ -708,14 +780,22 @@ describe('selectionDayTimetable', () => {
         {
           panel: { id: 'panel1' },
           panellists: [{ id: 'panellist1' }],
-          date: new Date('2024-01-01'),
-          totalSlots: 3,
+          timetable: [
+            {
+              date: new Date('2024-01-01'),
+              totalSlots: 3,
+            },
+          ],
         },
         {
           panel: { id: 'panel2' },
           panellists: [{ id: 'panellist2' }],
-          date: new Date('2024-01-02'),
-          totalSlots: 3,
+          timetable: [
+            {
+              date: new Date('2024-01-02'),
+              totalSlots: 3,
+            },
+          ],
         },
       ];
       const multiSlotCandidateInfo = [
@@ -760,8 +840,12 @@ describe('selectionDayTimetable', () => {
         {
           panel: { id: 'panel1' },
           panellists: [{ id: 'panellist1' }],
-          date: new Date('2024-01-01'),
-          totalSlots: 1,
+          timetable: [
+            {
+              date: new Date('2024-01-01'),
+              totalSlots: 1,
+            },
+          ],
         },
       ];
       const unassignableConflictCandidateInfo = [
@@ -773,7 +857,7 @@ describe('selectionDayTimetable', () => {
       const unassignableConflictPanelConflicts = [
         {
           candidate: { id: 'conflictCandidate' },
-          panellist: { id: 'panellist1' },
+          panellists: [{ id: 'panellist1' }],
         },
       ];
     
@@ -793,8 +877,12 @@ describe('selectionDayTimetable', () => {
         {
           panel: { id: 'panel1' },
           panellists: [{ id: 'panellist1' }],
-          date: new Date('2024-01-01'),
-          totalSlots: 1,
+          timetable: [
+            {
+              date: new Date('2024-01-01'),
+              totalSlots: 1,
+            },
+          ],
         },
       ];
       const combinedConflictRACandidateInfo = [
@@ -806,7 +894,7 @@ describe('selectionDayTimetable', () => {
       const combinedConflictRAPanelConflicts = [
         {
           candidate: { id: 'conflictedCandidateWithRA' },
-          panellist: { id: 'panellist1' },
+          panellists: [{ id: 'panellist1' }],
         },
       ];
       const combinedConflictRAResasonableAdjustments = ['conflictedCandidateWithRA'];
@@ -827,8 +915,12 @@ describe('selectionDayTimetable', () => {
         {
           panel: { id: 'panel1' },
           panellists: [{ id: 'panellist1' }],
-          date: new Date('2024-01-01'),
-          totalSlots: 0,
+          timetable: [
+            {
+              date: new Date('2024-01-01'),
+              totalSlots: 0,
+            },
+          ],
         },
       ];
       const noAvailableSlotsCandidateInfo = [
@@ -863,8 +955,12 @@ describe('selectionDayTimetable', () => {
               id: 'panellist2',
             },
           ],
-          date: new Date('2024-01-01'),
-          totalSlots: 5,
+          timetable: [
+            {
+              date: new Date('2024-01-01'),
+              totalSlots: 5,
+            },
+          ],
         },
         { 
           panel: { 
@@ -878,8 +974,12 @@ describe('selectionDayTimetable', () => {
               id: 'panellist4',
             },
           ],
-          date: new Date('2024-01-02'),
-          totalSlots: 5,
+          timetable: [
+            {
+              date: new Date('2024-01-02'),
+              totalSlots: 5,
+            },
+          ],
         },
         { 
           panel: { 
@@ -890,8 +990,12 @@ describe('selectionDayTimetable', () => {
               id: 'panellist5',
             },
           ],
-          date: new Date('2024-01-03'),
-          totalSlots: 1,
+          timetable: [
+            {
+              date: new Date('2024-01-03'),
+              totalSlots: 1,
+            },
+          ],
         },
       ];
       mockPanelConflicts = [
@@ -899,9 +1003,11 @@ describe('selectionDayTimetable', () => {
           candidate: {
             id: 'unassignableCandidateHasConflict',
           },
-          panellist: {
-            id: 'panellist5',
-          },
+          panellists: [
+            {
+              id: 'panellist5',
+            },
+          ],
         },
       ];
       mockCandidateInfo = [
@@ -1011,8 +1117,12 @@ describe('selectionDayTimetable', () => {
       const largeDatasetPanelData = Array.from({ length: 1000 }, (_, index) => ({
         panel: { id: `panel${index + 1}` },
         panellists: [{ id: `panellist${index + 1}` }],
-        date: new Date(new Date('2024-01-01').getTime() + 24 * 60 * 60 * parseInt(`${index}000`)),
-        totalSlots: 3,
+        timetable: [
+          {
+            date: new Date(new Date('2024-01-01').getTime() + 24 * 60 * 60 * parseInt(`${index}000`)),
+            totalSlots: 3,
+          },
+        ],
       }));
     
       const largeDatasetCandidateInfo = Array.from({ length: 1000 }, (_, index) => ({
@@ -1037,14 +1147,22 @@ describe('selectionDayTimetable', () => {
         {
           panel: { id: 'panel1' },
           panellists: [{ id: 'panellist1' }],
-          date: new Date('2024-01-01'),
-          totalSlots: 2,
+          timetable: [
+            {
+              date: new Date('2024-01-01'),
+              totalSlots: 2,
+            },
+          ],
         },
         {
           panel: { id: 'panel2' },
           panellists: [{ id: 'panellist2' }],
-          date: new Date('2024-01-02'),
-          totalSlots: 1,
+          timetable: [
+            {
+              date: new Date('2024-01-02'),
+              totalSlots: 1,
+            },
+          ],
         },
       ];
     
