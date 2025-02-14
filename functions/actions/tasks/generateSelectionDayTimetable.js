@@ -29,7 +29,9 @@ export default (db) => {
       .map(application => application.id);
     const panelConflicts = candidateFormResponses.map(response => ({
       candidate: { id: response.id },
-      panellists: response.panelConflicts?.panelConflicts?.filter(panelConflict => panelConflict.hasRelationship)?.map(panelConflict => ({ id: panelConflict.id })),
+      panellists: response.panelConflicts && response.panelConflicts.panelConflicts
+        ? response.panelConflicts.panelConflicts.filter(panelConflict => panelConflict.hasRelationship).map(panelConflict => ({ id: panelConflict.id }))
+        : [],
     }));
     const result = await selectionDayTimetable(panelData, candidateInfo, reasonableAdjustments, panelConflicts);  
     return result;
