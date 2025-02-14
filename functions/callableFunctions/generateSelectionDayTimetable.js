@@ -1,10 +1,10 @@
 import * as functions from 'firebase-functions/v1';
-import { firebase, db } from '../shared/admin.js';
-import selectionDayTimetable from '../actions/tasks/selectionDayTimetable.js';
-import { getDocument } from '../shared/helpers.js';
+import { db } from '../shared/admin.js';
+import initGenerateSelectionDayTimetable from '../actions/tasks/generateSelectionDayTimetable.js';
 import initServiceSettings from '../shared/serviceSettings.js';
 import { PERMISSIONS, hasPermissions } from '../shared/permissions.js';
 
+const generateSelectionDayTimetable = initGenerateSelectionDayTimetable(db);
 const { checkFunctionEnabled } = initServiceSettings(db);
 
 export default functions.region('europe-west2').https.onCall(async (data, context) => {
@@ -25,9 +25,7 @@ export default functions.region('europe-west2').https.onCall(async (data, contex
     throw new functions.https.HttpsError('invalid-argument', 'Please specify an "exerciseId"');
   }
 
-  // generate selection day timetable
-  // TODO: parameters should be passed to the function
-  const result = await selectionDayTimetable();  
+  const result = await generateSelectionDayTimetable(data.exerciseId);  
   return {
     result: result,
   };
