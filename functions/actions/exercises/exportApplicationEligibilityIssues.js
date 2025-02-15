@@ -1,10 +1,9 @@
-import * as helpers from '../../shared/converters/helpers.js';
 import lookup from '../../shared/converters/lookup.js';
 import { getDocuments, getDocument, formatDate, splitFullName } from '../../shared/helpers.js';
 import _ from 'lodash';
 import { ordinal } from '../../shared/converters/helpers.js';
 import htmlWriter from '../../shared/htmlWriter.js';
-import config from '../../shared/config.js';
+import { APPLICATION } from '../../shared/config.js';
 import initDrive from '../../shared/google-drive.js';
 
 const drive = initDrive();
@@ -134,7 +133,7 @@ export default (firebase, db) => {
     drive.setDriveId(settings.google.driveId);
 
     // generate a filename for the document we are going to create ex. JAC00787_SCC Eligibility Annexes
-    const now = new Date();
+    // const now = new Date();
     // const timestamp = new Date(now.getTime() - (now.getTimezoneOffset() * 60000)).toISOString();
     const filename = `${exercise.referenceNumber}_SCC Eligibility Annexes` ;
 
@@ -290,7 +289,7 @@ export default (firebase, db) => {
     const applicationWithdrawnNum = exercise._applications.withdrawn || 0;
     const applicationEligibilityNotProceed = applicationRecords.filter(ar => (
       ar.issues && ar.issues.eligibilityIssuesStatus && 
-      (ar.issues.eligibilityIssuesStatus === config.APPLICATION.ELIGIBILITY_ISSUE_STATUS.REJECT || ar.issues.eligibilityIssuesStatus === config.APPLICATION.ELIGIBILITY_ISSUE_STATUS.REJECT_NON_DECLARATION)
+      (ar.issues.eligibilityIssuesStatus === APPLICATION.ELIGIBILITY_ISSUE_STATUS.REJECT || ar.issues.eligibilityIssuesStatus === APPLICATION.ELIGIBILITY_ISSUE_STATUS.REJECT_NON_DECLARATION)
     ));
 
     addOfficialSensitive(writer);
@@ -779,7 +778,7 @@ export default (firebase, db) => {
     applicationRecords.forEach((applicationRecord) => {
       if (!applicationRecord.issues ||
         !applicationRecord.issues.eligibilityIssuesStatus ||
-        applicationRecord.issues.eligibilityIssuesStatus !== config.APPLICATION.ELIGIBILITY_ISSUE_STATUS.PROCEED
+        applicationRecord.issues.eligibilityIssuesStatus !== APPLICATION.ELIGIBILITY_ISSUE_STATUS.PROCEED
       ) {
         return;
       }
@@ -840,8 +839,8 @@ export default (firebase, db) => {
     applicationRecords.forEach((applicationRecord) => {
       if (!applicationRecord.issues ||
         !applicationRecord.issues.eligibilityIssuesStatus ||
-        (applicationRecord.issues.eligibilityIssuesStatus !== config.APPLICATION.ELIGIBILITY_ISSUE_STATUS.REJECT &&
-        applicationRecord.issues.eligibilityIssuesStatus !== config.APPLICATION.ELIGIBILITY_ISSUE_STATUS.REJECT_NON_DECLARATION)
+        (applicationRecord.issues.eligibilityIssuesStatus !== APPLICATION.ELIGIBILITY_ISSUE_STATUS.REJECT &&
+        applicationRecord.issues.eligibilityIssuesStatus !== APPLICATION.ELIGIBILITY_ISSUE_STATUS.REJECT_NON_DECLARATION)
       ) {
         return;
       }
@@ -922,23 +921,23 @@ export default (firebase, db) => {
    * @param {*} applicationRecords
    * @returns void
    */
-   function dumpEligibilityIssues(applicationRecords) {
+  //  function dumpEligibilityIssues(applicationRecords) {
 
-    console.log('*** Dump - START ***');
+  //   console.log('*** Dump - START ***');
 
-    // dump a summary of all applications
-    const filtered = applicationRecords.filter(ar => { // exclude applications with no eligibility issues
-      return ar.issues && ar.issues.eligibilityIssues && ar.issues.eligibilityIssues.length > 0;
-    });
-    filtered.forEach((ar) => {
-      console.log(ar.candidate.fullName);
-      if (ar && ar.issues) {
-        console.log(` - ${ar.issues.eligibilityIssuesStatus || 'unassigned'}`);
-      }
-    });
+  //   // dump a summary of all applications
+  //   const filtered = applicationRecords.filter(ar => { // exclude applications with no eligibility issues
+  //     return ar.issues && ar.issues.eligibilityIssues && ar.issues.eligibilityIssues.length > 0;
+  //   });
+  //   filtered.forEach((ar) => {
+  //     console.log(ar.candidate.fullName);
+  //     if (ar && ar.issues) {
+  //       console.log(` - ${ar.issues.eligibilityIssuesStatus || 'unassigned'}`);
+  //     }
+  //   });
 
-    console.log('*** Dump - END ***');
-  }
+  //   console.log('*** Dump - END ***');
+  // }
 };
 
 function getHeaders(maxQualificationNum, maxPostQualificationExperienceNum) {

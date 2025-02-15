@@ -1,14 +1,13 @@
 import { getDocument, formatDate } from '../../shared/helpers.js';
 import htmlWriter from '../../shared/htmlWriter.js';
-import config from '../../shared/config.js';
+import { APPLICATION_STATUS } from '../../shared/config.js';
 import initDrive from '../../shared/google-drive.js';
 import initExerciseHelper from '../../shared/exerciseHelper.js';
 
 const drive = initDrive();
 
-export default (firebase, db) => {
-  const { SELECTION_CATEGORIES, applicationCounts, shortlistingMethods, formatSelectionDays } = initExerciseHelper(config);
-  const { APPLICATION_STATUS } = config;
+export default (db) => {
+  const { SELECTION_CATEGORIES, applicationCounts, shortlistingMethods, formatSelectionDays } = initExerciseHelper();
 
   return {
     generateSccSummaryReport,
@@ -120,7 +119,7 @@ export default (firebase, db) => {
         drive.setDriveId(settings.google.driveId);
     
         // generate a filename for the document we are going to create ex. JAC00787_SCC Summary
-        const now = new Date();
+        // const now = new Date();
         // const timestamp = new Date(now.getTime() - (now.getTimezoneOffset() * 60000)).toISOString();
         const filename = `${exercise.referenceNumber}_SCC Summary` ;
     

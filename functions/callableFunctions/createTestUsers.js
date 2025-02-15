@@ -1,11 +1,10 @@
 import * as functions from 'firebase-functions/v1';
 import { firebase, db, auth } from '../shared/admin.js';
-import config from '../shared/config.js';
 import initApplications from '../actions/applications/applications.js';
 import initUsers from '../actions/users.js';
 import { isProduction } from '../shared/helpers.js';
 
-const { loadTestApplications } = initApplications(config, firebase, db, auth);
+const { loadTestApplications } = initApplications(firebase, db, auth);
 const { importUsers } = initUsers(auth, db);
 
 const runtimeOptions = {

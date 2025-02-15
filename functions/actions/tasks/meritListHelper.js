@@ -28,84 +28,84 @@ const OUTCOME = {
   },
 };
 
-const OVERRIDE_REASON = {
-  EMP_GENDER: {
-    code: 'g',
-    value: 'emp-gender',
-    label: 'EMP applied on basis of gender',
-  },
-  EMP_ETHNICITY: {
-    code: 'e',
-    value: 'emp-ethnicity',
-    label: 'EMP applied on basis of ethnicity',
-  },
-  TECHNICAL: {
-    code: 't',
-    value: 'technical',
-    label: 'Technical glitches encountered',
-  },
-  PERSONAL: {
-    code: 'p',
-    value: 'personal',
-    label: 'Personal circumstances',
-  },
-};
+// const OVERRIDE_REASON = {
+//   EMP_GENDER: {
+//     code: 'g',
+//     value: 'emp-gender',
+//     label: 'EMP applied on basis of gender',
+//   },
+//   EMP_ETHNICITY: {
+//     code: 'e',
+//     value: 'emp-ethnicity',
+//     label: 'EMP applied on basis of ethnicity',
+//   },
+//   TECHNICAL: {
+//     code: 't',
+//     value: 'technical',
+//     label: 'Technical glitches encountered',
+//   },
+//   PERSONAL: {
+//     code: 'p',
+//     value: 'personal',
+//     label: 'Personal circumstances',
+//   },
+// };
 
-function getOverrideReasons() {
-  return Object.values(OVERRIDE_REASON);
-}
+// function getOverrideReasons() {
+//   return Object.values(OVERRIDE_REASON);
+// }
 
-function convertOverrideCode2Value(code) {
-  const match = getOverrideReasons().find(reason => reason.code === code);
-  return match ? match.value : '';
-}
+// function convertOverrideCode2Value(code) {
+//   const match = getOverrideReasons().find(reason => reason.code === code);
+//   return match ? match.value : '';
+// }
 
-function convertOverrideValue2Code(value) {
-  const match = getOverrideReasons().find(reason => reason.value === value);
-  return match ? match.code : '';
-}
+// function convertOverrideValue2Code(value) {
+//   const match = getOverrideReasons().find(reason => reason.value === value);
+//   return match ? match.code : '';
+// }
 
-function isPassingScore(task, score) {
-  if (task && task.passMark && task.passMark <= score) {
-    return true;
-  }
-  return false;
-}
+// function isPassingScore(task, score) {
+//   if (task && task.passMark && task.passMark <= score) {
+//     return true;
+//   }
+//   return false;
+// }
 
-function isPass(task, applicationId, score) {
-  const override = getOverride(task, applicationId);
-  if (override) {
-    return override.outcome === OUTCOME.PASS.value;
-  }
-  if (isPassingScore(task, score)) {
-    return true;
-  }
-  return false;
-}
+// function isPass(task, applicationId, score) {
+//   const override = getOverride(task, applicationId);
+//   if (override) {
+//     return override.outcome === OUTCOME.PASS.value;
+//   }
+//   if (isPassingScore(task, score)) {
+//     return true;
+//   }
+//   return false;
+// }
 
-function getDefaultOutcome(task, score) {
-  if (isPassingScore(task, score)) {
-    return OUTCOME.PASS;
-  } else {
-    return OUTCOME.FAIL;
-  }
-}
+// function getDefaultOutcome(task, score) {
+//   if (isPassingScore(task, score)) {
+//     return OUTCOME.PASS;
+//   } else {
+//     return OUTCOME.FAIL;
+//   }
+// }
 
-function getNewOutcome(task, score) {
-  if (isPassingScore(task, score)) {
-    return OUTCOME.FAIL;
-  } else {
-    return OUTCOME.PASS;
-  }
-}
+// function getNewOutcome(task, score) {
+//   if (isPassingScore(task, score)) {
+//     return OUTCOME.FAIL;
+//   } else {
+//     return OUTCOME.PASS;
+//   }
+// }
 
-function getCurrentOutcome(task, score) {
-  if (isPass(task, score)) {
-    return OUTCOME.PASS;
-  } else {
-    return OUTCOME.FAIL;
-  }
-}
+// function getCurrentOutcome(task, score) {
+//   if (isPass(task, score)) {
+//     return OUTCOME.PASS;
+//   } else {
+//     return OUTCOME.FAIL;
+//   }
+// }
 
 /**
  * function getOverride(task, applicationId)

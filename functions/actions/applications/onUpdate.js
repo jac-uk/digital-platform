@@ -4,11 +4,11 @@ import { getSearchMap } from '../../shared/search.js';
 import initCandidatesSearch from '../candidates/search.js';
 import initApplications from './applications.js';
 
-export default (config, firebase, db, auth) => {
-  const { canApplyFullApplicationSubmitted } = initExerciseHelper(config);
+export default (firebase, db, auth) => {
+  const { canApplyFullApplicationSubmitted } = initExerciseHelper();
   
   const { updateCandidate } = initCandidatesSearch(firebase, db);
-  const { sendApplicationConfirmation, sendFullApplicationConfirmation, sendApplicationInWelsh, sendCharacterCheckRequests, sendCandidateFlagConfirmation } = initApplications(config, firebase, db, auth);
+  const { sendApplicationConfirmation, sendFullApplicationConfirmation, sendApplicationInWelsh, sendCharacterCheckRequests, sendCandidateFlagConfirmation } = initApplications(firebase, db, auth);
 
   return onUpdate;
 

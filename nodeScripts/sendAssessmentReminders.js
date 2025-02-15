@@ -1,10 +1,9 @@
 'use strict';
 
-import config from './shared/config.js';
 import { firebase, app, db } from './shared/admin.js';
 import initAssessments from '../functions/actions/assessments.js';
 
-const { cancelAssessments } = initAssessments(config, firebase, db);
+const { cancelAssessments } = initAssessments(firebase, db);
 
 const main = async () => {
   return cancelAssessments({

@@ -1,9 +1,8 @@
 import initSlack from '../../../shared/slack.js';
 import initUsers from '../../users.js';
 
-export default (config, db, auth) => {
-
-  const slack = initSlack(config);
+export default (slackBotToken, db, auth) => {
+  const slack = initSlack(slackBotToken);
   const { getUser } = initUsers(auth, db);
 
   return {
@@ -36,10 +35,10 @@ export default (config, db, auth) => {
     const assignees = assigneesOrig.map(({ id, login, type }) => ({ id, login, type }));
 
     // Assignee who has been ASSIGNED OR UNASSIGNED!
-    const assignee = {
-      login: params.assignee.login,
-      id: params.assignee.id,
-    };
+    // const assignee = {
+    //   login: params.assignee.login,
+    //   id: params.assignee.id,
+    // };
 
     // Update the bugReport
     const bugReportId = bugReport.id; // Get the ID of the document

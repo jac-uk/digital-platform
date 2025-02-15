@@ -13,22 +13,21 @@ import { objectHasNestedProperty } from './helpers.js';
  * or
  * { ok: true, user: ... }
  * 
- * @param {object} config 
  * @returns 
  */
-export default (config) => {
+export default (apiStub, apiToken) => {
 
   return {
     getUser,
   };
 
   async function getUser(userId) {
-    if (config.SLACK_API_STUB && config.SLACK_TICKETING_APP_BOT_TOKEN) {
-      const apiUrl = `${config.SLACK_API_STUB}/users.info?user=${userId}`;
+    if (apiStub && apiToken) {
+      const apiUrl = `${apiStub}/users.info?user=${userId}`;
       try {
         const response = await axios.get(apiUrl, {
           headers: {
-            'Authorization': `Bearer ${config.SLACK_TICKETING_APP_BOT_TOKEN}`,
+            'Authorization': `Bearer ${apiToken}`,
           },
         });
         if (objectHasNestedProperty(response, 'data.ok')) {

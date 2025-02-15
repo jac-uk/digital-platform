@@ -9,13 +9,12 @@
  */
  'use strict';
 
-import config from './shared/config.js';
 import { firebase, app, db, auth } from './shared/admin.js';
 import initApplications from '../functions/actions/applications/applications.js';
 import { getDocument, getDocuments, applyUpdates } from '../functions/shared/helpers.js';
 import { faker } from '@faker-js/faker';
 
-const action = initApplications(config, firebase, db, auth);
+const action = initApplications(firebase, db, auth);
 
 const main = async () => {
 

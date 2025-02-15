@@ -1,9 +1,8 @@
 import * as functions from 'firebase-functions/v1';
-import config from '../shared/config.js';
 import { firebase, db, auth } from '../shared/admin.js';
 import initOnCandidateFormResponseUpdate from '../actions/candidateFormResponses/onUpdate.js';
 
-const onCandidateFormResponseUpdate = initOnCandidateFormResponseUpdate(config, firebase, db, auth);
+const onCandidateFormResponseUpdate = initOnCandidateFormResponseUpdate(firebase, db, auth);
 
 export default functions.region('europe-west2').firestore
   .document('candidateForms/{formId}/responses/{responseId}')

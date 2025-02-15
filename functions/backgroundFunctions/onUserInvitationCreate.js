@@ -1,10 +1,9 @@
 import * as functions from 'firebase-functions/v1';
-import config from '../shared/config.js';
 import { firebase, db, auth } from '../shared/admin.js';
 import initUserInvitations from '../actions/userInvitations.js';
 import initLogEvent from '../actions/logs/logEvent.js';
 
-const { onUserInvitationCreate } = initUserInvitations(config, firebase, db, auth);
+const { onUserInvitationCreate } = initUserInvitations(firebase, db);
 const { logEvent } = initLogEvent(firebase, db, auth);
 
 export default functions.region('europe-west2').firestore

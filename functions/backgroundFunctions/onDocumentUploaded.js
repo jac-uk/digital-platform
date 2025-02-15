@@ -1,9 +1,8 @@
 import * as functions from 'firebase-functions/v1';
-import config from '../shared/config.js';
 import { firebase } from '../shared/admin.js';
 import scanFileInit from '../actions/malware-scanning/scanFile.js';
 
-const scanFile = scanFileInit(config, firebase);
+const scanFile = scanFileInit(firebase);
 
 export default functions.region('europe-west2').storage
   .object()

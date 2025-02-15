@@ -2,10 +2,10 @@ import initFactories from '../../shared/factories.js';
 import initNotify from '../../shared/notify.js';
 import { getDocument, applyUpdates } from '../../shared/helpers.js';
 
-export default (config, firebase, db) => {
+export default (notifyKey, firebase, db) => {
 
-  const { newSmsNotificationLoginVerificationNumber } = initFactories(config);
-  const { sendSMS } = initNotify(config);
+  const { newSmsNotificationLoginVerificationNumber } = initFactories();
+  const { sendSMS } = initNotify(notifyKey);
 
   return {
     sendSmsCode,

@@ -3,8 +3,8 @@ import initTaskHelpers from './taskHelpers.js';
 import initUpdateTask from './updateTask.js';
 
 export default (config, firebase, db) => {
-  const { taskApplicationsEntryStatus } = initTaskHelpers(config);
-  const { getApplications } = initUpdateTask(config, firebase, db);
+  const { taskApplicationsEntryStatus } = initTaskHelpers();
+  const { getApplications } = initUpdateTask(firebase, db);
 
   return refreshTaskApplications;
 

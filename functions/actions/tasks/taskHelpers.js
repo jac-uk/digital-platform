@@ -3,13 +3,10 @@ import createTimeline from '../../shared/Timeline/createTimeline.js';
 import { convertToDate, calculateMean, calculateStandardDeviation } from '../../shared/helpers.js';
 import initExerciseTimeline from '../../shared/Timeline/exerciseTimeline.TMP.js';
 import { MARKING_TYPE, GRADE_VALUES } from '../../shared/scoreSheetHelper.js';
+import { CAPABILITIES, SELECTION_CATEGORIES, APPLICATION, APPLICATION_STATUS, TASK_TYPE, SHORTLISTING_TASK_TYPES, TASK_STATUS, SHORTLISTING } from '../../shared/config.js';
 
-export default (config) => {
-  const exerciseTimeline = initExerciseTimeline(config);
-  const TASK_TYPE = config.TASK_TYPE;
-  const SHORTLISTING_TASK_TYPES = config.SHORTLISTING_TASK_TYPES;
-  const TASK_STATUS = config.TASK_STATUS;
-  const APPLICATION_STATUS = config.APPLICATION_STATUS;
+export default () => {
+  const exerciseTimeline = initExerciseTimeline();
   return {
     scoreSheet,
     getTimelineDate,
@@ -212,8 +209,8 @@ export default (config) => {
   }
 
   function hasQualifyingTest(exercise) {
-    const hasCA = Boolean(exercise.shortlistingMethods.indexOf(config.SHORTLISTING.CRITICAL_ANALYSIS_QUALIFYING_TEST) >= 0 && exercise.criticalAnalysisTestDate);
-    const hasSJ = Boolean(exercise.shortlistingMethods.indexOf(config.SHORTLISTING.SITUATIONAL_JUDGEMENT_QUALIFYING_TEST) >= 0 && exercise.situationalJudgementTestDate);
+    const hasCA = Boolean(exercise.shortlistingMethods.indexOf(SHORTLISTING.CRITICAL_ANALYSIS_QUALIFYING_TEST) >= 0 && exercise.criticalAnalysisTestDate);
+    const hasSJ = Boolean(exercise.shortlistingMethods.indexOf(SHORTLISTING.SITUATIONAL_JUDGEMENT_QUALIFYING_TEST) >= 0 && exercise.situationalJudgementTestDate);
     return hasCA && hasSJ;
   }
 
@@ -231,9 +228,9 @@ export default (config) => {
     const statuses = [];
     switch (taskType) {
     // customise task types here
-    case config.TASK_TYPE.ELIGIBILITY_SCC:
-      statuses.push(config.APPLICATION.STATUS.REJECTED_INELIGIBLE_STATUTORY);
-      statuses.push(config.APPLICATION.STATUS.REJECTED_INELIGIBLE_ADDITIONAL);
+    case TASK_TYPE.ELIGIBILITY_SCC:
+      statuses.push(APPLICATION.STATUS.REJECTED_INELIGIBLE_STATUTORY);
+      statuses.push(APPLICATION.STATUS.REJECTED_INELIGIBLE_ADDITIONAL);
       break;
     default:
       statuses.push(`${taskType}Failed`);
@@ -244,15 +241,15 @@ export default (config) => {
   function scoreSheet({ type, exercise }) {
     let scoreSheet = {};
     switch (type) {
-      case config.TASK_TYPE.SIFT:
+      case TASK_TYPE.SIFT:
         scoreSheet[type] = exercise.capabilities.reduce((acc, curr) => (acc[curr] = '', acc), {});
         break;
-      case config.TASK_TYPE.SELECTION_DAY:
+      case TASK_TYPE.SELECTION_DAY:
         exercise.selectionCategories.forEach(category => {
           scoreSheet[category] = exercise.capabilities.reduce((acc, curr) => (acc[curr] = '', acc), {});
         });
         break;
-      case config.TASK_TYPE.SCENARIO:
+      case TASK_TYPE.SCENARIO:
         // TODO scenario
         scoreSheet = exercise.capabilities.reduce((acc, curr) => (acc[curr] = '', acc), {});
         break;
@@ -268,13 +265,13 @@ export default (config) => {
     }
 
     let fieldName;
-    if (taskType === config.TASK_TYPE.SCENARIO && exercise.shortlistingMethods.includes(config.SHORTLISTING.SCENARIO_TEST_QUALIFYING_TEST)) {
+    if (taskType === TASK_TYPE.SCENARIO && exercise.shortlistingMethods.includes(SHORTLISTING.SCENARIO_TEST_QUALIFYING_TEST)) {
       fieldName = 'scenarioTest';
     }
-    if (taskType === config.TASK_TYPE.SITUATIONAL_JUDGEMENT && exercise.shortlistingMethods.includes(config.SHORTLISTING.SITUATIONAL_JUDGEMENT_QUALIFYING_TEST)) {
+    if (taskType === TASK_TYPE.SITUATIONAL_JUDGEMENT && exercise.shortlistingMethods.includes(SHORTLISTING.SITUATIONAL_JUDGEMENT_QUALIFYING_TEST)) {
       fieldName = 'situationalJudgementTest';
     }
-    if (taskType === config.TASK_TYPE.CRITICAL_ANALYSIS && exercise.shortlistingMethods.includes(config.SHORTLISTING.CRITICAL_ANALYSIS_QUALIFYING_TEST)) {
+    if (taskType === TASK_TYPE.CRITICAL_ANALYSIS && exercise.shortlistingMethods.includes(SHORTLISTING.CRITICAL_ANALYSIS_QUALIFYING_TEST)) {
       fieldName = 'criticalAnalysisTest';
     }
 
@@ -294,25 +291,25 @@ export default (config) => {
 
   function getExerciseCapabilities(exercise) {  // returns display order
     if (!exercise) return [];
-    return config.CAPABILITIES.filter(cap => exercise.capabilities.indexOf(cap) >= 0);
+    return CAPABILITIES.filter(cap => exercise.capabilities.indexOf(cap) >= 0);
   }
 
   function getExerciseSelectionCategories(exercise) {  // returns display order
     if (!exercise) return [];
-    return config.SELECTION_CATEGORIES.filter(cap => exercise.selectionCategories.indexOf(cap) >= 0);
+    return SELECTION_CATEGORIES.filter(cap => exercise.selectionCategories.indexOf(cap) >= 0);
   }
 
   function createMarkingScheme(exercise, taskType) {
     // console.log('createMarkingScheme', exercise, taskType);
     const markingScheme = [];
     switch (taskType) {
-    case config.TASK_TYPE.SIFT: {
+    case TASK_TYPE.SIFT: {
       const capabilities = getExerciseCapabilities(exercise);
       capabilities.push('OVERALL');
       markingScheme.push(createMarkingSchemeGroup(taskType, capabilities));
       break;
     }
-    case config.TASK_TYPE.SELECTION_DAY: {
+    case TASK_TYPE.SELECTION_DAY: {
       const categories = getExerciseSelectionCategories(exercise);
       categories.push('overall');
       const capabilities = getExerciseCapabilities(exercise);
@@ -412,9 +409,9 @@ export default (config) => {
     const taskTypes = getTaskTypes(exercise);
     const currentIndex = taskTypes.indexOf(type);
     if (currentIndex > 0) {
-      if ([config.TASK_TYPE.CRITICAL_ANALYSIS, config.TASK_TYPE.SITUATIONAL_JUDGEMENT, config.TASK_TYPE.QUALIFYING_TEST].indexOf(type) >= 0) {
+      if ([TASK_TYPE.CRITICAL_ANALYSIS, TASK_TYPE.SITUATIONAL_JUDGEMENT, TASK_TYPE.QUALIFYING_TEST].indexOf(type) >= 0) {
         for (let i = currentIndex; i >= 0; --i) {
-          if ([config.TASK_TYPE.CRITICAL_ANALYSIS, config.TASK_TYPE.SITUATIONAL_JUDGEMENT, config.TASK_TYPE.QUALIFYING_TEST].indexOf(taskTypes[i]) < 0) {
+          if ([TASK_TYPE.CRITICAL_ANALYSIS, TASK_TYPE.SITUATIONAL_JUDGEMENT, TASK_TYPE.QUALIFYING_TEST].indexOf(taskTypes[i]) < 0) {
             prevTaskType = taskTypes[i];
             break;
           }

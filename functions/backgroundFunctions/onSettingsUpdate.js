@@ -1,9 +1,8 @@
 import * as functions from 'firebase-functions/v1';
-import config from '../shared/config.js';
-import { firebase, db } from '../shared/admin.js';
+import { db } from '../shared/admin.js';
 import initOnSettingsUpdate from '../actions/settings/onUpdate.js';
 
-const onSettingsUpdate = initOnSettingsUpdate(config, firebase, db);
+const onSettingsUpdate = initOnSettingsUpdate(db);
 
 export default functions.region('europe-west2').firestore
   .document('settings/services')

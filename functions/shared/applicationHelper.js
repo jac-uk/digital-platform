@@ -1,5 +1,5 @@
 import { formatDate } from './helpers.js';
-export default (config) => {
+export default () => {
 
   return {
     formatExperience,

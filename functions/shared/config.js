@@ -1,21 +1,15 @@
-import * as functions from 'firebase-functions/v1';
+import * as dotenv from 'dotenv';
+dotenv.config(); // Load .env file
 
 const CONSTANTS = {
-  PROJECT_ID: functions.config().project.id,
-  IS_LOCAL: functions.config().project.is_local,
-  APPLY_URL: functions.config().apply.url,
-  // QT_URL: 'http://localhost:5001/jac-qualifying-tests-develop/europe-west2/api/v1',
-  QT_URL: functions.config().qt_platform.url,
-  QT_KEY: functions.config().qt_platform.key,
-  ZENHUB_GRAPH_QL_API_KEY: functions.config().zenhub.graph_ql_api_key, // graphQL personal api key
-  ZENHUB_ISSUES_WORKSPACE_ID: functions.config().zenhub.workspace_id,
-  GITHUB_WEBHOOK_SECRET: functions.config().github.webhook_secret,
-  GITHUB_PAT: functions.config().github.pat, // personal access token
-  SLACK_TICKETING_APP_BOT_TOKEN: functions.config().slack.ticketing_app_bot_token,
-  SLACK_TICKETING_APP_CHANNEL_ID: functions.config().slack.ticketing_app_channel_id,
-  SLACK_RETRY_SCHEDULE: functions.config().slack.retry_send_schedule,
+  PROJECT_ID: process.env.PROJECT_ID,
+  IS_LOCAL: process.env.IS_LOCAL,
+  APPLY_URL: process.env.APPLY_URL,
+  QT_URL: process.env.QT_URL,
+  SLACK_TICKETING_APP_CHANNEL_ID: process.env.SLACK_TICKETING_APP_CHANNEL_ID,
+  SLACK_RETRY_SCHEDULE: process.env.SLACK_RETRY_SCHEDULE,
   SLACK_MAX_RETRIES: 3,
-  SCANNER_TEST_SCHEDULE: functions.config().scan_service.test_schedule,
+  SCANNER_TEST_SCHEDULE: process.env.SCANNER_TEST_SCHEDULE,
   APPLICATION: {
     STATUS: {
       QUALIFYING_TEST_PASSED: 'qualifyingTestPassed',
@@ -252,7 +246,7 @@ const CONSTANTS = {
       DISCUSS: 'discuss',
     },
   },
-  ASSESSMENTS_URL: functions.config().assessments.url,
+  ASSESSMENTS_URL: process.env.ASSESSMENTS_URL,
   ASSESSMENT_METHOD: {
     SELF_ASSESSMENT_WITH_COMPETENCIES: 'selfAssessmentWithCompetencies',
     COVERING_LETTER: 'coveringLetter',
@@ -316,22 +310,22 @@ const CONSTANTS = {
   },
   CAPABILITIES: ['L', 'EJ', 'L&J', 'PQ', 'PBK', 'ACI', 'WCO', 'MWE', 'OVERALL'],
   SELECTION_CATEGORIES: ['leadership', 'roleplay', 'situational', 'interview', 'overall'],
-  NOTIFY_KEY: functions.config().notify.key,
-  SLACK_URL: functions.config().slack.url,
-  SLACK_API_STUB: functions.config().slack.api_url,
-  STORAGE_URL: functions.config().project.id + '.appspot.com',
-  SCAN_SERVICE_URL: functions.config().scan_service.url,
-  GOOGLE_RECAPTCHA_VALIDATION_URL: functions.config().google_recaptcha.url,
-  GOOGLE_RECAPTCHA_SECRET: functions.config().google_recaptcha.secret,
+
+  SLACK_URL: process.env.SLACK_URL,
+  SLACK_API_STUB: process.env.SLACK_API_STUB,
+  STORAGE_URL: process.env.STORAGE_URL,
+  SCAN_SERVICE_URL: process.env.SCAN_SERVICE_URL,
+  GOOGLE_RECAPTCHA_VALIDATION_URL: process.env.GOOGLE_RECAPTCHA_VALIDATION_URL,
+
   NOT_COMPLETE_PUPILLAGE_REASONS: {
     TRANSFERRED: 'transferred ',
     CALLED_PRE_2002: 'called-pre-2002',
     OTHER: 'other',
   },
-  ZENHUB_GRAPH_QL_URL: functions.config().zenhub.graph_ql_url,
+  ZENHUB_GRAPH_QL_URL: process.env.ZENHUB_GRAPH_QL_URL,
 };
 
-const TASK_TYPE = {
+export const TASK_TYPE = {
   SIFT: 'sift',
   SCENARIO: 'scenarioTest',
   CRITICAL_ANALYSIS: 'criticalAnalysis',
@@ -349,7 +343,7 @@ const TASK_TYPE = {
   EMP_TIEBREAKER: 'empTiebreaker',
 };
 
-const SHORTLISTING_TASK_TYPES = [
+export const SHORTLISTING_TASK_TYPES = [
   TASK_TYPE.TELEPHONE_ASSESSMENT,
   TASK_TYPE.SIFT,
   TASK_TYPE.CRITICAL_ANALYSIS,
@@ -358,7 +352,7 @@ const SHORTLISTING_TASK_TYPES = [
   TASK_TYPE.SCENARIO,
 ];
 
-const TASK_STATUS = { // aka task STEPS
+export const TASK_STATUS = { // aka task STEPS
   CANDIDATE_FORM_CONFIGURE: 'candidateFormConfigure',
   CANDIDATE_FORM_MONITOR: 'candidateFormMonitor',
   DATA_INITIALISED: 'dataInitialised',
@@ -376,19 +370,19 @@ const TASK_STATUS = { // aka task STEPS
   COMPLETED: 'completed',
 };
 
-const CANDIDATE_FORM_STATUS = {
+export const CANDIDATE_FORM_STATUS = {
   CREATED: 'created',
   OPEN: 'open',
   CLOSED: 'closed',
 };
 
-const CANDIDATE_FORM_RESPONSE_STATUS = {
+export const CANDIDATE_FORM_RESPONSE_STATUS = {
   CREATED: 'created',
   REQUESTED: 'requested',
   COMPLETED: 'completed',
 };
 
-const EXERCISE_STAGE = {
+export const EXERCISE_STAGE = {
   // v2
   SHORTLISTING: 'shortlisting',
   SELECTION: 'selection',
@@ -407,7 +401,7 @@ const EXERCISE_STAGE = {
   HANDOVER: 'handover', // to be removed/replaced with recommendation
 };
 
-const APPLICATION_STATUS = {
+export const APPLICATION_STATUS = {
   // v2
   CRITICAL_ANALYSIS_PASSED: 'criticalAnalysisPassed',
   CRITICAL_ANALYSIS_FAILED: 'criticalAnalysisFailed',
@@ -482,13 +476,30 @@ const APPLICATION_STATUS = {
   SCC_TO_RECONSIDER: 'sccToReconsider',
 };
 
-export default {
-  ...CONSTANTS,
-  TASK_TYPE,
-  SHORTLISTING_TASK_TYPES,
-  TASK_STATUS,
-  CANDIDATE_FORM_STATUS,
-  CANDIDATE_FORM_RESPONSE_STATUS,
-  EXERCISE_STAGE,
-  APPLICATION_STATUS,
-};
+export const {
+  PROJECT_ID,
+  IS_LOCAL,
+  APPLY_URL,
+  QT_URL,
+  SLACK_TICKETING_APP_CHANNEL_ID,
+  SLACK_RETRY_SCHEDULE,
+  SLACK_MAX_RETRIES,
+  SCANNER_TEST_SCHEDULE,
+  APPLICATION,
+  ASSESSMENTS_URL,
+  ASSESSMENT_METHOD,
+  ASSESSMENT_TYPE,
+  SHORTLISTING,
+  QUALIFYING_TEST,
+  QUALIFYING_TEST_RESPONSES,
+  PANEL_STATUS,
+  CAPABILITIES,
+  SELECTION_CATEGORIES,
+  SLACK_URL,
+  SLACK_API_STUB,
+  STORAGE_URL,
+  SCAN_SERVICE_URL,
+  GOOGLE_RECAPTCHA_VALIDATION_URL,
+  NOT_COMPLETE_PUPILLAGE_REASONS,
+  ZENHUB_GRAPH_QL_URL,
+} = CONSTANTS;

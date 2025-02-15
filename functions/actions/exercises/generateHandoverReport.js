@@ -1,15 +1,15 @@
 import * as helpers from '../../shared/converters/helpers.js';
 import lookup from '../../shared/converters/lookup.js';
-import { getDocument, getDocuments, getAllDocuments, removeHtml, objectHasNestedProperty } from '../../shared/helpers.js';
-import initApplicationConverter from '../../shared/converters/applicationConverter.js';
+import { getDocument, getDocuments, getAllDocuments, objectHasNestedProperty } from '../../shared/helpers.js';
+//import initApplicationConverter from '../../shared/converters/applicationConverter.js';
 import initUpdateApplicationRecordStageStatus from '../applicationRecords/updateApplicationRecordStageStatus.js';
+import { EXERCISE_STAGE, APPLICATION_STATUS } from '../../shared/config.js';
 
-const applicationConverter = initApplicationConverter();
-const { getWelshData } = applicationConverter;
+//const applicationConverter = initApplicationConverter();
+//const { getWelshData } = applicationConverter;
 
-export default (firebase, config, db) => {
-  const { EXERCISE_STAGE, APPLICATION_STATUS } = config;
-  const { convertStageToVersion2, convertStatusToVersion2 } = initUpdateApplicationRecordStageStatus(firebase, config, db);
+export default (firebase, db) => {
+  const { convertStageToVersion2, convertStatusToVersion2 } = initUpdateApplicationRecordStageStatus(firebase, db);
   
   return {
     generateHandoverReport,

@@ -1,9 +1,9 @@
 import { formatDate } from './helpers.js';
 import lookup from './converters/lookup.js';
 import _ from 'lodash';
-export default (config) => {
-  const EXERCISE_STAGE = config.EXERCISE_STAGE;
+import { EXERCISE_STAGE } from './config.js';
 
+export default () => {
   const SELECTION_CATEGORIES = {
     LEADERSHIP: {
       value: 'leadership',

@@ -1,18 +1,21 @@
-import config from '../shared/config.js';
-import * as functions from 'firebase-functions/v1';
+import { onSchedule } from 'firebase-functions/v2/scheduler';
 import { firebase, db } from '../shared/admin.js';
 import runScannerTestInit from '../actions/malware-scanning/runScannerTest.js';
+import { SCANNER_TEST_SCHEDULE } from '../shared/config.js';
+const runScannerTest = runScannerTestInit(firebase, db);
 
-const runScannerTest = runScannerTestInit(config, firebase, db);
+const SCHEDULE = SCANNER_TEST_SCHEDULE ? SCANNER_TEST_SCHEDULE : 'every 10 minutes';
 
-const SCHEDULE = config.SCANNER_TEST_SCHEDULE ? config.SCANNER_TEST_SCHEDULE : 'every 10 minutes';
-
-export default functions
-  .region('europe-west2')
-  .pubsub
-  .schedule(SCHEDULE)
-  .timeZone('Europe/London')
-  .onRun(async () => {
+export default onSchedule(
+  {
+    schedule: SCHEDULE,
+    region: 'europe-west2',
+    timeZone: 'Europe/London',
+    memory: '256MiB', // Adjust as needed
+    timeoutSeconds: 540, // Maximum timeout for long-running tasks
+  },
+  async (event) => {
     const result = await runScannerTest();
     return result;
-  });
+  }
+);

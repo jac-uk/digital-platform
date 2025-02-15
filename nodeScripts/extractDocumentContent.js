@@ -1,10 +1,9 @@
 'use strict';
 
-import config from './shared/config.js';
 import { firebase, app } from './shared/admin.js';
 import initExtractDocumentContent from '../functions/shared/file-extraction/extractDocumentContent.js';
 
-const { extractDocumentContent } = initExtractDocumentContent(config, firebase);
+const { extractDocumentContent } = initExtractDocumentContent(firebase);
 
 const main = async () => {
   return extractDocumentContent('exercise/0CgDWjU5Iap9wxBqECZD/candidate-assessement-forms_0.docx','exercise/0CgDWjU5Iap9wxBqECZD/candidate-assessement-forms_filled.docx');

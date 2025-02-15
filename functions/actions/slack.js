@@ -3,11 +3,11 @@ import initUsers from './users.js';
 import initBugReports from './bugReports.js';
 import initSendSlackNotifications from './zenhub/sendNewIssueSlackNotifications.js';
 
-export default (auth, config, db, firebase) => {
-  const slackWebApi = initSlackWebApi(config);
+export default (slackBotToken, auth, db, firebase) => {
+  const slackWebApi = initSlackWebApi(process.env.SLACK_API_STUB, slackBotToken);
   const { updateUser } = initUsers(auth, db);
   const { getBugReportsWithFailedSendOnCreate } = initBugReports(db, firebase);
-  const { sendNewIssueSlackNotifications } = initSendSlackNotifications(config, db, auth, firebase);
+  const { sendNewIssueSlackNotifications } = initSendSlackNotifications(slackBotToken, db, auth, firebase);
 
   return {
     lookupSlackUser,

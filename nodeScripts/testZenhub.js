@@ -7,11 +7,15 @@
  */
 
 import { app } from './shared/admin.js';
-//import config from './shared/config.js';
-import config from '../functions/shared/config.js';
 import initZenhub from '../functions/shared/zenhub.js';
+import { defineSecret } from 'firebase-functions/params';
 
-const zenhub = initZenhub(config);
+const ZENHUB_GRAPH_QL_API_KEY = defineSecret('ZENHUB_GRAPH_QL_API_KEY');
+const GITHUB_PAT = defineSecret('GITHUB_PAT');
+const ZENHUB_ISSUES_WORKSPACE_ID = defineSecret('ZENHUB_ISSUES_WORKSPACE_ID');
+const ZENHUB_GRAPH_QL_URL = process.env.ZENHUB_GRAPH_QL_URL;
+
+const zenhub = initZenhub(ZENHUB_GRAPH_QL_URL, ZENHUB_GRAPH_QL_API_KEY, GITHUB_PAT, ZENHUB_ISSUES_WORKSPACE_ID);
 
 const main = async () => {
 

@@ -2,7 +2,7 @@ import { getDocuments, getAllDocuments, formatDate } from '../../shared/helpers.
 import lookup from '../../shared/converters/lookup.js';
 import * as applicationHelpers from '../../shared/converters/helpers.js';
 
-export default (config, firebase, db) => {
+export default (db) => {
 
   return {
     exportExerciseData,

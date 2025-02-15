@@ -1,23 +1,54 @@
-import * as functions from 'firebase-functions/v1';
-import config from '../shared/config.js';
+import { onCall, HttpsError } from 'firebase-functions/v2/https';
 import { db } from '../shared/admin.js';
 import initServiceSettings from '../shared/serviceSettings.js';
 const { checkFunctionEnabled } = initServiceSettings(db);
 import { PERMISSIONS, hasPermissions } from '../shared/permissions.js';
 import initZenhub from '../shared/zenhub.js';
 
-const zenhub = initZenhub(config);
+import { defineSecret } from 'firebase-functions/params';
 
-export default functions.region('europe-west2').https.onCall(async (data, context) => {
-  await checkFunctionEnabled();
-  if (!context.auth) {
-    throw new functions.https.HttpsError('failed-precondition', 'The function must be called while authenticated.');
+const ZENHUB_GRAPH_QL_API_KEY = defineSecret('ZENHUB_GRAPH_QL_API_KEY');
+const GITHUB_PAT = defineSecret('GITHUB_PAT');
+const ZENHUB_ISSUES_WORKSPACE_ID = defineSecret('ZENHUB_ISSUES_WORKSPACE_ID');
+
+export default onCall(
+  {
+    region: 'europe-west2', // Specify the region
+    memory: '256MiB',       // (Optional) Configure memory allocation
+    timeoutSeconds: 240,    // (Optional) Configure timeout
+    minInstances: 0,        // (Optional) Min instances to reduce cold starts
+    maxInstances: 10,       // (Optional) Max instances to scale
+    secrets: [GITHUB_PAT, ZENHUB_GRAPH_QL_API_KEY, ZENHUB_ISSUES_WORKSPACE_ID],  // ✅ Ensure the function has access to the secrets
+  },
+  async (request) => {
+
+    try {
+      //const data = request.data;
+
+      await checkFunctionEnabled();
+
+      // authenticate the request
+      if (!request.auth) {
+        throw new HttpsError('failed-precondition', 'The function must be called while authenticated.');
+      }
+    
+      hasPermissions(request.auth.token.rp, [
+        PERMISSIONS.releases.permissions.canReadReleases.value,
+      ]);
+    
+      const zenhub = initZenhub(
+        process.env.ZENHUB_GRAPH_QL_URL,
+        process.env.ZENHUB_GRAPH_QL_API_KEY,
+        process.env.GITHUB_PAT,
+        process.env.ZENHUB_ISSUES_WORKSPACE_ID
+      );
+
+      return await zenhub.getLatestReleaseForRepositories();
+    }
+    catch (error) {
+      console.error('Error in function:', error);
+      throw new HttpsError('internal', 'An error occurred during execution');
+    }
   }
-  hasPermissions(context.auth.token.rp, [
-    PERMISSIONS.releases.permissions.canReadReleases.value,
-  ]);
-
-  return await zenhub.getLatestReleaseForRepositories();
-
-});
+);
 

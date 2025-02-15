@@ -1,17 +1,16 @@
 import axios from 'axios';
 
-export default (config) => {
-
+export default (qtKey) => {
   return {
     get,
     post,
   };
 
   async function get(url, params) {
-    if (config.QT_URL && config.QT_KEY) {
+    if (process.env.QT_URL && qtKey) {
       try {
         const result = await axios.get(
-          `${config.QT_URL}/${url}?key=${config.QT_KEY}`,
+          `${process.env.QT_URL}/${url}?key=${qtKey}`,
           { params: params }
         );
         return result.data;
@@ -29,10 +28,10 @@ export default (config) => {
   }
 
   async function post(url, data) {
-    if (config.QT_URL && config.QT_KEY) {
+    if (process.env.QT_URL && qtKey) {
       try {
         const result = await axios.post(
-          `${config.QT_URL}/${url}?key=${config.QT_KEY}`,
+          `${process.env.QT_URL}/${url}?key=${qtKey}`,
           data
         );
         return result.data;

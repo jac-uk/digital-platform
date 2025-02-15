@@ -1,13 +1,13 @@
 import firebase from 'firebase-admin';
 import { jest } from '@jest/globals';
-import config from '../../../../nodeScripts/shared/config.js';
+//import config from '../../../../nodeScripts/shared/config.js';
 import initGenerateDiversityReport from '../../../../functions/actions/exercises/generateDiversityReport.js';
 
 const db = jest.fn();
 
 const {
   ethnicityStats,
-} = initGenerateDiversityReport(config, firebase, db);
+} = initGenerateDiversityReport(firebase, db);
 
 // List of all possible ethnic groups
 const ethnicGroups = ['prefer-not-to-say', 'other-white', 'uk-ethnic', 'irish', 'gypsy-irish-traveller', 'other-ethnic-group', 'chinese', 'bangladeshi', 'indian', 'pakistani', 'other-asian', 'african', 'caribbean', 'other-black', 'white-black-caribbean', 'white-black-african', 'white-asian', 'other-mixed'];

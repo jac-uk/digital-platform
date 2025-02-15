@@ -5,7 +5,7 @@ export default [
   {
     files: ['**/*.js'],
     languageOptions: {
-      ecmaVersion: 2018,
+      ecmaVersion: 2020, // ✅ Supports optional chaining
       sourceType: 'module',
       globals: {
         NodeJS: true,
