@@ -5,21 +5,22 @@ import firestore from '@google-cloud/firestore';
 import initSlack from '../../shared/slack.js';
 
 const client = new firestore.v1.FirestoreAdminClient();
+import { defineSecret } from 'firebase-functions/params';
 
-
-export default (config, firebase) => {
-  const slack = initSlack(config);
+export default (firebase) => {
+  const SLACK_TICKETING_APP_BOT_TOKEN = defineSecret('SLACK_TICKETING_APP_BOT_TOKEN');
+  const slack = initSlack(SLACK_TICKETING_APP_BOT_TOKEN);
   return {
     backupFirestore,
   };
 
   async function backupFirestore() {
 
-    const BACKUP_BUCKET = `${config.PROJECT_ID}-backups`;
+    const BACKUP_BUCKET = `${process.env.PROJECT_ID}-backups`;
     const BACKUP_PATH = 'firestore';
 
     const exportPath = `gs://${BACKUP_BUCKET}/${BACKUP_PATH}/${(new Date()).toISOString()}`;
-    const databaseName = client.databasePath(config.PROJECT_ID, '(default)');
+    const databaseName = client.databasePath(process.env.PROJECT_ID, '(default)');
 
     try {
       console.log('Exporting firestore (i.e., taking database backup)...');

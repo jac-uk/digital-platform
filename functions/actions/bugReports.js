@@ -1,6 +1,5 @@
-import config from '../shared/config.js';
+import { SLACK_MAX_RETRIES  } from '../shared/config.js';
 import { getDocument, getDocuments, applyUpdates } from '../shared/helpers.js';
-
 export default (db, firebase) => {
   return {
     getBugReportById,
@@ -45,7 +44,7 @@ export default (db, firebase) => {
    */
   async function getBugReportsWithFailedSendOnCreate() {
     try {
-      const MAX_RETRIES = config.SLACK_MAX_RETRIES ? config.SLACK_MAX_RETRIES : 3;
+      const MAX_RETRIES = SLACK_MAX_RETRIES ? SLACK_MAX_RETRIES : 3;
       const bugReportsRef = db.collection('bugReports')
         .where('slackMessages.onCreate.retries', '<', MAX_RETRIES)
         .where('slackMessages.onCreate.sentAt', '==', null);
@@ -70,7 +69,7 @@ export default (db, firebase) => {
       let retries = bugReport.slackMessages[bugReportAction].retries;
       const data = bugReport;
       data.slackMessages.onCreate.retries = ++retries;
-      const MAX_RETRIES = config.SLACK_MAX_RETRIES ? config.SLACK_MAX_RETRIES : 3;
+      const MAX_RETRIES = SLACK_MAX_RETRIES ? SLACK_MAX_RETRIES : 3;
       if (retries < MAX_RETRIES) {
         commands.push({
           command: 'update',
@@ -97,7 +96,6 @@ export default (db, firebase) => {
   async function updateBugReportOnSlackSent(bugReport, action = 'create') {
     const commands = [];
     if (action === 'create') {
-      const bugReportAction = 'onCreate';
       const data = bugReport;
       data.slackMessages.onCreate.sentAt = firebase.firestore.FieldValue.serverTimestamp();
       commands.push({

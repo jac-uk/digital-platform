@@ -2,7 +2,7 @@ import { getDocuments } from '../../shared/helpers.js';
 
 import _ from 'lodash';
 
-export default (config, firebase, db, auth) => {
+export default (db) => {
 
   return {
     customReport,

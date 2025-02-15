@@ -1,11 +1,10 @@
 'use strict';
 
-import config from './shared/config.js';
-import { firebase, app, auth, db } from './shared/admin.js';
+import { app, db } from './shared/admin.js';
 import initGetMultipleApplicationData from '../functions/actions/exercises/getMultipleApplicationData.js';
 
 // Initialize getApplicationData with config, firebase, db, and auth
-const getMultipleApplicationData = initGetMultipleApplicationData(config, firebase, db, auth);
+const getMultipleApplicationData = initGetMultipleApplicationData(db);
 
 // Define the list of exerciseIds to retrieve data for
 const exerciseIds = ['XvzIg48K9XOhfeFr3w91', 'Biyjd07Xz2usL9yXjtjV', 'IKLcf2Y187f2WTjifsoj'];  

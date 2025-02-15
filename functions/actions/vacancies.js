@@ -1,7 +1,7 @@
 import initFactories from '../shared/factories.js';
 
-export default (config, db) => {
-  const { newVacancy } = initFactories(config);
+export default (db) => {
+  const { newVacancy } = initFactories();
 
   return {
     deleteVacancy,

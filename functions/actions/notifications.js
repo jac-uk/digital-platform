@@ -1,8 +1,8 @@
 import { getDocument, getDocuments, applyUpdates } from '../shared/helpers.js';
 import initNotify from '../shared/notify.js';
 
-export default (config, firebase, db) => {
-  const { sendEmail, previewEmail, sendSMS } = initNotify(config);
+export default (notifyKey, firebase, db) => {
+  const { sendEmail, previewEmail, sendSMS } = initNotify(notifyKey);
   return {
     processNotifications,
     previewNotification,

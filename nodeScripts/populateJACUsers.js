@@ -12,7 +12,7 @@ import initUsers from '../functions/actions/users.js';
 import { listAllUsers } from './shared/helpers.js';
 import { log } from './shared/helpers.js';
 
-const { newUser } = initFactories(config);
+const { newUser } = initFactories();
 const { getUserSearchMap } = initUsers(config, firebase, db, auth);
 
 // whether to make changes in `users` collection in firestore

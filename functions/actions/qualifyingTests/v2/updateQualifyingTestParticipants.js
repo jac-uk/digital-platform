@@ -1,8 +1,9 @@
 import { getDocuments, getDocument } from '../../../shared/helpers.js';
 import initQts from '../../../shared/qts.js';
+import { TASK_STATUS } from '../../../shared/config.js';
 
-export default (config, firebase, db) => {
-  const qts = initQts(config);
+export default (qtKey, firebase, db) => {
+  const qts = initQts(qtKey);
 
   return updateQualifyingTestParticipants;
 
@@ -23,7 +24,7 @@ export default (config, firebase, db) => {
     const taskRef = db.doc(`exercises/${params.exerciseId}/tasks/${params.type}`);
     const task = await getDocument(taskRef);
     if (!task) return { success: false, message: 'Task not found' };
-    if (task.status !== config.TASK_STATUS.TEST_INITIALISED) return { success: false, message: 'Task not initialised' };
+    if (task.status !== TASK_STATUS.TEST_INITIALISED) return { success: false, message: 'Task not initialised' };
 
     // get applications
     let applicationsRef = db.collection('applications')
@@ -68,8 +69,8 @@ export default (config, firebase, db) => {
     // update task
     const taskData = {};
     taskData.applications = applicationsData;
-    taskData.status = config.TASK_STATUS.TEST_ACTIVATED;
-    taskData[`statusLog.${config.TASK_STATUS.TEST_ACTIVATED}`] = firebase.firestore.FieldValue.serverTimestamp();
+    taskData.status = TASK_STATUS.TEST_ACTIVATED;
+    taskData[`statusLog.${TASK_STATUS.TEST_ACTIVATED}`] = firebase.firestore.FieldValue.serverTimestamp();
     await taskRef.update(taskData);
 
     // return result

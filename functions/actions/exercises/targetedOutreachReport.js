@@ -45,8 +45,7 @@ export default (firebase, db) => {
               let applicationNationalInsuranceNumber;
 
               if (applications.length > 0) {
-                let NiFromApplications = applications.map(async (application) => {
-                  let returnObj = [];
+                applications.map(async (application) => {
                   applicationNationalInsuranceNumber = application.personalDetails && application.personalDetails.nationalInsuranceNumber ? application.personalDetails.nationalInsuranceNumber : singleNationalInsuranceNumber;
                 });
               }

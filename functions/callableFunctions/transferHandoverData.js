@@ -1,11 +1,10 @@
 import * as functions from 'firebase-functions/v1';
-import config from '../shared/config.js';
-import { firebase, db } from '../shared/admin.js';
+import { db } from '../shared/admin.js';
 import { checkArguments } from '../shared/helpers.js';
 import initTransferHandoverData from '../actions/exercises/transferHandoverData.js';
 import initServiceSettings from '../shared/serviceSettings.js';
 
-const transferHandoverData = initTransferHandoverData(config, firebase, db);
+const transferHandoverData = initTransferHandoverData();
 const { checkFunctionEnabled } = initServiceSettings(db);
 
 export default functions.region('europe-west2').https.onCall(async (data, context) => {

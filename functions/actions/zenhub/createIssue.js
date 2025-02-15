@@ -1,9 +1,12 @@
 import initZenhub from '../../shared/zenhub.js';
 import { getDocument } from '../../shared/helpers.js';
 
-export default (config, firebase, db) => {
-
-  const zenhub = initZenhub(config);
+export default (secrets, firebase, db) => {
+  const ZENHUB_GRAPH_QL_API_KEY = secrets.ZENHUB_GRAPH_QL_API_KEY;
+  const GITHUB_PAT = secrets.GITHUB_PAT;
+  const ZENHUB_ISSUES_WORKSPACE_ID = secrets.ZENHUB_ISSUES_WORKSPACE_ID;
+  const ZENHUB_GRAPH_QL_URL = process.env.ZENHUB_GRAPH_QL_URL;
+  const zenhub = initZenhub(ZENHUB_GRAPH_QL_URL, ZENHUB_GRAPH_QL_API_KEY, GITHUB_PAT, ZENHUB_ISSUES_WORKSPACE_ID);
 
   return {
     createIssue,

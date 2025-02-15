@@ -1,10 +1,9 @@
 'use strict';
 
-import config from './shared/config.js';
-import { firebase, app, auth, db } from './shared/admin.js';
+import { app, db } from './shared/admin.js';
 import initGetApplicationData from '../functions/actions/exercises/getApplicationData.js';
 
-const getApplicationData = initGetApplicationData(config, firebase, db, auth);
+const getApplicationData = initGetApplicationData(db);
 
 const params = {
   // columns: ['personalDetails.title'],

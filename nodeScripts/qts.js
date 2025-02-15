@@ -4,7 +4,7 @@ import config from './shared/config.js';
 import { app } from './shared/admin.js';
 import initQts from '../functions/shared/qts.js';
 
-const qts = initQts(config);
+const qts = initQts();
 
 const main = async () => {
 

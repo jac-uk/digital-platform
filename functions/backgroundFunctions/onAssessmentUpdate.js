@@ -1,10 +1,9 @@
 import * as functions from 'firebase-functions/v1';
-import config from '../shared/config.js';
 import { firebase, db } from '../shared/admin.js';
 import initAssessments from '../actions/assessments.js';
 import { getSearchMap } from '../shared/search.js';
 
-const { onAssessmentCompleted } = initAssessments(config, firebase, db);
+const { onAssessmentCompleted } = initAssessments(firebase, db);
 
 import has from 'lodash/has.js';
 import { isDifferentPropsByPath } from '../shared/helpers.js';

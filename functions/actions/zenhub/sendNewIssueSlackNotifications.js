@@ -3,9 +3,8 @@ import initUsers from '../users.js';
 import initBugReports from '../bugReports.js';
 import get from 'lodash/get.js';
 
-export default (config, db, auth, firebase) => {
-
-  const slack = initSlack(config);
+export default (slackBotToken, db, auth, firebase) => {
+  const slack = initSlack(slackBotToken);
   const { getUser } = initUsers(auth, db);
   const { incrementSlackRetries, updateBugReportOnSlackSent } = initBugReports(db, firebase);
 

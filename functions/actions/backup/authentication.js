@@ -8,11 +8,12 @@ import initSlack from '../../shared/slack.js';
 
 import { deleteLocalFile, uploadToStorageBucket } from '../../shared/file.js';
 
-export default (config, firebase) => {
-  const BACKUP_BUCKET = `${config.PROJECT_ID}-backups`;
+export default (slackBotToken, firebase) => {
+  const BACKUP_BUCKET = `${process.env.PROJECT_ID}-backups`;
   const BACKUP_PATH = 'authentication';
-  const PROJECT_ID = config.PROJECT_ID;
-  const slack = initSlack(config);
+  const PROJECT_ID = process.env.PROJECT_ID;
+
+  const slack = initSlack(slackBotToken);
   return {
     backupAuthentication,
   };

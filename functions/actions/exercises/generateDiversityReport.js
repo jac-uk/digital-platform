@@ -1,6 +1,7 @@
 import { getDocument, getDocuments } from '../../shared/helpers.js';
 import { applicationOpenDatePost01042023 } from '../../shared/converters/helpers.js';
 import initExerciseHelper from '../../shared/exerciseHelper.js';
+import { APPLICATION_STATUS, SHORTLISTING } from '../../shared/config.js';
 
 /**
  * For the diversity reports:
@@ -17,13 +18,12 @@ import initExerciseHelper from '../../shared/exerciseHelper.js';
  *   • 25% said they prefer Applause (2 out of 8)
  *   • Declaration rate was 80% (8 out of 10)
  *
- * @param {*} config
  * @param {*} firebase
  * @param {*} db 
  * @returns 
  */
-export default (config, firebase, db) => {
-  const { availableStages } = initExerciseHelper(config);
+export default (firebase, db) => {
+  const { availableStages } = initExerciseHelper();
 
   return {
     generateDiversityReport,
@@ -79,38 +79,40 @@ export default (config, firebase, db) => {
 
     // add additional data based on shortlisting methods
     const isProcessingVersion2 = exercise._processingVersion >= 2;
-    const APPLICATION_STATUS = config.APPLICATION_STATUS;
-    const SHORTLISTING = config.SHORTLISTING;
+
+    const APP_STATUS = JSON.parse(APPLICATION_STATUS);
+    const SH_LISTING = JSON.parse(SHORTLISTING);
+
     const statuses = [];
 
     if (exercise.shortlistingMethods) {
       // qt
       if (exercise.shortlistingMethods.some(method => [
-        SHORTLISTING.SITUATIONAL_JUDGEMENT_QUALIFYING_TEST,
-        SHORTLISTING.CRITICAL_ANALYSIS_QUALIFYING_TEST,
+        SH_LISTING.SITUATIONAL_JUDGEMENT_QUALIFYING_TEST,
+        SH_LISTING.CRITICAL_ANALYSIS_QUALIFYING_TEST,
       ].includes(method))) {
-        const status = isProcessingVersion2 ? APPLICATION_STATUS.QUALIFYING_TEST_PASSED : APPLICATION_STATUS.PASSED_FIRST_TEST;
+        const status = isProcessingVersion2 ? APP_STATUS.QUALIFYING_TEST_PASSED : APP_STATUS.PASSED_FIRST_TEST;
         statuses.push(status);
       }
       // scenario test
-      if (exercise.shortlistingMethods.includes(SHORTLISTING.SCENARIO_TEST_QUALIFYING_TEST)) {
-        const status = isProcessingVersion2 ? APPLICATION_STATUS.SCENARIO_TEST_PASSED : APPLICATION_STATUS.PASSED_SCENARIO_TEST;
+      if (exercise.shortlistingMethods.includes(SH_LISTING.SCENARIO_TEST_QUALIFYING_TEST)) {
+        const status = isProcessingVersion2 ? APP_STATUS.SCENARIO_TEST_PASSED : APP_STATUS.PASSED_SCENARIO_TEST;
         statuses.push(status);
       }
       // sift
       if (exercise.shortlistingMethods.some(method => [
-        SHORTLISTING.NAME_BLIND_PAPER_SIFT,
-        SHORTLISTING.PAPER_SIFT,
+        SH_LISTING.NAME_BLIND_PAPER_SIFT,
+        SH_LISTING.PAPER_SIFT,
       ].includes(method))) {
-        const status = isProcessingVersion2 ? APPLICATION_STATUS.SIFT_PASSED : APPLICATION_STATUS.PASSED_SIFT;
+        const status = isProcessingVersion2 ? APP_STATUS.SIFT_PASSED : APP_STATUS.PASSED_SIFT;
         statuses.push(status);
       }
     }
 
     if (isProcessingVersion2) {
-      statuses.push(APPLICATION_STATUS.SELECTION_DAY_PASSED);
+      statuses.push(APP_STATUS.SELECTION_DAY_PASSED);
     } else {
-      statuses.push(APPLICATION_STATUS.PASSED_SELECTION);
+      statuses.push(APP_STATUS.PASSED_SELECTION);
     }
 
     statuses.forEach(status => {

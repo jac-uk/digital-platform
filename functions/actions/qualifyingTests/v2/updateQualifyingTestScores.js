@@ -1,8 +1,8 @@
 import { getDocument, applyUpdates } from '../../../shared/helpers.js';
 import initQts from '../../../shared/qts.js';
-
-export default (config, firebase, db) => {
-  const qts = initQts(config);
+import { TASK_TYPE, TASK_STATUS } from '../../../shared/config.js';
+export default (qtKey, firebase, db) => {
+  const qts = initQts(qtKey);
 
   return updateQualifyingTestScores;
 
@@ -23,7 +23,7 @@ export default (config, firebase, db) => {
     const taskRef = db.doc(`exercises/${params.exerciseId}/tasks/${params.type}`);
     const task = await getDocument(taskRef);
     if (!task) return { success: false, message: 'Task not found' };
-    if (task.status !== config.TASK_STATUS.TEST_ACTIVATED) return { success: false, message: 'Task not activated' };
+    if (task.status !== TASK_STATUS.TEST_ACTIVATED) return { success: false, message: 'Task not activated' };
 
     // get results from QT Platform
     const response = await qts.get('scores', {
@@ -34,7 +34,7 @@ export default (config, firebase, db) => {
     // update task
     const taskData = {};
     let nextStatus;
-    if ([config.TASK_TYPE.CRITICAL_ANALYSIS, config.TASK_TYPE.SITUATIONAL_JUDGEMENT].indexOf(task.type) >= 0) {
+    if ([TASK_TYPE.CRITICAL_ANALYSIS, TASK_TYPE.SITUATIONAL_JUDGEMENT].indexOf(task.type) >= 0) {
       if (!response.scores) return { success: false, message: 'No scores available' };
       if (!Object.keys(response.scores).length) return { success: false, message: 'No scores available' };
         // construct finalScores
@@ -47,11 +47,11 @@ export default (config, firebase, db) => {
         });
       });
       taskData.finalScores = finalScores;
-      nextStatus = config.TASK_STATUS.FINALISED;
+      nextStatus = TASK_STATUS.FINALISED;
     }
-    if (task.type === config.TASK_TYPE.SCENARIO) {
+    if (task.type === TASK_TYPE.SCENARIO) {
       if (!response.questionIds) return { success: false, message: 'No question ids available' };
-      nextStatus = config.TASK_STATUS.PANELS_INITIALISED;
+      nextStatus = TASK_STATUS.PANELS_INITIALISED;
       taskData.emptyScoreSheet = getEmptyScoreSheet(response.questionIds);
       taskData.markingScheme = scoreSheet2MarkingScheme(taskData.emptyScoreSheet);
       taskData['test.questionIds'] = response.questionIds;
@@ -81,11 +81,11 @@ export default (config, firebase, db) => {
 
   }
 
-  function arrayToObject(arrData) {
-    const returnObject = {};
-    arrData.forEach(item => returnObject[item] = '');
-    return returnObject;
-  }
+  // function arrayToObject(arrData) {
+  //   const returnObject = {};
+  //   arrData.forEach(item => returnObject[item] = '');
+  //   return returnObject;
+  // }
 
   function getEmptyScoreSheet(arrData) {
     const returnObject = {};

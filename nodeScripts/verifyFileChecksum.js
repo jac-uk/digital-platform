@@ -1,9 +1,8 @@
 'use strict';
 
-import config from './shared/config.js';
 import { app, firebase, db } from './shared/admin.js';
 import verifyChecksumInit from '../functions/actions/malware-scanning/verifyFileChecksum.js';
-const verifyChecksum = verifyChecksumInit(config, firebase, db);
+const verifyChecksum = verifyChecksumInit(firebase, db);
 
 const fileURL = 'test/nothing.txt';
 

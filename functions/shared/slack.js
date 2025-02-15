@@ -1,6 +1,6 @@
 import axios from 'axios';
 
-export default (config) => {
+export default (slackBotToken) => {
 
   return {
     post,
@@ -10,9 +10,9 @@ export default (config) => {
   };
 
   async function post(msgString) {
-    if (config.SLACK_URL) {
+    if (process.env.SLACK_URL) {
       const result = await axios.post(
-        config.SLACK_URL,
+        process.env.SLACK_URL,
         {
           text: msgString,
         }
@@ -23,10 +23,10 @@ export default (config) => {
   }
 
   async function postBlocks(blocks) {
-    if (config.SLACK_URL) {
+    if (process.env.SLACK_URL) {
 
       const result = await axios.post(
-        config.SLACK_URL,
+        process.env.SLACK_URL,
         blocks
       );
       return result;
@@ -41,8 +41,7 @@ export default (config) => {
    * @returns 
    */
   async function postBotMsgToChannel(channelId, msg) {
-    if (config.SLACK_TICKETING_APP_BOT_TOKEN) {
-      const slackBotToken = config.SLACK_TICKETING_APP_BOT_TOKEN;      
+    if (slackBotToken) {
       const postData = {
         channel: channelId,
         text: msg,
@@ -71,8 +70,7 @@ export default (config) => {
    * @returns 
    */
   async function postBotBlocksMsgToChannel(channelId, blocks) {
-    if (config.SLACK_TICKETING_APP_BOT_TOKEN) {
-      const slackBotToken = config.SLACK_TICKETING_APP_BOT_TOKEN;      
+    if (slackBotToken) {
       const postData = {
         channel: channelId,
         blocks: blocks,

@@ -1,8 +1,7 @@
 import { getDocument, getDocuments, applyUpdates } from '../../shared/helpers.js';
+import { EXERCISE_STAGE, APPLICATION_STATUS } from '../../shared/config.js';
 
-export default (firebase, config, db) => {
-  const { EXERCISE_STAGE, APPLICATION_STATUS } = config;
-
+export default (firebase, db) => {
   return {
     updateApplicationRecordStageStatus,
     getApplicationRecordStageStatus,

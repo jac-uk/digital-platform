@@ -1,6 +1,6 @@
 import axios from 'axios';
 
-export default (config) => {
+export default (secret, validationUrl) => {
   return verifyRecaptcha;
 
   /**
@@ -8,9 +8,9 @@ export default (config) => {
    */
   async function verifyRecaptcha({ token, remoteip }) {
     try {
-      const res = await axios.post(config.GOOGLE_RECAPTCHA_VALIDATION_URL, null, {
+      const res = await axios.post(validationUrl, null, {
         params: {
-          secret: config.GOOGLE_RECAPTCHA_SECRET,
+          secret: secret,
           response: token,
           remoteip,
         },

@@ -1,8 +1,9 @@
 import { getDocument, isEmpty, applyUpdates, getDate } from '../../shared/helpers.js';
 import lookup from '../../shared/converters/lookup.js';
 import _ from 'lodash';
+import { APPLICATION } from '../../shared/config.js';
 
-export default (firebase, config, db) => {
+export default (firebase, db) => {
   return {
     flagApplicationIssues,
     flagApplicationIssuesForExercise,
@@ -429,10 +430,10 @@ export default (firebase, config, db) => {
     let answers;
 
     if (exercise._applicationVersion >= 2) {
-      questions = config.APPLICATION.CHARACTER_ISSUES_V2;
+      questions = APPLICATION.CHARACTER_ISSUES_V2;
       answers = application.characterInformationV3 ? application.characterInformationV3 : application.characterInformationV2;
     } else if (application.characterInformation) {
-      questions = config.APPLICATION.CHARACTER_ISSUES;
+      questions = APPLICATION.CHARACTER_ISSUES;
       answers = application.characterInformation;
     }
 

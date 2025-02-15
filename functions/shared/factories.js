@@ -1,9 +1,10 @@
 import { formatDate, objectHasNestedProperty } from './helpers.js';
 import { applicationOpenDatePost01042023 } from './converters/helpers.js';
 import { getSearchMap } from './search.js';
-import _ from 'lodash';
+//import _ from 'lodash';
+import { EXERCISE_STAGE, ASSESSMENT_TYPE, ASSESSMENT_METHOD } from './config.js';
 
-export default (CONSTANTS) => {
+export default () => {
   return {
     newNotificationExerciseApprovalSubmit,
     newNotificationApplicationSubmit,
@@ -232,7 +233,7 @@ export default (CONSTANTS) => {
       personalisation: {
         exerciseName: application.exerciseName,
         dueDate: dueDate,
-        urlRequired: `${CONSTANTS.APPLY_URL}/sign-in`,
+        urlRequired: `${process.env.APPLY_URL}/sign-in`,
         applicantName: application.personalDetails.fullName,
         selectionExerciseManager: exerciseManagerName,
         exerciseMailbox: exerciseMailbox,
@@ -247,13 +248,13 @@ export default (CONSTANTS) => {
   }
 
   function newNotificationAssessmentRequest(firebase, assessment, exercise) {
-    const link = `${CONSTANTS.ASSESSMENTS_URL}/sign-in?email=${assessment.assessor.email}&ref=assessments/${assessment.id}`;
+    const link = `${process.env.ASSESSMENTS_URL}/sign-in?email=${assessment.assessor.email}&ref=assessments/${assessment.id}`;
     let xCompetencyAreasOrXSkillsAndAbilities;
     switch (assessment.type) {
-      case CONSTANTS.ASSESSMENT_TYPE.COMPETENCY:
+      case ASSESSMENT_TYPE.COMPETENCY:
         xCompetencyAreasOrXSkillsAndAbilities = 'competency areas';
         break;
-      case CONSTANTS.ASSESSMENT_TYPE.SKILLS:
+      case ASSESSMENT_TYPE.SKILLS:
         xCompetencyAreasOrXSkillsAndAbilities = 'skills and abilities';
         break;
       default:
@@ -288,13 +289,13 @@ export default (CONSTANTS) => {
   }
 
   function newNotificationAssessmentReminder(firebase, assessment, exercise) {
-    const link = `${CONSTANTS.ASSESSMENTS_URL}/sign-in?email=${assessment.assessor.email}&ref=assessments/${assessment.id}`;
+    const link = `${process.env.ASSESSMENTS_URL}/sign-in?email=${assessment.assessor.email}&ref=assessments/${assessment.id}`;
     let xCompetencyAreasOrXSkillsAndAbilities;
     switch (assessment.type) {
-      case CONSTANTS.ASSESSMENT_TYPE.COMPETENCY:
+      case ASSESSMENT_TYPE.COMPETENCY:
         xCompetencyAreasOrXSkillsAndAbilities = 'competency areas';
         break;
-      case CONSTANTS.ASSESSMENT_TYPE.SKILLS:
+      case ASSESSMENT_TYPE.SKILLS:
         xCompetencyAreasOrXSkillsAndAbilities = 'skills and abilities';
         break;
       default:
@@ -329,13 +330,13 @@ export default (CONSTANTS) => {
   }
 
   function newNotificationAssessmentSubmit(firebase, assessment, exercise) {
-    const link = `${CONSTANTS.ASSESSMENTS_URL}/sign-in?email=${assessment.assessor.email}&ref=assessments/${assessment.id}`;
+    const link = `${process.env.ASSESSMENTS_URL}/sign-in?email=${assessment.assessor.email}&ref=assessments/${assessment.id}`;
     let xCompetencyAreasOrXSkillsAndAbilities;
     switch (assessment.type) {
-      case CONSTANTS.ASSESSMENT_TYPE.COMPETENCY:
+      case ASSESSMENT_TYPE.COMPETENCY:
         xCompetencyAreasOrXSkillsAndAbilities = 'competency areas';
         break;
-      case CONSTANTS.ASSESSMENT_TYPE.SKILLS:
+      case ASSESSMENT_TYPE.SKILLS:
         xCompetencyAreasOrXSkillsAndAbilities = 'skills and abilities';
         break;
       default:
@@ -414,16 +415,16 @@ export default (CONSTANTS) => {
     // assessment type
     if (exercise.assessmentMethods) {
       if (
-        exercise.assessmentMethods[CONSTANTS.ASSESSMENT_METHOD.SELF_ASSESSMENT_WITH_COMPETENCIES] ||
-        exercise.assessmentMethods[CONSTANTS.ASSESSMENT_METHOD.STATEMENT_OF_SUITABILITY_WITH_COMPETENCIES]
+        exercise.assessmentMethods[ASSESSMENT_METHOD.SELF_ASSESSMENT_WITH_COMPETENCIES] ||
+        exercise.assessmentMethods[ASSESSMENT_METHOD.STATEMENT_OF_SUITABILITY_WITH_COMPETENCIES]
       ) {
-        assessment.type = CONSTANTS.ASSESSMENT_TYPE.COMPETENCY;
-      } else if (exercise.assessmentMethods[CONSTANTS.ASSESSMENT_METHOD.STATEMENT_OF_SUITABILITY_WITH_SKILLS_AND_ABILITIES]) {
-        assessment.type = CONSTANTS.ASSESSMENT_TYPE.SKILLS;
+        assessment.type = ASSESSMENT_TYPE.COMPETENCY;
+      } else if (exercise.assessmentMethods[ASSESSMENT_METHOD.STATEMENT_OF_SUITABILITY_WITH_SKILLS_AND_ABILITIES]) {
+        assessment.type = ASSESSMENT_TYPE.SKILLS;
       }
     }
     if (!assessment.type) {
-      assessment.type = CONSTANTS.ASSESSMENT_TYPE.GENERAL;
+      assessment.type = ASSESSMENT_TYPE.GENERAL;
     }
 
     // build searchables for search map
@@ -560,7 +561,7 @@ export default (CONSTANTS) => {
         status: 'not requested',
       },
       active: true,
-      stage: exercise._processingVersion >= 2 ? CONSTANTS.EXERCISE_STAGE.SHORTLISTING : CONSTANTS.EXERCISE_STAGE.REVIEW,
+      stage: exercise._processingVersion >= 2 ? EXERCISE_STAGE.SHORTLISTING : EXERCISE_STAGE.REVIEW,
       status: '',
       flags: {
         characterIssues: false,
@@ -823,7 +824,7 @@ export default (CONSTANTS) => {
       personalisation: {
         exerciseName: application.exerciseName,
         dueDate,
-        urlRequired: `${CONSTANTS.APPLY_URL}/sign-in`,
+        urlRequired: `${process.env.APPLY_URL}/sign-in`,
         applicantName: application.personalDetails.fullName,
         selectionExerciseManager: exerciseManagerName,
         exerciseMailbox,

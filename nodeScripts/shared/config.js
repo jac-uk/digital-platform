@@ -4,11 +4,6 @@ const CONSTANTS = {
   APPLY_URL: process.env.APPLY_URL,
   // QT_URL: 'http://localhost:5001/jac-qualifying-tests-develop/europe-west2/api/v1',
   QT_URL: process.env.QT_PLATFORM_URL,
-  QT_KEY: process.env.QT_PLATFORM_KEY,
-  ZENHUB_GRAPH_QL_API_KEY: process.env.ZENHUB_GRAPH_QL_API_KEY, // graphQL personal api key
-  ZENHUB_ISSUES_WORKSPACE_ID: process.env.ZENHUB_ISSUES_WORKSPACE_ID,
-  SLACK_TICKETING_APP_BOT_TOKEN: process.env.SLACK_TICKETING_APP_BOT_TOKEN,
-  GITHUB_PAT: process.env.GITHUB_PAT, // personal access token
   SCAN_SERVICE_URL: 'https://malware-scanner-dot-platform-production-9207d.appspot.com/scan',
   APPLICATION: {
     STATUS: {
@@ -302,7 +297,6 @@ const CONSTANTS = {
   },
   CAPABILITIES: ['L', 'EJ', 'L&J', 'PQ', 'PBK', 'ACI', 'WCO', 'MWE', 'OVERALL'],
   SELECTION_CATEGORIES: ['leadership', 'roleplay', 'situational', 'interview', 'overall'],
-  NOTIFY_KEY: process.env.NOTIFY_LIMITED_KEY,
   SLACK_URL: process.env.SLACK_URL,
   SLACK_API_STUB: process.env.SLACK_API_STUB,
   STORAGE_URL: process.env.PROJECT_ID + '.appspot.com',

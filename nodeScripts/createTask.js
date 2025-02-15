@@ -1,10 +1,9 @@
 'use strict';
 
-import config from './shared/config.js';
 import { firebase, app, db } from './shared/admin.js';
 import initCreateTask from '../functions/actions/tasks/createTask.js';
 
-const createTask = initCreateTask(config, firebase, db);
+const createTask = initCreateTask(firebase, db);
 
 const main = async () => {
   return createTask({

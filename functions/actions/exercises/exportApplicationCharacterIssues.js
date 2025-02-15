@@ -4,7 +4,7 @@ import { getDocuments, getDocument, formatDate, getDate, splitFullName } from '.
 import { applicationOpenDatePost01042023, ordinal, getJudicialExperienceString } from '../../shared/converters/helpers.js';
 import _ from 'lodash';
 import htmlWriter from '../../shared/htmlWriter.js';
-import config from '../../shared/config.js';
+import { APPLICATION } from '../../shared/config.js';
 import initDrive from '../../shared/google-drive.js';
 
 const drive = initDrive();
@@ -909,9 +909,9 @@ export default (firebase, db) => {
     let candidateCount = 0;
     let firstStatusIsDone = false;
 
-    Object.keys(config.APPLICATION.CHARACTER_ISSUE_STATUS).forEach((k) => {
+    Object.keys(APPLICATION.CHARACTER_ISSUE_STATUS).forEach((k) => {
 
-      const currentStatus = config.APPLICATION.CHARACTER_ISSUE_STATUS[k];
+      const currentStatus = APPLICATION.CHARACTER_ISSUE_STATUS[k];
       const statusText = k.split('_').join(' '); // i.e. REJECT_NON_DECLARATION becomes REJECT NON DECLARATION
 
       statusGroupARs = flattened.filter(ar => { // get applications with the character issue status we are processing
@@ -1004,32 +1004,32 @@ export default (firebase, db) => {
    *
    * @param {*} applicationRecords
    */
-  function dumpCharacterIssues(applicationRecords) {
+  // function dumpCharacterIssues(applicationRecords) {
 
-    console.log('*** Dump - START ***');
+  //   console.log('*** Dump - START ***');
 
-    // dump a summary of all applications that have one or more character issues
-    const filtered = applicationRecords.filter(ar => { // exclude applications with no character issues
-      return ar.issues && ar.issues.characterIssues && ar.issues.characterIssues.length > 0;
-    });
-    filtered.forEach((ar) => {
-      console.log(`${ar.candidate.fullName} - ${ar.issues.characterIssuesStatus || 'unassigned'}`);
-      ar.issues.characterIssues.forEach((issue) => {
-        console.log(` - ${issue.type} x ${issue.events.length}`);
-      });
-    });
+  //   // dump a summary of all applications that have one or more character issues
+  //   const filtered = applicationRecords.filter(ar => { // exclude applications with no character issues
+  //     return ar.issues && ar.issues.characterIssues && ar.issues.characterIssues.length > 0;
+  //   });
+  //   filtered.forEach((ar) => {
+  //     console.log(`${ar.candidate.fullName} - ${ar.issues.characterIssuesStatus || 'unassigned'}`);
+  //     ar.issues.characterIssues.forEach((issue) => {
+  //       console.log(` - ${issue.type} x ${issue.events.length}`);
+  //     });
+  //   });
 
-    console.log('*** Dump - END ***');
-  }
+  //   console.log('*** Dump - END ***');
+  // }
 
   /**
    * Dumps flattened applications/characters issue records to the console, to assist with debugging
    *
    * @param {*} flattened
    */
-  function dumpFlatRecords(flattened) {
-    console.log(JSON.stringify(flattened, null, 2));
-  }
+  // function dumpFlatRecords(flattened) {
+  //   console.log(JSON.stringify(flattened, null, 2));
+  // }
 
   /**
    * Sometimes an application has multiple issues of the same type with a single event each
@@ -1157,10 +1157,10 @@ export default (firebase, db) => {
    */
    function getCharacterIssueGroup(characterIssue) {
     if (characterIssue.type) {
-      if (Object.keys(config.APPLICATION.CHARACTER_ISSUES).includes(characterIssue.type)) {
-        return config.APPLICATION.CHARACTER_ISSUES[characterIssue.type].group;
-      } if (Object.keys(config.APPLICATION.CHARACTER_ISSUES_V2).includes(characterIssue.type)) {
-        return config.APPLICATION.CHARACTER_ISSUES_V2[characterIssue.type].group;
+      if (Object.keys(APPLICATION.CHARACTER_ISSUES).includes(characterIssue.type)) {
+        return APPLICATION.CHARACTER_ISSUES[characterIssue.type].group;
+      } if (Object.keys(APPLICATION.CHARACTER_ISSUES_V2).includes(characterIssue.type)) {
+        return APPLICATION.CHARACTER_ISSUES_V2[characterIssue.type].group;
       }
     }
     return '?';
@@ -1175,10 +1175,10 @@ export default (firebase, db) => {
    */
   function getCharacterIssuePrettyType(characterIssue) {
     if (characterIssue.type) {
-      if (Object.keys(config.APPLICATION.CHARACTER_ISSUES).includes(characterIssue.type)) {
-        return config.APPLICATION.CHARACTER_ISSUES[characterIssue.type].title;
-      } if (Object.keys(config.APPLICATION.CHARACTER_ISSUES_V2).includes(characterIssue.type)) {
-        return config.APPLICATION.CHARACTER_ISSUES_V2[characterIssue.type].title;
+      if (Object.keys(APPLICATION.CHARACTER_ISSUES).includes(characterIssue.type)) {
+        return APPLICATION.CHARACTER_ISSUES[characterIssue.type].title;
+      } if (Object.keys(APPLICATION.CHARACTER_ISSUES_V2).includes(characterIssue.type)) {
+        return APPLICATION.CHARACTER_ISSUES_V2[characterIssue.type].title;
       }
     }
     return '?';
@@ -1549,17 +1549,17 @@ REPRODUCE THIS TABLE AS APPROPRIATE.<span class="red">&gt;</span></b>
    */
   function addHtmlCharacterAnnex_MainBody(writer, exercise, applicationRecords) {
     let candidateCount = 0;
-    const statusItems = Object.values(config.APPLICATION.CHARACTER_ISSUE_STATUS).map(status => {
+    const statusItems = Object.values(APPLICATION.CHARACTER_ISSUE_STATUS).map(status => {
       const item = { status };
       switch (status) {
-      case config.APPLICATION.CHARACTER_ISSUE_STATUS.PROCEED:
+      case APPLICATION.CHARACTER_ISSUE_STATUS.PROCEED:
         item.background = 'green';
         break;
-      case config.APPLICATION.CHARACTER_ISSUE_STATUS.REJECT:
-      case config.APPLICATION.CHARACTER_ISSUE_STATUS.REJECT_NON_DECLARATION:
+      case APPLICATION.CHARACTER_ISSUE_STATUS.REJECT:
+      case APPLICATION.CHARACTER_ISSUE_STATUS.REJECT_NON_DECLARATION:
         item.background = 'red';
         break;
-      case config.APPLICATION.CHARACTER_ISSUE_STATUS.DISCUSS:
+      case APPLICATION.CHARACTER_ISSUE_STATUS.DISCUSS:
         item.background = '#FFBF00';
         break;
       default:
@@ -1580,7 +1580,7 @@ REPRODUCE THIS TABLE AS APPROPRIATE.<span class="red">&gt;</span></b>
 
       writer.addRaw(`<tr><td colspan="3" style="text-align:center; background-color:${background}; padding:5px"><b>${lookup(status)}</b></td></tr>`);
     
-      Object.values(config.APPLICATION.CHARACTER_ISSUE_OFFENCE_CATEGORY).forEach(offenceCategory => {
+      Object.values(APPLICATION.CHARACTER_ISSUE_OFFENCE_CATEGORY).forEach(offenceCategory => {
         const filteredApplications = ars.filter(ar => ar.issues && ar.issues.characterIssuesOffenceCategory === offenceCategory);
         if (filteredApplications.length === 0) return;
 

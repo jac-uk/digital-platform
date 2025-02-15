@@ -6,14 +6,9 @@ import { objectHasNestedProperty } from './helpers.js';
  * Zenhub GraphQL API calls
  * As this is a GraphQL API, a response code of 200 does not guarantee that the request was successful.
  * Responses in GraphQL are in JSON and this JSON may contain an "errors" field with a list of errors that occurred with your request.
- * @param {*} config 
  * @returns issue id | false
  */
-export default (config) => {
-  const baseApiUrl = config.ZENHUB_GRAPH_QL_URL;
-  const apiKey = config.ZENHUB_GRAPH_QL_API_KEY;
-  const githubPersonalAccesToken = config.GITHUB_PAT;
-
+export default (baseApiUrl, apiKey, githubPersonalAccesToken, workspaceId) => {
   const axiosHeaders = {
     Authorization: `Bearer ${apiKey}`,
     'Content-Type': 'application/json',
@@ -34,7 +29,7 @@ export default (config) => {
    * @returns 
    */
   async function createZenhubIssue(referenceNumber, body) {
-    const platformIssuesRepositoryId = config.ZENHUB_ISSUES_WORKSPACE_ID;
+    const platformIssuesRepositoryId = workspaceId;
     if (baseApiUrl && apiKey) {
       try {
         const title = `User Raised Issue ${referenceNumber}`;

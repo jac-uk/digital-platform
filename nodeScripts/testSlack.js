@@ -1,8 +1,10 @@
 'use strict';
 
-import config from '../functions/shared/config.js';
 import initSlack from '../functions/shared/slack.js';
-const slack = initSlack(config);
+import { defineSecret } from 'firebase-functions/params';
+
+const SLACK_TICKETING_APP_BOT_TOKEN = defineSecret('SLACK_TICKETING_APP_BOT_TOKEN');
+const slack = initSlack(SLACK_TICKETING_APP_BOT_TOKEN);
 
 const main = async () => {
   // TEST 1
