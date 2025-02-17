@@ -60,11 +60,11 @@ function selectionDayTimetable(panelData, candidateInfo, reasonableAdjustments, 
 
           // Assign the candidate to the slot
           const row = {
-            Panel: panel.panel.id,
-            Date: slot.date,
-            Slot: slot.totalSlots - availableSlots + 1,
-            CandidateRef: candidate,
-            ReasonableAdjustment: reasonableAdjustments.includes(candidate),
+            panel: panel.panel.id,
+            date: slot.date,
+            slot: slot.totalSlots - availableSlots + 1,
+            candidateRef: candidate,
+            reasonableAdjustment: reasonableAdjustments.includes(candidate),
           };
 
           availableSlots--;
@@ -95,11 +95,11 @@ function selectionDayTimetable(panelData, candidateInfo, reasonableAdjustments, 
             
             // Assign the candidate to the slot
             const row = {
-              Panel: panel.panel.id,
-              Date: slot.date,
-              Slot: slot.totalSlots - availableSlots + 1,
-              CandidateRef: candidate,
-              ReasonableAdjustment: reasonableAdjustments.includes(candidate),
+              panel: panel.panel.id,
+              date: slot.date,
+              slot: slot.totalSlots - availableSlots + 1,
+              candidateRef: candidate,
+              reasonableAdjustment: reasonableAdjustments.includes(candidate),
             };
 
             availableSlots--;
