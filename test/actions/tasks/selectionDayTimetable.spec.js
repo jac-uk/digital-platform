@@ -91,18 +91,18 @@ describe('selectionDayTimetable', () => {
     expect(result).toHaveLength(2);
 
     const firstRow = result[0];
-    expect(firstRow.Panel).toBe(mockPanelData[0].panel.id);
-    expect(firstRow.Date).toEqual(mockPanelData[0].timetable[0].date);
-    expect(firstRow.Slot).toBe(1);
-    expect(firstRow.CandidateRef).toBe(mockCandidateInfo[0].candidate.id); 
-    expect(firstRow.ReasonableAdjustment).toBe(true);
+    expect(firstRow.panel).toBe(mockPanelData[0].panel.id);
+    expect(firstRow.date).toEqual(mockPanelData[0].timetable[0].date);
+    expect(firstRow.slot).toBe(1);
+    expect(firstRow.candidateRef).toBe(mockCandidateInfo[0].candidate.id); 
+    expect(firstRow.reasonableAdjustment).toBe(true);
 
     const secondRow = result[1];
-    expect(secondRow.Panel).toBe(mockPanelData[1].panel.id);
-    expect(secondRow.Date).toEqual(mockPanelData[1].timetable[0].date);
-    expect(secondRow.Slot).toBe(1);
-    expect(secondRow.CandidateRef).toBe(mockCandidateInfo[1].candidate.id);
-    expect(secondRow.ReasonableAdjustment).toBe(false);
+    expect(secondRow.panel).toBe(mockPanelData[1].panel.id);
+    expect(secondRow.date).toEqual(mockPanelData[1].timetable[0].date);
+    expect(secondRow.slot).toBe(1);
+    expect(secondRow.candidateRef).toBe(mockCandidateInfo[1].candidate.id);
+    expect(secondRow.reasonableAdjustment).toBe(false);
   });
   
   describe('slots', () => {
@@ -128,18 +128,18 @@ describe('selectionDayTimetable', () => {
       expect(result).toHaveLength(2);
       
       const firstRow = result[0];
-      expect(firstRow.Panel).toBe(mockPanelData[0].panel.id);
-      expect(firstRow.Date).toEqual(mockPanelData[0].timetable[0].date);
-      expect(firstRow.Slot).toBe(1);
-      expect(firstRow.CandidateRef).toBe(mockCandidateInfo[0].candidate.id); 
-      expect(firstRow.ReasonableAdjustment).toBe(true);
+      expect(firstRow.panel).toBe(mockPanelData[0].panel.id);
+      expect(firstRow.date).toEqual(mockPanelData[0].timetable[0].date);
+      expect(firstRow.slot).toBe(1);
+      expect(firstRow.candidateRef).toBe(mockCandidateInfo[0].candidate.id); 
+      expect(firstRow.reasonableAdjustment).toBe(true);
 
       const secondRow = result[1];
-      expect(secondRow.Panel).toBe(mockPanelData[0].panel.id);
-      expect(secondRow.Date).toEqual(mockPanelData[0].timetable[0].date);
-      expect(secondRow.Slot).toBe(2);
-      expect(secondRow.CandidateRef).toBe(mockCandidateInfo[1].candidate.id);
-      expect(secondRow.ReasonableAdjustment).toBe(false);
+      expect(secondRow.panel).toBe(mockPanelData[0].panel.id);
+      expect(secondRow.date).toEqual(mockPanelData[0].timetable[0].date);
+      expect(secondRow.slot).toBe(2);
+      expect(secondRow.candidateRef).toBe(mockCandidateInfo[1].candidate.id);
+      expect(secondRow.reasonableAdjustment).toBe(false);
     });
 
     it('wont assign too many candidates to slots', () => {
@@ -275,13 +275,13 @@ describe('selectionDayTimetable', () => {
       const result = selectionDayTimetable(mockPanelData, mockCandidateInfo, mockReasonableAdjustments, mockPanelConflicts);
     
       expect(result.timetable[0]).toEqual(
-        {'CandidateRef': 'candidate2', 'Date': new Date('2024-01-01'), 'Panel': 'panel1', 'ReasonableAdjustment': false, 'Slot': 1}
+        {'candidateRef': 'candidate2', 'date': new Date('2024-01-01'), 'panel': 'panel1', 'reasonableAdjustment': false, 'slot': 1}
       );
       expect(result.timetable[1]).toEqual(
-        {'CandidateRef': 'candidate3', 'Date': new Date('2024-01-02'), 'Panel': 'panel2', 'ReasonableAdjustment': false, 'Slot': 1}
+        {'candidateRef': 'candidate3', 'date': new Date('2024-01-02'), 'panel': 'panel2', 'reasonableAdjustment': false, 'slot': 1}
       );
       expect(result.timetable[2]).toEqual(
-        {'CandidateRef': 'candidate1', 'Date': new Date('2024-01-03'), 'Panel': 'panel3', 'ReasonableAdjustment': false, 'Slot': 1}
+        {'candidateRef': 'candidate1', 'date': new Date('2024-01-03'), 'panel': 'panel3', 'reasonableAdjustment': false, 'slot': 1}
       );
       expect(result.unassignedCandidates).toEqual([]);
     });
@@ -339,8 +339,8 @@ describe('selectionDayTimetable', () => {
       ).timetable;
     
       expect(result).toHaveLength(2);
-      expect(result[0].CandidateRef).toBe('candidate1');
-      expect(result[1].CandidateRef).toBe('candidate2');
+      expect(result[0].candidateRef).toBe('candidate1');
+      expect(result[1].candidateRef).toBe('candidate2');
     });
 
     it('handles one slot across all panels', () => {
@@ -386,8 +386,8 @@ describe('selectionDayTimetable', () => {
       ).timetable;
     
       expect(result).toHaveLength(2);
-      expect(result[0].CandidateRef).toBe('candidate1');
-      expect(result[1].CandidateRef).toBe('candidate2');
+      expect(result[0].candidateRef).toBe('candidate1');
+      expect(result[1].candidateRef).toBe('candidate2');
     });
 
     it('handles no slots available across all panels', () => {
@@ -473,7 +473,7 @@ describe('selectionDayTimetable', () => {
       const result = selectionDayTimetable(mockPanelData, mockCandidateInfo, mockReasonableAdjustments, mockPanelConflicts);
 
       expect(result.timetable).toHaveLength(5); 
-      expect(result.timetable[4].CandidateRef).toEqual(mockCandidateInfo[2].candidate.id);
+      expect(result.timetable[4].candidateRef).toEqual(mockCandidateInfo[2].candidate.id);
     });
   });
   
@@ -683,7 +683,7 @@ describe('selectionDayTimetable', () => {
       );
 
       expect(result.timetable).toHaveLength(1);
-      expect(result.timetable[0].CandidateRef).toBe('candidate1');
+      expect(result.timetable[0].candidateRef).toBe('candidate1');
       expect(result.unassignedCandidates[0].candidate.id).toBe('candidate2');
       expect(result.unassignedCandidates[1].candidate.id).toBe('candidate3');
     });
@@ -738,8 +738,8 @@ describe('selectionDayTimetable', () => {
       ).timetable;
   
       expect(result).toHaveLength(1);
-      expect(result[0].CandidateRef).toBe(reasonableAdjustedCandidate.candidate.id);
-      expect(result[0].ReasonableAdjustment).toBe(true);
+      expect(result[0].candidateRef).toBe(reasonableAdjustedCandidate.candidate.id);
+      expect(result[0].reasonableAdjustment).toBe(true);
     });
 
     it('performs well with a larger dataset', () => {
@@ -1093,17 +1093,17 @@ describe('selectionDayTimetable', () => {
     
       expect(result.timetable).toEqual([
         // panel1 candidates
-        {'CandidateRef': 'candidate1', 'Date': new Date('2024-01-01'), 'Panel': 'panel1', 'ReasonableAdjustment': true, 'Slot': 1},
-        {'CandidateRef': 'candidate2', 'Date': new Date('2024-01-01'), 'Panel': 'panel1', 'ReasonableAdjustment': false, 'Slot': 2},
-        {'CandidateRef': 'candidate3', 'Date': new Date('2024-01-01'), 'Panel': 'panel1', 'ReasonableAdjustment': false, 'Slot': 3},
-        {'CandidateRef': 'candidate4', 'Date': new Date('2024-01-01'), 'Panel': 'panel1', 'ReasonableAdjustment': true, 'Slot': 4},
-        {'CandidateRef': 'candidate5', 'Date': new Date('2024-01-01'), 'Panel': 'panel1', 'ReasonableAdjustment': false, 'Slot': 5},
+        {'candidateRef': 'candidate1', 'date': new Date('2024-01-01'), 'panel': 'panel1', 'reasonableAdjustment': true, 'slot': 1},
+        {'candidateRef': 'candidate2', 'date': new Date('2024-01-01'), 'panel': 'panel1', 'reasonableAdjustment': false, 'slot': 2},
+        {'candidateRef': 'candidate3', 'date': new Date('2024-01-01'), 'panel': 'panel1', 'reasonableAdjustment': false, 'slot': 3},
+        {'candidateRef': 'candidate4', 'date': new Date('2024-01-01'), 'panel': 'panel1', 'reasonableAdjustment': true, 'slot': 4},
+        {'candidateRef': 'candidate5', 'date': new Date('2024-01-01'), 'panel': 'panel1', 'reasonableAdjustment': false, 'slot': 5},
         // panel2 candidates
-        {'CandidateRef': 'candidate6', 'Date': new Date('2024-01-02'), 'Panel': 'panel2', 'ReasonableAdjustment': false, 'Slot': 1},
-        {'CandidateRef': 'candidate7', 'Date': new Date('2024-01-02'), 'Panel': 'panel2', 'ReasonableAdjustment': false, 'Slot': 2},
-        {'CandidateRef': 'candidate8', 'Date': new Date('2024-01-02'), 'Panel': 'panel2', 'ReasonableAdjustment': true, 'Slot': 3},
-        {'CandidateRef': 'candidate9', 'Date': new Date('2024-01-02'), 'Panel': 'panel2', 'ReasonableAdjustment': false, 'Slot': 4},
-        {'CandidateRef': 'candidate10', 'Date': new Date('2024-01-02'), 'Panel': 'panel2', 'ReasonableAdjustment': false, 'Slot': 5},
+        {'candidateRef': 'candidate6', 'date': new Date('2024-01-02'), 'panel': 'panel2', 'reasonableAdjustment': false, 'slot': 1},
+        {'candidateRef': 'candidate7', 'date': new Date('2024-01-02'), 'panel': 'panel2', 'reasonableAdjustment': false, 'slot': 2},
+        {'candidateRef': 'candidate8', 'date': new Date('2024-01-02'), 'panel': 'panel2', 'reasonableAdjustment': true, 'slot': 3},
+        {'candidateRef': 'candidate9', 'date': new Date('2024-01-02'), 'panel': 'panel2', 'reasonableAdjustment': false, 'slot': 4},
+        {'candidateRef': 'candidate10', 'date': new Date('2024-01-02'), 'panel': 'panel2', 'reasonableAdjustment': false, 'slot': 5},
       ]);
       expect(result.unassignedCandidates).toEqual([
         // unassignable candidates
@@ -1189,9 +1189,9 @@ describe('selectionDayTimetable', () => {
       ).timetable;
     
       expect(result).toHaveLength(3);
-      expect(result[0].CandidateRef).toBe('candidate1');
-      expect(result[1].CandidateRef).toBe('candidate2');
-      expect(result[2].CandidateRef).toBe('candidate3');
+      expect(result[0].candidateRef).toBe('candidate1');
+      expect(result[1].candidateRef).toBe('candidate2');
+      expect(result[2].candidateRef).toBe('candidate3');
     });
     
   });
