@@ -60,10 +60,10 @@ function selectionDayTimetable(panelData, candidateInfo, reasonableAdjustments, 
 
           // Assign the candidate to the slot
           const row = {
-            panel: panel.panel.id,
+            panel: panel.panel,
             date: slot.date,
             slot: slot.totalSlots - availableSlots + 1,
-            candidateRef: candidate,
+            candidateRef: assignedCandidate.candidate.ref,
             reasonableAdjustment: reasonableAdjustments.includes(candidate),
           };
 
@@ -95,10 +95,10 @@ function selectionDayTimetable(panelData, candidateInfo, reasonableAdjustments, 
             
             // Assign the candidate to the slot
             const row = {
-              panel: panel.panel.id,
+              panel: panel.panel,
               date: slot.date,
               slot: slot.totalSlots - availableSlots + 1,
-              candidateRef: candidate,
+              candidateRef: assignedCandidate.candidate.ref,
               reasonableAdjustment: reasonableAdjustments.includes(candidate),
             };
 
