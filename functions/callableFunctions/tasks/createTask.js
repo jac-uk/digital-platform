@@ -11,7 +11,7 @@ const { checkFunctionEnabled } = initServiceSettings(db);
 
 export default functions.runWith({
   timeoutSeconds: 180,
-  memory: '256MB',
+  memory: '512MB',
 }).region('europe-west2').https.onCall(async (data, context) => {
   await checkFunctionEnabled();
   if (!context.auth) {
