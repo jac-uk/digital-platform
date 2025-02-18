@@ -21,7 +21,7 @@ const { onCreatedIssue } = initOnCreatedIssue(db, firebase);
 export default onRequest(
   {
     region: 'europe-west2',
-    memory: '256MiB',
+    memory: '256MB',
     timeoutSeconds: 240,
     minInstances: 0,
     maxInstances: 10,
@@ -165,7 +165,7 @@ export default onRequest(
       res.status(200).send('Function executed successfully');
     }
     // ... other event hooks
-    
+
     return;
   }
 );

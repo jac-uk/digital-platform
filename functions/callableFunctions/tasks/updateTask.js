@@ -11,7 +11,7 @@ const { checkFunctionEnabled } = initServiceSettings(db);
 export default onCall(
   {
     region: 'europe-west2', // Specify the region
-    memory: '512MiB',       // (Optional) Configure memory allocation
+    memory: '512MB',       // (Optional) Configure memory allocation
     timeoutSeconds: 180,    // (Optional) Configure timeout
     minInstances: 0,        // (Optional) Min instances to reduce cold starts
     maxInstances: 10,       // (Optional) Max instances to scale
@@ -27,11 +27,11 @@ export default onCall(
       if (!request.auth) {
         throw new HttpsError('failed-precondition', 'The function must be called while authenticated.');
       }
-    
+
       hasPermissions(request.auth.token.rp, [
         PERMISSIONS.tasks.permissions.canUpdate.value,
       ]);
-    
+
       if (!checkArguments({
         exerciseId: { required: true },
         type: { required: true },

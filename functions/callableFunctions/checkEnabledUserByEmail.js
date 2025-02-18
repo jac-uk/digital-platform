@@ -10,7 +10,7 @@ const { checkFunctionEnabled } = initServiceSettings(db);
 export default onCall(
   {
     region: 'europe-west2', // Specify the region
-    memory: '256MiB',       // (Optional) Configure memory allocation
+    memory: '256MB',       // (Optional) Configure memory allocation
     timeoutSeconds: 240,    // (Optional) Configure timeout
     minInstances: 0,        // (Optional) Min instances to reduce cold starts
     maxInstances: 10,       // (Optional) Max instances to scale
@@ -27,7 +27,7 @@ export default onCall(
       }, data)) {
         throw new HttpsError('invalid-argument', 'Please provide valid arguments');
       }
-    
+
       return await checkEnabledUserByEmail(data);
     }
     catch (error) {

@@ -13,7 +13,7 @@ const { checkFunctionEnabled } = initServiceSettings(db);
 export default onCall(
   {
     region: 'europe-west2', // Specify the region
-    memory: '256MiB',       // (Optional) Configure memory allocation
+    memory: '256MB',       // (Optional) Configure memory allocation
     timeoutSeconds: 240,    // (Optional) Configure timeout
     minInstances: 0,        // (Optional) Min instances to reduce cold starts
     maxInstances: 10,       // (Optional) Max instances to scale
@@ -29,7 +29,7 @@ export default onCall(
       if (!request.auth) {
         throw new HttpsError('failed-precondition', 'The function must be called while authenticated.');
       }
-    
+
       hasPermissions(request.auth.token.rp, [
         PERMISSIONS.exercises.permissions.canReadExercises.value,
         PERMISSIONS.applicationRecords.permissions.canReadApplicationRecords.value,
@@ -39,17 +39,17 @@ export default onCall(
       if (!(typeof data.exerciseId === 'string') || data.exerciseId.length === 0) {
         throw new HttpsError('invalid-argument', 'Please specify an "exerciseId"');
       }
-    
+
       if (!(typeof data.format === 'string') || data.format.length === 0) {
         throw new HttpsError('invalid-argument', 'Please specify a data format (excel or googledoc)');
       }
-    
+
       const exercise = await getDocument(db.collection('exercises').doc(data.exerciseId));
-    
+
       if (!exercise) {
         throw new HttpsError('not-found', 'Excercise not found');
       }
-    
+
       let details = {
         exerciseId: exercise.id,
         exerciseRef: exercise.referenceNumber,
