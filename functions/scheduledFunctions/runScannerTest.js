@@ -11,7 +11,7 @@ export default onSchedule(
     schedule: SCHEDULE,
     region: 'europe-west2',
     timeZone: 'Europe/London',
-    memory: '256MB', // Adjust as needed
+    memory: '256MiB', // Adjust as needed
     timeoutSeconds: 540, // Maximum timeout for long-running tasks
   },
   async (event) => {

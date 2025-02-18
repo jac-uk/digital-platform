@@ -8,7 +8,7 @@ const { loadTestApplications } = initApplications(firebase, db, auth);
 const { importUsers } = initUsers(auth, db);
 
 const runtimeOptions = {
-  memory: '512MB',
+  memory: '512MiB',
 };
 // default hashed password
 const defaultPasswordBcryptHash = '$2a$12$y/eoSrLp1c147c4VjCT/l.f/hxxraGhQYIYKYycZVdqh61pvPXjOW';

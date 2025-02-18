@@ -21,7 +21,7 @@ const { onCreatedIssue } = initOnCreatedIssue(db, firebase);
 export default onRequest(
   {
     region: 'europe-west2',
-    memory: '256MB',
+    memory: '256MiB',
     timeoutSeconds: 240,
     minInstances: 0,
     maxInstances: 10,

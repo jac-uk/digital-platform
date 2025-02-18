@@ -8,7 +8,7 @@ const { loadTestApplications } = initApplications(firebase, db, auth);
 const { deleteUsers } = initUsers(auth, db);
 
 const runtimeOptions = {
-  memory: '512MB',
+  memory: '512MiB',
 };
 
 export default functions.runWith(runtimeOptions).region('europe-west2').https.onCall(async (data, context) => {

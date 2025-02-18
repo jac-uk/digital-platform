@@ -13,7 +13,7 @@ const { checkFunctionEnabled } = initServiceSettings(db);
 export default onCall(
   {
     region: 'europe-west2', // Specify the region
-    memory: '1GB',       // (Optional) Configure memory allocation
+    memory: '1GiB',       // (Optional) Configure memory allocation
     timeoutSeconds: 180,    // (Optional) Configure timeout
     minInstances: 0,        // (Optional) Min instances to reduce cold starts
     maxInstances: 10,       // (Optional) Max instances to scale
@@ -42,11 +42,11 @@ export default onCall(
         throw new HttpsError('invalid-argument', 'Please provide valid arguments');
       }
       const result = await initialiseApplicationRecords(data);
-    
+
       // once we have application records we can generate reports
       await generateDiversityReport(data.exerciseId);  // @TODO use pub/sub instead?
       // await flagApplicationIssuesForExercise(data.exerciseId);
-    
+
       return {
         result: result,
       };

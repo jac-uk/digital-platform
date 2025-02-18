@@ -17,7 +17,7 @@ const { generateOutreachReport } = initGenerateOutreachReport(firebase, db);
 export default onCall(
   {
     region: 'europe-west2', // Specify the region
-    memory: '1GB',       // (Optional) Configure memory allocation
+    memory: '1GiB',       // (Optional) Configure memory allocation
     timeoutSeconds: 180,    // (Optional) Configure timeout
     minInstances: 0,        // (Optional) Min instances to reduce cold starts
     maxInstances: 10,       // (Optional) Max instances to scale
@@ -33,12 +33,12 @@ export default onCall(
       if (!request.auth) {
         throw new HttpsError('failed-precondition', 'The function must be called while authenticated.');
       }
-    
+
       hasPermissions(request.auth.token.rp, [
         PERMISSIONS.applicationRecords.permissions.canReadApplicationRecords.value,
         PERMISSIONS.applicationRecords.permissions.canUpdateApplicationRecords.value,
       ]);
-    
+
       // validate input parameters
       if (!checkArguments({
         exerciseId: { required: true },

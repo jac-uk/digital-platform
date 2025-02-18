@@ -17,7 +17,7 @@ const { generateDiversityData } = initGenerateDiversityData(firebase, db);
 export default onCall(
   {
     region: 'europe-west2', // Specify the region
-    memory: '512MB',       // (Optional) Configure memory allocation
+    memory: '512MiB',       // (Optional) Configure memory allocation
     timeoutSeconds: 240,    // (Optional) Configure timeout
     minInstances: 0,        // (Optional) Min instances to reduce cold starts
     maxInstances: 10,       // (Optional) Max instances to scale

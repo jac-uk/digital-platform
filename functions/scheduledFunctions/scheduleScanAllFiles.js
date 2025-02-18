@@ -13,7 +13,7 @@ export default onSchedule(
     schedule: SCHEDULE,
     region: 'europe-west2',
     timeZone: 'Europe/London',
-    memory: '4GB', // Adjust as needed
+    memory: '4GiB', // Adjust as needed
     timeoutSeconds: 540, // Maximum timeout for long-running tasks
     //secrets: [NOTIFY_KEY],  // ✅ Ensure the function has access to the secrets
   },

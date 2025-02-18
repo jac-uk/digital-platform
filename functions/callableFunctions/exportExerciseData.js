@@ -14,7 +14,7 @@ const { checkFunctionEnabled } = initServiceSettings(db);
 export default onCall(
   {
     region: 'europe-west2', // Specify the region
-    memory: '1GB',          // (Optional) Configure memory allocation
+    memory: '1GiB',          // (Optional) Configure memory allocation
     timeoutSeconds: 180,    // (Optional) Configure timeout
     minInstances: 0,        // (Optional) Min instances to reduce cold starts
     maxInstances: 10,       // (Optional) Max instances to scale
