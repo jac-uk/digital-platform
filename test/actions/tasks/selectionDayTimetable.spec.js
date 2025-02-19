@@ -95,14 +95,14 @@ describe('selectionDayTimetable', () => {
 
     const firstRow = result[0];
     expect(firstRow.panel.id).toBe(mockPanelData[0].panel.id);
-    expect(firstRow.date).toEqual(mockPanelData[0].timetable[0].date);
+    expect(firstRow.date).toEqual(mockPanelData[0].timetable[0].date.getTime());
     expect(firstRow.slot).toBe(1);
     expect(firstRow.candidateRef).toBe(mockCandidateInfo[0].candidate.ref); 
     expect(firstRow.reasonableAdjustment).toBe(true);
 
     const secondRow = result[1];
     expect(secondRow.panel.id).toBe(mockPanelData[1].panel.id);
-    expect(secondRow.date).toEqual(mockPanelData[1].timetable[0].date);
+    expect(secondRow.date).toEqual(mockPanelData[1].timetable[0].date.getTime());
     expect(secondRow.slot).toBe(1);
     expect(secondRow.candidateRef).toBe(mockCandidateInfo[1].candidate.ref);
     expect(secondRow.reasonableAdjustment).toBe(false);
@@ -134,14 +134,14 @@ describe('selectionDayTimetable', () => {
       
       const firstRow = result[0];
       expect(firstRow.panel.id).toBe(mockPanelData[0].panel.id);
-      expect(firstRow.date).toEqual(mockPanelData[0].timetable[0].date);
+      expect(firstRow.date).toEqual(mockPanelData[0].timetable[0].date.getTime());
       expect(firstRow.slot).toBe(1);
       expect(firstRow.candidateRef).toBe(mockCandidateInfo[0].candidate.ref); 
       expect(firstRow.reasonableAdjustment).toBe(true);
 
       const secondRow = result[1];
       expect(secondRow.panel.id).toBe(mockPanelData[0].panel.id);
-      expect(secondRow.date).toEqual(mockPanelData[0].timetable[0].date);
+      expect(secondRow.date).toEqual(mockPanelData[0].timetable[0].date.getTime());
       expect(secondRow.slot).toBe(2);
       expect(secondRow.candidateRef).toBe(mockCandidateInfo[1].candidate.ref);
       expect(secondRow.reasonableAdjustment).toBe(false);
@@ -290,21 +290,21 @@ describe('selectionDayTimetable', () => {
     
       expect(result.timetable[0]).toEqual({
         candidateRef: 'JAC001-002',
-        date: new Date('2024-01-01'),
+        date: new Date('2024-01-01').getTime(),
         panel: { id: 'panel1' },
         reasonableAdjustment: false,
         slot: 1,
       });
       expect(result.timetable[1]).toEqual({
         candidateRef: 'JAC001-003',
-        date: new Date('2024-01-02'),
+        date: new Date('2024-01-02').getTime(),
         panel: { id: 'panel2' },
         reasonableAdjustment: false,
         slot: 1,
       });
       expect(result.timetable[2]).toEqual({
         candidateRef: 'JAC001-001',
-        date: new Date('2024-01-03'),
+        date: new Date('2024-01-03').getTime(),
         panel: { id: 'panel3' },
         reasonableAdjustment: false,
         slot: 1,
@@ -1135,35 +1135,35 @@ describe('selectionDayTimetable', () => {
         // panel1 candidates
         {
           candidateRef: 'JAC001-001',
-          date: new Date('2024-01-01'),
+          date: new Date('2024-01-01').getTime(),
           panel: { id: 'panel1' },
           reasonableAdjustment: true,
           slot: 1,
         },
         {
           candidateRef: 'JAC001-002',
-          date: new Date('2024-01-01'),
+          date: new Date('2024-01-01').getTime(),
           panel: { id: 'panel1' },
           reasonableAdjustment: false,
           slot: 2,
         },
         {
           candidateRef: 'JAC001-003',
-          date: new Date('2024-01-01'),
+          date: new Date('2024-01-01').getTime(),
           panel: { id: 'panel1' },
           reasonableAdjustment: false,
           slot: 3,
         },
         {
           candidateRef: 'JAC001-004',
-          date: new Date('2024-01-01'),
+          date: new Date('2024-01-01').getTime(),
           panel: { id: 'panel1' },
           reasonableAdjustment: true, 
           slot: 4,
         },
         {
           candidateRef: 'JAC001-005',
-          date: new Date('2024-01-01'),
+          date: new Date('2024-01-01').getTime(),
           panel: { id: 'panel1' },
           reasonableAdjustment: false,
           slot: 5,
@@ -1171,35 +1171,35 @@ describe('selectionDayTimetable', () => {
         // panel2 candidates
         {
           candidateRef: 'JAC001-006',
-          date: new Date('2024-01-02'),
+          date: new Date('2024-01-02').getTime(),
           panel: { id: 'panel2' },
           reasonableAdjustment: false,
           slot: 1,
         },
         {
           candidateRef: 'JAC001-007',
-          date: new Date('2024-01-02'),
+          date: new Date('2024-01-02').getTime(),
           panel: { id: 'panel2' },
           reasonableAdjustment: false,
           slot: 2,
         },
         {
           candidateRef: 'JAC001-008',
-          date: new Date('2024-01-02'),
+          date: new Date('2024-01-02').getTime(),
           panel: { id: 'panel2' },
           reasonableAdjustment: true, 
           slot: 3,
         },
         {
           candidateRef: 'JAC001-009',
-          date: new Date('2024-01-02'),
+          date: new Date('2024-01-02').getTime(),
           panel: { id: 'panel2' },
           reasonableAdjustment: false,
           slot: 4,
         },
         {
           candidateRef: 'JAC001-010',
-          date: new Date('2024-01-02'),
+          date: new Date('2024-01-02').getTime(),
           panel: { id: 'panel2' },
           reasonableAdjustment: false,
           slot: 5,
