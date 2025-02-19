@@ -80,8 +80,8 @@ export default (firebase, db) => {
     // add additional data based on shortlisting methods
     const isProcessingVersion2 = exercise._processingVersion >= 2;
 
-    const APP_STATUS = JSON.parse(APPLICATION_STATUS);
-    const SH_LISTING = JSON.parse(SHORTLISTING);
+    const APP_STATUS = APPLICATION_STATUS;
+    const SH_LISTING = SHORTLISTING;
 
     const statuses = [];
 
