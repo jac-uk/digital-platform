@@ -1085,4 +1085,35 @@ describe('includeZScores(finalScores)', () => {
     });
   });
 
+  describe('zScore calculations: candidates fail any of CAT or SJT should not be calculated in any zScore (SJT, CAT and overall)', () => {
+    const sourceData = [
+      // Pass CAT, Pass SJT
+      { expectedZScore: -0.2, expectedCATZScore: 1, expectedSJTZScore: -1, scoreSheet: { qualifyingTest: {CA: { percent: 1, pass: true }, SJ: { percent: 0.6, pass: true} } } },
+      { expectedZScore: 0.2, expectedCATZScore: -1, expectedSJTZScore: 1, scoreSheet: { qualifyingTest: {CA: { percent: 0.6, pass: true }, SJ: { percent: 1, pass: true} } } },
+      // Pass CAT, Fail SJT
+      { expectedZScore: null, expectedCATZScore: null, expectedSJTZScore: null, scoreSheet: { qualifyingTest: {CA: { percent: 1, pass: true }, SJ: { percent: 0.1, pass: false} } } },
+      // Fail CAT, Pass SJT
+      { expectedZScore: null, expectedCATZScore: null, expectedSJTZScore: null, scoreSheet: { qualifyingTest: {CA: { percent: 0.1, pass: false }, SJ: { percent: 1, pass: true} } } },
+      // Fail CAT, Fail SJT
+      { expectedZScore: null, expectedCATZScore: null, expectedSJTZScore: null, scoreSheet: { qualifyingTest: {CA: { percent: 0.1, pass: false }, SJ: { percent: 0.1, pass: false } } } },
+    ];
+    const resultData = includeZScores(sourceData);
+    // console.log('resultData', JSON.stringify(resultData, null, 2));
+    it('calculated zScores match expected zScores', async () => {
+      resultData.forEach((resultItem, index) => {
+        if (index < 2) {
+          expect(resultItem.zScore).toBeCloseTo(resultItem.expectedZScore);
+          expect(resultItem.scoreSheet.qualifyingTest.zScore).toBeCloseTo(resultItem.expectedZScore);
+          expect(resultItem.scoreSheet.qualifyingTest.CA.zScore).toBeCloseTo(resultItem.expectedCATZScore);
+          expect(resultItem.scoreSheet.qualifyingTest.SJ.zScore).toBeCloseTo(resultItem.expectedSJTZScore);
+        } else {
+          expect(resultItem.zScore).toBe(resultItem.expectedZScore);
+          expect(resultItem.scoreSheet.qualifyingTest.zScore).toBe(resultItem.expectedZScore);
+          expect(resultItem.scoreSheet.qualifyingTest.CA.zScore).toBe(resultItem.expectedCATZScore);
+          expect(resultItem.scoreSheet.qualifyingTest.SJ.zScore).toBe(resultItem.expectedSJTZScore);
+        }
+
+      });
+    });
+  });
 });

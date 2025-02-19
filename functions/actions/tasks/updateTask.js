@@ -936,7 +936,7 @@ export default (firebase, db) => {
    * @returns Result object of the form `{ success: Boolean, data: Object }`. If successful then `data` is to be stored in the `task` document
    */
   async function completeTask(exercise, task) {
-
+    console.log('completeTask', task.type);
     const result = {
       success: false,
       data: {},
@@ -953,7 +953,8 @@ export default (firebase, db) => {
     if (didNotParticipateStatus) outcomeStats[didNotParticipateStatus] = 0;
 
     // get applications still relevant to this task
-    const applications = await getApplications(exercise, task);
+    const applications = await getApplications(exercise, task, false);
+    console.log('completeTask applications', applications.length);
     const applicationIdMap = {};
     applications.forEach(application => applicationIdMap[application.id] = true);
 
@@ -1011,48 +1012,82 @@ export default (firebase, db) => {
       });
     }
 
+    console.log('applications.length', applications.length);
+
     // check for qualifying test follow on task
     if (task.type === TASK_TYPE.CRITICAL_ANALYSIS || task.type === TASK_TYPE.SITUATIONAL_JUDGEMENT) {
       if (
         exercise.shortlistingMethods.indexOf('critical-analysis-qualifying-test') >= 0 && exercise.criticalAnalysisTestDate
         && exercise.shortlistingMethods.indexOf('situational-judgement-qualifying-test') >= 0 && exercise.situationalJudgementTestDate
       ) {
+
         // get the other QT task
         const otherTaskType = task.type === TASK_TYPE.CRITICAL_ANALYSIS ? TASK_TYPE.SITUATIONAL_JUDGEMENT : TASK_TYPE.CRITICAL_ANALYSIS;
         const otherTask = await getDocument(db.doc(`exercises/${exercise.id}/tasks/${otherTaskType}`));
+       
+        console.log('task.type', task.type);
+        console.log('otherTaskType', otherTaskType);
+        console.log('otherTask.status', otherTask.status);
+
         if (otherTask.status === TASK_STATUS.COMPLETED) {
           // create qualifying test task
           const finalScores = [];
-          const applications = [];
-          task.finalScores.filter(scoreData => applicationIdMap[scoreData.id]).forEach(scoreData => {
-            if (scoreData.pass) {
-              const otherTaskScoreData = otherTask.finalScores.find(otherScoreData => otherScoreData.id === scoreData.id);
-              if (otherTaskScoreData && otherTaskScoreData.pass) {
-                const CAData = task.type === TASK_TYPE.CRITICAL_ANALYSIS ? scoreData : otherTaskScoreData;
-                const SJData = task.type === TASK_TYPE.CRITICAL_ANALYSIS ? otherTaskScoreData : scoreData;
-                finalScores.push({
-                  id: scoreData.id,
-                  ref: scoreData.ref,
-                  score: CAData.score + SJData.score,
-                  scoreSheet: {
-                    qualifyingTest: {
-                      CA: {
-                        score: CAData.score,
-                        percent: CAData.percent,
-                      },
-                      SJ: {
-                        score: SJData.score,
-                        percent: SJData.percent,
-                      },
-                      score: CAData.score + SJData.score,
-                    },
+
+          // the merit list should contains all the applications, even the CAT or SJT scores missing
+          const idToCAScore = {};
+          const idToSJScore = {};
+          for (const scoreData of task.finalScores) {
+            if (task.type === TASK_TYPE.CRITICAL_ANALYSIS) {
+              idToCAScore[scoreData.id] = scoreData;
+            } else if (task.type === TASK_TYPE.SITUATIONAL_JUDGEMENT) {
+              idToSJScore[scoreData.id] = scoreData;
+            }
+          }
+          for (const scoreData of otherTask.finalScores) {
+            if (otherTask.type === TASK_TYPE.CRITICAL_ANALYSIS) {
+              idToCAScore[scoreData.id] = scoreData;
+            } else if (otherTask.type === TASK_TYPE.SITUATIONAL_JUDGEMENT) {
+              idToSJScore[scoreData.id] = scoreData;
+            }
+          }
+
+          // contains union of CAT and SJT applications
+          const overallQTApplications = _unionBy(task.applications, otherTask.applications, 'id');
+          for (const application of overallQTApplications) {
+            const failedScoreData = { score: 0, percent: 0, pass: false };
+            let CAData = idToCAScore[application.id] || failedScoreData;
+            let SJData = idToSJScore[application.id] || failedScoreData;
+            
+            /**
+             * If failed one of CAT or SJT, then it should fail in overall merit list task.
+             * To achieve this, if one of the tests fails, all the scores and z-scores should be 0.
+             */
+            let score = CAData.score + SJData.score;
+            if (!CAData.pass || !SJData.pass) score = 0;
+            
+            finalScores.push({
+              id: application.id,
+              ref: application.ref,
+              score,
+              scoreSheet: {
+                qualifyingTest: {
+                  CA: {
+                    score: CAData.score,
+                    percent: CAData.percent,
+                    pass: CAData.pass, // for frontend can know if is first test failed
                   },
-                });
-                const application = task.applications.find(application => application.id === scoreData.id);
-                if (application) {
-                  applications.push(application);
-                }
-              } else {
+                  SJ: {
+                    score: SJData.score,
+                    percent: SJData.percent,
+                    pass: SJData.pass, // for frontend can know if is first test failed
+                  },
+                  score: CAData.score + SJData.score,
+                },
+              },
+            });
+
+            // if not pass one of the tests then fail
+            if (!CAData.pass || !SJData.pass) {
                 // update application record status to failed first test
                 outcomeStats[failStatus] += 1;
                 const saveData = {};
@@ -1060,18 +1095,17 @@ export default (firebase, db) => {
                 saveData[`statusLog.${failStatus}`] = firebase.firestore.FieldValue.serverTimestamp(); // we still always log the status change
                 commands.push({
                   command: 'update',
-                  ref: db.collection('applicationRecords').doc(scoreData.id),
+                  ref: db.collection('applicationRecords').doc(application.id),
                   data: saveData,
                 });
-              }
             }
-          });
+          }
 
           const taskData = {
             _stats: {
               totalApplications: finalScores.length,
             },
-            applications: applications,
+            applications: overallQTApplications,
             scoreType: 'zScore',
             finalScores: includeZScores(finalScores),
             markingScheme: [
