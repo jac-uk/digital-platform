@@ -845,15 +845,18 @@ export default (firebase, db) => {
     // construct finalScores
     const finalScores = [];
     task.applications.forEach(application => {
-      if (response.scores[application.id]) {
-        finalScores.push({
-          id: application.id,
-          ref: application.ref,
-          score: response.scores[application.id],
-          percent: 100 * (response.scores[application.id] / response.maxScore),
-        });
-      }
+      // include zero score or no score
+      const score = response.scores[application.id] !== undefined ? response.scores[application.id] : 0;
+      const percent = 100 * (score / response.maxScore);
+
+      finalScores.push({
+        id: application.id,
+        ref: application.ref,
+        score,
+        percent,
+      });
     });
+
     result.success = true;
     result.data.maxScore = response.maxScore;
     result.data.finalScores = finalScores;
