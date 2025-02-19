@@ -7,7 +7,7 @@ import initQts from '../../shared/qts.js';
 import { getOverride } from './meritListHelper.js';
 import { GRADES, GRADE_VALUES, markingScheme2ScoreSheet } from '../../shared/scoreSheetHelper.js';
 import { TASK_STATUS, PANEL_STATUS, TASK_TYPE, CANDIDATE_FORM_STATUS } from '../../shared/constants.js';
-
+import _unionBy from 'lodash/unionBy.js';
 export default (firebase, db) => {
   const {
     taskStatuses,
@@ -566,18 +566,48 @@ export default (firebase, db) => {
     return result;
   }
 
-  async function getApplications(exercise, task) {
+  async function getApplications(exercise, task, checkApplicationEntryStatus = true) {
     const applicationsData = [];
     let applicationsRef = db.collection('applications')
       .where('exerciseId', '==', exercise.id)
-      .where('status', '==', 'applied');
-    if (task.applicationEntryStatus) {
+      .where('status', 'in', ['applied', 'withdrawn']);
+    if (checkApplicationEntryStatus && task.applicationEntryStatus) {
       applicationsRef = applicationsRef.where('_processing.status', '==', task.applicationEntryStatus);
       console.log('get applications with status', task.applicationEntryStatus);
     }
+
+    // exclude the applications withdrawn before QT
+    let withdrawnBeforeQT = [];
+    if (task.type === TASK_TYPE.CRITICAL_ANALYSIS || task.type === TASK_TYPE.SITUATIONAL_JUDGEMENT) {
+      let qtStartDate = null;
+      if (task.type === TASK_TYPE.CRITICAL_ANALYSIS) {
+        qtStartDate = exercise.criticalAnalysisTestDate;        ;
+      } else if (task.type === TASK_TYPE.SITUATIONAL_JUDGEMENT) {
+        qtStartDate = exercise.situationalJudgementTestDate;
+      }
+      if (qtStartDate) {
+        withdrawnBeforeQT = await getDocuments(
+          db.collection('applicationRecords')
+            .where('exercise.id', '==', exercise.id)
+            .where('statusLog.withdrawn', '<', qtStartDate)
+            .select('status', 'statusLog')
+        );
+      }
+    }
+
+    let isWithdrawnBeforeQT = {};
+    if (withdrawnBeforeQT) {
+      withdrawnBeforeQT.forEach(applicationRecord => {
+        isWithdrawnBeforeQT[applicationRecord.id] = true;
+      });
+    }
+
     const applications = await getDocuments(applicationsRef);
     if (!applications) return applicationsData;
     applications.forEach(application => {
+      // exclude the applications withdrawn before QT
+      if (isWithdrawnBeforeQT[application.id]) return;
+
       if (application.personalDetails) {
         applicationsData.push({
           id: application.id,
@@ -585,9 +615,11 @@ export default (firebase, db) => {
           email: application.personalDetails.email || '',
           fullName: application.personalDetails.fullName || '',
           adjustments: application.personalDetails.reasonableAdjustments || false,
+          status: application.status,
         });
       }
     });
+
     return applicationsData;
   }
 
