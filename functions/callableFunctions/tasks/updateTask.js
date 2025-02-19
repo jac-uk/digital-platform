@@ -4,8 +4,10 @@ import { checkArguments } from '../../shared/helpers.js';
 import initUpdateTask from '../../actions/tasks/updateTask.js';
 import initServiceSettings from '../../shared/serviceSettings.js';
 import { PERMISSIONS, hasPermissions } from '../../shared/permissions.js';
+import { defineSecret } from 'firebase-functions/params';
+const QT_KEY = defineSecret('QT_KEY');
 
-const { updateTask } = initUpdateTask(firebase, db);
+const { updateTask } = initUpdateTask(QT_KEY, firebase, db);
 const { checkFunctionEnabled } = initServiceSettings(db);
 
 export default onCall(
