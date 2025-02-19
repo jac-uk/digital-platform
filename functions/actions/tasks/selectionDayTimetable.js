@@ -61,7 +61,7 @@ function selectionDayTimetable(panelData, candidateInfo, reasonableAdjustments, 
           // Assign the candidate to the slot
           const row = {
             panel: panel.panel,
-            date: slot.date,
+            date: slot.date.getTime(), // convert to milliseconds as Date object will be serialized to an empty object
             slot: slot.totalSlots - availableSlots + 1,
             candidateRef: assignedCandidate.candidate.ref,
             reasonableAdjustment: reasonableAdjustments.includes(candidate),
@@ -96,7 +96,7 @@ function selectionDayTimetable(panelData, candidateInfo, reasonableAdjustments, 
             // Assign the candidate to the slot
             const row = {
               panel: panel.panel,
-              date: slot.date,
+              date: slot.date.getTime(), // convert to milliseconds as Date object will be serialized to an empty object
               slot: slot.totalSlots - availableSlots + 1,
               candidateRef: assignedCandidate.candidate.ref,
               reasonableAdjustment: reasonableAdjustments.includes(candidate),
