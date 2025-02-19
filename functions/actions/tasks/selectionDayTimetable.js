@@ -1,3 +1,5 @@
+import { formatDate } from '../../shared/helpers.js';
+
 // function generates a selection day timetable - result is an object containing a 'timetable' (with headings  Panel: String, Date: Date, Slot: Number, CandidateRef: String, ReasonableAdjustment: Boolean)
 function selectionDayTimetable(panelData, candidateInfo, reasonableAdjustments, panelConflicts) {
   const result = {
@@ -61,7 +63,7 @@ function selectionDayTimetable(panelData, candidateInfo, reasonableAdjustments, 
           // Assign the candidate to the slot
           const row = {
             panel: panel.panel,
-            date: slot.date.getTime(), // convert to milliseconds as Date object will be serialized to an empty object
+            date: formatDate(slot.date, 'DD/MM/YYYY'),
             slot: slot.totalSlots - availableSlots + 1,
             candidateRef: assignedCandidate.candidate.ref,
             reasonableAdjustment: reasonableAdjustments.includes(candidate),
@@ -96,7 +98,7 @@ function selectionDayTimetable(panelData, candidateInfo, reasonableAdjustments, 
             // Assign the candidate to the slot
             const row = {
               panel: panel.panel,
-              date: slot.date.getTime(), // convert to milliseconds as Date object will be serialized to an empty object
+              date: formatDate(slot.date, 'DD/MM/YYYY'),
               slot: slot.totalSlots - availableSlots + 1,
               candidateRef: assignedCandidate.candidate.ref,
               reasonableAdjustment: reasonableAdjustments.includes(candidate),
