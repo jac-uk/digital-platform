@@ -36,10 +36,7 @@ export default onCall(
       }
     
       // generate selection day timetable
-      const result = await generateSelectionDayTimetable(data.exerciseId);  
-      return {
-        result: result,
-      };
+      return await generateSelectionDayTimetable(data.exerciseId);
     }
     catch (error) {
       console.error('Error in function:', error);
