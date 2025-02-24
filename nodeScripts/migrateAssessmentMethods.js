@@ -2,7 +2,7 @@
 
 import _ from 'lodash';
 import { app, db } from './shared/admin.js';
-import { ASSESSMENT_METHOD } from './shared/constants.js';
+import { ASSESSMENT_METHOD } from '../functions/shared/constants.js';
 import { applyUpdates, getDocuments, getDocument } from '../functions/shared/helpers.js';
 
 // whether to make changes in `exercises` collection in firestore

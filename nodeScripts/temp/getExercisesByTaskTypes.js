@@ -10,7 +10,7 @@
  */
 'use strict';
 
-import { TASK_TYPE } from '../shared/constants.js';
+import { TASK_TYPE } from '../../functions/shared/constants.js';
 import { app, db } from '../shared/admin.js';
 import { getDocuments, objectHasNestedProperty } from '../../functions/shared/helpers.js';
 

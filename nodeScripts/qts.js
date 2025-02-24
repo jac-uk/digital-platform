@@ -1,6 +1,6 @@
 'use strict';
 
-import { QUALIFYING_TEST } from './shared/constants.js';
+import { QUALIFYING_TEST } from '../functions/shared/constants.js';
 import { app } from './shared/admin.js';
 import initQts from '../functions/shared/qts.js';
 

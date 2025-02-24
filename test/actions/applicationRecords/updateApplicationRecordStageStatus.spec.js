@@ -1,6 +1,6 @@
 import mockFirebase from 'firebase-admin';
 import { jest } from '@jest/globals';
-import { EXERCISE_STAGE, APPLICATION_STATUS } from '../../../nodeScripts/shared/constants.js';
+import { EXERCISE_STAGE, APPLICATION_STATUS } from '../../../functions/shared/constants.js';
 import initUpdateApplicationRecordStageStatus from '../../../functions/actions/applicationRecords/updateApplicationRecordStageStatus.js';
 
 const mockDB = jest.fn();

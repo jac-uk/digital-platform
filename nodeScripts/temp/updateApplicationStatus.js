@@ -13,7 +13,7 @@
  */
  'use strict';
 
-import { APPLICATION_STATUS } from '../shared/constants.js';
+import { APPLICATION_STATUS } from '../../functions/shared/constants.js';
 import { app, db } from '../shared/admin.js';
 import { applyUpdates, getDocuments } from '../../functions/shared/helpers.js';
 

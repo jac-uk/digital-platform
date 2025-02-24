@@ -1,6 +1,6 @@
 'use strict';
 
-import constants from './shared/constants.js';
+import constants from '../functions/shared/constants.js';
 import { app, db } from './shared/admin.js';
 import { getDocuments, getAllDocuments, formatDate } from '../functions/shared/helpers.js';
 
