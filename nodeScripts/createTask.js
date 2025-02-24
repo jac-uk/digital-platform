@@ -3,12 +3,13 @@
 import { firebase, app, db } from './shared/admin.js';
 import initCreateTask from '../functions/actions/tasks/createTask.js';
 
-const createTask = initCreateTask(firebase, db);
+const createTask = initCreateTask(process.env.QT_KEY, firebase, db);
 
 const main = async () => {
+  console.log('qt key (process)', process.env.QT_KEY);
   return createTask({
-    exerciseId: '1qef6rsaSLvvsZHrJuw7',
-    type: 'criticalAnalysis',
+    exerciseId: 'kT7GfUeNwp5DsYkgEQIH',
+    type: 'sift',
   });
 };
 
