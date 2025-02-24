@@ -31,7 +31,7 @@ export const setup = async (auth, data) => {
     await testEnv.withSecurityRulesDisabled(async (context) => {
       const db = context.firestore();
       for (const key in data) {
-        console.log(key, data[key]);
+        // console.log(key, data[key]);
         await db.doc(key).set(data[key]);
       }
     });
