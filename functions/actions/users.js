@@ -1,6 +1,7 @@
 import { getDocument, getDocuments } from '../shared/helpers.js';
 import { convertPermissions } from '../shared/permissions.js';
 import { getSearchMap } from '../shared/search.js';
+import { signInWithPassword } from '../shared/google/identitytoolkit/accounts/signInWithPassword.js';
 
 export default (auth, db) => {
   return {
@@ -15,6 +16,7 @@ export default (auth, db) => {
     getUserSearchMap,
     getUserByGithubUsername,
     getUser,
+    signIn,
   };
 
   async function generateSignInWithEmailLink(ref, email, returnUrl) {
@@ -38,6 +40,37 @@ export default (auth, db) => {
       console.log('generateSignInWithEmailLink DONE', ref);
       return emailLink;
     }
+  }
+
+  /**
+   * Wrapper for signInWithPassword of firebase authentication
+   * @param {*} email 
+   * @param {*} password 
+   * @returns {object} {
+   *   success: boolean,
+   *   data: object,
+   *   error: string,
+   * }
+   */
+  async function signIn({ email, password }) {
+    const result = {
+      success: false,
+      data: {},
+      error: 'Sign in failed',
+    };
+
+    try {
+      const response = await signInWithPassword(email, password);
+      if (response.idToken) {
+        result.success = true;
+        result.data = response;
+        result.error = null;
+      }
+    } catch (error) {
+      console.log(`signInWithPassword failed: ${email}`, error);
+    }
+
+    return result;
   }
 
   async function canAccessAssessments(ref, email) {
