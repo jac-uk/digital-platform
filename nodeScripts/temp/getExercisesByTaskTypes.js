@@ -10,7 +10,7 @@
  */
 'use strict';
 
-import config from '../shared/config.js';
+import { TASK_TYPE } from '../shared/constants.js';
 import { app, db } from '../shared/admin.js';
 import { getDocuments, objectHasNestedProperty } from '../../functions/shared/helpers.js';
 
@@ -18,10 +18,10 @@ const main = async () => {
 
   const results = {};
   let typesToRetrieve = [
-    config.TASK_TYPE.CRITICAL_ANALYSIS,
-    config.TASK_TYPE.QUALIFYING_TEST,
-    config.TASK_TYPE.SCENARIO,
-    config.TASK_TYPE.SITUATIONAL_JUDGEMENT,
+    TASK_TYPE.CRITICAL_ANALYSIS,
+    TASK_TYPE.QUALIFYING_TEST,
+    TASK_TYPE.SCENARIO,
+    TASK_TYPE.SITUATIONAL_JUDGEMENT,
   ];
 
   let exercisesRef = db.collection('exercises');

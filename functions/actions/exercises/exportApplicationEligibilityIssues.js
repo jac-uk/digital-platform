@@ -3,7 +3,7 @@ import { getDocuments, getDocument, formatDate, splitFullName } from '../../shar
 import _ from 'lodash';
 import { ordinal } from '../../shared/converters/helpers.js';
 import htmlWriter from '../../shared/htmlWriter.js';
-import { APPLICATION } from '../../shared/config.js';
+import { APPLICATION } from '../../shared/constants.js';
 import initDrive from '../../shared/google-drive.js';
 
 const drive = initDrive();

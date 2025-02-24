@@ -1,6 +1,6 @@
 import { getDocument, getDocuments, applyUpdates } from '../shared/helpers.js';
 
-export default (config, firebase, db) => {
+export default (db) => {
   return {
     changeIATemplate,
   };

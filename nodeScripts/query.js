@@ -1,6 +1,6 @@
 'use strict';
 
-import config from './shared/config.js';
+import constants from './shared/constants.js';
 import { app, db } from './shared/admin.js';
 import { getDocuments, getAllDocuments, formatDate } from '../functions/shared/helpers.js';
 
@@ -43,10 +43,10 @@ function flattenCharacterInformation(application) {
   let answers;
 
   if (application.characterInformationV2 || application.characterInformationV3) {
-    questions = config.APPLICATION.CHARACTER_ISSUES_V2;
+    questions = constants.APPLICATION.CHARACTER_ISSUES_V2;
     answers = application.characterInformationV3 ? application.characterInformationV3 : application.characterInformationV2;
   } else if (application.characterInformation) {
-    questions = config.APPLICATION.CHARACTER_ISSUES;
+    questions = constants.APPLICATION.CHARACTER_ISSUES;
     answers = application.characterInformation;
   }
 

@@ -9,10 +9,9 @@
  */
 'use strict';
 
-import config from './shared/config.js';
 import { firebase, app, db } from './shared/admin.js';
 import initProcessPanelExport from '../functions/actions/panels/processPanelExport.js';
-const { processPanelExport } = initProcessPanelExport(config, firebase, db);
+const { processPanelExport } = initProcessPanelExport(process.env.STORAGE_URL, firebase, db);
 
 const main = async () => {
   await processPanelExport('ozUWQ7ewwnA0RZOZ8nIP');

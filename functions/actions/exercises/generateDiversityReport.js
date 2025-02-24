@@ -1,13 +1,13 @@
 import { getDocument, getDocuments } from '../../shared/helpers.js';
 import { applicationOpenDatePost01042023 } from '../../shared/converters/helpers.js';
 import initExerciseHelper from '../../shared/exerciseHelper.js';
-import { APPLICATION_STATUS, SHORTLISTING } from '../../shared/config.js';
+import { APPLICATION_STATUS, SHORTLISTING } from '../../shared/constants.js';
 
 /**
  * For the diversity reports:
  *  - candidates listing their ethnicity as Other should be included in the BAME category
  *  - display a declaration rate (see example below)
- *  - candidates who have 'Not Answered' or have selected 'Other' or 'Prefer Not To Say' should NOT be included in the percentage 
+ *  - candidates who have 'Not Answered' or have selected 'Other' or 'Prefer Not To Say' should NOT be included in the percentage
  *    calculations,
  * eg out of 10 cats:
  *   • 6 said they prefer Whiskers
@@ -19,8 +19,8 @@ import { APPLICATION_STATUS, SHORTLISTING } from '../../shared/config.js';
  *   • Declaration rate was 80% (8 out of 10)
  *
  * @param {*} firebase
- * @param {*} db 
- * @returns 
+ * @param {*} db
+ * @returns
  */
 export default (firebase, db) => {
   const { availableStages } = initExerciseHelper();

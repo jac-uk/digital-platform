@@ -83,7 +83,7 @@ export default (firebase, db) => {
     }
     const driveId = drives[0].id;
     drive.setDriveId(driveId);
-    
+
     // create panel folder and get id
     const panelFolderId = await drive.createFolder(panelFolderName, {
       parentId: driveId,

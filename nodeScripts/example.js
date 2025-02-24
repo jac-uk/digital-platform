@@ -9,7 +9,7 @@
  */
 'use strict';
 
-import { app, auth } from './shared/firebase.js';
+import { app, auth } from './shared/admin.js';
 
 const main = async () => {
   // login as test user

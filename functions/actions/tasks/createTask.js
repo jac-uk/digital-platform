@@ -1,7 +1,7 @@
 import { getDocument, getDocuments, applyUpdates } from '../../shared/helpers.js';
 import initTaskHelpers from './taskHelpers.js';
 import initUpdateTask from './updateTask.js';
-import { TASK_STATUS, TASK_TYPE } from '../../shared/config.js';
+import { TASK_STATUS, TASK_TYPE } from '../../shared/constants.js';
 
 export default (QT_KEY, firebase, db) => {
   const { getTimelineTasks, taskNextStatus, taskApplicationsEntryStatus } = initTaskHelpers();

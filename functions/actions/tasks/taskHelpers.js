@@ -3,7 +3,7 @@ import createTimeline from '../../shared/Timeline/createTimeline.js';
 import { convertToDate, calculateMean, calculateStandardDeviation } from '../../shared/helpers.js';
 import initExerciseTimeline from '../../shared/Timeline/exerciseTimeline.TMP.js';
 import { MARKING_TYPE, GRADE_VALUES } from '../../shared/scoreSheetHelper.js';
-import { CAPABILITIES, SELECTION_CATEGORIES, APPLICATION, APPLICATION_STATUS, TASK_TYPE, SHORTLISTING_TASK_TYPES, TASK_STATUS, SHORTLISTING } from '../../shared/config.js';
+import { CAPABILITIES, SELECTION_CATEGORIES, APPLICATION, APPLICATION_STATUS, TASK_TYPE, SHORTLISTING_TASK_TYPES, TASK_STATUS, SHORTLISTING } from '../../shared/constants.js';
 
 export default () => {
   const exerciseTimeline = initExerciseTimeline();

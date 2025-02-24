@@ -1,5 +1,5 @@
 import { getDocument, getDocuments, applyUpdates } from '../../shared/helpers.js';
-import { EXERCISE_STAGE, APPLICATION_STATUS } from '../../shared/config.js';
+import { EXERCISE_STAGE, APPLICATION_STATUS } from '../../shared/constants.js';
 
 export default (firebase, db) => {
   return {

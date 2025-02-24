@@ -7,10 +7,17 @@ import { objectHasNestedProperty } from './helpers.js';
  * As this is a GraphQL API, a response code of 200 does not guarantee that the request was successful.
  * Responses in GraphQL are in JSON and this JSON may contain an "errors" field with a list of errors that occurred with your request.
  * @returns issue id | false
+ *
+ * NOTE: Depends upon the following env values (or secrets):
+ *  process.env.ZENHUB_GRAPH_QL_URL
+ *  process.env.ZENHUB_GRAPH_QL_API_KEY
+ *  process.env.GITHUB_PAT
+ *  process.env.ZENHUB_ISSUES_WORKSPACE_ID
  */
-export default (baseApiUrl, apiKey, githubPersonalAccesToken, workspaceId) => {
+export default () => {
+
   const axiosHeaders = {
-    Authorization: `Bearer ${apiKey}`,
+    Authorization: `Bearer ${process.env.ZENHUB_GRAPH_QL_API_KEY}`,
     'Content-Type': 'application/json',
   };
 
@@ -29,49 +36,52 @@ export default (baseApiUrl, apiKey, githubPersonalAccesToken, workspaceId) => {
    * @returns
    */
   async function createZenhubIssue(referenceNumber, body) {
-    const platformIssuesRepositoryId = workspaceId;
-    if (baseApiUrl && apiKey) {
-      try {
-        const title = `User Raised Issue ${referenceNumber}`;
-        const escapedTitle = JSON.stringify(title);
-        const escapedBody = JSON.stringify(body);
-        const result = await axios({
-          url: baseApiUrl,
-          method: 'post',
-          headers: axiosHeaders,
-          data: {
-            operationName: 'createIssue',
-            query: `
-              mutation createIssue {
-                createIssue(input: {
-                    title: ${escapedTitle},
-                    body: ${escapedBody},
-                    repositoryId: "${platformIssuesRepositoryId}"
-                }) {
-                    issue {
-                        id
-                        title
-                    }
-                }
+    // check for required env values
+    if (!process.env.ZENHUB_ISSUES_WORKSPACE_ID) return false;
+    if (!process.env.ZENHUB_GRAPH_QL_API_KEY) return false;
+    if (!process.env.ZENHUB_GRAPH_QL_URL) return false;
+
+    const platformIssuesRepositoryId = process.env.ZENHUB_ISSUES_WORKSPACE_ID;
+    try {
+      const title = `User Raised Issue ${referenceNumber}`;
+      const escapedTitle = JSON.stringify(title);
+      const escapedBody = JSON.stringify(body);
+      const result = await axios({
+        url: process.env.ZENHUB_GRAPH_QL_URL,
+        method: 'post',
+        headers: axiosHeaders,
+        data: {
+          operationName: 'createIssue',
+          query: `
+            mutation createIssue {
+              createIssue(input: {
+                  title: ${escapedTitle},
+                  body: ${escapedBody},
+                  repositoryId: "${platformIssuesRepositoryId}"
+              }) {
+                  issue {
+                      id
+                      title
+                  }
               }
-            `,
-          },
-        });
-        if (objectHasNestedProperty(result, 'data.errors')) {
-          const errorsStr = result.data.errors.map(e => e.message).join('\n');
-          throw new Error(errorsStr);
-        }
-        else if (objectHasNestedProperty(result, 'data.data.createIssue.issue.id')) {
-          // Return the new issue id from the API
-          return result.data.data.createIssue.issue.id;
-        }
-        else {
-          throw new Error('New issue id was not returned from the API');
-        }
-      } catch(error) {
-        console.log('Zenhub createIssue errors:');
-        console.log(error);
+            }
+          `,
+        },
+      });
+      if (objectHasNestedProperty(result, 'data.errors')) {
+        const errorsStr = result.data.errors.map(e => e.message).join('\n');
+        throw new Error(errorsStr);
       }
+      else if (objectHasNestedProperty(result, 'data.data.createIssue.issue.id')) {
+        // Return the new issue id from the API
+        return result.data.data.createIssue.issue.id;
+      }
+      else {
+        throw new Error('New issue id was not returned from the API');
+      }
+    } catch(error) {
+      console.log('Zenhub createIssue errors:');
+      console.log(error);
     }
     return false;
   }
@@ -85,49 +95,47 @@ export default (baseApiUrl, apiKey, githubPersonalAccesToken, workspaceId) => {
    */
   async function createGithubIssue(referenceNumber, body, label) {
     const platformIssuesRepositoryId = 'Z2lkOi8vcmFwdG9yL1JlcG9zaXRvcnkvMTMzOTczMzA2';
-    if (baseApiUrl && apiKey) {
-      try {
-        const title = `User Raised Issue ${referenceNumber}`;
-        const escapedTitle = JSON.stringify(title);
-        const escapedBody = JSON.stringify(body);
-        const result = await axios({
-          url: baseApiUrl,
-          method: 'post',
-          headers: axiosHeaders,
-          data: {
-            operationName: 'createIssue',
-            query: `
-              mutation createIssue {
-                createIssue(input: {
-                    title: ${escapedTitle},
-                    body: ${escapedBody},
-                    repositoryId: "${platformIssuesRepositoryId}"
-                    labels: ["${label}"],
-                }) {
-                    issue {
-                        id
-                        title
-                    }
-                }
+    try {
+      const title = `User Raised Issue ${referenceNumber}`;
+      const escapedTitle = JSON.stringify(title);
+      const escapedBody = JSON.stringify(body);
+      const result = await axios({
+        url: process.env.ZENHUB_GRAPH_QL_URL,
+        method: 'post',
+        headers: axiosHeaders,
+        data: {
+          operationName: 'createIssue',
+          query: `
+            mutation createIssue {
+              createIssue(input: {
+                  title: ${escapedTitle},
+                  body: ${escapedBody},
+                  repositoryId: "${platformIssuesRepositoryId}"
+                  labels: ["${label}"],
+              }) {
+                  issue {
+                      id
+                      title
+                  }
               }
-            `,
-          },
-        });
-        if (objectHasNestedProperty(result, 'data.errors')) {
-          const errorsStr = result.data.errors.map(e => e.message).join('\n');
-          throw new Error(errorsStr);
-        }
-        else if (objectHasNestedProperty(result, 'data.data.createIssue.issue.id')) {
-          // Return the new issue id from the API
-          return result.data.data.createIssue.issue.id;
-        }
-        else {
-          throw new Error('New issue id was not returned from the API');
-        }
-      } catch(error) {
-        console.log('gitHub createIssue errors:');
-        console.log(error);
+            }
+          `,
+        },
+      });
+      if (objectHasNestedProperty(result, 'data.errors')) {
+        const errorsStr = result.data.errors.map(e => e.message).join('\n');
+        throw new Error(errorsStr);
       }
+      else if (objectHasNestedProperty(result, 'data.data.createIssue.issue.id')) {
+        // Return the new issue id from the API
+        return result.data.data.createIssue.issue.id;
+      }
+      else {
+        throw new Error('New issue id was not returned from the API');
+      }
+    } catch(error) {
+      console.log('gitHub createIssue errors:');
+      console.log(error);
     }
     return false;
   }
@@ -154,6 +162,10 @@ export default (baseApiUrl, apiKey, githubPersonalAccesToken, workspaceId) => {
    * @returns {Array<Object>} Array of release objects.
    */
   async function getLatestReleaseForRepositories() {
+
+    // check for required env values
+    if (!process.env.GITHUB_PAT) return [];
+
     const repositories = [
       'admin', 'apply', 'jac-kit', 'assessments', 'digital-platform', 'qt', 'panellists',
     ];
@@ -167,7 +179,7 @@ export default (baseApiUrl, apiKey, githubPersonalAccesToken, workspaceId) => {
         const response = await axios.get(url, {
           headers: {
             'Accept': 'application/vnd.github+json',
-            'Authorization': `Bearer ${githubPersonalAccesToken}`,
+            'Authorization': `Bearer ${process.env.GITHUB_PAT}`,
             'X-GitHub-Api-Version': '2022-11-28',
           },
         });

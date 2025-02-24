@@ -59,12 +59,7 @@ export default onRequest(
       return;
     }
 
-    const { validateWebhookRequest } = initZenhub(
-      process.env.ZENHUB_GRAPH_QL_URL,
-      process.env.ZENHUB_GRAPH_QL_API_KEY,
-      process.env.GITHUB_PAT,
-      process.env.ZENHUB_ISSUES_WORKSPACE_ID
-    );
+    const { validateWebhookRequest } = initZenhub();
 
     // Confirm that the request has a valid secret passed
     await validateWebhookRequest(process.env.GITHUB_WEBHOOK_SECRET, req.headers['x-hub-signature-256'], req.body);

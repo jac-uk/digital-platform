@@ -4,7 +4,7 @@ import { getDocuments, getDocument, formatDate, getDate, splitFullName } from '.
 import { applicationOpenDatePost01042023, ordinal, getJudicialExperienceString } from '../../shared/converters/helpers.js';
 import _ from 'lodash';
 import htmlWriter from '../../shared/htmlWriter.js';
-import { APPLICATION } from '../../shared/config.js';
+import { APPLICATION } from '../../shared/constants.js';
 import initDrive from '../../shared/google-drive.js';
 
 const drive = initDrive();
@@ -16,8 +16,8 @@ export default (firebase, db) => {
 
   /**
    * Initialise the Google Drive service and return the folder ID for the specified folder
-   * 
-   * @param   {string} folderName 
+   *
+   * @param   {string} folderName
    * @returns {string} The folder ID
    */
   async function initialiseGoogleDriveFolder(folderName = 'Character Export') {
@@ -218,7 +218,7 @@ export default (firebase, db) => {
 
     const data = applicationRecords.map((applicationRecord) => {
       const application = applicationRecord.application;
-      
+
       let characterIssues = [];
       // check if candidate has completed the section
       if (
@@ -236,7 +236,7 @@ export default (firebase, db) => {
 
       const qualifications = application.qualifications || [];
       const postQualificationExperiences = application.experience || [];
-      
+
       maxCharacterInformationNum = characterIssues.length > maxCharacterInformationNum ? characterIssues.length : maxCharacterInformationNum;
       maxProfessionalBackgroundNum = professionalBackgrounds.length > maxProfessionalBackgroundNum ? professionalBackgrounds.length : maxProfessionalBackgroundNum;
       maxQualificationNum = qualifications.length > maxQualificationNum ? qualifications.length : maxQualificationNum;
@@ -600,7 +600,7 @@ export default (firebase, db) => {
   </li><br>
   <li>
     The exercise launched on <b class="red">insert date</b> and closed for applications on <b class="red">insert date</b>. A total of <b class="red">insert number</b> applications were received with
-    <b class="red">insert number</b> candidates withdrawing during the course of this exercise.  
+    <b class="red">insert number</b> candidates withdrawing during the course of this exercise.
   </li><br>
   <li>
     <b class="red">Insert number</b> candidates were invited to selection day<span class="red">/s</span>. Selection day<span class="red">/s</span> took place
@@ -659,7 +659,7 @@ export default (firebase, db) => {
   </li>
 </ol>
   `);
-  
+
     writer.addHeadingRaw('<a name="character">Character</a>');
     writer.addRaw(`
 <ol start="12">
@@ -682,7 +682,7 @@ export default (firebase, db) => {
   </li>
 </ol>
 `   );
-    
+
     writer.addHeadingRaw('<a name="statutory-consultation">Statutory Consultation</a>');
     writer.addRaw(`
 <ol start="14">
@@ -698,7 +698,7 @@ export default (firebase, db) => {
         <li><b class="red">insert name: insert comments / concerns</b>
         <li><b class="red">insert name: insert comments / concerns</b>
       </ul>
-    </p>  
+    </p>
   </li>
 </ol>
     `);
@@ -756,7 +756,7 @@ export default (firebase, db) => {
   </li>
 </ol>
     `);
-    
+
     writer.addHeading('OR');
     writer.addRaw(`
 <ol start="23">
@@ -783,7 +783,7 @@ export default (firebase, db) => {
   <li>
     An equivalent body is one of a quasi-judicial nature for which the powers and procedures should resemble those of a court of law and involve highly complex matters,
     requiring its members objectively to determine the facts and draw conclusions to reach a reasoned decision.  Such decisions could result in the imposition of a penalty,
-    and they are likely to affect the legal rights, duties or privileges of specific parties.  Examples could include, but are not restricted to:  
+    and they are likely to affect the legal rights, duties or privileges of specific parties.  Examples could include, but are not restricted to:
     <p>A. Coroner</p>
     <p>B. Disciplinary tribunals and conduct hearings for professional standards bodies</p>
     <p>C. Arbitration</p>
@@ -824,7 +824,7 @@ export default (firebase, db) => {
   </li><br>
 </ol>
     `);
-    
+
     writer.addHeadingRaw('<a name="diversity-monitoring">Diversity Monitoring</a>');
     writer.addRaw(`
 <ol start="31">
@@ -1046,7 +1046,7 @@ export default (firebase, db) => {
     // flatten this into a simple list of issues
 
     let applications = [];
-    
+
     applicationRecords.forEach(ar => {
       if (ar.issues && ar.issues.characterIssues && ar.issues.characterIssues.length > 0) {
         let application = {
@@ -1579,7 +1579,7 @@ REPRODUCE THIS TABLE AS APPROPRIATE.<span class="red">&gt;</span></b>
       if (ars.length === 0) return;
 
       writer.addRaw(`<tr><td colspan="3" style="text-align:center; background-color:${background}; padding:5px"><b>${lookup(status)}</b></td></tr>`);
-    
+
       Object.values(APPLICATION.CHARACTER_ISSUE_OFFENCE_CATEGORY).forEach(offenceCategory => {
         const filteredApplications = ars.filter(ar => ar.issues && ar.issues.characterIssuesOffenceCategory === offenceCategory);
         if (filteredApplications.length === 0) return;
@@ -1605,7 +1605,7 @@ REPRODUCE THIS TABLE AS APPROPRIATE.<span class="red">&gt;</span></b>
             ? ar.issues.characterIssuesGuidanceReferences.map(item => lookup(item)).join('<br>')
             : '';
           let declaration = '';
-  
+
           ar.issues.characterIssues.forEach(issue => {
             declaration += `<p><b>${issue.summary}</b></p>`;
             if (Array.isArray(issue.events)) {
@@ -1637,7 +1637,7 @@ REPRODUCE THIS TABLE AS APPROPRIATE.<span class="red">&gt;</span></b>
               });
             }
           });
-  
+
           writer.addRaw(`
             <tr><td rowspan="4" width="50"><b>${candidateCount}.</b></td><td width="175"><b>Name</b></td><td>${formattedName}</td></tr>
             <tr><td><b>Declaration</b></td><td>${declaration}</td></tr>
@@ -1661,7 +1661,7 @@ REPRODUCE THIS TABLE AS APPROPRIATE.<span class="red">&gt;</span></b>
 
   /**
    * @param  {string} fullName (e.g. "first name, last name")
-   * @return {string} formatted name (e.g. "last name, first name") 
+   * @return {string} formatted name (e.g. "last name, first name")
    */
   function getFormattedName(fullName) {
     const names = splitFullName(fullName);

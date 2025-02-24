@@ -35,12 +35,7 @@ export default onCall(
         throw new HttpsError('failed-precondition', 'The function is restricted to JAC Staff.');
       }
 
-      const secrets = {
-        ZENHUB_GRAPH_QL_API_KEY: process.env.ZENHUB_GRAPH_QL_API_KEY,
-        GITHUB_PAT: process.env.GITHUB_PAT,
-        ZENHUB_ISSUES_WORKSPACE_ID: process.env.ZENHUB_ISSUES_WORKSPACE_ID,
-      };
-      const { createIssue } = initCreateIssue(secrets, firebase, db);
+      const { createIssue } = initCreateIssue(firebase, db);
 
       return await createIssue(data.bugReportId, data.userId);
     }

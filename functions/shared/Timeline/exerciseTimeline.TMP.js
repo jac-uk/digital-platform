@@ -2,7 +2,7 @@
 // TODO: THIS IS COPIED FROM ADMIN `helpersTMP` folder. It should be moved to JAC Kit, plus streamlined
 
 import { isDate, formatDate } from '../helpers.js';
-import { TASK_TYPE } from '../config.js';
+import { TASK_TYPE } from '../constants.js';
 
 export default () => {
   return exerciseTimeline;

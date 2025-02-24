@@ -34,12 +34,7 @@ export default onCall(
         PERMISSIONS.releases.permissions.canReadReleases.value,
       ]);
 
-      const zenhub = initZenhub(
-        process.env.ZENHUB_GRAPH_QL_URL,
-        process.env.ZENHUB_GRAPH_QL_API_KEY,
-        process.env.GITHUB_PAT,
-        process.env.ZENHUB_ISSUES_WORKSPACE_ID
-      );
+      const zenhub = initZenhub();
 
       return await zenhub.getLatestReleaseForRepositories();
     }

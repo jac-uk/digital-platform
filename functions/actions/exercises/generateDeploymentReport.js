@@ -1,6 +1,6 @@
 import { getDocument, getDocuments, getAllDocuments } from '../../shared/helpers.js';
 import initUpdateApplicationRecordStageStatus from '../applicationRecords/updateApplicationRecordStageStatus.js';
-import { EXERCISE_STAGE, APPLICATION_STATUS } from '../../shared/config.js';
+import { EXERCISE_STAGE, APPLICATION_STATUS } from '../../shared/constants.js';
 
 export default (firebase, db) => {
   const { convertStageToVersion2, convertStatusToVersion2 } = initUpdateApplicationRecordStageStatus(firebase, db);

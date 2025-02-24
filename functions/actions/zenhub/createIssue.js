@@ -1,12 +1,8 @@
 import initZenhub from '../../shared/zenhub.js';
 import { getDocument } from '../../shared/helpers.js';
 
-export default (secrets, firebase, db) => {
-  const ZENHUB_GRAPH_QL_API_KEY = secrets.ZENHUB_GRAPH_QL_API_KEY;
-  const GITHUB_PAT = secrets.GITHUB_PAT;
-  const ZENHUB_ISSUES_WORKSPACE_ID = secrets.ZENHUB_ISSUES_WORKSPACE_ID;
-  const ZENHUB_GRAPH_QL_URL = process.env.ZENHUB_GRAPH_QL_URL;
-  const zenhub = initZenhub(ZENHUB_GRAPH_QL_URL, ZENHUB_GRAPH_QL_API_KEY, GITHUB_PAT, ZENHUB_ISSUES_WORKSPACE_ID);
+export default (firebase, db) => {
+  const zenhub = initZenhub();
 
   return {
     createIssue,
@@ -15,8 +11,8 @@ export default (secrets, firebase, db) => {
   /**
    * Create an issue in Zenhub
    * Update the bugReport collection with the Zenhub Issue ID
-   * 
-   * @param {*} bugReportId 
+   *
+   * @param {*} bugReportId
    */
   async function createIssue(bugReportId, userId) {
     const user = await getDocument(db.collection('users').doc(userId));
@@ -36,11 +32,11 @@ export default (secrets, firebase, db) => {
         zenhubIssueId: zenhubIssueId,
         lastUpdatedAt: firebase.firestore.FieldValue.serverTimestamp(),
       });
-    }    
+    }
   }
 
   function buildZenhubPayload(data, user) {
-    // line breaks removed as working fix, TODO add them back in 
+    // line breaks removed as working fix, TODO add them back in
     let payload = `The following ${data.criticality} issue was raised by ${data.reporter}`;
     if (data.exercise.referenceNumber) {
       payload += ` for exercise ${data.exercise.referenceNumber} `;
@@ -68,7 +64,7 @@ export default (secrets, firebase, db) => {
     //payload += '<!-- test = { id: 23, name: \'tester\' } -->';
     //payload += `<!-- reporter = { email: '${data.contactDetails}' } -->`;
     //payload += `<!-- { reporter: '${user.slackMemberId}', developer: 'U052NR5U43Z' } -->`;
-  
+
     return payload;
   }
 

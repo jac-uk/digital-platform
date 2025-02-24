@@ -3,14 +3,14 @@ import lookup from '../../shared/converters/lookup.js';
 import { getDocument, getDocuments, getAllDocuments, objectHasNestedProperty } from '../../shared/helpers.js';
 //import initApplicationConverter from '../../shared/converters/applicationConverter.js';
 import initUpdateApplicationRecordStageStatus from '../applicationRecords/updateApplicationRecordStageStatus.js';
-import { EXERCISE_STAGE, APPLICATION_STATUS } from '../../shared/config.js';
+import { EXERCISE_STAGE, APPLICATION_STATUS } from '../../shared/constants.js';
 
 //const applicationConverter = initApplicationConverter();
 //const { getWelshData } = applicationConverter;
 
 export default (firebase, db) => {
   const { convertStageToVersion2, convertStatusToVersion2 } = initUpdateApplicationRecordStageStatus(firebase, db);
-  
+
   return {
     generateHandoverReport,
   };
@@ -170,8 +170,8 @@ const reportData = (db, exercise, applicationRecords, applications, forAdminDisp
 
 /**
  * Fields only used for display on the admin frontend (not for download so get stripped out by the frontend)
- * @param {Object} application 
- * @returns 
+ * @param {Object} application
+ * @returns
  */
 const adminDisplayFields = (application) => {
   return {

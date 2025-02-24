@@ -1,6 +1,6 @@
 import { getDocument, getAllDocuments, getDocuments, formatDate, getDate } from '../../shared/helpers.js';
 import lookup from '../../shared/converters/lookup.js';
-import { NOT_COMPLETE_PUPILLAGE_REASONS } from '../../shared/config.js';
+import { NOT_COMPLETE_PUPILLAGE_REASONS } from '../../shared/constants.js';
 import * as helpers from '../../shared/converters/helpers.js';
 
 export default (firebase, db) => {

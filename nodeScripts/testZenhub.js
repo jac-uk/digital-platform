@@ -9,16 +9,9 @@
 import { app } from './shared/admin.js';
 import initZenhub from '../functions/shared/zenhub.js';
 
-const ZENHUB_GRAPH_QL_API_KEY = process.env.ZENHUB_GRAPH_QL_API_KEY;
-const GITHUB_PAT = process.env.GITHUB_PAT;
-const ZENHUB_ISSUES_WORKSPACE_ID = process.env.ZENHUB_ISSUES_WORKSPACE_ID;
-const ZENHUB_GRAPH_QL_URL = process.env.ZENHUB_GRAPH_QL_URL;
-
-const zenhub = initZenhub(ZENHUB_GRAPH_QL_URL, ZENHUB_GRAPH_QL_API_KEY, GITHUB_PAT, ZENHUB_ISSUES_WORKSPACE_ID);
+const zenhub = initZenhub();
 
 const main = async () => {
-
-
   try {
     const newIssueID = await zenhub.createZenhubIssue('TESTER2', '"Test" new issue body');
     console.log(`newIssueID: ${newIssueID}`);

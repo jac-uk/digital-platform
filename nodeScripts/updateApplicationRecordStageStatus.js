@@ -4,7 +4,6 @@
 
 'use strict';
 
-//import config from './shared/config.js';
 import { firebase, app, db } from './shared/admin.js';
 import initUpdateApplicationRecordStageStatus from '../functions/actions/applicationRecords/updateApplicationRecordStageStatus.js';
 
@@ -13,7 +12,7 @@ const { updateApplicationRecordStageStatus } = initUpdateApplicationRecordStageS
 // whether to make changes in firestore
 
 const main = async () => {
-  
+
   updateApplicationRecordStageStatus(null);
   return true;
 };

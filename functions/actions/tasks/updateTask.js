@@ -6,7 +6,7 @@ import initFactories from '../../shared/factories.js';
 import initQts from '../../shared/qts.js';
 import { getOverride } from './meritListHelper.js';
 import { GRADES, GRADE_VALUES, markingScheme2ScoreSheet } from '../../shared/scoreSheetHelper.js';
-import { TASK_STATUS, PANEL_STATUS, TASK_TYPE, CANDIDATE_FORM_STATUS } from '../../shared/config.js';
+import { TASK_STATUS, PANEL_STATUS, TASK_TYPE, CANDIDATE_FORM_STATUS } from '../../shared/constants.js';
 
 export default (qtKey, firebase, db) => {
   const {

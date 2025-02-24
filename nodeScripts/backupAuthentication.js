@@ -1,10 +1,9 @@
 'use strict';
 
-import config from './shared/config.js';
 import { app, firebase } from './shared/admin.js';
 import initBackupAuthentication from '../functions/actions/backup/authentication.js';
 
-const { backupAuthentication } = initBackupAuthentication(config, firebase);
+const { backupAuthentication } = initBackupAuthentication(process.env.SLACK_TICKETING_APP_BOT_TOKEN, firebase);
 
 const main = async () => {
   return backupAuthentication();

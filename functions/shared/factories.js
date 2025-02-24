@@ -2,7 +2,7 @@ import { formatDate, objectHasNestedProperty } from './helpers.js';
 import { applicationOpenDatePost01042023 } from './converters/helpers.js';
 import { getSearchMap } from './search.js';
 //import _ from 'lodash';
-import { EXERCISE_STAGE, ASSESSMENT_TYPE, ASSESSMENT_METHOD } from './config.js';
+import { EXERCISE_STAGE, ASSESSMENT_TYPE, ASSESSMENT_METHOD } from './constants.js';
 
 export default () => {
   return {
@@ -90,8 +90,8 @@ export default () => {
     const templateId = 'd411b686-f86f-46be-b4a0-4d3946e2beff';
 
     let secondStageClosingDate = '';
-    if (exercise._applicationContent 
-        && exercise._applicationContent._currentStep 
+    if (exercise._applicationContent
+        && exercise._applicationContent._currentStep
         && exercise._applicationContent._currentStep.end) {
       secondStageClosingDate = formatDate(exercise._applicationContent._currentStep.end.toDate());
     }
@@ -542,7 +542,7 @@ export default () => {
       application.personalDetails.nationalInsuranceNumber,
       application.referenceNumber,
     ]);
-    
+
     let applicationRecord = {
       _search: search,
       exercise: {
@@ -800,7 +800,7 @@ export default () => {
   function newCandidateFormNotification(firebase, application, type, exerciseMailbox, exerciseManagerName, dueDate) {
     let templateId = '';
     let templateName = '';
-    
+
     if (type === 'request') {
       templateId = 'bba6cebb-b3b3-4ba3-818b-af7b9a011f77';
       templateName = 'Candidate form consent form request';
@@ -883,10 +883,10 @@ export default () => {
   /**
    * Send email verification link ** on change of email address **
    * (Note that this is not used for sending the verification link on sign up)
-   * 
-   * @param {*} email 
-   * @param {*} verificationLink 
-   * @returns 
+   *
+   * @param {*} email
+   * @param {*} verificationLink
+   * @returns
    */
   function newNotificationEmailVerificationLink(firebase, email, verificationLink) {
     const templateName = 'Change Email Address Verification Link';
@@ -908,10 +908,10 @@ export default () => {
 
   /**
    * Send sms notification for login device confirmation
-   * @param {*} firebase 
-   * @param {*} intlMobileNumber 
-   * @param {*} verificationNumber 
-   * @returns 
+   * @param {*} firebase
+   * @param {*} intlMobileNumber
+   * @param {*} verificationNumber
+   * @returns
    */
   function newSmsNotificationLoginVerificationNumber(firebase, intlMobileNumber, verificationNumber) {
     const templateName = 'Login Verification Number';

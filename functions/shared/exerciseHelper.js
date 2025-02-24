@@ -1,7 +1,7 @@
 import { formatDate } from './helpers.js';
 import lookup from './converters/lookup.js';
 import _ from 'lodash';
-import { EXERCISE_STAGE } from './config.js';
+import { EXERCISE_STAGE } from './constants.js';
 
 export default () => {
   const SELECTION_CATEGORIES = {
@@ -62,7 +62,7 @@ export default () => {
 
   function isStagedExercise(exercise) {
     if (!exercise) return false;
-  
+
     const selectionProcess = exercise._applicationContent.selection || {};
     const isStagedExercise = Object.values(selectionProcess).includes(true);
     console.log('selectionProcess', JSON.stringify(selectionProcess));
@@ -73,10 +73,10 @@ export default () => {
 
   function canApplyFullApplicationSubmitted(exercise) {
     if (!exercise) return false;
-  
+
     const applyFullApplicationSubmitted = isStagedExercise(exercise) && exercise.applicationOpenDate.toDate() >= new Date(2024, 7, 18);
     console.log('applyFillApplicationSubmitted', applyFullApplicationSubmitted);
-   
+
     return applyFullApplicationSubmitted;
   }
 
@@ -116,12 +116,12 @@ export default () => {
     }
 
     let dateStrings = [];
-    
+
     for (const selectionDay of exercise.selectionDays) {
       let dateString = '';
       const selectionDayStart = formatDate(selectionDay.selectionDayStart, 'DD/MM/YYYY');
       const selectionDayEnd = formatDate(selectionDay.selectionDayEnd, 'DD/MM/YYYY');
-    
+
       if (!selectionDayStart || !selectionDayEnd) {
         dateString = '';
       } else if (selectionDayStart !== selectionDayEnd) {

@@ -1,6 +1,5 @@
 import firebase from 'firebase-admin';
 import { jest } from '@jest/globals';
-//import config from '../../../../nodeScripts/shared/config.js';
 import initGenerateDiversityReport from '../../../../functions/actions/exercises/generateDiversityReport.js';
 
 const db = jest.fn();

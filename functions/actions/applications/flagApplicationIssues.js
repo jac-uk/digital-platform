@@ -1,7 +1,7 @@
 import { getDocument, isEmpty, applyUpdates, getDate } from '../../shared/helpers.js';
 import lookup from '../../shared/converters/lookup.js';
 import _ from 'lodash';
-import { APPLICATION } from '../../shared/config.js';
+import { APPLICATION } from '../../shared/constants.js';
 
 export default (firebase, db) => {
   return {
@@ -72,7 +72,7 @@ export default (firebase, db) => {
     let applications = [];
     let lastApplicationDoc = null;
     let lastApplication = null;
-    
+
     /**
      * {
      *    stage1 : {
@@ -138,7 +138,7 @@ export default (firebase, db) => {
   }
 
   async function updateApplicationIssues(exercise, applications, reset, characterIssueStatusCounts) {
-    
+
     const exerciseId = exercise.id;
 
     // construct commands
@@ -147,7 +147,7 @@ export default (firebase, db) => {
       const applicationRecord = await getDocument(db.collection('applicationRecords').doc(`${applications[i].id}`));
       const eligibilityIssues = getEligibilityIssues(exercise, applications[i], applicationRecord);
       const characterIssues = getCharacterIssues(exercise, applications[i]);
-      
+
       const stage = applicationRecord ? applicationRecord.stage : '';
       const status = applicationRecord ? applicationRecord.status || 'blank' : '';
 
@@ -240,7 +240,7 @@ export default (firebase, db) => {
       const dateOfBirth = getDate(application.personalDetails.dateOfBirth);
       const dateOfRetirement = new Date(dateOfBirth.getFullYear() + retirementAge, dateOfBirth.getMonth(), dateOfBirth.getDate());
       sccAge = new Duration(dateOfBirth, getDate(exercise.characterAndSCCDate)).setDays(0).toString();
-      
+
       if (application.canGiveReasonableLOS === false) {
         const rslSummary = isNonLegalExercise ? `Not Met (${application.cantGiveReasonableLOSDetails})` : 'Not Met';
         rlsIssue = newEligibilityIssue('rls', rslSummary, application.cantGiveReasonableLOSDetails);

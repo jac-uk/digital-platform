@@ -2,7 +2,7 @@
 
 import _ from 'lodash';
 import { app, db } from './shared/admin.js';
-import { ASSESSMENT_METHOD } from './shared/config.js';
+import { ASSESSMENT_METHOD } from './shared/constants.js';
 import { applyUpdates, getDocuments, getDocument } from '../functions/shared/helpers.js';
 
 // whether to make changes in `exercises` collection in firestore
@@ -71,7 +71,7 @@ const main = async () => {
         break;
       default:
     }
-  
+
     if (Object.keys(assessmentMethods).length) {
       if (isAction) {
         commands.push({

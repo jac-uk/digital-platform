@@ -1,13 +1,12 @@
 import mockFirebase from 'firebase-admin';
 import { jest } from '@jest/globals';
-import config from '../../../nodeScripts/shared/config.js';
+import { EXERCISE_STAGE, APPLICATION_STATUS } from '../../../nodeScripts/shared/constants.js';
 import initUpdateApplicationRecordStageStatus from '../../../functions/actions/applicationRecords/updateApplicationRecordStageStatus.js';
 
 const mockDB = jest.fn();
-const { convertStageToVersion2, convertStatusToVersion2 } = initUpdateApplicationRecordStageStatus(mockFirebase, config, mockDB);
+const { convertStageToVersion2, convertStatusToVersion2 } = initUpdateApplicationRecordStageStatus(mockFirebase, mockDB);
 
 describe('Update stages to version 2', () => {
-  const { EXERCISE_STAGE } = config;
   const expectedMappings = [
     { v1: EXERCISE_STAGE.REVIEW, v2: EXERCISE_STAGE.SHORTLISTING },
     { v1: EXERCISE_STAGE.APPLIED, v2: EXERCISE_STAGE.SHORTLISTING },
@@ -28,7 +27,6 @@ describe('Update stages to version 2', () => {
 
 
 describe('Update status to version 2', () => {
-  const { APPLICATION_STATUS } = config;
   const expectedMappings = [
     { v1: APPLICATION_STATUS.CRITICAL_ANALYSIS_PASSED, v2: APPLICATION_STATUS.CRITICAL_ANALYSIS_PASSED },
     { v1: APPLICATION_STATUS.CRITICAL_ANALYSIS_FAILED, v2: APPLICATION_STATUS.QUALIFYING_TEST_FAILED },

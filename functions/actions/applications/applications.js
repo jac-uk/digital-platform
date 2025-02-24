@@ -4,7 +4,7 @@ import initApplicationRecords from '../../actions/applicationRecords.js';
 import initRefreshApplicationCounts from '../../actions/exercises/refreshApplicationCounts.js';
 import initFactories from '../../shared/factories.js';
 import initCandidatesSearch from '../candidates/search.js';
-import { TASK_TYPE } from '../../shared/config.js';
+import { TASK_TYPE } from '../../shared/constants.js';
 
 const testApplicationsFileName = 'test_applications.json';
 
