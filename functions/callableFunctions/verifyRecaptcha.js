@@ -15,7 +15,6 @@ export default onCall(
     maxInstances: 10,       // (Optional) Max instances to scale
     secrets: [
       'GOOGLE_RECAPTCHA_SECRET',
-      'GOOGLE_RECAPTCHA_VALIDATION_URL',
     ],  // ✅ Ensure the function has access to the secrets
   },
   async (request) => {
