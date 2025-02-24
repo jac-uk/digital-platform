@@ -1,9 +1,9 @@
 import initInitialisePanelExport from './initialisePanelExport.js';
 import initProcessPanelExport from './processPanelExport.js';
 
-export default (storageUrl, firebase, db) => {
+export default (firebase, db) => {
   const { initialisePanelExport } = initInitialisePanelExport(firebase, db);
-  const { processPanelExport } = initProcessPanelExport(storageUrl, firebase, db);
+  const { processPanelExport } = initProcessPanelExport(firebase, db);
 
   return onUpdate;
 

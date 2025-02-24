@@ -2,7 +2,7 @@ import * as functions from 'firebase-functions/v1';
 import { firebase, db } from '../shared/admin.js';
 import initOnPanelUpdate from '../actions/panels/onUpdate.js';
 
-const onPanelUpdate = initOnPanelUpdate(process.env.STORAGE_URL, firebase, db);
+const onPanelUpdate = initOnPanelUpdate(firebase, db);
 
 const runtimeOptions = {
   timeoutSeconds: 300,

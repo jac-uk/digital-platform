@@ -13,7 +13,10 @@ export default onCall(
     timeoutSeconds: 240,    // (Optional) Configure timeout
     minInstances: 0,        // (Optional) Min instances to reduce cold starts
     maxInstances: 10,       // (Optional) Max instances to scale
-    secrets: [ 'GOOGLE_RECAPTCHA_SECRET' ],  // ✅ Ensure the function has access to the secrets
+    secrets: [
+      'GOOGLE_RECAPTCHA_SECRET',
+      'GOOGLE_RECAPTCHA_VALIDATION_URL',
+    ],  // ✅ Ensure the function has access to the secrets
   },
   async (request) => {
 
@@ -29,10 +32,7 @@ export default onCall(
       }, data)) {
         throw new HttpsError('invalid-argument', 'Please provide valid arguments');
       }
-      const verifyRecaptcha = initVerifyRecaptcha(
-        process.env.GOOGLE_RECAPTCHA_SECRET,
-        process.env.GOOGLE_RECAPTCHA_VALIDATION_URL
-      );
+      const verifyRecaptcha = initVerifyRecaptcha();
 
       return await verifyRecaptcha(data);
     }

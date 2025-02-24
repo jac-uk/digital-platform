@@ -1,4 +1,5 @@
 import { onSchedule } from 'firebase-functions/v2/scheduler';
+import { db } from '../shared/admin.js';
 import initCloseExercises from '../actions/exercises/closeExercises.js';
 
 const { closeExercises } = initCloseExercises(db);

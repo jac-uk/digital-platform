@@ -1,6 +1,6 @@
 import axios from 'axios';
 
-export default (secret, validationUrl) => {
+export default () => {
   return verifyRecaptcha;
 
   /**

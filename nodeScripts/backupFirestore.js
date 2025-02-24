@@ -3,7 +3,7 @@
 import { app, firebase } from './shared/admin.js';
 import initBackupFirestore from '../functions/actions/backup/firestore.js';
 
-const { backupFirestore } = initBackupFirestore(process.env.SLACK_TICKETING_APP_BOT_TOKEN, firebase);
+const { backupFirestore } = initBackupFirestore(firebase);
 
 const main = async () => {
   return backupFirestore();
