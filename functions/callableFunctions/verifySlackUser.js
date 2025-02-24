@@ -16,7 +16,7 @@ export default onCall(
     maxInstances: 10,       // (Optional) Max instances to scale
     secrets: [
       'SLACK_TICKETING_APP_BOT_TOKEN',
-      'SLACK_URL'
+      'SLACK_URL',
     ],  // ✅ Ensure the function has access to the secrets
   },
   async (request) => {
