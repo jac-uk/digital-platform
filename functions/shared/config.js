@@ -2,14 +2,6 @@ import * as dotenv from 'dotenv';
 dotenv.config(); // Load .env file
 
 const CONSTANTS = {
-  PROJECT_ID: process.env.PROJECT_ID,
-  IS_LOCAL: process.env.IS_LOCAL,
-  APPLY_URL: process.env.APPLY_URL,
-  QT_URL: process.env.QT_URL,
-  SLACK_TICKETING_APP_CHANNEL_ID: process.env.SLACK_TICKETING_APP_CHANNEL_ID,
-  SLACK_RETRY_SCHEDULE: process.env.SLACK_RETRY_SCHEDULE,
-  SLACK_MAX_RETRIES: 3,
-  SCANNER_TEST_SCHEDULE: process.env.SCANNER_TEST_SCHEDULE,
   APPLICATION: {
     STATUS: {
       QUALIFYING_TEST_PASSED: 'qualifyingTestPassed',
@@ -246,7 +238,6 @@ const CONSTANTS = {
       DISCUSS: 'discuss',
     },
   },
-  ASSESSMENTS_URL: process.env.ASSESSMENTS_URL,
   ASSESSMENT_METHOD: {
     SELF_ASSESSMENT_WITH_COMPETENCIES: 'selfAssessmentWithCompetencies',
     COVERING_LETTER: 'coveringLetter',
@@ -311,18 +302,11 @@ const CONSTANTS = {
   CAPABILITIES: ['L', 'EJ', 'L&J', 'PQ', 'PBK', 'ACI', 'WCO', 'MWE', 'OVERALL'],
   SELECTION_CATEGORIES: ['leadership', 'roleplay', 'situational', 'interview', 'overall'],
 
-  SLACK_URL: process.env.SLACK_URL,
-  SLACK_API_STUB: process.env.SLACK_API_STUB,
-  STORAGE_URL: process.env.STORAGE_URL,
-  SCAN_SERVICE_URL: process.env.SCAN_SERVICE_URL,
-  GOOGLE_RECAPTCHA_VALIDATION_URL: process.env.GOOGLE_RECAPTCHA_VALIDATION_URL,
-
   NOT_COMPLETE_PUPILLAGE_REASONS: {
     TRANSFERRED: 'transferred ',
     CALLED_PRE_2002: 'called-pre-2002',
     OTHER: 'other',
   },
-  ZENHUB_GRAPH_QL_URL: process.env.ZENHUB_GRAPH_QL_URL,
 };
 
 export const TASK_TYPE = {
@@ -477,16 +461,7 @@ export const APPLICATION_STATUS = {
 };
 
 export const {
-  PROJECT_ID,
-  IS_LOCAL,
-  APPLY_URL,
-  QT_URL,
-  SLACK_TICKETING_APP_CHANNEL_ID,
-  SLACK_RETRY_SCHEDULE,
-  SLACK_MAX_RETRIES,
-  SCANNER_TEST_SCHEDULE,
   APPLICATION,
-  ASSESSMENTS_URL,
   ASSESSMENT_METHOD,
   ASSESSMENT_TYPE,
   SHORTLISTING,
@@ -495,11 +470,5 @@ export const {
   PANEL_STATUS,
   CAPABILITIES,
   SELECTION_CATEGORIES,
-  SLACK_URL,
-  SLACK_API_STUB,
-  STORAGE_URL,
-  SCAN_SERVICE_URL,
-  GOOGLE_RECAPTCHA_VALIDATION_URL,
   NOT_COMPLETE_PUPILLAGE_REASONS,
-  ZENHUB_GRAPH_QL_URL,
 } = CONSTANTS;

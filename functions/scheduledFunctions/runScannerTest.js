@@ -1,10 +1,10 @@
 import { onSchedule } from 'firebase-functions/v2/scheduler';
 import { firebase, db } from '../shared/admin.js';
 import runScannerTestInit from '../actions/malware-scanning/runScannerTest.js';
-import { SCANNER_TEST_SCHEDULE } from '../shared/config.js';
+
 const runScannerTest = runScannerTestInit(firebase, db);
 
-const SCHEDULE = SCANNER_TEST_SCHEDULE ? SCANNER_TEST_SCHEDULE : 'every 10 minutes';
+const SCHEDULE = process.env.SCANNER_TEST_SCHEDULE ? process.env.SCANNER_TEST_SCHEDULE : 'every 10 minutes';
 
 export default onSchedule(
   {

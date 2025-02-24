@@ -1,8 +1,8 @@
 import * as functions from 'firebase-functions/v1';
 import { firebase, db } from '../shared/admin.js';
 import initOnPanelUpdate from '../actions/panels/onUpdate.js';
-import { STORAGE_URL } from '../shared/config.js';
-const onPanelUpdate = initOnPanelUpdate(STORAGE_URL, firebase, db);
+
+const onPanelUpdate = initOnPanelUpdate(process.env.STORAGE_URL, firebase, db);
 
 const runtimeOptions = {
   timeoutSeconds: 300,

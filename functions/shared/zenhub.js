@@ -13,7 +13,7 @@ export default (baseApiUrl, apiKey, githubPersonalAccesToken, workspaceId) => {
     Authorization: `Bearer ${apiKey}`,
     'Content-Type': 'application/json',
   };
-  
+
   return {
     createZenhubIssue,
     createGithubIssue,
@@ -24,9 +24,9 @@ export default (baseApiUrl, apiKey, githubPersonalAccesToken, workspaceId) => {
   /**
    * Creates issue ONLY in Zenhub
    * Cannot set assigness nor labels
-   * @param {*} referenceNumber 
-   * @param {*} body 
-   * @returns 
+   * @param {*} referenceNumber
+   * @param {*} body
+   * @returns
    */
   async function createZenhubIssue(referenceNumber, body) {
     const platformIssuesRepositoryId = workspaceId;
@@ -79,9 +79,9 @@ export default (baseApiUrl, apiKey, githubPersonalAccesToken, workspaceId) => {
   /**
    * Creates issue in Github (gets picked up by Zenhub)
    * Cannot set assigness
-   * @param {*} referenceNumber 
-   * @param {*} body 
-   * @returns 
+   * @param {*} referenceNumber
+   * @param {*} body
+   * @returns
    */
   async function createGithubIssue(referenceNumber, body, label) {
     const platformIssuesRepositoryId = 'Z2lkOi8vcmFwdG9yL1JlcG9zaXRvcnkvMTMzOTczMzA2';
@@ -134,13 +134,13 @@ export default (baseApiUrl, apiKey, githubPersonalAccesToken, workspaceId) => {
 
   /**
    * Validate a webhook request from Github
-   * @param {string} secret 
-   * @param {string} header 
-   * @param {object} payload 
-   * @returns 
+   * @param {string} secret
+   * @param {string} header
+   * @param {object} payload
+   * @returns
    */
   async function validateWebhookRequest(secret, header, payload) {
-    const [algorithm, sigHex] = header.split('=');
+    const sigHex = header.split('=')[1];  // [algorithm, sigHex]
     const key = Buffer.from(secret, 'utf-8');
     const hmac = crypto.createHmac('sha256', key);
     const payloadString = JSON.stringify(payload); // Convert payload to a string
@@ -173,7 +173,7 @@ export default (baseApiUrl, apiKey, githubPersonalAccesToken, workspaceId) => {
         });
 
         data.push({
-          title: repo, 
+          title: repo,
           url: response.data.html_url,
           id: response.data.id,
           author: response.data.author.login,
@@ -186,7 +186,7 @@ export default (baseApiUrl, apiKey, githubPersonalAccesToken, workspaceId) => {
       } catch (error) {
 
         data.push({
-          title: repo, 
+          title: repo,
           url: '',
           id: '',
           author: '',

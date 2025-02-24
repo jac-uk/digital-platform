@@ -1,10 +1,4 @@
 const CONSTANTS = {
-  PROJECT_ID: process.env.PROJECT_ID,
-  IS_LOCAL: process.env.IS_LOCAL,
-  APPLY_URL: process.env.APPLY_URL,
-  // QT_URL: 'http://localhost:5001/jac-qualifying-tests-develop/europe-west2/api/v1',
-  QT_URL: process.env.QT_PLATFORM_URL,
-  SCAN_SERVICE_URL: 'https://malware-scanner-dot-platform-production-9207d.appspot.com/scan',
   APPLICATION: {
     STATUS: {
       QUALIFYING_TEST_PASSED: 'qualifyingTestPassed',
@@ -234,7 +228,6 @@ const CONSTANTS = {
       FURTHER_DISCLOSURES: 'furtherDisclosuresV2',
     },
   },
-  ASSESSMENTS_URL: process.env.ASSESSMENTS_URL,
   ASSESSMENT_METHOD: {
     SELF_ASSESSMENT_WITH_COMPETENCIES: 'selfAssessmentWithCompetencies',
     COVERING_LETTER: 'coveringLetter',
@@ -297,10 +290,6 @@ const CONSTANTS = {
   },
   CAPABILITIES: ['L', 'EJ', 'L&J', 'PQ', 'PBK', 'ACI', 'WCO', 'MWE', 'OVERALL'],
   SELECTION_CATEGORIES: ['leadership', 'roleplay', 'situational', 'interview', 'overall'],
-  SLACK_URL: process.env.SLACK_URL,
-  SLACK_API_STUB: process.env.SLACK_API_STUB,
-  STORAGE_URL: process.env.PROJECT_ID + '.appspot.com',
-  ZENHUB_GRAPH_QL_URL: process.env.ZENHUB_GRAPH_QL_URL,
 };
 
 const TASK_TYPE = {
