@@ -7,7 +7,7 @@ const { initialiseApplicationRecords } = initApplicationRecords(firebase, db, au
 
 const main = async () => {
   return initialiseApplicationRecords({
-    exerciseId: 'rxqeJzA9WjZ21dEXf03p',
+    exerciseId: 'p4DnfgusUqaoRP6ZCXpM',
   });
 };
 

@@ -4,9 +4,6 @@ import initNotifications from '../actions/notifications.js';
 import initServiceSettings from '../shared/serviceSettings.js';
 import { PERMISSIONS, hasPermissions } from '../shared/permissions.js';
 
-import { defineSecret } from 'firebase-functions/params';
-const NOTIFY_KEY = defineSecret('NOTIFY_KEY');
-
 const { checkFunctionEnabled } = initServiceSettings(db);
 
 export default onCall(
@@ -16,7 +13,7 @@ export default onCall(
     timeoutSeconds: 240,    // (Optional) Configure timeout
     minInstances: 0,        // (Optional) Min instances to reduce cold starts
     maxInstances: 10,       // (Optional) Max instances to scale
-    secrets: [NOTIFY_KEY],  // ✅ Ensure the function has access to the secrets
+    secrets: [ 'NOTIFY_KEY' ],  // ✅ Ensure the function has access to the secrets
   },
   async (request) => {
 

@@ -1,11 +1,11 @@
 import { getDocument, getDocuments, applyUpdates } from '../../shared/helpers.js';
 import initTaskHelpers from './taskHelpers.js';
 import initUpdateTask from './updateTask.js';
-import { TASK_STATUS } from '../../shared/config.js';
+import { TASK_STATUS, TASK_TYPE } from '../../shared/config.js';
 
-export default (firebase, db) => {
+export default (QT_KEY, firebase, db) => {
   const { getTimelineTasks, taskNextStatus, taskApplicationsEntryStatus } = initTaskHelpers();
-  const { getApplications, initialisePanelTask, initialiseTestTask, initialiseStatusChangesTask, initialiseCandidateFormTask, initialiseDataTask, initialiseStageOutcomeTask } = initUpdateTask(firebase, db);
+  const { getApplications, initialisePanelTask, initialiseTestTask, initialiseStatusChangesTask, initialiseCandidateFormTask, initialiseDataTask, initialiseStageOutcomeTask } = initUpdateTask(QT_KEY, firebase, db);
 
   return createTask;
 
@@ -89,11 +89,11 @@ export default (firebase, db) => {
     // task-specific updates
     if (result.success) {
       switch (params.type) {
-      case config.TASK_TYPE.SELECTION_DAY:
-        if (hasTaskType(exercise, config.TASK_TYPE.PRE_SELECTION_DAY_QUESTIONNAIRE)) {
-          const psdq = await getDocument(db.doc(`exercises/${params.exerciseId}/tasks/${config.TASK_TYPE.PRE_SELECTION_DAY_QUESTIONNAIRE}`));
+      case TASK_TYPE.SELECTION_DAY:
+        if (hasTaskType(exercise, TASK_TYPE.PRE_SELECTION_DAY_QUESTIONNAIRE)) {
+          const psdq = await getDocument(db.doc(`exercises/${params.exerciseId}/tasks/${TASK_TYPE.PRE_SELECTION_DAY_QUESTIONNAIRE}`));
           if (psdq) {
-            result[`_${config.TASK_TYPE.PRE_SELECTION_DAY_QUESTIONNAIRE}`] = {
+            result[`_${TASK_TYPE.PRE_SELECTION_DAY_QUESTIONNAIRE}`] = {
               formId: psdq.formId,
             };
           }

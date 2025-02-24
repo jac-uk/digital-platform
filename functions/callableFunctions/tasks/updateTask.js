@@ -4,8 +4,7 @@ import { checkArguments } from '../../shared/helpers.js';
 import initUpdateTask from '../../actions/tasks/updateTask.js';
 import initServiceSettings from '../../shared/serviceSettings.js';
 import { PERMISSIONS, hasPermissions } from '../../shared/permissions.js';
-import { defineSecret } from 'firebase-functions/params';
-const QT_KEY = defineSecret('QT_KEY');
+
 const { checkFunctionEnabled } = initServiceSettings(db);
 
 export default onCall(
@@ -16,7 +15,8 @@ export default onCall(
     minInstances: 0,        // (Optional) Min instances to reduce cold starts
     maxInstances: 10,       // (Optional) Max instances to scale
     secrets: [
-      QT_KEY,
+      'QT_KEY',
+      'QT_URL',
     ],  // ✅ Ensure the function has access to the secrets
   },
   async (request) => {

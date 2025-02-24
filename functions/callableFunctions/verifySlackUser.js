@@ -5,9 +5,6 @@ import { checkArguments } from '../shared/helpers.js';
 import initServiceSettings from '../shared/serviceSettings.js';
 import initSlack from '../actions/slack.js';
 
-import { defineSecret } from 'firebase-functions/params';
-const SLACK_TICKETING_APP_BOT_TOKEN = defineSecret('SLACK_TICKETING_APP_BOT_TOKEN');
-
 const { checkFunctionEnabled } = initServiceSettings(db);
 
 export default onCall(
@@ -17,7 +14,7 @@ export default onCall(
     timeoutSeconds: 240,    // (Optional) Configure timeout
     minInstances: 0,        // (Optional) Min instances to reduce cold starts
     maxInstances: 10,       // (Optional) Max instances to scale
-    secrets: [SLACK_TICKETING_APP_BOT_TOKEN],  // ✅ Ensure the function has access to the secrets
+    secrets: [ 'SLACK_TICKETING_APP_BOT_TOKEN', 'SLACK_URL' ],  // ✅ Ensure the function has access to the secrets
   },
   async (request) => {
 

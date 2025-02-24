@@ -2,11 +2,6 @@ import { onCall, HttpsError } from 'firebase-functions/v2/https';
 import { firebase, db } from '../shared/admin.js';
 import initCreateIssue from '../actions/zenhub/createIssue.js';
 import initServiceSettings from '../shared/serviceSettings.js';
-import { defineSecret } from 'firebase-functions/params';
-
-const ZENHUB_GRAPH_QL_API_KEY = defineSecret('ZENHUB_GRAPH_QL_API_KEY');
-const GITHUB_PAT = defineSecret('GITHUB_PAT');
-const ZENHUB_ISSUES_WORKSPACE_ID = defineSecret('ZENHUB_ISSUES_WORKSPACE_ID');
 
 const { checkFunctionEnabled } = initServiceSettings(db);
 
@@ -18,9 +13,9 @@ export default onCall(
     minInstances: 0,        // (Optional) Min instances to reduce cold starts
     maxInstances: 10,       // (Optional) Max instances to scale
     secrets: [
-      GITHUB_PAT,
-      ZENHUB_GRAPH_QL_API_KEY,
-      ZENHUB_ISSUES_WORKSPACE_ID,
+      'ZENHUB_GRAPH_QL_API_KEY',
+      'GITHUB_PAT',
+      'ZENHUB_ISSUES_WORKSPACE_ID',
     ],  // ✅ Ensure the function has access to the secrets
   },
   async (request) => {

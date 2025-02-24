@@ -4,9 +4,6 @@ import { checkArguments } from '../../../shared/helpers.js';
 import initUpdateQualifyingTestScores from '../../../actions/qualifyingTests/v2/updateQualifyingTestScores.js';
 import initServiceSettings from  '../../../shared/serviceSettings.js';
 
-import { defineSecret } from 'firebase-functions/params';
-const QT_KEY = defineSecret('QT_KEY');
-
 const { checkFunctionEnabled } = initServiceSettings(db);
 
 export default onCall(
@@ -16,7 +13,10 @@ export default onCall(
     timeoutSeconds: 240,    // (Optional) Configure timeout
     minInstances: 0,        // (Optional) Min instances to reduce cold starts
     maxInstances: 10,       // (Optional) Max instances to scale
-    secrets: [QT_KEY],  // Specify the secret(s) you want to access
+    secrets: [
+      'QT_KEY',
+      'QT_URL',
+    ],  // Specify the secret(s) you want to access
   },
   async (request) => {
 

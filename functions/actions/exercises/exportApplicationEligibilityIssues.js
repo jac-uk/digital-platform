@@ -288,7 +288,7 @@ export default (firebase, db) => {
     const applicationTotalNum = exercise._applications._total;
     const applicationWithdrawnNum = exercise._applications.withdrawn || 0;
     const applicationEligibilityNotProceed = applicationRecords.filter(ar => (
-      ar.issues && ar.issues.eligibilityIssuesStatus && 
+      ar.issues && ar.issues.eligibilityIssuesStatus &&
       (ar.issues.eligibilityIssuesStatus === APPLICATION.ELIGIBILITY_ISSUE_STATUS.REJECT || ar.issues.eligibilityIssuesStatus === APPLICATION.ELIGIBILITY_ISSUE_STATUS.REJECT_NON_DECLARATION)
     ));
 
@@ -311,15 +311,15 @@ export default (firebase, db) => {
   writer.addRaw(`
 <ol start="3">
   <li>
-    The Judicial Appointments Commission received a vacancy request on 
-    <b class="red">insert date</b> asking us to select 
+    The Judicial Appointments Commission received a vacancy request on
+    <b class="red">insert date</b> asking us to select
     ${exerciseImmediateStart} ${exerciseImmediateStart > 1 ? 'candidates' : 'candidate'} for appointment under section 87 of the Constitutional Reform Act 2005 (CRA)
-    ${!exerciseFutureStart ? '' : exerciseFutureStart + (exerciseFutureStart > 1 ? ' candidates' : ' candidate') + ' for appointment under section 94 of the Constitutional Reform Act 2005 (CRA)'} 
+    ${!exerciseFutureStart ? '' : exerciseFutureStart + (exerciseFutureStart > 1 ? ' candidates' : ' candidate') + ' for appointment under section 94 of the Constitutional Reform Act 2005 (CRA)'}
     <b class="red"> OR under section 83 Government of Wales Act 2006.</b>
   </li><br>
   <li>
-    The exercise launched on ${applicationOpenDate} and closed for applications on ${applicationCloseDate}. 
-    A total of ${applicationTotalNum} ${applicationTotalNum > 1 ? 'applications were' : 'application was'} received with 
+    The exercise launched on ${applicationOpenDate} and closed for applications on ${applicationCloseDate}.
+    A total of ${applicationTotalNum} ${applicationTotalNum > 1 ? 'applications were' : 'application was'} received with
     ${applicationWithdrawnNum === 0 ? 'no candidates' : applicationWithdrawnNum + (applicationWithdrawnNum > 1 ? ' candidates' : ' candidate')}</span> withdrawing during the course of the exercise.
     ${exercise._applicationRecords.shortlisted === 0 ? '' : exercise._applicationRecords.shortlisted + (exercise._applicationRecords.shortlisted > 1 ? ' candidates have' : ' candidate has')}</span> been shortlisted at the sift.
   </li><br>
@@ -340,7 +340,7 @@ export default (firebase, db) => {
     }
   </li><br>
   <li>
-    <b class="red">Insert number</b> candidates' statutory eligibility was considered by the Lord Chancellor under the Tribunals, Courts and Enforcement Act 2007. 
+    <b class="red">Insert number</b> candidates' statutory eligibility was considered by the Lord Chancellor under the Tribunals, Courts and Enforcement Act 2007.
     <b class="red">Insert number</b> were deemed ineligible by the Lord Chancellor and are now listed at <b class="red"><u>Annex X</u></b> <b class="red">&lt;insert hyperlink to Annex&gt;</b> for information purposes.
   </li>
 </ol>
@@ -370,9 +370,9 @@ export default (firebase, db) => {
   writer.addRaw(`
 <ol start="12">
   <li>
-    The Lord Chancellor expects candidates to be able to offer a reasonable length of service following recommendation for appointment and before retirement. 
-    Following the Public Service Pensions and Judicial Office Act 2022 receiving Royal Assent on 10 March 2022, the mandatory retirement age is 75. 
-    The age at which someone is appointed to this office must allow for a reasonable length of service before retirement, usually for this position ${exercise.reasonableLengthService} ${exercise.reasonableLengthService > 1 ? 'years' : 'year'}. 
+    The Lord Chancellor expects candidates to be able to offer a reasonable length of service following recommendation for appointment and before retirement.
+    Following the Public Service Pensions and Judicial Office Act 2022 receiving Royal Assent on 10 March 2022, the mandatory retirement age is 75.
+    The age at which someone is appointed to this office must allow for a reasonable length of service before retirement, usually for this position ${exercise.reasonableLengthService} ${exercise.reasonableLengthService > 1 ? 'years' : 'year'}.
     <b class="red">&lt;insert if all candidates meeting the RLoS&gt;</b> All candidates meet the reasonable length of service criterion.
   </li>
   <br>
@@ -390,7 +390,7 @@ export default (firebase, db) => {
         <li>Candidates whose character issues require a character decision (Annex X) <b class="red">&lt;insert hyperlink to Annex&gt;</b></li>
         <li>Candidates recommended to proceed as character issues within precedent (Annex X) <b class="red">&lt;insert hyperlink to Annex&gt;</b></li>
       </ul>
-    </p> 
+    </p>
   </li>
 </ol>
 <br><br><br><br><br><br><br><br><br><br>
@@ -539,9 +539,9 @@ export default (firebase, db) => {
                     const [forename, surname] = splitFullName(record.candidate.fullName);
                     // statutory issues share the same comments(reasons), can just use the comments of one of issues
                     const reasons = record.issues.eligibilityIssues.find((issue) => ['pq', 'pqe'].includes(issue.type)).comments;
-                    
+
                     return {
-                      forename, 
+                      forename,
                       surname,
                       reasons,
                     };
@@ -581,10 +581,10 @@ export default (firebase, db) => {
   }
 
   /**
-   * 
-   * @param {*} writer 
-   * @param {*} applicationRecords 
-   * @param {string} recommendation available options: 'proceed', 'reject', 'discuss' 
+   *
+   * @param {*} writer
+   * @param {*} applicationRecords
+   * @param {string} recommendation available options: 'proceed', 'reject', 'discuss'
    */
   function addSccEligibilityIssues_PreviousJudicialExperience(writer, applicationRecords, recommendation) {
     if (!['proceed', 'reject', 'discuss'].includes(recommendation)) {
@@ -609,13 +609,13 @@ export default (firebase, db) => {
                     return targetIssue && targetIssue.result === recommendation;
                   })
                   .map((record) => {
-                    const [forename, surname] = splitFullName(record.candidate.fullName);        
+                    const [forename, surname] = splitFullName(record.candidate.fullName);
                     const targetIssue = record.issues.eligibilityIssues.find((issue) => issue.type === 'pje');
                     const candidateComments = targetIssue.candidateComments;
                     const jacComments = targetIssue.comments;
-                    
+
                     return {
-                      forename, 
+                      forename,
                       surname,
                       candidateComments,
                       jacComments,
@@ -629,7 +629,7 @@ export default (firebase, db) => {
     writer.addRaw(`
 <p style="text-align: right;"><a name="annex-c"><b>ANNEX X</b></a></p>
     `);
-    
+
     writer.addHeading(recommendationToHeading[recommendation], 'center');
     writer.addRaw(`
 <table>
@@ -678,9 +678,9 @@ export default (firebase, db) => {
   }
 
   /**
-   * 
-   * @param {*} writer 
-   * @param {*} applicationRecords 
+   *
+   * @param {*} writer
+   * @param {*} applicationRecords
    */
   function addSccEligibilityIssues_ReasonableLengthOfService(writer, exercise, applicationRecords) {
     // TODO: to number words
@@ -692,14 +692,14 @@ export default (firebase, db) => {
                     return targetIssue && targetIssue.summary.search('Not Met') !== -1;
                   })
                   .map((record) => {
-                    const [forename, surname] = splitFullName(record.candidate.fullName);        
+                    const [forename, surname] = splitFullName(record.candidate.fullName);
                     const targetIssue = record.issues.eligibilityIssues.find((issue) => issue.type === 'rls');
                     const ageAtSccDate = targetIssue.sccAge || '';
                     const mitigationProvided = targetIssue.candidateComments || '';
                     const recommendation = `${_.capitalize(targetIssue.result)}<br>${targetIssue.comments}`;
-                    
+
                     return {
-                      forename, 
+                      forename,
                       surname,
                       ageAtSccDate,
                       mitigationProvided,
@@ -714,7 +714,7 @@ export default (firebase, db) => {
     writer.addRaw(`
 <p style="text-align: right;"><a name="annex-c"><b>ANNEX X</b></a></p>
     `);
-    
+
     writer.addHeading(`Candidates who will not be able to provide ${serviceYears} years reasonable service when recommendations are made to the Lord Chancellor`, 'center');
     writer.addRaw(`
 <table>
@@ -774,7 +774,7 @@ export default (firebase, db) => {
       </td>
     </tr>
     `);
-    
+
     applicationRecords.forEach((applicationRecord) => {
       if (!applicationRecord.issues ||
         !applicationRecord.issues.eligibilityIssuesStatus ||
@@ -888,7 +888,7 @@ export default (firebase, db) => {
    * Get date string. e.g.  1 January 2022
    *
    * @param {Date} date
-   * @returns {String} 
+   * @returns {String}
    */
   function getDateString(date) {
     const day = date.getDate();

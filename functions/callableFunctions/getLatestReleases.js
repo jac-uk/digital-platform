@@ -5,12 +5,6 @@ const { checkFunctionEnabled } = initServiceSettings(db);
 import { PERMISSIONS, hasPermissions } from '../shared/permissions.js';
 import initZenhub from '../shared/zenhub.js';
 
-import { defineSecret } from 'firebase-functions/params';
-
-const ZENHUB_GRAPH_QL_API_KEY = defineSecret('ZENHUB_GRAPH_QL_API_KEY');
-const GITHUB_PAT = defineSecret('GITHUB_PAT');
-const ZENHUB_ISSUES_WORKSPACE_ID = defineSecret('ZENHUB_ISSUES_WORKSPACE_ID');
-
 export default onCall(
   {
     region: 'europe-west2', // Specify the region
@@ -18,7 +12,11 @@ export default onCall(
     timeoutSeconds: 240,    // (Optional) Configure timeout
     minInstances: 0,        // (Optional) Min instances to reduce cold starts
     maxInstances: 10,       // (Optional) Max instances to scale
-    secrets: [GITHUB_PAT, ZENHUB_GRAPH_QL_API_KEY, ZENHUB_ISSUES_WORKSPACE_ID],  // ✅ Ensure the function has access to the secrets
+    secrets: [
+      'ZENHUB_GRAPH_QL_API_KEY',
+      'GITHUB_PAT',
+      'ZENHUB_ISSUES_WORKSPACE_ID',
+    ],  // ✅ Ensure the function has access to the secrets
   },
   async (request) => {
 

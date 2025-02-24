@@ -4,7 +4,7 @@
   "main": "index.js",
   "type": "module",
   "engines": {
-    "node": "18"
+    "node": "20"
   },
   "scripts": {
     "lint": "eslint .",
@@ -21,7 +21,7 @@
     "dotenv": "^16.4.7",
     "exceljs": "^4.4.0",
     "firebase-admin": "^13.0.1",
-    "firebase-functions": "^6.1.2",
+    "firebase-functions": "^6.3.2",
     "firebase-tools": "^13.29.1",
     "fs": "^0.0.1-security",
     "googleapis": "^144.0.0",

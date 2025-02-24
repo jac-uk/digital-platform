@@ -1,9 +1,8 @@
 'use strict';
 
 import initSlack from '../functions/shared/slack.js';
-import { defineSecret } from 'firebase-functions/params';
 
-const SLACK_TICKETING_APP_BOT_TOKEN = defineSecret('SLACK_TICKETING_APP_BOT_TOKEN');
+const SLACK_TICKETING_APP_BOT_TOKEN = process.env.SLACK_TICKETING_APP_BOT_TOKEN;
 const slack = initSlack(SLACK_TICKETING_APP_BOT_TOKEN);
 
 const main = async () => {
@@ -11,7 +10,7 @@ const main = async () => {
   const result = await slack.post('OJ Test');
   console.log('RESULT:');
   console.log(result);
-    
+
   // TEST 2
   // const referenceNumber = 'BR_ADMIN_DE_000242';
   // const bugReport = await getBugReportByRef(referenceNumber);

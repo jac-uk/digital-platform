@@ -24,7 +24,7 @@ jobs:
           token: ${{ secrets.DEPLOY_TOKEN }}
       - uses: actions/setup-node@master
         with:
-          node-version: '18.20.3'
+          node-version: '20.10.0'
       - run: npm ci
       - name: Test
         run: npm run ci:test:rules

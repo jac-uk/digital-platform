@@ -6,13 +6,6 @@ import initBugReports from '../actions/bugReports.js';
 import initOnAssignedIssue from '../actions/zenhub/hooks/onAssignedIssue.js';
 import initOnCreatedIssue from '../actions/zenhub/hooks/onCreatedIssue.js';
 import initZenhub from '../shared/zenhub.js';
-import { defineSecret } from 'firebase-functions/params';
-
-const ZENHUB_GRAPH_QL_API_KEY = defineSecret('ZENHUB_GRAPH_QL_API_KEY');
-const GITHUB_PAT = defineSecret('GITHUB_PAT');
-const ZENHUB_ISSUES_WORKSPACE_ID = defineSecret('ZENHUB_ISSUES_WORKSPACE_ID');
-const GITHUB_WEBHOOK_SECRET = defineSecret('GITHUB_WEBHOOK_SECRET');
-const SLACK_TICKETING_APP_BOT_TOKEN = defineSecret('SLACK_TICKETING_APP_BOT_TOKEN');
 
 const { getUserByGithubUsername } = initUsers(auth, db);
 const { getBugReportByRef, getBugReportNumberFromIssueTitle } = initBugReports(db, firebase);
@@ -26,11 +19,13 @@ export default onRequest(
     minInstances: 0,
     maxInstances: 10,
     secrets: [
-      GITHUB_WEBHOOK_SECRET,
-      ZENHUB_GRAPH_QL_API_KEY,
-      GITHUB_PAT,
-      ZENHUB_ISSUES_WORKSPACE_ID,
-      SLACK_TICKETING_APP_BOT_TOKEN,
+      'ZENHUB_GRAPH_QL_API_KEY',
+      'GITHUB_PAT',
+      'ZENHUB_ISSUES_WORKSPACE_ID',
+      'GITHUB_WEBHOOK_SECRET',
+      'SLACK_TICKETING_APP_BOT_TOKEN',
+      'SLACK_TICKETING_APP_CHANNEL_ID',
+      'SLACK_URL',
     ],  // ✅ Ensure the function has access to the secrets
   },
   async (req, res) => {
