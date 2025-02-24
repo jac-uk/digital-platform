@@ -32,7 +32,7 @@ export default onCall(
         PERMISSIONS.settings.permissions.canUpdateSettings.value,
       ]);
 
-      const { processNotifications } = initNotifications(process.env.NOTIFY_KEY, firebase, db);
+      const { processNotifications } = initNotifications(firebase, db);
 
       return await processNotifications();
     }

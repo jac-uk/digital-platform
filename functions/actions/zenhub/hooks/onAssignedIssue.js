@@ -1,8 +1,8 @@
 import initSlack from '../../../shared/slack.js';
 import initUsers from '../../users.js';
 
-export default (slackBotToken, db, auth) => {
-  const slack = initSlack(slackBotToken);
+export default (db, auth) => {
+  const slack = initSlack();
   const { getUser } = initUsers(auth, db);
 
   return {
@@ -12,8 +12,8 @@ export default (slackBotToken, db, auth) => {
   /**
    * Hook called when an issue is assigned/unassigned in github
    * assigneeUser is the user who has been assigned/unassigned retrieved from our db by their githubUsername
-   * @param {object} params 
-   * @param {object} bugReport 
+   * @param {object} params
+   * @param {object} bugReport
    * @param {object} assigneeUser
    * @param {string} slackChannelId
    */

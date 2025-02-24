@@ -3,7 +3,7 @@
 import { firebase, app, db } from './shared/admin.js';
 import initUpdateTask from '../functions/actions/tasks/updateTask.js';
 
-const { updateTask } = initUpdateTask(process.env.QT_KEY, firebase, db);
+const { updateTask } = initUpdateTask(firebase, db);
 
 const main = async () => {
   return updateTask({

@@ -8,7 +8,7 @@ import { getOverride } from './meritListHelper.js';
 import { GRADES, GRADE_VALUES, markingScheme2ScoreSheet } from '../../shared/scoreSheetHelper.js';
 import { TASK_STATUS, PANEL_STATUS, TASK_TYPE, CANDIDATE_FORM_STATUS } from '../../shared/constants.js';
 
-export default (qtKey, firebase, db) => {
+export default (firebase, db) => {
   const {
     taskStatuses,
     taskNextStatus,
@@ -251,7 +251,7 @@ export default (qtKey, firebase, db) => {
     };
 
     // get test
-    const qts = initQts(qtKey);
+    const qts = initQts();
     const response = await qts.get('scores', {
       testId: task.test.id,
     });
@@ -398,7 +398,7 @@ export default (qtKey, firebase, db) => {
     const title = `${lookup(testType)} for ${folderName}`;
     const QTType = testType === TASK_TYPE.EMP_TIEBREAKER ? TASK_TYPE.SCENARIO : testType;
     // initialise test on QT Platform
-    const qts = initQts(qtKey);
+    const qts = initQts();
     const response = await qts.post('qualifying-test', {
       folder: folderName,
       test: {
@@ -445,7 +445,7 @@ export default (qtKey, firebase, db) => {
     });
 
     // send participants to QT Platform
-    const qts = initQts(qtKey);
+    const qts = initQts();
     await qts.post('participants', {
       testId: task.test.id,
       participants: participants,
@@ -680,7 +680,7 @@ export default (qtKey, firebase, db) => {
     let emptyScoreSheet = task.emptyScoreSheet;
     if (task.type === TASK_TYPE.SCENARIO || task.type === TASK_TYPE.EMP_TIEBREAKER) {
       // get test
-      const qts = initQts(qtKey);
+      const qts = initQts();
       const response = await qts.get('scores', {
         testId: task.test.id,
       });
@@ -801,7 +801,7 @@ export default (qtKey, firebase, db) => {
     };
 
     // get results from QT Platform
-    const qts = initQts(qtKey);
+    const qts = initQts();
     const response = await qts.get('scores', {
       testId: task.test.id,
     });

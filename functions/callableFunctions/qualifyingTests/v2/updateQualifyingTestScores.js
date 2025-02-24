@@ -31,7 +31,7 @@ export default onCall(
       }
       await checkFunctionEnabled();
 
-      const updateQualifyingTestScores = initUpdateQualifyingTestScores(process.env.QT_KEY, firebase, db);
+      const updateQualifyingTestScores = initUpdateQualifyingTestScores(firebase, db);
 
       const response = await updateQualifyingTestScores(data);
 

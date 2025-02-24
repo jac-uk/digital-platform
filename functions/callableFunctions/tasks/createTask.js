@@ -20,7 +20,7 @@ export default onCall(
     ],  // ✅ Ensure the function has access to the secrets
   },
   async (request) => {
-    const createTask = initCreateTask(process.env.QT_KEY, firebase, db);
+    const createTask = initCreateTask(firebase, db);
 
     try {
       const data = request.data;

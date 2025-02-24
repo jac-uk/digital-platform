@@ -17,10 +17,7 @@ export default onSchedule(
     ],  // ✅ Ensure the function has access to the secrets
   },
   async (event) => {
-    const { backupFirestore } = initBackupFirestore(
-      process.env.SLACK_TICKETING_APP_BOT_TOKEN,
-      firebase
-    );
+    const { backupFirestore } = initBackupFirestore(firebase);
     const result = await backupFirestore();
     return result;
   }

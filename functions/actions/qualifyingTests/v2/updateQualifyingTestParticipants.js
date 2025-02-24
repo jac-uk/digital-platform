@@ -2,8 +2,8 @@ import { getDocuments, getDocument } from '../../../shared/helpers.js';
 import initQts from '../../../shared/qts.js';
 import { TASK_STATUS } from '../../../shared/constants.js';
 
-export default (qtKey, firebase, db) => {
-  const qts = initQts(qtKey);
+export default (firebase, db) => {
+  const qts = initQts();
 
   return updateQualifyingTestParticipants;
 

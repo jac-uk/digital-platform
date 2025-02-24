@@ -2,8 +2,7 @@
 
 import initSlack from '../functions/shared/slack.js';
 
-const SLACK_TICKETING_APP_BOT_TOKEN = process.env.SLACK_TICKETING_APP_BOT_TOKEN;
-const slack = initSlack(SLACK_TICKETING_APP_BOT_TOKEN);
+const slack = initSlack();
 
 const main = async () => {
   // TEST 1

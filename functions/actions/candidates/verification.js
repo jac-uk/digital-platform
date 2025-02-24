@@ -2,10 +2,10 @@ import initFactories from '../../shared/factories.js';
 import initNotify from '../../shared/notify.js';
 import { getDocument, applyUpdates } from '../../shared/helpers.js';
 
-export default (notifyKey, firebase, db) => {
+export default (firebase, db) => {
 
   const { newSmsNotificationLoginVerificationNumber } = initFactories();
-  const { sendSMS } = initNotify(notifyKey);
+  const { sendSMS } = initNotify();
 
   return {
     sendSmsCode,
@@ -14,7 +14,7 @@ export default (notifyKey, firebase, db) => {
 
   /**
    * Send SMS verification code
-   * 
+   *
    * @param {string} uid    User ID
    * @param {string} mobile UK or international number (e.g. +447900900123)
    */
@@ -42,7 +42,7 @@ export default (notifyKey, firebase, db) => {
 
   /**
    * Verify SMS verification code
-   * 
+   *
    * @param {string} uid  User ID
    * @param {string} code Verification code
    */
@@ -74,7 +74,7 @@ export default (notifyKey, firebase, db) => {
 
   /**
    * Generate verification code of n digits
-   * 
+   *
    * @param   {number} n Number of digits
    * @returns {string}   Verification code
    */

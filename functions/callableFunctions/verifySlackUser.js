@@ -14,7 +14,10 @@ export default onCall(
     timeoutSeconds: 240,    // (Optional) Configure timeout
     minInstances: 0,        // (Optional) Min instances to reduce cold starts
     maxInstances: 10,       // (Optional) Max instances to scale
-    secrets: [ 'SLACK_TICKETING_APP_BOT_TOKEN', 'SLACK_URL' ],  // ✅ Ensure the function has access to the secrets
+    secrets: [
+      'SLACK_TICKETING_APP_BOT_TOKEN',
+      'SLACK_URL'
+    ],  // ✅ Ensure the function has access to the secrets
   },
   async (request) => {
 
@@ -36,7 +39,7 @@ export default onCall(
         throw new HttpsError('invalid-argument', 'Please provide valid arguments');
       }
 
-      const slack = initSlack(process.env.SLACK_TICKETING_APP_BOT_TOKEN, auth, db, firebase);
+      const slack = initSlack(auth, db, firebase);
       const addSlackIdToUserRecord = objectHasNestedProperty(data, 'addSlackToProfile') && data.addSlackToProfile;
       return await slack.lookupSlackUser(data.userId, data.slackMemberId, addSlackIdToUserRecord);
     }

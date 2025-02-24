@@ -3,9 +3,9 @@ import initTaskHelpers from './taskHelpers.js';
 import initUpdateTask from './updateTask.js';
 import { TASK_STATUS, TASK_TYPE } from '../../shared/constants.js';
 
-export default (QT_KEY, firebase, db) => {
+export default (firebase, db) => {
   const { getTimelineTasks, taskNextStatus, taskApplicationsEntryStatus } = initTaskHelpers();
-  const { getApplications, initialisePanelTask, initialiseTestTask, initialiseStatusChangesTask, initialiseCandidateFormTask, initialiseDataTask, initialiseStageOutcomeTask } = initUpdateTask(QT_KEY, firebase, db);
+  const { getApplications, initialisePanelTask, initialiseTestTask, initialiseStatusChangesTask, initialiseCandidateFormTask, initialiseDataTask, initialiseStageOutcomeTask } = initUpdateTask(firebase, db);
 
   return createTask;
 

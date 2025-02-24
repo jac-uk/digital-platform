@@ -1,6 +1,6 @@
 import axios from 'axios';
 
-export default (slackBotToken) => {
+export default () => {
 
   return {
     post,
@@ -36,12 +36,12 @@ export default (slackBotToken) => {
 
   /**
    * Post message to a channel using the Slack Bot and Slack API
-   * @param {string} channelId 
-   * @param {string} msg 
-   * @returns 
+   * @param {string} channelId
+   * @param {string} msg
+   * @returns
    */
   async function postBotMsgToChannel(channelId, msg) {
-    if (slackBotToken) {
+    if (process.env.SLACK_TICKETING_APP_BOT_TOKEN) {
       const postData = {
         channel: channelId,
         text: msg,
@@ -49,7 +49,7 @@ export default (slackBotToken) => {
       const msgConfig = {
         headers: {
           'Content-Type': 'application/json; charset=UTF-8',
-          'Authorization': `Bearer ${slackBotToken}`,
+          'Authorization': `Bearer ${process.env.SLACK_TICKETING_APP_BOT_TOKEN}`,
         },
       };
       try {
@@ -65,12 +65,12 @@ export default (slackBotToken) => {
 
   /**
    * Post blocks message to a channel using the Slack Bot and Slack API
-   * @param {string} channelId 
-   * @param {array} blocks 
-   * @returns 
+   * @param {string} channelId
+   * @param {array} blocks
+   * @returns
    */
   async function postBotBlocksMsgToChannel(channelId, blocks) {
-    if (slackBotToken) {
+    if (process.env.SLACK_TICKETING_APP_BOT_TOKEN) {
       const postData = {
         channel: channelId,
         blocks: blocks,
@@ -78,7 +78,7 @@ export default (slackBotToken) => {
       const msgConfig = {
         headers: {
           'Content-Type': 'application/json; charset=UTF-8',
-          'Authorization': `Bearer ${slackBotToken}`,
+          'Authorization': `Bearer ${process.env.SLACK_TICKETING_APP_BOT_TOKEN}`,
         },
       };
       try {

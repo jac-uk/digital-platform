@@ -1,6 +1,6 @@
 import { NotifyClient } from 'notifications-node-client';
 
-export default (notifyKey) => {
+export default () => {
 
   return {
     sendEmail,
@@ -9,7 +9,7 @@ export default (notifyKey) => {
   };
 
   function sendEmail(email, templateId, personalisation) {
-    const client = new NotifyClient(notifyKey);
+    const client = new NotifyClient(process.env.NOTIFY_KEY);
 
     // console.info({
     //   action: 'Sending email',
@@ -36,7 +36,7 @@ export default (notifyKey) => {
 
   function previewEmail(notificationId) {
     console.log('preview email', notificationId);
-    const client = new NotifyClient(notifyKey);
+    const client = new NotifyClient(process.env.NOTIFY_KEY);
     return client
       .getTemplateById(notificationId)
       .then((response) => console.log(response))
@@ -44,7 +44,7 @@ export default (notifyKey) => {
   }
 
   function sendSMS(intlMobileNumber, templateId, personalisation) {
-    const client = new NotifyClient(notifyKey);
+    const client = new NotifyClient(process.env.NOTIFY_KEY);
     return client
       .sendSms(templateId, intlMobileNumber, {
         personalisation: personalisation,

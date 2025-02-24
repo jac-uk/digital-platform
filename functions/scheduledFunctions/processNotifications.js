@@ -14,7 +14,7 @@ export default onSchedule(
     secrets: [ 'NOTIFY_KEY' ],  // ✅ Ensure the function has access to the secrets
   },
   async (event) => {
-    const { processNotifications } = initNotifications(process.env.NOTIFY_KEY, firebase, db);
+    const { processNotifications } = initNotifications(firebase, db);
     const result = await processNotifications();
     return result;
   }

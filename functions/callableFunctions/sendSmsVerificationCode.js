@@ -27,7 +27,7 @@ export default onCall(
         throw new HttpsError('invalid-argument', 'Please provide valid arguments');
       }
 
-      const { sendSmsCode } = initVerification(process.env.NOTIFY_KEY, firebase, db);
+      const { sendSmsCode } = initVerification(firebase, db);
 
       const uid = request.auth.uid;
       return await sendSmsCode({ uid, mobile: data.mobile });

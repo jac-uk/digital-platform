@@ -3,11 +3,11 @@ import initUsers from './users.js';
 import initBugReports from './bugReports.js';
 import initSendSlackNotifications from './zenhub/sendNewIssueSlackNotifications.js';
 
-export default (slackBotToken, auth, db, firebase) => {
-  const slackWebApi = initSlackWebApi(process.env.SLACK_API_STUB, slackBotToken);
+export default (auth, db, firebase) => {
+  const slackWebApi = initSlackWebApi();
   const { updateUser } = initUsers(auth, db);
   const { getBugReportsWithFailedSendOnCreate } = initBugReports(db, firebase);
-  const { sendNewIssueSlackNotifications } = initSendSlackNotifications(slackBotToken, db, auth, firebase);
+  const { sendNewIssueSlackNotifications } = initSendSlackNotifications(db, auth, firebase);
 
   return {
     lookupSlackUser,
@@ -17,8 +17,8 @@ export default (slackBotToken, auth, db, firebase) => {
   /**
    * Check to see if a member id exists in Slack
    * Optionally add the member id to the user profile in firestore
-   * 
-   * @param {*} bugReportId 
+   *
+   * @param {*} bugReportId
    */
   async function lookupSlackUser(userId, slackMemberId, addSlackIdToUserRecord) {
     const memberExists = await slackWebApi.getUser(slackMemberId);
@@ -32,8 +32,8 @@ export default (slackBotToken, auth, db, firebase) => {
 
   /**
    * Check for slack messages which were not sent when the bugReport was created and resend them
-   * @param {*} slackChannelId 
-   * @returns 
+   * @param {*} slackChannelId
+   * @returns
    */
   async function retrySlackMessageOnCreateIssue(slackChannelId) {
     const bugReports = await getBugReportsWithFailedSendOnCreate();

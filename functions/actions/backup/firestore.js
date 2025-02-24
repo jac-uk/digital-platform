@@ -6,8 +6,8 @@ import initSlack from '../../shared/slack.js';
 
 const client = new firestore.v1.FirestoreAdminClient();
 
-export default (slackBotToken, firebase) => {
-  const slack = initSlack(slackBotToken);
+export default (firebase) => {
+  const slack = initSlack();
   return {
     backupFirestore,
   };

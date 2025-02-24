@@ -18,12 +18,7 @@ export default onSchedule(
   async (event) => {
     if (process.env.SLACK_TICKETING_APP_CHANNEL_ID) {
 
-      const { retrySlackMessageOnCreateIssue } = initSlackActions(
-        process.env.SLACK_TICKETING_APP_BOT_TOKEN,
-        auth,
-        db,
-        firebase
-      );
+      const { retrySlackMessageOnCreateIssue } = initSlackActions(auth, db, firebase);
 
       const result = await retrySlackMessageOnCreateIssue(process.env.SLACK_TICKETING_APP_CHANNEL_ID);
       return result;

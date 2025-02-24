@@ -16,7 +16,7 @@ export default onSchedule(
   },
   async (event) => {
     console.log('Running scheduled backupAuthentication...');
-    const { backupAuthentication } = initBackupAuthentication(process.env.SLACK_TICKETING_APP_BOT_TOKEN, firebase);
+    const { backupAuthentication } = initBackupAuthentication(firebase);
     const result = await backupAuthentication();
     return result;
   }

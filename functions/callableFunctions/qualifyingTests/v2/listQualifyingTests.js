@@ -30,7 +30,7 @@ export default onCall(
       }
       await checkFunctionEnabled();
 
-      const qts = initQts(process.env.QT_KEY);
+      const qts = initQts();
 
       const response = await qts.get('qualifying-tests', {
         folder: data.folder,

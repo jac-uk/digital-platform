@@ -148,7 +148,7 @@ export default onRequest(
         return;
       }
 
-      const { onAssignedIssue } = initOnAssignedIssue(process.env.SLACK_TICKETING_APP_BOT_TOKEN, db, auth);
+      const { onAssignedIssue } = initOnAssignedIssue(db, auth);
 
       await onAssignedIssue(req.body, bugReport, user, process.env.SLACK_TICKETING_APP_CHANNEL_ID);
       // Your callable function logic here
