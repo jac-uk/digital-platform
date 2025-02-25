@@ -4,7 +4,7 @@ import { checkArguments } from '../shared/helpers.js';
 import initUsers from '../actions/users.js';
 import initServiceSettings from '../shared/serviceSettings.js';
 
-const  { signIn } = initUsers(db, auth);
+const  { signIn } = initUsers(auth, db);
 const { checkFunctionEnabled } = initServiceSettings(db);
 
 export default onCall(
@@ -28,7 +28,7 @@ export default onCall(
       }, data)) {
         throw new HttpsError('invalid-argument', 'Please provide valid arguments');
       }
-      
+
       return await signIn(data);
     }
     catch (error) {

@@ -2,7 +2,7 @@ import { getDocument, getDocuments } from '../shared/helpers.js';
 import { convertPermissions } from '../shared/permissions.js';
 import { getSearchMap } from '../shared/search.js';
 import { signInWithPassword } from '../shared/google/identitytoolkit/accounts/signInWithPassword.js';
-
+import { jwtDecode } from 'jwt-decode';
 export default (auth, db) => {
   return {
     generateSignInWithEmailLink,
@@ -62,9 +62,20 @@ export default (auth, db) => {
     try {
       const response = await signInWithPassword(email, password);
       if (response.idToken) {
-        result.success = true;
-        result.data = response;
-        result.error = null;
+        let customToken = null;
+        const decoded = jwtDecode(response.idToken);
+
+        if (decoded.user_id) {
+          customToken = await auth.createCustomToken(decoded.user_id);
+          response.customToken = customToken;
+        }
+
+        if (customToken) {
+          result.success = true;
+          result.data = {...response, customToken};
+          result.error = null;
+        }
+
       }
     } catch (error) {
       console.log(`signInWithPassword failed: ${email}`, error);
