@@ -62,12 +62,8 @@ export default () => {
 
   function isStagedExercise(exercise) {
     if (!exercise) return false;
-
-    const selectionProcess = exercise._applicationContent.selection || {};
+    const selectionProcess = (exercise._applicationContent && exercise._applicationContent.selection) || {};
     const isStagedExercise = Object.values(selectionProcess).includes(true);
-    console.log('selectionProcess', JSON.stringify(selectionProcess));
-    console.log('isStagedExercise', isStagedExercise);
-
     return isStagedExercise;
   }
 

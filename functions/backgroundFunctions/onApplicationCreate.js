@@ -1,4 +1,4 @@
-import * as functions from 'firebase-functions/v1';
+import { onDocumentCreated } from 'firebase-functions/v2/firestore';
 import { firebase, db, auth } from '../shared/admin.js';
 import initApplications from '../actions/applications/applications.js';
 import initLogEvent from '../actions/logs/logEvent.js';
@@ -6,19 +6,14 @@ import initLogEvent from '../actions/logs/logEvent.js';
 const { onApplicationCreate } = initApplications(firebase, db, auth);
 const { logEvent } = initLogEvent(firebase, db, auth);
 
-export default functions.region('europe-west2').firestore
-  .document('applications/{applicationId}')
-  .onCreate((snap, context) => {
-
-    const application = snap.data();
-
-    const details = {
-      applicationId: context.params.applicationId,
-      candidateName: application.personalDetails ? application.personalDetails.fullName : null,
-      exerciseRef: application.exerciseRef,
-    };
-
-    logEvent('info', 'Application created', details);
-
-    return onApplicationCreate(snap.ref, snap.data());
-  });
+export default onDocumentCreated('applications/{applicationId}', (event) => {
+  const snap = event.data;
+  const application = snap.data();
+  const details = {
+    applicationId: event.params.applicationId,
+    candidateName: application.personalDetails ? application.personalDetails.fullName : null,
+    exerciseRef: application.exerciseRef,
+  };
+  logEvent('info', 'Application created', details);
+  return onApplicationCreate(snap.ref, snap.data());
+});

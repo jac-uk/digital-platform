@@ -91,7 +91,6 @@ export default (firebase, db, auth) => {
    * - Adds search map
    */
   async function onApplicationCreate(ref, data) {
-    console.log('application created');
     if (data.userId) { await updateCandidate(data.userId); }
 
     // update application

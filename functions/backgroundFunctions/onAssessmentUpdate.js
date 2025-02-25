@@ -1,4 +1,4 @@
-import * as functions from 'firebase-functions/v1';
+import { onDocumentUpdated } from 'firebase-functions/v2/firestore';
 import { firebase, db } from '../shared/admin.js';
 import initAssessments from '../actions/assessments.js';
 import { getSearchMap } from '../shared/search.js';
@@ -8,11 +8,9 @@ const { onAssessmentCompleted } = initAssessments(firebase, db);
 import has from 'lodash/has.js';
 import { isDifferentPropsByPath } from '../shared/helpers.js';
 
-export default functions.region('europe-west2').firestore
-  .document('assessments/{assessmentId}')
-  .onUpdate(async (change, context) => {
-    const after = change.after.data();
-    const before = change.before.data();
+export default onDocumentUpdated('assessments/{assessmentId}', async (event) => {
+    const after = event.data.after.data();
+    const before = event.data.before.data();
 
     const updateSearchMap = isDifferentPropsByPath(before, after, 'application.referenceNumber') ||
       isDifferentPropsByPath(before, after, 'assessor.email') ||
@@ -35,13 +33,13 @@ export default functions.region('europe-west2').firestore
       }
 
       // add search map
-      await db.doc(`assessments/${context.params.assessmentId}`).update({
+      await db.doc(`assessments/${event.params.assessmentId}`).update({
         _search: getSearchMap(updateArray),
       });
     }
 
     if (after.status !== before.status && after.status === 'completed') {
-      onAssessmentCompleted(context.params.assessmentId, after);
+      onAssessmentCompleted(event.params.assessmentId, after);
     }
 
     return true;

@@ -6,7 +6,6 @@ import initApplications from './applications.js';
 
 export default (firebase, db, auth) => {
   const { canApplyFullApplicationSubmitted } = initExerciseHelper();
-  
   const { updateCandidate } = initCandidatesSearch(firebase, db);
   const { sendApplicationConfirmation, sendFullApplicationConfirmation, sendApplicationInWelsh, sendCharacterCheckRequests, sendCandidateFlagConfirmation } = initApplications(firebase, db, auth);
 
@@ -106,7 +105,7 @@ export default (firebase, db, auth) => {
             });
           }
         }
-        
+
         try {
           await db.collection('applicationRecords').doc(`${applicationId}`).update({
             'characterChecks.status': 'completed',
@@ -160,10 +159,10 @@ export default (firebase, db, auth) => {
     }
 
     // Update search map if searchable keys have changed (ie name/ref no/email/NI No)
-    const hasUpdatedName = dataBefore.personalDetails.fullName !== dataAfter.personalDetails.fullName;
+    const hasUpdatedName = dataAfter.personalDetails ? dataBefore.personalDetails.fullName !== dataAfter.personalDetails.fullName : false;
     const hasUpdatedReferenceNumber = dataBefore.referenceNumber !== dataAfter.referenceNumber;
-    const hasUpdatedEmail = dataBefore.personalDetails.email !== dataAfter.personalDetails.email;
-    const hasUpdatedNINumber = dataBefore.personalDetails.nationalInsuranceNumber !== dataAfter.personalDetails.nationalInsuranceNumber;
+    const hasUpdatedEmail = dataAfter.personalDetails ? dataBefore.personalDetails.email !== dataAfter.personalDetails.email : false;
+    const hasUpdatedNINumber = dataAfter.personalDetails ? dataBefore.personalDetails.nationalInsuranceNumber !== dataAfter.personalDetails.nationalInsuranceNumber : false;
 
     if (hasUpdatedName || hasUpdatedReferenceNumber || hasUpdatedEmail || hasUpdatedNINumber) {
       // Build search map
@@ -234,7 +233,7 @@ export default (firebase, db, auth) => {
       }
 
       // If change full application submitted to full application not submitted, reset related flags
-      if ((dataBefore._processing && dataBefore._processing.status === 'fullApplicationSubmitted') 
+      if ((dataBefore._processing && dataBefore._processing.status === 'fullApplicationSubmitted')
         && (dataAfter._processing && dataAfter._processing.status === 'fullApplicationNotSubmitted')) {
         db.collection('applications').doc(applicationId).update({
           'emailLog.fullApplicationSubmitted': null,

@@ -1,14 +1,12 @@
-import * as functions from 'firebase-functions/v1';
+import { onDocumentUpdated } from 'firebase-functions/v2/firestore';
 import { firebase, db } from '../shared/admin.js';
 import initOnCandidatePersonalDetailsUpdate from '../actions/candidates/personalDetails/onUpdate.js';
 
 const onCandidatePersonalDetailsUpdate = initOnCandidatePersonalDetailsUpdate(firebase, db);
 
-export default functions.region('europe-west2').firestore
-  .document('candidates/{candidateId}/documents/personalDetails')
-  .onUpdate((change, context) => {
-    const candidateId = context.params.candidateId;
-    const dataBefore = change.before.data();
-    const dataAfter = change.after.data();
-    return onCandidatePersonalDetailsUpdate(candidateId, dataBefore, dataAfter);
-  });
+export default onDocumentUpdated('candidates/{candidateId}/documents/personalDetails', (event) => {
+  const candidateId = event.params.candidateId;
+  const dataBefore = event.data.before.data();
+  const dataAfter = event.data.after.data();
+  return onCandidatePersonalDetailsUpdate(candidateId, dataBefore, dataAfter);
+});
