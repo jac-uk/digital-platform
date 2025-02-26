@@ -93,6 +93,7 @@ import verifySmsVerificationCode from './callableFunctions/verifySmsVerification
 import generateSccSummaryReport from './callableFunctions/generateSccSummaryReport.js';
 import exportSccSummaryReport from './callableFunctions/exportSccSummaryReport.js';
 import getMultipleApplicationData from './callableFunctions/getMultipleApplicationData.js';
+import generateSelectionDayTimetable from './callableFunctions/generateSelectionDayTimetable.js';
 
 // HTTP
 import ticketingGithubWebhook from './httpFunctions/ticketingGithubWebhook.js';
@@ -193,6 +194,7 @@ export {
   getMultipleApplicationData,
   generateSccSummaryReport,
   exportSccSummaryReport,
+  generateSelectionDayTimetable,
 
   // HTTP
   ticketingGithubWebhook
