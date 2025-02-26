@@ -32,7 +32,7 @@ const getStatsForMonth = async (startDate, endDate) => {
 
 const main = async () => {
   const results = [];
-  const startYear = 2021; // Starting from January 2021
+  const startYear = 2025; // Starting from January 2021
   const endDate = new Date(); // Current date
 
   // Iterate over each month from startYear to the current month

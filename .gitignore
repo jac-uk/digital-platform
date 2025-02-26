@@ -109,3 +109,6 @@ out/
 data/
 data.*
 backup.*
+
+# csv exports
+Monthly_Stats.csv
