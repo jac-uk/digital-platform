@@ -1,17 +1,16 @@
-import * as functions from 'firebase-functions/v1';
+import { onDocumentCreated } from 'firebase-functions/v2/firestore';
 import { db } from '../shared/admin.js';
 import initExercisesOnCreate from '../actions/exercises/onCreate.js';
 
 const onCreate = initExercisesOnCreate(db);
 
-export default functions.region('europe-west2').firestore
-  .document('exercises/{exerciseId}')
-  .onCreate(async (snap, context) => {
-    const exerciseId = context.params.exerciseId;
-    console.log(`Exercise created (${exerciseId})`);
-    const snapData = snap.data();
-    const name = snapData.name;
-    const referenceNumber = snapData.referenceNumber;
-    onCreate(exerciseId, name, referenceNumber);
-    return true;
-  });
+export default onDocumentCreated('exercises/{exerciseId}', async (event) => {
+  const snap = event.data;
+  const exerciseId = event.params.exerciseId;
+  console.log(`Exercise created (${exerciseId})`);
+  const snapData = snap.data();
+  const name = snapData.name;
+  const referenceNumber = snapData.referenceNumber;
+  onCreate(exerciseId, name, referenceNumber);
+  return true;
+});

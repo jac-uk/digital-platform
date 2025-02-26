@@ -2,20 +2,16 @@
 
 /**
  * Node script to test Zenhub GraphQL API
- * 
+ *
  * Run with: > npm run local:nodeScript testZenHub.js
  */
 
 import { app } from './shared/admin.js';
-//import config from './shared/config.js';
-import config from '../functions/shared/config.js';
 import initZenhub from '../functions/shared/zenhub.js';
 
-const zenhub = initZenhub(config);
+const zenhub = initZenhub();
 
 const main = async () => {
-
-
   try {
     const newIssueID = await zenhub.createZenhubIssue('TESTER2', '"Test" new issue body');
     console.log(`newIssueID: ${newIssueID}`);

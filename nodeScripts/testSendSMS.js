@@ -1,12 +1,11 @@
 'use strict';
 
-import config from './shared/config.js';
 import { firebase, app } from './shared/admin.js';
 import initFactories from '../functions/shared/factories.js';
 import initNotify from '../functions/shared/notify.js';
 
-const { sendSMS } = initNotify(config);
-const { newSmsNotificationLoginVerificationNumber } = initFactories(config);
+const { sendSMS } = initNotify();
+const { newSmsNotificationLoginVerificationNumber } = initFactories();
 
 const mobile = '';
 const verificationCode = '12345';

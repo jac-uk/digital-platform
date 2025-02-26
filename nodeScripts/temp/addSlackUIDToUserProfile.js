@@ -1,10 +1,9 @@
 'use strict';
 
 import { app, auth, db, firebase } from '../shared/admin.js';
-import config from '../shared/config.js';
 import initSlack from '../../functions/actions/slack.js';
 
-const slack = initSlack(auth, config, db, firebase);
+const slack = initSlack(auth, db, firebase);
 
 // Details for 'Drie Contractor'
 const appUserId = 'uq7S68mW3zTKd6duK9L94dIyu1B2';

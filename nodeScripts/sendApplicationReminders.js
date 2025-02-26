@@ -1,10 +1,9 @@
 'use strict';
 
-import config from './shared/config.js';
 import { firebase, app, db, auth } from './shared/admin.js';
 import initApplications from '../functions/actions/applications/applications.js';
 
-const { sendApplicationReminders } = initApplications(config, firebase, db, auth);
+const { sendApplicationReminders } = initApplications(firebase, db, auth);
 
 const main = async () => {
   return sendApplicationReminders({

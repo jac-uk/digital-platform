@@ -1,50 +1,63 @@
-import * as functions from 'firebase-functions/v1';
+import { onCall, HttpsError } from 'firebase-functions/v2/https';
 import { firebase, db, auth } from '../shared/admin.js';
-import config from '../shared/config.js';
 import initApplications from '../actions/applications/applications.js';
 import { isProduction } from '../shared/helpers.js';
 import { PERMISSIONS, hasPermissions } from '../shared/permissions.js';
 
-const { loadTestApplications, createTestApplications } = initApplications(config, firebase, db, auth);
+const { loadTestApplications, createTestApplications } = initApplications(firebase, db, auth);
 
-const runtimeOptions = {
-  timeoutSeconds: 120,
-  memory: '1GB',
-};
+export default onCall(
+  {
+    region: 'europe-west2', // Specify the region
+    memory: '1GiB',       // (Optional) Configure memory allocation
+    timeoutSeconds: 120,    // (Optional) Configure timeout
+    minInstances: 0,        // (Optional) Min instances to reduce cold starts
+    maxInstances: 10,       // (Optional) Max instances to scale
+  },
+  async (request) => {
 
-export default functions.runWith(runtimeOptions).region('europe-west2').https.onCall(async (data, context) => {
-  // do not use this function on production
-  if (isProduction()) {
-    throw new functions.https.HttpsError('failed-precondition', 'The function must not be called on production.');
+    try {
+      const data = request.data;
+
+      // do not use this function on production
+      if (isProduction()) {
+        throw new HttpsError('failed-precondition', 'The function must not be called on production.');
+      }
+
+      // authenticate the request
+      if (!request.auth) {
+        throw new HttpsError('failed-precondition', 'The function must be called while authenticated.');
+      }
+
+      hasPermissions(request.auth.token.rp, [
+        PERMISSIONS.applications.permissions.canCreateTestApplications.value,
+      ]);
+
+      if (!(typeof data.exerciseId === 'string') || data.exerciseId.length === 0) {
+        throw new HttpsError('invalid-argument', 'Please specify an exercise id');
+      }
+      if (!(typeof data.noOfTestApplications === 'number')) {
+        throw new HttpsError('invalid-argument', 'Please specify a number of test applications');
+      }
+
+      const testApplications = await loadTestApplications();
+      if (!testApplications) {
+        throw new HttpsError('failed-precondition', 'Failed to load test applications from cloud storage.');
+      }
+
+      const maxNoOfTestApplications = testApplications.length;
+      if (data.noOfTestApplications < 1 || data.noOfTestApplications > maxNoOfTestApplications) {
+        throw new HttpsError('invalid-argument', 'The number of test applications should be between 1 and ' + maxNoOfTestApplications);
+      }
+
+      return await createTestApplications({
+        ...data,
+        testApplications,
+      });
+    }
+    catch (error) {
+      console.error('Error in function:', error);
+      throw new HttpsError('internal', 'An error occurred during execution');
+    }
   }
-
-  if (!context.auth) {
-    throw new functions.https.HttpsError('failed-precondition', 'The function must be called while authenticated.');
-  }
-
-  hasPermissions(context.auth.token.rp, [
-    PERMISSIONS.applications.permissions.canCreateTestApplications.value,
-  ]);
-
-  if (!(typeof data.exerciseId === 'string') || data.exerciseId.length === 0) {
-    throw new functions.https.HttpsError('invalid-argument', 'Please specify an exercise id');
-  }
-  if (!(typeof data.noOfTestApplications === 'number')) {
-    throw new functions.https.HttpsError('invalid-argument', 'Please specify a number of test applications');
-  }
-
-  const testApplications = await loadTestApplications();
-  if (!testApplications) {
-    throw new functions.https.HttpsError('failed-precondition', 'Failed to load test applications from cloud storage.');
-  }
-
-  const maxNoOfTestApplications = testApplications.length;
-  if (data.noOfTestApplications < 1 || data.noOfTestApplications > maxNoOfTestApplications) {
-    throw new functions.https.HttpsError('invalid-argument', 'The number of test applications should be between 1 and ' + maxNoOfTestApplications);
-  }
-
-  return await createTestApplications({
-    ...data,
-    testApplications,
-  });
-});
+);

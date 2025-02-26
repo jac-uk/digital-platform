@@ -1,9 +1,8 @@
 import initSlack from '../../../shared/slack.js';
 import initUsers from '../../users.js';
 
-export default (config, db, auth) => {
-
-  const slack = initSlack(config);
+export default (db, auth) => {
+  const slack = initSlack();
   const { getUser } = initUsers(auth, db);
 
   return {
@@ -13,8 +12,8 @@ export default (config, db, auth) => {
   /**
    * Hook called when an issue is assigned/unassigned in github
    * assigneeUser is the user who has been assigned/unassigned retrieved from our db by their githubUsername
-   * @param {object} params 
-   * @param {object} bugReport 
+   * @param {object} params
+   * @param {object} bugReport
    * @param {object} assigneeUser
    * @param {string} slackChannelId
    */
@@ -36,10 +35,10 @@ export default (config, db, auth) => {
     const assignees = assigneesOrig.map(({ id, login, type }) => ({ id, login, type }));
 
     // Assignee who has been ASSIGNED OR UNASSIGNED!
-    const assignee = {
-      login: params.assignee.login,
-      id: params.assignee.id,
-    };
+    // const assignee = {
+    //   login: params.assignee.login,
+    //   id: params.assignee.id,
+    // };
 
     // Update the bugReport
     const bugReportId = bugReport.id; // Get the ID of the document

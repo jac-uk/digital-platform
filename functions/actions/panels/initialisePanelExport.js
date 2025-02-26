@@ -1,11 +1,11 @@
-import { getDocument, getDocuments, applyUpdates, getAllDocuments, formatDate } from '../../shared/helpers.js';
+import { getDocument, getDocuments } from '../../shared/helpers.js';
 import initDrive from '../../shared/google-drive.js';
 import { exportGradingSheet } from './exportGradingSheet.js';
-import lookup from '../../shared/converters/lookup.js';
+//import lookup from '../../shared/converters/lookup.js';
 
 const drive = initDrive();
 
-export default (config, firebase, db) => {
+export default (firebase, db) => {
 
   return {
     initialisePanelExport,
@@ -54,7 +54,7 @@ export default (config, firebase, db) => {
     });
 
     // get settings
-    const settings = await getDocument(db.collection('settings').doc('services'));
+    //const settings = await getDocument(db.collection('settings').doc('services'));
 
     // get exercise
     const exerciseId = panel.exercise ? panel.exercise.id : panel.exerciseId;
@@ -65,7 +65,7 @@ export default (config, firebase, db) => {
 
     // get panel and type folder name
     const panelFolderName = panel.name;
-    const panelTypeFolderName = lookup(panel.type) || panel.type;
+    //const panelTypeFolderName = lookup(panel.type) || panel.type;
 
     // login to google drive and create panel folder
     await drive.login();
@@ -83,7 +83,7 @@ export default (config, firebase, db) => {
     }
     const driveId = drives[0].id;
     drive.setDriveId(driveId);
-    
+
     // create panel folder and get id
     const panelFolderId = await drive.createFolder(panelFolderName, {
       parentId: driveId,

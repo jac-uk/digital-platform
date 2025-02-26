@@ -9,11 +9,11 @@
  */
 'use strict';
 
-import { app, auth } from './shared/firebase.js';
+import { app, auth } from './shared/admin.js';
 
 const main = async () => {
   // login as test user
-  await auth.signInWithEmailAndPassword(process.env.AUTHENTICATED_USER_EMAIL, process.env.AUTHENTICATED_USER_PASSWORD);
+  await auth.signInWithEmailAndPassword();
   return true;
 };
 

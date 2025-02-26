@@ -2,9 +2,9 @@ import { applyUpdates } from '../shared/helpers.js';
 import initUpdateLateApplicationRequests from './exercises/updateLateApplicationRequests.js';
 import initFactories from '../shared/factories.js';
 
-export default (config, firebase, db, auth) => {
+export default (firebase, db) => {
   const { addLateApplicationRequest, removeLateApplicationRequest } = initUpdateLateApplicationRequests(firebase, db);
-  const { newNotificationLateApplicationRequest, newNotificationLateApplicationResponse } = initFactories(config);
+  const { newNotificationLateApplicationRequest, newNotificationLateApplicationResponse } = initFactories();
 
   return {
     onMessageCreate,

@@ -1,7 +1,7 @@
 import assert from 'assert';
 import { firebaseFunctionsTest, generateMockContext } from './helpers.js';
 import { PERMISSIONS } from '../../functions/shared/permissions.js';
-import createUser from '../../functions/callableFunctions/createUser.js';
+import createUser from '../../functions/callableFunctions/x.createUser.js';
 
 const { wrap } = firebaseFunctionsTest;
 

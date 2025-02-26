@@ -51,7 +51,7 @@ export default (auth, db) => {
 
   /**
    * Create a user
-   * 
+   *
    * @param {object} user
    *
    */
@@ -67,9 +67,9 @@ export default (auth, db) => {
 
   /**
    * Update a user
-   * @param {string} userId 
-   * @param {object} data 
-   * @returns 
+   * @param {string} userId
+   * @param {object} data
+   * @returns
    */
   async function updateUser(userId, data) {
     try {
@@ -82,7 +82,7 @@ export default (auth, db) => {
 
   /**
    * Delete multiple users
-   * 
+   *
    * @param {array} uids
    *
    */
@@ -125,9 +125,9 @@ export default (auth, db) => {
 
   /**
    * Import users
-   * 
+   *
    * @param {array} userImportRecords
-   * 
+   *
    */
    async function importUsers(userImportRecords) {
     if (!userImportRecords || !userImportRecords.length) return false;
@@ -143,7 +143,7 @@ export default (auth, db) => {
         const data = userImportRecords.slice(i, i + BATCH_SIZE - 1);
         const res = await auth.importUsers(data, {
           hash: { algorithm: 'BCRYPT' },
-        });  
+        });
         result.successCount += res.successCount;
         result.failureCount += res.failureCount;
         result.errors.push(res.errors);
@@ -168,7 +168,7 @@ export default (auth, db) => {
 
   /**
    * User updated event handler
-   * 
+   *
    * @param {string} userId
    * @param {object} dataBefore
    * @param {object} dataAfter
@@ -179,7 +179,7 @@ export default (auth, db) => {
     fields.forEach(field => {
       if (dataBefore[field] !== dataAfter[field]) data[field] = dataAfter[field];
     });
-    
+
     try {
       if (data.displayName || !dataAfter._search) {
         console.log('Set _search for search and sorting');
@@ -202,7 +202,7 @@ export default (auth, db) => {
           customClaims.r = dataAfter.role.id;
           customClaims.rp = convertedPermissions;
           await auth.setCustomUserClaims(userId, customClaims);
-  
+
           // mark role.isChanged as false
           await db.collection('users').doc(userId).update({
             'role.isChanged': false,
@@ -220,7 +220,7 @@ export default (auth, db) => {
 
   /**
    * Update user custom claims
-   * 
+   *
    * @param {string} userId
    */
   async function updateUserCustomClaims(userId) {
@@ -246,8 +246,8 @@ export default (auth, db) => {
   }
 
   /**
-   * 
-   * @param {object} user 
+   *
+   * @param {object} user
    * @returns {array}
    */
   function getUserSearchMap(user) {

@@ -1,4 +1,4 @@
-import * as functions from 'firebase-functions/v1';
+import { HttpsError } from 'firebase-functions/v2/https';
 
 const PERMISSIONS = {
   users: {
@@ -425,7 +425,7 @@ function hasPermissions(rolePermissions, permissions) {
     && permissions.every(p => rolePermissions.includes(p));
 
   if (!valid) {
-    throw new functions.https.HttpsError('permission-denied', 'Permission denied');
+    throw new HttpsError('permission-denied', 'Permission denied');
   }
 }
 

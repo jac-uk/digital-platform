@@ -1,12 +1,11 @@
 import { getDocuments, dedupeArray } from '../shared/helpers.js';
-import { auth } from '../shared/admin.js';
 import initCandidateHelper from '../shared/candidateHelper.js';
 import initAuthHelper from '../shared/authHelper.js';
 
-const  { candidateCompleted2FASinceDate } = initCandidateHelper(auth);
-const  { listAllUsers } = initAuthHelper(auth);
-
 export default (db, auth) => {
+
+  const  { candidateCompleted2FASinceDate } = initCandidateHelper(auth);
+  const  { listAllUsers } = initAuthHelper(auth);
 
   return {
     getNumCandidatesCompleted2FASinceDate,
@@ -19,7 +18,7 @@ export default (db, auth) => {
    * Return the number of candidates who have completed 2FA since a specific date.
    * If no date is supplied then its since records began
    * @param {String} specifiedCutoffDate eg '2024-01-31'
-   * @returns 
+   * @returns
    */
   async function getNumCandidatesCompleted2FASinceDate(specifiedCutoffDate = null) {
     try {
@@ -29,7 +28,7 @@ export default (db, auth) => {
       for (const candidate of candidates) {
         personalDetailsRefs.push(db.doc(`candidates/${candidate.id}/documents/personalDetails`));
       }
-  
+
       // get personal details
       const personalDetailsDocs = await db.getAll(...personalDetailsRefs, { fieldMask: ['twoFactorAuthVerifiedAt'] });
       personalDetailsDocs.forEach((doc) => {
@@ -55,7 +54,7 @@ export default (db, auth) => {
    * Return the candidates who have completed 2FA since a specific date.
    * If no date is supplied then its since records began
    * @param {String} specifiedCutoffDate eg '2024-01-31'
-   * @returns 
+   * @returns
    */
   async function getCandidatesCompleted2FASinceDate(specifiedCutoffDate = null) {
     try {
@@ -95,7 +94,7 @@ export default (db, auth) => {
    * Return all candidates authenticated with google / microsoft (i.e. users who have attempted authentication with admin)
    * since a specific sign in date (includes the sign in date)
    * @param {String} specifiedCutoffDate eg '2024-01-01'
-   * @returns 
+   * @returns
    */
   async function getCandidatesSinceSignInDate(specifiedCutoffDate) {
     let candidateUsers = [];
@@ -110,7 +109,7 @@ export default (db, auth) => {
         if (lastSignInTime && new Date(lastSignInTime) >= cutoffDate) {
           if (user.providerData.length === 1) {
             const provider = user.providerData[0];
-            if (user.email.match(/(.*@judicialappointments|.*@justice)[.](digital|gov[.]uk)/) && 
+            if (user.email.match(/(.*@judicialappointments|.*@justice)[.](digital|gov[.]uk)/) &&
               (provider.providerId === 'google.com' || provider.providerId === 'microsoft.com' || provider.providerId === 'password')) {
               isJacAdmin = true; // user has authenticated successfully with google or microsoft
             }
@@ -119,7 +118,7 @@ export default (db, auth) => {
           } else {
             isJacAdmin = false;
           }
-  
+
           if (!isJacAdmin) {
             // Get fullname from candidate record by email
             let fullName = '';
@@ -152,7 +151,7 @@ export default (db, auth) => {
      * Return all IAs authenticated with google / microsoft (i.e. users who have attempted authentication with admin)
      * since a specific sign in date (includes the sign in date)
      * @param {String} specifiedCutoffDate eg '2024-01-01'
-     * @returns 
+     * @returns
      */
   async function getIndependentAssessorsSinceSignInDate(specifiedCutoffDate) {
     let assessorUsers = [];
@@ -167,7 +166,7 @@ export default (db, auth) => {
         if (lastSignInTime && new Date(lastSignInTime) >= cutoffDate) {
           if (user.providerData.length === 1) {
             const provider = user.providerData[0];
-            if (user.email.match(/(.*@judicialappointments|.*@justice)[.](digital|gov[.]uk)/) && 
+            if (user.email.match(/(.*@judicialappointments|.*@justice)[.](digital|gov[.]uk)/) &&
               (provider.providerId === 'google.com' || provider.providerId === 'microsoft.com' || provider.providerId === 'password')) {
               isJacAdmin = true; // user has authenticated successfully with google or microsoft
             }

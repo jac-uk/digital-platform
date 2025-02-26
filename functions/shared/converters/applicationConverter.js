@@ -442,72 +442,72 @@ export default () => {
   // html.addTitle('Personal details');
   // html.addTable(getPersonalDetails(application));
 
-  function getPersonalDetails(application) {
-    const personalDetailsData = application.personalDetails;
-    const data = [];
-    Object.keys(personalDetailsData).forEach(key => {
-      addField(data, key, personalDetailsData[key]);
-    });
-    return data;
-  }
+  // function getPersonalDetails(application) {
+  //   const personalDetailsData = application.personalDetails;
+  //   const data = [];
+  //   Object.keys(personalDetailsData).forEach(key => {
+  //     addField(data, key, personalDetailsData[key]);
+  //   });
+  //   return data;
+  // }
 
   // html.addTitle('Character information');
   // html.addTable(getCharacterInformation(application));
 
-  function getCharacterInformation(application) {
-    const characterData = application.characterInformation;
-    const data = [];
-    Object.keys(characterData).forEach(key => {
-      addField(data, key, characterData[key]);
-    });
-    return data;
-  }
+  // function getCharacterInformation(application) {
+  //   const characterData = application.characterInformation;
+  //   const data = [];
+  //   Object.keys(characterData).forEach(key => {
+  //     addField(data, key, characterData[key]);
+  //   });
+  //   return data;
+  // }
 
   // html.addTitle('Equality and diversity information');
   // html.addTable(getEqualityAndDiversityInfo(application));
 
-  function getEqualityAndDiversityInfo(application) {
-    const EqualityAndDiversityData = application.equalityAndDiversitySurvey;
-    const data = [];
-    Object.keys(EqualityAndDiversityData).forEach(key => {
-      addField(data, key, EqualityAndDiversityData[key]);
-    });
-    return data;
-  }
+  // function getEqualityAndDiversityInfo(application) {
+  //   const EqualityAndDiversityData = application.equalityAndDiversitySurvey;
+  //   const data = [];
+  //   Object.keys(EqualityAndDiversityData).forEach(key => {
+  //     addField(data, key, EqualityAndDiversityData[key]);
+  //   });
+  //   return data;
+  // }
 
   // if (application.partTimeWorkingPreferences && application.partTimeWorkingPreferences.length) {
   //   html.addHeading('Part Time Working Preferences');
   //   html.addTable(getPartTimeWorkingPreferences(application, exercise));
   // }
 
-  function getPartTimeWorkingPreferences(application, exercise) {
-    const data = [];
-    addField(data, exercise.yesSalaryDetails, application.partTimeWorkingPreferencesDetails);
-    return data;
-  }
+  // function getPartTimeWorkingPreferences(application, exercise) {
+  //   const data = [];
+  //   addField(data, exercise.yesSalaryDetails, application.partTimeWorkingPreferencesDetails);
+  //   return data;
+  // }
 
-  function getAssessorsData(application) {
-    const firstAssessorFullName = application.firstAssessorFullName;
-    const firstAssessorEmail = application.firstAssessorEmail;
-    const firstAssessorPhone = application.firstAssessorPhone;
-    const firstAssessorTitle = application.firstAssessorTitle;
+  // function getAssessorsData(application) {
+  //   const firstAssessorFullName = application.firstAssessorFullName;
+  //   const firstAssessorEmail = application.firstAssessorEmail;
+  //   const firstAssessorPhone = application.firstAssessorPhone;
+  //   const firstAssessorTitle = application.firstAssessorTitle;
 
-    const secondAssessorFullName = application.secondAssessorFullName;
-    const secondAssessorEmail = application.secondAssessorEmail;
-    const secondAssessorPhone = application.secondAssessorPhone;
-    const secondAssessorTitle = application.secondAssessorTitle;
+  //   const secondAssessorFullName = application.secondAssessorFullName;
+  //   const secondAssessorEmail = application.secondAssessorEmail;
+  //   const secondAssessorPhone = application.secondAssessorPhone;
+  //   const secondAssessorTitle = application.secondAssessorTitle;
 
-    const firstAssessor = [firstAssessorFullName, firstAssessorTitle, firstAssessorEmail, firstAssessorPhone];
-    const secondAssessor = [secondAssessorFullName, secondAssessorTitle, secondAssessorEmail, secondAssessorPhone];
-    const data = [];
-    const assessorData = [firstAssessor, secondAssessor];
+  //   const firstAssessor = [firstAssessorFullName, firstAssessorTitle, firstAssessorEmail, firstAssessorPhone];
+  //   const secondAssessor = [secondAssessorFullName, secondAssessorTitle, secondAssessorEmail, secondAssessorPhone];
+  //   const data = [];
+  //   const assessorData = [firstAssessor, secondAssessor];
 
-    assessorData.forEach((d, idx) => {
-      addField(data, 'Full name', d[0], idx !== 0);
-      addField(data, 'Title or position', d[1]);
-      addField(data, 'Email', d[2]);
-      addField(data, 'Phone', d[3]);
-    });
-    return data;
-  }
+  //   assessorData.forEach((d, idx) => {
+  //     addField(data, 'Full name', d[0], idx !== 0);
+  //     addField(data, 'Title or position', d[1]);
+  //     addField(data, 'Email', d[2]);
+  //     addField(data, 'Phone', d[3]);
+  //   });
+  //   return data;
+  // }
 };

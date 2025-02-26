@@ -1,11 +1,10 @@
 import { getDocument, getDocuments, applyUpdates } from '../shared/helpers.js';
 import { PERMISSIONS } from '../shared/permissions.js';
-
-import { auth } from '../shared/admin.js';
 import initAuthHelper from '../shared/authHelper.js';
-const  { listAllUsers } = initAuthHelper(auth);
 
 export default (db, auth) => {
+
+  const  { listAllUsers } = initAuthHelper(auth);
 
   //TODO: add logging for all changes to roles
 
@@ -24,7 +23,7 @@ export default (db, auth) => {
 
   /**
    * Role event handler for Update
-   * 
+   *
    * @param {string} roleId
    * @param {object} dataBefore
    * @param {object} dataAfter
@@ -47,7 +46,7 @@ export default (db, auth) => {
         }
       });
     }
-    
+
     if (commands.length) {
       await applyUpdates(db, commands);
     }
@@ -70,7 +69,7 @@ export default (db, auth) => {
         let isJacAdmin = false;
         if (user.providerData.length === 1) {
           const provider = user.providerData[0];
-          if (user.email.match(/(.*@judicialappointments|.*@justice)[.](digital|gov[.]uk)/) && 
+          if (user.email.match(/(.*@judicialappointments|.*@justice)[.](digital|gov[.]uk)/) &&
             (provider.providerId === 'google.com' || provider.providerId === 'microsoft.com' || provider.providerId === 'password')) {
             isJacAdmin = true; // user has authenticated successfully with google or microsoft
           }
@@ -274,7 +273,7 @@ export default (db, auth) => {
             }
           }
         }
-  
+
         if (JSON.stringify(user.customClaims.rp) !== JSON.stringify(convertedPermissions)) {
           console.log('Updating user permissions');
           user.customClaims.rp = convertedPermissions;

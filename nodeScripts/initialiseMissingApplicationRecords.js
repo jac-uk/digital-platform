@@ -1,10 +1,9 @@
 'use strict';
 
-import config from './shared/config.js';
 import { firebase, app, db, auth } from './shared/admin.js';
 import initApplicationRecords from '../functions/actions/applicationRecords.js';
 
-const { initialiseMissingApplicationRecords } = initApplicationRecords(config, firebase, db, auth);
+const { initialiseMissingApplicationRecords } = initApplicationRecords(firebase, db, auth);
 
 const main = async () => {
   return initialiseMissingApplicationRecords({

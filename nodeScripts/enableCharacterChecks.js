@@ -1,8 +1,7 @@
-import config from './shared/config.js';
-import { app, firebase, db } from './shared/admin.js';
+import { app, db } from './shared/admin.js';
 import initCharacterChecks from '../functions/actions/characterChecks.js';
 
-const enableCharacterChecks = initCharacterChecks(config, firebase, db);
+const enableCharacterChecks = initCharacterChecks(db);
 
 const main = async () => {
   return enableCharacterChecks({

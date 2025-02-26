@@ -2,7 +2,7 @@ import firebase from 'firebase-admin';
 import { jest } from '@jest/globals';
 import initFlagApplicationIssues from '../../../functions/actions/applications/flagApplicationIssues.js';
 
-const mockDb = jest.fn();
+//const mockDb = jest.fn();
 const mockSlack = jest.fn();
 
 const createTimestamp = (year, month, day) => {
@@ -48,7 +48,7 @@ const mockApplication = (id) => {
   };
 }; 
 
-const flagApplicationIssues = initFlagApplicationIssues(firebase, mockDb, mockSlack);
+const flagApplicationIssues = initFlagApplicationIssues(firebase, mockSlack);
 
 xdescribe('getEligibilityIssues()', () => {
 

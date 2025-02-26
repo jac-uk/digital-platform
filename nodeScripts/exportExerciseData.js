@@ -1,10 +1,9 @@
 'use strict';
 
-import config from './shared/config.js';
-import { firebase, app, db } from './shared/admin.js';
+import { app, db } from './shared/admin.js';
 import initExportExerciseData from '../functions/actions/exercises/exportExerciseData.js';
 
-const { exportExerciseData } = initExportExerciseData(config, firebase, db);
+const { exportExerciseData } = initExportExerciseData(db);
 
 const main = async () => {
   return exportExerciseData(['FTEkY12izilXtn6sP3cK']);

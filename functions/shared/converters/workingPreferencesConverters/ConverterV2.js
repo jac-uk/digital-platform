@@ -142,8 +142,8 @@ class ConverterV2 {
   }
 
   getJurisdictionPreferences(application, exercise) {    
-    let questionId = null;
-    let answerId = null;
+    // let questionId = null;
+    // let answerId = null;
 
     const data = [];
 
@@ -153,7 +153,7 @@ class ConverterV2 {
         if (questionObj) {
           const question = questionObj.question;
           const questionType = questionObj.questionType;
-          const groupAnswers = questionObj.groupAnswers;
+          //const groupAnswers = questionObj.groupAnswers;
           const answerSource = get(questionObj, 'answerSource', '');
   
           // SINGLE CHOICE
@@ -201,8 +201,8 @@ class ConverterV2 {
   }
 
   getGenericPreferences(application, exercise, preferencesType) {
-    let questionId = null;
-    let answerId = null;
+    // let questionId = null;
+    // let answerId = null;
     const data = [];
 
     if (preferencesType in exercise && isObject(exercise[preferencesType])) {

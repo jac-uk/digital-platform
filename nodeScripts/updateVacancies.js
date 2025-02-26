@@ -6,11 +6,10 @@
 'use strict';
 
 import { app, db } from './shared/admin.js';
-import config from './shared/config.js';
 import initVacancies from '../functions/actions/vacancies.js';
 import { getDocuments } from '../functions/shared/helpers.js';
 
-const { updateVacancy } = initVacancies(config, db);
+const { updateVacancy } = initVacancies(db);
 const isAction = false;
 
 const main = async () => {

@@ -1,10 +1,9 @@
 'use strict';
 
-import config from './shared/config.js';
 import { firebase, app, db } from './shared/admin.js';
 import initRefreshTaskApplications from '../functions/actions/tasks/refreshTaskApplications.js';
 
-const refreshTaskApplications = initRefreshTaskApplications(config, firebase, db);
+const refreshTaskApplications = initRefreshTaskApplications(firebase, db);
 
 const main = async () => {
   return refreshTaskApplications({

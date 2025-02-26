@@ -4,11 +4,10 @@
  * Nodescript for initialising independent assessment (IA)
  */
 
-import config from './shared/config.js';
 import { auth, firebase, app, db } from './shared/admin.js';
 import initAssessments from '../functions/actions/assessments.js';
 
-const { initialiseAssessments } = initAssessments(config, firebase, db, auth);
+const { initialiseAssessments } = initAssessments(firebase, db, auth);
 
 const main = async () => {
   return initialiseAssessments({

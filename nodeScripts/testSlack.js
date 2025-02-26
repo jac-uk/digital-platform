@@ -1,15 +1,15 @@
 'use strict';
 
-import config from '../functions/shared/config.js';
 import initSlack from '../functions/shared/slack.js';
-const slack = initSlack(config);
+
+const slack = initSlack();
 
 const main = async () => {
   // TEST 1
   const result = await slack.post('OJ Test');
   console.log('RESULT:');
   console.log(result);
-    
+
   // TEST 2
   // const referenceNumber = 'BR_ADMIN_DE_000242';
   // const bugReport = await getBugReportByRef(referenceNumber);
