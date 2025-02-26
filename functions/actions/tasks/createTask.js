@@ -4,7 +4,7 @@ import initUpdateTask from './updateTask.js';
 import { TASK_STATUS, TASK_TYPE } from '../../shared/constants.js';
 
 export default (firebase, db) => {
-  const { getTimelineTasks, taskNextStatus, taskApplicationsEntryStatus } = initTaskHelpers();
+  const { getTimelineTasks, taskNextStatus, taskApplicationsEntryStatus, hasTaskType } = initTaskHelpers();
   const { getApplications, initialisePanelTask, initialiseTestTask, initialiseStatusChangesTask, initialiseCandidateFormTask, initialiseDataTask, initialiseStageOutcomeTask } = initUpdateTask(firebase, db);
 
   return createTask;
