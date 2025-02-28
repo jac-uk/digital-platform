@@ -16,7 +16,7 @@ const main = async () => {
 main()
   .then((result) => {
     result;
-    console.log('result', result);
+    console.log(JSON.stringify(result, null, 2));
     app.delete();
     return process.exit();
   })

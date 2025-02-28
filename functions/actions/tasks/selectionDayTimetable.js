@@ -12,6 +12,11 @@ function selectionDayTimetable(panelData, candidateInfo, reasonableAdjustments, 
     // Initialize suitableCandidates with candidates without conflicts and available on the date
     panel.suitableCandidates = candidateInfo
       .filter((candidate) => {
+        // Check if candidate is in the panel packs
+        if (!panel.applicationIds.includes(candidate.application.id)) {
+          return false;
+        }
+
         // Check for conflicts
         const hasConflict = panelConflicts.some((conflict) =>
           conflict.candidate.id === candidate.candidate.id &&
@@ -30,6 +35,11 @@ function selectionDayTimetable(panelData, candidateInfo, reasonableAdjustments, 
   candidateInfo.forEach((candidate) => {
     candidate.suitablePanels = panelData
       .filter((panel) => {
+        // Check if candidate is in the panel packs
+        if (!panel.applicationIds.includes(candidate.application.id)) { 
+          return false;
+        }
+
         // Check for conflicts
         const hasConflict = panelConflicts.some((conflict) =>
           conflict.candidate.id === candidate.candidate.id &&
@@ -65,7 +75,10 @@ function selectionDayTimetable(panelData, candidateInfo, reasonableAdjustments, 
             panel: panel.panel,
             date: formatDate(slot.date, 'DD/MM/YYYY'),
             slot: slot.totalSlots - availableSlots + 1,
-            candidateRef: assignedCandidate.candidate.ref,
+            application: {
+              ref: assignedCandidate.application.ref,
+              fullName: assignedCandidate.application.fullName,
+            },
             reasonableAdjustment: reasonableAdjustments.includes(candidate),
           };
 
@@ -100,7 +113,10 @@ function selectionDayTimetable(panelData, candidateInfo, reasonableAdjustments, 
               panel: panel.panel,
               date: formatDate(slot.date, 'DD/MM/YYYY'),
               slot: slot.totalSlots - availableSlots + 1,
-              candidateRef: assignedCandidate.candidate.ref,
+              application: {
+                ref: assignedCandidate.application.ref,
+                fullName: assignedCandidate.application.fullName,
+              },
               reasonableAdjustment: reasonableAdjustments.includes(candidate),
             };
 
@@ -128,6 +144,11 @@ function selectionDayTimetable(panelData, candidateInfo, reasonableAdjustments, 
   });
 
   return result;
+}
+
+function checkIfMoreCandidatesThanSlots(panelData, candidateInfo) {
+  const totalSlots = panelData.reduce((total, panel) => total + panel.timetable.reduce((total, slot) => total + slot.totalSlots, 0), 0);
+  return candidateInfo.length > totalSlots;
 }
 
 export default selectionDayTimetable;

@@ -14,6 +14,7 @@ export default (db) => {
           name: panel.name,
         },
         panellists: panel.panellistIds.map(panellistId => ({ id: panellistId })),
+        applicationIds: panel.applicationIds,
         timetable: panel.timetable.map(slot => ({
           date: slot.date.toDate(),
           totalSlots: slot.totalSlots,
@@ -24,14 +25,17 @@ export default (db) => {
         candidate: {
           id: response.id,
         },
+        application: {
+          id: response.applicationId,
+        },
         availableDates: response.candidateAvailability.availableDays.map(availableDay => availableDay.date.toDate()),
       }));
       const applications = await Promise.all(candidateFormResponses.map(async (response) => {
         const application = await getDocument(db.collection('applications').doc(response.applicationId));
-        const referenceNumber = application ? application.referenceNumber : null;
         candidateInfo.forEach(candidate => {
           if (candidate.candidate.id === response.id) {
-            candidate.candidate.ref = referenceNumber;
+            candidate.application.ref = application ? application.referenceNumber : null;
+            candidate.application.fullName = application ? application.personalDetails.fullName : null;
           }
         });
         return application;
