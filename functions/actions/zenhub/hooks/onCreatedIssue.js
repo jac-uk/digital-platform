@@ -1,6 +1,6 @@
 import initBugReports from '../../bugReports.js';
 
-export default (config, db, auth, firebase) => {
+export default (db, firebase) => {
 
   const { updateBugReportOnCreate } = initBugReports(db, firebase);
 

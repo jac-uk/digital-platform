@@ -1,13 +1,12 @@
 import firebase from 'firebase-admin';
 import { jest } from '@jest/globals';
-import config from '../../../../nodeScripts/shared/config.js';
 import initGenerateOutreachReport from '../../../../functions/actions/exercises/generateOutreachReport.js';
 
 const db = jest.fn();
 
 const {
   hasTakenPAJEStats,
-} = initGenerateOutreachReport(config, firebase, db);
+} = initGenerateOutreachReport(firebase, db);
 
 const applications = [
   {

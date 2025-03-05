@@ -1,4 +1,3 @@
-import config from './shared/config.js';
 import { firebase } from './shared/admin.js';
 
 /**
@@ -7,7 +6,7 @@ import { firebase } from './shared/admin.js';
 async function scanAllFiles() {
 
   // open the store bucket
-  const bucket = firebase.storage().bucket(config.STORAGE_URL);
+  const bucket = firebase.storage().bucket(process.env.STORAGE_URL);
 
   // read all files
   const [files] = await bucket.getFiles({

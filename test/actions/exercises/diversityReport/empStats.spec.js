@@ -1,13 +1,12 @@
 import firebase from 'firebase-admin';
 import { jest } from '@jest/globals';
-import config from '../../../../nodeScripts/shared/config.js';
 import initGenerateDiversityReport from '../../../../functions/actions/exercises/generateDiversityReport.js';
 
 const db = jest.fn();
 
 const {
   empStats,
-} = initGenerateDiversityReport(config, firebase, db);
+} = initGenerateDiversityReport(firebase, db);
 
 // List of all possible emp groups
 const empGroups = [true, false, 'gender', 'ethnicity'];

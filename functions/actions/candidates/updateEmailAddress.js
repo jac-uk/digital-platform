@@ -1,11 +1,11 @@
 import initFactories from '../../shared/factories.js';
 import { applyUpdates } from '../../shared/helpers.js';
 
-export default (config, auth, firebase, db) => {
+export default (auth, firebase, db) => {
 
   const {
     newNotificationEmailVerificationLink,
-  } = initFactories(config);
+  } = initFactories();
 
   return updateEmailAddress;
 
@@ -24,9 +24,7 @@ export default (config, auth, firebase, db) => {
         let newEmailUser = null;
         try {
           newEmailUser = await auth.getUserByEmail(newEmailAddress);
-        } catch (e1) {
-            // eslint-disable-next-line no-empty
-        }
+        } catch (e1) {}
 
         if (newEmailUser) {
           return {

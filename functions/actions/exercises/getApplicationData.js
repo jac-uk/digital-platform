@@ -19,8 +19,8 @@ function formatPreference(choiceArray, questionType) {
   }
   return choiceArray;
 }
-export default (config, firebase, db, auth) => {
-  const { formatExperience } = initApplicationHelper(config);
+export default (db) => {
+  const { formatExperience } = initApplicationHelper();
 
 
   return getApplicationData;

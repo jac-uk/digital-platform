@@ -5,13 +5,12 @@
 
 'use strict';
 
-import config from './shared/config.js';
 import { firebase, app, db } from './shared/admin.js';
 import { applyUpdates, getDocument } from '../functions/shared/helpers.js';
 import initExtractDocumentContent from '../functions/shared/file-extraction/extractDocumentContent.js';
 import { log } from './shared/helpers.js';
 
-const { extractDocumentContent } = initExtractDocumentContent(config, firebase);
+const { extractDocumentContent } = initExtractDocumentContent(firebase);
 
 // whether to make changes in `applications` collection in firestore
 const isAction = false;

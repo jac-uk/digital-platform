@@ -1,8 +1,9 @@
 import { getDocument, isEmpty, applyUpdates, getDate } from '../../shared/helpers.js';
 import lookup from '../../shared/converters/lookup.js';
 import _ from 'lodash';
+import { APPLICATION } from '../../shared/constants.js';
 
-export default (firebase, config, db) => {
+export default (firebase, db) => {
   return {
     flagApplicationIssues,
     flagApplicationIssuesForExercise,
@@ -71,7 +72,7 @@ export default (firebase, config, db) => {
     let applications = [];
     let lastApplicationDoc = null;
     let lastApplication = null;
-    
+
     /**
      * {
      *    stage1 : {
@@ -137,7 +138,7 @@ export default (firebase, config, db) => {
   }
 
   async function updateApplicationIssues(exercise, applications, reset, characterIssueStatusCounts) {
-    
+
     const exerciseId = exercise.id;
 
     // construct commands
@@ -146,7 +147,7 @@ export default (firebase, config, db) => {
       const applicationRecord = await getDocument(db.collection('applicationRecords').doc(`${applications[i].id}`));
       const eligibilityIssues = getEligibilityIssues(exercise, applications[i], applicationRecord);
       const characterIssues = getCharacterIssues(exercise, applications[i]);
-      
+
       const stage = applicationRecord ? applicationRecord.stage : '';
       const status = applicationRecord ? applicationRecord.status || 'blank' : '';
 
@@ -239,7 +240,7 @@ export default (firebase, config, db) => {
       const dateOfBirth = getDate(application.personalDetails.dateOfBirth);
       const dateOfRetirement = new Date(dateOfBirth.getFullYear() + retirementAge, dateOfBirth.getMonth(), dateOfBirth.getDate());
       sccAge = new Duration(dateOfBirth, getDate(exercise.characterAndSCCDate)).setDays(0).toString();
-      
+
       if (application.canGiveReasonableLOS === false) {
         const rslSummary = isNonLegalExercise ? `Not Met (${application.cantGiveReasonableLOSDetails})` : 'Not Met';
         rlsIssue = newEligibilityIssue('rls', rslSummary, application.cantGiveReasonableLOSDetails);
@@ -429,10 +430,10 @@ export default (firebase, config, db) => {
     let answers;
 
     if (exercise._applicationVersion >= 2) {
-      questions = config.APPLICATION.CHARACTER_ISSUES_V2;
+      questions = APPLICATION.CHARACTER_ISSUES_V2;
       answers = application.characterInformationV3 ? application.characterInformationV3 : application.characterInformationV2;
     } else if (application.characterInformation) {
-      questions = config.APPLICATION.CHARACTER_ISSUES;
+      questions = APPLICATION.CHARACTER_ISSUES;
       answers = application.characterInformation;
     }
 

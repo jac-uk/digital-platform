@@ -1,14 +1,13 @@
 import { getDocument, formatDate } from '../../shared/helpers.js';
 import htmlWriter from '../../shared/htmlWriter.js';
-import config from '../../shared/config.js';
+import { APPLICATION_STATUS } from '../../shared/constants.js';
 import initDrive from '../../shared/google-drive.js';
 import initExerciseHelper from '../../shared/exerciseHelper.js';
 
 const drive = initDrive();
 
 export default (firebase, db) => {
-  const { SELECTION_CATEGORIES, applicationCounts, shortlistingMethods, formatSelectionDays } = initExerciseHelper(config);
-  const { APPLICATION_STATUS } = config;
+  const { SELECTION_CATEGORIES, applicationCounts, shortlistingMethods, formatSelectionDays } = initExerciseHelper();
 
   return {
     generateSccSummaryReport,
@@ -26,7 +25,7 @@ export default (firebase, db) => {
     const statutoryConsultees = reportData.statutoryConsultees || '';
     const vr = reportData.vr || '';
     const dateS94ListCreated = reportData.dateS94ListCreated || '';
-    const candidatesRemainingOnS94List = reportData.candidatesRemainingOnS94List || ''; 
+    const candidatesRemainingOnS94List = reportData.candidatesRemainingOnS94List || '';
     const vacanciesByJurisdictionChamber = reportData.vacanciesByJurisdictionChamber || '';
     const characterChecksUndertaken = reportData.characterChecksUndertaken || '';
     const numberOfACandidates = reportData.numberOfACandidates || '';
@@ -47,7 +46,7 @@ export default (firebase, db) => {
     const locationDetails = exercise.location;
     const launch = formatDate(exercise.applicationOpenDate);
     const closed = formatDate(exercise.applicationCloseDate);
-    
+
     const applicationCountValues = applicationCounts(exercise);
     const numberOfApplications = applicationCountValues.applied || 0;
     const numberOfWithdrawals = applicationCountValues.withdrawn || 0;
@@ -56,12 +55,12 @@ export default (firebase, db) => {
     let numberOfShortlisted = 0;
 
     if (exercise._applicationRecords.status) {
-      numberOfRemovedOnEligibilityOrASC = 
-        (exercise._applicationRecords.status[APPLICATION_STATUS.REJECTED_INELIGIBLE_STATUTORY] || 0) + 
+      numberOfRemovedOnEligibilityOrASC =
+        (exercise._applicationRecords.status[APPLICATION_STATUS.REJECTED_INELIGIBLE_STATUTORY] || 0) +
         (exercise._applicationRecords.status[APPLICATION_STATUS.REJECTED_INELIGIBLE_ADDITIONAL] || 0);
       numberOfShortlisted = exercise._applicationRecords.status[APPLICATION_STATUS.SHORTLISTING_PASSED] || 0;
     }
-    
+
     const shortlistingMethod = shortlistingMethods(exercise);
     const selectionCategories = exercise.selectionCategories || [];
     const selectionDayTools = Object.values(SELECTION_CATEGORIES).filter((c) => selectionCategories.includes(c.value)).map((c) => c.description);
@@ -91,7 +90,7 @@ export default (firebase, db) => {
       shortlistingDates,
       statutoryConsultees: statutoryConsultees.length > 0 ? statutoryConsultees : 'Insert name(s) or Consultation waived',
       dateS94ListCreated,
-      candidatesRemainingOnS94List, 
+      candidatesRemainingOnS94List,
       shortlistingMethod: shortlistingMethod.join(', '),
     };
 
@@ -118,12 +117,12 @@ export default (firebase, db) => {
         // get settings and apply them
         const settings = await getDocument(db.collection('settings').doc('services'));
         drive.setDriveId(settings.google.driveId);
-    
+
         // generate a filename for the document we are going to create ex. JAC00787_SCC Summary
-        const now = new Date();
+        // const now = new Date();
         // const timestamp = new Date(now.getTime() - (now.getTimezoneOffset() * 60000)).toISOString();
         const filename = `${exercise.referenceNumber}_SCC Summary` ;
-    
+
         // make sure a destination folder exists to create the file in
         const folderName = 'SCC Summary Export';
         const folders = await drive.listFolders();
@@ -136,7 +135,7 @@ export default (firebase, db) => {
         if (folderId === 0) { // folder doesn't exist so create it
           folderId = await drive.createFolder(folderName);
         }
-    
+
         // Create SCC Summary document
         const fileId = await drive.createFile(filename, {
           folderId: folderId,
@@ -144,7 +143,7 @@ export default (firebase, db) => {
           sourceContent: getHtmlSccSummaryReport(sccSummaryReport),
           destinationType: drive.MIME_TYPE.DOCUMENT,
         });
-    
+
         if (fileId) {
           return await drive.exportFile(fileId, 'application/vnd.openxmlformats-officedocument.wordprocessingml.document');
         }

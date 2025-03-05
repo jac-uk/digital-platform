@@ -1,14 +1,11 @@
-import * as functions from 'firebase-functions/v1';
-import config from '../shared/config.js';
+import { onDocumentCreated } from 'firebase-functions/v2/firestore';
 import { firebase, db } from '../shared/admin.js';
 import initOnCandidatePersonalDetailsCreate from '../actions/candidates/personalDetails/onCreate.js';
 
-const onCandidatePersonalDetailsCreate = initOnCandidatePersonalDetailsCreate(config, firebase, db);
+const onCandidatePersonalDetailsCreate = initOnCandidatePersonalDetailsCreate(firebase, db);
 
-export default functions.region('europe-west2').firestore
-  .document('candidates/{candidateId}/documents/personalDetails')
-  .onCreate((document, context) => {
-    const candidateId = context.params.candidateId;
-    const data = document.data();
-    return onCandidatePersonalDetailsCreate(candidateId, data);
-  });
+export default onDocumentCreated('candidates/{candidateId}/documents/personalDetails', (event) => {
+  const candidateId = event.params.candidateId;
+  const data = event.data.data();
+  return onCandidatePersonalDetailsCreate(candidateId, data);
+});

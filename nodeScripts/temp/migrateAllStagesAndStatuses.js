@@ -4,7 +4,6 @@
  */
 'use strict';
 
-import config from '../shared/config.js';
 import { firebase, app, db } from '../shared/admin.js';
 import { getDocuments } from '../../functions/shared/helpers.js';
 import initUpdateApplicationRecordStageStatus from '../../functions/actions/applicationRecords/updateApplicationRecordStageStatus.js';
@@ -12,10 +11,10 @@ import initGenerateDiversityReport from '../../functions/actions/exercises/gener
 import initGenerateDiversityData from '../../functions/actions/exercises/generateDiversityData.js';
 import initGenerateOutreachReport from '../../functions/actions/exercises/generateOutreachReport.js';
 
-const { updateApplicationRecordStageStatus } = initUpdateApplicationRecordStageStatus(firebase, config, db);
-const { generateDiversityReport } = initGenerateDiversityReport(config, firebase, db);
+const { updateApplicationRecordStageStatus } = initUpdateApplicationRecordStageStatus(firebase, db);
+const { generateDiversityReport } = initGenerateDiversityReport(firebase, db);
 const { generateDiversityData } = initGenerateDiversityData(firebase, db);
-const { generateOutreachReport } = initGenerateOutreachReport(config, firebase, db);
+const { generateOutreachReport } = initGenerateOutreachReport(firebase, db);
 
 const main = async () => {
   

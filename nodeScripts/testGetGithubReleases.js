@@ -4,14 +4,13 @@
  * Node script to test Zenhub Api to get releases
  * Documentation:
  *  - https://github.com/settings/tokens/new?scopes=repo
- * 
+ *
  * Run with: > npm run local:nodeScript testGetGithubReleases
  */
 
-import config from './shared/config.js';
 import initZenhub from '../functions/shared/zenhub.js';
 
-const zenhub = initZenhub(config);
+const zenhub = initZenhub();
 
 const main = async () => {
   try {

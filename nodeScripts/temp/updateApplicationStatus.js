@@ -2,7 +2,7 @@
 /**
  * NOTE: After running this nodescript it's important to run 'refreshApplicationCounts.js' to ensure the counts are updated in the
  * exercise!
- * 
+ *
  * For all applications in a specific exercise with status = 'shortlistingOutcomePassed' do the following:
  * 1) Remove 'shortlistingOutcomePassed' item from the statusLogs
  * 2) For all records with 'withdrawn' in the statusLogs, set the status to 'withdrawn' otherwise set the status to empty
@@ -13,8 +13,7 @@
  */
  'use strict';
 
-import config from '../shared/config.js';
-const { APPLICATION_STATUS } = config;
+import { APPLICATION_STATUS } from '../../functions/shared/constants.js';
 import { app, db } from '../shared/admin.js';
 import { applyUpdates, getDocuments } from '../../functions/shared/helpers.js';
 
@@ -30,7 +29,7 @@ const main = async () => {
   const commands = [];
 
   console.log('-- Processing applicationRecords...');
-  
+
   for (let i = 0; i < applicationRecords.length; i++) {
 
     // Set the status to empty
@@ -49,7 +48,7 @@ const main = async () => {
       if (APPLICATION_STATUS.WITHDRAWN in applicationRecord.statusLog) {
         payload.status = APPLICATION_STATUS.WITHDRAWN;
       }
-      
+
       // Remove 'shortlistingOutcomePassed' from the statusLog
       if ('shortlistingOutcomePassed' in applicationRecord.statusLog) {
         delete applicationRecord.statusLog.shortlistingOutcomePassed;

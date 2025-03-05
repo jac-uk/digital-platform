@@ -1,11 +1,10 @@
 
-import config from '../shared/config.js';
-import { firebase, app, db } from '../shared/admin.js';
+import { app, db } from '../shared/admin.js';
 import initCustomReport from '../../functions/actions/exercises/customReport.js';
 import ExcelJS from 'exceljs';
 import path  from 'path';
 
-const { getColumnUsage } = initCustomReport(config, firebase, db);
+const { getColumnUsage } = initCustomReport(db);
 
 const exportToExcel = async (data, filePath) => {
   const workbook = new ExcelJS.Workbook();

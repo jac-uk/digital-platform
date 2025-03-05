@@ -1,5 +1,4 @@
 import { auth } from './admin.js';
-import { PROJECT_ID } from './config.js';
 
 export default {
   listAllUsers,
@@ -48,7 +47,7 @@ async function deleteUser(uid) {
 }
 
 function isDevelop() {
-  return PROJECT_ID.includes('develop');
+  return process.env.PROJECT_ID && process.env.PROJECT_ID.includes('develop');
 }
 
 function log(message) {

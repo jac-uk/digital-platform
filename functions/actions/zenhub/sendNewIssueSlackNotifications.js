@@ -3,9 +3,8 @@ import initUsers from '../users.js';
 import initBugReports from '../bugReports.js';
 import get from 'lodash/get.js';
 
-export default (config, db, auth, firebase) => {
-
-  const slack = initSlack(config);
+export default (db, auth, firebase) => {
+  const slack = initSlack();
   const { getUser } = initUsers(auth, db);
   const { incrementSlackRetries, updateBugReportOnSlackSent } = initBugReports(db, firebase);
 
@@ -17,8 +16,8 @@ export default (config, db, auth, firebase) => {
    * Called for new issues (or those previously created whose slack messages weren't sent out)
    * Send a message to a Slack channel notifying the team of the bug
    * Increment retries then send a slack message and only if successful set the timestamp
-   * 
-   * @param {object} params 
+   *
+   * @param {object} params
    * @param {object} bugReport
    * @param {string} slackChannelId
    */
@@ -56,7 +55,7 @@ export default (config, db, auth, firebase) => {
 			'type': 'divider',
 		};
   }
-  
+
   //function addSlackSection1(data, user, issue = null) {
   function addSlackSection1(data, user) {
     let text = '';
@@ -94,7 +93,7 @@ export default (config, db, auth, firebase) => {
       },
     };
   }
-  
+
   function addSlackSection3(data) {
     let fields = [];
     // fields.push(      {

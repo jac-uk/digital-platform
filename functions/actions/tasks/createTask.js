@@ -1,10 +1,11 @@
 import { getDocument, getDocuments, applyUpdates } from '../../shared/helpers.js';
 import initTaskHelpers from './taskHelpers.js';
 import initUpdateTask from './updateTask.js';
+import { TASK_STATUS, TASK_TYPE } from '../../shared/constants.js';
 
-export default (config, firebase, db) => {
-  const { getTimelineTasks, taskNextStatus, taskApplicationsEntryStatus, hasTaskType } = initTaskHelpers(config);
-  const { getApplications, initialisePanelTask, initialiseTestTask, initialiseStatusChangesTask, initialiseCandidateFormTask, initialiseDataTask, initialiseStageOutcomeTask } = initUpdateTask(config, firebase, db);
+export default (firebase, db) => {
+  const { getTimelineTasks, taskNextStatus, taskApplicationsEntryStatus, hasTaskType } = initTaskHelpers();
+  const { getApplications, initialisePanelTask, initialiseTestTask, initialiseStatusChangesTask, initialiseCandidateFormTask, initialiseDataTask, initialiseStageOutcomeTask } = initUpdateTask(firebase, db);
 
   return createTask;
 
@@ -44,7 +45,7 @@ export default (config, firebase, db) => {
     // get application records
     // TODO check whether we still need this now we have `applications`
     let applicationRecords = [];
-    if (applicationEntryStatus || [config.TASK_STATUS.PANELS_INITIALISED, config.TASK_STATUS.STATUS_CHANGES].indexOf(nextStatus)) {
+    if (applicationEntryStatus || [TASK_STATUS.PANELS_INITIALISED, TASK_STATUS.STATUS_CHANGES].indexOf(nextStatus)) {
       let queryRef = db.collection('applicationRecords')
         .where('exercise.id', '==', params.exerciseId);
       if (applicationEntryStatus) {
@@ -65,22 +66,22 @@ export default (config, firebase, db) => {
 
     // construct task document, based on next status
     switch (nextStatus) {
-    case config.TASK_STATUS.PANELS_INITIALISED:
+    case TASK_STATUS.PANELS_INITIALISED:
       result = await initialisePanelTask(exercise, { taskType: params.type, applicationRecords: applicationRecords });
       break;
-    case config.TASK_STATUS.TEST_INITIALISED:
+    case TASK_STATUS.TEST_INITIALISED:
       result = await initialiseTestTask(exercise.referenceNumber, params.type, timelineTask.date, timelineTask.endDate);
       break;
-    case config.TASK_STATUS.STATUS_CHANGES:
+    case TASK_STATUS.STATUS_CHANGES:
       result = await initialiseStatusChangesTask(exercise, params.type, applicationRecords);
       break;
-    case config.TASK_STATUS.CANDIDATE_FORM_CONFIGURE:
+    case TASK_STATUS.CANDIDATE_FORM_CONFIGURE:
       result = await initialiseCandidateFormTask(exercise, params.type);
       break;
-    case config.TASK_STATUS.DATA_INITIALISED:
+    case TASK_STATUS.DATA_INITIALISED:
       result = await initialiseDataTask(exercise, params.type);
       break;
-    case config.TASK_STATUS.STAGE_OUTCOME:
+    case TASK_STATUS.STAGE_OUTCOME:
       result = await initialiseStageOutcomeTask(exercise, params.type);
       break;
     }
@@ -88,11 +89,11 @@ export default (config, firebase, db) => {
     // task-specific updates
     if (result.success) {
       switch (params.type) {
-      case config.TASK_TYPE.SELECTION_DAY:
-        if (hasTaskType(exercise, config.TASK_TYPE.PRE_SELECTION_DAY_QUESTIONNAIRE)) {
-          const psdq = await getDocument(db.doc(`exercises/${params.exerciseId}/tasks/${config.TASK_TYPE.PRE_SELECTION_DAY_QUESTIONNAIRE}`));
+      case TASK_TYPE.SELECTION_DAY:
+        if (hasTaskType(exercise, TASK_TYPE.PRE_SELECTION_DAY_QUESTIONNAIRE)) {
+          const psdq = await getDocument(db.doc(`exercises/${params.exerciseId}/tasks/${TASK_TYPE.PRE_SELECTION_DAY_QUESTIONNAIRE}`));
           if (psdq) {
-            result[`_${config.TASK_TYPE.PRE_SELECTION_DAY_QUESTIONNAIRE}`] = {
+            result[`_${TASK_TYPE.PRE_SELECTION_DAY_QUESTIONNAIRE}`] = {
               formId: psdq.formId,
             };
           }
