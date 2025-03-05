@@ -6,7 +6,7 @@ import initExerciseHelper from '../../shared/exerciseHelper.js';
 
 const drive = initDrive();
 
-export default (db) => {
+export default (firebase, db) => {
   const { SELECTION_CATEGORIES, applicationCounts, shortlistingMethods, formatSelectionDays } = initExerciseHelper();
 
   return {
