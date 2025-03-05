@@ -6,7 +6,7 @@ import initLogEvent from '../actions/logs/logEvent.js';
 import initServiceSettings from '../shared/serviceSettings.js';
 import { PERMISSIONS, hasPermissions } from '../shared/permissions.js';
 
-const { exportSccSummaryReport } = initExportSccSummaryReport(db);
+const { exportSccSummaryReport } = initExportSccSummaryReport(firebase, db);
 const { logEvent } = initLogEvent(firebase, db, auth);
 const { checkFunctionEnabled } = initServiceSettings(db);
 
@@ -58,7 +58,15 @@ export default onCall(
         id: request.auth.token.user_id,
         name: request.auth.token.name,
       };
-      await logEvent('info', 'SCC Summary report exported (to ' + data.format + ')', details, user);
+      try {
+        await logEvent('info', 'SCC Summary report exported (to ' + data.format + ')', details, user);
+      } catch (error) {
+        console.error('Error in function:', error);
+        console.error('Error in function:', JSON.stringify(error));
+        console.error('Error in function:', error.stack);
+        throw new HttpsError('internal', 'An error occurred during execution');
+      }
+
       return await exportSccSummaryReport(data.exerciseId, data.format, (data.status || null));
     }
     catch (error) {
