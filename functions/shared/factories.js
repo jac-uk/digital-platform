@@ -858,21 +858,22 @@ export default (CONSTANTS) => {
     };
   }
 
-  function newNotificationPublishedFeedbackReport(firebase, email, exerciseName, testType) {
+  function newNotificationPublishedFeedbackReport(firebase, email, exercise, testType) {
     const templateName = 'Generic Feedback Report Publication';
     const templateId = 'f74f3fda-419a-4c78-ad15-fbe0e33656ee';
     const reportsLink = 'https://judicialappointments.gov.uk/feedback-and-evaluation-reports#OnlineTests';
     return {
       email: email,
-      replyTo: '',
+      replyTo: exercise.exerciseMailbox,
       template: {
         name: templateName,
         id: templateId,
       },
       personalisation: {
-        exerciseName: exerciseName,
+        exerciseName: exercise.name,
         testType: testType,
         reportsLink: reportsLink,
+        exerciseMailbox: exercise.exerciseMailbox,
       },
       createdAt: firebase.firestore.FieldValue.serverTimestamp(),
       status: 'ready',
