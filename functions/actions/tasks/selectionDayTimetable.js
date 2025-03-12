@@ -1,3 +1,5 @@
+import { formatDate } from '../../shared/helpers.js';
+
 // function generates a selection day timetable - result is an object containing a 'timetable' (with headings  Panel: String, Date: Date, Slot: Number, CandidateRef: String, ReasonableAdjustment: Boolean)
 function selectionDayTimetable(panelData, candidateInfo, reasonableAdjustments, panelConflicts) {
   const result = {
@@ -7,18 +9,22 @@ function selectionDayTimetable(panelData, candidateInfo, reasonableAdjustments, 
 
   // Initialize suitableCandidates on panels
   panelData.forEach((panel) => {
-    const panelDate = panel.date;
     // Initialize suitableCandidates with candidates without conflicts and available on the date
     panel.suitableCandidates = candidateInfo
       .filter((candidate) => {
+        // Check if candidate is in the panel packs
+        if (!panel.applicationIds.includes(candidate.application.id)) {
+          return false;
+        }
+
         // Check for conflicts
         const hasConflict = panelConflicts.some((conflict) =>
           conflict.candidate.id === candidate.candidate.id &&
-          panel.panellists.some((panellist) => conflict.panellist.id === panellist.id)
+          panel.panellists.some((panellist) => conflict.panellists.map(panellist => panellist.id).includes(panellist.id))
         );
 
         // Check for availability on the date
-        const isAvailable = candidate.availableDates.some((date) => date.getTime() === panelDate.getTime());
+        const isAvailable = candidate.availableDates.some((date) => panel.timetable.map(slot => slot.date.getTime()).includes(date.getTime()));
 
         return !hasConflict && isAvailable;
       })
@@ -29,14 +35,19 @@ function selectionDayTimetable(panelData, candidateInfo, reasonableAdjustments, 
   candidateInfo.forEach((candidate) => {
     candidate.suitablePanels = panelData
       .filter((panel) => {
+        // Check if candidate is in the panel packs
+        if (!panel.applicationIds.includes(candidate.application.id)) { 
+          return false;
+        }
+
         // Check for conflicts
         const hasConflict = panelConflicts.some((conflict) =>
           conflict.candidate.id === candidate.candidate.id &&
-          panel.panellists.some((panellist) => conflict.panellist.id === panellist.id)
+          panel.panellists.some((panellist) => conflict.panellists.map(panellist => panellist.id).includes(panellist.id))
         );
 
         // Check for availability on the date
-        const isAvailable = candidate.availableDates.some((date) => date.getTime() === panel.date.getTime());
+        const isAvailable = candidate.availableDates.some((date) => panel.timetable.map(slot => slot.date.getTime()).includes(date.getTime()));
 
         return !hasConflict && isAvailable;
       })
@@ -45,76 +56,84 @@ function selectionDayTimetable(panelData, candidateInfo, reasonableAdjustments, 
 
   // Assign candidates to slots
   panelData.forEach((panel) => {
-    let availableSlots = panel.totalSlots;
+    panel.timetable.forEach(slot => {
+      let availableSlots = slot.totalSlots;
+      
+      // For candidates available for only one date
+      const oneDateCandidates = panel.suitableCandidates.filter((candidateId) => {
+        const candidate = candidateInfo.find((c) => c.candidate.id === candidateId);
+        return candidate.availableDates.length === 1 && candidate.availableDates[0].getTime() === slot.date.getTime();
+      });
 
-    // For candidates available for only one date
-    const oneDateCandidates = panel.suitableCandidates.filter((candidateId) => {
-      const candidate = candidateInfo.find((c) => c.candidate.id === candidateId);
-      return candidate.availableDates.length === 1 && candidate.availableDates[0].getTime() === panel.date.getTime();
-    });
-
-    oneDateCandidates.forEach((candidate) => {
-      if (availableSlots > 0 && !candidate.sorted) {
-
-        const assignedCandidate = candidateInfo.find((c) => c.candidate.id === candidate);
-
-        // Assign the candidate to the slot
-        const row = {
-          Panel: panel.panel.id,
-          Date: panel.date,
-          Slot: panel.totalSlots - availableSlots + 1,
-          CandidateRef: candidate,
-          ReasonableAdjustment: reasonableAdjustments.includes(candidate),
-        };
-
-        availableSlots--;
-
-        result.timetable.push(row);
-
-        // Remove assigned candidate from suitableCandidates
-        panel.suitableCandidates = panel.suitableCandidates.filter((candidateId) => candidateId !== candidate);
-        // Add sorted flag to candidate on candidateInfo array (for determining unassigned candidates)
-        assignedCandidate.sorted = true;
-      }
-    });
-
-    // For candidates available for multiple dates
-    const multiDateCandidates = panel.suitableCandidates.filter((candidateId) => {
-      const candidate = candidateInfo.find((c) => c.candidate.id === candidateId);
-      return (
-        candidate.availableDates.length > 1 &&
-        candidate.availableDates.some((date) => date.getTime() === panel.date.getTime())
-      );
-    });
-
-    if (multiDateCandidates.length) {
-      multiDateCandidates.forEach((candidate) => {
+      oneDateCandidates.forEach((candidate) => {
         if (availableSlots > 0 && !candidate.sorted) {
 
           const assignedCandidate = candidateInfo.find((c) => c.candidate.id === candidate);
-          
+
           // Assign the candidate to the slot
           const row = {
-            Panel: panel.panel.id,
-            Date: panel.date,
-            Slot: panel.totalSlots - availableSlots + 1,
-            CandidateRef: candidate,
-            ReasonableAdjustment: reasonableAdjustments.includes(candidate),
+            panel: panel.panel,
+            date: formatDate(slot.date, 'DD/MM/YYYY'),
+            slot: slot.totalSlots - availableSlots + 1,
+            application: {
+              ref: assignedCandidate.application.ref,
+              fullName: assignedCandidate.application.fullName,
+            },
+            reasonableAdjustment: reasonableAdjustments.includes(candidate),
           };
 
           availableSlots--;
 
           result.timetable.push(row);
-          
+
           // Remove assigned candidate from suitableCandidates
-          panelData.forEach((panelToRemoveCandidate) => {
-            panelToRemoveCandidate.suitableCandidates = panelToRemoveCandidate.suitableCandidates.filter((candidateId) => candidateId !== candidate);
-          });
+          panel.suitableCandidates = panel.suitableCandidates.filter((candidateId) => candidateId !== candidate);
           // Add sorted flag to candidate on candidateInfo array (for determining unassigned candidates)
           assignedCandidate.sorted = true;
         }
       });
-    }
+
+      // For candidates available for multiple dates
+      const multiDateCandidates = panel.suitableCandidates.filter((candidateId) => {
+        const candidate = candidateInfo.find((c) => c.candidate.id === candidateId);
+        return (
+          candidate.availableDates.length > 1 &&
+          candidate.availableDates.some((date) => date.getTime() === slot.date.getTime())
+        );
+      });
+
+      if (multiDateCandidates.length) {
+        multiDateCandidates.forEach((candidate) => {
+          if (availableSlots > 0 && !candidate.sorted) {
+
+            const assignedCandidate = candidateInfo.find((c) => c.candidate.id === candidate);
+            
+            // Assign the candidate to the slot
+            const row = {
+              panel: panel.panel,
+              date: formatDate(slot.date, 'DD/MM/YYYY'),
+              slot: slot.totalSlots - availableSlots + 1,
+              application: {
+                ref: assignedCandidate.application.ref,
+                fullName: assignedCandidate.application.fullName,
+              },
+              reasonableAdjustment: reasonableAdjustments.includes(candidate),
+            };
+
+            availableSlots--;
+
+            result.timetable.push(row);
+            
+            // Remove assigned candidate from suitableCandidates
+            panelData.forEach((panelToRemoveCandidate) => {
+              panelToRemoveCandidate.suitableCandidates = panelToRemoveCandidate.suitableCandidates.filter((candidateId) => candidateId !== candidate);
+            });
+            // Add sorted flag to candidate on candidateInfo array (for determining unassigned candidates)
+            assignedCandidate.sorted = true;
+          }
+        });
+      }
+    });
   });
 
   // Collect unassigned candidates
@@ -125,6 +144,11 @@ function selectionDayTimetable(panelData, candidateInfo, reasonableAdjustments, 
   });
 
   return result;
+}
+
+function checkIfMoreCandidatesThanSlots(panelData, candidateInfo) {
+  const totalSlots = panelData.reduce((total, panel) => total + panel.timetable.reduce((total, slot) => total + slot.totalSlots, 0), 0);
+  return candidateInfo.length > totalSlots;
 }
 
 export default selectionDayTimetable;
