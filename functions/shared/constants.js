@@ -1,15 +1,7 @@
+import * as dotenv from 'dotenv';
+dotenv.config(); // Load .env file
+
 const CONSTANTS = {
-  PROJECT_ID: process.env.PROJECT_ID,
-  IS_LOCAL: process.env.IS_LOCAL,
-  APPLY_URL: process.env.APPLY_URL,
-  // QT_URL: 'http://localhost:5001/jac-qualifying-tests-develop/europe-west2/api/v1',
-  QT_URL: process.env.QT_PLATFORM_URL,
-  QT_KEY: process.env.QT_PLATFORM_KEY,
-  ZENHUB_GRAPH_QL_API_KEY: process.env.ZENHUB_GRAPH_QL_API_KEY, // graphQL personal api key
-  ZENHUB_ISSUES_WORKSPACE_ID: process.env.ZENHUB_ISSUES_WORKSPACE_ID,
-  SLACK_TICKETING_APP_BOT_TOKEN: process.env.SLACK_TICKETING_APP_BOT_TOKEN,
-  GITHUB_PAT: process.env.GITHUB_PAT, // personal access token
-  SCAN_SERVICE_URL: 'https://malware-scanner-dot-platform-production-9207d.appspot.com/scan',
   APPLICATION: {
     STATUS: {
       QUALIFYING_TEST_PASSED: 'qualifyingTestPassed',
@@ -31,6 +23,7 @@ const CONSTANTS = {
       RECOMMENDED_FUTURE: 'recommendedFuture',
       RECONSIDER: 'reconsider',
       SECOND_STAGE_INVITED: 'secondStageInvited',
+      SCC_TO_RECONSIDER: 'sccToReconsider',
     },
     CHARACTER_ISSUES: { // this gives a map from issue to corresponding details field TODO improve naming or where we store this
       drivingDisqualificationDrinkDrugs: {
@@ -238,8 +231,13 @@ const CONSTANTS = {
       CIVIL_PROCEEDINGS: 'civilProceedingsV2',
       FURTHER_DISCLOSURES: 'furtherDisclosuresV2',
     },
+    ELIGIBILITY_ISSUE_STATUS: {
+      PROCEED: 'proceed',
+      REJECT: 'reject',
+      REJECT_NON_DECLARATION: 'reject-non-declaration',
+      DISCUSS: 'discuss',
+    },
   },
-  ASSESSMENTS_URL: process.env.ASSESSMENTS_URL,
   ASSESSMENT_METHOD: {
     SELF_ASSESSMENT_WITH_COMPETENCIES: 'selfAssessmentWithCompetencies',
     COVERING_LETTER: 'coveringLetter',
@@ -290,6 +288,7 @@ const CONSTANTS = {
       ACTIVATED: 'activated',
       STARTED: 'started',
       COMPLETED: 'completed',
+      CANCELLED: 'cancelled',
     },
   },
   PANEL_STATUS: {
@@ -302,14 +301,15 @@ const CONSTANTS = {
   },
   CAPABILITIES: ['L', 'EJ', 'L&J', 'PQ', 'PBK', 'ACI', 'WCO', 'MWE', 'OVERALL'],
   SELECTION_CATEGORIES: ['leadership', 'roleplay', 'situational', 'interview', 'overall'],
-  NOTIFY_KEY: process.env.NOTIFY_LIMITED_KEY,
-  SLACK_URL: process.env.SLACK_URL,
-  SLACK_API_STUB: process.env.SLACK_API_STUB,
-  STORAGE_URL: process.env.PROJECT_ID + '.appspot.com',
-  ZENHUB_GRAPH_QL_URL: process.env.ZENHUB_GRAPH_QL_URL,
+
+  NOT_COMPLETE_PUPILLAGE_REASONS: {
+    TRANSFERRED: 'transferred ',
+    CALLED_PRE_2002: 'called-pre-2002',
+    OTHER: 'other',
+  },
 };
 
-const TASK_TYPE = {
+export const TASK_TYPE = {
   SIFT: 'sift',
   SCENARIO: 'scenarioTest',
   CRITICAL_ANALYSIS: 'criticalAnalysis',
@@ -327,7 +327,7 @@ const TASK_TYPE = {
   EMP_TIEBREAKER: 'empTiebreaker',
 };
 
-const SHORTLISTING_TASK_TYPES = [
+export const SHORTLISTING_TASK_TYPES = [
   TASK_TYPE.TELEPHONE_ASSESSMENT,
   TASK_TYPE.SIFT,
   TASK_TYPE.CRITICAL_ANALYSIS,
@@ -336,7 +336,7 @@ const SHORTLISTING_TASK_TYPES = [
   TASK_TYPE.SCENARIO,
 ];
 
-const TASK_STATUS = { // aka task STEPS
+export const TASK_STATUS = { // aka task STEPS
   CANDIDATE_FORM_CONFIGURE: 'candidateFormConfigure',
   CANDIDATE_FORM_MONITOR: 'candidateFormMonitor',
   DATA_INITIALISED: 'dataInitialised',
@@ -354,19 +354,19 @@ const TASK_STATUS = { // aka task STEPS
   COMPLETED: 'completed',
 };
 
-const CANDIDATE_FORM_STATUS = {
+export const CANDIDATE_FORM_STATUS = {
   CREATED: 'created',
   OPEN: 'open',
   CLOSED: 'closed',
 };
 
-const CANDIDATE_FORM_RESPONSE_STATUS = {
+export const CANDIDATE_FORM_RESPONSE_STATUS = {
   CREATED: 'created',
   REQUESTED: 'requested',
   COMPLETED: 'completed',
 };
 
-const EXERCISE_STAGE = {
+export const EXERCISE_STAGE = {
   // v2
   SHORTLISTING: 'shortlisting',
   SELECTION: 'selection',
@@ -385,7 +385,7 @@ const EXERCISE_STAGE = {
   HANDOVER: 'handover', // to be removed/replaced with recommendation
 };
 
-const APPLICATION_STATUS = {
+export const APPLICATION_STATUS = {
   // v2
   CRITICAL_ANALYSIS_PASSED: 'criticalAnalysisPassed',
   CRITICAL_ANALYSIS_FAILED: 'criticalAnalysisFailed',
@@ -460,13 +460,15 @@ const APPLICATION_STATUS = {
   SCC_TO_RECONSIDER: 'sccToReconsider',
 };
 
-export default {
-  ...CONSTANTS,
-  TASK_TYPE,
-  SHORTLISTING_TASK_TYPES,
-  TASK_STATUS,
-  CANDIDATE_FORM_STATUS,
-  CANDIDATE_FORM_RESPONSE_STATUS,
-  EXERCISE_STAGE,
-  APPLICATION_STATUS,
-};
+export const {
+  APPLICATION,
+  ASSESSMENT_METHOD,
+  ASSESSMENT_TYPE,
+  SHORTLISTING,
+  QUALIFYING_TEST,
+  QUALIFYING_TEST_RESPONSES,
+  PANEL_STATUS,
+  CAPABILITIES,
+  SELECTION_CATEGORIES,
+  NOT_COMPLETE_PUPILLAGE_REASONS,
+} = CONSTANTS;

@@ -1,9 +1,8 @@
 import initZenhub from '../../shared/zenhub.js';
 import { getDocument } from '../../shared/helpers.js';
 
-export default (config, firebase, db) => {
-
-  const zenhub = initZenhub(config);
+export default (firebase, db) => {
+  const zenhub = initZenhub();
 
   return {
     createIssue,
@@ -12,8 +11,8 @@ export default (config, firebase, db) => {
   /**
    * Create an issue in Zenhub
    * Update the bugReport collection with the Zenhub Issue ID
-   * 
-   * @param {*} bugReportId 
+   *
+   * @param {*} bugReportId
    */
   async function createIssue(bugReportId, userId) {
     const user = await getDocument(db.collection('users').doc(userId));
@@ -33,11 +32,11 @@ export default (config, firebase, db) => {
         zenhubIssueId: zenhubIssueId,
         lastUpdatedAt: firebase.firestore.FieldValue.serverTimestamp(),
       });
-    }    
+    }
   }
 
   function buildZenhubPayload(data, user) {
-    // line breaks removed as working fix, TODO add them back in 
+    // line breaks removed as working fix, TODO add them back in
     let payload = `The following ${data.criticality} issue was raised by ${data.reporter}`;
     if (data.exercise.referenceNumber) {
       payload += ` for exercise ${data.exercise.referenceNumber} `;
@@ -65,7 +64,7 @@ export default (config, firebase, db) => {
     //payload += '<!-- test = { id: 23, name: \'tester\' } -->';
     //payload += `<!-- reporter = { email: '${data.contactDetails}' } -->`;
     //payload += `<!-- { reporter: '${user.slackMemberId}', developer: 'U052NR5U43Z' } -->`;
-  
+
     return payload;
   }
 

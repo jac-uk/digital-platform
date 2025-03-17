@@ -1,16 +1,13 @@
-import * as functions from 'firebase-functions/v1';
-import config from '../shared/config.js';
-import { firebase, db, auth } from '../shared/admin.js';
+import { onDocumentUpdated } from 'firebase-functions/v2/firestore';
+import { firebase, db } from '../shared/admin.js';
 import initExercisesOnUpdate from '../actions/exercises/onUpdate.js';
 
-const onUpdate = initExercisesOnUpdate(config, firebase, db, auth);
+const onUpdate = initExercisesOnUpdate(firebase, db);
 
-export default functions.region('europe-west2').firestore
-  .document('exercises/{exerciseId}')
-  .onUpdate(async (change, context) => {
-    const after = change.after.data();
-    const before = change.before.data();
-    const exerciseId = context.params.exerciseId;
-    onUpdate(exerciseId, before, after);
-    return true;
-  });
+export default onDocumentUpdated('exercises/{exerciseId}', async (event) => {
+  const after = event.data.after.data();
+  const before = event.data.before.data();
+  const exerciseId = event.params.exerciseId;
+  onUpdate(exerciseId, before, after);
+  return true;
+});

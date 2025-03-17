@@ -1,28 +1,42 @@
-import * as functions from 'firebase-functions/v1';
-import config from '../shared/config.js';
+import { onCall, HttpsError } from 'firebase-functions/v2/https';
 import { firebase, db } from '../shared/admin.js';
 import verifyChecksumInit from '../actions/malware-scanning/verifyFileChecksum.js';
 
-const verifyChecksum = verifyChecksumInit(config, firebase, db);
+const verifyChecksum = verifyChecksumInit(firebase, db);
 
-export default functions
-  .region('europe-west2')
-  .https
-  .onCall(async (data, context) => {
-  const { filePath } = data;
+export default onCall(
+  {
+    region: 'europe-west2', // Specify the region
+    memory: '256MiB',       // (Optional) Configure memory allocation
+    timeoutSeconds: 240,    // (Optional) Configure timeout
+    minInstances: 0,        // (Optional) Min instances to reduce cold starts
+    maxInstances: 10,       // (Optional) Max instances to scale
+  },
+  async (request) => {
 
-  try {
-    const result = await verifyChecksum(filePath);
+    try {
+      const data = request.data;
 
-    // Ensure that the result is what the frontend expects
-    return {
-      valid: result.valid,
-      message: result.message || null,
-    };
-  } catch (error) {
-    console.error('Error verifying checksum:', error);
+      const { filePath } = data;
 
-    // Throw an HttpsError with a message to return a proper error response
-    throw new functions.https.HttpsError('internal', error.message);
+      try {
+        const result = await verifyChecksum(filePath);
+
+        // Ensure that the result is what the frontend expects
+        return {
+          valid: result.valid,
+          message: result.message || null,
+        };
+      } catch (error) {
+        console.error('Error verifying checksum:', error);
+
+        // Throw an HttpsError with a message to return a proper error response
+        throw new HttpsError('internal', error.message);
+      }
+    }
+    catch (error) {
+      console.error('Error in function:', error);
+      throw new HttpsError('internal', 'An error occurred during execution');
+    }
   }
-});
+);

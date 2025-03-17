@@ -1,6 +1,6 @@
 import { getDocument, getDocuments, applyUpdates } from '../shared/helpers.js';
 
-export default (config, firebase, db) => {
+export default (db) => {
 
   return enableCharacterChecks;
 
@@ -23,13 +23,13 @@ export default (config, firebase, db) => {
 
     // construct db commands
     const commands = [];
-    let appRecordCount = 0;
+    //let appRecordCount = 0;
 
     for (let i = 0, len = applicationRecords.length; i < len; ++i) {
       const applicationRecord = applicationRecords[i];
 
       if (!Object.prototype.hasOwnProperty.call(applicationRecord, 'characterChecks')) {
-        appRecordCount++;
+        //appRecordCount++;
         commands.push({
           command: 'update',
           ref: applicationRecord.ref,

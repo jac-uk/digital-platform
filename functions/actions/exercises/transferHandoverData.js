@@ -1,4 +1,4 @@
-export default (config, firebase, db) => {
+export default () => {
 
   return transferHandoverData;
 

@@ -1,10 +1,9 @@
 'use strict';
 
-import config from './shared/config.js';
 import { firebase, app, db } from './shared/admin.js';
 import initFlagApplicationIssues from '../functions/actions/applications/flagApplicationIssues.js';
 
-const { flagApplicationIssuesForExercise } = initFlagApplicationIssues(firebase, config, db);
+const { flagApplicationIssuesForExercise } = initFlagApplicationIssues(firebase, db);
 
 const main = async () => {
   return flagApplicationIssuesForExercise('wdpALbyICL7ZxxN5AQt8');

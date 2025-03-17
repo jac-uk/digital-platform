@@ -3,8 +3,8 @@ import initFactories from '../shared/factories.js';
 import initLogEvent from './logs/logEvent.js';
 import initRefreshApplicationCounts from '../actions/exercises/refreshApplicationCounts.js';
 
-export default (config, firebase, db, auth) => {
-  const { newApplicationRecord } = initFactories(config);
+export default (firebase, db, auth) => {
+  const { newApplicationRecord } = initFactories();
   const { logEvent } = initLogEvent(firebase, db, auth);
   const { refreshApplicationCounts } = initRefreshApplicationCounts(firebase, db);
 

@@ -3,9 +3,9 @@ import initFactories from '../shared/factories.js';
 import initNotifications from './notifications.js';
 import _ from 'lodash';
 
-export default (config, firebase, db) => {
-  const { newAssessment, newNotificationAssessmentRequest, newNotificationAssessmentReminder, newNotificationAssessmentSubmit } = initFactories(config);
-  const { testNotification } = initNotifications(config, db);
+export default (firebase, db) => {
+  const { newAssessment, newNotificationAssessmentRequest, newNotificationAssessmentReminder, newNotificationAssessmentSubmit } = initFactories();
+  const { testNotification } = initNotifications(firebase, db);
 
   return {
     initialiseAssessments,

@@ -1,13 +1,12 @@
 import firebase from 'firebase-admin';
 import { jest } from '@jest/globals';
-import config from '../../../../nodeScripts/shared/config.js';
 import initGenerateDiversityReport from '../../../../functions/actions/exercises/generateDiversityReport.js';
 
 const db = jest.fn();
 
 const {
   firstGenerationUniversityStats,
-} = initGenerateDiversityReport(config, firebase, db);
+} = initGenerateDiversityReport(firebase, db);
 
 describe('firstGenerationUniversityStats', () => {
 
@@ -78,7 +77,7 @@ describe('firstGenerationUniversityStats', () => {
   });
 
   it('returns correct stats if empty firstGenerationStudent', async () => {
-    
+
     applications1.push(
       {
         equalityAndDiversitySurvey: {

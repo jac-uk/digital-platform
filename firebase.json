@@ -65,7 +65,7 @@
   "functions": {
     "source": "functions",
     "predeploy": [
-      "npm run lint"
+      "cd functions && npm run lint && cd ../"
     ]
   },
   "storage": {

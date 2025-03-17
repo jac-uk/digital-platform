@@ -3,13 +3,13 @@ import { getSearchMap } from '../../shared/search.js';
 import initApplicationRecords from '../../actions/applicationRecords.js';
 import initRefreshApplicationCounts from '../../actions/exercises/refreshApplicationCounts.js';
 import initFactories from '../../shared/factories.js';
-// import initSlack from '../../shared/slack.js';
 import initCandidatesSearch from '../candidates/search.js';
+import { TASK_TYPE } from '../../shared/constants.js';
 
 const testApplicationsFileName = 'test_applications.json';
 
-export default (config, firebase, db, auth) => {
-  const { initialiseApplicationRecords } = initApplicationRecords(config, firebase, db, auth);
+export default (firebase, db, auth) => {
+  const { initialiseApplicationRecords } = initApplicationRecords(firebase, db, auth);
   const { refreshApplicationCounts } = initRefreshApplicationCounts(firebase, db);
   const {
     newNotificationApplicationSubmit,
@@ -20,8 +20,7 @@ export default (config, firebase, db, auth) => {
     newNotificationCandidateFlagConfirmation,
     newCandidateFormNotification,
     newNotificationPublishedFeedbackReport,
-  } = initFactories(config);
-  // const slack = initSlack(config);
+  } = initFactories();
   const { updateCandidate } = initCandidatesSearch(firebase, db);
   return {
     updateApplication,
@@ -88,13 +87,10 @@ export default (config, firebase, db, auth) => {
 
   /**
    * Application created event handler
-   * - Posts message to slack
    * - Increment exercise applications count
    * - Adds search map
    */
   async function onApplicationCreate(ref, data) {
-    console.log('application created');
-    // slack.post(`${data.exerciseRef}. New application started`);
     if (data.userId) { await updateCandidate(data.userId); }
 
     // update application
@@ -439,7 +435,7 @@ export default (config, firebase, db, auth) => {
     * load test applications JSON file from cloud storage
     */
   async function loadTestApplications() {
-    const bucket = firebase.storage().bucket(config.STORAGE_URL);
+    const bucket = firebase.storage().bucket(process.env.STORAGE_URL);
     const file = bucket.file(testApplicationsFileName);
     try {
       const data = await file.download();
@@ -609,10 +605,10 @@ export default (config, firebase, db, auth) => {
 
   async function sendPublishedFeedbackReportNotifications(exerciseId, taskType) {
     const validTaskTypes = [
-      config.TASK_TYPE.CRITICAL_ANALYSIS,
-      config.TASK_TYPE.QUALIFYING_TEST,
-      config.TASK_TYPE.SCENARIO,
-      config.TASK_TYPE.SITUATIONAL_JUDGEMENT,
+      TASK_TYPE.CRITICAL_ANALYSIS,
+      TASK_TYPE.QUALIFYING_TEST,
+      TASK_TYPE.SCENARIO,
+      TASK_TYPE.SITUATIONAL_JUDGEMENT,
     ];
     if (!validTaskTypes.includes(taskType)) {
       console.log(`sendPublishedFeedbackReportNotifications called with invalid task type: ${taskType}`);

@@ -1,4 +1,3 @@
-import config from '../shared/config.js';
 import { getDocument, getDocuments, applyUpdates } from '../shared/helpers.js';
 
 export default (db, firebase) => {
@@ -29,7 +28,7 @@ export default (db, firebase) => {
    * Extract the bugReport referenceNUmber from the github issue title
    * Checks if the string contains the pattern:
    * BR_<platform>_<2 letter environment>_<number>
-   * @param {*} issueTitle 
+   * @param {*} issueTitle
    * @returns array|null
    */
   function getBugReportNumberFromIssueTitle(issueTitle) {
@@ -39,13 +38,13 @@ export default (db, firebase) => {
   }
 
   /**
-   * Get bugReports who have attempted to send at least one (but not the max number allowed) slack message 
+   * Get bugReports who have attempted to send at least one (but not the max number allowed) slack message
    * on creation of a github issue but failed
    * @returns array
    */
   async function getBugReportsWithFailedSendOnCreate() {
     try {
-      const MAX_RETRIES = config.SLACK_MAX_RETRIES ? config.SLACK_MAX_RETRIES : 3;
+      const MAX_RETRIES = process.env.SLACK_MAX_RETRIES ? process.env.SLACK_MAX_RETRIES : 3;
       const bugReportsRef = db.collection('bugReports')
         .where('slackMessages.onCreate.retries', '<', MAX_RETRIES)
         .where('slackMessages.onCreate.sentAt', '==', null);
@@ -59,9 +58,9 @@ export default (db, firebase) => {
   /**
    * Update the num slack retries based on the action (eg create)
    * This number specifies the number of times we've tried to send the slack msg to notify us that an issue was eg created
-   * @param {*} bugReport 
-   * @param {*} action 
-   * @returns 
+   * @param {*} bugReport
+   * @param {*} action
+   * @returns
    */
   async function incrementSlackRetries(bugReport, action = 'create') {
     const commands = [];
@@ -70,7 +69,7 @@ export default (db, firebase) => {
       let retries = bugReport.slackMessages[bugReportAction].retries;
       const data = bugReport;
       data.slackMessages.onCreate.retries = ++retries;
-      const MAX_RETRIES = config.SLACK_MAX_RETRIES ? config.SLACK_MAX_RETRIES : 3;
+      const MAX_RETRIES = process.env.SLACK_MAX_RETRIES ? process.env.SLACK_MAX_RETRIES : 3;
       if (retries < MAX_RETRIES) {
         commands.push({
           command: 'update',
@@ -90,14 +89,13 @@ export default (db, firebase) => {
   /**
    * Update the slack retry timestamp based on the action (eg create)
    * This timestamp specifies the time that the slack msg was sent when the issue was eg created
-   * @param {*} bugReport 
-   * @param {*} action 
-   * @returns 
+   * @param {*} bugReport
+   * @param {*} action
+   * @returns
    */
   async function updateBugReportOnSlackSent(bugReport, action = 'create') {
     const commands = [];
     if (action === 'create') {
-      const bugReportAction = 'onCreate';
       const data = bugReport;
       data.slackMessages.onCreate.sentAt = firebase.firestore.FieldValue.serverTimestamp();
       commands.push({
@@ -117,9 +115,9 @@ export default (db, firebase) => {
   /**
    * When a github issue is created update the bugReport with the issue number and url to the issue
    * on github
-   * @param {*} bugReport 
-   * @param {*} issue 
-   * @returns 
+   * @param {*} bugReport
+   * @param {*} issue
+   * @returns
    */
   async function updateBugReportOnCreate(bugReport, issueNumber, issueUrl) {
     const commands = [];

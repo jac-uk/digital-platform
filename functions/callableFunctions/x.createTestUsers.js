@@ -1,16 +1,17 @@
 import * as functions from 'firebase-functions/v1';
 import { firebase, db, auth } from '../shared/admin.js';
-import config from '../shared/config.js';
 import initApplications from '../actions/applications/applications.js';
 import initUsers from '../actions/users.js';
 import { isProduction } from '../shared/helpers.js';
 
-const { loadTestApplications } = initApplications(config, firebase, db, auth);
-const { deleteUsers } = initUsers(auth, db);
+const { loadTestApplications } = initApplications(firebase, db, auth);
+const { importUsers } = initUsers(auth, db);
 
 const runtimeOptions = {
-  memory: '512MB',
+  memory: '512MiB',
 };
+// default hashed password
+const defaultPasswordBcryptHash = '$2a$12$y/eoSrLp1c147c4VjCT/l.f/hxxraGhQYIYKYycZVdqh61pvPXjOW';
 
 export default functions.runWith(runtimeOptions).region('europe-west2').https.onCall(async (data, context) => {
   // do not use this function on production
@@ -36,11 +37,16 @@ export default functions.runWith(runtimeOptions).region('europe-west2').https.on
     throw new functions.https.HttpsError('invalid-argument', 'The number of test applications should be between 1 and ' + maxNoOfTestApplications);
   }
 
-  let uids = [];
+  const passwordBcryptHash = data.passwordBcryptHash ? data.passwordBcryptHash : defaultPasswordBcryptHash;
+  let userImportRecords = [];
   for (let i = 0; i < data.noOfTestUsers; i++) {
     const application = testApplications[i];
-    uids.push(application.userId);
+    userImportRecords.push({
+      uid: application.userId,
+      email: application.personalDetails.email,
+      passwordHash: Buffer.from(passwordBcryptHash),
+    });
   }
 
-  return await deleteUsers(uids);
+  return await importUsers(userImportRecords);
 });

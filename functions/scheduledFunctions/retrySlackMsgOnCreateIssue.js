@@ -1,20 +1,29 @@
-import config from '../shared/config.js';
-import * as functions from 'firebase-functions/v1';
+import { onSchedule } from 'firebase-functions/v2/scheduler';
 import { auth, firebase, db } from '../shared/admin.js';
 import initSlackActions from '../actions/slack.js';
-const { retrySlackMessageOnCreateIssue } = initSlackActions(auth, config, db, firebase);
-const SCHEDULE = config.SLACK_RETRY_SCHEDULE ? config.SLACK_RETRY_SCHEDULE : 'every 2 minutes';
 
-export default functions
-  .region('europe-west2')
-  .pubsub
-  .schedule(SCHEDULE)
-  .timeZone('Europe/London')
-  .onRun(async () => {
-    if (Object.prototype.hasOwnProperty.call(config, 'SLACK_TICKETING_APP_CHANNEL_ID')) {
-      const result = await retrySlackMessageOnCreateIssue(config.SLACK_TICKETING_APP_CHANNEL_ID);
+export default onSchedule(
+  {
+    schedule: process.env.SLACK_RETRY_SCHEDULE ? process.env.SLACK_RETRY_SCHEDULE : 'every 2 minutes',
+    region: 'europe-west2',
+    timeZone: 'Europe/London',
+    memory: '256MiB', // Adjust as needed
+    timeoutSeconds: 540, // Maximum timeout for long-running tasks
+    secrets: [
+      'SLACK_TICKETING_APP_BOT_TOKEN',
+      'SLACK_TICKETING_APP_CHANNEL_ID',
+      'SLACK_URL',
+    ],  // ✅ Ensure the function has access to the secrets
+  },
+  async (event) => {
+    if (process.env.SLACK_TICKETING_APP_CHANNEL_ID) {
+
+      const { retrySlackMessageOnCreateIssue } = initSlackActions(auth, db, firebase);
+
+      const result = await retrySlackMessageOnCreateIssue(process.env.SLACK_TICKETING_APP_CHANNEL_ID);
       return result;
     }
-    console.log('Cannot run scheduled task: retrySlackMessageOnCreateIssue due to missing SLACK_TICKETING_APP_CHANNEL_ID');
+    console.log('Cannot run scheduled task: retrySlackMessageOnCreateIssue due to missing process.env.SLACK_TICKETING_APP_CHANNEL_ID');
     return false;
-  });
+  }
+);

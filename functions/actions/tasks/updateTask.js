@@ -6,8 +6,9 @@ import initFactories from '../../shared/factories.js';
 import initQts from '../../shared/qts.js';
 import { getOverride } from './meritListHelper.js';
 import { GRADES, GRADE_VALUES, markingScheme2ScoreSheet } from '../../shared/scoreSheetHelper.js';
+import { TASK_STATUS, PANEL_STATUS, TASK_TYPE, CANDIDATE_FORM_STATUS } from '../../shared/constants.js';
 
-export default (config, firebase, db) => {
+export default (firebase, db) => {
   const {
     taskStatuses,
     taskNextStatus,
@@ -16,7 +17,7 @@ export default (config, firebase, db) => {
     hasOverallGrade,
     getOverallGrade,
     createMarkingScheme,
-    scoreSheet,
+    //scoreSheet,
     getEmptyScoreSheet,
     scoreSheet2MarkingScheme,
     getApplicationPassStatus,
@@ -24,12 +25,12 @@ export default (config, firebase, db) => {
     getApplicationDidNotParticipateStatus,
     getApplicationPassStatuses,
     getApplicationFailStatuses,
-    taskApplicationsEntryStatus,
+    //taskApplicationsEntryStatus,
     includeZScores,
-  } = initTaskHelpers(config);
+  } = initTaskHelpers();
 
   const { refreshApplicationCounts } = initRefreshApplicationCounts(firebase, db);
-  const { newCandidateFormResponse } = initFactories(config);
+  const { newCandidateFormResponse } = initFactories();
 
   return {
     updateTask,
@@ -75,62 +76,62 @@ export default (config, firebase, db) => {
 
     // update task
     switch (nextStatus) {
-    case config.TASK_STATUS.PANELS_INITIALISED:
-      if (task.type === config.TASK_TYPE.SCENARIO) {
+    case TASK_STATUS.PANELS_INITIALISED:
+      if (task.type === TASK_TYPE.SCENARIO) {
         result = await initialisePanelTaskForScenario(exercise, task);
       } else {
         result = await initialisePanelTask(exercise, { task: task });
       }
       break;
-    case config.TASK_STATUS.PANELS_ACTIVATED:
+    case TASK_STATUS.PANELS_ACTIVATED:
       result = await activatePanelTask(exercise, task);
       break;
-    case config.TASK_STATUS.TEST_ACTIVATED:
+    case TASK_STATUS.TEST_ACTIVATED:
       result = await activateTestTask(exercise, task);
       break;
-    case config.TASK_STATUS.CANDIDATE_FORM_CONFIGURE:
+    case TASK_STATUS.CANDIDATE_FORM_CONFIGURE:
       result = await initialiseCandidateFormTask(exercise, task.type);
       break;
-    case config.TASK_STATUS.CANDIDATE_FORM_MONITOR:
+    case TASK_STATUS.CANDIDATE_FORM_MONITOR:
       result = await monitorCandidateFormTask(exercise, task);
       break;
-    case config.TASK_STATUS.DATA_INITIALISED:
+    case TASK_STATUS.DATA_INITIALISED:
       result = await initialiseDataTask(exercise, task.type);
       break;
-    case config.TASK_STATUS.DATA_ACTIVATED:
+    case TASK_STATUS.DATA_ACTIVATED:
       result = await activateDataTask(exercise, task);
       break;
-    case config.TASK_STATUS.MODERATION_INITIALISED:
+    case TASK_STATUS.MODERATION_INITIALISED:
       result = await initialiseModerationTask(exercise, task);
       break;
-    case config.TASK_STATUS.MODERATION_ACTIVATED:
+    case TASK_STATUS.MODERATION_ACTIVATED:
       result = await activateModerationTask(exercise, task);
       break;
-    case config.TASK_STATUS.FINALISED:
+    case TASK_STATUS.FINALISED:
       switch (task.status) {
-      case config.TASK_STATUS.PANELS_ACTIVATED:
+      case TASK_STATUS.PANELS_ACTIVATED:
         result = await finalisePanelTask(exercise, task);
         break;
-      case config.TASK_STATUS.TEST_ACTIVATED:
+      case TASK_STATUS.TEST_ACTIVATED:
         result = await finaliseTestTask(exercise, task);
         break;
-      case config.TASK_STATUS.DATA_ACTIVATED:
+      case TASK_STATUS.DATA_ACTIVATED:
         result = await finaliseDataTask(exercise, task);
         break;
       }
       break;
-    case config.TASK_STATUS.STAGE_OUTCOME:
+    case TASK_STATUS.STAGE_OUTCOME:
       result = await initialiseStageOutcomeTask(exercise, task.type);
       break;
-    case config.TASK_STATUS.COMPLETED:
+    case TASK_STATUS.COMPLETED:
       switch (task.status) {
-      case config.TASK_STATUS.STATUS_CHANGES:
+      case TASK_STATUS.STATUS_CHANGES:
         result = await completeStatusChangesTask(exercise, task);
         break;
-      case config.TASK_STATUS.STAGE_OUTCOME:
+      case TASK_STATUS.STAGE_OUTCOME:
         result = await completeStageOutcomeTask(exercise, task, params.nextStage);
         break;
-      case config.TASK_STATUS.CANDIDATE_FORM_MONITOR:
+      case TASK_STATUS.CANDIDATE_FORM_MONITOR:
         result = await completeCandidateFormTask(exercise, task);
         break;
       default:
@@ -250,7 +251,7 @@ export default (config, firebase, db) => {
     };
 
     // get test
-    const qts = initQts(config);
+    const qts = initQts();
     const response = await qts.get('scores', {
       testId: task.test.id,
     });
@@ -341,13 +342,13 @@ export default (config, firebase, db) => {
         markingScheme: task.markingScheme,
         hasModeration: panelIds.length > 1,
         scoreSheet: {},
-        status: config.PANEL_STATUS.CREATED,
+        status: PANEL_STATUS.CREATED,
       };
       if (task.grades) {
         data.grades = task.grades;
         data.grade_values = GRADE_VALUES;
       }
-      data[`statusLog.${config.PANEL_STATUS.CREATED}`] = firebase.firestore.FieldValue.serverTimestamp();
+      data[`statusLog.${PANEL_STATUS.CREATED}`] = firebase.firestore.FieldValue.serverTimestamp();
 
       const relevantApplicationRecords = applicationRecords.filter(applicationRecord => panel.applicationIds.indexOf(applicationRecord.id) >= 0);
       relevantApplicationRecords.forEach(applicationRecord => {
@@ -395,9 +396,9 @@ export default (config, firebase, db) => {
       data: {},
     };
     const title = `${lookup(testType)} for ${folderName}`;
-    const QTType = testType === config.TASK_TYPE.EMP_TIEBREAKER ? config.TASK_TYPE.SCENARIO : testType;
+    const QTType = testType === TASK_TYPE.EMP_TIEBREAKER ? TASK_TYPE.SCENARIO : testType;
     // initialise test on QT Platform
-    const qts = initQts(config);
+    const qts = initQts();
     const response = await qts.post('qualifying-test', {
       folder: folderName,
       test: {
@@ -444,7 +445,7 @@ export default (config, firebase, db) => {
     });
 
     // send participants to QT Platform
-    const qts = initQts(config);
+    const qts = initQts();
     await qts.post('participants', {
       testId: task.test.id,
       participants: participants,
@@ -501,7 +502,7 @@ export default (config, firebase, db) => {
       openDate: exercise.preSelectionDayQuestionnaireSendDate,
       closeDate: exercise.preSelectionDayQuestionnaireReturnDate,
       parts: [],
-      status: config.CANDIDATE_FORM_STATUS.CREATED,
+      status: CANDIDATE_FORM_STATUS.CREATED,
       statusLog: {},
       candidateAvailabilityDates: [],
     };
@@ -514,7 +515,7 @@ export default (config, firebase, db) => {
       dates.forEach(date => saveData.candidateAvailabilityDates.push({ date: date, location: location }));
     });
 
-    saveData.statusLog[config.CANDIDATE_FORM_STATUS.CREATED] = firebase.firestore.FieldValue.serverTimestamp();
+    saveData.statusLog[CANDIDATE_FORM_STATUS.CREATED] = firebase.firestore.FieldValue.serverTimestamp();
     const candidateForm = await db.collection('candidateForms').add(saveData);
 
     result.success = true;
@@ -677,9 +678,9 @@ export default (config, firebase, db) => {
 
     // get scoresheet
     let emptyScoreSheet = task.emptyScoreSheet;
-    if (task.type === config.TASK_TYPE.SCENARIO || task.type === config.TASK_TYPE.EMP_TIEBREAKER) {
+    if (task.type === TASK_TYPE.SCENARIO || task.type === TASK_TYPE.EMP_TIEBREAKER) {
       // get test
-      const qts = initQts(config);
+      const qts = initQts();
       const response = await qts.get('scores', {
         testId: task.test.id,
       });
@@ -800,7 +801,7 @@ export default (config, firebase, db) => {
     };
 
     // get results from QT Platform
-    const qts = initQts(config);
+    const qts = initQts();
     const response = await qts.get('scores', {
       testId: task.test.id,
     });
@@ -976,15 +977,15 @@ export default (config, firebase, db) => {
     }
 
     // check for qualifying test follow on task
-    if (task.type === config.TASK_TYPE.CRITICAL_ANALYSIS || task.type === config.TASK_TYPE.SITUATIONAL_JUDGEMENT) {
+    if (task.type === TASK_TYPE.CRITICAL_ANALYSIS || task.type === TASK_TYPE.SITUATIONAL_JUDGEMENT) {
       if (
         exercise.shortlistingMethods.indexOf('critical-analysis-qualifying-test') >= 0 && exercise.criticalAnalysisTestDate
         && exercise.shortlistingMethods.indexOf('situational-judgement-qualifying-test') >= 0 && exercise.situationalJudgementTestDate
       ) {
         // get the other QT task
-        const otherTaskType = task.type === config.TASK_TYPE.CRITICAL_ANALYSIS ? config.TASK_TYPE.SITUATIONAL_JUDGEMENT : config.TASK_TYPE.CRITICAL_ANALYSIS;
+        const otherTaskType = task.type === TASK_TYPE.CRITICAL_ANALYSIS ? TASK_TYPE.SITUATIONAL_JUDGEMENT : TASK_TYPE.CRITICAL_ANALYSIS;
         const otherTask = await getDocument(db.doc(`exercises/${exercise.id}/tasks/${otherTaskType}`));
-        if (otherTask.status === config.TASK_STATUS.COMPLETED) {
+        if (otherTask.status === TASK_STATUS.COMPLETED) {
           // create qualifying test task
           const finalScores = [];
           const applications = [];
@@ -992,8 +993,8 @@ export default (config, firebase, db) => {
             if (scoreData.pass) {
               const otherTaskScoreData = otherTask.finalScores.find(otherScoreData => otherScoreData.id === scoreData.id);
               if (otherTaskScoreData && otherTaskScoreData.pass) {
-                const CAData = task.type === config.TASK_TYPE.CRITICAL_ANALYSIS ? scoreData : otherTaskScoreData;
-                const SJData = task.type === config.TASK_TYPE.CRITICAL_ANALYSIS ? otherTaskScoreData : scoreData;
+                const CAData = task.type === TASK_TYPE.CRITICAL_ANALYSIS ? scoreData : otherTaskScoreData;
+                const SJData = task.type === TASK_TYPE.CRITICAL_ANALYSIS ? otherTaskScoreData : scoreData;
                 finalScores.push({
                   id: scoreData.id,
                   ref: scoreData.ref,
@@ -1040,7 +1041,7 @@ export default (config, firebase, db) => {
             finalScores: includeZScores(finalScores),
             markingScheme: [
               {
-                ref: config.TASK_TYPE.QUALIFYING_TEST,
+                ref: TASK_TYPE.QUALIFYING_TEST,
                 type: 'group',
                 children: [
                   {
@@ -1054,14 +1055,14 @@ export default (config, firebase, db) => {
                 ],
               },
             ],
-            type: config.TASK_TYPE.QUALIFYING_TEST,
+            type: TASK_TYPE.QUALIFYING_TEST,
           };
-          taskData['status'] = config.TASK_STATUS.FINALISED;
+          taskData['status'] = TASK_STATUS.FINALISED;
           taskData.statusLog = {};
-          taskData.statusLog[config.TASK_STATUS.FINALISED] = firebase.firestore.FieldValue.serverTimestamp();
+          taskData.statusLog[TASK_STATUS.FINALISED] = firebase.firestore.FieldValue.serverTimestamp();
           commands.push({
             command: 'set',
-            ref: db.doc(`exercises/${exercise.id}/tasks/${config.TASK_TYPE.QUALIFYING_TEST}`),
+            ref: db.doc(`exercises/${exercise.id}/tasks/${TASK_TYPE.QUALIFYING_TEST}`),
             data: taskData,
           });
         }

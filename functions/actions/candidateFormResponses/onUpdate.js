@@ -1,6 +1,6 @@
 import { applyUpdates } from '../../shared/helpers.js';
 
-export default (config, firebase, db, auth) => {
+export default (firebase, db, auth) => {
 
   return onUpdate;
 

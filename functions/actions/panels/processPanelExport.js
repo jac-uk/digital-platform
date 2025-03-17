@@ -4,7 +4,7 @@ import initDrive from '../../shared/google-drive.js';
 const applicationConverter = initApplicationConverter();
 const drive = initDrive();
 
-export default (config, firebase, db) => {
+export default (firebase, db) => {
 
   return {
     processPanelExport,
@@ -41,7 +41,7 @@ export default (config, firebase, db) => {
       drive.setDriveId(panel.drive.driveId);
 
       // get storage service
-      const bucket = firebase.storage().bucket(config.STORAGE_URL);
+      const bucket = firebase.storage().bucket(process.env.STORAGE_URL);
       // console.log('bucket', bucket);
 
       // show candidate name

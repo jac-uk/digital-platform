@@ -1,6 +1,6 @@
 import mammoth from 'mammoth';
 
-export default (config, firebase) => {
+export default (firebase) => {
   return {
     extractDocumentContent,
   };
@@ -13,7 +13,7 @@ export default (config, firebase) => {
    * @param {array}  questions    - List of questions used to extract the answers from the document
    */
   async function extractDocumentContent(templatePath, documentPath, questions) {
-    const bucket = firebase.storage().bucket(config.STORAGE_URL);
+    const bucket = firebase.storage().bucket(process.env.STORAGE_URL);
   
     try {
       // Download template and document files
