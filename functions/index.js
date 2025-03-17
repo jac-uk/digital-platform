@@ -6,7 +6,7 @@ import scheduleScanAllFiles from './scheduledFunctions/scheduleScanAllFiles.js';
 import runScannerTest from './scheduledFunctions/runScannerTest.js';
 import retrySlackMessageOnCreateIssue from './scheduledFunctions/retrySlackMsgOnCreateIssue.js';
 
-// Background
+/// Background
 import onDelete from './backgroundFunctions/onDelete.js';
 import onExerciseCreate from './backgroundFunctions/onExerciseCreate.js';
 import onExerciseUpdate from './backgroundFunctions/onExerciseUpdate.js';
