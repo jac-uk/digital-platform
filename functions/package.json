@@ -16,7 +16,7 @@
     "logs": "firebase functions:log"
   },
   "dependencies": {
-    "axios": "^1.7.9",
+    "axios": "^1.8.3",
     "bottleneck": "^2.19.5",
     "dayjs": "^1.11.13",
     "dotenv": "^16.4.7",
