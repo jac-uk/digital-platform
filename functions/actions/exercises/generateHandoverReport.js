@@ -201,6 +201,7 @@ const formatPersonalDetails = (personalDetails) => {
     town: address && address.town ? address.town : null,
     county: address && address.county ? address.county : null,
     postcode: address && address.postcode ? address.postcode : null,
+    country: address.country ? address.country : lookup(personalDetails.citizenship), // check if country is in address, if not use citizenship
     citizenship: lookup(personalDetails.citizenship),
     phone: personalDetails.phone || null,
     mobile: personalDetails.mobile || null,
@@ -232,7 +233,6 @@ const formatDiversityData = (survey, exercise, personalDetails) => {
   }
   return {
     gender: share(lookup(survey.gender)),
-    country: lookup(personalDetails.citizenship), // the content should come from the Citizenship field as most candidates will not specify country in their address
     ethnicGroup: share(lookup(survey.ethnicGroup)),
     stateOrFeeSchool16: share(lookup(survey.stateOrFeeSchool16)),
     parentsAttendedUniversity: share(helpers.toYesNo(lookup(survey.parentsAttendedUniversity))),
