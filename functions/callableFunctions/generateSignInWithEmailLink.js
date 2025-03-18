@@ -21,9 +21,6 @@ export default onCall(
       const data = request.data;
 
       await checkFunctionEnabled();
-      if (!request.auth) {
-        throw new HttpsError('failed-precondition', 'The function must be called while authenticated.');
-      }
 
       if (!checkArguments({
         ref: { required: true },

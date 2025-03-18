@@ -13,7 +13,7 @@ export default onDocumentUpdated('applicationRecords/{applicationRecordId}', (ev
 
   if (dataBefore.stage !== dataAfter.stage) {
     const detail = {
-      applicationRecordId: change.after.id,
+      applicationRecordId: event.data.after.id,
       candidateName: dataAfter.candidate.fullName,
       exerciseRef: dataAfter.exercise.referenceNumber,
       oldStage: dataBefore.stage,
@@ -24,7 +24,7 @@ export default onDocumentUpdated('applicationRecords/{applicationRecordId}', (ev
 
   if (dataBefore.status !== dataAfter.status) {
     const detail = {
-      applicationRecordId: change.after.id,
+      applicationRecordId: event.data.after.id,
       candidateName: dataAfter.candidate.fullName,
       exerciseRef: dataAfter.exercise.referenceNumber,
       oldStatus: dataBefore.status,

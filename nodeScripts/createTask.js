@@ -7,8 +7,8 @@ const createTask = initCreateTask(firebase, db);
 
 const main = async () => {
   return createTask({
-    exerciseId: 'kT7GfUeNwp5DsYkgEQIH',
-    type: 'sift',
+    exerciseId: 'nKtO8nAdvFFVBEEbvm4Z',
+    type: 'selectionDay',
   });
 };
 

@@ -10,6 +10,9 @@ firebase-debug.log*
 service-account.json
 service-account.*.json
 
+# ignore .env but include .env.* in source control
+.env
+
 # secrets
 .secret.local
 

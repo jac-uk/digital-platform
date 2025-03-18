@@ -3,12 +3,12 @@ name: Storage rules
 on:
   # pull_request:
   #   branches:
-  #     - develop
+  #     - main
   #   paths:
   #     - 'storage/storage.rules'
   push:
     branches:
-      - develop
+      - main
     paths:
       - 'storage/storage.rules'
 

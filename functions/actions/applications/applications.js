@@ -629,7 +629,7 @@ export default (firebase, db, auth) => {
             {
               command: 'set',
               ref: db.collection('notifications').doc(),
-              data: newNotificationPublishedFeedbackReport(firebase, emails[i], exercise.name, taskType),
+              data: newNotificationPublishedFeedbackReport(firebase, emails[i], exercise, taskType),
             }
           );
         }
