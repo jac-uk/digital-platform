@@ -6,7 +6,7 @@ import initLogEvent from '../actions/logs/logEvent.js';
 import initServiceSettings from '../shared/serviceSettings.js';
 import { PERMISSIONS, hasPermissions } from '../shared/permissions.js';
 
-const { exportSccSummaryReport } = initExportSccSummaryReport(db);
+const { exportSccSummaryReport } = initExportSccSummaryReport(firebase, db);
 const { logEvent } = initLogEvent(firebase, db, auth);
 const { checkFunctionEnabled } = initServiceSettings(db);
 
