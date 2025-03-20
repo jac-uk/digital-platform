@@ -201,7 +201,7 @@ const formatPersonalDetails = (personalDetails) => {
     town: address && address.town ? address.town : null,
     county: address && address.county ? address.county : null,
     postcode: address && address.postcode ? address.postcode : null,
-    country: address.country ? address.country : lookup(personalDetails.citizenship), // check if country is in address, if not use citizenship
+    country: address && address.country ? address.country : lookup(personalDetails.citizenship), // check if country is in address, if not use citizenship
     citizenship: lookup(personalDetails.citizenship),
     phone: personalDetails.phone || null,
     mobile: personalDetails.mobile || null,
