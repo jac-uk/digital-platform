@@ -644,6 +644,79 @@ export default () => {
     return finalScores;
   }
 
+  /**
+   * includeZScores
+   * Calculates z score for each item provided in the 'finalScores' param
+   * * @param {*} `finalScores` array of objects where each object has the following shape:
+   ```
+   {
+    score: Number,
+    percent: Number,
+    scoreSheet: {
+      qualifyingTest: {
+        CA: {
+          score: Number,
+          percent: Number,
+        },
+        SJ: {
+          score: Number,
+          percent: Number,
+        },
+        score: Number,
+        percent: Number,
+      },
+    },
+  }
+  ```
+   * @returns Provided `finalScores` array decorated with new `zScore` properties
+   * Note: zScore = ((% Score – Mean(All % Scores))/SD(All % Scores))
+   * Note: combined zScore has a weighting of 40% of CAT zScore plus 60% of SJT zScore
+   **/
+  function includeZScores(finalScores) {
+    if (!finalScores) return [];
+    if (!finalScores.length) return [];
+    let CApercents = [];
+    let SJpercents = [];
+    try {
+      finalScores.forEach(item => {
+        // only candidates pass both CAT and SJT should be included in zScores
+        if (item.scoreSheet.qualifyingTest.CA.pass === false || item.scoreSheet.qualifyingTest.SJ.pass === false) return;
+        CApercents.push(item.scoreSheet.qualifyingTest.CA.percent);
+        SJpercents.push(item.scoreSheet.qualifyingTest.SJ.percent);
+      });
+      const CAmean = calculateMean(CApercents);
+      const SJmean = calculateMean(SJpercents);
+      const CAstdev = calculateStandardDeviation(CApercents);
+      const SJstdev = calculateStandardDeviation(SJpercents);
+      finalScores.forEach(item => {
+        // only candidates pass both CAT and SJT should be included in zScores
+        const isFailed = item.scoreSheet.qualifyingTest.CA.pass === false || item.scoreSheet.qualifyingTest.SJ.pass === false;
+        if (!isFailed) {
+          item.scoreSheet.qualifyingTest.CA.zScore = CAstdev ? (item.scoreSheet.qualifyingTest.CA.percent - CAmean) / CAstdev : 0;
+          item.scoreSheet.qualifyingTest.SJ.zScore = SJstdev ? (item.scoreSheet.qualifyingTest.SJ.percent - SJmean) / SJstdev : 0;          
+        } else {
+          item.scoreSheet.qualifyingTest.CA.zScore = null;
+          item.scoreSheet.qualifyingTest.SJ.zScore = null;
+        }
+      });
+      finalScores.forEach(item => {
+        let zScore = (0.4 * item.scoreSheet.qualifyingTest.CA.zScore) + (0.6 * item.scoreSheet.qualifyingTest.SJ.zScore);
+        /**
+         * If failed one of CAT or SJT, then it should fail in overall merit list task.
+         * To achieve this, if one of the tests fails, all the scores and z-scores should be null.
+         */
+        if (item.scoreSheet.qualifyingTest.CA.pass === false || item.scoreSheet.qualifyingTest.SJ.pass === false) zScore = null;
+        if (zScore !== null) zScore = parseFloat(zScore.toFixed(2));
+        if (zScore === 0) zScore = 0;
+        item.zScore = zScore;
+        item.scoreSheet.qualifyingTest.zScore = zScore;
+      });
+    } catch (e) {
+      return finalScores;
+    }
+    return finalScores;
+  }
+
   function hasTaskType(exercise, taskType) {
     const task = getTimelineTasks(exercise, taskType)[0];
     return task ? true : false;
