@@ -3,12 +3,12 @@ name: Firestore indexes
 on:
   # pull_request:
   #   branches:
-  #     - develop
+  #     - main
   #   paths:
   #     - 'database/firestore.indexes.json'
   push:
     branches:
-      - develop
+      - main
     paths:
       - 'database/firestore.indexes.json'
 

@@ -1024,11 +1024,6 @@ export default (firebase, db) => {
         // get the other QT task
         const otherTaskType = task.type === TASK_TYPE.CRITICAL_ANALYSIS ? TASK_TYPE.SITUATIONAL_JUDGEMENT : TASK_TYPE.CRITICAL_ANALYSIS;
         const otherTask = await getDocument(db.doc(`exercises/${exercise.id}/tasks/${otherTaskType}`));
-       
-        console.log('task.type', task.type);
-        console.log('otherTaskType', otherTaskType);
-        console.log('otherTask.status', otherTask.status);
-
         if (otherTask.status === TASK_STATUS.COMPLETED) {
           // create qualifying test task
           const finalScores = [];

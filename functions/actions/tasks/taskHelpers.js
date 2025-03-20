@@ -722,4 +722,9 @@ export default () => {
     return task ? true : false;
   }
 
+  function hasTaskType(exercise, taskType) {
+    const task = getTimelineTasks(exercise, taskType)[0];
+    return task ? true : false;
+  }
+
 };

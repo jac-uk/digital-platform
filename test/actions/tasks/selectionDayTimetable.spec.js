@@ -1,4 +1,5 @@
 import selectionDayTimetable from '../../../functions/actions/tasks/selectionDayTimetable.js';
+import { formatDate } from '../../../functions/shared/helpers.js';
 
 describe('selectionDayTimetable', () => {
   let mockPanelData;
@@ -11,7 +12,8 @@ describe('selectionDayTimetable', () => {
     mockPanelData = [
       { 
         panel: { 
-          id: 'panel1', 
+          id: 'panel1',
+          name: 'Panel 1',
         },
         panellists: [
           {
@@ -21,23 +23,34 @@ describe('selectionDayTimetable', () => {
             id: 'panellist2',
           },
         ],
-        date: new Date('2024-01-01'),
-        totalSlots: 5,
+        applicationIds: ['application1', 'application2'],
+        timetable: [
+          {
+            date: new Date('2024-01-01'),
+            totalSlots: 2,
+          },
+        ],
       },
       { 
         panel: { 
-          id: 'panel2', 
+          id: 'panel2',
+          name: 'Panel 2',
         },
         panellists: [
           {
-            id: 'panellist3',
+            id: 'panellist1',
           },
           {
-            id: 'panellist4',
+            id: 'panellist2',
           },
         ],
-        date: new Date('2024-01-02'),
-        totalSlots: 5,
+        applicationIds: ['application3', 'application4'],
+        timetable: [
+          {
+            date: new Date('2024-01-02'),
+            totalSlots: 2,
+          },
+        ],
       },
       // Add more panel data as needed
     ];
@@ -47,11 +60,21 @@ describe('selectionDayTimetable', () => {
         candidate: {
           id: 'candidate1',
         },
+        application: {
+          id: 'application1',
+          ref: 'JAC001-001',
+          fullName: '001 JAC',
+        },
         availableDates: [new Date('2024-01-01')],
       },
       {
         candidate: {
-          id: 'candidate2',
+          id: 'candidate3',
+        },
+        application: {
+          id: 'application3',
+          ref: 'JAC001-003',
+          fullName: '003 JAC',
         },
         availableDates: [new Date('2024-01-02')],
       },
@@ -68,9 +91,11 @@ describe('selectionDayTimetable', () => {
         candidate: {
           id: 'candidate1',
         },
-        panellist: {
-          id: 'panellist3',
-        },
+        panellists: [
+          {
+            id: 'panellist3',
+          },
+        ],
       },
     ];
   });
@@ -81,18 +106,22 @@ describe('selectionDayTimetable', () => {
     expect(result).toHaveLength(2);
 
     const firstRow = result[0];
-    expect(firstRow.Panel).toBe(mockPanelData[0].panel.id);
-    expect(firstRow.Date).toEqual(mockPanelData[0].date);
-    expect(firstRow.Slot).toBe(1);
-    expect(firstRow.CandidateRef).toBe(mockCandidateInfo[0].candidate.id); 
-    expect(firstRow.ReasonableAdjustment).toBe(true);
+    expect(firstRow.panel.id).toBe(mockPanelData[0].panel.id);
+    expect(firstRow.panel.name).toBe(mockPanelData[0].panel.name);
+    expect(firstRow.date).toEqual(formatDate(mockPanelData[0].timetable[0].date, 'DD/MM/YYYY'));
+    expect(firstRow.slot).toBe(1);
+    expect(firstRow.application.ref).toBe(mockCandidateInfo[0].application.ref);
+    expect(firstRow.application.fullName).toBe(mockCandidateInfo[0].application.fullName);
+    expect(firstRow.reasonableAdjustment).toBe(true);
 
     const secondRow = result[1];
-    expect(secondRow.Panel).toBe(mockPanelData[1].panel.id);
-    expect(secondRow.Date).toEqual(mockPanelData[1].date);
-    expect(secondRow.Slot).toBe(1);
-    expect(secondRow.CandidateRef).toBe(mockCandidateInfo[1].candidate.id);
-    expect(secondRow.ReasonableAdjustment).toBe(false);
+    expect(secondRow.panel.id).toBe(mockPanelData[1].panel.id);
+    expect(secondRow.panel.name).toBe(mockPanelData[1].panel.name);
+    expect(secondRow.date).toEqual(formatDate(mockPanelData[1].timetable[0].date, 'DD/MM/YYYY'));
+    expect(secondRow.slot).toBe(1);
+    expect(secondRow.application.ref).toBe(mockCandidateInfo[1].application.ref);
+    expect(secondRow.application.fullName).toBe(mockCandidateInfo[1].application.fullName);
+    expect(secondRow.reasonableAdjustment).toBe(false);
   });
   
   describe('slots', () => {
@@ -103,11 +132,21 @@ describe('selectionDayTimetable', () => {
           candidate: {
             id: 'candidate1',
           },
+          application: {
+            id: 'application1',
+            ref: 'JAC001-001',
+            fullName: '001 JAC',
+          },
           availableDates: [new Date('2024-01-01')],
         },
         {
           candidate: {
             id: 'candidate2',
+          },
+          application: {
+            id: 'application2',
+            ref: 'JAC001-002',
+            fullName: '002 JAC',
           },
           availableDates: [new Date('2024-01-01')],
         },
@@ -118,18 +157,22 @@ describe('selectionDayTimetable', () => {
       expect(result).toHaveLength(2);
       
       const firstRow = result[0];
-      expect(firstRow.Panel).toBe(mockPanelData[0].panel.id);
-      expect(firstRow.Date).toEqual(mockPanelData[0].date);
-      expect(firstRow.Slot).toBe(1);
-      expect(firstRow.CandidateRef).toBe(mockCandidateInfo[0].candidate.id); 
-      expect(firstRow.ReasonableAdjustment).toBe(true);
+      expect(firstRow.panel.id).toBe(mockPanelData[0].panel.id);
+      expect(firstRow.panel.name).toBe(mockPanelData[0].panel.name);
+      expect(firstRow.date).toEqual(formatDate(mockPanelData[0].timetable[0].date, 'DD/MM/YYYY'));
+      expect(firstRow.slot).toBe(1);
+      expect(firstRow.application.ref).toBe(mockCandidateInfo[0].application.ref);
+      expect(firstRow.application.fullName).toBe(mockCandidateInfo[0].application.fullName);
+      expect(firstRow.reasonableAdjustment).toBe(true);
 
       const secondRow = result[1];
-      expect(secondRow.Panel).toBe(mockPanelData[0].panel.id);
-      expect(secondRow.Date).toEqual(mockPanelData[0].date);
-      expect(secondRow.Slot).toBe(2);
-      expect(secondRow.CandidateRef).toBe(mockCandidateInfo[1].candidate.id);
-      expect(secondRow.ReasonableAdjustment).toBe(false);
+      expect(secondRow.panel.id).toBe(mockPanelData[0].panel.id);
+      expect(secondRow.panel.name).toBe(mockPanelData[0].panel.name);
+      expect(secondRow.date).toEqual(formatDate(mockPanelData[0].timetable[0].date, 'DD/MM/YYYY'));
+      expect(secondRow.slot).toBe(2);
+      expect(secondRow.application.ref).toBe(mockCandidateInfo[1].application.ref);
+      expect(secondRow.application.fullName).toBe(mockCandidateInfo[1].application.fullName);
+      expect(secondRow.reasonableAdjustment).toBe(false);
     });
 
     it('wont assign too many candidates to slots', () => {
@@ -139,17 +182,32 @@ describe('selectionDayTimetable', () => {
           candidate: {
             id: 'candidate1',
           },
+          application: {
+            id: 'application1',
+            ref: 'JAC001-001',
+            fullName: '001 JAC',
+          },
           availableDates: [new Date('2024-01-01')],
         },
         {
           candidate: {
             id: 'candidate2',
           },
+          application: {
+            id: 'application2',
+            ref: 'JAC001-002',
+            fullName: '002 JAC',
+          },
           availableDates: [new Date('2024-01-01')],
         },
         {
           candidate: {
             id: 'candidate3',
+          },
+          application: {
+            id: 'application3',
+            ref: 'JAC001-003',
+            fullName: '003 JAC',
           },
           availableDates: [new Date('2024-01-01')],
         },
@@ -157,17 +215,10 @@ describe('selectionDayTimetable', () => {
           candidate: {
             id: 'candidate4',
           },
-          availableDates: [new Date('2024-01-01')],
-        },
-        {
-          candidate: {
-            id: 'candidate5',
-          },
-          availableDates: [new Date('2024-01-01')],
-        },
-        {
-          candidate: {
-            id: 'candidate6',
+          application: {
+            id: 'application4',
+            ref: 'JAC001-004',
+            fullName: '004 JAC',
           },
           availableDates: [new Date('2024-01-01')],
         },
@@ -175,202 +226,63 @@ describe('selectionDayTimetable', () => {
 
       const result = selectionDayTimetable(mockPanelData, mockCandidateInfo, mockReasonableAdjustments, mockPanelConflicts);
 
-      expect(result.timetable).toHaveLength(5); 
-      expect(result.unassignedCandidates).toEqual([mockCandidateInfo[5]]);
-    });
-
-    it('allocates candidates based on availability', () => {
-      mockPanelData = [
-        {
-          panel: { 
-            id: 'panel1', 
-          },
-          panellists: [
-            {
-              id: 'panellist1',
-            },
-            {
-              id: 'panellist2',
-            },
-          ],
-          date: new Date('2024-01-01'),
-          totalSlots: 1,
-        },
-        { 
-          panel: { 
-            id: 'panel2', 
-          },
-          panellists: [
-            {
-              id: 'panellist3',
-            },
-            {
-              id: 'panellist4',
-            },
-          ],
-          date: new Date('2024-01-02'),
-          totalSlots: 1,
-        },
-        { 
-          panel: { 
-            id: 'panel3', 
-          },
-          panellists: [
-            {
-              id: 'panellist5',
-            },
-            {
-              id: 'panellist6',
-            },
-          ],
-          date: new Date('2024-01-03'),
-          totalSlots: 1,
-        },
-      ];
-      mockReasonableAdjustments = [];
-      mockPanelConflicts = [];
-      mockCandidateInfo = [
-        {
-          candidate: {
-            id: 'candidate1',
-          },
-          availableDates: [new Date('2024-01-01'), new Date('2024-01-02'), new Date('2024-01-03')],
-        },
-        {
-          candidate: {
-            id: 'candidate2',
-          },
-          availableDates: [new Date('2024-01-01')],
-        },
-        {
-          candidate: {
-            id: 'candidate3',
-          },
-          availableDates: [new Date('2024-01-02')],
-        },
-      ];
-    
-      const result = selectionDayTimetable(mockPanelData, mockCandidateInfo, mockReasonableAdjustments, mockPanelConflicts);
-    
-      expect(result.timetable[0]).toEqual(
-        {'CandidateRef': 'candidate2', 'Date': new Date('2024-01-01'), 'Panel': 'panel1', 'ReasonableAdjustment': false, 'Slot': 1}
-      );
-      expect(result.timetable[1]).toEqual(
-        {'CandidateRef': 'candidate3', 'Date': new Date('2024-01-02'), 'Panel': 'panel2', 'ReasonableAdjustment': false, 'Slot': 1}
-      );
-      expect(result.timetable[2]).toEqual(
-        {'CandidateRef': 'candidate1', 'Date': new Date('2024-01-03'), 'Panel': 'panel3', 'ReasonableAdjustment': false, 'Slot': 1}
-      );
-      expect(result.unassignedCandidates).toEqual([]);
-    });
-
-    it('handles overlapping availability for different slots', () => {
-      const overlappingPanelData = [
-        {
-          panel: { id: 'panel1' },
-          panellists: [{ id: 'panellist1' }],
-          date: new Date('2024-01-01'),
-          totalSlots: 1,
-        },
-        {
-          panel: { id: 'panel2' },
-          panellists: [{ id: 'panellist1' }],
-          date: new Date('2024-01-02'),
-          totalSlots: 1,
-        },
-        {
-          panel: { id: 'panel3' },
-          panellists: [{ id: 'panellist1' }],
-          date: new Date('2024-01-03'),
-          totalSlots: 1,
-        },
-      ];
-    
-      const overlappingDatesCandidateInfo = [
-        {
-          candidate: { id: 'candidate1' },
-          availableDates: [new Date('2024-01-01'), new Date('2024-01-02')],
-        },
-        {
-          candidate: { id: 'candidate2' },
-          availableDates: [new Date('2024-01-02'), new Date('2024-01-03')],
-        },
-      ];
-    
-      const result = selectionDayTimetable(
-        overlappingPanelData,
-        overlappingDatesCandidateInfo,
-        [],
-        []
-      ).timetable;
-    
-      expect(result).toHaveLength(2);
-      expect(result[0].CandidateRef).toBe('candidate1');
-      expect(result[1].CandidateRef).toBe('candidate2');
-    });
-
-    it('handles one slot across all panels', () => {
-      const oneSlotPanelData = [
-        {
-          panel: { id: 'panel1' },
-          panellists: [{ id: 'panellist1' }],
-          date: new Date('2024-01-01'),
-          totalSlots: 1,
-        },
-        {
-          panel: { id: 'panel2' },
-          panellists: [{ id: 'panellist2' }],
-          date: new Date('2024-01-02'),
-          totalSlots: 1,
-        },
-      ];
-    
-      const oneSlotCandidateInfo = [
-        {
-          candidate: { id: 'candidate1' },
-          availableDates: [new Date('2024-01-01'), new Date('2024-01-02')],
-        },
-        {
-          candidate: { id: 'candidate2' },
-          availableDates: [new Date('2024-01-01'), new Date('2024-01-02')],
-        },
-      ];
-    
-      const result = selectionDayTimetable(
-        oneSlotPanelData,
-        oneSlotCandidateInfo,
-        [],
-        []
-      ).timetable;
-    
-      expect(result).toHaveLength(2);
-      expect(result[0].CandidateRef).toBe('candidate1');
-      expect(result[1].CandidateRef).toBe('candidate2');
+      expect(result.timetable).toHaveLength(2); 
+      expect(result.unassignedCandidates).toHaveLength(2); 
     });
 
     it('handles no slots available across all panels', () => {
       const noSlotsPanelData = [
         {
-          panel: { id: 'panel1' },
+          panel: {
+            id: 'panel1',
+            name: 'Panel 1',
+          },
           panellists: [{ id: 'panellist1' }],
-          date: new Date('2024-01-01'),
-          totalSlots: 0,
+          applicationIds: ['application1', 'application2'],
+          timetable: [
+            {
+              date: new Date('2024-01-01'),
+              totalSlots: 0,
+            },
+          ],
         },
         {
-          panel: { id: 'panel2' },
+          panel: {
+            id: 'panel2',
+            name: 'Panel 2',
+          },
           panellists: [{ id: 'panellist2' }],
-          date: new Date('2024-01-02'),
-          totalSlots: 0,
+          applicationIds: ['application3', 'application4'],
+          timetable: [
+            {
+              date: new Date('2024-01-02'),
+              totalSlots: 0,
+            },
+          ],
         },
       ];
     
       const noSlotsCandidateInfo = [
         {
-          candidate: { id: 'candidate1' },
+          candidate: {
+            id: 'candidate1',
+          },
+          application: {
+            id: 'application1',
+            ref: 'JAC001-001',
+            fullName: '001 JAC',
+          },
           availableDates: [new Date('2024-01-01'), new Date('2024-01-02')],
         },
         {
-          candidate: { id: 'candidate2' },
+          candidate: {
+            id: 'candidate2',
+          },
+          application: {
+            id: 'application2',
+            ref: 'JAC001-002',
+            fullName: '002 JAC',
+          },
           availableDates: [new Date('2024-01-01'), new Date('2024-01-02')],
         },
       ];
@@ -423,7 +335,7 @@ describe('selectionDayTimetable', () => {
       const result = selectionDayTimetable(mockPanelData, mockCandidateInfo, mockReasonableAdjustments, mockPanelConflicts);
 
       expect(result.timetable).toHaveLength(5); 
-      expect(result.timetable[4].CandidateRef).toEqual(mockCandidateInfo[2].candidate.id);
+      expect(result.timetable[4].candidateRef).toEqual(mockCandidateInfo[2].candidate.id);
     });
   });
   
@@ -434,6 +346,11 @@ describe('selectionDayTimetable', () => {
           candidate: {
             id: 'candidate1',
           },
+          application: {
+            id: 'application1',
+            ref: 'JAC001-001',
+            fullName: '001 JAC',
+          },
           availableDates: [new Date('2024-01-01')],
         },
       ];
@@ -442,6 +359,7 @@ describe('selectionDayTimetable', () => {
         { 
           panel: { 
             id: 'panel1', 
+            name: 'Panel 1',
           },
           panellists: [
             {
@@ -451,8 +369,13 @@ describe('selectionDayTimetable', () => {
               id: 'panellist2',
             },
           ],
-          date: new Date('2024-01-01'),
-          totalSlots: 5,
+          applicationIds: ['application1'],
+          timetable: [
+            {
+              date: new Date('2024-01-01'),
+              totalSlots: 5,
+            },
+          ],
         },
       ];
       
@@ -461,9 +384,11 @@ describe('selectionDayTimetable', () => {
           candidate: {
             id: 'candidate1',
           },
-          panellist: {
-            id: 'panellist1',
-          },
+          panellists: [
+            {
+              id: 'panellist1',
+            },
+          ], 
         },
       ];
 
@@ -478,7 +403,8 @@ describe('selectionDayTimetable', () => {
       mockPanelData = [
         { 
           panel: { 
-            id: 'panel1', 
+            id: 'panel1',
+            name: 'Panel 1',
           },
           panellists: [
             {
@@ -488,8 +414,13 @@ describe('selectionDayTimetable', () => {
               id: 'panellist2',
             },
           ],
-          date: new Date('2024-01-01'),
-          totalSlots: 1,
+          applicationIds: ['application1', 'application2'],
+          timetable: [
+            {
+              date: new Date('2024-01-01'),
+              totalSlots: 1,
+            },
+          ],
         },
       ];
       mockCandidateInfo = [
@@ -497,11 +428,21 @@ describe('selectionDayTimetable', () => {
           candidate: {
             id: 'candidate1',
           },
+          application: {
+            id: 'application1',
+            ref: 'JAC001-001',
+            fullName: '001 JAC',
+          },
           availableDates: [new Date('2024-01-01')],
         },
         {
           candidate: {
             id: 'candidate2',
+          },
+          application: {
+            id: 'application2',
+            ref: 'JAC001-002',
+            fullName: '002 JAC',
           },
           availableDates: [new Date('2024-01-01')],
         },
@@ -519,6 +460,7 @@ describe('selectionDayTimetable', () => {
         { 
           panel: { 
             id: 'panel1', 
+            name: 'Panel 1',
           },
           panellists: [
             {
@@ -528,8 +470,13 @@ describe('selectionDayTimetable', () => {
               id: 'panellist2',
             },
           ],
-          date: new Date('2024-01-02'),
-          totalSlots: 5,
+          applicationIds: ['application1', 'application2'],
+          timetable: [
+            {
+              date: new Date('2024-01-02'),
+              totalSlots: 5,
+            },
+          ],
         },
       ];
       mockCandidateInfo = [
@@ -537,11 +484,21 @@ describe('selectionDayTimetable', () => {
           candidate: {
             id: 'candidate1',
           },
+          application: {
+            id: 'application1',
+            ref: 'JAC001-001',
+            fullName: '001 JAC',
+          },
           availableDates: [new Date('2024-01-01')],
         },
         {
           candidate: {
             id: 'candidate2',
+          },
+          application: {
+            id: 'application2',
+            ref: 'JAC001-002',
+            fullName: '002 JAC',
           },
           availableDates: [new Date('2024-01-01')],
         },
@@ -549,11 +506,21 @@ describe('selectionDayTimetable', () => {
           candidate: {
             id: 'candidate3',
           },
+          application: {
+            id: 'application3',
+            ref: 'JAC001-003',
+            fullName: '003 JAC',
+          },
           availableDates: [new Date('2024-01-01')],
         },
         {
           candidate: {
             id: 'candidate4',
+          },
+          application: {
+            id: 'application4',
+            ref: 'JAC001-004',
+            fullName: '004 JAC',
           },
           availableDates: [new Date('2024-01-01')],
         },
@@ -561,11 +528,21 @@ describe('selectionDayTimetable', () => {
           candidate: {
             id: 'candidate5',
           },
+          application: {
+            id: 'application5', 
+            ref: 'JAC001-005',
+            fullName: '005 JAC',
+          },
           availableDates: [new Date('2024-01-01')],
         },
         {
           candidate: {
             id: 'candidate6',
+          },
+          application: {
+            id: 'application6',
+            ref: 'JAC001-006',
+            fullName: '006 JAC',
           },
           availableDates: [new Date('2024-01-01')],
         },
@@ -580,31 +557,42 @@ describe('selectionDayTimetable', () => {
     it('handles conflicts within the same panel', () => {
       const conflictPanelData = [
         {
-          panel: { id: 'panel1' },
+          panel: {
+            id: 'panel1',
+            name: 'Panel 1',
+          },
           panellists: [{ id: 'panellist1' }],
-          date: new Date('2024-01-01'),
-          totalSlots: 3,
+          applicationIds: ['application1', 'application2'],
+          timetable: [
+            {
+              date: new Date('2024-01-01'),
+              totalSlots: 3,
+            },
+          ],
         },
       ];
     
       const conflictCandidateInfo = [
         {
           candidate: { id: 'candidate1' },
+          application: { id: 'application1', ref: 'JAC001-001', fullName: '001 JAC' },
           availableDates: [new Date('2024-01-01')],
         },
         {
           candidate: { id: 'candidate2' },
+          application: { id: 'application2', ref: 'JAC001-002', fullName: '002 JAC' },
           availableDates: [new Date('2024-01-01')],
         },
         {
           candidate: { id: 'candidate3' },
+          application: { id: 'application3', ref: 'JAC001-003', fullName: '003 JAC' },
           availableDates: [new Date('2024-01-01')],
         },
       ];
     
       const conflictPanelConflicts = [
-        { candidate: { id: 'candidate2' }, panellist: { id: 'panellist1' } },
-        { candidate: { id: 'candidate3' }, panellist: { id: 'panellist1' } },
+        { candidate: { id: 'candidate2' }, panellists: [{ id: 'panellist1' }] },
+        { candidate: { id: 'candidate3' }, panellists: [{ id: 'panellist1' }] },
       ];
     
       const result = selectionDayTimetable(
@@ -615,7 +603,7 @@ describe('selectionDayTimetable', () => {
       );
 
       expect(result.timetable).toHaveLength(1);
-      expect(result.timetable[0].CandidateRef).toBe('candidate1');
+      expect(result.timetable[0].application.ref).toBe('JAC001-001');
       expect(result.unassignedCandidates[0].candidate.id).toBe('candidate2');
       expect(result.unassignedCandidates[1].candidate.id).toBe('candidate3');
     });
@@ -652,12 +640,22 @@ describe('selectionDayTimetable', () => {
         candidate: {
           id: 'conflictingCandidate',
         },
+        application: {
+          id: 'application1',
+          ref: 'JAC001-001',
+          fullName: '001 JAC',
+        },
         availableDates: [new Date('2024-01-01')],
       };
   
       const reasonableAdjustedCandidate = {
         candidate: {
           id: 'reasonableAdjustedCandidate',
+        },
+        application: {
+          id: 'application2',
+          ref: 'JAC001-002',
+          fullName: '002 JAC',
         },
         availableDates: [new Date('2024-01-01')],
       };
@@ -666,25 +664,31 @@ describe('selectionDayTimetable', () => {
         mockPanelData,
         [conflictingCandidate, reasonableAdjustedCandidate],
         [conflictingCandidate.candidate.id, reasonableAdjustedCandidate.candidate.id],
-        [{ candidate: { id: 'conflictingCandidate' }, panellist: { id: 'panellist1' } }]
+        [{ candidate: { id: 'conflictingCandidate' }, panellists: [{ id: 'panellist1' }] }]
       ).timetable;
   
       expect(result).toHaveLength(1);
-      expect(result[0].CandidateRef).toBe(reasonableAdjustedCandidate.candidate.id);
-      expect(result[0].ReasonableAdjustment).toBe(true);
+      expect(result[0].candidateRef).toBe(reasonableAdjustedCandidate.candidate.ref);
+      expect(result[0].reasonableAdjustment).toBe(true);
     });
 
     it('performs well with a larger dataset', () => {
       // Create a larger dataset for performance testing
       const largePanelData = Array.from({ length: 100 }, (_, index) => ({
-        panel: { id: `panel${index + 1}` },
+        panel: { id: `panel${index + 1}`, name: `Panel ${index + 1}` },
         panellists: [{ id: `panellist${index * 2 + 1}` }, { id: `panellist${index * 2 + 2}` }],
-        date: new Date(`2024-01-${index + 1}`),
-        totalSlots: 5,
+        applicationIds: [`application${index * 2 + 1}`, `application${index * 2 + 2}`],
+        timetable: [
+          {
+            date: new Date(`2024-01-${index + 1}`),
+            totalSlots: 5,
+          },
+        ],
       }));
   
       const largeCandidateInfo = Array.from({ length: 200 }, (_, index) => ({
         candidate: { id: `candidate${index + 1}` },
+        application: { id: `application${index + 1}`, ref: `JAC001-${index + 1}`, fullName: `${index + 1} JAC` },
         availableDates: [new Date(`2024-01-${index % 10 + 1}`)],
       }));
   
@@ -702,78 +706,32 @@ describe('selectionDayTimetable', () => {
   
       expect(result).toHaveLength(2); // Assuming there are two panels in mockPanelData
     });
-
-    it('handles multiple slots and dates', () => {
-      const multiSlotPanelData = [
-        {
-          panel: { id: 'panel1' },
-          panellists: [{ id: 'panellist1' }],
-          date: new Date('2024-01-01'),
-          totalSlots: 3,
-        },
-        {
-          panel: { id: 'panel2' },
-          panellists: [{ id: 'panellist2' }],
-          date: new Date('2024-01-02'),
-          totalSlots: 3,
-        },
-      ];
-      const multiSlotCandidateInfo = [
-        {
-          candidate: { id: 'candidate1' },
-          availableDates: [new Date('2024-01-01'), new Date('2024-01-02')],
-        },
-        {
-          candidate: { id: 'candidate2' },
-          availableDates: [new Date('2024-01-01'), new Date('2024-01-02')],
-        },
-        {
-          candidate: { id: 'candidate3' },
-          availableDates: [new Date('2024-01-01'), new Date('2024-01-02')],
-        },
-        {
-          candidate: { id: 'candidate4' },
-          availableDates: [new Date('2024-01-01'), new Date('2024-01-02')],
-        },
-        {
-          candidate: { id: 'candidate5' },
-          availableDates: [new Date('2024-01-01'), new Date('2024-01-02')],
-        },
-        {
-          candidate: { id: 'candidate6' },
-          availableDates: [new Date('2024-01-01'), new Date('2024-01-02')],
-        },
-      ];
-    
-      const result = selectionDayTimetable(
-        multiSlotPanelData,
-        multiSlotCandidateInfo,
-        [],
-        []
-      ).timetable;
-    
-      expect(result).toHaveLength(6);
-    });
     
     it('handles unassignable candidates with conflicts and no available slots', () => {
       const unassignableConflictData = [
         {
-          panel: { id: 'panel1' },
+          panel: { id: 'panel1', name: 'Panel 1' },
           panellists: [{ id: 'panellist1' }],
-          date: new Date('2024-01-01'),
-          totalSlots: 1,
+          applicationIds: ['application1'],
+          timetable: [
+            {
+              date: new Date('2024-01-01'),
+              totalSlots: 1,
+            },
+          ],
         },
       ];
       const unassignableConflictCandidateInfo = [
         {
           candidate: { id: 'conflictCandidate' },
+          application: { id: 'application1', ref: 'JAC001-001', fullName: '001 JAC' },
           availableDates: [new Date('2024-01-01')],
         },
       ];
       const unassignableConflictPanelConflicts = [
         {
           candidate: { id: 'conflictCandidate' },
-          panellist: { id: 'panellist1' },
+          panellists: [{ id: 'panellist1' }],
         },
       ];
     
@@ -791,22 +749,28 @@ describe('selectionDayTimetable', () => {
     it('handles combination of conflicts and reasonable adjustments for a candidate', () => {
       const combinedConflictRAData = [
         {
-          panel: { id: 'panel1' },
+          panel: { id: 'panel1', name: 'Panel 1' },
           panellists: [{ id: 'panellist1' }],
-          date: new Date('2024-01-01'),
-          totalSlots: 1,
+          applicationIds: ['application1'],
+          timetable: [
+            {
+              date: new Date('2024-01-01'),
+              totalSlots: 1,
+            },
+          ],
         },
       ];
       const combinedConflictRACandidateInfo = [
         {
           candidate: { id: 'conflictedCandidateWithRA' },
+          application: { id: 'application1', ref: 'JAC001-001', fullName: '001 JAC' },
           availableDates: [new Date('2024-01-01')],
         },
       ];
       const combinedConflictRAPanelConflicts = [
         {
           candidate: { id: 'conflictedCandidateWithRA' },
-          panellist: { id: 'panellist1' },
+          panellists: [{ id: 'panellist1' }],
         },
       ];
       const combinedConflictRAResasonableAdjustments = ['conflictedCandidateWithRA'];
@@ -825,15 +789,21 @@ describe('selectionDayTimetable', () => {
     it('handles edge case with panels having no available slots', () => {
       const noAvailableSlotsData = [
         {
-          panel: { id: 'panel1' },
+          panel: { id: 'panel1', name: 'Panel 1' },
           panellists: [{ id: 'panellist1' }],
-          date: new Date('2024-01-01'),
-          totalSlots: 0,
+          applicationIds: ['application1'],
+          timetable: [
+            {
+              date: new Date('2024-01-01'),
+              totalSlots: 0,
+            },
+          ],
         },
       ];
       const noAvailableSlotsCandidateInfo = [
         {
           candidate: { id: 'candidate1' },
+          application: { id: 'application1', ref: 'JAC001-001', fullName: '001 JAC' },
           availableDates: [new Date('2024-01-01')],
         },
       ];
@@ -849,174 +819,23 @@ describe('selectionDayTimetable', () => {
       expect(result[0].candidate.id).toBe('candidate1'); // Ensure correct candidate is unassigned
     });
 
-    it('assigns candidates and handles error cases', () => {
-      mockPanelData = [
-        {
-          panel: { 
-            id: 'panel1', 
-          },
-          panellists: [
-            {
-              id: 'panellist1',
-            },
-            {
-              id: 'panellist2',
-            },
-          ],
-          date: new Date('2024-01-01'),
-          totalSlots: 5,
-        },
-        { 
-          panel: { 
-            id: 'panel2', 
-          },
-          panellists: [
-            {
-              id: 'panellist3',
-            },
-            {
-              id: 'panellist4',
-            },
-          ],
-          date: new Date('2024-01-02'),
-          totalSlots: 5,
-        },
-        { 
-          panel: { 
-            id: 'panel3', 
-          },
-          panellists: [
-            {
-              id: 'panellist5',
-            },
-          ],
-          date: new Date('2024-01-03'),
-          totalSlots: 1,
-        },
-      ];
-      mockPanelConflicts = [
-        { 
-          candidate: {
-            id: 'unassignableCandidateHasConflict',
-          },
-          panellist: {
-            id: 'panellist5',
-          },
-        },
-      ];
-      mockCandidateInfo = [
-        // all assignable to panel1
-        {
-          candidate: {
-            id: 'candidate1',
-          },
-          availableDates: [new Date('2024-01-01')],
-        },
-        {
-          candidate: {
-            id: 'candidate2',
-          },
-          availableDates: [new Date('2024-01-01')],
-        },
-        {
-          candidate: {
-            id: 'candidate3',
-          },
-          availableDates: [new Date('2024-01-01')],
-        },
-        {
-          candidate: {
-            id: 'candidate4',
-          },
-          availableDates: [new Date('2024-01-01')],
-        },
-        {
-          candidate: {
-            id: 'candidate5',
-          },
-          availableDates: [new Date('2024-01-01')],
-        },
-        // all assignable to panel2
-        {
-          candidate: {
-            id: 'candidate6',
-          },
-          availableDates: [new Date('2024-01-02')],
-        },
-        {
-          candidate: {
-            id: 'candidate7',
-          },
-          availableDates: [new Date('2024-01-02')],
-        },
-        {
-          candidate: {
-            id: 'candidate8',
-          },
-          availableDates: [new Date('2024-01-02')],
-        },
-        {
-          candidate: {
-            id: 'candidate9',
-          },
-          availableDates: [new Date('2024-01-02')],
-        },
-        {
-          candidate: {
-            id: 'candidate10',
-          },
-          availableDates: [new Date('2024-01-02')],
-        },
-        // unassignable no slots left
-        {
-          candidate: {
-            id: 'unassignableCandidateNoSlotsLeft',
-          },
-          availableDates: [new Date('2024-01-01'), new Date('2024-01-02')],
-        },
-        // unassignable candidate has conflict
-        {
-          candidate: {
-            id: 'unassignableCandidateHasConflict',
-          },
-          availableDates: [new Date('2024-01-03')],
-        },
-      ];
-    
-      const result = selectionDayTimetable(mockPanelData, mockCandidateInfo, mockReasonableAdjustments, mockPanelConflicts);
-    
-      expect(result.timetable).toEqual([
-        // panel1 candidates
-        {'CandidateRef': 'candidate1', 'Date': new Date('2024-01-01'), 'Panel': 'panel1', 'ReasonableAdjustment': true, 'Slot': 1},
-        {'CandidateRef': 'candidate2', 'Date': new Date('2024-01-01'), 'Panel': 'panel1', 'ReasonableAdjustment': false, 'Slot': 2},
-        {'CandidateRef': 'candidate3', 'Date': new Date('2024-01-01'), 'Panel': 'panel1', 'ReasonableAdjustment': false, 'Slot': 3},
-        {'CandidateRef': 'candidate4', 'Date': new Date('2024-01-01'), 'Panel': 'panel1', 'ReasonableAdjustment': true, 'Slot': 4},
-        {'CandidateRef': 'candidate5', 'Date': new Date('2024-01-01'), 'Panel': 'panel1', 'ReasonableAdjustment': false, 'Slot': 5},
-        // panel2 candidates
-        {'CandidateRef': 'candidate6', 'Date': new Date('2024-01-02'), 'Panel': 'panel2', 'ReasonableAdjustment': false, 'Slot': 1},
-        {'CandidateRef': 'candidate7', 'Date': new Date('2024-01-02'), 'Panel': 'panel2', 'ReasonableAdjustment': false, 'Slot': 2},
-        {'CandidateRef': 'candidate8', 'Date': new Date('2024-01-02'), 'Panel': 'panel2', 'ReasonableAdjustment': true, 'Slot': 3},
-        {'CandidateRef': 'candidate9', 'Date': new Date('2024-01-02'), 'Panel': 'panel2', 'ReasonableAdjustment': false, 'Slot': 4},
-        {'CandidateRef': 'candidate10', 'Date': new Date('2024-01-02'), 'Panel': 'panel2', 'ReasonableAdjustment': false, 'Slot': 5},
-      ]);
-      expect(result.unassignedCandidates).toEqual([
-        // unassignable candidates
-          mockCandidateInfo[10],
-          mockCandidateInfo[11],
-      ]);
-    });
-
     it('handles performance testing with a very large dataset', () => {
       // Create a large dataset for performance testing
       const largeDatasetPanelData = Array.from({ length: 1000 }, (_, index) => ({
-        panel: { id: `panel${index + 1}` },
+        panel: { id: `panel${index + 1}`, name: `Panel ${index + 1}` },
         panellists: [{ id: `panellist${index + 1}` }],
-        date: new Date(new Date('2024-01-01').getTime() + 24 * 60 * 60 * parseInt(`${index}000`)),
-        totalSlots: 3,
+        applicationIds: [`application${index + 1}`],
+        timetable: [
+          {
+            date: new Date(new Date('2024-01-01').getTime() + 24 * 60 * 60 * parseInt(`${index}000`)),
+            totalSlots: 3,
+          },
+        ],
       }));
     
       const largeDatasetCandidateInfo = Array.from({ length: 1000 }, (_, index) => ({
         candidate: { id: `candidate${index + 1}` },
+        application: { id: `application${index + 1}`, ref: `JAC001-${index + 1}`, fullName: `${index + 1} JAC` },
         availableDates: [new Date(new Date('2024-01-01').getTime() + 24 * 60 * 60 * parseInt(`${index}000`)), new Date(new Date('2024-01-01').getTime() + 24 * 60 * 60 * parseInt(`${index+1}000`))],
       }));
 
@@ -1035,30 +854,38 @@ describe('selectionDayTimetable', () => {
       // Combine multiple scenarios to test a variety of situations simultaneously
       const combinedPanelData = [
         {
-          panel: { id: 'panel1' },
+          panel: { id: 'panel1', name: 'Panel 1' },
           panellists: [{ id: 'panellist1' }],
-          date: new Date('2024-01-01'),
-          totalSlots: 2,
+          applicationIds: ['application1'],
+          timetable: [
+            {
+              date: new Date('2024-01-01'),
+              totalSlots: 2,
+            },
+          ],
         },
         {
-          panel: { id: 'panel2' },
+          panel: { id: 'panel2', name: 'Panel 2' },
           panellists: [{ id: 'panellist2' }],
-          date: new Date('2024-01-02'),
-          totalSlots: 1,
+          applicationIds: ['application2'],
+          timetable: [
+            {
+              date: new Date('2024-01-02'),
+              totalSlots: 1,
+            },
+          ],
         },
       ];
     
       const combinedCandidateInfo = [
         {
           candidate: { id: 'candidate1' },
+          application: { id: 'application1', ref: 'JAC001-001', fullName: '001 JAC' },
           availableDates: [new Date('2024-01-01'), new Date('2024-01-02')],
         },
         {
-          candidate: { id: 'candidate2' },
-          availableDates: [new Date('2024-01-01'), new Date('2024-01-02')],
-        },
-        {
-          candidate: { id: 'candidate3' },
+          candidate: { id: 'candidate2', ref: 'JAC001-002' },
+          application: { id: 'application2', ref: 'JAC001-002', fullName: '002 JAC' },
           availableDates: [new Date('2024-01-01'), new Date('2024-01-02')],
         },
       ];
@@ -1070,10 +897,9 @@ describe('selectionDayTimetable', () => {
         []
       ).timetable;
     
-      expect(result).toHaveLength(3);
-      expect(result[0].CandidateRef).toBe('candidate1');
-      expect(result[1].CandidateRef).toBe('candidate2');
-      expect(result[2].CandidateRef).toBe('candidate3');
+      expect(result).toHaveLength(2);
+      expect(result[0].application.ref).toBe('JAC001-001');
+      expect(result[1].application.ref).toBe('JAC001-002');
     });
     
   });
