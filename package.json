@@ -62,7 +62,7 @@
   },
   "dependencies": {
     "@google-cloud/storage": "^7.14.0",
-    "axios": "^1.7.9",
+    "axios": "^1.8.4",
     "bottleneck": "^2.19.5",
     "caseless": "^0.12.0",
     "chalk": "^5.4.0",
