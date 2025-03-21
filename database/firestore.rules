@@ -119,6 +119,7 @@ service cloud.firestore {
 
       // Allow JAC to read and write
       allow read, write: if userIsAuthenticated() && userIsJAC() && hasPermission('pa1');
+      allow read: if userIsAuthenticated() && userIsJAC() && hasPermission('pa2');
     }
 
     match /meta/stats {
