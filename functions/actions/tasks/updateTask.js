@@ -974,13 +974,20 @@ export default (firebase, db) => {
         }
         newStatus = isPass ? passStatus : failStatus;
       } else if (scoreData[scoreType] >= task.passMark) {
-        newStatus = passStatus; // TODO double-check we don't want to allow overrides from PASS->FAIL
+        newStatus = passStatus;
       } else {
-        const override = getOverride(task, scoreData.id);
-        if (override) {
+        newStatus = failStatus;
+      }
+      // check for overrides
+      const override = getOverride(task, scoreData.id);
+      if (override) {
+        switch (override.outcome) {
+        case 'pass':
           newStatus = passStatus;
-        } else {
+          break;
+        case 'fail':
           newStatus = failStatus;
+          break;
         }
       }
       outcomeStats[newStatus] += 1;
@@ -1052,14 +1059,14 @@ export default (firebase, db) => {
             const failedScoreData = { score: 0, percent: 0, pass: false };
             let CAData = idToCAScore[application.id] || failedScoreData;
             let SJData = idToSJScore[application.id] || failedScoreData;
-            
+
             /**
              * If failed one of CAT or SJT, then it should fail in overall merit list task.
              * To achieve this, if one of the tests fails, all the scores and z-scores should be 0.
              */
             let score = CAData.score + SJData.score;
             if (!CAData.pass || !SJData.pass) score = 0;
-            
+
             finalScores.push({
               id: application.id,
               ref: application.ref,
