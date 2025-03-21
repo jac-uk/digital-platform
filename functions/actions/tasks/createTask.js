@@ -93,7 +93,7 @@ export default (firebase, db) => {
         if (hasTaskType(exercise, TASK_TYPE.PRE_SELECTION_DAY_QUESTIONNAIRE)) {
           const psdq = await getDocument(db.doc(`exercises/${params.exerciseId}/tasks/${TASK_TYPE.PRE_SELECTION_DAY_QUESTIONNAIRE}`));
           if (psdq) {
-            result[`_${TASK_TYPE.PRE_SELECTION_DAY_QUESTIONNAIRE}`] = {
+            result.data[`_${TASK_TYPE.PRE_SELECTION_DAY_QUESTIONNAIRE}`] = {
               formId: psdq.formId,
             };
           }
