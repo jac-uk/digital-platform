@@ -454,7 +454,7 @@ export default (firebase, db) => {
         groups[issueType].forEach(key => {
           details = answers[questions[key].details];
           if (answers[key] && details) {
-            const category = questions[key].title;
+            const category = questions[key].category || '';
             if (Array.isArray(details)) { // if the answer contains more than one issue, create an issue for each
               events.push(...details.map(d => ({ ...d, category }))); //  append type (ex. bankruptcies) to the issue
             } else {
