@@ -1624,9 +1624,9 @@ REPRODUCE THIS TABLE AS APPROPRIATE.<span class="red">&gt;</span></b>
                 }
                 if (issue.summary === 'Professional Conduct') {
                   if (event.investigations !== null && event.investigations !== undefined) {
-                    result.push(`Investigations: ${helpers.toYesNo(event.investigations)}`);
+                    result.push(`Investigation ongoing: ${helpers.toYesNo(event.investigations)}`);
                   }
-                  if (event.investigationConclusionDate) {
+                  if (event.investigations === true && event.investigationConclusionDate) {
                     const prettyDate = getDate(event.investigationConclusionDate).toJSON().slice(0, 10).split('-').reverse().join('/'); // dd/mm/yyyy
                     result.push(`Investigation conclusion date: ${prettyDate}`);
                   }
