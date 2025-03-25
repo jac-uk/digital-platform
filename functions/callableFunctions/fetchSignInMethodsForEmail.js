@@ -35,7 +35,7 @@ export default onCall(
         throw new HttpsError('invalid-argument', 'Please provide valid arguments');
       }
 
-      const result = await fetchSignInMethodsForEmail(data.email);
+      const result = await fetchSignInMethodsForEmail({ email: data.email });
       return result;
     }
     catch (error) {
