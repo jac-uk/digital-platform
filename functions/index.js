@@ -94,7 +94,7 @@ import generateSccSummaryReport from './callableFunctions/generateSccSummaryRepo
 import exportSccSummaryReport from './callableFunctions/exportSccSummaryReport.js';
 import getMultipleApplicationData from './callableFunctions/getMultipleApplicationData.js';
 import generateSelectionDayTimetable from './callableFunctions/generateSelectionDayTimetable.js';
-import fetchSignInMethodsForEmail from './callableFunctions/fetchSignInMethodsForEmail.js';
+import checkSignInMethodsForEmail from './callableFunctions/checkSignInMethodsForEmail.js';
 
 // HTTP
 import ticketingGithubWebhook from './httpFunctions/ticketingGithubWebhook.js';
@@ -196,7 +196,7 @@ export {
   generateSccSummaryReport,
   exportSccSummaryReport,
   generateSelectionDayTimetable,
-  fetchSignInMethodsForEmail,
+  checkSignInMethodsForEmail,
 
   // HTTP
   ticketingGithubWebhook

@@ -1,10 +1,10 @@
 import { onCall, HttpsError } from 'firebase-functions/v2/https';
 import { db, auth } from '../shared/admin.js';
 import { checkArguments } from '../shared/helpers.js';
-import initFetchSignInMethodsForEmail from '../actions/candidates/fetchSignInMethodsForEmail.js';
+import initCheckSignInMethodsForEmail from '../actions/candidates/checkSignInMethodsForEmail.js';
 import initServiceSettings from '../shared/serviceSettings.js';
 
-const fetchSignInMethodsForEmail = initFetchSignInMethodsForEmail(auth);
+const checkSignInMethodsForEmail = initCheckSignInMethodsForEmail(auth);
 
 const { checkFunctionEnabled } = initServiceSettings(db);
 
@@ -35,7 +35,7 @@ export default onCall(
         throw new HttpsError('invalid-argument', 'Please provide valid arguments');
       }
 
-      const result = await fetchSignInMethodsForEmail({ email: data.email });
+      const result = await checkSignInMethodsForEmail({ email: data.email });
       return result;
     }
     catch (error) {
