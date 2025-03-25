@@ -6,14 +6,20 @@ import initLogEvent from '../actions/logs/logEvent.js';
 const { onApplicationCreate } = initApplications(firebase, db, auth);
 const { logEvent } = initLogEvent(firebase, db, auth);
 
-export default onDocumentCreated('applications/{applicationId}', (event) => {
-  const snap = event.data;
-  const application = snap.data();
-  const details = {
-    applicationId: event.params.applicationId,
-    candidateName: application.personalDetails ? application.personalDetails.fullName : null,
-    exerciseRef: application.exerciseRef,
-  };
-  logEvent('info', 'Application created', details);
-  return onApplicationCreate(snap.ref, snap.data());
-});
+export default onDocumentCreated(
+  {
+    document: 'applications/{applicationId}',
+    memory: '512MiB', // Specify memory allocation
+  },
+  (event) => {
+    const snap = event.data;
+    const application = snap.data();
+    const details = {
+      applicationId: event.params.applicationId,
+      candidateName: application.personalDetails ? application.personalDetails.fullName : null,
+      exerciseRef: application.exerciseRef,
+    };
+    logEvent('info', 'Application created', details);
+    return onApplicationCreate(snap.ref, snap.data());
+  }
+);

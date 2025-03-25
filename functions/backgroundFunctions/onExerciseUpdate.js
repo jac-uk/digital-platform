@@ -4,7 +4,12 @@ import initExercisesOnUpdate from '../actions/exercises/onUpdate.js';
 
 const onUpdate = initExercisesOnUpdate(firebase, db);
 
-export default onDocumentUpdated('exercises/{exerciseId}', async (event) => {
+export default onDocumentUpdated(
+  {
+    document: 'exercises/{exerciseId}',
+    memory: '512MiB', // Specify memory allocation
+  },
+  async (event) => {
   const after = event.data.after.data();
   const before = event.data.before.data();
   const exerciseId = event.params.exerciseId;

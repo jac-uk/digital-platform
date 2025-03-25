@@ -9,7 +9,7 @@ export default onSchedule(
     schedule: SCHEDULE,
     region: 'europe-west2',
     timeZone: 'Europe/London',
-    memory: '256MiB', // Adjust as needed
+    memory: '512MiB', // Adjust as needed
     timeoutSeconds: 540, // Maximum timeout for long-running tasks
     secrets: [
       'SLACK_TICKETING_APP_BOT_TOKEN',
