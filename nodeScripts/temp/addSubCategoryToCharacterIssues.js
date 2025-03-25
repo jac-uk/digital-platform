@@ -74,7 +74,18 @@ async function updateApplicationIssues(exercise, applications) {
     // get character issues
     const existingCharacterIssues = applicationRecord?.issues?.characterIssues || [];
     const characterIssues = getCharacterIssues(exercise, applications[i]);
-    if (!existingCharacterIssues.length && !characterIssues.length) {
+    
+    if (!applicationRecord?.flags?.characterIssues) {
+      // not to update character issues of the applications
+      continue;
+    }
+    
+    if (!existingCharacterIssues.length || !characterIssues.length) {
+      // not to update character issues of the applications
+      continue;
+    }
+
+    if (existingCharacterIssues.length !== characterIssues.length) {
       // not to update character issues of the applications
       continue;
     }
@@ -88,10 +99,10 @@ async function updateApplicationIssues(exercise, applications) {
       // try to match events
       const existingEvents = existingCharacterIssue.events || [];
       const events = characterIssue.events || [];
+
       if (existingEvents.length !== events.length) {
         continue applicationLoop;
       }
-      
 
       const eventData = [];
       eventLoop: for (let k = 0, len3 = existingEvents.length; k < len3; ++k) {
@@ -137,10 +148,10 @@ const main = async () => {
 
   // for each exercise run the migration and update the exercise document with new version number
   for (let i = 0, len = exercises.length; i < len; ++i) {
-    if (exercises[i].id !== 'X40tLeB3DuKBUsq72AU7') {
-      console.log('Skipping exercise', exercises[i].id);
-      continue;
-    };
+    // if (exercises[i].id !== 'X40tLeB3DuKBUsq72AU7') {
+    //   console.log('Skipping exercise', exercises[i].id);
+    //   continue;
+    // };
     try {
       console.log('Update exercise', exercises[i].id);
       await addSubCategoryToCharacterIssuesForExercise(exercises[i]);  
