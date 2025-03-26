@@ -7,7 +7,7 @@ export default (auth) => {
    * @param {string} email 
    * @returns 
    */
-  async function checkSignInMethodsForEmail({ email }) {
+  async function checkSignInMethodsForEmail(email) {
     try {
       const user = await auth.getUserByEmail(email);
       return !user.disabled && user.providerData.length && !!user.providerData.find(provider => provider.providerId === 'password');

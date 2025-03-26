@@ -1,6 +1,5 @@
 import { onCall, HttpsError } from 'firebase-functions/v2/https';
 import { db, auth } from '../shared/admin.js';
-import { checkArguments } from '../shared/helpers.js';
 import initCheckSignInMethodsForEmail from '../actions/candidates/checkSignInMethodsForEmail.js';
 import initServiceSettings from '../shared/serviceSettings.js';
 
@@ -17,10 +16,7 @@ export default onCall(
     maxInstances: 10,       // (Optional) Max instances to scale
   },
   async (request) => {
-
     try {
-      const data = request.data;
-
       await checkFunctionEnabled();
 
       // authenticate the request
@@ -28,15 +24,7 @@ export default onCall(
         throw new HttpsError('failed-precondition', 'The function must be called while authenticated.');
       }
 
-      // validate input parameters
-      if (!checkArguments({
-        email: { required: true },
-      }, data)) {
-        throw new HttpsError('invalid-argument', 'Please provide valid arguments');
-      }
-
-      const result = await checkSignInMethodsForEmail({ email: data.email });
-      return result;
+      return await checkSignInMethodsForEmail(request.auth.token.email);
     }
     catch (error) {
       console.error('Error in function:', error);

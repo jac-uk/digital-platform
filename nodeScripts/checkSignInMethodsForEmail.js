@@ -5,7 +5,7 @@ import initCheckSignInMethodsForEmail from '../functions/actions/candidates/chec
 
 const checkSignInMethodsForEmail = initCheckSignInMethodsForEmail(auth);
 
-const candidateEmail = { email: 'application-0004@jac-dummy-email.jac' };
+const candidateEmail = 'application-0004@jac-dummy-email.jac';
 
 const main = async () => {
   return checkSignInMethodsForEmail(candidateEmail);
