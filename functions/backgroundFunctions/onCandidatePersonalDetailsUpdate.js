@@ -4,7 +4,12 @@ import initOnCandidatePersonalDetailsUpdate from '../actions/candidates/personal
 
 const onCandidatePersonalDetailsUpdate = initOnCandidatePersonalDetailsUpdate(firebase, db);
 
-export default onDocumentUpdated('candidates/{candidateId}/documents/personalDetails', (event) => {
+export default onDocumentUpdated(
+  {
+    document: 'candidates/{candidateId}/documents/personalDetails',
+    memory: '512MiB', // Specify memory allocation
+  },
+  (event) => {
   const candidateId = event.params.candidateId;
   const dataBefore = event.data.before.data();
   const dataAfter = event.data.after.data();
