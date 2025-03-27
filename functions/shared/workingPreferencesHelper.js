@@ -208,7 +208,7 @@ function extractAnswers(config, data, answerSources, filters) {
       }
     }
     return config.questionType === 'ranked-choice' ? sortedAnswers.sort((a, b) => a.rank - b.rank) : sortedAnswers;
-    }
+  }
 }
 
 // === Only for digital platform ===
@@ -227,7 +227,6 @@ function formatAnswers(answers) {
   if (!Array.isArray(answers)) {
     return []; // Return an empty array if answers is not iterable
   }
-
   const formattedAnswers = [];
   for (const answer of answers) {
     const chunks = [];
