@@ -9,7 +9,7 @@ export default (db) => {
     const allData = [];
 
     for (const exerciseId of exerciseIds) {
-      const whereClauses = [];
+      const whereClauses = [{ column: 'status', operator: '!=',  value: 'draft' }];
       const exerciseParams = { whereClauses, columns, exerciseId };
       const exerciseData = await getApplicationData(exerciseParams);
 
