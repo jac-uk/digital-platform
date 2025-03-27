@@ -1,6 +1,6 @@
 import { getDocument, isEmpty, applyUpdates, getDate } from '../../shared/helpers.js';
 import lookup from '../../shared/converters/lookup.js';
-import _ from 'lodash';
+import _last from 'lodash/last.js';
 import { APPLICATION } from '../../shared/constants.js';
 
 export default (firebase, db) => {
@@ -116,8 +116,8 @@ export default (firebase, db) => {
       }
 
       // update cursor & total
-      lastApplicationDoc = _.last(applicationSnapshot.docs);
-      lastApplication = _.last(applications);
+      lastApplicationDoc = _last(applicationSnapshot.docs);
+      lastApplication = _last(applications);
       applicationCount += applications.length;
 
       // process application

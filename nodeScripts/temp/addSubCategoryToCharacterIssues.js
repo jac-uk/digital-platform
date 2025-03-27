@@ -5,9 +5,9 @@
 'use strict';
 
 import { firebase, app, db } from '../shared/admin.js';
-import { getDocuments, getDocument, applyUpdates } from '../../functions/shared/helpers.js';
+import { getDocuments, applyUpdates } from '../../functions/shared/helpers.js';
 import flagApplicationIssues from '../../functions/actions/applications/flagApplicationIssues.js';
-import _ from 'lodash';
+import _last from 'lodash/last.js';
 
 
 const { getCharacterIssues } = flagApplicationIssues(firebase, db);
@@ -48,8 +48,8 @@ async function addSubCategoryToCharacterIssuesForExercise(exercise) {
         }
   
         // update cursor & total
-        lastApplicationDoc = _.last(applicationSnapshot.docs);
-        lastApplication = _.last(applications);
+        lastApplicationDoc = _last(applicationSnapshot.docs);
+        lastApplication = _last(applications);
   
         // process application
         const result = await updateApplicationIssues(exercise, applications);
@@ -64,13 +64,22 @@ async function addSubCategoryToCharacterIssuesForExercise(exercise) {
 }
 
 async function updateApplicationIssues(exercise, applications) {
+  // get application records
+  const applicationRecords = await getDocuments(db.collection('applicationRecords').where('exercise.id', '==', exercise.id));
+  const applicationRecordMap = {};
+  applicationRecords.forEach((record) => {
+    applicationRecordMap[record.id] = record;
+  });
+
   // construct commands
   const commands = [];
 
   applicationLoop: for (let i = 0, len = applications.length; i < len; ++i) {    
-
-    const applicationRecord = await getDocument(db.collection('applicationRecords').doc(`${applications[i].id}`));
-    
+    const applicationRecord = applicationRecordMap[applications[i].id];
+    if (!applicationRecord) {
+      // not to update character issues of the applications
+      continue;
+    }
     // get character issues
     const existingCharacterIssues = applicationRecord?.issues?.characterIssues || [];
     const characterIssues = getCharacterIssues(exercise, applications[i]);
@@ -92,7 +101,7 @@ async function updateApplicationIssues(exercise, applications) {
 
     // add sub-category to character issues
     const characterIssueData = [];
-    characterIssueLoop: for (let j = 0, len2 = existingCharacterIssues.length; j < len2; ++j) {
+    for (let j = 0, len2 = existingCharacterIssues.length; j < len2; ++j) {
       const existingCharacterIssue = existingCharacterIssues[j];
       const characterIssue = characterIssues[j];
 
@@ -100,12 +109,14 @@ async function updateApplicationIssues(exercise, applications) {
       const existingEvents = existingCharacterIssue.events || [];
       const events = characterIssue.events || [];
 
+      // if the events do not match, skip this application record
       if (existingEvents.length !== events.length) {
+        // jump to the next application record
         continue applicationLoop;
       }
 
       const eventData = [];
-      eventLoop: for (let k = 0, len3 = existingEvents.length; k < len3; ++k) {
+      for (let k = 0, len3 = existingEvents.length; k < len3; ++k) {
         const existingEvent = existingEvents[k];
         const event = events[k];
 
