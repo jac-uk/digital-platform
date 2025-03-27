@@ -19,8 +19,8 @@ function formatPreference(choiceArray, questionType) {
   }
   return choiceArray;
 }
-export default (config, firebase, db, auth) => {
-  const { formatExperience } = initApplicationHelper(config);
+export default (db) => {
+  const { formatExperience } = initApplicationHelper();
 
 
   return getApplicationData;
@@ -140,7 +140,6 @@ export default (config, firebase, db, auth) => {
           const [preferenceKey, configId] = column.split('.');
           const configs = filteredPreferences(exerciseData, result, preferenceKey);
           const config = configs.find(c => c.id === configId);
-          console.log('applicationId', result.id);
           const data = result[preferenceKey] ? result[preferenceKey][configId] : null;
           if (data !== null) {
             const source = exerciseData;

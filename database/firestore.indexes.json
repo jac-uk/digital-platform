@@ -1335,6 +1335,20 @@
       "queryScope": "COLLECTION",
       "fields": [
         {
+          "fieldPath": "exercise.id",
+          "order": "ASCENDING"
+        },
+        {
+          "fieldPath": "statusLog.withdrawn",
+          "order": "ASCENDING"
+        }
+      ]
+    },
+    {
+      "collectionGroup": "applicationRecords",
+      "queryScope": "COLLECTION",
+      "fields": [
+        {
           "fieldPath": "exerciseId",
           "order": "ASCENDING"
         },

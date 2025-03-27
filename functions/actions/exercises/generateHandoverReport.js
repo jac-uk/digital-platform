@@ -1,16 +1,16 @@
 import * as helpers from '../../shared/converters/helpers.js';
 import lookup from '../../shared/converters/lookup.js';
-import { getDocument, getDocuments, getAllDocuments, removeHtml, objectHasNestedProperty } from '../../shared/helpers.js';
-import initApplicationConverter from '../../shared/converters/applicationConverter.js';
+import { getDocument, getDocuments, getAllDocuments, objectHasNestedProperty } from '../../shared/helpers.js';
+//import initApplicationConverter from '../../shared/converters/applicationConverter.js';
 import initUpdateApplicationRecordStageStatus from '../applicationRecords/updateApplicationRecordStageStatus.js';
+import { EXERCISE_STAGE, APPLICATION_STATUS } from '../../shared/constants.js';
 
-const applicationConverter = initApplicationConverter();
-const { getWelshData } = applicationConverter;
+//const applicationConverter = initApplicationConverter();
+//const { getWelshData } = applicationConverter;
 
-export default (firebase, config, db) => {
-  const { EXERCISE_STAGE, APPLICATION_STATUS } = config;
-  const { convertStageToVersion2, convertStatusToVersion2 } = initUpdateApplicationRecordStageStatus(firebase, config, db);
-  
+export default (firebase, db) => {
+  const { convertStageToVersion2, convertStatusToVersion2 } = initUpdateApplicationRecordStageStatus(firebase, db);
+
   return {
     generateHandoverReport,
   };
@@ -170,8 +170,8 @@ const reportData = (db, exercise, applicationRecords, applications, forAdminDisp
 
 /**
  * Fields only used for display on the admin frontend (not for download so get stripped out by the frontend)
- * @param {Object} application 
- * @returns 
+ * @param {Object} application
+ * @returns
  */
 const adminDisplayFields = (application) => {
   return {
@@ -201,6 +201,7 @@ const formatPersonalDetails = (personalDetails) => {
     town: address && address.town ? address.town : null,
     county: address && address.county ? address.county : null,
     postcode: address && address.postcode ? address.postcode : null,
+    country: address && address.country ? address.country : lookup(personalDetails.citizenship), // check if country is in address, if not use citizenship
     citizenship: lookup(personalDetails.citizenship),
     phone: personalDetails.phone || null,
     mobile: personalDetails.mobile || null,
@@ -232,7 +233,6 @@ const formatDiversityData = (survey, exercise, personalDetails) => {
   }
   return {
     gender: share(lookup(survey.gender)),
-    country: lookup(personalDetails.citizenship), // the content should come from the Citizenship field as most candidates will not specify country in their address
     ethnicGroup: share(lookup(survey.ethnicGroup)),
     stateOrFeeSchool16: share(lookup(survey.stateOrFeeSchool16)),
     parentsAttendedUniversity: share(helpers.toYesNo(lookup(survey.parentsAttendedUniversity))),

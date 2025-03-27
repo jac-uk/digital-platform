@@ -1,8 +1,8 @@
 import { getDocument, getDocuments, applyUpdates } from '../shared/helpers.js';
 import initNotify from '../shared/notify.js';
 
-export default (config, firebase, db) => {
-  const { sendEmail, previewEmail, sendSMS } = initNotify(config);
+export default (firebase, db) => {
+  const { sendEmail, previewEmail, sendSMS } = initNotify();
   return {
     processNotifications,
     previewNotification,
@@ -17,12 +17,12 @@ export default (config, firebase, db) => {
    */
   async function processNotifications() {
     const NOTIFICATIONS_BATCH_SIZE = 1000;
-  
+
     const services = await getDocument(db.doc('settings/services'));
-  
+
     if (services.notifications && services.notifications.isProcessing === true) {
       const delayBeforeSendMinutes = services.notifications.delayInMinutes || 5;
-  
+
       // Get the next batch of notifications
       const dateLessDelay = new Date(Date.now() - delayBeforeSendMinutes * 60 * 1000);
       const notifications = await getDocuments(
@@ -31,11 +31,11 @@ export default (config, firebase, db) => {
           .where('createdAt', '<=', dateLessDelay)
           .limit(NOTIFICATIONS_BATCH_SIZE)
       );
-  
+
       const sendToRecipient = services.notifications.sendToRecipient;
       const promises = [];
       const commands = [];
-  
+
       for (const notification of notifications) {
         // SMS notification handling
         if (notification.type === 'sms') {
@@ -71,10 +71,10 @@ export default (config, firebase, db) => {
           );
         }
       }
-  
+
       // Process all promises
       await Promise.all(promises);
-  
+
       // Process commands
       const result = await applyUpdates(db, commands);
       return result ? notifications.length : false;

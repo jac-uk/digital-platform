@@ -1,10 +1,11 @@
 import { getDocument, getDocuments, objectHasNestedProperty } from '../../shared/helpers.js';
 import initExerciseHelper from '../../shared/exerciseHelper.js';
+import { APPLICATION_STATUS, SHORTLISTING } from '../../shared/constants.js';
 
 const ignoreKeys = ['totalApplications', 'total', 'declaration', 'preferNotToSay', 'noAnswer'];
 
-export default (config, firebase, db) => {
-  const { availableStages } = initExerciseHelper(config);
+export default (firebase, db) => {
+  const { availableStages } = initExerciseHelper();
   return {
     generateOutreachReport,
     attendedOutreachStats,
@@ -38,9 +39,9 @@ export default (config, firebase, db) => {
     if (stages.length && applications.length) {
       for (let i = stages.length - 1; i >= 0; --i) {
         const stage = stages[i];
-        const applicationsByStage = applications.filter(application => 
+        const applicationsByStage = applications.filter(application =>
           objectHasNestedProperty(application, '_processing.stage') &&
-          objectHasNestedProperty(application, '_processing.status') && 
+          objectHasNestedProperty(application, '_processing.status') &&
           application._processing.stage === stage
         );
         report[stage] = outreachReport(applicationsByStage);
@@ -49,8 +50,6 @@ export default (config, firebase, db) => {
 
     // add additional data based on shortlisting methods
     const isProcessingVersion2 = exercise._processingVersion >= 2;
-    const APPLICATION_STATUS = config.APPLICATION_STATUS;
-    const SHORTLISTING = config.SHORTLISTING;
     const statuses = [];
 
     if (exercise.shortlistingMethods) {

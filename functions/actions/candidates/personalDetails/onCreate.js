@@ -1,6 +1,6 @@
 import initSearch from '../search.js';
 
-export default (config, firebase, db) => {
+export default (firebase, db) => {
   const { updateCandidate } = initSearch(firebase, db);
 
   return onCreate;

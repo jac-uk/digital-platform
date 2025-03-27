@@ -3,12 +3,12 @@ name: Cloud functions for firebase
 on:
   pull_request:
     branches:
-      - develop
+      - main
     paths:
       - 'functions/**'
   push:
     branches:
-      - develop
+      - main
     paths:
       - 'functions/**'
 
@@ -35,7 +35,7 @@ jobs:
             ${{ runner.os }}-
       - uses: actions/setup-node@master
         with:
-          node-version: '18.20.3'
+          node-version: '20.10.0'
       - run: npm ci
       - name: Run lint
         run: npm run lint

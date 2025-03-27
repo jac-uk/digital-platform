@@ -4,12 +4,11 @@
 
 'use strict';
 
-import config from './shared/config.js';
 import { firebase, app, db } from './shared/admin.js';
 import { getDocuments } from '../functions/shared/helpers.js';
 import initGenerateDiversityReport from '../functions/actions/exercises/generateDiversityReport.js';
 
-const { generateDiversityReport } = initGenerateDiversityReport(config, firebase, db);
+const { generateDiversityReport } = initGenerateDiversityReport(firebase, db);
 
 const main = async () => {
   let exercisesRef = db.collection('exercises')

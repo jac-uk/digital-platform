@@ -1,10 +1,9 @@
 'use strict';
 
-import config from './shared/config.js';
 import { app, firebase } from './shared/admin.js';
 import initBackupFirestore from '../functions/actions/backup/firestore.js';
 
-const { backupFirestore } = initBackupFirestore(config, firebase);
+const { backupFirestore } = initBackupFirestore(firebase);
 
 const main = async () => {
   return backupFirestore();

@@ -1,18 +1,14 @@
-import * as functions from 'firebase-functions/v1';
-import config from '../shared/config.js';
+import { onDocumentUpdated } from 'firebase-functions/v2/firestore';
 import { firebase, db } from '../shared/admin.js';
 import initOnPanelUpdate from '../actions/panels/onUpdate.js';
 
-const onPanelUpdate = initOnPanelUpdate(config, firebase, db);
+const onPanelUpdate = initOnPanelUpdate(firebase, db);
 
-const runtimeOptions = {
+export default onDocumentUpdated({
+  document: 'panels/{panelId}',
   timeoutSeconds: 300,
-};
-
-export default functions.runWith(runtimeOptions).region('europe-west2').firestore
-  .document('panels/{panelId}')
-  .onUpdate((change, context) => {
-    const dataBefore = change.before.data();
-    const dataAfter = change.after.data();
-    return onPanelUpdate(context.params.panelId, dataBefore, dataAfter);
-  });
+}, (event) => {
+  const dataBefore = event.data.before.data();
+  const dataAfter = event.data.after.data();
+  return onPanelUpdate(event.params.panelId, dataBefore, dataAfter);
+});

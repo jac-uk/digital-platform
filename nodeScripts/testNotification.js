@@ -1,13 +1,12 @@
 'use strict';
 
-import config from './shared/config.js';
 import { firebase, app, db } from './shared/admin.js';
 import initNotifications from '../functions/actions/notifications.js';
 import initFactories from '../functions/shared/factories.js';
 import { getDocument } from '../functions/shared/helpers.js';
 
-const { testNotification } = initNotifications(config, firebase, db);
-const { newNotificationCharacterCheckRequest } = initFactories(config);
+const { testNotification } = initNotifications(firebase, db);
+const { newNotificationCharacterCheckRequest } = initFactories();
 
 const main = async () => {
   const applicationId = 'xmnLGyEmaQd2w18BnCJP';

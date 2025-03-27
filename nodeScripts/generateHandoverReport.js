@@ -1,10 +1,9 @@
 'use strict';
 
-import config from './shared/config.js';
 import { firebase, app, db } from './shared/admin.js';
 import initGenerateHandoverReport from '../functions/actions/exercises/generateHandoverReport.js';
 
-const { generateHandoverReport } = initGenerateHandoverReport(firebase, config, db);
+const { generateHandoverReport } = initGenerateHandoverReport(firebase, db);
 
 // Live: IiaXjmpDQd7BQx7ovlv0, R5mu47EVqEPf1WbXsLfZ, Bfoe64GS5GoDOSgXz2GT, T0UYPpfHpLUDLdYWlnQI, IiaXjmpDQd7BQx7ovlv0
 

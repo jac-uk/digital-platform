@@ -4,7 +4,7 @@
  * Get the number of unique independent assessors by email
  */
 
-import { app, db, auth } from '../shared/admin.js';
+import { app, db } from '../shared/admin.js';
 
 import { getDocuments, dedupeArrayOfObjects } from '../../functions/shared/helpers.js';
 

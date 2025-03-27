@@ -1,9 +1,8 @@
 
-import config from './shared/config.js';
-import { firebase, app, db } from './shared/admin.js';
+import { app, db } from './shared/admin.js';
 import initCustomReport from '../functions/actions/exercises/customReport.js';
 
-const { customReport } = initCustomReport(config, firebase, db);
+const { customReport } = initCustomReport(db);
 
 const main = async (params) => {
   await customReport({

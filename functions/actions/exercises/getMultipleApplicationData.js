@@ -1,15 +1,15 @@
 import initGetApplicationData from './getApplicationData.js';
 
-export default (config, firebase, db, auth) => {
+export default (db) => {
 
-  const getApplicationData = initGetApplicationData(config, firebase, db, auth);
+  const getApplicationData = initGetApplicationData(db);
 
   return getMultipleApplicationData;  
   async function getMultipleApplicationData(exerciseIds, columns) {
     const allData = [];
 
     for (const exerciseId of exerciseIds) {
-      const whereClauses = [];
+      const whereClauses = [{ column: 'status', operator: '!=',  value: 'draft' }];
       const exerciseParams = { whereClauses, columns, exerciseId };
       const exerciseData = await getApplicationData(exerciseParams);
 

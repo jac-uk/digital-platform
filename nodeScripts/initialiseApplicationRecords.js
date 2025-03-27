@@ -1,14 +1,13 @@
 'use strict';
 
-import config from './shared/config.js';
 import { auth, firebase, app, db } from './shared/admin.js';
 import initApplicationRecords from '../functions/actions/applicationRecords.js';
 
-const { initialiseApplicationRecords } = initApplicationRecords(config, firebase, db, auth);
+const { initialiseApplicationRecords } = initApplicationRecords(firebase, db, auth);
 
 const main = async () => {
   return initialiseApplicationRecords({
-    exerciseId: 'rxqeJzA9WjZ21dEXf03p',
+    exerciseId: 'p4DnfgusUqaoRP6ZCXpM',
   });
 };
 

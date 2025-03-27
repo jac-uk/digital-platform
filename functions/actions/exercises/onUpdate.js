@@ -4,9 +4,9 @@ import initVacancies from '../vacancies.js';
 import initExercises from './exercises.js';
 import { getSearchMap } from '../../shared/search.js';
 
-export default (config, firebase, db, auth) => {
-  const { sendExerciseReadyForApproval } = initSendExerciseReadyForApproval(config, firebase, db, auth);
-  const { updateVacancy, deleteVacancy } = initVacancies(config, db);
+export default (firebase, db) => {
+  const { sendExerciseReadyForApproval } = initSendExerciseReadyForApproval(firebase, db);
+  const { updateVacancy } = initVacancies(db);
   const { updateExercise } = initExercises(db);
 
   return onUpdate;

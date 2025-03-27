@@ -1,10 +1,11 @@
+import constants from '../../shared/constants.js';
 import { getDocument, getDocuments, applyUpdates } from '../../shared/helpers.js';
 import initTaskHelpers from './taskHelpers.js';
 import initUpdateTask from './updateTask.js';
 
-export default (config, firebase, db) => {
-  const { taskApplicationsEntryStatus } = initTaskHelpers(config);
-  const { getApplications } = initUpdateTask(config, firebase, db);
+export default (firebase, db) => {
+  const { taskApplicationsEntryStatus } = initTaskHelpers();
+  const { getApplications } = initUpdateTask(firebase, db);
 
   return refreshTaskApplications;
 
@@ -51,7 +52,7 @@ export default (config, firebase, db) => {
     // get relevant panels
     // check panel applicationIds are all still eligible
     // add any non-eligible ones in `applicationIdsOptional`
-    if (task.status === config.TASK_STATUS.PANELS_ACTIVATED) {
+    if (task.status === constants.TASK_STATUS.PANELS_ACTIVATED) {
       const panels = await getDocuments(db.collection('panels').where('exercise.id', '==', params.exerciseId).where('type', '==', params.type));
       if (panels) {
         panels.forEach(panel => {

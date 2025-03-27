@@ -6,8 +6,9 @@ import initFactories from '../../shared/factories.js';
 import initQts from '../../shared/qts.js';
 import { getOverride } from './meritListHelper.js';
 import { GRADES, GRADE_VALUES, markingScheme2ScoreSheet } from '../../shared/scoreSheetHelper.js';
-
-export default (config, firebase, db) => {
+import { TASK_STATUS, PANEL_STATUS, TASK_TYPE, CANDIDATE_FORM_STATUS } from '../../shared/constants.js';
+import _unionBy from 'lodash/unionBy.js';
+export default (firebase, db) => {
   const {
     taskStatuses,
     taskNextStatus,
@@ -16,7 +17,7 @@ export default (config, firebase, db) => {
     hasOverallGrade,
     getOverallGrade,
     createMarkingScheme,
-    scoreSheet,
+    //scoreSheet,
     getEmptyScoreSheet,
     scoreSheet2MarkingScheme,
     getApplicationPassStatus,
@@ -24,12 +25,12 @@ export default (config, firebase, db) => {
     getApplicationDidNotParticipateStatus,
     getApplicationPassStatuses,
     getApplicationFailStatuses,
-    taskApplicationsEntryStatus,
+    //taskApplicationsEntryStatus,
     includeZScores,
-  } = initTaskHelpers(config);
+  } = initTaskHelpers();
 
   const { refreshApplicationCounts } = initRefreshApplicationCounts(firebase, db);
-  const { newCandidateFormResponse } = initFactories(config);
+  const { newCandidateFormResponse } = initFactories();
 
   return {
     updateTask,
@@ -75,62 +76,62 @@ export default (config, firebase, db) => {
 
     // update task
     switch (nextStatus) {
-    case config.TASK_STATUS.PANELS_INITIALISED:
-      if (task.type === config.TASK_TYPE.SCENARIO) {
+    case TASK_STATUS.PANELS_INITIALISED:
+      if (task.type === TASK_TYPE.SCENARIO) {
         result = await initialisePanelTaskForScenario(exercise, task);
       } else {
         result = await initialisePanelTask(exercise, { task: task });
       }
       break;
-    case config.TASK_STATUS.PANELS_ACTIVATED:
+    case TASK_STATUS.PANELS_ACTIVATED:
       result = await activatePanelTask(exercise, task);
       break;
-    case config.TASK_STATUS.TEST_ACTIVATED:
+    case TASK_STATUS.TEST_ACTIVATED:
       result = await activateTestTask(exercise, task);
       break;
-    case config.TASK_STATUS.CANDIDATE_FORM_CONFIGURE:
+    case TASK_STATUS.CANDIDATE_FORM_CONFIGURE:
       result = await initialiseCandidateFormTask(exercise, task.type);
       break;
-    case config.TASK_STATUS.CANDIDATE_FORM_MONITOR:
+    case TASK_STATUS.CANDIDATE_FORM_MONITOR:
       result = await monitorCandidateFormTask(exercise, task);
       break;
-    case config.TASK_STATUS.DATA_INITIALISED:
+    case TASK_STATUS.DATA_INITIALISED:
       result = await initialiseDataTask(exercise, task.type);
       break;
-    case config.TASK_STATUS.DATA_ACTIVATED:
+    case TASK_STATUS.DATA_ACTIVATED:
       result = await activateDataTask(exercise, task);
       break;
-    case config.TASK_STATUS.MODERATION_INITIALISED:
+    case TASK_STATUS.MODERATION_INITIALISED:
       result = await initialiseModerationTask(exercise, task);
       break;
-    case config.TASK_STATUS.MODERATION_ACTIVATED:
+    case TASK_STATUS.MODERATION_ACTIVATED:
       result = await activateModerationTask(exercise, task);
       break;
-    case config.TASK_STATUS.FINALISED:
+    case TASK_STATUS.FINALISED:
       switch (task.status) {
-      case config.TASK_STATUS.PANELS_ACTIVATED:
+      case TASK_STATUS.PANELS_ACTIVATED:
         result = await finalisePanelTask(exercise, task);
         break;
-      case config.TASK_STATUS.TEST_ACTIVATED:
+      case TASK_STATUS.TEST_ACTIVATED:
         result = await finaliseTestTask(exercise, task);
         break;
-      case config.TASK_STATUS.DATA_ACTIVATED:
+      case TASK_STATUS.DATA_ACTIVATED:
         result = await finaliseDataTask(exercise, task);
         break;
       }
       break;
-    case config.TASK_STATUS.STAGE_OUTCOME:
+    case TASK_STATUS.STAGE_OUTCOME:
       result = await initialiseStageOutcomeTask(exercise, task.type);
       break;
-    case config.TASK_STATUS.COMPLETED:
+    case TASK_STATUS.COMPLETED:
       switch (task.status) {
-      case config.TASK_STATUS.STATUS_CHANGES:
+      case TASK_STATUS.STATUS_CHANGES:
         result = await completeStatusChangesTask(exercise, task);
         break;
-      case config.TASK_STATUS.STAGE_OUTCOME:
+      case TASK_STATUS.STAGE_OUTCOME:
         result = await completeStageOutcomeTask(exercise, task, params.nextStage);
         break;
-      case config.TASK_STATUS.CANDIDATE_FORM_MONITOR:
+      case TASK_STATUS.CANDIDATE_FORM_MONITOR:
         result = await completeCandidateFormTask(exercise, task);
         break;
       default:
@@ -250,7 +251,7 @@ export default (config, firebase, db) => {
     };
 
     // get test
-    const qts = initQts(config);
+    const qts = initQts();
     const response = await qts.get('scores', {
       testId: task.test.id,
     });
@@ -341,13 +342,13 @@ export default (config, firebase, db) => {
         markingScheme: task.markingScheme,
         hasModeration: panelIds.length > 1,
         scoreSheet: {},
-        status: config.PANEL_STATUS.CREATED,
+        status: PANEL_STATUS.CREATED,
       };
       if (task.grades) {
         data.grades = task.grades;
         data.grade_values = GRADE_VALUES;
       }
-      data[`statusLog.${config.PANEL_STATUS.CREATED}`] = firebase.firestore.FieldValue.serverTimestamp();
+      data[`statusLog.${PANEL_STATUS.CREATED}`] = firebase.firestore.FieldValue.serverTimestamp();
 
       const relevantApplicationRecords = applicationRecords.filter(applicationRecord => panel.applicationIds.indexOf(applicationRecord.id) >= 0);
       relevantApplicationRecords.forEach(applicationRecord => {
@@ -395,9 +396,9 @@ export default (config, firebase, db) => {
       data: {},
     };
     const title = `${lookup(testType)} for ${folderName}`;
-    const QTType = testType === config.TASK_TYPE.EMP_TIEBREAKER ? config.TASK_TYPE.SCENARIO : testType;
+    const QTType = testType === TASK_TYPE.EMP_TIEBREAKER ? TASK_TYPE.SCENARIO : testType;
     // initialise test on QT Platform
-    const qts = initQts(config);
+    const qts = initQts();
     const response = await qts.post('qualifying-test', {
       folder: folderName,
       test: {
@@ -444,7 +445,7 @@ export default (config, firebase, db) => {
     });
 
     // send participants to QT Platform
-    const qts = initQts(config);
+    const qts = initQts();
     await qts.post('participants', {
       testId: task.test.id,
       participants: participants,
@@ -501,7 +502,7 @@ export default (config, firebase, db) => {
       openDate: exercise.preSelectionDayQuestionnaireSendDate,
       closeDate: exercise.preSelectionDayQuestionnaireReturnDate,
       parts: [],
-      status: config.CANDIDATE_FORM_STATUS.CREATED,
+      status: CANDIDATE_FORM_STATUS.CREATED,
       statusLog: {},
       candidateAvailabilityDates: [],
     };
@@ -514,7 +515,7 @@ export default (config, firebase, db) => {
       dates.forEach(date => saveData.candidateAvailabilityDates.push({ date: date, location: location }));
     });
 
-    saveData.statusLog[config.CANDIDATE_FORM_STATUS.CREATED] = firebase.firestore.FieldValue.serverTimestamp();
+    saveData.statusLog[CANDIDATE_FORM_STATUS.CREATED] = firebase.firestore.FieldValue.serverTimestamp();
     const candidateForm = await db.collection('candidateForms').add(saveData);
 
     result.success = true;
@@ -565,18 +566,48 @@ export default (config, firebase, db) => {
     return result;
   }
 
-  async function getApplications(exercise, task) {
+  async function getApplications(exercise, task, checkApplicationEntryStatus = true) {
     const applicationsData = [];
     let applicationsRef = db.collection('applications')
       .where('exerciseId', '==', exercise.id)
-      .where('status', '==', 'applied');
-    if (task.applicationEntryStatus) {
+      .where('status', 'in', ['applied', 'withdrawn']);
+    if (checkApplicationEntryStatus && task.applicationEntryStatus) {
       applicationsRef = applicationsRef.where('_processing.status', '==', task.applicationEntryStatus);
       console.log('get applications with status', task.applicationEntryStatus);
     }
+
+    // exclude the applications withdrawn before QT
+    let withdrawnBeforeQT = [];
+    if (task.type === TASK_TYPE.CRITICAL_ANALYSIS || task.type === TASK_TYPE.SITUATIONAL_JUDGEMENT) {
+      let qtStartDate = null;
+      if (task.type === TASK_TYPE.CRITICAL_ANALYSIS) {
+        qtStartDate = exercise.criticalAnalysisTestDate;        ;
+      } else if (task.type === TASK_TYPE.SITUATIONAL_JUDGEMENT) {
+        qtStartDate = exercise.situationalJudgementTestDate;
+      }
+      if (qtStartDate) {
+        withdrawnBeforeQT = await getDocuments(
+          db.collection('applicationRecords')
+            .where('exercise.id', '==', exercise.id)
+            .where('statusLog.withdrawn', '<', qtStartDate)
+            .select('status', 'statusLog')
+        );
+      }
+    }
+
+    let isWithdrawnBeforeQT = {};
+    if (withdrawnBeforeQT) {
+      withdrawnBeforeQT.forEach(applicationRecord => {
+        isWithdrawnBeforeQT[applicationRecord.id] = true;
+      });
+    }
+
     const applications = await getDocuments(applicationsRef);
     if (!applications) return applicationsData;
     applications.forEach(application => {
+      // exclude the applications withdrawn before QT
+      if (isWithdrawnBeforeQT[application.id]) return;
+
       if (application.personalDetails) {
         applicationsData.push({
           id: application.id,
@@ -584,9 +615,11 @@ export default (config, firebase, db) => {
           email: application.personalDetails.email || '',
           fullName: application.personalDetails.fullName || '',
           adjustments: application.personalDetails.reasonableAdjustments || false,
+          status: application.status,
         });
       }
     });
+
     return applicationsData;
   }
 
@@ -677,9 +710,9 @@ export default (config, firebase, db) => {
 
     // get scoresheet
     let emptyScoreSheet = task.emptyScoreSheet;
-    if (task.type === config.TASK_TYPE.SCENARIO || task.type === config.TASK_TYPE.EMP_TIEBREAKER) {
+    if (task.type === TASK_TYPE.SCENARIO || task.type === TASK_TYPE.EMP_TIEBREAKER) {
       // get test
-      const qts = initQts(config);
+      const qts = initQts();
       const response = await qts.get('scores', {
         testId: task.test.id,
       });
@@ -800,7 +833,7 @@ export default (config, firebase, db) => {
     };
 
     // get results from QT Platform
-    const qts = initQts(config);
+    const qts = initQts();
     const response = await qts.get('scores', {
       testId: task.test.id,
     });
@@ -812,15 +845,18 @@ export default (config, firebase, db) => {
     // construct finalScores
     const finalScores = [];
     task.applications.forEach(application => {
-      if (response.scores[application.id]) {
-        finalScores.push({
-          id: application.id,
-          ref: application.ref,
-          score: response.scores[application.id],
-          percent: 100 * (response.scores[application.id] / response.maxScore),
-        });
-      }
+      // include zero score or no score
+      const score = response.scores[application.id] !== undefined ? response.scores[application.id] : 0;
+      const percent = 100 * (score / response.maxScore);
+
+      finalScores.push({
+        id: application.id,
+        ref: application.ref,
+        score,
+        percent,
+      });
     });
+
     result.success = true;
     result.data.maxScore = response.maxScore;
     result.data.finalScores = finalScores;
@@ -900,7 +936,7 @@ export default (config, firebase, db) => {
    * @returns Result object of the form `{ success: Boolean, data: Object }`. If successful then `data` is to be stored in the `task` document
    */
   async function completeTask(exercise, task) {
-
+    console.log('completeTask', task.type);
     const result = {
       success: false,
       data: {},
@@ -917,7 +953,8 @@ export default (config, firebase, db) => {
     if (didNotParticipateStatus) outcomeStats[didNotParticipateStatus] = 0;
 
     // get applications still relevant to this task
-    const applications = await getApplications(exercise, task);
+    const applications = await getApplications(exercise, task, false);
+    console.log('completeTask applications', applications.length);
     const applicationIdMap = {};
     applications.forEach(application => applicationIdMap[application.id] = true);
 
@@ -937,13 +974,20 @@ export default (config, firebase, db) => {
         }
         newStatus = isPass ? passStatus : failStatus;
       } else if (scoreData[scoreType] >= task.passMark) {
-        newStatus = passStatus; // TODO double-check we don't want to allow overrides from PASS->FAIL
+        newStatus = passStatus;
       } else {
-        const override = getOverride(task, scoreData.id);
-        if (override) {
+        newStatus = failStatus;
+      }
+      // check for overrides
+      const override = getOverride(task, scoreData.id);
+      if (override) {
+        switch (override.outcome) {
+        case 'pass':
           newStatus = passStatus;
-        } else {
+          break;
+        case 'fail':
           newStatus = failStatus;
+          break;
         }
       }
       outcomeStats[newStatus] += 1;
@@ -975,48 +1019,77 @@ export default (config, firebase, db) => {
       });
     }
 
+    console.log('applications.length', applications.length);
+
     // check for qualifying test follow on task
-    if (task.type === config.TASK_TYPE.CRITICAL_ANALYSIS || task.type === config.TASK_TYPE.SITUATIONAL_JUDGEMENT) {
+    if (task.type === TASK_TYPE.CRITICAL_ANALYSIS || task.type === TASK_TYPE.SITUATIONAL_JUDGEMENT) {
       if (
         exercise.shortlistingMethods.indexOf('critical-analysis-qualifying-test') >= 0 && exercise.criticalAnalysisTestDate
         && exercise.shortlistingMethods.indexOf('situational-judgement-qualifying-test') >= 0 && exercise.situationalJudgementTestDate
       ) {
+
         // get the other QT task
-        const otherTaskType = task.type === config.TASK_TYPE.CRITICAL_ANALYSIS ? config.TASK_TYPE.SITUATIONAL_JUDGEMENT : config.TASK_TYPE.CRITICAL_ANALYSIS;
+        const otherTaskType = task.type === TASK_TYPE.CRITICAL_ANALYSIS ? TASK_TYPE.SITUATIONAL_JUDGEMENT : TASK_TYPE.CRITICAL_ANALYSIS;
         const otherTask = await getDocument(db.doc(`exercises/${exercise.id}/tasks/${otherTaskType}`));
-        if (otherTask.status === config.TASK_STATUS.COMPLETED) {
+        if (otherTask.status === TASK_STATUS.COMPLETED) {
           // create qualifying test task
           const finalScores = [];
-          const applications = [];
-          task.finalScores.filter(scoreData => applicationIdMap[scoreData.id]).forEach(scoreData => {
-            if (scoreData.pass) {
-              const otherTaskScoreData = otherTask.finalScores.find(otherScoreData => otherScoreData.id === scoreData.id);
-              if (otherTaskScoreData && otherTaskScoreData.pass) {
-                const CAData = task.type === config.TASK_TYPE.CRITICAL_ANALYSIS ? scoreData : otherTaskScoreData;
-                const SJData = task.type === config.TASK_TYPE.CRITICAL_ANALYSIS ? otherTaskScoreData : scoreData;
-                finalScores.push({
-                  id: scoreData.id,
-                  ref: scoreData.ref,
-                  score: CAData.score + SJData.score,
-                  scoreSheet: {
-                    qualifyingTest: {
-                      CA: {
-                        score: CAData.score,
-                        percent: CAData.percent,
-                      },
-                      SJ: {
-                        score: SJData.score,
-                        percent: SJData.percent,
-                      },
-                      score: CAData.score + SJData.score,
-                    },
+
+          // the merit list should contains all the applications, even the CAT or SJT scores missing
+          const idToCAScore = {};
+          const idToSJScore = {};
+          for (const scoreData of task.finalScores) {
+            if (task.type === TASK_TYPE.CRITICAL_ANALYSIS) {
+              idToCAScore[scoreData.id] = scoreData;
+            } else if (task.type === TASK_TYPE.SITUATIONAL_JUDGEMENT) {
+              idToSJScore[scoreData.id] = scoreData;
+            }
+          }
+          for (const scoreData of otherTask.finalScores) {
+            if (otherTask.type === TASK_TYPE.CRITICAL_ANALYSIS) {
+              idToCAScore[scoreData.id] = scoreData;
+            } else if (otherTask.type === TASK_TYPE.SITUATIONAL_JUDGEMENT) {
+              idToSJScore[scoreData.id] = scoreData;
+            }
+          }
+
+          // contains union of CAT and SJT applications
+          const overallQTApplications = _unionBy(task.applications, otherTask.applications, 'id');
+          for (const application of overallQTApplications) {
+            const failedScoreData = { score: 0, percent: 0, pass: false };
+            let CAData = idToCAScore[application.id] || failedScoreData;
+            let SJData = idToSJScore[application.id] || failedScoreData;
+
+            /**
+             * If failed one of CAT or SJT, then it should fail in overall merit list task.
+             * To achieve this, if one of the tests fails, all the scores and z-scores should be 0.
+             */
+            let score = CAData.score + SJData.score;
+            if (!CAData.pass || !SJData.pass) score = 0;
+
+            finalScores.push({
+              id: application.id,
+              ref: application.ref,
+              score,
+              scoreSheet: {
+                qualifyingTest: {
+                  CA: {
+                    score: CAData.score,
+                    percent: CAData.percent,
+                    pass: CAData.pass, // for frontend can know if is first test failed
                   },
-                });
-                const application = task.applications.find(application => application.id === scoreData.id);
-                if (application) {
-                  applications.push(application);
-                }
-              } else {
+                  SJ: {
+                    score: SJData.score,
+                    percent: SJData.percent,
+                    pass: SJData.pass, // for frontend can know if is first test failed
+                  },
+                  score: CAData.score + SJData.score,
+                },
+              },
+            });
+
+            // if not pass one of the tests then fail
+            if (!CAData.pass || !SJData.pass) {
                 // update application record status to failed first test
                 outcomeStats[failStatus] += 1;
                 const saveData = {};
@@ -1024,23 +1097,22 @@ export default (config, firebase, db) => {
                 saveData[`statusLog.${failStatus}`] = firebase.firestore.FieldValue.serverTimestamp(); // we still always log the status change
                 commands.push({
                   command: 'update',
-                  ref: db.collection('applicationRecords').doc(scoreData.id),
+                  ref: db.collection('applicationRecords').doc(application.id),
                   data: saveData,
                 });
-              }
             }
-          });
+          }
 
           const taskData = {
             _stats: {
               totalApplications: finalScores.length,
             },
-            applications: applications,
+            applications: overallQTApplications,
             scoreType: 'zScore',
             finalScores: includeZScores(finalScores),
             markingScheme: [
               {
-                ref: config.TASK_TYPE.QUALIFYING_TEST,
+                ref: TASK_TYPE.QUALIFYING_TEST,
                 type: 'group',
                 children: [
                   {
@@ -1054,14 +1126,14 @@ export default (config, firebase, db) => {
                 ],
               },
             ],
-            type: config.TASK_TYPE.QUALIFYING_TEST,
+            type: TASK_TYPE.QUALIFYING_TEST,
           };
-          taskData['status'] = config.TASK_STATUS.FINALISED;
+          taskData['status'] = TASK_STATUS.FINALISED;
           taskData.statusLog = {};
-          taskData.statusLog[config.TASK_STATUS.FINALISED] = firebase.firestore.FieldValue.serverTimestamp();
+          taskData.statusLog[TASK_STATUS.FINALISED] = firebase.firestore.FieldValue.serverTimestamp();
           commands.push({
             command: 'set',
-            ref: db.doc(`exercises/${exercise.id}/tasks/${config.TASK_TYPE.QUALIFYING_TEST}`),
+            ref: db.doc(`exercises/${exercise.id}/tasks/${TASK_TYPE.QUALIFYING_TEST}`),
             data: taskData,
           });
         }

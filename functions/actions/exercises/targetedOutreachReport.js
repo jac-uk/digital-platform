@@ -12,7 +12,7 @@ export default (firebase, db) => {
   * @param [*] `nationalInsuranceNumbers` (required) Array list
   */
   async function targetedOutreachReport(nationalInsuranceNumbers) {
-    
+
     let NINs = []; // store normalized National Insurance Numbers
     let data = []; // store the returned data in an Array
 
@@ -26,7 +26,7 @@ export default (firebase, db) => {
     // Iterate through the NINs - National Insurance Numbers
     let resultsFromNIN = NINs.map(async (singleNationalInsuranceNumber) => {
       if (singleNationalInsuranceNumber) {
-        
+
         const candidates = await getDocuments(db.collection('candidates')
           .where('computed.nino', '==', singleNationalInsuranceNumber)
         );
@@ -34,24 +34,22 @@ export default (firebase, db) => {
         if (candidates.length > 0) {
           let resultsFromRecords = candidates.map(async (obj) => {
             const candidateID = obj.id;
-            
             const applicationRecords = await getDocuments(db.collection('applicationRecords')
               .where('candidate.id', '==', candidateID));
 
             const applications = await getDocuments(db.collection('applications')
               .where('status', '!=', 'withdrawn')
               .where('userId', '==', candidateID));
-            
-              let applicationNationalInsuranceNumber;
 
-              if (applications.length > 0) {
-                let NiFromApplications = applications.map(async (application) => {
-                  let returnObj = [];
-                  applicationNationalInsuranceNumber = application.personalDetails && application.personalDetails.nationalInsuranceNumber ? application.personalDetails.nationalInsuranceNumber : singleNationalInsuranceNumber;
-                });
-              }
+            let applicationNationalInsuranceNumber;
 
-              if (applicationRecords.length > 0) {
+            if (applications.length > 0) {
+              applications.map(async (application) => {
+                applicationNationalInsuranceNumber = application.personalDetails && application.personalDetails.nationalInsuranceNumber ? application.personalDetails.nationalInsuranceNumber : singleNationalInsuranceNumber;
+              });
+            }
+
+            if (applicationRecords.length > 0) {
               let applicationsFromRecords = applicationRecords.map(async (application) => {
                 let returnObj = [];
 
@@ -86,7 +84,7 @@ export default (firebase, db) => {
     });
 
     resultsFromNIN = await Promise.all(resultsFromNIN); // Wait for the promises to fulfill before showing the results (data)
-    return data;    
+    return data;
   }
 
 };

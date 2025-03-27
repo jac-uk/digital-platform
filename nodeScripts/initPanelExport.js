@@ -9,11 +9,10 @@
  */
 'use strict';
 
-import config from './shared/config.js';
 import { firebase, app, db } from './shared/admin.js';
 import initInitialisePanelExport from '../functions/actions/panels/initialisePanelExport.js';
 
-const { initialisePanelExport } = initInitialisePanelExport(config, firebase, db);
+const { initialisePanelExport } = initInitialisePanelExport(firebase, db);
 
 const main = async () => {
   await initialisePanelExport('ozUWQ7ewwnA0RZOZ8nIP');

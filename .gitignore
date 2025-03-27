@@ -10,10 +10,11 @@ firebase-debug.log*
 service-account.json
 service-account.*.json
 
-# environment vars
+# ignore .env but include .env.* in source control
 .env
-.env.local
-.env.*.local
+
+# secrets
+.secret.local
 
 # Firebase cache
 .firebase/

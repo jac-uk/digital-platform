@@ -1,10 +1,9 @@
 'use strict';
 
-import config from './shared/config.js';
 import { firebase, app, db } from './shared/admin.js';
 import initFactories from '../functions/shared/factories.js';
 import { applyUpdates } from '../functions/shared/helpers.js';
-const { newSmsNotificationLoginVerificationNumber } = initFactories(config);
+const { newSmsNotificationLoginVerificationNumber } = initFactories();
 
 const main = async () => {
 

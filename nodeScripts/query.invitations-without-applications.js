@@ -1,6 +1,5 @@
 'use strict';
 
-// import config from './shared/config.js';
 import { app, db } from './shared/admin.js';
 import { getDocuments } from '../functions/shared/helpers.js';
 

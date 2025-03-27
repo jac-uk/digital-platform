@@ -2,9 +2,9 @@
 // TODO: THIS IS COPIED FROM ADMIN `helpersTMP` folder. It should be moved to JAC Kit, plus streamlined
 
 import { isDate, formatDate } from '../helpers.js';
+import { TASK_TYPE } from '../constants.js';
 
-export default (config) => {
-  const TASK_TYPE = config.TASK_TYPE;
+export default () => {
   return exerciseTimeline;
 
   function getDateString(date, format) {

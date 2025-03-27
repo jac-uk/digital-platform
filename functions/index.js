@@ -48,7 +48,6 @@ import enableCharacterChecks from './callableFunctions/enableCharacterChecks.js'
 import initialiseMissingApplicationRecords from './callableFunctions/initialiseMissingApplicationRecords.js';
 import exportExerciseData from './callableFunctions/exportExerciseData.js';
 import targetedOutreachReport from './callableFunctions/targetedOutreachReport.js';
-//import transferHandoverData from './callableFunctions/transferHandoverData.js';
 import exportApplicationContactsData from './callableFunctions/exportApplicationContactsData.js';
 import exportApplicationEligibilityIssues from './callableFunctions/exportApplicationEligibilityIssues.js';
 import generateHandoverReport from './callableFunctions/generateHandoverReport.js';
@@ -61,11 +60,8 @@ import scanFile from './callableFunctions/scanFile.js';
 import scanAllFiles from './callableFunctions/scanAllFiles.js';
 import exportApplicationCharacterIssues from './callableFunctions/exportApplicationCharacterIssues.js';
 import getUserEmailByID from './callableFunctions/getUserEmailByID.js';
-//import getUserByEmail from './callableFunctions/getUserByEmail.js';
 import updateEmailAddress from './callableFunctions/updateEmailAddress.js';
 import ensureEmailVerified from './callableFunctions/ensureEmailVerified.js';
-//import adminGetUsers from './callableFunctions/adminGetUsers.js';
-//import adminGetUserRoles from './callableFunctions/adminGetUserRoles.js';
 import adminDisableUser from './callableFunctions/adminDisableUser.js';
 import adminCreateUserRole from './callableFunctions/adminCreateUserRole.js';
 import adminUpdateUserRole from './callableFunctions/adminUpdateUserRole.js';
@@ -73,14 +69,11 @@ import adminSetUserRole from './callableFunctions/adminSetUserRole.js';
 import adminSetDefaultRole from './callableFunctions/adminSetDefaultRole.js';
 import adminDisableNewUser from './callableFunctions/adminDisableNewUser.js';
 import adminSyncUserRolePermissions from './callableFunctions/adminSyncUserRolePermissions.js';
-//import createUser from './callableFunctions/createUser.js';
 import deleteUsers from './callableFunctions/deleteUsers.js';
 import customReport from './callableFunctions/customReport.js';
 import refreshApplicationCounts from './callableFunctions/refreshApplicationCounts.js';
 import createTestApplications from './callableFunctions/createTestApplications.js';
 import deleteApplications from './callableFunctions/deleteApplications.js';
-//import createTestUsers from './callableFunctions/createTestUsers.js';
-//import deleteTestUsers from './callableFunctions/deleteTestUsers.js';
 import createTask from './callableFunctions/tasks/createTask.js';
 import updateTask from './callableFunctions/tasks/updateTask.js';
 import verifyRecaptcha from './callableFunctions/verifyRecaptcha.js';
@@ -100,11 +93,7 @@ import verifySmsVerificationCode from './callableFunctions/verifySmsVerification
 import generateSccSummaryReport from './callableFunctions/generateSccSummaryReport.js';
 import exportSccSummaryReport from './callableFunctions/exportSccSummaryReport.js';
 import getMultipleApplicationData from './callableFunctions/getMultipleApplicationData.js';
-
-// Callable - QTs v2
-//import listQualifyingTests from './callableFunctions/qualifyingTests/v2/listQualifyingTests.js';
-//import updateQualifyingTestParticipants from './callableFunctions/qualifyingTests/v2/updateQualifyingTestParticipants.js';
-//import updateQualifyingTestScores from './callableFunctions/qualifyingTests/v2/updateQualifyingTestScores.js';
+import generateSelectionDayTimetable from './callableFunctions/generateSelectionDayTimetable.js';
 
 // HTTP
 import ticketingGithubWebhook from './httpFunctions/ticketingGithubWebhook.js';
@@ -160,7 +149,6 @@ export {
   initialiseMissingApplicationRecords,
   exportExerciseData,
   targetedOutreachReport,
-  //transferHandoverData,
   exportApplicationContactsData,
   exportApplicationEligibilityIssues,
   generateHandoverReport,
@@ -173,11 +161,8 @@ export {
   scanAllFiles,
   exportApplicationCharacterIssues,
   getUserEmailByID,
-  //getUserByEmail,
   updateEmailAddress,
   ensureEmailVerified,
-  //adminGetUsers,
-  //adminGetUserRoles,
   adminDisableUser,
   adminCreateUserRole,
   adminUpdateUserRole,
@@ -185,14 +170,11 @@ export {
   adminSetDefaultRole,
   adminDisableNewUser,
   adminSyncUserRolePermissions,
-  //createUser,
   deleteUsers,
   customReport,
   refreshApplicationCounts,
   createTestApplications,
   deleteApplications,
-  //createTestUsers,
-  //deleteTestUsers,
   createTask,
   updateTask,
   verifyRecaptcha,
@@ -212,11 +194,7 @@ export {
   getMultipleApplicationData,
   generateSccSummaryReport,
   exportSccSummaryReport,
-
-  // Callable - QTs v2
-  //listQualifyingTests,
-  //updateQualifyingTestParticipants,
-  //updateQualifyingTestScores,
+  generateSelectionDayTimetable,
 
   // HTTP
   ticketingGithubWebhook

@@ -1,9 +1,8 @@
 'use strict';
 
-import config from './shared/config.js';
 import { db, app, firebase } from './shared/admin.js';
 import runScannerTestInit from '../functions/actions/malware-scanning/runScannerTest.js';
-const runScannerTest = runScannerTestInit(config, firebase, db);
+const runScannerTest = runScannerTestInit(firebase, db);
 
 const main = async () => {
   return runScannerTest();

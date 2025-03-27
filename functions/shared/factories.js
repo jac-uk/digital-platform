@@ -1,9 +1,10 @@
 import { formatDate, objectHasNestedProperty } from './helpers.js';
 import { applicationOpenDatePost01042023 } from './converters/helpers.js';
 import { getSearchMap } from './search.js';
-import _ from 'lodash';
+//import _ from 'lodash';
+import { EXERCISE_STAGE, ASSESSMENT_TYPE, ASSESSMENT_METHOD } from './constants.js';
 
-export default (CONSTANTS) => {
+export default () => {
   return {
     newNotificationExerciseApprovalSubmit,
     newNotificationApplicationSubmit,
@@ -89,8 +90,8 @@ export default (CONSTANTS) => {
     const templateId = 'd411b686-f86f-46be-b4a0-4d3946e2beff';
 
     let secondStageClosingDate = '';
-    if (exercise._applicationContent 
-        && exercise._applicationContent._currentStep 
+    if (exercise._applicationContent
+        && exercise._applicationContent._currentStep
         && exercise._applicationContent._currentStep.end) {
       secondStageClosingDate = formatDate(exercise._applicationContent._currentStep.end.toDate());
     }
@@ -232,7 +233,7 @@ export default (CONSTANTS) => {
       personalisation: {
         exerciseName: application.exerciseName,
         dueDate: dueDate,
-        urlRequired: `${CONSTANTS.APPLY_URL}/sign-in`,
+        urlRequired: `${process.env.APPLY_URL}/sign-in`,
         applicantName: application.personalDetails.fullName,
         selectionExerciseManager: exerciseManagerName,
         exerciseMailbox: exerciseMailbox,
@@ -247,13 +248,13 @@ export default (CONSTANTS) => {
   }
 
   function newNotificationAssessmentRequest(firebase, assessment, exercise) {
-    const link = `${CONSTANTS.ASSESSMENTS_URL}/sign-in?email=${assessment.assessor.email}&ref=assessments/${assessment.id}`;
+    const link = `${process.env.ASSESSMENTS_URL}/sign-in?email=${assessment.assessor.email}&ref=assessments/${assessment.id}`;
     let xCompetencyAreasOrXSkillsAndAbilities;
     switch (assessment.type) {
-      case CONSTANTS.ASSESSMENT_TYPE.COMPETENCY:
+      case ASSESSMENT_TYPE.COMPETENCY:
         xCompetencyAreasOrXSkillsAndAbilities = 'competency areas';
         break;
-      case CONSTANTS.ASSESSMENT_TYPE.SKILLS:
+      case ASSESSMENT_TYPE.SKILLS:
         xCompetencyAreasOrXSkillsAndAbilities = 'skills and abilities';
         break;
       default:
@@ -288,13 +289,13 @@ export default (CONSTANTS) => {
   }
 
   function newNotificationAssessmentReminder(firebase, assessment, exercise) {
-    const link = `${CONSTANTS.ASSESSMENTS_URL}/sign-in?email=${assessment.assessor.email}&ref=assessments/${assessment.id}`;
+    const link = `${process.env.ASSESSMENTS_URL}/sign-in?email=${assessment.assessor.email}&ref=assessments/${assessment.id}`;
     let xCompetencyAreasOrXSkillsAndAbilities;
     switch (assessment.type) {
-      case CONSTANTS.ASSESSMENT_TYPE.COMPETENCY:
+      case ASSESSMENT_TYPE.COMPETENCY:
         xCompetencyAreasOrXSkillsAndAbilities = 'competency areas';
         break;
-      case CONSTANTS.ASSESSMENT_TYPE.SKILLS:
+      case ASSESSMENT_TYPE.SKILLS:
         xCompetencyAreasOrXSkillsAndAbilities = 'skills and abilities';
         break;
       default:
@@ -329,13 +330,13 @@ export default (CONSTANTS) => {
   }
 
   function newNotificationAssessmentSubmit(firebase, assessment, exercise) {
-    const link = `${CONSTANTS.ASSESSMENTS_URL}/sign-in?email=${assessment.assessor.email}&ref=assessments/${assessment.id}`;
+    const link = `${process.env.ASSESSMENTS_URL}/sign-in?email=${assessment.assessor.email}&ref=assessments/${assessment.id}`;
     let xCompetencyAreasOrXSkillsAndAbilities;
     switch (assessment.type) {
-      case CONSTANTS.ASSESSMENT_TYPE.COMPETENCY:
+      case ASSESSMENT_TYPE.COMPETENCY:
         xCompetencyAreasOrXSkillsAndAbilities = 'competency areas';
         break;
-      case CONSTANTS.ASSESSMENT_TYPE.SKILLS:
+      case ASSESSMENT_TYPE.SKILLS:
         xCompetencyAreasOrXSkillsAndAbilities = 'skills and abilities';
         break;
       default:
@@ -414,16 +415,16 @@ export default (CONSTANTS) => {
     // assessment type
     if (exercise.assessmentMethods) {
       if (
-        exercise.assessmentMethods[CONSTANTS.ASSESSMENT_METHOD.SELF_ASSESSMENT_WITH_COMPETENCIES] ||
-        exercise.assessmentMethods[CONSTANTS.ASSESSMENT_METHOD.STATEMENT_OF_SUITABILITY_WITH_COMPETENCIES]
+        exercise.assessmentMethods[ASSESSMENT_METHOD.SELF_ASSESSMENT_WITH_COMPETENCIES] ||
+        exercise.assessmentMethods[ASSESSMENT_METHOD.STATEMENT_OF_SUITABILITY_WITH_COMPETENCIES]
       ) {
-        assessment.type = CONSTANTS.ASSESSMENT_TYPE.COMPETENCY;
-      } else if (exercise.assessmentMethods[CONSTANTS.ASSESSMENT_METHOD.STATEMENT_OF_SUITABILITY_WITH_SKILLS_AND_ABILITIES]) {
-        assessment.type = CONSTANTS.ASSESSMENT_TYPE.SKILLS;
+        assessment.type = ASSESSMENT_TYPE.COMPETENCY;
+      } else if (exercise.assessmentMethods[ASSESSMENT_METHOD.STATEMENT_OF_SUITABILITY_WITH_SKILLS_AND_ABILITIES]) {
+        assessment.type = ASSESSMENT_TYPE.SKILLS;
       }
     }
     if (!assessment.type) {
-      assessment.type = CONSTANTS.ASSESSMENT_TYPE.GENERAL;
+      assessment.type = ASSESSMENT_TYPE.GENERAL;
     }
 
     // build searchables for search map
@@ -541,7 +542,7 @@ export default (CONSTANTS) => {
       application.personalDetails.nationalInsuranceNumber,
       application.referenceNumber,
     ]);
-    
+
     let applicationRecord = {
       _search: search,
       exercise: {
@@ -560,7 +561,7 @@ export default (CONSTANTS) => {
         status: 'not requested',
       },
       active: true,
-      stage: exercise._processingVersion >= 2 ? CONSTANTS.EXERCISE_STAGE.SHORTLISTING : CONSTANTS.EXERCISE_STAGE.REVIEW,
+      stage: exercise._processingVersion >= 2 ? EXERCISE_STAGE.SHORTLISTING : EXERCISE_STAGE.REVIEW,
       status: '',
       flags: {
         characterIssues: false,
@@ -799,7 +800,7 @@ export default (CONSTANTS) => {
   function newCandidateFormNotification(firebase, application, type, exerciseMailbox, exerciseManagerName, dueDate) {
     let templateId = '';
     let templateName = '';
-    
+
     if (type === 'request') {
       templateId = 'bba6cebb-b3b3-4ba3-818b-af7b9a011f77';
       templateName = 'Candidate form consent form request';
@@ -823,7 +824,7 @@ export default (CONSTANTS) => {
       personalisation: {
         exerciseName: application.exerciseName,
         dueDate,
-        urlRequired: `${CONSTANTS.APPLY_URL}/sign-in`,
+        urlRequired: `${process.env.APPLY_URL}/sign-in`,
         applicantName: application.personalDetails.fullName,
         selectionExerciseManager: exerciseManagerName,
         exerciseMailbox,
@@ -858,21 +859,22 @@ export default (CONSTANTS) => {
     };
   }
 
-  function newNotificationPublishedFeedbackReport(firebase, email, exerciseName, testType) {
+  function newNotificationPublishedFeedbackReport(firebase, email, exercise, testType) {
     const templateName = 'Generic Feedback Report Publication';
     const templateId = 'f74f3fda-419a-4c78-ad15-fbe0e33656ee';
     const reportsLink = 'https://judicialappointments.gov.uk/feedback-and-evaluation-reports#OnlineTests';
     return {
       email: email,
-      replyTo: '',
+      replyTo: exercise.exerciseMailbox,
       template: {
         name: templateName,
         id: templateId,
       },
       personalisation: {
-        exerciseName: exerciseName,
+        exerciseName: exercise.name,
         testType: testType,
         reportsLink: reportsLink,
+        exerciseMailbox: exercise.exerciseMailbox,
       },
       createdAt: firebase.firestore.FieldValue.serverTimestamp(),
       status: 'ready',
@@ -882,10 +884,10 @@ export default (CONSTANTS) => {
   /**
    * Send email verification link ** on change of email address **
    * (Note that this is not used for sending the verification link on sign up)
-   * 
-   * @param {*} email 
-   * @param {*} verificationLink 
-   * @returns 
+   *
+   * @param {*} email
+   * @param {*} verificationLink
+   * @returns
    */
   function newNotificationEmailVerificationLink(firebase, email, verificationLink) {
     const templateName = 'Change Email Address Verification Link';
@@ -907,10 +909,10 @@ export default (CONSTANTS) => {
 
   /**
    * Send sms notification for login device confirmation
-   * @param {*} firebase 
-   * @param {*} intlMobileNumber 
-   * @param {*} verificationNumber 
-   * @returns 
+   * @param {*} firebase
+   * @param {*} intlMobileNumber
+   * @param {*} verificationNumber
+   * @returns
    */
   function newSmsNotificationLoginVerificationNumber(firebase, intlMobileNumber, verificationNumber) {
     const templateName = 'Login Verification Number';
