@@ -408,7 +408,16 @@ export default (firebase, db) => {
       if (!issue.events || issue.events.length === 0) continue;
       const index = i + 1;
       data[`characterInformation${index}`] = issue.events.map((event) => {
-        return `${issue.summary.toUpperCase()}\r\n${swapDY(formatDate(event.date, 'DD/MM/YYYY'))} - ${event.title || ''}\r\n${event.details}`;
+        let investigations = '';
+        if (event.investigations !== null && event.investigations !== undefined) {
+          investigations = `Investigation ongoing: ${helpers.toYesNo(event.investigations)}\r\n`;
+        }
+        if (event.investigations === true && event.investigationConclusionDate) {
+          const prettyDate = getDate(event.investigationConclusionDate).toJSON().slice(0, 10).split('-').reverse().join('/'); // dd/mm/yyyy
+          investigations = investigations.concat(`Investigation conclusion date: ${prettyDate}\r\n`);
+        }
+
+        return `${issue.summary.toUpperCase()}\r\n${event.category || ''}\r\n${swapDY(formatDate(event.date, 'DD/MM/YYYY'))} - ${event.title || ''}\r\n${investigations}${event.details}`;
       }).join('\r\n\r\n\r\n').trim();
     }
     return data;
@@ -432,6 +441,7 @@ export default (firebase, db) => {
 
   function swapDY(d) {
     const parts = d.split('-');
+    if (parts.length !== 3) return d;
     return `${parts[2]}/${parts[1]}/${parts[0]}`;
   }
 
@@ -1611,6 +1621,9 @@ REPRODUCE THIS TABLE AS APPROPRIATE.<span class="red">&gt;</span></b>
             if (Array.isArray(issue.events)) {
               issue.events.forEach((event, i) => {
                 let result = [];
+                if (event.category) {
+                  result.push(`<u>${event.category}</u>`);
+                }
                 if (event.date) {
                   const prettyDate = getDate(event.date).toJSON().slice(0, 10).split('-').reverse().join('/'); // dd/mm/yyyy
                   result.push(prettyDate);
@@ -1620,9 +1633,9 @@ REPRODUCE THIS TABLE AS APPROPRIATE.<span class="red">&gt;</span></b>
                 }
                 if (issue.summary === 'Professional Conduct') {
                   if (event.investigations !== null && event.investigations !== undefined) {
-                    result.push(`Investigations: ${helpers.toYesNo(event.investigations)}`);
+                    result.push(`Investigation ongoing: ${helpers.toYesNo(event.investigations)}`);
                   }
-                  if (event.investigationConclusionDate) {
+                  if (event.investigations === true && event.investigationConclusionDate) {
                     const prettyDate = getDate(event.investigationConclusionDate).toJSON().slice(0, 10).split('-').reverse().join('/'); // dd/mm/yyyy
                     result.push(`Investigation conclusion date: ${prettyDate}`);
                   }

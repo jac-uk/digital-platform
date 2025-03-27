@@ -1,6 +1,6 @@
 import { getDocument, isEmpty, applyUpdates, getDate } from '../../shared/helpers.js';
 import lookup from '../../shared/converters/lookup.js';
-import _ from 'lodash';
+import _last from 'lodash/last.js';
 import { APPLICATION } from '../../shared/constants.js';
 
 export default (firebase, db) => {
@@ -116,8 +116,8 @@ export default (firebase, db) => {
       }
 
       // update cursor & total
-      lastApplicationDoc = _.last(applicationSnapshot.docs);
-      lastApplication = _.last(applications);
+      lastApplicationDoc = _last(applicationSnapshot.docs);
+      lastApplication = _last(applications);
       applicationCount += applications.length;
 
       // process application
@@ -450,12 +450,15 @@ export default (firebase, db) => {
       });
       Object.keys(groups).forEach(issueType => {
         const events = [];
+        let details;
         groups[issueType].forEach(key => {
-          if (answers[key] && answers[questions[key].details]) {
-            if (Array.isArray(answers[questions[key].details])) { // if the answer contains more than one issue, create an issue for each
-              events.push(...answers[questions[key].details]);
+          details = answers[questions[key].details];
+          if (answers[key] && details) {
+            const category = questions[key].category || '';
+            if (Array.isArray(details)) { // if the answer contains more than one issue, create an issue for each
+              events.push(...details.map(d => ({ ...d, category }))); //  append type (ex. bankruptcies) to the issue
             } else {
-              events.push(answers[questions[key].details]);
+              events.push({ ...details, category }); // append type (ex. bankruptcies) to the issue
             }
           }
         });
