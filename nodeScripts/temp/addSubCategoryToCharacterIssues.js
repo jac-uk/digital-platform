@@ -1,6 +1,6 @@
 
 /**
- * Migrate all live exercises to `_processingVersion` 2. This updates all `applicationRecords` for each exercise
+ * Add sub-category to character issues for all the application records
  */
 'use strict';
 
