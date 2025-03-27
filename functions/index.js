@@ -70,7 +70,7 @@ import adminSetDefaultRole from './callableFunctions/adminSetDefaultRole.js';
 import adminDisableNewUser from './callableFunctions/adminDisableNewUser.js';
 import adminSyncUserRolePermissions from './callableFunctions/adminSyncUserRolePermissions.js';
 import deleteUsers from './callableFunctions/deleteUsers.js';
-import customReport from './callableFunctions/customReport.js';
+//import customReport from './callableFunctions/customReport.js';
 import refreshApplicationCounts from './callableFunctions/refreshApplicationCounts.js';
 import createTestApplications from './callableFunctions/createTestApplications.js';
 import deleteApplications from './callableFunctions/deleteApplications.js';
@@ -172,7 +172,7 @@ export {
   adminDisableNewUser,
   adminSyncUserRolePermissions,
   deleteUsers,
-  customReport,
+  //customReport,
   refreshApplicationCounts,
   createTestApplications,
   deleteApplications,

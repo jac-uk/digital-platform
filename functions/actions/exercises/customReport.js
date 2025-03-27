@@ -5,30 +5,31 @@ import _ from 'lodash';
 export default (db) => {
 
   return {
-    customReport,
+    //customReport,
     getColumnUsage,
   };
 
-  async function customReport(params, context) {
+  // @TODO: This function can be moved to the frontend
+  // async function customReport(params, context) {
 
-    let reportRef = db.collection('customReports');
+  //   let reportRef = db.collection('customReports');
 
-    if(_.get(params, 'columns', null)) {
-      //save report
-      const report = {
-        name: params.name,
-        columns: params.columns,
-        whereClauses: params.whereClauses,
-        users: [context.auth.uid],
-      };
-      await reportRef.add(report);
-    }
+  //   if(_.get(params, 'columns', null)) {
+  //     //save report
+  //     const report = {
+  //       name: params.name,
+  //       columns: params.columns,
+  //       whereClauses: params.whereClauses,
+  //       users: [context.auth.uid],
+  //     };
+  //     await reportRef.add(report);
+  //   }
 
-    const reports = await getDocuments(reportRef.where('users', 'array-contains', context.auth.uid));
+  //   const reports = await getDocuments(reportRef.where('users', 'array-contains', context.auth.uid));
 
-    return reports;
+  //   return reports;
 
-  }
+  // }
 
   async function getColumnUsage(orderBy = null) {
     let reportRef = db.collection('customReports');
