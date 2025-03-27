@@ -17,8 +17,7 @@ export const firebase = {
 export const db = getFirestore(app);
 export const auth = getAuth(app);
 
-// export const projectId = app.options.credential.projectId;
-export const projectId = 'digital-platform-develop';
+export const projectId = app.options.credential.projectId;
 export const environment = whichEnvironment(projectId);
 export const isProduction = environment === 'production';
 
