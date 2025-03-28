@@ -408,16 +408,37 @@ export default (firebase, db) => {
       if (!issue.events || issue.events.length === 0) continue;
       const index = i + 1;
       data[`characterInformation${index}`] = issue.events.map((event) => {
-        let investigations = '';
-        if (event.investigations !== null && event.investigations !== undefined) {
-          investigations = `Investigation ongoing: ${helpers.toYesNo(event.investigations)}\r\n`;
+        
+        // format each character issue
+        const issueBlock = [];
+        
+        if (issue.summary) {
+          issueBlock.push(`${issue.summary.toUpperCase()}`);
         }
-        if (event.investigations === true && event.investigationConclusionDate) {
-          const prettyDate = getDate(event.investigationConclusionDate).toJSON().slice(0, 10).split('-').reverse().join('/'); // dd/mm/yyyy
-          investigations = investigations.concat(`Investigation conclusion date: ${prettyDate}\r\n`);
+        if (event.category) {
+          issueBlock.push(`${event.category}`);
+        }
+        if (event.date) {
+          const prettyDate = swapDY(formatDate(event.date, 'DD/MM/YYYY'));
+          if (event.title) {
+            issueBlock.push(`${prettyDate} - ${event.title}`);
+          } else {
+            issueBlock.push(`${prettyDate}`);
+          }
+        }
+        if (event.investigations === true) {
+          issueBlock.push(`Investigation ongoing: ${helpers.toYesNo(event.investigations)}`);
+          if (event.investigationConclusionDate) {
+            const prettyDate = getDate(event.investigationConclusionDate).toJSON().slice(0, 10).split('-').reverse().join('/'); // dd/mm/yyyy
+            issueBlock.push(`Anticipated conclusion date: ${prettyDate}`);
+          }
         }
 
-        return `${issue.summary.toUpperCase()}\r\n${event.category || ''}\r\n${swapDY(formatDate(event.date, 'DD/MM/YYYY'))} - ${event.title || ''}\r\n${investigations}${event.details}`;
+        if (event.details) {
+          issueBlock.push(`${event.details}`);
+        }
+
+        return issueBlock.join('\r\n');
       }).join('\r\n\r\n\r\n').trim();
     }
     return data;
@@ -1632,12 +1653,12 @@ REPRODUCE THIS TABLE AS APPROPRIATE.<span class="red">&gt;</span></b>
                   result.push(event.title);
                 }
                 if (issue.summary === 'Professional Conduct') {
-                  if (event.investigations !== null && event.investigations !== undefined) {
+                  if (event.investigations === true) {
                     result.push(`Investigation ongoing: ${helpers.toYesNo(event.investigations)}`);
-                  }
-                  if (event.investigations === true && event.investigationConclusionDate) {
-                    const prettyDate = getDate(event.investigationConclusionDate).toJSON().slice(0, 10).split('-').reverse().join('/'); // dd/mm/yyyy
-                    result.push(`Investigation conclusion date: ${prettyDate}`);
+                    if (event.investigationConclusionDate) {
+                      const prettyDate = getDate(event.investigationConclusionDate).toJSON().slice(0, 10).split('-').reverse().join('/'); // dd/mm/yyyy
+                      result.push(`Anticipated conclusion date: ${prettyDate}`);
+                    }
                   }
                 }
                 if (event.details) {
