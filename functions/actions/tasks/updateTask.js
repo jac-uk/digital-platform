@@ -954,7 +954,6 @@ export default (firebase, db) => {
 
     // get all applicationRecords for validation
     const applicationRecords = await getDocuments(db.collection('applicationRecords').where('exercise.id', '==', exercise.id).select('application.id'));
-    console.log('applicationRecords', JSON.stringify(applicationRecords));
     const applicationRecordIdSet = new Set(applicationRecords.map(record => record.id));
 
     // get applications still relevant to this task
