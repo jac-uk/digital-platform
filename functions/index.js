@@ -96,6 +96,8 @@ import getMultipleApplicationData from './callableFunctions/getMultipleApplicati
 import generateSelectionDayTimetable from './callableFunctions/generateSelectionDayTimetable.js';
 import checkSignInMethodsForEmail from './callableFunctions/checkSignInMethodsForEmail.js';
 
+import checkDuplicateApplications from './callableFunctions/checkDuplicateApplications.js';
+
 // HTTP
 import ticketingGithubWebhook from './httpFunctions/ticketingGithubWebhook.js';
 
@@ -197,7 +199,8 @@ export {
   exportSccSummaryReport,
   generateSelectionDayTimetable,
   checkSignInMethodsForEmail,
-
+  checkDuplicateApplications,
+  
   // HTTP
   ticketingGithubWebhook
 };
