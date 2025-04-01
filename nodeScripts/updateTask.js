@@ -7,8 +7,8 @@ const { updateTask } = initUpdateTask(firebase, db);
 
 const main = async () => {
   return updateTask({
-    exerciseId: 'ebz1bzduUEToY8oZzNC5',
-    type: 'selectionDay',
+    exerciseId: '5Koy4ZOXpVH2kfiCKNLi',
+    type: 'situationalJudgement',
   });
 };
 

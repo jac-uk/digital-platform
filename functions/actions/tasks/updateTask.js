@@ -1061,6 +1061,14 @@ export default (firebase, db) => {
             let SJData = idToSJScore[application.id] || failedScoreData;
 
             /**
+             * Bugfix: some/withdrawn candidates do not have 'pass' field. This is breaking the firestore commands as we are trying to set a field to `undefined`
+             * TODO check this fix and remove/replace as it doesn't seem 'right'!
+             */
+            if (CAData.pass === undefined) CAData.pass = false;
+            if (SJData.pass === undefined) SJData.pass = false;
+            /** end bigfix */
+
+            /**
              * If failed one of CAT or SJT, then it should fail in overall merit list task.
              * To achieve this, if one of the tests fails, all the scores and z-scores should be 0.
              */
