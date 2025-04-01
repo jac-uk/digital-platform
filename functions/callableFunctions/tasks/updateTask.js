@@ -18,6 +18,7 @@ export default onCall(
       'QT_KEY',
       'QT_URL',
     ],  // ✅ Ensure the function has access to the secrets
+    enforceAppCheck: true,
   },
   async (request) => {
     const { updateTask } = initUpdateTask(firebase, db);

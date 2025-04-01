@@ -14,6 +14,7 @@ export default onCall(
     timeoutSeconds: 240,    // (Optional) Configure timeout
     minInstances: 0,        // (Optional) Min instances to reduce cold starts
     maxInstances: 10,       // (Optional) Max instances to scale
+    enforceAppCheck: true,
   },
   async (request) => {
 

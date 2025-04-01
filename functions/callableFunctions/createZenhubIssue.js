@@ -17,6 +17,7 @@ export default onCall(
       'GITHUB_PAT',
       'ZENHUB_ISSUES_WORKSPACE_ID',
     ],  // ✅ Ensure the function has access to the secrets
+    enforceAppCheck: true,
   },
   async (request) => {
 

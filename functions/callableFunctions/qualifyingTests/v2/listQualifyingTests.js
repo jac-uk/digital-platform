@@ -17,6 +17,7 @@ export default onCall(
       'QT_KEY',
       'QT_URL',
     ],  // Specify the secret(s) you want to access
+    enforceAppCheck: true,
   },
   async (request) => {
 

@@ -18,6 +18,7 @@ export default onCall(
       'SLACK_TICKETING_APP_BOT_TOKEN',
       'SLACK_URL',
     ],  // ✅ Ensure the function has access to the secrets
+    enforceAppCheck: true,
   },
   async (request) => {
 

@@ -16,6 +16,7 @@ export default onCall(
     secrets: [
       'GOOGLE_RECAPTCHA_SECRET',
     ],  // ✅ Ensure the function has access to the secrets
+    enforceAppCheck: true,
   },
   async (request) => {
 
