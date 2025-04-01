@@ -1,4 +1,3 @@
-
 import createTimeline from '../../shared/Timeline/createTimeline.js';
 import { convertToDate, calculateMean, calculateStandardDeviation } from '../../shared/helpers.js';
 import initExerciseTimeline from '../../shared/Timeline/exerciseTimeline.TMP.js';
@@ -584,34 +583,26 @@ export default () => {
     return markingScheme;
   }
 
-  /**
-   * includeZScores
-   * Calculates z score for each item provided in the 'finalScores' param
-   * * @param {*} `finalScores` array of objects where each object has the following shape:
-   ```
-   {
-    score: Number,
-    percent: Number,
-    scoreSheet: {
-      qualifyingTest: {
-        CA: {
-          score: Number,
-          percent: Number,
-        },
-        SJ: {
-          score: Number,
-          percent: Number,
-        },
-        score: Number,
-        percent: Number,
-      },
-    },
+  function includePercentileRank(finalScores) {
+    // Calculate percentile for overall zScores
+    const nonNullOverallZScores = finalScores
+      .filter(item => item.zScore !== null)
+      .map(item => item.zScore);
+
+    // Sort the non-null overall zScores in ascending order
+    const sortedOverallZScores = [...nonNullOverallZScores].sort((a, b) => a - b);
+
+    finalScores.forEach(item => {
+      if (item.zScore !== null) {
+        const rank = sortedOverallZScores.indexOf(item.zScore) + 1;
+        const percentileRank = (rank / sortedOverallZScores.length) * 100;
+        item.percentileRank = parseFloat(percentileRank.toFixed(2));
+      }
+    });
+
+    return finalScores;
   }
-  ```
-   * @returns Provided `finalScores` array decorated with new `zScore` properties
-   * Note: zScore = ((% Score – Mean(All % Scores))/SD(All % Scores))
-   * Note: combined zScore has a weighting of 40% of CAT zScore plus 60% of SJT zScore
-   **/
+
   function includeZScores(finalScores) {
     if (!finalScores) return [];
     if (!finalScores.length) return [];
@@ -651,10 +642,12 @@ export default () => {
         item.zScore = zScore;
         item.scoreSheet.qualifyingTest.zScore = zScore;
       });
+
+      // Add percentile rank to finalScores
+      return includePercentileRank(finalScores);
     } catch (e) {
       return finalScores;
     }
-    return finalScores;
   }
 
   function hasTaskType(exercise, taskType) {
