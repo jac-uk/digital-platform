@@ -6,8 +6,9 @@ export default (db) => {
   /**
    * Get all applications for a given exercise and check for duplicate NI numbers
    * Return the duplicates grouped by NI number and sorted by name
-   * @param {*} params 
-   * @returns 
+   * @param {{ exerciseId: string }} params - An object containing the exercise ID.
+   * @returns {{ duplicates: { referenceNumber: string, name: string, niNumber: string }[] }} 
+   *          An object containing an array of duplicate applications.
    */
   async function checkDuplicateApplications(params) {
     const applicationDataRef = db.collection('applications').where('exerciseId', '==', params.exerciseId);

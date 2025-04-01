@@ -31,6 +31,12 @@ export default onCall(
         PERMISSIONS.applications.permissions.canReadApplications.value,
       ]);
 
+      if (!checkArguments({
+        exerciseId: { required: true },
+      }, data)) {
+        throw new HttpsError('invalid-argument', 'Please provide valid arguments');
+      }
+
       return await checkDuplicateApplications(data);
     }
     catch (error) {
