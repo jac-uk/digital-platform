@@ -952,6 +952,10 @@ export default (firebase, db) => {
     outcomeStats[failStatus] = 0;
     if (didNotParticipateStatus) outcomeStats[didNotParticipateStatus] = 0;
 
+    // get all applicationRecords for validation
+    const applicationRecords = await getDocuments(db.collection('applicationRecords').where('exercise.id', '==', exercise.id).select('application.id'));
+    const applicationRecordIdSet = new Set(applicationRecords.map(record => record.id));
+
     // get applications still relevant to this task
     const applications = await getApplications(exercise, task, false);
     console.log('completeTask applications', applications.length);
@@ -995,11 +999,15 @@ export default (firebase, db) => {
       const saveData = {};
       if (!(task.allowStatusUpdates === false)) { saveData.status = newStatus; }  // here we update status unless this has been explicitly denied
       saveData[`statusLog.${newStatus}`] = firebase.firestore.FieldValue.serverTimestamp(); // we still always log the status change
-      commands.push({
-        command: 'update',
-        ref: db.collection('applicationRecords').doc(scoreData.id),
-        data: saveData,
-      });
+      
+      // Only update application records that exist
+      if (applicationRecordIdSet.has(scoreData.id)) {
+        commands.push({
+          command: 'update',
+          ref: db.collection('applicationRecords').doc(scoreData.id),
+          data: saveData,
+        });
+      }
     });
 
     // update application records where we don't have final scores (if we have a status to set these to)
@@ -1011,11 +1019,15 @@ export default (firebase, db) => {
         const saveData = {};
         if (!(task.allowStatusUpdates === false)) { saveData.status = didNotParticipateStatus; }  // here we update status unless this has been explicitly denied
         saveData[`statusLog.${didNotParticipateStatus}`] = firebase.firestore.FieldValue.serverTimestamp(); // we still always log the status change
-        commands.push({
-          command: 'update',
-          ref: db.collection('applicationRecords').doc(application.id),
-          data: saveData,
-        });
+        
+        // Only update application records that exist
+        if (applicationRecordIdSet.has(application.id)) {
+          commands.push({
+            command: 'update',
+            ref: db.collection('applicationRecords').doc(application.id),
+            data: saveData,
+          });
+        }
       });
     }
 
@@ -1095,11 +1107,15 @@ export default (firebase, db) => {
                 const saveData = {};
                 if (!(task.allowStatusUpdates === false)) { saveData.status = failStatus; }  // here we update status unless this has been explicitly denied
                 saveData[`statusLog.${failStatus}`] = firebase.firestore.FieldValue.serverTimestamp(); // we still always log the status change
-                commands.push({
-                  command: 'update',
-                  ref: db.collection('applicationRecords').doc(application.id),
-                  data: saveData,
-                });
+                
+                // Only update application records that exist
+                if (applicationRecordIdSet.has(application.id)) {
+                  commands.push({
+                    command: 'update',
+                    ref: db.collection('applicationRecords').doc(application.id),
+                    data: saveData,
+                  });
+                }
             }
           }
 
