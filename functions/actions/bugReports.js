@@ -44,7 +44,7 @@ export default (db, firebase) => {
    */
   async function getBugReportsWithFailedSendOnCreate() {
     try {
-      const MAX_RETRIES = process.env.SLACK_MAX_RETRIES ? process.env.SLACK_MAX_RETRIES : 3;
+      const MAX_RETRIES = process.env.SLACK_MAX_RETRIES ? parseInt(process.env.SLACK_MAX_RETRIES) : 3;
       const bugReportsRef = db.collection('bugReports')
         .where('slackMessages.onCreate.retries', '<', MAX_RETRIES)
         .where('slackMessages.onCreate.sentAt', '==', null);
