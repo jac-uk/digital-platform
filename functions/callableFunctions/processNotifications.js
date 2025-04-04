@@ -14,6 +14,7 @@ export default onCall(
     minInstances: 0,        // (Optional) Min instances to reduce cold starts
     maxInstances: 10,       // (Optional) Max instances to scale
     secrets: [ 'NOTIFY_KEY' ],  // ✅ Ensure the function has access to the secrets
+    enforceAppCheck: true,
   },
   async (request) => {
 

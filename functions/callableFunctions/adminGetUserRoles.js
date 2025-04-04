@@ -8,6 +8,7 @@ const { checkFunctionEnabled } = initServiceSettings(db);
 
 export default onCall({
   memory: '256MiB',
+  enforceAppCheck: true,
 },
 async (request) => {
   await checkFunctionEnabled();
